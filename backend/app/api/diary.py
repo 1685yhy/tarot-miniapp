@@ -19,7 +19,36 @@ async def create_entry(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    # Draw a random card for today's reflection (DB-random, not assuming sequential IDs)
+    today = date.today()
+
+    # ── Check if entry already exists for today → update instead ──
+    existing_result = await db.execute(
+        select(DiaryEntry).where(
+            DiaryEntry.user_id == user.id,
+            DiaryEntry.entry_date == today,
+        )
+    )
+    existing = existing_result.scalar_one_or_none()
+
+    if existing:
+        # Update existing entry
+        existing.mood = body.mood
+        if body.reflection is not None:
+            existing.reflection = body.reflection
+        await db.flush()
+        card_result = await db.execute(
+            select(TarotCard).where(TarotCard.id == existing.card_id)
+        )
+        card = card_result.scalar_one_or_none()
+        return DiaryEntryResponse(
+            id=existing.id,
+            date=str(existing.entry_date),
+            mood=existing.mood,
+            card={"id": card.id, "name_zh": card.name_zh, "meaning_upright": card.meaning_upright[:200]} if card else None,
+            reflection=existing.reflection,
+        )
+
+    # ── Create new entry ──
     card_result = await db.execute(
         select(TarotCard).order_by(func.random()).limit(1)
     )
@@ -29,7 +58,7 @@ async def create_entry(
 
     entry = DiaryEntry(
         user_id=user.id,
-        entry_date=date.today(),
+        entry_date=today,
         mood=body.mood,
         card_id=card.id,
         reflection=body.reflection,

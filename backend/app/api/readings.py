@@ -38,9 +38,9 @@ router = APIRouter(prefix="/readings", tags=["占卜解读"])
 # -------------------------------------------------------------------
 
 def _today() -> datetime:
-    """Return the start-of-day (midnight) for the current UTC date."""
+    """Return the start-of-day (midnight) for the current UTC date (naive, matching DB storage)."""
     now = datetime.now(timezone.utc)
-    return now.replace(hour=0, minute=0, second=0, microsecond=0)
+    return datetime(now.year, now.month, now.day)
 
 
 async def _reset_daily_count_if_new_day(user: User) -> None:
@@ -109,6 +109,8 @@ async def create_reading(
     await _reset_daily_count_if_new_day(user)
 
     # ── Free-tier limit check ──
+    if user.is_member and user.member_expires_at and user.member_expires_at < datetime.now(timezone.utc):
+        user.is_member = False
     if not user.is_member and user.free_readings_today >= settings.FREE_DAILY_READINGS:
         # Check if user has paid reading credits
         if user.paid_readings_balance and user.paid_readings_balance > 0:
@@ -287,6 +289,75 @@ async def get_reading(
 
     drawn_resp = await _load_drawn_cards_response(db, reading.drawn_cards)
 
+    return ReadingResponse(
+        id=reading.id,
+        spread_type=reading.spread_type,
+        question=reading.question,
+        theme=reading.theme,
+        interpretation=reading.interpretation,
+        is_paid=reading.is_paid,
+        created_at=reading.created_at,
+        drawn_cards=[DrawnCardResponse(**d) for d in drawn_resp],
+    )
+
+
+@router.post("/{reading_id}/reinterpret", response_model=ReadingResponse)
+async def reinterpret_reading(
+    reading_id: str,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Re-generate the AI interpretation for a reading."""
+    result = await db.execute(
+        select(Reading)
+        .where(Reading.id == reading_id)
+        .options(selectinload(Reading.drawn_cards))
+    )
+    reading = result.scalar_one_or_none()
+    if reading is None:
+        raise HTTPException(status_code=404, detail="解读不存在")
+    if reading.user_id != user.id:
+        raise HTTPException(status_code=403, detail="无权操作他人的解读")
+
+    # Build cards_info from drawn_cards
+    cards_info: list[dict] = []
+    for dc in reading.drawn_cards:
+        card_result = await db.execute(
+            select(TarotCard).where(TarotCard.id == dc.card_id)
+        )
+        card = card_result.scalar_one_or_none()
+        if card is None:
+            continue
+        cards_info.append(
+            {
+                "card_id": dc.card_id,
+                "position": dc.position,
+                "position_name": dc.position_name,
+                "is_reversed": dc.is_reversed,
+                "name_zh": card.name_zh,
+                "name_en": card.name_en,
+                "image_description": card.image_description,
+                "meaning_upright": card.meaning_upright,
+                "meaning_reversed": card.meaning_reversed,
+                "love_upright": card.love_upright,
+                "love_reversed": card.love_reversed,
+                "career_upright": card.career_upright,
+                "career_reversed": card.career_reversed,
+                "finance_upright": card.finance_upright,
+                "finance_reversed": card.finance_reversed,
+            }
+        )
+
+    interpretation = await generate_reading(
+        reading.spread_type, reading.question, reading.theme, cards_info
+    )
+    if interpretation is not None:
+        reading.interpretation = interpretation
+
+    await db.flush()
+    await db.refresh(reading, ["drawn_cards"])
+
+    drawn_resp = await _load_drawn_cards_response(db, reading.drawn_cards)
     return ReadingResponse(
         id=reading.id,
         spread_type=reading.spread_type,

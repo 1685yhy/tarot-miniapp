@@ -72,7 +72,7 @@ Page({
         data: {
           spread_type: selectedSpread.key,
           question: this.data.question || null,
-          theme: selectedSpread.theme || 'general',
+          theme: this.data.theme || 'general',
         },
       });
 

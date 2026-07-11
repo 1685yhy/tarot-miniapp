@@ -13,8 +13,11 @@ router = APIRouter(prefix="/auth", tags=["认证"])
 
 
 @router.post("/dev-login", response_model=LoginResponse)
-async def dev_login(db: AsyncSession = Depends(get_db)):
-    """开发环境：创建或获取测试用户，绕过微信登录"""
+async def dev_login(
+    member: bool = False,
+    db: AsyncSession = Depends(get_db),
+):
+    """开发环境：创建或获取测试用户，绕过微信登录。默认非会员，传 ?member=true 切换为会员。"""
     test_openid = "dev_test_user_001"
     result = await db.execute(select(User).where(User.openid == test_openid))
     user = result.scalar_one_or_none()
@@ -22,9 +25,12 @@ async def dev_login(db: AsyncSession = Depends(get_db)):
         user = User(
             openid=test_openid,
             nickname="测试用户",
-            is_member=True,  # 开发环境直接给会员
+            is_member=member,
         )
         db.add(user)
+        await db.flush()
+    else:
+        user.is_member = member
         await db.flush()
 
     token = create_token(user.id)

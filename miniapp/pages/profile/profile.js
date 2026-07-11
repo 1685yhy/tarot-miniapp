@@ -9,6 +9,9 @@ Page({
     readingHistory: [],
     pageLoading: true,
     pageError: null,
+    historyPage: 1,
+    hasMore: true,
+    loadingMore: false,
   },
 
   async onShow() {
@@ -21,16 +24,35 @@ Page({
       const user = await checkLogin();
       const [status, history] = await Promise.all([
         request('/membership/status'),
-        request('/readings/history'),
+        request('/readings/history?page=1&page_size=20'),
       ]);
       this.setData({
         user,
         memberStatus: status,
         readingHistory: history.items || [],
         pageLoading: false,
+        historyPage: 1,
+        hasMore: history.items ? history.items.length >= 20 : false,
       });
     } catch (err) {
       this.setData({ pageLoading: false, pageError: err.errMsg || '加载失败' });
+    }
+  },
+
+  async onScrollToBottom() {
+    if (this.data.loadingMore || !this.data.hasMore) return;
+    this.setData({ loadingMore: true });
+    const nextPage = this.data.historyPage + 1;
+    try {
+      const history = await request(`/readings/history?page=${nextPage}&page_size=20`);
+      this.setData({
+        readingHistory: this.data.readingHistory.concat(history.items || []),
+        historyPage: nextPage,
+        hasMore: history.items ? history.items.length >= 20 : false,
+        loadingMore: false,
+      });
+    } catch (err) {
+      this.setData({ loadingMore: false });
     }
   },
 

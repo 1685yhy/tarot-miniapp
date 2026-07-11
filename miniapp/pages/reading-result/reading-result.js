@@ -81,4 +81,18 @@ Page({
     const id = this.options?.id;
     if (id) this.loadReading(id);
   },
+
+  async onReinterpret() {
+    const id = this.options?.id;
+    if (!id) return;
+    wx.showLoading({ title: '重新生成解读...' });
+    try {
+      const result = await request(`/readings/${id}/reinterpret`, { method: 'POST' });
+      this.setData({ reading: result });
+      wx.hideLoading();
+    } catch (err) {
+      wx.hideLoading();
+      wx.showToast({ title: '生成失败，请重试', icon: 'none' });
+    }
+  },
 });

@@ -93,8 +93,12 @@
   <!-- Interpretation -->
   <view class="interpretation-section anim-fade-in-up-2">
     <text class="text-secondary text-center" style="display:block;margin-bottom:var(--space-md)">AI 塔罗解读</text>
-    <view class="interpretation-card card {{showFullInterpretation ? 'expanded' : ''}}">
-      <text class="interpretation-text">{{reading.interpretation || '正在生成解读...'}}</text>
+    <view class="interpretation-card card {{showFullInterpretation ? 'expanded' : ''}}" wx:if="{{reading.interpretation}}">
+      <text class="interpretation-text">{{reading.interpretation}}</text>
+    </view>
+    <view wx:else class="interpretation-card card">
+      <text class="interpretation-text text-dim">解读生成失败</text>
+      <button class="btn-primary btn-small" bindtap="onReinterpret" style="margin-top:var(--space-md)">✨ 重新生成解读</button>
     </view>
     <view wx:if="{{reading.interpretation && reading.interpretation.length > 300}}">
       <text class="btn-text" style="text-align:center;display:block;width:100%" bindtap="onToggleInterpretation">
