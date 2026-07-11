@@ -36,13 +36,13 @@
 
 ### MCP 连通性要求
 
-| MCP 服务 | 类型 | 所需凭证 | 状态检查方式 |
-|----------|------|----------|-------------|
-| Unity MCP | Unity Editor 内建 | 无（Unity 6 AI Assistant） | `mcp__unity-mcp__debug_request_context` |
-| ComfyUI MCP | 本地 npx | 无（本地 ComfyUI URL） | 调用 ComfyUI API |
-| Ludo.ai MCP | HTTP API | `LUDO_API_KEY` | 调用 Ludo.ai API |
-| NanoBanana MCP | HTTP API | `GEMINI_API_KEY` | 调用 Gemini API |
-| Blender MCP | 本地进程 | 无（本地 Blender） | 检查 Blender 进程 |
+| MCP 服务 | 安装方式 | 所需凭证 | 来源 |
+|----------|----------|----------|------|
+| Unity MCP | Unity 6 AI Assistant 内建 | 无 | Unity Editor Package Manager |
+| ComfyUI MCP | `npx comfyui-mcp` | 无（本地 ComfyUI URL） | npm |
+| Ludo.ai MCP | HTTP: `https://mcp.ludo.ai/mcp` | `LUDO_API_KEY`（Header: `ApiKey <key>`） | [ludo.ai](https://ludo.ai/api-mcp-integration) |
+| NanoBanana MCP | `npx nanobanana-mcp` | `GEMINI_API_KEY` | npm: `nanobanana-mcp` |
+| Blender MCP | `uvx blender-mcp` | 无（需 Blender 运行 addon.py） | PyPI: `blender-mcp` (23k⭐ GitHub) |
 
 ### 违规处理
 
