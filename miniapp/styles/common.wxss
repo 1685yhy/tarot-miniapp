@@ -1,0 +1,16 @@
+/* 塔罗主题色系 */
+page {
+  --color-bg: #0f0f23;
+  --color-bg-card: #1a1a2e;
+  --color-gold: #c9a96e;
+  --color-gold-light: #e0c78a;
+  --color-purple: #7b68ee;
+  --color-purple-dark: #4a3f8a;
+  --color-text-primary: #e8e8f0;
+  --color-text-secondary: #8888aa;
+  --color-text-dim: #555577;
+
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+}

@@ -1,0 +1,49 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/encyclopedia/encyclopedia",
+    "pages/card-detail/card-detail",
+    "pages/reading/reading",
+    "pages/reading-result/reading-result",
+    "pages/chat/chat",
+    "pages/membership/membership",
+    "pages/profile/profile",
+    "pages/diary/diary",
+    "pages/annual-report/annual-report"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#1a1a2e",
+    "navigationBarTitleText": "塔罗占卜",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#0f0f23"
+  },
+  "tabBar": {
+    "color": "#8888aa",
+    "selectedColor": "#c9a96e",
+    "backgroundColor": "#1a1a2e",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "占卜",
+        "iconPath": "images/tab-divine.png",
+        "selectedIconPath": "images/tab-divine-active.png"
+      },
+      {
+        "pagePath": "pages/encyclopedia/encyclopedia",
+        "text": "百科",
+        "iconPath": "images/tab-book.png",
+        "selectedIconPath": "images/tab-book-active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "images/tab-profile.png",
+        "selectedIconPath": "images/tab-profile-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}
