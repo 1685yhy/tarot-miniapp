@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.db.database import create_all
 from app.config import settings
-from app.api import auth, cards, chat, diary, membership, orders, readings, share
+from app.api import auth, cards, chat, diary, membership, orders, readings, report, share
 
 
 @asynccontextmanager
@@ -30,6 +30,7 @@ app.include_router(diary.router)
 app.include_router(orders.router)
 app.include_router(membership.router)
 app.include_router(readings.router)
+app.include_router(report.router)
 app.include_router(share.router)
 
 
