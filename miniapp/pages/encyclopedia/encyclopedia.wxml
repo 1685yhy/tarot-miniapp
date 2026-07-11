@@ -1,0 +1,63 @@
+<!-- pages/encyclopedia/encyclopedia.wxml -->
+<view class="container">
+  <!-- Search bar -->
+  <view class="search-bar">
+    <text class="search-icon">🔍</text>
+    <input
+      class="search-input"
+      placeholder="搜索塔罗牌名称..."
+      placeholder-style="color:#555577"
+      value="{{searchKeyword}}"
+      bindinput="onSearchInput"
+    />
+  </view>
+
+  <!-- Tab bar -->
+  <scroll-view class="tab-bar" scroll-x>
+    <view
+      class="tab-item {{activeTab === item.key ? 'tab-active' : ''}}"
+      wx:for="{{tabs}}"
+      wx:key="key"
+      data-key="{{item.key}}"
+      bindtap="onTabTap"
+    >
+      <text>{{item.label}}</text>
+    </view>
+  </scroll-view>
+
+  <!-- Card grid -->
+  <view wx:if="{{!loading}}" class="card-grid">
+    <view
+      class="card-item"
+      wx:for="{{filteredCards}}"
+      wx:key="id"
+      data-id="{{item.id}}"
+      bindtap="onCardTap"
+    >
+      <view class="card-number">{{item.card_number}}</view>
+      <text class="card-name">{{item.name_zh}}</text>
+      <text class="card-en">{{item.name_en}}</text>
+      <view class="card-tags">
+        <text class="tag arcana-tag">{{item.arcana === 'major' ? '大牌' : '小牌'}}</text>
+        <text class="tag suit-tag" wx:if="{{item.suit}}">{{item.suit}}</text>
+        <text class="tag element-tag" wx:if="{{item.element}}">{{item.element}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Empty state -->
+  <view wx:if="{{!loading && filteredCards.length === 0}}" class="empty">
+    <text class="empty-icon">🃏</text>
+    <text class="empty-text">没有找到匹配的牌</text>
+  </view>
+
+  <!-- Loading -->
+  <view wx:if="{{loading}}" class="loading">
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- Card count -->
+  <view class="count-bar" wx:if="{{!loading}}">
+    <text>共 {{filteredCards.length}} 张牌</text>
+  </view>
+</view>

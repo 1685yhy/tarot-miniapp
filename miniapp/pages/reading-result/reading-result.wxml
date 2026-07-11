@@ -1,0 +1,75 @@
+<!-- pages/reading-result/reading-result.wxml -->
+<view class="container" wx:if="{{!loading && reading}}">
+  <!-- Card swiper -->
+  <view class="cards-section">
+    <text class="section-label">你抽到的牌</text>
+    <swiper
+      class="card-swiper"
+      current="{{activeCardIndex}}"
+      bindchange="onCardSwiperChange"
+      indicator-dots
+      indicator-color="rgba(201,169,110,0.3)"
+      indicator-active-color="#c9a96e"
+    >
+      <swiper-item wx:for="{{reading.drawn_cards}}" wx:key="id">
+        <view class="drawn-card {{item.is_reversed ? 'reversed' : ''}}">
+          <view class="card-position-badge">{{item.position_name}}</view>
+          <view class="card-main">
+            <text class="card-name">{{item.card_name}}</text>
+            <view class="direction-badge {{item.is_reversed ? 'rev' : 'up'}}">
+              <text>{{item.is_reversed ? '🌙 逆位' : '☀️ 正位'}}</text>
+            </view>
+          </view>
+        </view>
+      </swiper-item>
+    </swiper>
+
+    <!-- Card quick nav dots -->
+    <view class="card-dots">
+      <view
+        class="dot {{activeCardIndex === index ? 'dot-active' : ''}}"
+        wx:for="{{reading.drawn_cards}}"
+        wx:key="id"
+        wx:for-index="index"
+        data-index="{{index}}"
+        bindtap="onCardTap"
+      />
+    </view>
+  </view>
+
+  <!-- Interpretation -->
+  <view class="interpretation-section">
+    <text class="section-label">AI 塔罗解读</text>
+    <view class="interpretation-card {{showFullInterpretation ? 'expanded' : ''}}">
+      <text class="interpretation-text">{{reading.interpretation || '正在生成解读...'}}</text>
+    </view>
+    <view class="interpretation-actions" wx:if="{{reading.interpretation && reading.interpretation.length > 300}}">
+      <text class="expand-btn" bindtap="onToggleInterpretation">
+        {{showFullInterpretation ? '收起 ▲' : '展开全文 ▼'}}
+      </text>
+    </view>
+  </view>
+
+  <!-- Actions -->
+  <view class="actions">
+    <button class="action-btn ask-btn" bindtap="onAskMore">
+      <text>💬 追问更多</text>
+    </button>
+    <button class="action-btn share-btn" open-type="share">
+      <text>📤 分享给朋友</text>
+    </button>
+    <view class="action-row">
+      <text class="action-link" bindtap="onNewReading">🔄 再来一次</text>
+      <text class="action-link" bindtap="onBackHome">🏠 回到首页</text>
+    </view>
+  </view>
+</view>
+
+<!-- Loading -->
+<view wx:if="{{loading}}" class="loading-page">
+  <view class="loading-animation">
+    <text class="mystic-symbol">✧</text>
+  </view>
+  <text class="loading-title">塔罗牌灵正在回应...</text>
+  <text class="loading-sub">AI正在为你解读命运</text>
+</view>

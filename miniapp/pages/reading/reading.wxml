@@ -1,0 +1,78 @@
+<!-- pages/reading/reading.wxml -->
+<view class="container">
+  <!-- Spread selection -->
+  <view class="spread-section" wx:if="{{!showQuestionInput}}">
+    <text class="page-title">选择牌阵</text>
+    <text class="page-subtitle">不同问题，用不同牌阵</text>
+
+    <view class="spread-grid">
+      <view
+        class="spread-card {{item.premium ? 'premium' : ''}}"
+        wx:for="{{spreads}}"
+        wx:key="key"
+        data-spread="{{item}}"
+        bindtap="onSelectSpread"
+      >
+        <text class="spread-icon">{{item.icon}}</text>
+        <view class="spread-info">
+          <text class="spread-name">{{item.name}}</text>
+          <text class="spread-desc">{{item.desc}}</text>
+        </view>
+        <view class="spread-meta">
+          <text class="spread-cards">{{item.cards}}张牌</text>
+          <text class="premium-tag" wx:if="{{item.premium}}">会员</text>
+          <text class="popular-tag" wx:if="{{item.popular}}">热门</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Question input -->
+  <view class="question-section" wx:if="{{showQuestionInput}}">
+    <view class="selected-info">
+      <text class="selected-icon">{{selectedSpread.icon}}</text>
+      <text class="selected-name">{{selectedSpread.name}}</text>
+      <text class="selected-desc">{{selectedSpread.desc}}</text>
+    </view>
+
+    <view class="question-box">
+      <text class="question-label">你想问什么？（可选）</text>
+      <textarea
+        class="question-input"
+        placeholder="例如：我最近的感情运势怎么样？这份工作要不要换？..."
+        placeholder-style="color:#555577"
+        maxlength="200"
+        value="{{question}}"
+        bindinput="onQuestionInput"
+      />
+      <text class="question-count">{{question.length}}/200</text>
+    </view>
+
+    <!-- Theme selection -->
+    <view class="theme-section">
+      <text class="question-label">解读侧重</text>
+      <view class="theme-options">
+        <view class="theme-item {{theme === 'general' ? 'theme-active' : ''}}" bindtap="onThemeTap" data-theme="general">
+          <text>🔮 综合</text>
+        </view>
+        <view class="theme-item {{theme === 'love' ? 'theme-active' : ''}}" bindtap="onThemeTap" data-theme="love">
+          <text>💕 爱情</text>
+        </view>
+        <view class="theme-item {{theme === 'career' ? 'theme-active' : ''}}" bindtap="onThemeTap" data-theme="career">
+          <text>💼 事业</text>
+        </view>
+        <view class="theme-item {{theme === 'finance' ? 'theme-active' : ''}}" bindtap="onThemeTap" data-theme="finance">
+          <text>💰 财运</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Draw button -->
+    <button class="draw-btn {{isDrawing ? 'drawing' : ''}}" bindtap="onStartReading" disabled="{{isDrawing}}">
+      <text wx:if="{{!isDrawing}}">✨ 开始抽牌</text>
+      <text wx:else>🌙 牌灵正在回应...</text>
+    </button>
+
+    <text class="back-link" bindtap="onBackToSpreads">← 重新选择牌阵</text>
+  </view>
+</view>

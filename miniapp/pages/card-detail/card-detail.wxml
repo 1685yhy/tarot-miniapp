@@ -1,0 +1,98 @@
+<!-- pages/card-detail/card-detail.wxml -->
+<view class="container" wx:if="{{!loading && card}}">
+  <!-- Card header -->
+  <view class="card-header">
+    <view class="card-number-badge">{{card.card_number}}</view>
+    <text class="card-title">{{card.name_zh}}</text>
+    <text class="card-subtitle">{{card.name_en}}</text>
+    <view class="card-meta">
+      <text class="meta-item">{{card.arcana === 'major' ? '大阿尔卡纳' : '小阿尔卡纳'}}</text>
+      <text class="meta-item" wx:if="{{card.suit}}">{{card.suit === 'wands' ? '权杖' : card.suit === 'cups' ? '圣杯' : card.suit === 'swords' ? '宝剑' : '星币'}}牌组</text>
+      <text class="meta-item" wx:if="{{card.element}}">{{card.element}}元素</text>
+    </view>
+  </view>
+
+  <!-- Image description -->
+  <view class="section">
+    <text class="section-title">🖼️ 牌面描述</text>
+    <text class="section-text">{{card.image_description}}</text>
+  </view>
+
+  <!-- Keywords -->
+  <view class="section">
+    <text class="section-title">🔑 关键词</text>
+    <view class="keyword-list">
+      <text class="keyword" wx:for="{{card.keywords_upright.split(',')}}" wx:key="*this">{{item.trim()}}</text>
+    </view>
+  </view>
+
+  <!-- Upright/Reversed toggle -->
+  <view class="toggle-bar">
+    <view
+      class="toggle-item {{activeTab === 'upright' ? 'toggle-active' : ''}}"
+      data-tab="upright"
+      bindtap="onTabTap"
+    >
+      <text>☀️ 正位</text>
+    </view>
+    <view
+      class="toggle-item {{activeTab === 'reversed' ? 'toggle-active' : ''}}"
+      data-tab="reversed"
+      bindtap="onTabTap"
+    >
+      <text>🌙 逆位</text>
+    </view>
+  </view>
+
+  <!-- Meanings -->
+  <view wx:if="{{activeTab === 'upright'}}">
+    <view class="section">
+      <text class="section-title">📜 正位含义</text>
+      <text class="section-text">{{card.meaning_upright}}</text>
+    </view>
+    <view class="section">
+      <text class="section-title">💕 爱情</text>
+      <text class="section-text">{{card.love_upright}}</text>
+    </view>
+    <view class="section">
+      <text class="section-title">💼 事业</text>
+      <text class="section-text">{{card.career_upright}}</text>
+    </view>
+    <view class="section">
+      <text class="section-title">💰 财运</text>
+      <text class="section-text">{{card.finance_upright}}</text>
+    </view>
+    <view class="section">
+      <text class="section-title">💚 健康</text>
+      <text class="section-text">{{card.health_upright}}</text>
+    </view>
+  </view>
+
+  <view wx:else>
+    <view class="section">
+      <text class="section-title">📜 逆位含义</text>
+      <text class="section-text">{{card.meaning_reversed}}</text>
+    </view>
+    <view class="section">
+      <text class="section-title">💕 爱情</text>
+      <text class="section-text">{{card.love_reversed}}</text>
+    </view>
+    <view class="section">
+      <text class="section-title">💼 事业</text>
+      <text class="section-text">{{card.career_reversed}}</text>
+    </view>
+    <view class="section">
+      <text class="section-title">💰 财运</text>
+      <text class="section-text">{{card.finance_reversed}}</text>
+    </view>
+    <view class="section">
+      <text class="section-title">💚 健康</text>
+      <text class="section-text">{{card.health_reversed}}</text>
+    </view>
+  </view>
+</view>
+
+<!-- Loading -->
+<view wx:if="{{loading}}" class="loading">
+  <text class="loading-text">加载中...</text>
+</view>
