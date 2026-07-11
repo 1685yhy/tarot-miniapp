@@ -23,6 +23,12 @@ Page({
     this.setData({ pageLoading: true, pageError: null });
     try {
       const card = await request(`/cards/${id}`);
+      // Preprocess keywords into array (WXML does not support .split()/.trim())
+      if (card.keywords_upright) {
+        card.keywordsList = card.keywords_upright.split(',').map(s => s.trim());
+      } else {
+        card.keywordsList = [];
+      }
       this.setData({ card, pageLoading: false });
     } catch (err) {
       this.setData({ pageLoading: false, pageError: err.message || '加载失败' });

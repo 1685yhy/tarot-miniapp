@@ -135,7 +135,7 @@ Component({
   },
 
   data: {
-    cardType: 'fool',
+    // cardType is defined in properties — do NOT duplicate here to avoid conflict
     cardNumberDisplay: '',
     displayNameEn: '',
     isMajor: true,

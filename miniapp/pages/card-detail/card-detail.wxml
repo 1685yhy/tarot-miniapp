@@ -49,7 +49,7 @@
     <view class="card anim-fade-in-up-3">
       <text class="section-title">🔑 关键词</text>
       <view class="keyword-list mt-sm">
-        <text class="badge badge-gold" wx:for="{{card.keywords_upright.split(',')}}" wx:key="*this" style="font-size:var(--fs-body-small);padding:8rpx 18rpx">{{item.trim()}}</text>
+        <text class="badge badge-gold" wx:for="{{card.keywordsList}}" wx:key="*this" style="font-size:var(--fs-body-small);padding:8rpx 18rpx">{{item}}</text>
       </view>
     </view>
 
