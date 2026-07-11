@@ -1,4 +1,3 @@
-import random
 from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -38,11 +37,10 @@ async def list_cards(
 
 @router.get("/daily", response_model=CardDetail)
 async def daily_card(db: AsyncSession = Depends(get_db)):
-    """每日一牌 - 随机抽取一张"""
-    result = await db.execute(select(func.count(TarotCard.id)))
-    count = result.scalar()
-    random_id = random.randint(1, count)
-    result = await db.execute(select(TarotCard).where(TarotCard.id == random_id))
+    """每日一牌 - 随机抽取一张（使用数据库随机排序，避免ID不连续问题）"""
+    result = await db.execute(
+        select(TarotCard).order_by(func.rand()).limit(1)
+    )
     card = result.scalar_one()
     return CardDetail.model_validate(card)
 
