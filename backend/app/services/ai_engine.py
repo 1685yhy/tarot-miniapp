@@ -1,30 +1,33 @@
 """
 Tarot AI interpretation engine.
 
-Uses the Anthropic (Claude) API to generate thoughtful tarot readings
-based on the cards drawn and the user's question.
+Uses DeepSeek API (OpenAI-compatible) to generate thoughtful tarot
+readings based on the cards drawn and the user's question.
 """
 
 import logging
 
-from anthropic import AsyncAnthropic
+from openai import AsyncOpenAI
 
 from app.config import settings
 
 logger = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------
-# Client – lazily evaluated at module level; if ANTHROPIC_API_KEY is
-# empty the first call will raise, which is caught by the endpoint.
+# Client – lazily initialised at module level; if DEEPSEEK_API_KEY is
+# empty the first call returns None, which is handled by the endpoint.
 # -------------------------------------------------------------------
-_anthropic_client: AsyncAnthropic | None = None
+_ai_client: AsyncOpenAI | None = None
 
 
-def _get_client() -> AsyncAnthropic:
-    global _anthropic_client
-    if _anthropic_client is None:
-        _anthropic_client = AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
-    return _anthropic_client
+def _get_client() -> AsyncOpenAI:
+    global _ai_client
+    if _ai_client is None:
+        _ai_client = AsyncOpenAI(
+            api_key=settings.DEEPSEEK_API_KEY,
+            base_url=settings.DEEPSEEK_BASE_URL,
+        )
+    return _ai_client
 
 
 SYSTEM_PROMPT = """你是一位经验丰富的塔罗占卜师，拥有20年解读经验。你温柔、智慧且富有洞察力。
@@ -92,7 +95,7 @@ async def generate_reading(
     cards_info: list[dict],
 ) -> str | None:
     """
-    Call the Claude API to produce a full tarot reading.
+    Call the DeepSeek API to produce a full tarot reading.
 
     Args:
         spread_type:  Spread key (e.g. 'three_card', 'celtic_cross').
@@ -104,7 +107,7 @@ async def generate_reading(
         The interpretation text, or ``None`` if the API call fails
         (the caller should still save the reading).
     """
-    if not settings.ANTHROPIC_API_KEY:
+    if not settings.DEEPSEEK_API_KEY:
         return None
 
     cards_text = _build_cards_text(cards_info, theme=theme)
@@ -124,14 +127,16 @@ async def generate_reading(
 
     client = _get_client()
     try:
-        response = await client.messages.create(
-            model=settings.CLAUDE_MODEL,
-            max_tokens=settings.CLAUDE_MAX_TOKENS,
-            system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": user_prompt}],
+        response = await client.chat.completions.create(
+            model=settings.DEEPSEEK_MODEL,
+            max_tokens=settings.AI_MAX_TOKENS,
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": user_prompt},
+            ],
             timeout=60.0,
         )
-        return response.content[0].text
+        return response.choices[0].message.content
     except Exception:
-        logger.exception("Failed to generate tarot reading")
+        logger.exception("Failed to generate tarot reading via DeepSeek")
         return None

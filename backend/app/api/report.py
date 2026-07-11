@@ -7,7 +7,7 @@ Annual report API endpoint.
 import random
 from datetime import date
 
-from anthropic import AsyncAnthropic
+from openai import AsyncOpenAI
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -47,8 +47,11 @@ async def get_annual_report(
             "meaning": card.meaning_upright[:200] if not c["is_reversed"] else card.meaning_reversed[:200],
         })
 
-    # AI generates the annual report
-    client = AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
+    # AI generates the annual report via DeepSeek
+    client = AsyncOpenAI(
+        api_key=settings.DEEPSEEK_API_KEY,
+        base_url=settings.DEEPSEEK_BASE_URL,
+    )
     prompt = f"""生成一份专业的塔罗年度运势报告。当前年份: {date.today().year}
 
 各月运势牌:
@@ -60,14 +63,14 @@ async def get_annual_report(
 3. 关键月份：哪几个月是关键转折点
 4. 年度寄语"""
 
-    response = await client.messages.create(
-        model=settings.CLAUDE_MODEL,
+    response = await client.chat.completions.create(
+        model=settings.DEEPSEEK_MODEL,
         max_tokens=3072,
         messages=[{"role": "user", "content": prompt}],
     )
 
     return {
         "cards": cards_info,
-        "report": response.content[0].text,
+        "report": response.choices[0].message.content,
         "generated_at": str(date.today()),
     }

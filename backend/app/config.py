@@ -6,10 +6,11 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "mysql+asyncmy://tarot:tarot123@localhost:3306/tarot_db"
     REDIS_URL: str = "redis://localhost:6379/0"
 
-    # Claude API
-    ANTHROPIC_API_KEY: str = ""
-    CLAUDE_MODEL: str = "claude-sonnet-4-20250514"
-    CLAUDE_MAX_TOKENS: int = 2048
+    # DeepSeek API (OpenAI-compatible)
+    DEEPSEEK_API_KEY: str = ""
+    DEEPSEEK_MODEL: str = "deepseek-chat"
+    DEEPSEEK_BASE_URL: str = "https://api.deepseek.com/v1"
+    AI_MAX_TOKENS: int = 2048
 
     # WeChat
     WECHAT_APP_ID: str = ""

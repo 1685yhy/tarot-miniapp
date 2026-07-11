@@ -6,7 +6,7 @@ AI follow-up chat API for tarot readings.
 
 import logging
 
-from anthropic import AsyncAnthropic
+from openai import AsyncOpenAI
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -56,33 +56,36 @@ async def chat_followup(
     db.add(user_msg)
     await db.flush()  # ensure the message is visible in history below
 
-    # ── Build conversation history for Claude ──
-    messages: list[dict] = []
+    # ── Build conversation history for DeepSeek ──
+    messages: list[dict] = [
+        {
+            "role": "system",
+            "content": (
+                f"你是一个温柔睿智的塔罗导师。用户刚才的解读结果是：\n"
+                f"{(reading.interpretation or '')[:500]}\n\n"
+                f"请基于这个解读，继续和用户深入探讨他们的问题。保持连续性和一致性。"
+            ),
+        }
+    ]
     for msg in reading.chat_messages:
         messages.append({"role": msg.role, "content": msg.content})
-    # Also include the message we just saved (already flushed so it's in the list)
-    messages.append({"role": "user", "content": req.message})
 
-    # ── Call Claude API ──
-    if not settings.ANTHROPIC_API_KEY:
+    # ── Call DeepSeek API ──
+    if not settings.DEEPSEEK_API_KEY:
         raise HTTPException(status_code=503, detail="AI服务未配置")
 
-    system_prompt = (
-        f"你是一个温柔睿智的塔罗导师。用户刚才的解读结果是：\n"
-        f"{reading.interpretation[:500]}\n\n"
-        f"请基于这个解读，继续和用户深入探讨他们的问题。保持连续性和一致性。"
+    client = AsyncOpenAI(
+        api_key=settings.DEEPSEEK_API_KEY,
+        base_url=settings.DEEPSEEK_BASE_URL,
     )
-
-    client = AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
     try:
-        response = await client.messages.create(
-            model=settings.CLAUDE_MODEL,
+        response = await client.chat.completions.create(
+            model=settings.DEEPSEEK_MODEL,
             max_tokens=1024,
-            system=system_prompt,
             messages=messages,
             timeout=60.0,
         )
-        ai_reply = response.content[0].text
+        ai_reply = response.choices[0].message.content
     except Exception:
         logger.exception("Failed to get AI chat reply")
         raise HTTPException(status_code=502, detail="AI回复生成失败")
