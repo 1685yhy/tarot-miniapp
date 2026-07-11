@@ -26,6 +26,11 @@ async def list_cards(
             (TarotCard.name_zh.contains(keyword))
             | (TarotCard.name_en.contains(keyword))
             | (TarotCard.meaning_upright.contains(keyword))
+            | (TarotCard.meaning_reversed.contains(keyword))
+            | (TarotCard.keywords_upright.contains(keyword))
+            | (TarotCard.love_upright.contains(keyword))
+            | (TarotCard.career_upright.contains(keyword))
+            | (TarotCard.finance_upright.contains(keyword))
         )
 
     result = await db.execute(query.order_by(TarotCard.card_number))
