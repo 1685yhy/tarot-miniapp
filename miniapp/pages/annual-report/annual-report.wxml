@@ -1,0 +1,28 @@
+<!-- pages/annual-report/annual-report.wxml -->
+<view class="container">
+  <!-- Before generating -->
+  <view wx:if="{{!report && !generating}}" class="intro">
+    <text class="intro-icon">📊</text>
+    <text class="intro-title">年度运势报告</text>
+    <text class="intro-desc">基于13张塔罗牌，AI为你生成未来12个月的专属运势报告。涵盖爱情、事业、财运，逐月详解。</text>
+    <button class="generate-btn" bindtap="onGenerate">🌟 生成我的年度报告</button>
+    <text class="intro-note">👑 会员专属功能</text>
+  </view>
+
+  <!-- Generating -->
+  <view wx:if="{{generating}}" class="generating">
+    <text class="gen-icon">🌙</text>
+    <text class="gen-text">AI正在为你抽取年度运势牌...</text>
+    <text class="gen-sub">13张牌 · 12个月 · 一份完整报告</text>
+  </view>
+
+  <!-- Report result -->
+  <view wx:if="{{report}}" class="report">
+    <text class="report-title">🌟 {{report.generated_at}} 年度运势报告</text>
+    <view class="report-body">
+      <text class="report-text">{{report.report}}</text>
+    </view>
+    <button class="share-btn" open-type="share">📤 分享报告</button>
+    <button class="regenerate-btn" bindtap="onGenerate">🔄 重新生成</button>
+  </view>
+</view>

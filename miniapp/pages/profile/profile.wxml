@@ -1,0 +1,68 @@
+<!-- pages/profile/profile.wxml -->
+<view class="container" wx:if="{{!loading}}">
+  <!-- User info + membership -->
+  <view class="user-card">
+    <view class="avatar">🔮</view>
+    <text class="nickname">{{user.nickname || '塔罗旅人'}}</text>
+    <view class="member-badge {{memberStatus.is_member ? 'is-member' : ''}}">
+      <text>{{memberStatus.is_member ? '👑 会员' : '免费用户'}}</text>
+      <text class="member-expiry" wx:if="{{memberStatus.is_member && memberStatus.expires_at}}">
+        有效期至 {{memberStatus.expires_at.split('T')[0]}}
+      </text>
+    </view>
+    <button class="upgrade-btn" wx:if="{{!memberStatus.is_member}}" bindtap="onGoMembership">
+      开通会员
+    </button>
+  </view>
+
+  <!-- Stats -->
+  <view class="stats-row">
+    <view class="stat-item">
+      <text class="stat-num">{{memberStatus.free_readings_today || 0}}</text>
+      <text class="stat-label">今日占卜</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-num">{{memberStatus.free_chats_today || 0}}</text>
+      <text class="stat-label">今日追问</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-num">{{readingHistory.length}}</text>
+      <text class="stat-label">历史记录</text>
+    </view>
+  </view>
+
+  <!-- Quick actions -->
+  <view class="quick-actions">
+    <view class="action-item" bindtap="onGoDiary">
+      <text class="action-icon">📝</text>
+      <text class="action-label">塔罗日记</text>
+    </view>
+    <view class="action-item" bindtap="onGoAnnualReport">
+      <text class="action-icon">📊</text>
+      <text class="action-label">年度报告</text>
+    </view>
+    <view class="action-item" bindtap="onGoMembership">
+      <text class="action-icon">👑</text>
+      <text class="action-label">{{memberStatus.is_member ? '管理会员' : '开通会员'}}</text>
+    </view>
+  </view>
+
+  <!-- History -->
+  <view class="history-section">
+    <view class="history-header">
+      <text class="section-title">占卜历史</text>
+      <text class="clear-btn" bindtap="onClearHistory" wx:if="{{readingHistory.length > 0}}">清除</text>
+    </view>
+    <view wx:if="{{readingHistory.length === 0}}" class="empty">
+      <text class="empty-text">暂无占卜记录</text>
+    </view>
+    <view class="history-item" wx:for="{{readingHistory}}" wx:key="id" data-id="{{item.id}}" bindtap="onViewReading">
+      <view class="history-info">
+        <text class="history-spread">{{item.spread_type}}</text>
+        <text class="history-theme" wx:if="{{item.theme}}">{{item.theme}}</text>
+      </view>
+      <text class="history-arrow">›</text>
+    </view>
+  </view>
+</view>
+<view wx:if="{{loading}}" class="loading"><text>加载中...</text></view>

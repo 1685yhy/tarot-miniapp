@@ -1,0 +1,48 @@
+<!-- pages/membership/membership.wxml -->
+<view class="container">
+  <view class="hero">
+    <text class="hero-icon">👑</text>
+    <text class="hero-title">开通会员</text>
+    <text class="hero-sub">解锁无限塔罗解读</text>
+  </view>
+
+  <!-- Benefits -->
+  <view class="benefits">
+    <view class="benefit-item" wx:for="{{['🔮 全部牌阵无限使用','💬 AI追问不限次数','📊 年度运势报告','🎴 每日多次抽牌','📤 专属运势卡片']}}" wx:key="*this">
+      <text class="benefit-text">{{item}}</text>
+    </view>
+  </view>
+
+  <!-- Product cards -->
+  <view class="products" wx:if="{{!loading}}">
+    <view
+      class="product-card {{item.id === 'membership_yearly' ? 'recommended' : ''}}"
+      wx:for="{{products}}"
+      wx:key="id"
+      data-product="{{item}}"
+      bindtap="onPurchase"
+    >
+      <view class="recommended-badge" wx:if="{{item.id === 'membership_yearly'}}">
+        <text>🔥 最受欢迎</text>
+      </view>
+      <text class="product-name">{{item.name}}</text>
+      <view class="product-price">
+        <text class="price-symbol">¥</text>
+        <text class="price-value">{{item.price}}</text>
+      </view>
+      <text class="product-period" wx:if="{{item.id === 'membership_monthly'}}">/月</text>
+      <text class="product-period" wx:elif="{{item.id === 'membership_yearly'}}">/年 每天仅{{(item.price / 365).toFixed(2)}}元</text>
+      <text class="product-period" wx:elif="{{item.id === 'membership_lifetime'}}">永久有效</text>
+      <text class="product-period" wx:elif="{{item.id === 'single_reading'}}">单次</text>
+    </view>
+  </view>
+
+  <!-- Guarantee -->
+  <view class="guarantee">
+    <text class="guarantee-text">🛡️ 支付安全 · 随时可查 · 会员期内无限使用</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading">
+    <text>加载中...</text>
+  </view>
+</view>

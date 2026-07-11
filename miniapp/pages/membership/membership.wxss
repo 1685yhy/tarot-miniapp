@@ -1,0 +1,74 @@
+/* pages/membership/membership.wxss */
+.container {
+  padding: 24rpx;
+  background: var(--color-bg);
+  min-height: 100vh;
+  padding-bottom: 60rpx;
+}
+.hero {
+  text-align: center;
+  padding: 40rpx 0 20rpx;
+}
+.hero-icon { font-size: 72rpx; display: block; }
+.hero-title { font-size: 40rpx; font-weight: 700; color: var(--color-gold); display: block; margin-top: 12rpx; }
+.hero-sub { font-size: 26rpx; color: var(--color-text-secondary); display: block; margin-top: 6rpx; }
+
+.benefits {
+  background: var(--color-bg-card);
+  border-radius: 20rpx;
+  padding: 28rpx;
+  margin-bottom: 28rpx;
+  border: 1rpx solid rgba(201,169,110,0.1);
+}
+.benefit-item {
+  padding: 14rpx 0;
+  border-bottom: 1rpx solid rgba(201,169,110,0.06);
+}
+.benefit-item:last-child { border-bottom: none; }
+.benefit-text { font-size: 28rpx; color: var(--color-text-primary); }
+
+.products {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+.product-card {
+  background: var(--color-bg-card);
+  border-radius: 20rpx;
+  padding: 32rpx;
+  text-align: center;
+  border: 2rpx solid rgba(201,169,110,0.1);
+  position: relative;
+  transition: all 0.2s;
+}
+.product-card:active {
+  border-color: var(--color-gold);
+  transform: scale(0.98);
+}
+.product-card.recommended {
+  border-color: var(--color-gold);
+  background: rgba(201,169,110,0.05);
+}
+.recommended-badge {
+  position: absolute;
+  top: -14rpx;
+  right: 24rpx;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  color: white;
+  font-size: 22rpx;
+  padding: 6rpx 20rpx;
+  border-radius: 20rpx;
+}
+.product-name { font-size: 30rpx; font-weight: 600; color: var(--color-text-primary); display: block; }
+.product-price { margin: 16rpx 0 6rpx; }
+.price-symbol { font-size: 28rpx; color: var(--color-gold); }
+.price-value { font-size: 52rpx; font-weight: 700; color: var(--color-gold); }
+.product-period { font-size: 24rpx; color: var(--color-text-dim); display: block; }
+.product-card.recommended .product-period { color: var(--color-gold); }
+
+.guarantee {
+  text-align: center;
+  padding: 32rpx 0;
+}
+.guarantee-text { font-size: 24rpx; color: var(--color-text-dim); }
+.loading { text-align: center; padding: 100rpx 0; color: var(--color-text-secondary); }

@@ -1,0 +1,31 @@
+<!-- pages/chat/chat.wxml -->
+<view class="container">
+  <view class="chat-intro" wx:if="{{messages.length === 0}}">
+    <text class="intro-icon">🔮</text>
+    <text class="intro-text">对刚才的解读有什么想问的吗？</text>
+    <text class="intro-hint">塔罗师会基于你的牌面继续为你解读</text>
+  </view>
+
+  <view class="message-list" wx:if="{{messages.length > 0}}">
+    <view class="msg-item {{item.role === 'user' ? 'msg-user' : 'msg-ai'}}" wx:for="{{messages}}" wx:key="index">
+      <text class="msg-role">{{item.role === 'user' ? '你' : '🔮 塔罗师'}}</text>
+      <view class="msg-bubble {{item.role === 'user' ? 'bubble-user' : 'bubble-ai'}}">
+        <text class="msg-text">{{item.content}}</text>
+      </view>
+    </view>
+    <view id="chat-bottom"></view>
+  </view>
+
+  <view class="input-bar">
+    <input class="chat-input" placeholder="输入你的问题..." placeholder-style="color:#555577"
+      value="{{inputText}}" bindinput="onInput" confirm-type="send" bindconfirm="onSend"
+    />
+    <button class="send-btn" bindtap="onSend" disabled="{{sending || !inputText.trim()}}">
+      <text>{{sending ? '...' : '发送'}}</text>
+    </button>
+  </view>
+
+  <view class="free-hint" wx:if="{{remainingFree > 0}}">
+    <text>今日剩余追问 {{remainingFree}} 次</text>
+  </view>
+</view>

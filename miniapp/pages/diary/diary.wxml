@@ -1,0 +1,58 @@
+<!-- pages/diary/diary.wxml -->
+<view class="container">
+  <view class="header">
+    <text class="header-title">📝 塔罗日记</text>
+    <text class="header-sub">每天一张牌，记录内心旅程</text>
+  </view>
+
+  <!-- Create button -->
+  <button class="create-btn" bindtap="showCreateModal">✨ 记录今天</button>
+
+  <!-- Entries -->
+  <view class="entries">
+    <view class="entry-card" wx:for="{{entries}}" wx:key="id">
+      <view class="entry-header">
+        <text class="entry-date">{{item.date}}</text>
+        <text class="entry-mood">{{item.mood === 'happy' ? '😊' : item.mood === 'sad' ? '😢' : item.mood === 'anxious' ? '😰' : item.mood === 'calm' ? '😌' : item.mood === 'excited' ? '🤩' : '💭'}}</text>
+      </view>
+      <text class="entry-reflection" wx:if="{{item.reflection}}">{{item.reflection}}</text>
+    </view>
+  </view>
+
+  <view wx:if="{{entries.length === 0}}" class="empty">
+    <text class="empty-icon">📖</text>
+    <text class="empty-text">还没有日记记录</text>
+    <text class="empty-hint">每天抽一张牌，记录你的感受</text>
+  </view>
+
+  <!-- Create modal -->
+  <view class="modal-mask" wx:if="{{showCreate}}" bindtap="hideCreateModal">
+    <view class="modal-content" catchtap="">
+      <text class="modal-title">今日塔罗日记</text>
+
+      <text class="modal-label">今天的心情</text>
+      <view class="mood-grid">
+        <view class="mood-item {{mood === 'happy' ? 'selected' : ''}}" data-mood="happy" bindtap="onMoodSelect">
+          <text>😊 开心</text></view>
+        <view class="mood-item {{mood === 'calm' ? 'selected' : ''}}" data-mood="calm" bindtap="onMoodSelect">
+          <text>😌 平静</text></view>
+        <view class="mood-item {{mood === 'excited' ? 'selected' : ''}}" data-mood="excited" bindtap="onMoodSelect">
+          <text>🤩 兴奋</text></view>
+        <view class="mood-item {{mood === 'anxious' ? 'selected' : ''}}" data-mood="anxious" bindtap="onMoodSelect">
+          <text>😰 焦虑</text></view>
+        <view class="mood-item {{mood === 'sad' ? 'selected' : ''}}" data-mood="sad" bindtap="onMoodSelect">
+          <text>😢 低落</text></view>
+        <view class="mood-item {{mood === 'thoughtful' ? 'selected' : ''}}" data-mood="thoughtful" bindtap="onMoodSelect">
+          <text>💭 思考</text></view>
+      </view>
+
+      <text class="modal-label">今日感悟（可选）</text>
+      <textarea class="reflection-input" placeholder="记录今天的想法..." value="{{reflection}}" bindinput="onReflectionInput" maxlength="500" />
+      <text class="char-count">{{reflection.length}}/500</text>
+
+      <button class="submit-btn" bindtap="onCreateEntry" disabled="{{creating}}">
+        {{creating ? '记录中...' : '💫 保存日记'}}
+      </button>
+    </view>
+  </view>
+</view>
