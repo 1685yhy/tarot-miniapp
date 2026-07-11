@@ -10,11 +10,14 @@
 """
 
 import re
+import sys
 import asyncio
 from pathlib import Path
 from sqlalchemy import select
 from app.db.database import async_session
 from app.models.card import TarotCard
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 # ---------------------------------------------------------------------------
 # 正则常量
@@ -75,8 +78,8 @@ def _build_subsection_map(text: str) -> dict[str, str]:
         key = key.rstrip('详解').rstrip('含义').rstrip('牌义').strip()
         if key and content:
             # 除非旧 key 更长，否则覆盖（短 key 更通用）
-            if key not in sections or len(key) < len(
-                k for k in sections if k != key
+            if key not in sections or len(key) < sum(
+                1 for k in sections if k != key
             ):
                 sections[key] = content
     return sections
@@ -275,27 +278,12 @@ def parse_minor_card(text: str) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# 确保字段存在
+# 卡牌字段定义
 # ---------------------------------------------------------------------------
-
-
-def _ensure_fields(data: dict, keys: list[str]) -> dict:
-    for k in keys:
-        data.setdefault(k, '')
-    return data
-
 
 CARD_FIELDS = [
     'name_zh', 'name_en', 'element', 'image_description',
     'keywords_upright', 'keywords_reversed',
-    'meaning_upright', 'meaning_reversed',
-    'love_upright', 'love_reversed',
-    'career_upright', 'career_reversed',
-    'finance_upright', 'finance_reversed',
-    'health_upright', 'health_reversed',
-]
-
-ARCANA_CARD_FIELDS = [
     'meaning_upright', 'meaning_reversed',
     'love_upright', 'love_reversed',
     'career_upright', 'career_reversed',
@@ -320,7 +308,7 @@ def _build_card(overrides: dict) -> TarotCard:
 
 async def seed_cards():
     """从 markdown 数据文件导入所有塔罗牌到数据库。"""
-    data_dir = Path("/mnt/e/tarot-miniapp/data")
+    data_dir = Path(__file__).resolve().parent.parent.parent.parent / "data"
     card_counter = 0
 
     async with async_session() as session:
@@ -399,6 +387,9 @@ async def seed_cards():
                 card_counter += 1
 
         await session.commit()
+        assert card_counter == 78, (
+            f"卡牌数量不正确: 预期 78 张, 实际导入 {card_counter} 张"
+        )
         print(f"成功导入 {card_counter} 张塔罗牌")
 
 
