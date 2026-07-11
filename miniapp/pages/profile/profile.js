@@ -56,14 +56,22 @@ Page({
     wx.navigateTo({ url: '/pages/annual-report/annual-report' });
   },
 
-  onClearHistory() {
-    wx.showModal({
-      title: '清除记录',
-      content: '确定清除所有历史记录吗？',
-      success: () => {
-        this.setData({ readingHistory: [] });
-        wx.showToast({ title: '已清除', icon: 'success' });
-      },
+  async onClearHistory() {
+    const res = await new Promise((resolve) => {
+      wx.showModal({
+        title: '清除记录',
+        content: '确定清除所有占卜历史记录吗？此操作不可恢复。',
+        success: resolve,
+      });
     });
+    if (!res.confirm) return;
+
+    try {
+      await request('/readings/history', { method: 'DELETE' });
+      this.setData({ readingHistory: [] });
+      wx.showToast({ title: '已清除', icon: 'success' });
+    } catch (err) {
+      wx.showToast({ title: '清除失败', icon: 'none' });
+    }
   },
 });

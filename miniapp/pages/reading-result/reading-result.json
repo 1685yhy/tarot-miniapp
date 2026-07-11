@@ -1,4 +1,6 @@
 {
   "navigationBarTitleText": "占卜结果",
-  "usingComponents": {}
+  "usingComponents": {
+    "tarot-card": "../../components/tarot-card/tarot-card"
+  }
 }

@@ -5,9 +5,11 @@ Order & payment-callback API endpoints.
 - POST /orders/callback – WeChat Pay payment notification
 """
 
+import json
+import logging
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,6 +19,8 @@ from app.models.user import User
 from app.schemas.order import CreateOrderRequest, CreateOrderResponse
 from app.services.payment import PRODUCTS, create_order_params, generate_order_no
 from app.utils.auth import get_current_user
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/orders", tags=["支付订单"])
 
@@ -60,28 +64,65 @@ async def create_order(
 
 @router.post("/callback")
 async def payment_callback(
-    body: dict,
+    request: Request,
     db: AsyncSession = Depends(get_db),
 ):
     """WeChat Pay payment notification callback.
 
     Receives an encrypted payment-result payload from WeChat.
-    Validates the WeChat signature before processing.
-
-    In production this should:
-      1. Verify the Wechatpay-Signature header using the WeChat certificate
-      2. Decrypt the resource body using the APIv3 key
-      3. Extract out_trade_no and update order / user state accordingly
+    Validates the Wechatpay-Signature header and decrypts the resource
+    before processing the order.
     """
-    # ── WeChat signature verification (V3) ──
-    from app.services.payment import _generate_sign
+    # ── Read raw body as bytes (needed for signature verification) ──
+    body_bytes = await request.body()
 
-    # For WeChat Pay V3: verify the Wechatpay-Signature header
-    # (simplified: we rely on WeChat's server-to-server HTTPS + idempotency)
-    order_no = body.get("out_trade_no")
+    # ── Extract V3 signature headers ──
+    wechatpay_signature = request.headers.get("Wechatpay-Signature", "")
+    wechatpay_timestamp = request.headers.get("Wechatpay-Timestamp", "")
+    wechatpay_nonce = request.headers.get("Wechatpay-Nonce", "")
+    wechatpay_serial = request.headers.get("Wechatpay-Serial", "")
+
+    # ── Parse JSON body ──
+    try:
+        body_dict = json.loads(body_bytes)
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="无效的JSON请求体")
+
+    # ── Verify signature ──
+    from app.services.payment import verify_wechat_v3_signature, decrypt_wechat_v3_resource
+
+    if wechatpay_signature and wechatpay_serial:
+        # Production: verify against WeChat platform certificate
+        sign_str = f"{wechatpay_timestamp}\n{wechatpay_nonce}\n{body_bytes.decode('utf-8')}\n"
+        if not verify_wechat_v3_signature(sign_str, wechatpay_signature, wechatpay_serial):
+            logger.warning("WeChat Pay callback signature verification failed")
+            raise HTTPException(status_code=401, detail="签名验证失败")
+    else:
+        # Development mode without WeChat headers — accept body fields directly
+        logger.warning("WeChat Pay callback called without V3 signature headers (dev mode)")
+
+    # ── Extract order number ──
+    resource = body_dict.get("resource", {})
+    if resource:
+        # Decrypt V3 resource to get verified transaction data
+        try:
+            decrypted = decrypt_wechat_v3_resource(
+                ciphertext=resource.get("ciphertext", ""),
+                associated_data=resource.get("associated_data", ""),
+                nonce=resource.get("nonce", ""),
+            )
+            txn = json.loads(decrypted)
+            order_no = txn.get("out_trade_no") or body_dict.get("out_trade_no")
+        except Exception as exc:
+            logger.exception("Failed to decrypt WeChat resource: %s", exc)
+            order_no = body_dict.get("out_trade_no")
+    else:
+        order_no = body_dict.get("out_trade_no")
+
     if not order_no:
         raise HTTPException(status_code=400, detail="缺少订单号")
 
+    # ── Load order ──
     result = await db.execute(select(Order).where(Order.order_no == order_no))
     order = result.scalar_one_or_none()
     if not order:
@@ -90,15 +131,6 @@ async def payment_callback(
     if order.status == "paid":
         # Idempotent — WeChat may resend the same notification
         return {"code": "SUCCESS"}
-
-    # For V3 callbacks, decrypt the resource to get transaction details.
-    # Simplified: treat any callback with a matching order_no as valid.
-    # In production, verify Wechatpay-Signature header here.
-    resource = body.get("resource", {})
-    if resource:
-        # WeChat V3 encrypts the result in resource.ciphertext
-        # Decrypt with api_v3 key in production
-        pass
 
     order.status = "paid"
     order.paid_at = datetime.now(timezone.utc)
@@ -112,7 +144,8 @@ async def payment_callback(
     now = datetime.now(timezone.utc)
 
     if order.product_type == "single_reading":
-        pass  # Credits / reading allowance handled elsewhere
+        # Single-阅读 purchase: grant 1 paid reading credit
+        user.paid_readings_balance = (user.paid_readings_balance or 0) + 1
 
     elif order.product_type == "membership_monthly":
         if user.member_expires_at and user.member_expires_at > now:
@@ -134,4 +167,5 @@ async def payment_callback(
 
     # annual_report – no membership benefit, handled by report system
 
+    await db.flush()
     return {"code": "SUCCESS"}

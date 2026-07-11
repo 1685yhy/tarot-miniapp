@@ -41,6 +41,33 @@
   <!-- ===== 报告结果 ===== -->
   <view wx:elif="{{report}}" class="report">
     <text class="heading-2 section-title-center anim-fade-in-up-1">🌟 {{report.generated_at}} 年度运势报告</text>
+
+    <!-- Monthly cards display -->
+    <view class="report-cards-section anim-fade-in-up-1">
+      <text class="section-subtitle">📅 月度运势牌</text>
+      <scroll-view class="monthly-cards-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+        <view class="monthly-cards-row">
+          <view
+            class="monthly-card-item"
+            wx:for="{{report.cards}}"
+            wx:key="month"
+            wx:for-index="cardIdx"
+            data-cardidx="{{cardIdx}}"
+            bindtap="onCardPreview"
+          >
+            <tarot-card
+              nameZh="{{item.card_name}}"
+              positionName="{{item.month}}"
+              isReversed="{{item.direction === '逆位'}}"
+              nameEn="{{''}}"
+              cardNumber="{{''}}"
+            />
+            <text class="month-label">{{item.month}}</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
     <view class="report-body anim-fade-in-up-2">
       <text class="report-text">{{report.report}}</text>
     </view>

@@ -43,6 +43,17 @@ Page({
     this.onLoad();
   },
 
+  onCardPreview(e) {
+    const idx = e.currentTarget.dataset.cardidx;
+    const card = this.data.report.cards[idx];
+    if (!card) return;
+    wx.showModal({
+      title: `${card.month} · ${card.card_name}`,
+      content: `${card.direction}\n\n${card.meaning || '暂无详细解读'}`,
+      showCancel: false,
+    });
+  },
+
   onShare() {
     wx.showShareMenu({ withShareTicket: true });
   },

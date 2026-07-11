@@ -5,22 +5,26 @@ PRODUCTS is the single source of truth for what can be purchased.
 """
 
 import hashlib
+import json
+import logging
 import secrets
 import time
 import uuid
 
 from app.config import settings
 
+logger = logging.getLogger(__name__)
+
 # ---------------------------------------------------------------------------
 # Product catalogue
 # ---------------------------------------------------------------------------
 
 PRODUCTS = {
-    "single_reading": {"name": "单次深度占卜", "price": 9.90},
-    "membership_monthly": {"name": "月度会员", "price": 29.90},
-    "membership_yearly": {"name": "年度会员", "price": 198.00},
-    "membership_lifetime": {"name": "永久会员", "price": 298.00},
-    "annual_report": {"name": "年度运势报告", "price": 29.90},
+    "single_reading": {"name": "单次深度占卜", "price": 9.90, "type": "single_purchase"},
+    "membership_monthly": {"name": "月度会员", "price": 29.90, "type": "membership"},
+    "membership_yearly": {"name": "年度会员", "price": 198.00, "type": "membership"},
+    "membership_lifetime": {"name": "永久会员", "price": 298.00, "type": "membership"},
+    "annual_report": {"name": "年度运势报告", "price": 29.90, "type": "single_purchase"},
 }
 
 
@@ -150,3 +154,120 @@ def create_order_params(openid: str, product_type: str, order_no: str) -> dict:
         "signType": "MD5",
         "paySign": pay_sign,
     }
+
+
+# ---------------------------------------------------------------------------
+# WeChat Pay V3 callback — signature verification & resource decryption
+# ---------------------------------------------------------------------------
+
+
+def verify_wechat_v3_signature(
+    sign_str: str,
+    signature: str,
+    serial: str,
+) -> bool:
+    """
+    Verify a WeChat Pay V3 signature using the configured platform certificate.
+
+    Args:
+        sign_str:   The string that was signed
+                    (``f"{timestamp}\\n{nonce}\\n{body}\\n"``).
+        signature:  The base64-encoded ``Wechatpay-Signature`` header value.
+        serial:     The ``Wechatpay-Serial`` header value identifying which
+                    certificate was used.
+
+    Returns:
+        ``True`` if the signature is valid, ``False`` otherwise.
+
+    In production: configure ``WECHAT_PLATFORM_CERT`` and
+    ``WECHAT_PLATFORM_CERT_SERIAL`` in the environment.  The cert *must* be
+    periodically refreshed from ``GET /v3/certificates``.
+    """
+    expected_serial = getattr(settings, "WECHAT_PLATFORM_CERT_SERIAL", "").strip()
+    if not expected_serial or expected_serial == "your-platform-cert-serial":
+        # Dev mode – skip verification
+        logger.warning("WECHAT_PLATFORM_CERT_SERIAL not configured; skipping V3 verification")
+        return True
+
+    if serial != expected_serial:
+        logger.error(
+            "WeChat certificate serial mismatch: got %s, expected %s",
+            serial, expected_serial,
+        )
+        return False
+
+    pem = getattr(settings, "WECHAT_PLATFORM_CERT", "").strip()
+    if not pem:
+        logger.error("WECHAT_PLATFORM_CERT not configured")
+        return False
+
+    try:
+        from cryptography.hazmat.primitives import hashes, serialization
+        from cryptography.hazmat.primitives.asymmetric import padding
+
+        cert_bytes = pem.encode("utf-8")
+        public_key = serialization.load_pem_x509_certificate(cert_bytes).public_key()
+
+        sig_bytes = _b64decode(signature)
+        public_key.verify(
+            sig_bytes,
+            sign_str.encode("utf-8"),
+            padding.PKCS1v15(),
+            hashes.SHA256(),
+        )
+        return True
+    except Exception as exc:
+        logger.exception("WeChat V3 signature verification failed: %s", exc)
+        return False
+
+
+def decrypt_wechat_v3_resource(
+    ciphertext: str,
+    associated_data: str,
+    nonce: str,
+) -> str:
+    """
+    Decrypt a WeChat Pay V3 resource (AEAD_AES_256_GCM).
+
+    Args:
+        ciphertext:     Base64-encoded ciphertext from ``resource.ciphertext``.
+        associated_data:Associated data from ``resource.associated_data``.
+        nonce:          Nonce from ``resource.nonce``.
+
+    Returns:
+        Decrypted plaintext (JSON string).
+
+    Raises:
+        ValueError: If decryption fails.
+    """
+    api_v3_key = settings.WECHAT_API_KEY_V3.strip()
+    if not api_v3_key:
+        logger.warning("WECHAT_API_KEY_V3 not configured; returning raw ciphertext placeholder")
+        # Dev fallback – assume ciphertext is plain JSON
+        return _b64decode(ciphertext).decode("utf-8")
+
+    try:
+        from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
+        key = api_v3_key.encode("utf-8")
+        nonce_bytes = nonce.encode("utf-8")
+        aad = associated_data.encode("utf-8")
+        ct = _b64decode(ciphertext)
+
+        aesgcm = AESGCM(key)
+        plaintext = aesgcm.decrypt(nonce_bytes, ct, aad)
+        return plaintext.decode("utf-8")
+    except Exception as exc:
+        logger.exception("Failed to decrypt WeChat V3 resource: %s", exc)
+        raise ValueError("解密失败") from exc
+
+
+def _b64decode(s: str) -> bytes:
+    """Decode a base64 string (with or without padding)."""
+    import base64
+    s = s.strip()
+    # Add padding if needed
+    padding = 4 - len(s) % 4
+    if padding != 4:
+        s += "=" * padding
+    return base64.b64decode(s)

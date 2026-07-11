@@ -1,1 +1,6 @@
-{"navigationBarTitleText":"年度运势报告","usingComponents":{}}
+{
+  "navigationBarTitleText": "年度运势报告",
+  "usingComponents": {
+    "tarot-card": "../../components/tarot-card/tarot-card"
+  }
+}

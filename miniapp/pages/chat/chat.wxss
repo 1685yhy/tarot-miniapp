@@ -153,3 +153,34 @@
   display: block;
   margin-bottom: var(--space-xxl);
 }
+
+/* ===== Reading Context Bar ===== */
+.reading-context-bar {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-card);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-lg);
+  border: 1rpx solid var(--color-border-subtle);
+  border-left: 6rpx solid var(--color-gold, #d4af37);
+}
+
+.context-label {
+  font-size: var(--fs-caption);
+  color: var(--color-gold, #d4af37);
+  font-weight: var(--fw-semibold);
+  display: block;
+  margin-bottom: var(--space-xs);
+}
+
+.context-question {
+  font-size: var(--fs-body-small);
+  color: var(--color-text-primary);
+  display: block;
+  margin-bottom: 4rpx;
+}
+
+.context-spread {
+  font-size: var(--fs-caption);
+  color: var(--color-text-dim);
+  display: block;
+}

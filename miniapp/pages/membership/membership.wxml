@@ -59,7 +59,7 @@
         <text class="text-dim" style="font-size:var(--fs-body-small);display:block" wx:if="{{item.id === 'membership_monthly'}}">/月</text>
         <text class="text-dim" style="font-size:var(--fs-body-small);display:block" wx:elif="{{item.id === 'membership_yearly'}}">/年 每天仅{{(item.price / 365).toFixed(2)}}元</text>
         <text class="text-dim" style="font-size:var(--fs-body-small);display:block" wx:elif="{{item.id === 'membership_lifetime'}}">永久有效</text>
-        <text class="text-dim" style="font-size:var(--fs-body-small);display:block" wx:elif="{{item.id === 'single_reading'}}">单次</text>
+        <text class="text-dim" style="font-size:var(--fs-body-small);display:block" wx:elif="{{item.id === 'annual_report'}}">年度报告</text>
       </view>
     </view>
 

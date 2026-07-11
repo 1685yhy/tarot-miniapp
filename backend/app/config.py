@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     WECHAT_APP_SECRET: str = ""
     WECHAT_MCH_ID: str = ""
     WECHAT_API_KEY_V3: str = ""
+    WECHAT_PLATFORM_CERT_SERIAL: str = ""
+    WECHAT_PLATFORM_CERT: str = ""
 
     # Auth
     JWT_SECRET: str = "change-me-in-production"

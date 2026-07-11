@@ -8,6 +8,7 @@ Page({
     pageError: null,
     activeCardIndex: 0,
     showFullInterpretation: false,
+    loadingStage: 0,
   },
 
   async onLoad(options) {
@@ -22,12 +23,20 @@ Page({
   },
 
   async loadReading(id) {
-    this.setData({ pageLoading: true });
+    this.setData({ pageLoading: true, loadingStage: 0 });
+    // Animate through stages while loading
+    this._stageTimer1 = setTimeout(() => { this.setData({ loadingStage: 1 }); }, 800);
+    this._stageTimer2 = setTimeout(() => { this.setData({ loadingStage: 2 }); }, 2000);
+    this._stageTimer3 = setTimeout(() => { this.setData({ loadingStage: 3 }); }, 4000);
     try {
       const reading = await request(`/readings/${id}`);
       this.setData({ reading, pageLoading: false });
     } catch (err) {
       this.setData({ pageLoading: false, pageError: err.errMsg || '加载失败' });
+    } finally {
+      this._stageTimer1 && clearTimeout(this._stageTimer1);
+      this._stageTimer2 && clearTimeout(this._stageTimer2);
+      this._stageTimer3 && clearTimeout(this._stageTimer3);
     }
   },
 

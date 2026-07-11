@@ -16,15 +16,22 @@
     </view>
   </view>
 
+  <!-- ===== Reading Context ===== -->
+  <view wx:if="{{readingContext && !pageLoading && !pageError}}" class="reading-context-bar">
+    <text class="context-label">当前解读</text>
+    <text class="context-question">问题：{{readingContext.question}}</text>
+    <text class="context-spread">牌阵：{{readingContext.spreadType}}</text>
+  </view>
+
   <!-- ===== 空状态（intro） ===== -->
-  <view wx:elif="{{messages.length === 0 && !pageError}}" class="chat-intro empty-state">
+  <view wx:elif="{{messages.length === 0 && !pageError && !pageLoading}}" class="chat-intro empty-state">
     <text class="empty-icon">🔮</text>
     <text class="empty-text">对刚才的解读有什么想问的吗？</text>
     <text class="empty-hint">塔罗师会基于你的牌面继续为你解读</text>
   </view>
 
   <!-- ===== 错误状态 ===== -->
-  <view wx:elif="{{pageError}}" class="error-state">
+  <view wx:elif="{{pageError && !readingContext}}" class="error-state">
     <text class="error-icon">🌙</text>
     <text class="error-text">塔罗师暂时无法回应</text>
     <text class="error-hint">{{pageError}}</text>
@@ -32,7 +39,7 @@
   </view>
 
   <!-- ===== 消息列表 ===== -->
-  <view wx:elif="{{messages.length > 0}}" class="message-list anim-fade-in">
+  <view wx:elif="{{!pageLoading}}" class="message-list anim-fade-in">
     <view class="msg-item {{item.role === 'user' ? 'msg-user' : 'msg-ai'}}" wx:for="{{messages}}" wx:key="index">
       <text class="text-caption" style="display:block;margin-bottom:6rpx;padding:0 8rpx;text-align:{{item.role === 'user' ? 'right' : 'left'}}">
         {{item.role === 'user' ? '你' : '🔮 塔罗师'}}

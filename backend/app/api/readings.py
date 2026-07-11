@@ -4,19 +4,20 @@ Tarot reading API endpoints.
 - POST   /readings/spread/{spread_type}   – create a new reading
 - GET    /readings/{reading_id}           – retrieve a single reading
 - GET    /readings/history                – list the current user's readings
+- DELETE /readings/history                – delete the current user's reading history
 """
 
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import select, func
+from sqlalchemy import select, func, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.config import settings
 from app.db.database import get_db
 from app.models.card import TarotCard
-from app.models.reading import DrawnCard, Reading
+from app.models.reading import ChatMessage, DrawnCard, Reading
 from app.models.user import User
 from app.schemas.reading import (
     CreateReadingRequest,
@@ -109,10 +110,14 @@ async def create_reading(
 
     # ── Free-tier limit check ──
     if not user.is_member and user.free_readings_today >= settings.FREE_DAILY_READINGS:
-        raise HTTPException(
-            status_code=402,
-            detail="今日免费次数已用完，请开通会员",
-        )
+        # Check if user has paid reading credits
+        if user.paid_readings_balance and user.paid_readings_balance > 0:
+            user.paid_readings_balance -= 1
+        else:
+            raise HTTPException(
+                status_code=402,
+                detail="今日免费次数已用完，请开通会员",
+            )
 
     # ── Draw cards ──
     cards_data = draw_cards(spread_type)
@@ -292,3 +297,25 @@ async def get_reading(
         created_at=reading.created_at,
         drawn_cards=[DrawnCardResponse(**d) for d in drawn_resp],
     )
+
+
+@router.delete("/history")
+async def delete_readings_history(
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Delete all reading history for the current user."""
+    # Delete all DrawnCard rows belonging to the user's readings
+    subquery = select(Reading.id).where(Reading.user_id == user.id)
+    await db.execute(
+        delete(DrawnCard).where(DrawnCard.reading_id.in_(subquery))
+    )
+    # Delete all ChatMessage rows belonging to the user's readings
+    await db.execute(
+        delete(ChatMessage).where(ChatMessage.reading_id.in_(subquery))
+    )
+    # Delete the readings themselves
+    await db.execute(
+        delete(Reading).where(Reading.user_id == user.id)
+    )
+    return {"detail": "历史记录已清除"}

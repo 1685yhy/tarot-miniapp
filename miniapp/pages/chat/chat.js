@@ -10,10 +10,26 @@ Page({
     remainingFree: 0,
     pageLoading: false,
     pageError: null,
+    readingContext: null, // { question, spread_type }
   },
 
-  onLoad(options) {
-    this.setData({ readingId: options.readingId || '' });
+  async onLoad(options) {
+    const readingId = options.readingId || '';
+    this.setData({ readingId, pageLoading: true });
+
+    // Load reading context for display
+    try {
+      const reading = await request(`/readings/${readingId}`);
+      this.setData({
+        readingContext: {
+          question: reading.question || '未指定问题',
+          spreadType: reading.spread_type,
+        },
+        pageLoading: false,
+      });
+    } catch (err) {
+      this.setData({ pageLoading: false });
+    }
   },
 
   onRetry() {

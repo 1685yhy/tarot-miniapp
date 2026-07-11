@@ -23,6 +23,23 @@
     <text class="mystic-loading-symbol">✧</text>
     <text class="mystic-loading-title">塔罗牌灵正在回应...</text>
     <text class="mystic-loading-sub">AI正在为你解读命运</text>
+    <!-- 阶段进度提示 -->
+    <view class="loading-stages">
+      <view class="stage-item {{loadingStage >= 1 ? 'stage-done' : ''}}">
+        <text class="stage-icon">{{loadingStage >= 1 ? '✅' : '⬜'}}</text>
+        <text class="stage-text">抽牌完成</text>
+      </view>
+      <view class="stage-arrow">→</view>
+      <view class="stage-item {{loadingStage >= 2 ? 'stage-done' : ''}}">
+        <text class="stage-icon">{{loadingStage >= 2 ? '✅' : '⬜'}}</text>
+        <text class="stage-text">AI解读中</text>
+      </view>
+      <view class="stage-arrow">→</view>
+      <view class="stage-item {{loadingStage >= 3 ? 'stage-done' : ''}}">
+        <text class="stage-icon">{{loadingStage >= 3 ? '✅' : '⬜'}}</text>
+        <text class="stage-text">生成报告</text>
+      </view>
+    </view>
   </view>
 </view>
 
@@ -47,15 +64,15 @@
       indicator-color="rgba(212,175,55,0.2)"
       indicator-active-color="#d4af37"
     >
-      <swiper-item wx:for="{{reading.drawn_cards}}" wx:key="id">
-        <view class="drawn-card {{item.is_reversed ? 'reversed' : ''}}">
-          <view class="badge badge-gold" style="margin-bottom:var(--space-lg)">{{item.position_name}}</view>
-          <view style="text-align:center">
-            <text class="text-body" style="font-size:var(--fs-h3);font-weight:var(--fw-bold);display:block;margin-bottom:var(--space-md)">{{item.card_name}}</text>
-            <text class="badge {{item.is_reversed ? 'badge-purple' : 'badge-gold'}}" style="font-size:var(--fs-body-small);padding:10rpx 24rpx">
-              {{item.is_reversed ? '🌙 逆位' : '☀️ 正位'}}
-            </text>
-          </view>
+      <swiper-item wx:for="{{reading.drawn_cards}}" wx:key="id" wx:for-index="idx">
+        <view class="swiper-card-wrapper">
+          <tarot-card
+            nameZh="{{item.card_name}}"
+            positionName="{{item.position_name}}"
+            isReversed="{{item.is_reversed}}"
+            nameEn="{{''}}"
+            cardNumber="{{''}}"
+          />
         </view>
       </swiper-item>
     </swiper>

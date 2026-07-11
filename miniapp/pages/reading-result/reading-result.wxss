@@ -6,7 +6,54 @@
 }
 
 .card-swiper {
-  height: 360rpx;
+  height: 520rpx;
+}
+
+.swiper-card-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+/* Loading stages indicator */
+.loading-stages {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+  margin-top: var(--space-xxl);
+  padding: 0 var(--space-lg);
+}
+
+.stage-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+  opacity: 0.4;
+  transition: opacity 0.4s ease;
+}
+
+.stage-item.stage-done {
+  opacity: 1;
+}
+
+.stage-icon {
+  font-size: 28rpx;
+}
+
+.stage-text {
+  font-size: var(--fs-caption, 20rpx);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.stage-arrow {
+  font-size: 24rpx;
+  color: var(--color-text-dim);
+  opacity: 0.5;
+  margin-top: -24rpx;
 }
 
 .drawn-card {

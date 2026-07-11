@@ -13,7 +13,9 @@ Page({
   async onLoad() {
     try {
       const user = await checkLogin();
-      const products = await request('/membership/products');
+      const allProducts = await request('/membership/products');
+      // Filter to show only membership-type products (hide single_reading/annual_report)
+      const products = allProducts.filter(p => p.type === 'membership');
       this.setData({ user, products, pageLoading: false, loading: false });
     } catch (err) {
       this.setData({ pageLoading: false, pageError: err.errMsg || '加载失败' });

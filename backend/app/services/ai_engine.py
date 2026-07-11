@@ -132,17 +132,34 @@ async def generate_reading(
     )
 
     client = _get_client()
-    try:
-        response = await client.chat.completions.create(
-            model=settings.DEEPSEEK_MODEL,
-            max_tokens=settings.AI_MAX_TOKENS,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": user_prompt},
-            ],
-            timeout=60.0,
-        )
-        return response.choices[0].message.content
-    except Exception:
-        logger.exception("Failed to generate tarot reading via DeepSeek")
-        return None
+
+    max_attempts = 3
+    last_exception: Exception | None = None
+
+    for attempt in range(1, max_attempts + 1):
+        try:
+            response = await client.chat.completions.create(
+                model=settings.DEEPSEEK_MODEL,
+                max_tokens=settings.AI_MAX_TOKENS,
+                messages=[
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": user_prompt},
+                ],
+                timeout=60.0,
+            )
+            content = response.choices[0].message.content
+            if content and content.strip():
+                return content
+            logger.warning("generate_reading attempt %d returned empty content", attempt)
+        except Exception as exc:
+            last_exception = exc
+            logger.warning(
+                "generate_reading attempt %d/%d failed: %s",
+                attempt, max_attempts, exc,
+            )
+        if attempt < max_attempts:
+            import asyncio
+            await asyncio.sleep(1.0 * attempt)  # linear backoff
+
+    logger.exception("All %d attempts to generate tarot reading failed", max_attempts)
+    return None

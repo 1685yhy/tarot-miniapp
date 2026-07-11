@@ -29,6 +29,6 @@ async def membership_status(user: User = Depends(get_current_user)):
 async def list_products():
     """List all purchasable products."""
     return [
-        {"id": k, "name": v["name"], "price": v["price"]}
+        {"id": k, "name": v["name"], "price": v["price"], "type": v.get("type", "single_purchase")}
         for k, v in PRODUCTS.items()
     ]
