@@ -13,11 +13,14 @@ import re
 import sys
 import asyncio
 from pathlib import Path
+
+# Ensure the backend directory is on sys.path for both `python -m app.db.seed`
+# and direct `python backend/app/db/seed.py` invocations.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 from sqlalchemy import select
 from app.db.database import async_session
 from app.models.card import TarotCard
-
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 # ---------------------------------------------------------------------------
 # 正则常量
