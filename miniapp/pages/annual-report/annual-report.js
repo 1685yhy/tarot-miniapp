@@ -10,7 +10,14 @@ Page({
   },
 
   async onLoad() {
-    // Don't auto-generate, let user trigger it
+    // Try to load cached report first
+    try {
+      const cached = wx.getStorageSync('annual_report');
+      if (cached && cached.generated_at) {
+        this.setData({ report: cached, pageLoading: false });
+        return;
+      }
+    } catch (_) { /* ignore cache read errors */ }
     this.setData({ pageLoading: false });
   },
 
@@ -19,6 +26,8 @@ Page({
     try {
       const report = await request('/report/annual');
       this.setData({ report, generating: false });
+      // Cache to local storage so next visit doesn't re-generate
+      wx.setStorageSync('annual_report', report);
     } catch (err) {
       this.setData({ generating: false });
       if (err.message.includes('402')) {

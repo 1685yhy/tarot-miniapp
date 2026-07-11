@@ -35,11 +35,11 @@ async def record_share(
         result = await db.execute(select(User).where(User.id == sharer_id))
         sharer = result.scalar_one_or_none()
         if sharer:
-            # Give one free reading as reward (cap at FREE_DAILY_READINGS)
+            # Give one free reading as reward (floor at 0)
             from app.config import settings
-            sharer.free_readings_today = min(
-                sharer.free_readings_today + 1,
-                settings.FREE_DAILY_READINGS
+            sharer.free_readings_today = max(
+                0,
+                sharer.free_readings_today - 1
             )
             free_readings_remaining = sharer.free_readings_today
             rewarded = True

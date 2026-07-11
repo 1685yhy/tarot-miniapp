@@ -2,9 +2,10 @@
 Annual report API endpoint.
 
 - GET /report/annual – generate an AI-powered annual fortune report (members only)
+  Results are cached per user per calendar year.
 """
 
-import random
+import json
 from datetime import date
 
 from openai import AsyncOpenAI
@@ -27,11 +28,20 @@ async def get_annual_report(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Generate an annual fortune report with 13 cards (one per month + theme)."""
+    """Generate an annual fortune report with 13 cards (one per month + theme).
+    Results are cached per user per calendar year.
+    """
     if not user.is_member:
         raise HTTPException(status_code=402, detail="年度报告仅限会员使用")
 
+    current_year = date.today().year
+
+    # Return cached report if available for the current year
+    if user.annual_report_year == current_year and user.annual_report_data:
+        return json.loads(user.annual_report_data)
+
     # Draw 13 cards for the year ahead
+    from app.services.tarot import draw_cards
     cards_data = draw_cards("year_ahead")
     cards_info = []
     for c in cards_data:
@@ -52,7 +62,7 @@ async def get_annual_report(
         api_key=settings.DEEPSEEK_API_KEY,
         base_url=settings.DEEPSEEK_BASE_URL,
     )
-    prompt = f"""生成一份专业的塔罗年度运势报告。当前年份: {date.today().year}
+    prompt = f"""生成一份专业的塔罗年度运势报告。当前年份: {current_year}
 
 各月运势牌:
 {chr(10).join(f'{c["month"]}: {c["card_name"]}({c["direction"]})' for c in cards_info)}
@@ -69,8 +79,15 @@ async def get_annual_report(
         messages=[{"role": "user", "content": prompt}],
     )
 
-    return {
+    result = {
         "cards": cards_info,
         "report": response.choices[0].message.content,
         "generated_at": str(date.today()),
     }
+
+    # Cache to DB so subsequent visits skip AI re-generation
+    user.annual_report_data = json.dumps(result, ensure_ascii=False)
+    user.annual_report_year = current_year
+    await db.flush()
+
+    return result

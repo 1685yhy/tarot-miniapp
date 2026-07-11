@@ -26,15 +26,10 @@ Page({
   },
 
   async drawDailyCard() {
-    if (this.data.freeCount >= 1 && !this.data.user?.is_member) {
-      wx.showToast({ title: '今日免费次数已用完', icon: 'none' });
-      return;
-    }
-
     wx.showLoading({ title: '抽取中...' });
     try {
       const card = await request('/cards/daily');
-      this.setData({ dailyCard: card, freeCount: this.data.freeCount + 1 });
+      this.setData({ dailyCard: card });
       wx.hideLoading();
       // 保存到globalData供详情页使用
       getApp().globalData.dailyCard = card;
