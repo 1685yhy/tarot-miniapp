@@ -16,10 +16,8 @@
 ### 强制规则
 
 1. **必须通过已配置的 MCP 工具调用外部美术服务生成原始资产。**
-   可用服务包括但不限于：
-   - Ludo.ai MCP — 一站式游戏资产生成
-   - NanoBanana MCP — 2D 原画 / 插画生成
-   - Unity MCP — 3D 模型与场景资产（Unity Editor 内）
+   可用服务：
+   - Unity MCP — 3D 模型、场景、纹理、特效（Unity Editor 内）
    - Blender MCP — 3D 建模与渲染（需本地 Blender 运行）
    - ComfyUI MCP — AI 图像生成工作流（需本地 ComfyUI 运行）
 
@@ -40,8 +38,6 @@
 |----------|----------|----------|------|
 | Unity MCP | Unity 6 AI Assistant 内建 | 无 | Unity Editor Package Manager |
 | ComfyUI MCP | `npx comfyui-mcp` | 无（本地 ComfyUI URL） | npm |
-| Ludo.ai MCP | HTTP: `https://mcp.ludo.ai/mcp` | `LUDO_API_KEY`（Header: `ApiKey <key>`） | [ludo.ai](https://ludo.ai/api-mcp-integration) |
-| NanoBanana MCP | `npx nanobanana-mcp` | `GEMINI_API_KEY` | npm: `nanobanana-mcp` |
 | Blender MCP | `uvx blender-mcp` | 无（需 Blender 运行 addon.py） | PyPI: `blender-mcp` (23k⭐ GitHub) |
 
 ### 违规处理
