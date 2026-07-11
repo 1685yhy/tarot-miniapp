@@ -93,7 +93,7 @@
   <!-- Interpretation -->
   <view class="interpretation-section anim-fade-in-up-2">
     <text class="text-secondary text-center" style="display:block;margin-bottom:var(--space-md)">AI 塔罗解读</text>
-    <view class="interpretation-card card {{showFullInterpretation ? 'expanded' : ''}}" wx:if="{{reading.interpretation}}">
+    <view class="interpretation-scroll card {{showFullInterpretation ? 'expanded' : ''}}" wx:if="{{reading.interpretation}}">
       <text class="interpretation-text">{{reading.interpretation}}</text>
     </view>
     <view wx:else class="interpretation-card card">
