@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     # Claude API
     ANTHROPIC_API_KEY: str = ""
     CLAUDE_MODEL: str = "claude-sonnet-4-20250514"
+    CLAUDE_MAX_TOKENS: int = 2048
 
     # WeChat
     WECHAT_APP_ID: str = ""

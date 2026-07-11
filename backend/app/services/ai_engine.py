@@ -5,9 +5,13 @@ Uses the Anthropic (Claude) API to generate thoughtful tarot readings
 based on the cards drawn and the user's question.
 """
 
+import logging
+
 from anthropic import AsyncAnthropic
 
 from app.config import settings
+
+logger = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------
 # Client – lazily evaluated at module level; if ANTHROPIC_API_KEY is
@@ -51,16 +55,23 @@ def _card_direction_tag(card: dict) -> str:
     return "逆位" if card.get("is_reversed") else "正位"
 
 
-def _build_cards_text(cards_info: list[dict]) -> str:
-    """Build a formatted block describing all drawn cards for the prompt."""
+def _build_cards_text(cards_info: list[dict], theme: str | None = None) -> str:
+    """Build a formatted block describing all drawn cards for the prompt.
+
+    Args:
+        cards_info:  Enriched card data from the DB.
+        theme:       Optional theme (love / career / finance / general).
+                     When set, uses theme-specific meaning fields
+                     (e.g. "love_upright") instead of the generic "meaning_upright".
+    """
+    keys = _THEME_MEANING_KEY_MAP.get(theme) if theme else None
+    upright_key = f"{keys[0]}" if keys else "meaning_upright"
+    reversed_key = f"{keys[1]}" if keys else "meaning_reversed"
+
     lines: list[str] = []
     for c in cards_info:
         direction = _card_direction_tag(c)
         reversed_flag = c.get("is_reversed", False)
-
-        # Pick theme-specific meaning if available, otherwise fall back to general
-        upright_key = "meaning_upright"
-        reversed_key = "meaning_reversed"
 
         lines.append(
             f"位置{c['position']} - {c['position_name']}: "
@@ -96,7 +107,7 @@ async def generate_reading(
     if not settings.ANTHROPIC_API_KEY:
         return None
 
-    cards_text = _build_cards_text(cards_info)
+    cards_text = _build_cards_text(cards_info, theme=theme)
 
     user_prompt = (
         f"请为用户进行塔罗解读。\n\n"
@@ -115,12 +126,12 @@ async def generate_reading(
     try:
         response = await client.messages.create(
             model=settings.CLAUDE_MODEL,
-            max_tokens=2048,
+            max_tokens=settings.CLAUDE_MAX_TOKENS,
             system=SYSTEM_PROMPT,
             messages=[{"role": "user", "content": user_prompt}],
+            timeout=60.0,
         )
         return response.content[0].text
     except Exception:
-        # Logging would go here in production — for now return None
-        # so the reading is still saved without interpretation.
+        logger.exception("Failed to generate tarot reading")
         return None
