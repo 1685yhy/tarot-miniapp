@@ -7,7 +7,6 @@ from pydantic import BaseModel
 
 
 class CreateReadingRequest(BaseModel):
-    spread_type: str  # daily / three_card / triangle / career / etc.
     question: str | None = None
     theme: str | None = None  # love / career / finance / general
 
@@ -56,4 +55,4 @@ class ReadingHistoryItem(BaseModel):
 
 class ReadingHistoryResponse(BaseModel):
     total: int
-    readings: list[ReadingHistoryItem]
+    items: list[ReadingHistoryItem]

@@ -3,7 +3,12 @@ from sqlalchemy.orm import DeclarativeBase
 
 from app.config import settings
 
-engine = create_async_engine(settings.DATABASE_URL, echo=False, pool_size=20)
+# SQLite doesn't support pool_size; MySQL/PostgreSQL do
+_engine_kwargs = {"echo": False}
+if "sqlite" not in settings.DATABASE_URL:
+    _engine_kwargs["pool_size"] = 20
+
+engine = create_async_engine(settings.DATABASE_URL, **_engine_kwargs)
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 

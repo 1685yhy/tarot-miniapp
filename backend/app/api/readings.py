@@ -259,7 +259,7 @@ async def list_readings(
             )
         )
 
-    return ReadingHistoryResponse(total=total, readings=items)
+    return ReadingHistoryResponse(total=total, items=items)
 
 
 @router.get("/{reading_id}", response_model=ReadingResponse)

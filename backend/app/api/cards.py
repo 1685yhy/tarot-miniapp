@@ -39,7 +39,7 @@ async def list_cards(
 async def daily_card(db: AsyncSession = Depends(get_db)):
     """每日一牌 - 随机抽取一张（使用数据库随机排序，避免ID不连续问题）"""
     result = await db.execute(
-        select(TarotCard).order_by(func.rand()).limit(1)
+        select(TarotCard).order_by(func.random()).limit(1)
     )
     card = result.scalar_one()
     return CardDetail.model_validate(card)

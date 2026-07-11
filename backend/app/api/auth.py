@@ -12,6 +12,25 @@ from app.utils.auth import create_token
 router = APIRouter(prefix="/auth", tags=["认证"])
 
 
+@router.post("/dev-login", response_model=LoginResponse)
+async def dev_login(db: AsyncSession = Depends(get_db)):
+    """开发环境：创建或获取测试用户，绕过微信登录"""
+    test_openid = "dev_test_user_001"
+    result = await db.execute(select(User).where(User.openid == test_openid))
+    user = result.scalar_one_or_none()
+    if not user:
+        user = User(
+            openid=test_openid,
+            nickname="测试用户",
+            is_member=True,  # 开发环境直接给会员
+        )
+        db.add(user)
+        await db.flush()
+
+    token = create_token(user.id)
+    return LoginResponse(token=token, user=UserResponse.model_validate(user))
+
+
 @router.post("/login", response_model=LoginResponse)
 async def wx_login(req: UserLoginRequest, db: AsyncSession = Depends(get_db)):
     # 调用微信接口换取 openid
