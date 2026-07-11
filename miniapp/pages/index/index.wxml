@@ -67,7 +67,7 @@
   <view class="daily-card-wrapper anim-fade-in-up-3">
     <view class="card-clickable card-daily-back" wx:if="{{!dailyCard}}" bindtap="drawDailyCard">
       <text class="heading-3">点击抽取今日运势</text>
-      <text class="text-dim mt-sm">{{freeCount}}/1 次免费</text>
+      <text class="text-dim mt-sm">今日免费</text>
     </view>
     <view class="card-daily-result anim-glow-pulse" wx:else>
       <text class="heading-2">{{dailyCard.name_zh}}</text>

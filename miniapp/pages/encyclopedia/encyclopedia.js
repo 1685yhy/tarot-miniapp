@@ -47,7 +47,11 @@ Page({
   onSearchInput(e) {
     const keyword = e.detail.value;
     this.setData({ searchKeyword: keyword });
-    this.filterCards(this.data.activeTab, keyword);
+    // Debounce search to avoid filtering on every keystroke
+    if (this._searchTimer) clearTimeout(this._searchTimer);
+    this._searchTimer = setTimeout(() => {
+      this.filterCards(this.data.activeTab, keyword);
+    }, 300);
   },
 
   filterCards(tab, keyword) {
@@ -85,5 +89,9 @@ Page({
   onRetry() {
     this.setData({ pageError: null, pageLoading: true });
     this.loadCards();
+  },
+
+  onUnload() {
+    if (this._searchTimer) clearTimeout(this._searchTimer);
   },
 });

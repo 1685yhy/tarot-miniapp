@@ -70,8 +70,6 @@
             nameZh="{{item.card_name}}"
             positionName="{{item.position_name}}"
             isReversed="{{item.is_reversed}}"
-            nameEn="{{''}}"
-            cardNumber="{{''}}"
           />
         </view>
       </swiper-item>

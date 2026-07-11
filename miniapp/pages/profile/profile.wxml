@@ -63,7 +63,7 @@
         <text class="stat-label">今日追问</text>
       </view>
       <view class="stat-item">
-        <text class="stat-num">{{readingHistory.length}}</text>
+        <text class="stat-num">{{historyTotal}}</text>
         <text class="stat-label">历史记录</text>
       </view>
     </view>

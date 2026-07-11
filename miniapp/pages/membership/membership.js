@@ -10,12 +10,19 @@ Page({
     pageError: null,
   },
 
-  async onLoad() {
+  async onLoad(options) {
     try {
       const user = await checkLogin();
       const allProducts = await request('/membership/products');
       // Filter to show only membership-type products (hide single_reading/annual_report)
-      const products = allProducts.filter(p => p.type === 'membership');
+      let products = allProducts.filter(p => p.type === 'membership');
+      // If navigated from annual-report page, also include the annual_report product
+      if (options && options.product === 'annual_report') {
+        const annualReportProduct = allProducts.find(p => p.id === 'annual_report');
+        if (annualReportProduct) {
+          products = [...products, annualReportProduct];
+        }
+      }
       this.setData({ user, products, pageLoading: false, loading: false });
     } catch (err) {
       this.setData({ pageLoading: false, pageError: err.errMsg || '加载失败' });
@@ -53,7 +60,7 @@ Page({
         success: () => {
           wx.showToast({ title: '支付成功！', icon: 'success' });
           setTimeout(() => {
-            wx.switchTab({ url: '/pages/profile/profile' });
+            wx.redirectTo({ url: '/pages/reading/reading' });
           }, 1500);
         },
         fail: (err) => {

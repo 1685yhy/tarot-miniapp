@@ -28,7 +28,8 @@
       基于13张塔罗牌，AI为你生成未来12个月的专属运势报告。涵盖爱情、事业、财运，逐月详解。
     </text>
     <button class="btn-glow-pulse" style="width:80%;margin:0 auto" bindtap="onGenerate">🌟 生成我的年度报告</button>
-    <text class="text-dim mt-xl" style="display:block;text-align:center">👑 会员专属功能</text>
+    <button class="btn-secondary mt-md" style="width:80%;margin:var(--space-md) auto 0" bindtap="onBuySingle">💳 单独购买 ¥29.90</button>
+    <text class="text-dim mt-xl" style="display:block;text-align:center">👑 会员专属 · 也可单独购买</text>
   </view>
 
   <!-- ===== 生成中（mystic loading） ===== -->

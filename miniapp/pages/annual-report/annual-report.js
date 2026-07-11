@@ -63,6 +63,10 @@ Page({
     });
   },
 
+  onBuySingle() {
+    wx.navigateTo({ url: '/pages/membership/membership?product=annual_report' });
+  },
+
   onShare() {
     wx.showShareMenu({ withShareTicket: true });
   },

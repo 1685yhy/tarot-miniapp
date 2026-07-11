@@ -30,6 +30,7 @@ Page({
         user,
         memberStatus: status,
         readingHistory: history.items || [],
+        historyTotal: history.total || (history.items ? history.items.length : 0),
         pageLoading: false,
         historyPage: 1,
         hasMore: history.items ? history.items.length >= 20 : false,

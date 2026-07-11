@@ -60,6 +60,19 @@ Page({
     });
   },
 
+  onShareAppMessage() {
+    const { reading } = this.data;
+    const cards = reading?.drawn_cards || [];
+    const cardNames = cards.map(c => c.card_name).join('、');
+    const title = cardNames
+      ? `我抽到了 ${cardNames} —— 来看看塔罗的解读吧`
+      : '塔罗占卜，揭秘你的命运';
+    return {
+      title,
+      desc: 'AI塔罗占卜解读，揭示你的过去、现在与未来',
+    };
+  },
+
   onAskMore() {
     const { reading } = this.data;
     if (!reading) return;

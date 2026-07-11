@@ -88,6 +88,33 @@
   white-space: pre-wrap;
 }
 
+/* Scrollable interpretation container */
+.interpretation-scroll {
+  max-height: 600rpx;
+  overflow: hidden;
+  position: relative;
+}
+.interpretation-scroll.expanded {
+  max-height: none;
+  overflow: visible;
+}
+/* Gradient fade at bottom when collapsed */
+.interpretation-scroll:not(.expanded)::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120rpx;
+  background: linear-gradient(transparent, var(--color-bg-card));
+  pointer-events: none;
+}
+/* Error state card */
+.interpretation-card {
+  text-align: center;
+  padding: var(--space-xxl);
+}
+
 /* Actions */
 .actions {
   display: flex;
