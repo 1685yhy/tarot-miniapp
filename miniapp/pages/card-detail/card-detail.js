@@ -5,7 +5,8 @@ Page({
   data: {
     card: null,
     activeTab: 'upright', // upright / reversed
-    loading: true,
+    pageLoading: true,
+    pageError: null,
   },
 
   async onLoad(options) {
@@ -19,17 +20,21 @@ Page({
   },
 
   async loadCard(id) {
-    this.setData({ loading: true });
+    this.setData({ pageLoading: true, pageError: null });
     try {
       const card = await request(`/cards/${id}`);
-      this.setData({ card, loading: false });
+      this.setData({ card, pageLoading: false });
     } catch (err) {
-      wx.showToast({ title: '加载失败', icon: 'none' });
-      this.setData({ loading: false });
+      this.setData({ pageLoading: false, pageError: err.errMsg || '加载失败' });
     }
   },
 
   onTabTap(e) {
     this.setData({ activeTab: e.currentTarget.dataset.tab });
+  },
+
+  onRetry() {
+    const id = this.options?.id;
+    if (id) this.loadCard(id);
   },
 });

@@ -23,6 +23,8 @@ Page({
     theme: '',
     showQuestionInput: false,
     isDrawing: false,
+    pageLoading: false,
+    pageError: null,
   },
 
   onSelectSpread(e) {
@@ -44,6 +46,10 @@ Page({
 
   onBackToSpreads() {
     this.setData({ selectedSpread: null, showQuestionInput: false, question: '' });
+  },
+
+  onRetry() {
+    this.setData({ pageError: null });
   },
 
   async onStartReading() {

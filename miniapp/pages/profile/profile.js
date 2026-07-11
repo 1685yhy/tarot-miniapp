@@ -7,7 +7,8 @@ Page({
     user: null,
     memberStatus: null,
     readingHistory: [],
-    loading: true,
+    pageLoading: true,
+    pageError: null,
   },
 
   async onShow() {
@@ -15,7 +16,7 @@ Page({
   },
 
   async loadData() {
-    this.setData({ loading: true });
+    this.setData({ pageLoading: true });
     try {
       const user = await checkLogin();
       const [status, history] = await Promise.all([
@@ -26,11 +27,16 @@ Page({
         user,
         memberStatus: status,
         readingHistory: history.items || [],
-        loading: false,
+        pageLoading: false,
       });
     } catch (err) {
-      this.setData({ loading: false });
+      this.setData({ pageLoading: false, pageError: err.errMsg || '加载失败' });
     }
+  },
+
+  onRetry() {
+    this.setData({ pageError: null, pageLoading: true });
+    this.loadData();
   },
 
   onGoMembership() {

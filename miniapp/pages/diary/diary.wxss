@@ -1,6 +1,156 @@
-.container{padding:24rpx;background:var(--color-bg);min-height:100vh;padding-bottom:60rpx}
-.header{text-align:center;padding:30rpx 0}.header-title{font-size:36rpx;font-weight:700;color:var(--color-gold);display:block}.header-sub{font-size:24rpx;color:var(--color-text-dim);display:block;margin-top:6rpx}
-.create-btn{width:100%;background:linear-gradient(135deg,var(--color-gold),var(--color-gold-light));color:#1a1a2e;font-weight:600;border-radius:48rpx;padding:24rpx 0;font-size:30rpx;margin-bottom:28rpx;border:none}
-.entries{display:flex;flex-direction:column;gap:16rpx}.entry-card{background:var(--color-bg-card);border-radius:16rpx;padding:24rpx;border:1rpx solid rgba(201,169,110,0.08)}.entry-header{display:flex;justify-content:space-between;margin-bottom:10rpx}.entry-date{font-size:24rpx;color:var(--color-text-dim)}.entry-mood{font-size:32rpx}.entry-reflection{font-size:28rpx;color:var(--color-text-primary);line-height:1.7;display:block}
-.empty{text-align:center;padding:100rpx 0}.empty-icon{font-size:64rpx;display:block}.empty-text{font-size:28rpx;color:var(--color-text-secondary);display:block;margin-top:16rpx}.empty-hint{font-size:24rpx;color:var(--color-text-dim);display:block;margin-top:8rpx}
-.modal-mask{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);display:flex;align-items:flex-end;z-index:100}.modal-content{width:100%;background:var(--color-bg-card);border-radius:32rpx 32rpx 0 0;padding:40rpx 32rpx 60rpx;max-height:80vh;overflow-y:auto}.modal-title{font-size:32rpx;font-weight:700;color:var(--color-gold);display:block;text-align:center;margin-bottom:28rpx}.modal-label{font-size:26rpx;color:var(--color-text-secondary);display:block;margin-bottom:12rpx;margin-top:20rpx}.mood-grid{display:flex;flex-wrap:wrap;gap:12rpx}.mood-item{padding:14rpx 24rpx;border-radius:24rpx;font-size:26rpx;background:var(--color-bg);color:var(--color-text-secondary);border:2rpx solid transparent}.mood-item.selected{border-color:var(--color-gold);color:var(--color-gold);background:rgba(201,169,110,0.08)}.reflection-input{width:100%;min-height:160rpx;background:var(--color-bg);border-radius:16rpx;padding:20rpx;font-size:26rpx;color:var(--color-text-primary);box-sizing:border-box}.char-count{text-align:right;font-size:22rpx;color:var(--color-text-dim);margin-top:8rpx;display:block}.submit-btn{width:100%;background:linear-gradient(135deg,var(--color-gold),var(--color-gold-light));color:#1a1a2e;font-weight:600;border-radius:48rpx;padding:24rpx 0;font-size:30rpx;margin-top:32rpx;border:none}.submit-btn[disabled]{opacity:.5}
+/* ===== 塔罗日记 - 至尊神秘主题 ===== */
+
+.container {
+  padding: var(--space-xl);
+  background: var(--color-bg);
+  min-height: 100vh;
+  padding-bottom: var(--space-massive);
+}
+
+/* Entries */
+.entries {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.entry-card {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  border: 1rpx solid var(--color-border-subtle);
+}
+
+.entry-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+
+.entry-reflection {
+  font-size: var(--fs-body);
+  color: var(--color-text-primary);
+  line-height: var(--lh-loose);
+  display: block;
+}
+
+/* Modal */
+.modal-content {
+  width: 100%;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-xxl) var(--radius-xxl) 0 0;
+  padding: var(--space-xxxl) var(--space-xxl) calc(var(--space-massive) + env(safe-area-inset-bottom));
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: fade-in-up 0.4s var(--ease-out);
+}
+
+/* Mood grid */
+.mood-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.mood-item {
+  padding: 14rpx var(--space-xl);
+  border-radius: var(--radius-round);
+  font-size: var(--fs-body);
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  border: 2rpx solid transparent;
+  transition: all var(--duration-normal);
+}
+
+.mood-item.selected {
+  border-color: var(--color-gold);
+  color: var(--color-gold);
+  background: var(--color-gold-subtle);
+  box-shadow: var(--shadow-glow-gold);
+}
+
+/* Reflection input */
+.reflection-input {
+  width: 100%;
+  min-height: 160rpx;
+  background: var(--color-bg);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  font-size: var(--fs-body-small);
+  color: var(--color-text-primary);
+  box-sizing: border-box;
+  border: 1rpx solid var(--color-border-subtle);
+}
+
+/* Submit button */
+.submit-btn[disabled] {
+  opacity: 0.5;
+}
+
+/* ===== 加载骨架 ===== */
+.skeleton {
+  padding: var(--space-xxl) 0;
+}
+
+.skeleton-header-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xxl);
+}
+
+.skeleton-line {
+  height: 32rpx;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-card);
+  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+}
+
+.skeleton-line.wide { width: 280rpx; }
+.skeleton-line.medium { width: 200rpx; }
+
+.skeleton-btn {
+  width: 100%;
+  height: 80rpx;
+  border-radius: var(--radius-round);
+  background: var(--color-bg-card);
+  margin-bottom: var(--space-xxl);
+  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+}
+
+.skeleton-entry {
+  width: 100%;
+  height: 120rpx;
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-card);
+  margin-bottom: var(--space-md);
+  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+}
+
+/* ===== 错误状态 ===== */
+.error-state {
+  text-align: center;
+  padding: var(--space-massive) var(--space-xl);
+}
+
+.error-icon {
+  font-size: 80rpx;
+  display: block;
+  margin-bottom: var(--space-md);
+  opacity: 0.6;
+}
+
+.error-text {
+  font-size: var(--fs-body);
+  color: var(--color-text-secondary);
+  display: block;
+  margin-bottom: var(--space-xs);
+}
+
+.error-hint {
+  font-size: var(--fs-body-small);
+  color: var(--color-text-dim);
+  display: block;
+  margin-bottom: var(--space-xxl);
+}

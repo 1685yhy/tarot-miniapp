@@ -4,13 +4,14 @@ const { request } = require('../../utils/api');
 Page({
   data: {
     report: null,
-    loading: true,
+    pageLoading: true,
+    pageError: null,
     generating: false,
   },
 
   async onLoad() {
     // Don't auto-generate, let user trigger it
-    this.setData({ loading: false });
+    this.setData({ pageLoading: false });
   },
 
   async onGenerate() {
@@ -35,6 +36,11 @@ Page({
         wx.showToast({ title: '生成失败', icon: 'none' });
       }
     }
+  },
+
+  onRetry() {
+    this.setData({ pageError: null, pageLoading: true });
+    this.onLoad();
   },
 
   onShare() {

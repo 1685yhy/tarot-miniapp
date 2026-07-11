@@ -1,6 +1,200 @@
-.container{padding:24rpx;background:var(--color-bg);min-height:100vh}
-.user-card{text-align:center;padding:40rpx 0;background:var(--color-bg-card);border-radius:24rpx;margin-bottom:24rpx;border:1rpx solid rgba(201,169,110,0.1)}.avatar{font-size:72rpx}.nickname{font-size:32rpx;font-weight:600;color:var(--color-text-primary);display:block;margin-top:12rpx}.member-badge{display:inline-block;margin-top:14rpx;padding:8rpx 24rpx;border-radius:20rpx;font-size:24rpx;background:rgba(136,136,170,0.15);color:var(--color-text-secondary)}.member-badge.is-member{background:rgba(201,169,110,0.15);color:var(--color-gold)}.member-expiry{display:block;font-size:20rpx;margin-top:4rpx;opacity:.7}.upgrade-btn{margin-top:20rpx;background:linear-gradient(135deg,var(--color-gold),var(--color-gold-light));color:#1a1a2e;font-weight:600;border-radius:32rpx;padding:16rpx 48rpx;font-size:28rpx;display:inline-block;border:none}
-.stats-row{display:flex;background:var(--color-bg-card);border-radius:20rpx;padding:28rpx;margin-bottom:24rpx;border:1rpx solid rgba(201,169,110,0.08)}.stat-item{flex:1;text-align:center}.stat-num{font-size:36rpx;font-weight:700;color:var(--color-gold);display:block}.stat-label{font-size:22rpx;color:var(--color-text-dim);display:block;margin-top:6rpx}
-.quick-actions{display:flex;gap:16rpx;margin-bottom:32rpx}.action-item{flex:1;text-align:center;background:var(--color-bg-card);border-radius:20rpx;padding:28rpx 0;border:1rpx solid rgba(201,169,110,0.08)}.action-icon{font-size:40rpx;display:block}.action-label{font-size:24rpx;color:var(--color-text-secondary);display:block;margin-top:8rpx}
-.history-section{background:var(--color-bg-card);border-radius:20rpx;padding:24rpx 0;border:1rpx solid rgba(201,169,110,0.08)}.history-header{display:flex;justify-content:space-between;align-items:center;padding:0 24rpx 16rpx;border-bottom:1rpx solid rgba(201,169,110,0.06)}.section-title{font-size:28rpx;font-weight:600;color:var(--color-text-primary)}.clear-btn{font-size:24rpx;color:var(--color-text-dim)}.history-item{display:flex;justify-content:space-between;align-items:center;padding:20rpx 24rpx;border-bottom:1rpx solid rgba(201,169,110,0.04)}.history-item:last-child{border-bottom:none}.history-spread{font-size:28rpx;color:var(--color-text-primary);display:block}.history-theme{font-size:22rpx;color:var(--color-text-dim);display:block;margin-top:4rpx}.history-arrow{font-size:36rpx;color:var(--color-text-dim)}
-.empty{text-align:center;padding:60rpx 0}.empty-text{font-size:26rpx;color:var(--color-text-dim)}.loading{text-align:center;padding:200rpx 0;color:var(--color-text-secondary)}
+/* ===== 个人中心 - 至尊神秘主题 ===== */
+
+.container {
+  padding: var(--space-xl);
+  background: var(--color-bg);
+  min-height: 100vh;
+}
+
+/* User card */
+.user-card {
+  text-align: center;
+  padding: var(--space-xxxl) 0;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-card);
+  margin-bottom: var(--space-xl);
+  border: 1rpx solid var(--color-border-subtle);
+  position: relative;
+  overflow: hidden;
+}
+
+.user-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 50% 0%, var(--color-purple-subtle), transparent 60%);
+  pointer-events: none;
+}
+
+.avatar {
+  font-size: 72rpx;
+  position: relative;
+  z-index: 1;
+}
+
+.upgrade-btn {
+  margin-top: var(--space-lg);
+  background: var(--gradient-gold);
+  color: var(--color-text-on-gold);
+  font-weight: var(--fw-semibold);
+  border-radius: var(--radius-round);
+  padding: var(--space-md) var(--space-huge);
+  font-size: var(--fs-body);
+  display: inline-block;
+  border: none;
+  box-shadow: var(--shadow-button);
+}
+
+/* Stats */
+.stats-row {
+  display: flex;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-xl);
+  border: 1rpx solid var(--color-border-subtle);
+}
+
+.stat-item {
+  flex: 1;
+  text-align: center;
+}
+
+.stat-num {
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-bold);
+  color: var(--color-gold);
+  display: block;
+}
+
+.stat-label {
+  font-size: var(--fs-caption);
+  color: var(--color-text-dim);
+  display: block;
+  margin-top: var(--space-xs);
+}
+
+/* Quick actions */
+.quick-actions {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xxl);
+}
+
+.action-item {
+  flex: 1;
+  text-align: center;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl) 0;
+  border: 1rpx solid var(--color-border-subtle);
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.action-item:active {
+  background: var(--color-gold-subtle);
+  border-color: var(--color-gold);
+  transform: scale(0.96);
+}
+
+/* History */
+.history-section {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-card);
+  padding: var(--space-xl) 0;
+  border: 1rpx solid var(--color-border-subtle);
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--space-xl) var(--space-md);
+  border-bottom: 1rpx solid var(--color-divider);
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-lg) var(--space-xl);
+  border-bottom: 1rpx solid var(--color-divider);
+}
+
+.history-item:last-child {
+  border-bottom: none;
+}
+
+.clear-btn {
+  font-size: var(--fs-body-small);
+  color: var(--color-text-dim);
+  background: none;
+  border: none;
+}
+
+/* ===== 加载骨架 ===== */
+.skeleton {
+  width: 100%;
+}
+
+.skeleton-card {
+  width: 100%;
+  height: 240rpx;
+  border-radius: var(--radius-card);
+  background: var(--color-bg-card);
+  margin-bottom: var(--space-xl);
+  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+}
+
+.skeleton-stats {
+  width: 100%;
+  height: 120rpx;
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-card);
+  margin-bottom: var(--space-xl);
+  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+}
+
+.skeleton-actions {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xxl);
+}
+
+.skeleton-action {
+  flex: 1;
+  height: 100rpx;
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-card);
+  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+}
+
+/* ===== 错误状态 ===== */
+.error-state {
+  text-align: center;
+  padding: var(--space-massive) var(--space-xl);
+}
+
+.error-icon {
+  font-size: 80rpx;
+  display: block;
+  margin-bottom: var(--space-md);
+  opacity: 0.6;
+}
+
+.error-text {
+  font-size: var(--fs-body);
+  color: var(--color-text-secondary);
+  display: block;
+  margin-bottom: var(--space-xs);
+}
+
+.error-hint {
+  font-size: var(--fs-body-small);
+  color: var(--color-text-dim);
+  display: block;
+  margin-bottom: var(--space-xxl);
+}

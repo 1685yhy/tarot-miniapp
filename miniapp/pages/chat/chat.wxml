@@ -1,14 +1,42 @@
 <!-- pages/chat/chat.wxml -->
 <view class="container">
-  <view class="chat-intro" wx:if="{{messages.length === 0}}">
-    <text class="intro-icon">🔮</text>
-    <text class="intro-text">对刚才的解读有什么想问的吗？</text>
-    <text class="intro-hint">塔罗师会基于你的牌面继续为你解读</text>
+  <!-- ===== 加载骨架 ===== -->
+  <view wx:if="{{pageLoading}}" class="skeleton-messages">
+    <view class="skeleton-msg">
+      <view class="skeleton-bubble right"></view>
+    </view>
+    <view class="skeleton-msg">
+      <view class="skeleton-bubble left"></view>
+    </view>
+    <view class="skeleton-msg">
+      <view class="skeleton-bubble right" style="width:40%"></view>
+    </view>
+    <view class="skeleton-msg">
+      <view class="skeleton-bubble left" style="width:70%"></view>
+    </view>
   </view>
 
-  <view class="message-list" wx:if="{{messages.length > 0}}">
+  <!-- ===== 空状态（intro） ===== -->
+  <view wx:elif="{{messages.length === 0 && !pageError}}" class="chat-intro empty-state">
+    <text class="empty-icon">🔮</text>
+    <text class="empty-text">对刚才的解读有什么想问的吗？</text>
+    <text class="empty-hint">塔罗师会基于你的牌面继续为你解读</text>
+  </view>
+
+  <!-- ===== 错误状态 ===== -->
+  <view wx:elif="{{pageError}}" class="error-state">
+    <text class="error-icon">🌙</text>
+    <text class="error-text">塔罗师暂时无法回应</text>
+    <text class="error-hint">{{pageError}}</text>
+    <button class="btn-primary btn-small" bindtap="onRetry">✨ 重试</button>
+  </view>
+
+  <!-- ===== 消息列表 ===== -->
+  <view wx:elif="{{messages.length > 0}}" class="message-list anim-fade-in">
     <view class="msg-item {{item.role === 'user' ? 'msg-user' : 'msg-ai'}}" wx:for="{{messages}}" wx:key="index">
-      <text class="msg-role">{{item.role === 'user' ? '你' : '🔮 塔罗师'}}</text>
+      <text class="text-caption" style="display:block;margin-bottom:6rpx;padding:0 8rpx;text-align:{{item.role === 'user' ? 'right' : 'left'}}">
+        {{item.role === 'user' ? '你' : '🔮 塔罗师'}}
+      </text>
       <view class="msg-bubble {{item.role === 'user' ? 'bubble-user' : 'bubble-ai'}}">
         <text class="msg-text">{{item.content}}</text>
       </view>
@@ -16,6 +44,7 @@
     <view id="chat-bottom"></view>
   </view>
 
+  <!-- Input bar -->
   <view class="input-bar">
     <input class="chat-input" placeholder="输入你的问题..." placeholder-style="color:#555577"
       value="{{inputText}}" bindinput="onInput" confirm-type="send" bindconfirm="onSend"

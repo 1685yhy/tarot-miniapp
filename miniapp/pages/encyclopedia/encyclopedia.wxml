@@ -1,63 +1,90 @@
 <!-- pages/encyclopedia/encyclopedia.wxml -->
-<view class="container">
-  <!-- Search bar -->
-  <view class="search-bar">
-    <text class="search-icon">🔍</text>
-    <input
-      class="search-input"
-      placeholder="搜索塔罗牌名称..."
-      placeholder-style="color:#555577"
-      value="{{searchKeyword}}"
-      bindinput="onSearchInput"
-    />
+<view class="page">
+  <!-- ===== 加载骨架 ===== -->
+  <view wx:if="{{pageLoading}}">
+    <view class="skeleton-search"></view>
+    <view class="skeleton-tabs">
+      <view class="skeleton-tab"></view>
+      <view class="skeleton-tab"></view>
+      <view class="skeleton-tab"></view>
+      <view class="skeleton-tab"></view>
+    </view>
+    <view class="skeleton-grid">
+      <view class="skeleton-card"></view>
+      <view class="skeleton-card"></view>
+      <view class="skeleton-card"></view>
+      <view class="skeleton-card"></view>
+      <view class="skeleton-card"></view>
+      <view class="skeleton-card"></view>
+    </view>
   </view>
 
-  <!-- Tab bar -->
-  <scroll-view class="tab-bar" scroll-x>
-    <view
-      class="tab-item {{activeTab === item.key ? 'tab-active' : ''}}"
-      wx:for="{{tabs}}"
-      wx:key="key"
-      data-key="{{item.key}}"
-      bindtap="onTabTap"
-    >
-      <text>{{item.label}}</text>
-    </view>
-  </scroll-view>
+  <!-- ===== 错误状态 ===== -->
+  <view wx:elif="{{pageError}}" class="error-state">
+    <text class="error-icon">🃏</text>
+    <text class="error-text">塔罗档案馆暂时打不开</text>
+    <text class="error-hint">{{pageError}}</text>
+    <button class="btn-primary btn-small" bindtap="onRetry">✨ 重新加载</button>
+  </view>
 
-  <!-- Card grid -->
-  <view wx:if="{{!loading}}" class="card-grid">
-    <view
-      class="card-item"
-      wx:for="{{filteredCards}}"
-      wx:key="id"
-      data-id="{{item.id}}"
-      bindtap="onCardTap"
-    >
-      <view class="card-number">{{item.card_number}}</view>
-      <text class="card-name">{{item.name_zh}}</text>
-      <text class="card-en">{{item.name_en}}</text>
-      <view class="card-tags">
-        <text class="tag arcana-tag">{{item.arcana === 'major' ? '大牌' : '小牌'}}</text>
-        <text class="tag suit-tag" wx:if="{{item.suit}}">{{item.suit}}</text>
-        <text class="tag element-tag" wx:if="{{item.element}}">{{item.element}}</text>
+  <!-- ===== 主内容 ===== -->
+  <view wx:else>
+    <!-- Search bar -->
+    <view class="search-bar anim-fade-in-up-1">
+      <text class="text-secondary" style="margin-right:var(--space-sm)">🔍</text>
+      <input
+        class="search-input"
+        style="flex:1;font-size:var(--fs-body);color:var(--color-text-primary);background:transparent"
+        placeholder="搜索塔罗牌名称..."
+        placeholder-style="color:#555577"
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+      />
+    </view>
+
+    <!-- Tab bar -->
+    <scroll-view class="tab-bar anim-fade-in-up-2" scroll-x>
+      <view
+        class="tab-item {{activeTab === item.key ? 'tab-active' : ''}}"
+        wx:for="{{tabs}}"
+        wx:key="key"
+        data-key="{{item.key}}"
+        bindtap="onTabTap"
+      >
+        <text>{{item.label}}</text>
+      </view>
+    </scroll-view>
+
+    <!-- Card grid -->
+    <view class="card-grid anim-fade-in-up-3">
+      <view
+        class="card-item"
+        wx:for="{{filteredCards}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        bindtap="onCardTap"
+      >
+        <text class="text-gold" style="font-size:var(--fs-caption)">{{item.card_number}}</text>
+        <text class="heading-4 mt-xs">{{item.name_zh}}</text>
+        <text class="text-dim" style="font-size:var(--fs-caption);display:block;margin-bottom:var(--space-sm)">{{item.name_en}}</text>
+        <view class="flex-center" style="justify-content:flex-start;gap:var(--space-xs);flex-wrap:wrap">
+          <text class="badge badge-purple">{{item.arcana === 'major' ? '大牌' : '小牌'}}</text>
+          <text class="badge badge-gold" wx:if="{{item.suit}}">{{item.suit}}</text>
+          <text class="badge" style="background:var(--color-star-subtle);color:var(--color-text-secondary)" wx:if="{{item.element}}">{{item.element}}</text>
+        </view>
       </view>
     </view>
-  </view>
 
-  <!-- Empty state -->
-  <view wx:if="{{!loading && filteredCards.length === 0}}" class="empty">
-    <text class="empty-icon">🃏</text>
-    <text class="empty-text">没有找到匹配的牌</text>
-  </view>
+    <!-- Empty state -->
+    <view wx:if="{{filteredCards.length === 0}}" class="empty-state">
+      <text class="empty-icon">🃏</text>
+      <text class="empty-text">没有找到匹配的牌</text>
+      <text class="empty-hint">试试换个关键词吧</text>
+    </view>
 
-  <!-- Loading -->
-  <view wx:if="{{loading}}" class="loading">
-    <text class="loading-text">加载中...</text>
-  </view>
-
-  <!-- Card count -->
-  <view class="count-bar" wx:if="{{!loading}}">
-    <text>共 {{filteredCards.length}} 张牌</text>
+    <!-- Card count -->
+    <view class="count-bar" wx:if="{{filteredCards.length > 0}}">
+      <text>共 {{filteredCards.length}} 张牌</text>
+    </view>
   </view>
 </view>

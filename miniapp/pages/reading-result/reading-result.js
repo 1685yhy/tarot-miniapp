@@ -4,12 +4,14 @@ const { request } = require('../../utils/api');
 Page({
   data: {
     reading: null,
-    loading: true,
+    pageLoading: true,
+    pageError: null,
     activeCardIndex: 0,
     showFullInterpretation: false,
   },
 
   async onLoad(options) {
+    this.options = options;
     const { id } = options;
     if (!id) {
       wx.showToast({ title: '参数错误', icon: 'none' });
@@ -20,13 +22,12 @@ Page({
   },
 
   async loadReading(id) {
-    this.setData({ loading: true });
+    this.setData({ pageLoading: true });
     try {
       const reading = await request(`/readings/${id}`);
-      this.setData({ reading, loading: false });
+      this.setData({ reading, pageLoading: false });
     } catch (err) {
-      wx.showToast({ title: '加载失败', icon: 'none' });
-      this.setData({ loading: false });
+      this.setData({ pageLoading: false, pageError: err.errMsg || '加载失败' });
     }
   },
 
@@ -64,5 +65,11 @@ Page({
 
   onBackHome() {
     wx.switchTab({ url: '/pages/index/index' });
+  },
+
+  onRetry() {
+    this.setData({ pageError: null });
+    const id = this.options?.id;
+    if (id) this.loadReading(id);
   },
 });

@@ -1,59 +1,110 @@
 <!-- pages/index/index.wxml -->
-<view class="container">
+<!-- 星尘粒子背景 -->
+<view class="star-field">
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+</view>
+
+<!-- 光晕装饰 -->
+<view class="orb-top"></view>
+<view class="orb-bottom"></view>
+
+<!-- ===== 加载骨架 ===== -->
+<view class="page" wx:if="{{pageLoading}}">
+  <view class="skeleton">
+    <view class="skeleton-hero">
+      <view class="skeleton-circle"></view>
+      <view class="skeleton-line wide"></view>
+      <view class="skeleton-line medium"></view>
+    </view>
+    <view class="skeleton-card-area">
+      <view class="skeleton-block"></view>
+    </view>
+    <view class="section-title">选择牌阵</view>
+    <view class="skeleton-grid">
+      <view class="skeleton-grid-item"></view>
+      <view class="skeleton-grid-item"></view>
+      <view class="skeleton-grid-item"></view>
+      <view class="skeleton-grid-item"></view>
+      <view class="skeleton-grid-item"></view>
+      <view class="skeleton-grid-item"></view>
+    </view>
+  </view>
+</view>
+
+<!-- ===== 错误状态 ===== -->
+<view class="page" wx:elif="{{pageError}}">
+  <view class="error-state">
+    <text class="error-icon">🌙</text>
+    <text class="error-text">星象紊乱，占卜台暂时无法连接</text>
+    <text class="error-hint">{{pageError}}</text>
+    <button class="btn-primary btn-small" bindtap="onRetry">✨ 重新连接</button>
+  </view>
+</view>
+
+<!-- ===== 主内容 ===== -->
+<view class="page" wx:else>
   <!-- 顶部神秘学氛围区 -->
   <view class="hero">
     <view class="mystic-circle">
-      <view class="star-field">
-        <text class="star">✦</text>
-        <text class="moon">☽</text>
+      <view class="star-field relative" style="width:100rpx;height:100rpx">
+        <text class="anim-float" style="font-size:64rpx;color:var(--color-gold);display:block">✦</text>
       </view>
     </view>
-    <text class="hero-title">塔罗占卜</text>
-    <text class="hero-subtitle">揭开命运的面纱</text>
+    <text class="hero-title anim-fade-in-up-1">塔罗占卜</text>
+    <text class="hero-subtitle anim-fade-in-up-2">揭开命运的面纱</text>
   </view>
 
   <!-- 每日一牌 -->
-  <view class="daily-card" bindtap="drawDailyCard">
-    <view class="card-back" wx:if="{{!dailyCard}}">
-      <text class="card-back-text">点击抽取今日运势</text>
-      <text class="card-back-hint">{{freeCount}}/1 次免费</text>
+  <view class="daily-card-wrapper anim-fade-in-up-3">
+    <view class="card-clickable card-daily-back" wx:if="{{!dailyCard}}" bindtap="drawDailyCard">
+      <text class="heading-3">点击抽取今日运势</text>
+      <text class="text-dim mt-sm">{{freeCount}}/1 次免费</text>
     </view>
-    <view class="card-result" wx:else>
-      <text class="card-name">{{dailyCard.name_zh}}</text>
-      <text class="card-keywords">{{dailyCard.keywords_upright}}</text>
+    <view class="card-daily-result anim-glow-pulse" wx:else>
+      <text class="heading-2">{{dailyCard.name_zh}}</text>
+      <text class="text-secondary mt-sm text-center">{{dailyCard.keywords_upright}}</text>
     </view>
   </view>
 
   <!-- 牌阵入口 -->
-  <view class="spread-section">
+  <view class="spread-section anim-fade-in-up-4">
     <text class="section-title">选择牌阵</text>
     <view class="spread-grid">
-      <view class="spread-item" bindtap="navigateToReading" data-type="triangle">
-        <text class="spread-icon">💕</text>
-        <text class="spread-name">恋人三角</text>
-        <text class="spread-badge">热门</text>
+      <view class="card card-clickable flex-col items-center" style="padding:28rpx 16rpx;gap:8rpx;text-align:center" bindtap="navigateToReading" data-type="triangle">
+        <text style="font-size:48rpx">💕</text>
+        <text class="text-body" style="font-size:var(--fs-body-small)">恋人三角</text>
+        <text class="badge badge-gold">热门</text>
       </view>
-      <view class="spread-item" bindtap="navigateToReading" data-type="celtic_cross">
-        <text class="spread-icon">✝️</text>
-        <text class="spread-name">凯尔特十字</text>
-        <text class="spread-desc">最全面</text>
+      <view class="card card-clickable flex-col items-center" style="padding:28rpx 16rpx;gap:8rpx;text-align:center" bindtap="navigateToReading" data-type="celtic_cross">
+        <text style="font-size:48rpx">✝️</text>
+        <text class="text-body" style="font-size:var(--fs-body-small)">凯尔特十字</text>
+        <text class="text-dim" style="font-size:var(--fs-caption)">最全面</text>
       </view>
-      <view class="spread-item" bindtap="navigateToReading" data-type="three_card">
-        <text class="spread-icon">🕯️</text>
-        <text class="spread-name">三牌占卜</text>
-        <text class="spread-desc">过去·现在·未来</text>
+      <view class="card card-clickable flex-col items-center" style="padding:28rpx 16rpx;gap:8rpx;text-align:center" bindtap="navigateToReading" data-type="three_card">
+        <text style="font-size:48rpx">🕯️</text>
+        <text class="text-body" style="font-size:var(--fs-body-small)">三牌占卜</text>
+        <text class="text-dim" style="font-size:var(--fs-caption)">过去·现在·未来</text>
       </view>
-      <view class="spread-item" bindtap="navigateToReading" data-type="career">
-        <text class="spread-icon">💼</text>
-        <text class="spread-name">事业牌阵</text>
+      <view class="card card-clickable flex-col items-center" style="padding:28rpx 16rpx;gap:8rpx;text-align:center" bindtap="navigateToReading" data-type="career">
+        <text style="font-size:48rpx">💼</text>
+        <text class="text-body" style="font-size:var(--fs-body-small)">事业牌阵</text>
       </view>
-      <view class="spread-item" bindtap="navigateToReading" data-type="finance">
-        <text class="spread-icon">💰</text>
-        <text class="spread-name">财运牌阵</text>
+      <view class="card card-clickable flex-col items-center" style="padding:28rpx 16rpx;gap:8rpx;text-align:center" bindtap="navigateToReading" data-type="finance">
+        <text style="font-size:48rpx">💰</text>
+        <text class="text-body" style="font-size:var(--fs-body-small)">财运牌阵</text>
       </view>
-      <view class="spread-item" bindtap="navigateToReading" data-type="decision">
-        <text class="spread-icon">🔀</text>
-        <text class="spread-name">二择一</text>
+      <view class="card card-clickable flex-col items-center" style="padding:28rpx 16rpx;gap:8rpx;text-align:center" bindtap="navigateToReading" data-type="decision">
+        <text style="font-size:48rpx">🔀</text>
+        <text class="text-body" style="font-size:var(--fs-body-small)">二择一</text>
       </view>
     </view>
   </view>

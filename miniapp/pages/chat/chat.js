@@ -8,10 +8,16 @@ Page({
     inputText: '',
     sending: false,
     remainingFree: 0,
+    pageLoading: false,
+    pageError: null,
   },
 
   onLoad(options) {
     this.setData({ readingId: options.readingId || '' });
+  },
+
+  onRetry() {
+    this.setData({ pageError: null });
   },
 
   onInput(e) {
@@ -36,6 +42,7 @@ Page({
         sending: false,
         remainingFree: result.remaining_free,
       });
+      this.scrollToBottom();
     } catch (err) {
       wx.showToast({ title: '发送失败', icon: 'none' });
       this.setData({ sending: false });

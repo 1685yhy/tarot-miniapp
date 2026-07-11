@@ -6,18 +6,23 @@ Page({
   data: {
     products: [],
     user: null,
-    loading: true,
+    pageLoading: true,
+    pageError: null,
   },
 
   async onLoad() {
     try {
       const user = await checkLogin();
       const products = await request('/membership/products');
-      this.setData({ user, products, loading: false });
+      this.setData({ user, products, pageLoading: false, loading: false });
     } catch (err) {
-      wx.showToast({ title: '加载失败', icon: 'none' });
-      this.setData({ loading: false });
+      this.setData({ pageLoading: false, pageError: err.errMsg || '加载失败' });
     }
+  },
+
+  onRetry() {
+    this.setData({ pageError: null, pageLoading: true });
+    this.onLoad();
   },
 
   async onPurchase(e) {
@@ -30,17 +35,30 @@ Page({
       });
       wx.hideLoading();
 
-      wx.showModal({
-        title: '确认支付',
-        content: `${product.name}\n¥${product.price}`,
-        confirmText: '支付',
-        success: async (res) => {
-          if (res.confirm) {
-            // In production, call wx.requestPayment with the order params
-            wx.showToast({ title: '支付成功！', icon: 'success' });
-            setTimeout(() => {
-              wx.switchTab({ url: '/pages/profile/profile' });
-            }, 1500);
+      // Call WeChat Pay JSAPI
+      const params = order.payment_params;
+      if (!params) {
+        wx.showToast({ title: '支付参数错误', icon: 'none' });
+        return;
+      }
+
+      wx.requestPayment({
+        timeStamp: params.timeStamp,
+        nonceStr: params.nonceStr,
+        package: params.package,
+        signType: params.signType || 'MD5',
+        paySign: params.paySign,
+        success: () => {
+          wx.showToast({ title: '支付成功！', icon: 'success' });
+          setTimeout(() => {
+            wx.switchTab({ url: '/pages/profile/profile' });
+          }, 1500);
+        },
+        fail: (err) => {
+          if (err.errMsg && err.errMsg.includes('cancel')) {
+            wx.showToast({ title: '支付已取消', icon: 'none' });
+          } else {
+            wx.showToast({ title: '支付失败，请重试', icon: 'none' });
           }
         },
       });

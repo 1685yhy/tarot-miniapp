@@ -7,7 +7,8 @@ Page({
     filteredCards: [],
     activeTab: 'all', // all / major / wands / cups / swords / pentacles
     searchKeyword: '',
-    loading: true,
+    pageLoading: true,
+    pageError: null,
     tabs: [
       { key: 'all', label: '全部' },
       { key: 'major', label: '大牌' },
@@ -27,14 +28,13 @@ Page({
   },
 
   async loadCards() {
-    this.setData({ loading: true });
+    this.setData({ pageLoading: true });
     try {
       const data = await request('/cards');
       const cards = data.cards || [];
-      this.setData({ cards, filteredCards: cards, loading: false });
+      this.setData({ cards, filteredCards: cards, pageLoading: false });
     } catch (err) {
-      wx.showToast({ title: '加载失败', icon: 'none' });
-      this.setData({ loading: false });
+      this.setData({ pageLoading: false, pageError: err.errMsg || '加载失败' });
     }
   },
 
@@ -80,5 +80,10 @@ Page({
   onCardTap(e) {
     const id = e.currentTarget.dataset.id;
     wx.navigateTo({ url: `/pages/card-detail/card-detail?id=${id}` });
+  },
+
+  onRetry() {
+    this.setData({ pageError: null, pageLoading: true });
+    this.loadCards();
   },
 });

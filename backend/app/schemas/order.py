@@ -21,6 +21,7 @@ class CreateOrderResponse(BaseModel):
     order_no: str
     amount: Decimal
     product_name: str
+    payment_params: dict | None = None  # wx.requestPayment payload
 
 
 class PaymentCallbackRequest(BaseModel):

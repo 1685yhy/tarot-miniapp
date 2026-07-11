@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>塔罗牌卡面设计预览</title>
+<style>
+  /* ===== 全局 ===== */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0d0a1a;
+    font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+  }
+  h1 {
+    color: #d4af37;
+    font-size: 28px;
+    letter-spacing: 6px;
+    text-shadow: 0 0 20px rgba(212,175,55,0.3);
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    color: #8a7bb5;
+    font-size: 13px;
+    letter-spacing: 4px;
+    margin-bottom: 40px;
+  }
+
+  /* ===== 卡片网格 ===== */
+  .gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 40px;
+    max-width: 1400px;
+  }
+  .card-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-wrapper .label {
+    color: #b8a9d4;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-align: center;
+  }
+  .card-wrapper .label .toggle-btn {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 4px 16px;
+    background: rgba(212,175,55,0.15);
+    border: 1px solid rgba(212,175,55,0.3);
+    border-radius: 12px;
+    color: #d4af37;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .card-wrapper .label .toggle-btn:hover {
+    background: rgba(212,175,55,0.3);
+  }
+
+  /* ===== 卡片容器 (3D翻转) ===== */
+  .card-container {
+    perspective: 1200px;
+    width: 300px;
+    height: 500px;
+  }
+  .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+  .card-container.flipped .card-inner {
+    transform: rotateY(180deg);
+  }
+
+  .card-front, .card-back {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    border-radius: 14px;
+    backface-visibility: hidden;
+  }
+  .card-front { z-index: 2; }
+  .card-back  { transform: rotateY(180deg); }
+
+  /* ===== 卡背 (通用) ===== */
+  .card-back {
+    background: radial-gradient(ellipse at 30% 20%, #1a1140, #0d0a1a);
+    border: 2px solid rgba(212,175,55,0.4);
+    box-shadow:
+      0 0 30px rgba(212,175,55,0.15),
+      inset 0 0 60px rgba(212,175,55,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+  .card-back::before {
+    content: '';
+    position: absolute;
+    inset: 12px;
+    border: 1px solid rgba(212,175,55,0.2);
+    border-radius: 8px;
+  }
+  /* 中央菱形星纹 */
+  .card-back .back-mandala {
+    position: relative;
+    width: 160px;
+    height: 160px;
+  }
+  .card-back .back-mandala::before {
+    content: '✦';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    font-size: 60px;
+    color: #d4af37;
+    text-shadow: 0 0 20px rgba(212,175,55,0.6);
+  }
+  .card-back .back-mandala .ring {
+    position: absolute;
+    top: 50%; left: 50%;
+    border: 1px solid rgba(212,175,55,0.2);
+    border-radius: 50%;
+    animation: pulse-ring 3s ease-in-out infinite;
+  }
+  .card-back .back-mandala .ring:nth-child(1) {
+    width: 120px; height: 120px;
+    margin: -60px 0 0 -60px;
+    animation-delay: 0s;
+  }
+  .card-back .back-mandala .ring:nth-child(2) {
+    width: 100px; height: 100px;
+    margin: -50px 0 0 -50px;
+    animation-delay: 0.5s;
+  }
+  .card-back .back-mandala .ring:nth-child(3) {
+    width: 80px; height: 80px;
+    margin: -40px 0 0 -40px;
+    animation-delay: 1s;
+  }
+  .card-back .back-mandala .ring:nth-child(4) {
+    width: 60px; height: 60px;
+    margin: -30px 0 0 -30px;
+    animation-delay: 1.5s;
+    border-color: rgba(212,175,55,0.3);
+  }
+  .card-back .back-corner {
+    position: absolute;
+    font-size: 14px;
+    color: rgba(212,175,55,0.3);
+  }
+  .card-back .back-corner.tl { top: 22px; left: 22px; }
+  .card-back .back-corner.tr { top: 22px; right: 22px; }
+  .card-back .back-corner.bl { bottom: 22px; left: 22px; }
+  .card-back .back-corner.br { bottom: 22px; right: 22px; }
+
+  @keyframes pulse-ring {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50%      { opacity: 0.8; transform: scale(1.05); }
+  }
+
+  /* ===== 卡面 (公共) ===== */
+  .card-front {
+    background: linear-gradient(145deg, #1e1445 0%, #120b30 50%, #0d0820 100%);
+    border: 2px solid rgba(212,175,55,0.5);
+    box-shadow:
+      0 8px 32px rgba(0,0,0,0.6),
+      0 0 40px rgba(212,175,55,0.1),
+      inset 0 0 80px rgba(212,175,55,0.03);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  /* 金色装饰内框 */
+  .card-front::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border: 1px solid rgba(212,175,55,0.25);
+    border-radius: 8px;
+    pointer-events: none;
+  }
+  /* 四角星饰 */
+  .card-front::after {
+    content: '✧ ✧';
+    position: absolute;
+    top: 12px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: #d4af37;
+    letter-spacing: 40px;
+    opacity: 0.4;
+  }
+
+  /* 牌号 — 顶部 */
+  .card-number {
+    position: absolute;
+    top: 18px;
+    left: 22px;
+    font-size: 13px;
+    color: rgba(212,175,55,0.6);
+    letter-spacing: 1px;
+    font-weight: 300;
+  }
+  .card-number.right {
+    left: auto;
+    right: 22px;
+  }
+
+  /* 标题区 */
+  .card-title {
+    margin-top: 30px;
+    font-size: 20px;
+    color: #d4af37;
+    letter-spacing: 4px;
+    text-shadow: 0 0 15px rgba(212,175,55,0.2);
+    font-weight: 500;
+    z-index: 1;
+  }
+  .card-title-sub {
+    font-size: 11px;
+    color: rgba(212,175,55,0.4);
+    letter-spacing: 2px;
+    margin-top: 2px;
+    z-index: 1;
+  }
+
+  /* 中央象征图 */
+  .card-art {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    z-index: 1;
+    position: relative;
+    margin: 6px 0;
+  }
+
+  /* 底部释义 */
+  .card-meaning {
+    text-align: center;
+    padding: 8px 6px 2px;
+    z-index: 1;
+  }
+  .card-meaning .keyword {
+    font-size: 13px;
+    color: #c8b8e8;
+    letter-spacing: 2px;
+    font-weight: 400;
+  }
+  .card-meaning .desc {
+    font-size: 11px;
+    color: rgba(180, 160, 210, 0.6);
+    letter-spacing: 1px;
+    margin-top: 3px;
+    line-height: 1.5;
+  }
+  .card-meaning .divider {
+    width: 40px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(212,175,55,0.4), transparent);
+    margin: 0 auto 4px;
+  }
+
+  /* ===== 各牌独特艺术 ===== */
+
+  /* — 愚者 The Fool — */
+  .card-fool .sun {
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 40%, #ffd700, #b8860b);
+    box-shadow: 0 0 40px rgba(255,215,0,0.4);
+    position: relative;
+  }
+  .card-fool .sun::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,215,0,0.2);
+    animation: pulse-ring 3s ease-in-out infinite;
+  }
+  .card-fool .figure {
+    position: absolute;
+    bottom: 8px;
+    font-size: 40px;
+    filter: drop-shadow(0 0 10px rgba(212,175,55,0.3));
+  }
+  .card-fool .cliff {
+    position: absolute;
+    bottom: -6px;
+    width: 100px;
+    height: 12px;
+    background: linear-gradient(180deg, #3a2a5a, #1e1445);
+    border-radius: 2px 2px 0 0;
+    clip-path: polygon(30% 0, 70% 0, 85% 100%, 15% 100%);
+  }
+
+  /* — 恋人 The Lovers — */
+  .card-lovers .lovers-heart {
+    position: relative;
+    width: 80px; height: 80px;
+  }
+  .card-lovers .lovers-heart::before {
+    content: '♡';
+    position: absolute;
+    font-size: 80px;
+    color: rgba(212,175,55,0.15);
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+  }
+  .card-lovers .lovers-heart .heart-fill {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 60px; height: 54px;
+    margin: -27px 0 0 -30px;
+    background: radial-gradient(ellipse at 30% 40%, #ff6b8a, #c03968);
+    clip-path: path('M30,0 C15,0 0,15 0,30 C0,45 30,54 30,54 C30,54 60,45 60,30 C60,15 45,0 30,0 Z');
+    box-shadow: 0 0 30px rgba(255,107,138,0.3);
+    animation: heartbeat 2s ease-in-out infinite;
+  }
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.08); }
+  }
+  .card-lovers .angel {
+    font-size: 28px;
+    margin-top: 2px;
+    filter: drop-shadow(0 0 8px rgba(212,175,55,0.3));
+  }
+
+  /* — 死神 Death — */
+  .card-death .death-scythe {
+    position: relative;
+    width: 100px; height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .card-death .death-scythe .blade {
+    width: 70px; height: 70px;
+    border: 3px solid #8a7bb5;
+    border-radius: 0 50% 0 50%;
+    transform: rotate(45deg);
+    margin-bottom: -10px;
+    box-shadow: 0 0 20px rgba(138,123,181,0.2);
+  }
+  .card-death .death-scythe .handle {
+    width: 3px;
+    height: 60px;
+    background: linear-gradient(180deg, #8a7bb5, #4a3a6a);
+    border-radius: 2px;
+  }
+  .card-death .death-scythe .glow {
+    position: absolute;
+    width: 80px; height: 80px;
+    top: -5px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(138,123,181,0.1), transparent 70%);
+  }
+  .card-death .skull {
+    font-size: 36px;
+    margin-bottom: 4px;
+    opacity: 0.7;
+  }
+
+  /* — 星星 The Star — */
+  .card-star .star-bg {
+    position: relative;
+    width: 100px; height: 100px;
+  }
+  .card-star .star-big {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 60px; height: 60px;
+    margin: -30px 0 0 -30px;
+    background: radial-gradient(circle at 40% 40%, #ffd700, #d4af37);
+    clip-path: polygon(
+      50% 0%, 63% 35%, 100% 35%, 69% 57%,
+      80% 90%, 50% 68%, 20% 90%, 31% 57%,
+      0% 35%, 37% 35%
+    );
+    box-shadow: 0 0 40px rgba(212,175,55,0.5);
+    animation: twinkle 2.5s ease-in-out infinite;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.8; transform: translate(-50%,-50%) scale(1); }
+    50%      { opacity: 1;   transform: translate(-50%,-50%) scale(1.1); }
+  }
+  .card-star .star-dust {
+    position: absolute;
+    width: 100%; height: 100%;
+  }
+  .card-star .star-dust span {
+    position: absolute;
+    width: 3px; height: 3px;
+    background: #d4af37;
+    border-radius: 50%;
+    opacity: 0.4;
+    animation: sparkle 2s ease-in-out infinite;
+  }
+  @keyframes sparkle {
+    0%, 100% { opacity: 0.2; }
+    50%      { opacity: 0.8; }
+  }
+  .card-star .star-dust span:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+  .card-star .star-dust span:nth-child(2) { top: 15%; right: 20%; animation-delay: 0.4s; }
+  .card-star .star-dust span:nth-child(3) { bottom: 20%; left: 15%; animation-delay: 0.8s; }
+  .card-star .star-dust span:nth-child(4) { bottom: 10%; right: 10%; animation-delay: 1.2s; }
+  .card-star .star-dust span:nth-child(5) { top: 50%; left: 0%; animation-delay: 0.6s; }
+  .card-star .star-dust span:nth-child(6) { bottom: 50%; right: 5%; animation-delay: 1s; }
+  .card-star .water {
+    margin-top: 2px;
+    font-size: 24px;
+    opacity: 0.6;
+  }
+
+  /* — 圣杯王牌 Ace of Cups — */
+  .card-ace-cups .cup {
+    position: relative;
+    width: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .card-ace-cups .cup .cup-body {
+    width: 50px; height: 50px;
+    border: 2px solid #d4af37;
+    border-radius: 0 0 50% 50% / 0 0 100% 100%;
+    background: linear-gradient(180deg, transparent 20%, rgba(212,175,55,0.08));
+    position: relative;
+  }
+  .card-ace-cups .cup .cup-body::before {
+    content: '✧';
+    position: absolute;
+    top: 4px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 14px;
+    color: #d4af37;
+    opacity: 0.5;
+  }
+  .card-ace-cups .cup .cup-rim {
+    width: 56px;
+    height: 8px;
+    border: 2px solid #d4af37;
+    border-radius: 50%;
+    background: rgba(212,175,55,0.06);
+    margin-bottom: -4px;
+  }
+  .card-ace-cups .cup .cup-stem {
+    width: 4px;
+    height: 20px;
+    background: linear-gradient(180deg, #d4af37, rgba(212,175,55,0.3));
+  }
+  .card-ace-cups .cup .cup-base {
+    width: 30px; height: 6px;
+    border-radius: 50%;
+    background: #d4af37;
+    opacity: 0.5;
+  }
+  .card-ace-cups .water-flow {
+    position: absolute;
+    bottom: -8px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 2px;
+  }
+  .card-ace-cups .water-flow .drop {
+    width: 4px; height: 10px;
+    border-radius: 50%;
+    background: rgba(100, 180, 255, 0.3);
+    animation: drip 2s ease-in-out infinite;
+  }
+  .card-ace-cups .water-flow .drop:nth-child(2) { animation-delay: 0.5s; height: 14px; }
+  .card-ace-cups .water-flow .drop:nth-child(3) { animation-delay: 1s; height: 8px; }
+  @keyframes drip {
+    0%, 100% { opacity: 0.3; transform: translateY(0); }
+    50%      { opacity: 0.7; transform: translateY(4px); }
+  }
+  .card-ace-cups .dove {
+    font-size: 22px;
+    margin-top: 4px;
+    opacity: 0.5;
+  }
+
+  /* ===== 逆位指示 ===== */
+  .card-container.reversed .card-front {
+    transform: rotate(180deg);
+  }
+  .card-container.reversed .card-front .card-number,
+  .card-container.reversed .card-front .card-title,
+  .card-container.reversed .card-front .card-meaning {
+    transform: rotate(180deg);
+  }
+  .card-container.reversed .card-front .card-art {
+    transform: rotate(180deg);
+  }
+  .card-container .reversed-badge {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%) rotate(270deg);
+    font-size: 11px;
+    color: rgba(180,130,210,0.3);
+    letter-spacing: 6px;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .card-container.reversed .reversed-badge {
+    display: block;
+  }
+
+  /* ===== 响应式 ===== */
+  @media (max-width: 720px) {
+    .card-container { width: 240px; height: 400px; }
+    .card-title { font-size: 17px; margin-top: 24px; }
+    .card-number { font-size: 11px; top: 14px; left: 18px; }
+    .card-number.right { left: auto; right: 18px; }
+    .card-meaning .keyword { font-size: 12px; }
+    .card-meaning .desc { font-size: 10px; }
+    .card-front { padding: 14px 14px; }
+    .card-fool .sun { width: 55px; height: 55px; }
+    .card-fool .figure { font-size: 30px; }
+    .card-lovers .lovers-heart::before { font-size: 60px; }
+    .card-lovers .lovers-heart .heart-fill { width: 45px; height: 40px; margin: -20px 0 0 -22px; }
+    .card-death .skull { font-size: 28px; }
+    .card-star .star-big { width: 45px; height: 45px; }
+    .card-ace-cups .cup .cup-body { width: 38px; height: 38px; }
+    .card-ace-cups .cup .cup-rim { width: 44px; }
+    .card-back .back-mandala { width: 120px; height: 120px; }
+    .card-back .back-mandala::before { font-size: 44px; }
+    .card-back .back-mandala .ring:nth-child(1) { width: 90px; height: 90px; margin: -45px 0 0 -45px; }
+    .card-back .back-mandala .ring:nth-child(2) { width: 72px; height: 72px; margin: -36px 0 0 -36px; }
+    .card-back .back-mandala .ring:nth-child(3) { width: 54px; height: 54px; margin: -27px 0 0 -27px; }
+    .card-back .back-mandala .ring:nth-child(4) { width: 36px; height: 36px; margin: -18px 0 0 -18px; }
+  }
+</style>
+</head>
+<body>
+
+<h1>✦ 塔罗牌卡面设计 ✦</h1>
+<p class="subtitle">TAROT CARD DESIGN — PREVIEW v1.0</p>
+
+<div class="gallery">
+
+  <!-- ===== 愚者 ===== -->
+  <div class="card-wrapper">
+    <div class="card-container card-fool" id="card0">
+      <div class="card-inner">
+        <div class="card-front">
+          <div class="card-number">0 / XXII</div>
+          <div class="card-title">愚者</div>
+          <div class="card-title-sub">THE FOOL</div>
+          <div class="card-art">
+            <div style="position:relative;display:flex;flex-direction:column;align-items:center">
+              <div class="sun"></div>
+              <div style="margin-top:-6px" class="figure">🚶</div>
+              <div class="cliff"></div>
+            </div>
+          </div>
+          <div class="card-meaning">
+            <div class="divider"></div>
+            <div class="keyword">新的开始 · 天真 · 冒险</div>
+            <div class="desc">张开双臂迎接未知，一切皆有可能</div>
+          </div>
+          <div class="card-number right">0</div>
+        </div>
+        <div class="card-back">
+          <div class="back-corner tl">✧</div>
+          <div class="back-corner tr">✧</div>
+          <div class="back-corner bl">✧</div>
+          <div class="back-corner br">✧</div>
+          <div class="back-mandala">
+            <div class="ring"></div>
+            <div class="ring"></div>
+            <div class="ring"></div>
+            <div class="ring"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="label">
+      <div>愚者 — THE FOOL</div>
+      <span class="toggle-btn" onclick="toggleFlip('card0')">翻转</span>
+      <span class="toggle-btn" onclick="toggleReverse('card0')" style="margin-left:4px;">逆位</span>
+    </div>
+  </div>
+
+  <!-- ===== 恋人 ===== -->
+  <div class="card-wrapper">
+    <div class="card-container card-lovers" id="card1">
+      <div class="card-inner">
+        <div class="card-front">
+          <div class="card-number">VI</div>
+          <div class="card-title">恋人</div>
+          <div class="card-title-sub">THE LOVERS</div>
+          <div class="card-art">
+            <div style="display:flex;flex-direction:column;align-items:center">
+              <div class="lovers-heart">
+                <div class="heart-fill"></div>
+              </div>
+              <div class="angel">✨</div>
+            </div>
+          </div>
+          <div class="card-meaning">
+            <div class="divider"></div>
+            <div class="keyword">爱情 · 和谐 · 选择</div>
+            <div class="desc">心灵契合，听从内心的声音</div>
+          </div>
+          <div class="card-number right">VI</div>
+        </div>
+        <div class="card-back">
+          <div class="back-corner tl">✧</div>
+          <div class="back-corner tr">✧</div>
+          <div class="back-corner bl">✧</div>
+          <div class="back-corner br">✧</div>
+          <div class="back-mandala">
+            <div class="ring"></div>
+            <div class="ring"></div>
+            <div class="ring"></div>
+            <div class="ring"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="label">
+      <div>恋人 — THE LOVERS</div>
+      <span class="toggle-btn" onclick="toggleFlip('card1')">翻转</span>
+      <span class="toggle-btn" onclick="toggleReverse('card1')" style="margin-left:4px;">逆位</span>
+    </div>
+  </div>
+
+  <!-- ===== 死神 ===== -->
+  <div class="card-wrapper">
+    <div class="card-container card-death" id="card2">
+      <div class="card-inner">
+        <div class="card-front">
+          <div class="card-number">XIII</div>
+          <div class="card-title">死神</div>
+          <div class="card-title-sub">DEATH</div>
+          <div class="card-art">
+            <div style="display:flex;flex-direction:column;align-items:center">
+              <div class="skull">💀</div>
+              <div class="death-scythe">
+                <div class="glow"></div>
+                <div class="blade"></div>
+                <div class="handle"></div>
+              </div>
+            </div>
+          </div>
+          <div class="card-meaning">
+            <div class="divider"></div>
+            <div class="keyword">结束 · 转变 · 新生</div>
+            <div class="desc">旧的不去新的不来，蜕变之时</div>
+          </div>
+          <div class="card-number right">XIII</div>
+        </div>
+        <div class="card-back">
+          <div class="back-corner tl">✧</div>
+          <div class="back-corner tr">✧</div>
+          <div class="back-corner bl">✧</div>
+          <div class="back-corner br">✧</div>
+          <div class="back-mandala">
+            <div class="ring"></div>
+            <div class="ring"></div>
+            <div class="ring"></div>
+            <div class="ring"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="label">
+      <div>死神 — DEATH</div>
+      <span class="toggle-btn" onclick="toggleFlip('card2')">翻转</span>
+      <span class="toggle-btn" onclick="toggleReverse('card2')" style="margin-left:4px;">逆位</span>
+    </div>
+  </div>
+
+  <!-- ===== 星星 ===== -->
+  <div class="card-wrapper">
+    <div class="card-container card-star" id="card3">
+      <div class="card-inner">
+        <div class="card-front">
+          <div class="card-number">XVII</div>
+          <div class="card-title">星星</div>
+          <div class="card-title-sub">THE STAR</div>
+          <div class="card-art">
+            <div style="display:flex;flex-direction:column;align-items:center">
+              <div class="star-bg">
+                <div class="star-dust">
+                  <span></span><span></span><span></span>
+                  <span></span><span></span><span></span>
+                </div>
+                <div class="star-big"></div>
+              </div>
+              <div class="water">🌊</div>
+            </div>
+          </div>
+          <div class="card-meaning">
+            <div class="divider"></div>
+            <div class="keyword">希望 · 灵感 · 宁静</div>
+            <div class="desc">星光指引，心怀希望，一切皆安</div>
+          </div>
+          <div class="card-number right">XVII</div>
+        </div>
+        <div class="card-back">
+          <div class="back-corner tl">✧</div>
+          <div class="back-corner tr">✧</div>
+          <div class="back-corner bl">✧</div>
+          <div class="back-corner br">✧</div>
+          <div class="back-mandala">
+            <div class="ring"></div>
+            <div class="ring"></div>
+            <div class="ring"></div>
+            <div class="ring"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="label">
+      <div>星星 — THE STAR</div>
+      <span class="toggle-btn" onclick="toggleFlip('card3')">翻转</span>
+      <span class="toggle-btn" onclick="toggleReverse('card3')" style="margin-left:4px;">逆位</span>
+    </div>
+  </div>
+
+  <!-- ===== 圣杯王牌 ===== -->
+  <div class="card-wrapper">
+    <div class="card-container card-ace-cups" id="card4">
+      <div class="card-inner">
+        <div class="card-front">
+          <div class="card-number">I</div>
+          <div class="card-title">圣杯王牌</div>
+          <div class="card-title-sub">ACE OF CUPS</div>
+          <div class="card-art">
+            <div style="display:flex;flex-direction:column;align-items:center">
+              <div class="cup">
+                <div class="cup-rim"></div>
+                <div class="cup-body"></div>
+                <div class="cup-stem"></div>
+                <div class="cup-base"></div>
+                <div class="water-flow">
+                  <div class="drop"></div>
+                  <div class="drop"></div>
+                  <div class="drop"></div>
+                </div>
+              </div>
+              <div class="dove">🕊️</div>
+            </div>
+          </div>
+          <div class="card-meaning">
+            <div class="divider"></div>
+            <div class="keyword">爱的开始 · 情感 · 丰盈</div>
+            <div class="desc">心门敞开，爱的能量源源不断</div>
+          </div>
+          <div class="card-number right">I</div>
+        </div>
+        <div class="card-back">
+          <div class="back-corner tl">✧</div>
+          <div class="back-corner tr">✧</div>
+          <div class="back-corner bl">✧</div>
+          <div class="back-corner br">✧</div>
+          <div class="back-mandala">
+            <div class="ring"></div>
+            <div class="ring"></div>
+            <div class="ring"></div>
+            <div class="ring"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="label">
+      <div>圣杯王牌 — ACE OF CUPS</div>
+      <span class="toggle-btn" onclick="toggleFlip('card4')">翻转</span>
+      <span class="toggle-btn" onclick="toggleReverse('card4')" style="margin-left:4px;">逆位</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggleFlip(id) {
+  document.getElementById(id).classList.toggle('flipped');
+}
+function toggleReverse(id) {
+  document.getElementById(id).classList.toggle('reversed');
+}
+</script>
+
+</body>
+</html>

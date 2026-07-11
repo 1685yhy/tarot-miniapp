@@ -1,0 +1,42 @@
+<view class="tarot-card-wrapper {{isReversed ? 'reversed' : ''}}">
+  <view class="tarot-card {{isReversed ? 'card-reversed' : ''}}">
+    <!-- 卡牌顶部装饰 -->
+    <view class="card-ornament-top"></view>
+
+    <!-- 卡牌编号 -->
+    <view class="card-number">{{cardNumber}}</view>
+
+    <!-- 卡面背景：神秘星空 -->
+    <view class="card-art">
+      <view class="star-field">
+        <view class="star star-1"></view>
+        <view class="star star-2"></view>
+        <view class="star star-3"></view>
+        <view class="star star-4"></view>
+        <view class="star star-5"></view>
+        <view class="star star-6"></view>
+        <view class="star star-7"></view>
+        <view class="star star-8"></view>
+      </view>
+      <view class="card-glyph {{isReversed ? 'glyph-reversed' : ''}}"></view>
+    </view>
+
+    <!-- 卡牌名称 -->
+    <view class="card-name-en">{{nameEn}}</view>
+    <view class="card-name-zh">{{nameZh}}</view>
+
+    <!-- 位置标记 -->
+    <view class="position-badge {{isReversed ? 'badge-reversed' : 'badge-upright'}}">
+      <text class="position-icon">{{isReversed ? '◀' : '▲'}}</text>
+      <text class="position-text">{{positionName}}</text>
+    </view>
+
+    <!-- 倒置指示器 -->
+    <block wx:if="{{isReversed}}">
+      <view class="reversed-label">逆位</view>
+    </block>
+
+    <!-- 底部装饰 -->
+    <view class="card-ornament-bottom"></view>
+  </view>
+</view>

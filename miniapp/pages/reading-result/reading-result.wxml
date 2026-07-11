@@ -1,31 +1,67 @@
 <!-- pages/reading-result/reading-result.wxml -->
-<view class="container" wx:if="{{!loading && reading}}">
+<!-- 星尘粒子背景 -->
+<view class="star-field">
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+</view>
+
+<!-- 光晕装饰 -->
+<view class="orb-top"></view>
+<view class="orb-bottom"></view>
+
+<!-- ===== Loading (占卜中) ===== -->
+<view wx:if="{{pageLoading}}" class="loading-page">
+  <view class="mystic-loading">
+    <text class="mystic-loading-symbol">✧</text>
+    <text class="mystic-loading-title">塔罗牌灵正在回应...</text>
+    <text class="mystic-loading-sub">AI正在为你解读命运</text>
+  </view>
+</view>
+
+<!-- ===== 错误状态 ===== -->
+<view wx:elif="{{pageError}}" class="error-state">
+  <text class="error-icon">🌙</text>
+  <text class="error-text">解读过程出现了一些干扰</text>
+  <text class="error-hint">{{pageError}}</text>
+  <button class="btn-primary btn-small" bindtap="onRetry">✨ 重新解读</button>
+</view>
+
+<!-- ===== 结果内容 ===== -->
+<view class="page" wx:elif="{{reading}}">
   <!-- Card swiper -->
-  <view class="cards-section">
-    <text class="section-label">你抽到的牌</text>
+  <view class="cards-section anim-fade-in-up-1">
+    <text class="text-secondary text-center" style="display:block;margin-bottom:var(--space-md)">你抽到的牌</text>
     <swiper
       class="card-swiper"
       current="{{activeCardIndex}}"
       bindchange="onCardSwiperChange"
       indicator-dots
-      indicator-color="rgba(201,169,110,0.3)"
-      indicator-active-color="#c9a96e"
+      indicator-color="rgba(212,175,55,0.2)"
+      indicator-active-color="#d4af37"
     >
       <swiper-item wx:for="{{reading.drawn_cards}}" wx:key="id">
         <view class="drawn-card {{item.is_reversed ? 'reversed' : ''}}">
-          <view class="card-position-badge">{{item.position_name}}</view>
-          <view class="card-main">
-            <text class="card-name">{{item.card_name}}</text>
-            <view class="direction-badge {{item.is_reversed ? 'rev' : 'up'}}">
-              <text>{{item.is_reversed ? '🌙 逆位' : '☀️ 正位'}}</text>
-            </view>
+          <view class="badge badge-gold" style="margin-bottom:var(--space-lg)">{{item.position_name}}</view>
+          <view style="text-align:center">
+            <text class="text-body" style="font-size:var(--fs-h3);font-weight:var(--fw-bold);display:block;margin-bottom:var(--space-md)">{{item.card_name}}</text>
+            <text class="badge {{item.is_reversed ? 'badge-purple' : 'badge-gold'}}" style="font-size:var(--fs-body-small);padding:10rpx 24rpx">
+              {{item.is_reversed ? '🌙 逆位' : '☀️ 正位'}}
+            </text>
           </view>
         </view>
       </swiper-item>
     </swiper>
 
     <!-- Card quick nav dots -->
-    <view class="card-dots">
+    <view class="dots">
       <view
         class="dot {{activeCardIndex === index ? 'dot-active' : ''}}"
         wx:for="{{reading.drawn_cards}}"
@@ -38,24 +74,24 @@
   </view>
 
   <!-- Interpretation -->
-  <view class="interpretation-section">
-    <text class="section-label">AI 塔罗解读</text>
-    <view class="interpretation-card {{showFullInterpretation ? 'expanded' : ''}}">
+  <view class="interpretation-section anim-fade-in-up-2">
+    <text class="text-secondary text-center" style="display:block;margin-bottom:var(--space-md)">AI 塔罗解读</text>
+    <view class="interpretation-card card {{showFullInterpretation ? 'expanded' : ''}}">
       <text class="interpretation-text">{{reading.interpretation || '正在生成解读...'}}</text>
     </view>
-    <view class="interpretation-actions" wx:if="{{reading.interpretation && reading.interpretation.length > 300}}">
-      <text class="expand-btn" bindtap="onToggleInterpretation">
+    <view wx:if="{{reading.interpretation && reading.interpretation.length > 300}}">
+      <text class="btn-text" style="text-align:center;display:block;width:100%" bindtap="onToggleInterpretation">
         {{showFullInterpretation ? '收起 ▲' : '展开全文 ▼'}}
       </text>
     </view>
   </view>
 
   <!-- Actions -->
-  <view class="actions">
-    <button class="action-btn ask-btn" bindtap="onAskMore">
+  <view class="actions anim-fade-in-up-3">
+    <button class="btn-primary" bindtap="onAskMore">
       <text>💬 追问更多</text>
     </button>
-    <button class="action-btn share-btn" open-type="share">
+    <button class="btn-secondary" open-type="share">
       <text>📤 分享给朋友</text>
     </button>
     <view class="action-row">
@@ -63,13 +99,4 @@
       <text class="action-link" bindtap="onBackHome">🏠 回到首页</text>
     </view>
   </view>
-</view>
-
-<!-- Loading -->
-<view wx:if="{{loading}}" class="loading-page">
-  <view class="loading-animation">
-    <text class="mystic-symbol">✧</text>
-  </view>
-  <text class="loading-title">塔罗牌灵正在回应...</text>
-  <text class="loading-sub">AI正在为你解读命运</text>
 </view>

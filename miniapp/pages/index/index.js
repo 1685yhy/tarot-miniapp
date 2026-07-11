@@ -7,11 +7,22 @@ Page({
     dailyCard: null,
     freeCount: 0,
     user: null,
+    pageLoading: true,
+    pageError: null,
   },
 
   async onLoad() {
-    const user = await checkLogin();
-    this.setData({ user, freeCount: user?.free_readings_today || 0 });
+    try {
+      const user = await checkLogin();
+      this.setData({ user, freeCount: user?.free_readings_today || 0, pageLoading: false });
+    } catch (err) {
+      this.setData({ pageLoading: false, pageError: err.errMsg || '加载失败' });
+    }
+  },
+
+  onRetry() {
+    this.setData({ pageError: null, pageLoading: true });
+    this.onLoad();
   },
 
   async drawDailyCard() {
@@ -35,10 +46,6 @@ Page({
 
   navigateToReading(e) {
     const type = e.currentTarget.dataset.type;
-    if (!this.data.user?.is_member) {
-      wx.navigateTo({ url: `/pages/membership/membership?from=reading` });
-      return;
-    }
     wx.navigateTo({ url: `/pages/reading/reading?type=${type}` });
   },
 });

@@ -1,0 +1,270 @@
+/* ==================== Tarot Card Component Styles ==================== */
+/* 神秘塔罗风格 — 金色边框 / 星空背景 / 神秘氛围 */
+/* 与 tarot-card.wxml 结构严格对应 */
+
+.tarot-card-wrapper {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8rpx;
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.tarot-card-wrapper.reversed {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+/* ---------- 卡牌主体 ---------- */
+.tarot-card {
+  position: relative;
+  width: 280rpx;
+  height: 460rpx;
+  background: linear-gradient(160deg, #0a0a1a 0%, #16163a 40%, #1a1a3e 70%, #0d0d22 100%);
+  border-radius: 16rpx;
+  border: 3rpx solid;
+  border-image: linear-gradient(135deg, #d4af37, #f5d680, #b8860b, #f5d680, #d4af37) 1;
+  box-shadow:
+    0 0 20rpx rgba(212, 175, 55, 0.25),
+    0 0 60rpx rgba(212, 175, 55, 0.08),
+    inset 0 0 30rpx rgba(212, 175, 55, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+  animation: card-appear 0.8s ease-out forwards;
+}
+
+.tarot-card.card-reversed {
+  transform: rotate(180deg);
+}
+
+/* ---------- 入场动画 ---------- */
+@keyframes card-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(30rpx) scale(0.92);
+    filter: brightness(0.6);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: brightness(1);
+  }
+}
+
+.card-reversed {
+  animation: card-appear-rev 0.8s ease-out forwards;
+}
+
+@keyframes card-appear-rev {
+  0% {
+    opacity: 0;
+    transform: rotate(180deg) translateY(-30rpx) scale(0.92);
+    filter: brightness(0.6);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(180deg) translateY(0) scale(1);
+    filter: brightness(1);
+  }
+}
+
+/* ---------- 光晕 ---------- */
+@keyframes glow-pulse {
+  0%, 100% { filter: drop-shadow(0 0 8rpx rgba(212,175,55,0.3)); }
+  50% { filter: drop-shadow(0 0 20rpx rgba(212,175,55,0.6)); }
+}
+
+/* ---------- 顶部/底部装饰 ---------- */
+.card-ornament-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6rpx;
+  background: linear-gradient(90deg, transparent, #d4af37, #f5d680, #d4af37, transparent);
+  opacity: 0.8;
+  z-index: 3;
+}
+
+.card-ornament-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 6rpx;
+  background: linear-gradient(90deg, transparent, #d4af37, #f5d680, #d4af37, transparent);
+  opacity: 0.8;
+  z-index: 3;
+}
+
+/* ---------- 卡牌编号 ---------- */
+.card-number {
+  position: absolute;
+  top: 18rpx;
+  left: 20rpx;
+  font-size: 20rpx;
+  color: #d4af37;
+  font-family: 'Georgia', serif;
+  letter-spacing: 2rpx;
+  opacity: 0.7;
+  z-index: 3;
+}
+
+/* ---------- 卡面艺术区 ---------- */
+.card-art {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-top: 36rpx;
+  margin-bottom: 8rpx;
+  min-height: 0;
+}
+
+/* 星空 */
+.star-field {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.star {
+  position: absolute;
+  width: 4rpx;
+  height: 4rpx;
+  background: #fff;
+  border-radius: 50%;
+  animation: twinkle 2.5s ease-in-out infinite;
+}
+
+.star-1 { top: 15%; left: 20%; animation-delay: 0s; }
+.star-2 { top: 30%; left: 70%; animation-delay: 0.4s; width: 3rpx; height: 3rpx; }
+.star-3 { top: 55%; left: 30%; animation-delay: 0.8s; }
+.star-4 { top: 70%; left: 65%; animation-delay: 1.2s; width: 5rpx; height: 5rpx; opacity: 0.8; }
+.star-5 { top: 40%; left: 45%; animation-delay: 0.2s; width: 3rpx; height: 3rpx; }
+.star-6 { top: 80%; left: 25%; animation-delay: 1.6s; }
+.star-7 { top: 20%; left: 55%; animation-delay: 0.6s; width: 5rpx; height: 5rpx; opacity: 0.6; }
+.star-8 { top: 60%; left: 80%; animation-delay: 1.0s; width: 3rpx; height: 3rpx; }
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.5); }
+}
+
+/* 中心符号 */
+.card-glyph {
+  width: 80rpx;
+  height: 80rpx;
+  border: 2rpx solid rgba(212, 175, 55, 0.4);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,175,55,0.12) 0%, transparent 70%);
+  position: relative;
+  z-index: 1;
+}
+
+.card-glyph::before {
+  content: '\2726';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 40rpx;
+  color: #d4af37;
+  opacity: 0.5;
+}
+
+.glyph-reversed::before {
+  transform: translate(-50%, -50%) rotate(180deg);
+}
+
+/* ---------- 英文名 ---------- */
+.card-name-en {
+  font-size: 22rpx;
+  color: #c8b060;
+  font-family: 'Georgia', serif;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 4rpx;
+  text-shadow: 0 0 10rpx rgba(200, 176, 96, 0.3);
+  z-index: 2;
+}
+
+/* ---------- 中文名 ---------- */
+.card-name-zh {
+  font-size: 28rpx;
+  color: #f5e6b8;
+  font-family: 'STKaiti', 'KaiTi', serif;
+  letter-spacing: 4rpx;
+  text-align: center;
+  margin-bottom: 12rpx;
+  font-weight: 500;
+  text-shadow: 0 0 12rpx rgba(245, 230, 184, 0.2);
+  z-index: 2;
+}
+
+/* ---------- 位置徽章 ---------- */
+.position-badge {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 20rpx;
+  margin-bottom: 28rpx;
+  white-space: nowrap;
+  z-index: 2;
+}
+
+.badge-upright {
+  background: linear-gradient(135deg, rgba(44, 62, 80, 0.85), rgba(52, 73, 94, 0.85));
+  border: 1rpx solid rgba(212, 175, 55, 0.4);
+  color: #d4af37;
+}
+
+.badge-reversed {
+  background: linear-gradient(135deg, rgba(80, 44, 55, 0.85), rgba(94, 52, 66, 0.85));
+  border: 1rpx solid rgba(200, 120, 140, 0.4);
+  color: #e8a0b0;
+}
+
+.position-icon {
+  font-size: 16rpx;
+}
+
+.position-text {
+  letter-spacing: 1rpx;
+}
+
+/* ---------- 逆位标签 ---------- */
+.reversed-label {
+  position: absolute;
+  bottom: 80rpx;
+  right: -6rpx;
+  font-size: 16rpx;
+  color: rgba(232, 160, 176, 0.6);
+  letter-spacing: 2rpx;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  z-index: 2;
+}
+
+/* ---------- 内边框光晕 ---------- */
+.tarot-card::before {
+  content: '';
+  position: absolute;
+  top: 6rpx;
+  left: 6rpx;
+  right: 6rpx;
+  bottom: 6rpx;
+  border: 1rpx solid rgba(212, 175, 55, 0.15);
+  border-radius: 10rpx;
+  pointer-events: none;
+  z-index: 2;
+}

@@ -19,23 +19,23 @@ async def create_entry(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    # Draw a random card for today's reflection
-    result = await db.execute(select(func.count(TarotCard.id)))
-    count = result.scalar()
-    random_id = random.randint(1, count)
+    # Draw a random card for today's reflection (DB-random, not assuming sequential IDs)
+    card_result = await db.execute(
+        select(TarotCard).order_by(func.random()).limit(1)
+    )
+    card = card_result.scalar_one_or_none()
+    if card is None:
+        raise HTTPException(status_code=500, detail="卡牌数据为空")
 
     entry = DiaryEntry(
         user_id=user.id,
         entry_date=date.today(),
         mood=body.mood,
-        card_id=random_id,
+        card_id=card.id,
         reflection=body.reflection,
     )
     db.add(entry)
     await db.flush()
-
-    card_result = await db.execute(select(TarotCard).where(TarotCard.id == random_id))
-    card = card_result.scalar_one()
 
     return DiaryEntryResponse(
         id=entry.id,

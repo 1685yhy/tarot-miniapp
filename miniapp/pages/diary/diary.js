@@ -10,10 +10,12 @@ Page({
     creating: false,
     page: 1,
     hasMore: true,
+    pageLoading: true,
+    pageError: null,
   },
 
   async onShow() {
-    this.setData({ page: 1, entries: [] });
+    this.setData({ page: 1, entries: [], pageLoading: true });
     await this.loadEntries();
   },
 
@@ -23,9 +25,10 @@ Page({
       this.setData({
         entries: [...this.data.entries, ...(data.entries || [])],
         hasMore: data.entries && data.entries.length === 20,
+        pageLoading: false,
       });
     } catch (err) {
-      wx.showToast({ title: '加载失败', icon: 'none' });
+      this.setData({ pageLoading: false, pageError: err.errMsg || '加载失败' });
     }
   },
 
@@ -74,5 +77,10 @@ Page({
       wx.showToast({ title: '记录失败', icon: 'none' });
       this.setData({ creating: false });
     }
+  },
+
+  onRetry() {
+    this.setData({ pageError: null, pageLoading: true, page: 1, entries: [] });
+    this.loadEntries();
   },
 });

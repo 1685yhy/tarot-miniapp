@@ -123,8 +123,7 @@ async def create_reading(
         spread_type=spread_type,
         question=req.question,
         theme=req.theme,
-        is_paid=user.is_member
-        or user.free_readings_today >= settings.FREE_DAILY_READINGS,
+        is_paid=user.is_member,
     )
     db.add(reading)
     await db.flush()

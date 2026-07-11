@@ -1,68 +1,107 @@
 <!-- pages/profile/profile.wxml -->
-<view class="container" wx:if="{{!loading}}">
-  <!-- User info + membership -->
-  <view class="user-card">
-    <view class="avatar">🔮</view>
-    <text class="nickname">{{user.nickname || '塔罗旅人'}}</text>
-    <view class="member-badge {{memberStatus.is_member ? 'is-member' : ''}}">
-      <text>{{memberStatus.is_member ? '👑 会员' : '免费用户'}}</text>
-      <text class="member-expiry" wx:if="{{memberStatus.is_member && memberStatus.expires_at}}">
-        有效期至 {{memberStatus.expires_at.split('T')[0]}}
-      </text>
-    </view>
-    <button class="upgrade-btn" wx:if="{{!memberStatus.is_member}}" bindtap="onGoMembership">
-      开通会员
-    </button>
-  </view>
+<!-- 星尘粒子背景 -->
+<view class="star-field">
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+</view>
 
-  <!-- Stats -->
-  <view class="stats-row">
-    <view class="stat-item">
-      <text class="stat-num">{{memberStatus.free_readings_today || 0}}</text>
-      <text class="stat-label">今日占卜</text>
-    </view>
-    <view class="stat-item">
-      <text class="stat-num">{{memberStatus.free_chats_today || 0}}</text>
-      <text class="stat-label">今日追问</text>
-    </view>
-    <view class="stat-item">
-      <text class="stat-num">{{readingHistory.length}}</text>
-      <text class="stat-label">历史记录</text>
+<view class="container">
+  <!-- ===== 加载骨架 ===== -->
+  <view wx:if="{{pageLoading}}">
+    <view class="skeleton-card"></view>
+    <view class="skeleton-stats"></view>
+    <view class="skeleton-actions">
+      <view class="skeleton-action"></view>
+      <view class="skeleton-action"></view>
+      <view class="skeleton-action"></view>
     </view>
   </view>
 
-  <!-- Quick actions -->
-  <view class="quick-actions">
-    <view class="action-item" bindtap="onGoDiary">
-      <text class="action-icon">📝</text>
-      <text class="action-label">塔罗日记</text>
-    </view>
-    <view class="action-item" bindtap="onGoAnnualReport">
-      <text class="action-icon">📊</text>
-      <text class="action-label">年度报告</text>
-    </view>
-    <view class="action-item" bindtap="onGoMembership">
-      <text class="action-icon">👑</text>
-      <text class="action-label">{{memberStatus.is_member ? '管理会员' : '开通会员'}}</text>
-    </view>
+  <!-- ===== 错误状态 ===== -->
+  <view wx:elif="{{pageError}}" class="error-state">
+    <text class="error-icon">🔮</text>
+    <text class="error-text">个人信息暂时无法获取</text>
+    <text class="error-hint">{{pageError}}</text>
+    <button class="btn-primary btn-small" bindtap="onRetry">✨ 重新加载</button>
   </view>
 
-  <!-- History -->
-  <view class="history-section">
-    <view class="history-header">
-      <text class="section-title">占卜历史</text>
-      <text class="clear-btn" bindtap="onClearHistory" wx:if="{{readingHistory.length > 0}}">清除</text>
-    </view>
-    <view wx:if="{{readingHistory.length === 0}}" class="empty">
-      <text class="empty-text">暂无占卜记录</text>
-    </view>
-    <view class="history-item" wx:for="{{readingHistory}}" wx:key="id" data-id="{{item.id}}" bindtap="onViewReading">
-      <view class="history-info">
-        <text class="history-spread">{{item.spread_type}}</text>
-        <text class="history-theme" wx:if="{{item.theme}}">{{item.theme}}</text>
+  <!-- ===== 主内容 ===== -->
+  <view wx:else>
+    <!-- User info + membership -->
+    <view class="user-card anim-fade-in-up-1">
+      <view class="avatar">🔮</view>
+      <text class="heading-3 mt-md" style="display:block">{{user.nickname || '塔罗旅人'}}</text>
+      <view class="mt-sm">
+        <text class="badge {{memberStatus.is_member ? 'badge-premium' : 'badge'}}" style="{{memberStatus.is_member ? '' : 'background:var(--color-star-subtle);color:var(--color-text-secondary)'}}">
+          {{memberStatus.is_member ? '👑 会员' : '免费用户'}}
+        </text>
+        <text class="text-dim mt-xs" style="display:block;font-size:var(--fs-caption)" wx:if="{{memberStatus.is_member && memberStatus.expires_at}}">
+          有效期至 {{memberStatus.expires_at.split('T')[0]}}
+        </text>
       </view>
-      <text class="history-arrow">›</text>
+      <button class="upgrade-btn" wx:if="{{!memberStatus.is_member}}" bindtap="onGoMembership">
+        开通会员
+      </button>
+    </view>
+
+    <!-- Stats -->
+    <view class="stats-row anim-fade-in-up-2">
+      <view class="stat-item">
+        <text class="stat-num">{{memberStatus.free_readings_today || 0}}</text>
+        <text class="stat-label">今日占卜</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-num">{{memberStatus.free_chats_today || 0}}</text>
+        <text class="stat-label">今日追问</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-num">{{readingHistory.length}}</text>
+        <text class="stat-label">历史记录</text>
+      </view>
+    </view>
+
+    <!-- Quick actions -->
+    <view class="quick-actions anim-fade-in-up-3">
+      <view class="action-item" bindtap="onGoDiary">
+        <text class="action-icon" style="font-size:40rpx;display:block">📝</text>
+        <text class="text-dim" style="font-size:var(--fs-body-small);display:block;margin-top:var(--space-xs)">塔罗日记</text>
+      </view>
+      <view class="action-item" bindtap="onGoAnnualReport">
+        <text class="action-icon" style="font-size:40rpx;display:block">📊</text>
+        <text class="text-dim" style="font-size:var(--fs-body-small);display:block;margin-top:var(--space-xs)">年度报告</text>
+      </view>
+      <view class="action-item" bindtap="onGoMembership">
+        <text class="action-icon" style="font-size:40rpx;display:block">👑</text>
+        <text class="text-dim" style="font-size:var(--fs-body-small);display:block;margin-top:var(--space-xs)">{{memberStatus.is_member ? '管理会员' : '开通会员'}}</text>
+      </view>
+    </view>
+
+    <!-- History -->
+    <view class="history-section anim-fade-in-up-4">
+      <view class="history-header">
+        <text class="heading-4" style="margin:0">占卜历史</text>
+        <button class="clear-btn" bindtap="onClearHistory" wx:if="{{readingHistory.length > 0}}">清除</button>
+      </view>
+      <view wx:if="{{readingHistory.length === 0}}" class="empty-state" style="padding:var(--space-massive) 0">
+        <text class="empty-icon">📜</text>
+        <text class="empty-text">暂无占卜记录</text>
+        <text class="empty-hint">开始你的第一次占卜吧</text>
+      </view>
+      <view class="history-item" wx:for="{{readingHistory}}" wx:key="id" data-id="{{item.id}}" bindtap="onViewReading">
+        <view>
+          <text class="text-body" style="font-size:var(--fs-body)">{{item.spread_type}}</text>
+          <text class="text-dim mt-xs" style="display:block" wx:if="{{item.theme}}">{{item.theme}}</text>
+        </view>
+        <text class="text-dim" style="font-size:var(--fs-h3)">›</text>
+      </view>
     </view>
   </view>
 </view>
-<view wx:if="{{loading}}" class="loading"><text>加载中...</text></view>
