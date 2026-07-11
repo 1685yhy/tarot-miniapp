@@ -67,6 +67,13 @@ Page({
     wx.navigateTo({ url: '/pages/membership/membership?product=annual_report' });
   },
 
+  onShareAppMessage() {
+    return {
+      title: '我的塔罗年度运势报告 —— 来看看未来12个月的运势吧',
+      desc: 'AI塔罗年度运势报告',
+    };
+  },
+
   onShare() {
     wx.showShareMenu({ withShareTicket: true });
   },

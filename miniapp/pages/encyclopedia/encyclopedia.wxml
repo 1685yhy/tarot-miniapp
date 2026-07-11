@@ -76,7 +76,7 @@
     </view>
 
     <!-- Empty state -->
-    <view wx:if="{{filteredCards.length === 0}}" class="empty-state">
+    <view wx:if="{{!pageLoading && filteredCards.length === 0}}" class="empty-state">
       <text class="empty-icon">🃏</text>
       <text class="empty-text">没有找到匹配的牌</text>
       <text class="empty-hint">试试换个关键词吧</text>

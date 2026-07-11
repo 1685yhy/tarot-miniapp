@@ -41,7 +41,11 @@ Page({
       ]);
       this.setData({
         user,
-        memberStatus: status,
+        // Preformat expires_at (WXML does not support .split())
+        memberStatus: status ? {
+          ...status,
+          expiresAtFormatted: status.expires_at ? status.expires_at.split('T')[0] : '',
+        } : null,
         readingHistory: (history.items || []).map(item => ({
           ...item,
           spreadTypeName: SPREAD_TYPE_NAMES[item.spread_type] || item.spread_type,

@@ -59,6 +59,12 @@ if (BASE_URL.includes('your-domain') && ENV !== 'develop') {
     '  请在 api.js 中将 ENV_URLS.release 替换为真实域名，\n' +
     '  或通过第三方平台的 extConfig.BASE_URL 传入正确地址。'
   );
+  // 给用户可见提示，避免带着占位符上线
+  wx.showModal({
+    title: 'API 配置错误',
+    content: '正式环境 BASE_URL 仍为占位符 "your-domain"，请联系开发者修改 api.js 中的 release URL。',
+    showCancel: false,
+  });
 } else if (BASE_URL.includes('your-domain') && ENV === 'develop') {
   console.warn(
     '[tarot] 提醒：release URL 仍为占位符 "your-domain"。\n' +

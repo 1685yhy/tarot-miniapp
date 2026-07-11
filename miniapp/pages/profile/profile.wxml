@@ -44,7 +44,7 @@
           {{memberStatus.is_member ? '👑 会员' : '免费用户'}}
         </text>
         <text class="text-dim mt-xs" style="display:block;font-size:var(--fs-caption)" wx:if="{{memberStatus.is_member && memberStatus.expires_at}}">
-          有效期至 {{memberStatus.expires_at.split('T')[0]}}
+          有效期至 {{memberStatus.expiresAtFormatted}}
         </text>
       </view>
       <button class="upgrade-btn" wx:if="{{!memberStatus.is_member}}" bindtap="onGoMembership">
