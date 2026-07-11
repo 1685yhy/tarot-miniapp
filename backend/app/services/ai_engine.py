@@ -68,13 +68,19 @@ def _build_cards_text(cards_info: list[dict], theme: str | None = None) -> str:
                      (e.g. "love_upright") instead of the generic "meaning_upright".
     """
     keys = _THEME_MEANING_KEY_MAP.get(theme) if theme else None
-    upright_key = f"{keys[0]}" if keys else "meaning_upright"
-    reversed_key = f"{keys[1]}" if keys else "meaning_reversed"
+    theme_upright = keys[0] if keys else None
+    theme_reversed = keys[1] if keys else None
 
     lines: list[str] = []
     for c in cards_info:
         direction = _card_direction_tag(c)
         reversed_flag = c.get("is_reversed", False)
+
+        # Prefer theme-specific meaning, fall back to generic
+        if reversed_flag:
+            meaning_key = theme_reversed if theme_reversed and theme_reversed in c else "meaning_reversed"
+        else:
+            meaning_key = theme_upright if theme_upright and theme_upright in c else "meaning_upright"
 
         lines.append(
             f"位置{c['position']} - {c['position_name']}: "
@@ -82,7 +88,7 @@ def _build_cards_text(cards_info: list[dict], theme: str | None = None) -> str:
         )
         lines.append(f"  牌面: {c['image_description'][:120]}...")
         lines.append(
-            f"  含义: {c[reversed_key if reversed_flag else upright_key][:200]}..."
+            f"  含义: {c[meaning_key][:200]}..."
         )
         lines.append("")  # blank line between cards for readability
     return "\n".join(lines)
