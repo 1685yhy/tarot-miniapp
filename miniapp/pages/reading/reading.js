@@ -27,8 +27,33 @@ Page({
     pageError: null,
   },
 
-  onSelectSpread(e) {
+  async onSelectSpread(e) {
     const spread = e.currentTarget.dataset.spread;
+
+    // Premium spreads require membership
+    if (spread.premium) {
+      try {
+        const user = await checkLogin();
+        if (user && !user.is_member) {
+          wx.showModal({
+            title: '会员专属',
+            content: `「${spread.name}」为会员专属牌阵，开通会员即可使用`,
+            confirmText: '开通会员',
+            cancelText: '取消',
+            success: (res) => {
+              if (res.confirm) {
+                wx.navigateTo({ url: '/pages/membership/membership' });
+              }
+            },
+          });
+          return;
+        }
+      } catch {
+        wx.showToast({ title: '请先登录', icon: 'none' });
+        return;
+      }
+    }
+
     this.setData({
       selectedSpread: spread,
       theme: spread.theme || '',
