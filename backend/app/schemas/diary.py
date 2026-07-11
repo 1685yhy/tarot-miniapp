@@ -31,6 +31,7 @@ class DiaryEntryBrief(BaseModel):
     id: str
     date: str
     mood: str | None
+    card: DiaryCardBrief | None = None
     reflection: str | None
 
     class Config:

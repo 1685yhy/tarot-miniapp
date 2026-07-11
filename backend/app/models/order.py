@@ -17,6 +17,6 @@ class Order(Base):
     amount: Mapped[Decimal] = mapped_column(DECIMAL(10, 2), nullable=False)
     status: Mapped[str] = mapped_column(String(16), default="pending")  # pending/paid/refunded/cancelled
     paid_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     user: Mapped["User"] = relationship(back_populates="orders")

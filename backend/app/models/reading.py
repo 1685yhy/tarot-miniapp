@@ -16,7 +16,7 @@ class Reading(Base):
     theme: Mapped[str | None] = mapped_column(String(16), nullable=True)  # love/career/finance/general
     interpretation: Mapped[str | None] = mapped_column(Text, nullable=True)
     is_paid: Mapped[bool] = mapped_column(Boolean, default=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     user: Mapped["User"] = relationship(back_populates="readings")
     drawn_cards: Mapped[list["DrawnCard"]] = relationship(back_populates="reading", cascade="all, delete-orphan")
@@ -44,6 +44,6 @@ class ChatMessage(Base):
     reading_id: Mapped[str] = mapped_column(CHAR(36), ForeignKey("readings.id"), nullable=False)
     role: Mapped[str] = mapped_column(String(16), nullable=False)  # 'user' or 'assistant'
     content: Mapped[str] = mapped_column(Text, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     reading: Mapped["Reading"] = relationship(back_populates="chat_messages")

@@ -18,6 +18,7 @@ from app.models.reading import ChatMessage, Reading
 from app.models.user import User
 from app.schemas.chat import ChatRequest, ChatResponse
 from app.utils.auth import get_current_user
+from .readings import _reset_daily_count_if_new_day
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +38,9 @@ async def chat_followup(
     Free-tier users are limited to ``FREE_CHAT_MESSAGES`` per day.
     Members have unlimited usage.
     """
+    # ── Reset daily counters if it's a new day ──
+    await _reset_daily_count_if_new_day(user)
+
     # ── Free-tier limit check ──
     if not user.is_member and user.free_chats_today >= settings.FREE_CHAT_MESSAGES:
         raise HTTPException(status_code=402, detail="今日追问次数已用完")
@@ -94,8 +98,9 @@ async def chat_followup(
     ai_msg = ChatMessage(reading_id=reading_id, role="assistant", content=ai_reply)
     db.add(ai_msg)
 
-    # ── Update daily counter ──
-    user.free_chats_today += 1
+    # ── Update daily counter (free users only) ──
+    if not user.is_member:
+        user.free_chats_today += 1
 
     # ── Return response ──
     return ChatResponse(

@@ -22,8 +22,8 @@ class User(Base):
     last_reading_date: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     annual_report_data: Mapped[str | None] = mapped_column(Text, nullable=True)
     annual_report_year: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     readings: Mapped[list["Reading"]] = relationship(back_populates="user")
     orders: Mapped[list["Order"]] = relationship(back_populates="user")

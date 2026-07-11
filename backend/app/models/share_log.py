@@ -19,5 +19,5 @@ class ShareLog(Base):
     share_type: Mapped[str | None] = mapped_column(String(32), nullable=True, comment="reading / card / diary / mini_program")
     ref_id: Mapped[str | None] = mapped_column(String(64), nullable=True, comment="optional reference — reading_id / card_id etc.")
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.now(timezone.utc)
+        DateTime, default=lambda: datetime.now(timezone.utc)
     )

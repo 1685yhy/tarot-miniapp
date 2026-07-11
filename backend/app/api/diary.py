@@ -92,12 +92,27 @@ async def list_entries(
     )
     entries = result.scalars().all()
 
+    # Eager-load cards for all entries
+    card_ids = [e.card_id for e in entries if e.card_id is not None]
+    cards_map = {}
+    if card_ids:
+        card_result = await db.execute(
+            select(TarotCard).where(TarotCard.id.in_(card_ids))
+        )
+        for card in card_result.scalars().all():
+            cards_map[card.id] = card
+
     return DiaryListResponse(
         entries=[
             {
                 "id": e.id,
                 "date": str(e.entry_date),
                 "mood": e.mood,
+                "card": {
+                    "id": cards_map[e.card_id].id,
+                    "name_zh": cards_map[e.card_id].name_zh,
+                    "meaning_upright": cards_map[e.card_id].meaning_upright[:200],
+                } if e.card_id and e.card_id in cards_map else None,
                 "reflection": e.reflection,
             }
             for e in entries

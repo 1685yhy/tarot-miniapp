@@ -60,8 +60,6 @@
               nameZh="{{item.card_name}}"
               positionName="{{item.month}}"
               isReversed="{{item.direction === '逆位'}}"
-              nameEn="{{''}}"
-              cardNumber="{{''}}"
             />
             <text class="month-label">{{item.month}}</text>
           </view>
