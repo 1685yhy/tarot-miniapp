@@ -17,7 +17,7 @@ Page({
       const user = await checkLogin();
       this.setData({ user, freeCount: user?.free_readings_today || 0, pageLoading: false });
     } catch (err) {
-      this.setData({ pageLoading: false, pageError: err.errMsg || '加载失败' });
+      this.setData({ pageLoading: false, pageError: err.message || '加载失败' });
     }
   },
 

@@ -1,6 +1,9 @@
-/* ==================== Tarot Card Component Styles ==================== */
-/* 神秘塔罗风格 — 金色边框 / 星空背景 / 神秘氛围 */
-/* 与 tarot-card.wxml 结构严格对应 */
+/* ==============================================================
+   塔罗卡牌组件 v2.0 — 全78张CSS艺术系统
+   神秘学高级感 · 深紫+金色 · 纯CSS插画
+   ============================================================== */
+
+/* ========== 1. 基础结构 ========== */
 
 .tarot-card-wrapper {
   display: inline-flex;
@@ -9,12 +12,10 @@
   padding: 8rpx;
   transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
 }
-
 .tarot-card-wrapper.reversed {
   animation: glow-pulse 3s ease-in-out infinite;
 }
 
-/* ---------- 卡牌主体 ---------- */
 .tarot-card {
   position: relative;
   width: 280rpx;
@@ -23,248 +24,1210 @@
   border-radius: 16rpx;
   border: 3rpx solid;
   border-image: linear-gradient(135deg, #d4af37, #f5d680, #b8860b, #f5d680, #d4af37) 1;
-  box-shadow:
-    0 0 20rpx rgba(212, 175, 55, 0.25),
-    0 0 60rpx rgba(212, 175, 55, 0.08),
-    inset 0 0 30rpx rgba(212, 175, 55, 0.05);
+  box-shadow: 0 0 20rpx rgba(212,175,55,0.25), 0 0 60rpx rgba(212,175,55,0.08), inset 0 0 30rpx rgba(212,175,55,0.05);
   overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: transform 0.8s cubic-bezier(0.23,1,0.32,1);
   animation: card-appear 0.8s ease-out forwards;
 }
+.tarot-card.card-reversed { transform: rotate(180deg); }
 
-.tarot-card.card-reversed {
-  transform: rotate(180deg);
-}
-
-/* ---------- 入场动画 ---------- */
 @keyframes card-appear {
-  0% {
-    opacity: 0;
-    transform: translateY(30rpx) scale(0.92);
-    filter: brightness(0.6);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: brightness(1);
-  }
+  0% { opacity:0; transform:translateY(30rpx) scale(0.92); filter:brightness(0.6); }
+  100% { opacity:1; transform:translateY(0) scale(1); filter:brightness(1); }
 }
-
-.card-reversed {
-  animation: card-appear-rev 0.8s ease-out forwards;
-}
-
-@keyframes card-appear-rev {
-  0% {
-    opacity: 0;
-    transform: rotate(180deg) translateY(-30rpx) scale(0.92);
-    filter: brightness(0.6);
-  }
-  100% {
-    opacity: 1;
-    transform: rotate(180deg) translateY(0) scale(1);
-    filter: brightness(1);
-  }
-}
-
-/* ---------- 光晕 ---------- */
 @keyframes glow-pulse {
-  0%, 100% { filter: drop-shadow(0 0 8rpx rgba(212,175,55,0.3)); }
-  50% { filter: drop-shadow(0 0 20rpx rgba(212,175,55,0.6)); }
+  0%,100% { filter:drop-shadow(0 0 8rpx rgba(212,175,55,0.3)); }
+  50% { filter:drop-shadow(0 0 20rpx rgba(212,175,55,0.6)); }
 }
-
-/* ---------- 顶部/底部装饰 ---------- */
-.card-ornament-top {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 6rpx;
-  background: linear-gradient(90deg, transparent, #d4af37, #f5d680, #d4af37, transparent);
-  opacity: 0.8;
-  z-index: 3;
-}
-
-.card-ornament-bottom {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 6rpx;
-  background: linear-gradient(90deg, transparent, #d4af37, #f5d680, #d4af37, transparent);
-  opacity: 0.8;
-  z-index: 3;
-}
-
-/* ---------- 卡牌编号 ---------- */
-.card-number {
-  position: absolute;
-  top: 18rpx;
-  left: 20rpx;
-  font-size: 20rpx;
-  color: #d4af37;
-  font-family: 'Georgia', serif;
-  letter-spacing: 2rpx;
-  opacity: 0.7;
-  z-index: 3;
-}
-
-/* ---------- 卡面艺术区 ---------- */
-.card-art {
-  flex: 1;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  margin-top: 36rpx;
-  margin-bottom: 8rpx;
-  min-height: 0;
-}
-
-/* 星空 */
-.star-field {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-.star {
-  position: absolute;
-  width: 4rpx;
-  height: 4rpx;
-  background: #fff;
-  border-radius: 50%;
-  animation: twinkle 2.5s ease-in-out infinite;
-}
-
-.star-1 { top: 15%; left: 20%; animation-delay: 0s; }
-.star-2 { top: 30%; left: 70%; animation-delay: 0.4s; width: 3rpx; height: 3rpx; }
-.star-3 { top: 55%; left: 30%; animation-delay: 0.8s; }
-.star-4 { top: 70%; left: 65%; animation-delay: 1.2s; width: 5rpx; height: 5rpx; opacity: 0.8; }
-.star-5 { top: 40%; left: 45%; animation-delay: 0.2s; width: 3rpx; height: 3rpx; }
-.star-6 { top: 80%; left: 25%; animation-delay: 1.6s; }
-.star-7 { top: 20%; left: 55%; animation-delay: 0.6s; width: 5rpx; height: 5rpx; opacity: 0.6; }
-.star-8 { top: 60%; left: 80%; animation-delay: 1.0s; width: 3rpx; height: 3rpx; }
-
 @keyframes twinkle {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.5); }
+  0%,100% { opacity:0.3; transform:scale(1); }
+  50% { opacity:1; transform:scale(1.5); }
+}
+@keyframes float {
+  0%,100% { transform:translateY(0); }
+  50% { transform:translateY(-6rpx); }
+}
+@keyframes pulse-glow {
+  0%,100% { opacity:0.5; transform:scale(1); }
+  50% { opacity:0.9; transform:scale(1.08); }
+}
+@keyframes rotate-slow {
+  from { transform:rotate(0deg); }
+  to { transform:rotate(360deg); }
+}
+@keyframes drip {
+  0%,100% { opacity:0.2; transform:translateY(0); }
+  50% { opacity:0.6; transform:translateY(6rpx); }
+}
+@keyframes spark {
+  0%,100% { opacity:0; transform:scale(0); }
+  50% { opacity:0.8; transform:scale(1); }
 }
 
-/* 中心符号 */
-.card-glyph {
-  width: 80rpx;
-  height: 80rpx;
-  border: 2rpx solid rgba(212, 175, 55, 0.4);
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(212,175,55,0.12) 0%, transparent 70%);
-  position: relative;
-  z-index: 1;
+/* ========== 2. 装饰元素 ========== */
+
+.card-ornament-top, .card-ornament-bottom {
+  position: absolute; left:0; right:0; height:6rpx; z-index:5;
+  background: linear-gradient(90deg, transparent, #d4af37, #f5d680, #d4af37, transparent);
+  opacity:0.8;
+}
+.card-ornament-top { top:0; }
+.card-ornament-bottom { bottom:0; }
+
+.card-number {
+  position: absolute; top:18rpx; left:20rpx; z-index:5;
+  font-size:20rpx; color:#d4af37; font-family:'Georgia',serif;
+  letter-spacing:2rpx; opacity:0.7;
 }
 
-.card-glyph::before {
-  content: '\2726';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 40rpx;
-  color: #d4af37;
-  opacity: 0.5;
+.card-art {
+  flex:1; width:100%; display:flex; align-items:center; justify-content:center;
+  position:relative; margin-top:36rpx; margin-bottom:8rpx; min-height:0;
 }
 
-.glyph-reversed::before {
-  transform: translate(-50%, -50%) rotate(180deg);
+/* 星空背景 */
+.star-field {
+  position:absolute; width:100%; height:100%; overflow:hidden;
+  pointer-events:none;
+}
+.star {
+  position:absolute; width:4rpx; height:4rpx; background:#fff;
+  border-radius:50%; animation:twinkle 2.5s ease-in-out infinite;
+}
+.star.s1 { top:15%; left:20%; animation-delay:0s; }
+.star.s2 { top:30%; left:70%; animation-delay:0.4s; width:3rpx; height:3rpx; }
+.star.s3 { top:55%; left:30%; animation-delay:0.8s; }
+.star.s4 { top:70%; left:65%; animation-delay:1.2s; width:5rpx; height:5rpx; opacity:0.8; }
+.star.s5 { top:40%; left:45%; animation-delay:0.2s; width:3rpx; height:3rpx; }
+.star.s6 { top:80%; left:25%; animation-delay:1.6s; }
+.star.s7 { top:20%; left:55%; animation-delay:0.6s; width:5rpx; height:5rpx; opacity:0.6; }
+.star.s8 { top:60%; left:80%; animation-delay:1.0s; width:3rpx; height:3rpx; }
+
+/* 插画核心容器 */
+.card-symbol {
+  position:relative; width:160rpx; height:200rpx; z-index:2;
+  display:flex; align-items:center; justify-content:center;
+}
+.card-symbol .art-shape,
+.card-symbol .art-accent,
+.card-symbol .art-detail {
+  position:absolute; width:100%; height:100%; top:0; left:0;
+  pointer-events:none;
 }
 
-/* ---------- 英文名 ---------- */
+/* 卡牌名称 */
 .card-name-en {
-  font-size: 22rpx;
-  color: #c8b060;
-  font-family: 'Georgia', serif;
-  letter-spacing: 3rpx;
-  text-transform: uppercase;
-  text-align: center;
-  margin-bottom: 4rpx;
-  text-shadow: 0 0 10rpx rgba(200, 176, 96, 0.3);
-  z-index: 2;
+  font-size:20rpx; color:#c8b060; font-family:'Georgia',serif;
+  letter-spacing:3rpx; text-transform:uppercase; text-align:center;
+  margin-bottom:2rpx; z-index:2;
+  text-shadow:0 0 10rpx rgba(200,176,96,0.3);
 }
-
-/* ---------- 中文名 ---------- */
 .card-name-zh {
-  font-size: 28rpx;
-  color: #f5e6b8;
-  font-family: 'STKaiti', 'KaiTi', serif;
-  letter-spacing: 4rpx;
-  text-align: center;
-  margin-bottom: 12rpx;
-  font-weight: 500;
-  text-shadow: 0 0 12rpx rgba(245, 230, 184, 0.2);
-  z-index: 2;
+  font-size:26rpx; color:#f5e6b8; font-family:'STKaiti','KaiTi',serif;
+  letter-spacing:4rpx; text-align:center; margin-bottom:10rpx;
+  font-weight:500; z-index:2;
+  text-shadow:0 0 12rpx rgba(245,230,184,0.2);
 }
 
-/* ---------- 位置徽章 ---------- */
+/* 位置徽章 */
 .position-badge {
-  display: flex;
-  align-items: center;
-  gap: 6rpx;
-  padding: 4rpx 16rpx;
-  border-radius: 20rpx;
-  font-size: 20rpx;
-  margin-bottom: 28rpx;
-  white-space: nowrap;
-  z-index: 2;
+  display:flex; align-items:center; gap:6rpx;
+  padding:4rpx 16rpx; border-radius:20rpx; font-size:20rpx;
+  margin-bottom:26rpx; white-space:nowrap; z-index:2;
 }
-
 .badge-upright {
-  background: linear-gradient(135deg, rgba(44, 62, 80, 0.85), rgba(52, 73, 94, 0.85));
-  border: 1rpx solid rgba(212, 175, 55, 0.4);
-  color: #d4af37;
+  background:linear-gradient(135deg,rgba(44,62,80,0.85),rgba(52,73,94,0.85));
+  border:1rpx solid rgba(212,175,55,0.4); color:#d4af37;
 }
-
 .badge-reversed {
-  background: linear-gradient(135deg, rgba(80, 44, 55, 0.85), rgba(94, 52, 66, 0.85));
-  border: 1rpx solid rgba(200, 120, 140, 0.4);
-  color: #e8a0b0;
+  background:linear-gradient(135deg,rgba(80,44,55,0.85),rgba(94,52,66,0.85));
+  border:1rpx solid rgba(200,120,140,0.4); color:#e8a0b0;
 }
+.position-icon { font-size:16rpx; }
+.position-text { letter-spacing:1rpx; }
 
-.position-icon {
-  font-size: 16rpx;
-}
-
-.position-text {
-  letter-spacing: 1rpx;
-}
-
-/* ---------- 逆位标签 ---------- */
 .reversed-label {
-  position: absolute;
-  bottom: 80rpx;
-  right: -6rpx;
-  font-size: 16rpx;
-  color: rgba(232, 160, 176, 0.6);
-  letter-spacing: 2rpx;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  z-index: 2;
+  position:absolute; bottom:76rpx; right:-6rpx;
+  font-size:16rpx; color:rgba(232,160,176,0.6);
+  letter-spacing:2rpx; writing-mode:vertical-rl; z-index:2;
 }
 
-/* ---------- 内边框光晕 ---------- */
 .tarot-card::before {
-  content: '';
-  position: absolute;
-  top: 6rpx;
-  left: 6rpx;
-  right: 6rpx;
-  bottom: 6rpx;
-  border: 1rpx solid rgba(212, 175, 55, 0.15);
-  border-radius: 10rpx;
-  pointer-events: none;
-  z-index: 2;
+  content:''; position:absolute; top:6rpx; left:6rpx; right:6rpx; bottom:6rpx;
+  border:1rpx solid rgba(212,175,55,0.15); border-radius:10rpx; pointer-events:none; z-index:3;
+}
+
+.card-aura {
+  position:absolute; inset:0; border-radius:14rpx;
+  background:radial-gradient(circle at 50% 40%, rgba(212,175,55,0.06) 0%, transparent 70%);
+  pointer-events:none; z-index:1;
+}
+
+/* 逆位时的全局翻转修正 */
+.card-reversed .card-symbol { transform:rotate(180deg); }
+.card-reversed .card-name-en,
+.card-reversed .card-name-zh { transform:rotate(180deg); }
+.card-reversed .position-badge { transform:rotate(180deg); }
+.card-reversed .reversed-label { transform:rotate(180deg); }
+
+
+/* ================================================================
+   3. 大阿尔卡纳 — 22张独特CSS插画
+   ================================================================ */
+
+/* ----- 0 愚者 · 太阳+悬崖 ----- */
+.card-fool .card-symbol .art-shape {
+  width:80rpx; height:80rpx; top:10rpx; left:40rpx;
+  background:radial-gradient(circle at 40% 40%, #ffd700, #b8860b);
+  border-radius:50%;
+  box-shadow:0 0 50rpx rgba(255,215,0,0.5), 0 0 100rpx rgba(255,215,0,0.2);
+  animation:pulse-glow 3s ease-in-out infinite;
+}
+.card-fool .card-symbol .art-shape::after {
+  content:''; position:absolute; inset:-12rpx; border-radius:50%;
+  border:2rpx solid rgba(255,215,0,0.25);
+  animation:pulse-glow 3s ease-in-out infinite 0.5s;
+}
+.card-fool .card-symbol .art-accent {
+  top:90rpx; left:20rpx; width:120rpx; height:60rpx;
+  border-top:4rpx dotted rgba(212,175,55,0.3);
+  box-shadow:0 10rpx 0 -4rpx rgba(212,175,55,0.08), 0 20rpx 0 -4rpx rgba(212,175,55,0.05);
+  clip-path:polygon(20% 100%, 35% 30%, 50% 100%, 65% 20%, 80% 100%);
+}
+.card-fool .card-symbol .art-detail {
+  border-bottom:6rpx solid #2a1a4a;
+  bottom:0; top:auto; height:20rpx;
+  box-shadow:0 -4rpx 0 rgba(212,175,55,0.15);
+  clip-path:polygon(10% 0, 25% 100%, 40% 20%, 55% 100%, 70% 10%, 85% 100%, 95% 0);
+}
+
+/* ----- I 魔术师 · 无限符号+四元素 ----- */
+.card-magician .card-symbol .art-shape {
+  top:20rpx; left:10rpx; width:140rpx; height:100rpx;
+  border:3rpx solid #d4af37; border-radius:50% 0 50% 0;
+  background:radial-gradient(circle at 50% 50%, rgba(212,175,55,0.1), transparent);
+  transform:rotate(45deg);
+}
+.card-magician .card-symbol .art-shape::after {
+  content:''; position:absolute; top:20rpx; left:20rpx; width:100rpx; height:60rpx;
+  border:2rpx solid rgba(212,175,55,0.3);
+  border-radius:50% 0 50% 0; transform:rotate(-90deg);
+}
+.card-magician .card-symbol .art-accent {
+  top:90rpx; height:2rpx; width:100rpx; left:30rpx;
+  background:linear-gradient(90deg, transparent, #d4af37, transparent);
+}
+.card-magician .card-symbol .art-detail::before {
+  content:''; position:absolute;
+  box-shadow:
+    30rpx 20rpx 0 0 #ff6b6b, 60rpx 20rpx 0 0 #4ecdc4,
+    30rpx 40rpx 0 0 #ffe66d, 60rpx 40rpx 0 0 #a8e6cf;
+  width:8rpx; height:8rpx; border-radius:50%;
+  top:80rpx; left:20rpx; opacity:0.7;
+}
+
+/* ----- II 女祭司 · 月+卷轴 ----- */
+.card-high-priestess .card-symbol .art-shape {
+  width:70rpx; height:70rpx; top:10rpx; left:45rpx;
+  border-radius:50%;
+  background:radial-gradient(circle at 55% 45%, #e8e0f0, transparent 60%);
+  box-shadow:
+    10rpx 0 0 -4rpx #c8b8e8, 20rpx 0 0 -8rpx rgba(200,184,232,0.3);
+  clip-path:polygon(50% 0%, 100% 0, 100% 100%, 50% 100%, 0 100%, 0 0);
+  border:2rpx solid rgba(200,184,232,0.3);
+}
+.card-high-priestess .card-symbol .art-shape::after {
+  content:''; position:absolute; top:10rpx; left:10rpx; width:30rpx; height:30rpx;
+  border-radius:50%; box-shadow:20rpx 0 0 2rpx rgba(212,175,55,0.2);
+}
+.card-high-priestess .card-symbol .art-accent {
+  top:90rpx; left:40rpx; width:80rpx; height:60rpx;
+  border:2rpx solid rgba(200,184,232,0.3);
+  border-radius:0 0 20rpx 20rpx;
+  background:linear-gradient(180deg, transparent, rgba(200,184,232,0.05));
+}
+.card-high-priestess .card-symbol .art-detail {
+  top:95rpx; left:45rpx; width:70rpx; height:50rpx;
+  border:1rpx solid rgba(212,175,55,0.15);
+  border-radius:4rpx;
+  background:linear-gradient(180deg, transparent 30%, rgba(212,175,55,0.05) 30%, rgba(212,175,55,0.05) 32%, transparent 32%);
+}
+
+/* ----- III 女皇 · 皇冠+麦穗 ----- */
+.card-empress .card-symbol .art-shape {
+  top:10rpx; left:40rpx; width:80rpx; height:50rpx;
+  clip-path:polygon(10% 100%, 25% 20%, 35% 50%, 50% 0%, 65% 50%, 75% 20%, 90% 100%);
+  background:linear-gradient(180deg, #d4af37, #b8860b);
+  box-shadow:0 10rpx 30rpx rgba(212,175,55,0.2);
+}
+.card-empress .card-symbol .art-shape::after {
+  content:''; position:absolute; bottom:-10rpx; left:20rpx; width:40rpx; height:30rpx;
+  background:radial-gradient(ellipse at 50% 0%, #d4af37 0%, transparent 70%);
+  border-radius:50%;
+}
+.card-empress .card-symbol .art-accent::before {
+  content:''; position:absolute; top:60rpx; left:10rpx; width:140rpx; height:30rpx;
+  box-shadow:
+    10rpx 0 0 0 rgba(144,238,144,0.2), 20rpx 2rpx 0 0 rgba(144,238,144,0.15),
+    30rpx 0 0 0 rgba(144,238,144,0.25), 40rpx 3rpx 0 0 rgba(144,238,144,0.1),
+    50rpx 0 0 0 rgba(144,238,144,0.2), 60rpx 2rpx 0 0 rgba(144,238,144,0.15),
+    70rpx 0 0 0 rgba(144,238,144,0.2), 80rpx 1rpx 0 0 rgba(144,238,144,0.1),
+    90rpx 0 0 0 rgba(144,238,144,0.2), 100rpx 3rpx 0 0 rgba(144,238,144,0.15),
+    110rpx 0 0 0 rgba(144,238,144,0.2), 120rpx 2rpx 0 0 rgba(144,238,144,0.1);
+  width:6rpx; height:6rpx; border-radius:50%;
+}
+
+/* ----- IV 皇帝 · 王座+公羊 ----- */
+.card-emperor .card-symbol .art-shape {
+  top:20rpx; left:30rpx; width:100rpx; height:90rpx;
+  border:3rpx solid rgba(212,175,55,0.4);
+  border-radius:20rpx 20rpx 6rpx 6rpx;
+  background:linear-gradient(180deg, rgba(180,60,60,0.2), transparent);
+}
+.card-emperor .card-symbol .art-shape::after {
+  content:''; position:absolute; top:-10rpx; left:-6rpx; width:30rpx; height:30rpx;
+  border-radius:50% 50% 0 0;
+  box-shadow:
+    52rpx 0 0 0 rgba(212,175,55,0.2);
+  border:2rpx solid rgba(212,175,55,0.2); border-bottom:none;
+  background:radial-gradient(circle at 50% 100%, rgba(212,175,55,0.1), transparent);
+}
+.card-emperor .card-symbol .art-accent {
+  top:10rpx; left:10rpx; width:140rpx; height:40rpx;
+  border-bottom:2rpx solid rgba(212,175,55,0.15);
+  clip-path:polygon(0% 0%, 20% 80%, 30% 10%, 40% 80%, 50% 0%, 60% 80%, 70% 10%, 80% 80%, 100% 0%);
+}
+
+/* ----- V 教皇 · 十字+钥匙 ----- */
+.card-hierophant .card-symbol .art-shape {
+  top:10rpx; left:60rpx; width:40rpx; height:100rpx;
+  border:2rpx solid rgba(212,175,55,0.4);
+  border-radius:4rpx;
+  background:linear-gradient(180deg, rgba(212,175,55,0.1), transparent);
+}
+.card-hierophant .card-symbol .art-shape::after {
+  content:''; position:absolute; top:20rpx; left:-24rpx; width:84rpx; height:50rpx;
+  border:2rpx solid rgba(212,175,55,0.25);
+  border-radius:40rpx 40rpx 0 0;
+  background:transparent; border-bottom:none;
+}
+.card-hierophant .card-symbol .art-accent::before {
+  content:''; position:absolute; top:110rpx; left:30rpx; width:100rpx; height:40rpx;
+  border-radius:0 0 20rpx 20rpx;
+  border:2rpx solid rgba(212,175,55,0.15); border-top:none;
+}
+.card-hierophant .card-symbol .art-detail::before {
+  content:''; position:absolute; top:120rpx; left:30rpx;
+  box-shadow:
+    20rpx 0 0 0 rgba(212,175,55,0.2), 80rpx 0 0 0 rgba(212,175,55,0.2);
+  width:10rpx; height:20rpx; border-radius:50% 50% 0 0; background:rgba(212,175,55,0.1);
+}
+
+/* ----- VI 恋人 · 心+天使 ----- */
+.card-lovers .card-symbol .art-shape {
+  top:30rpx; left:45rpx; width:70rpx; height:64rpx;
+  background:radial-gradient(ellipse at 30% 40%, #ff6b8a, #c03968);
+  clip-path:path('M35,0 C17,0 0,17 0,35 C0,52 35,62 35,62 C35,62 70,52 70,35 C70,17 53,0 35,0 Z');
+  box-shadow:0 0 30rpx rgba(255,107,138,0.4);
+  animation:float 3s ease-in-out infinite;
+}
+.card-lovers .card-symbol .art-accent {
+  top:90rpx; left:50rpx; width:60rpx; height:40rpx;
+  border:2rpx solid rgba(212,175,55,0.3); border-bottom:none;
+  border-radius:30rpx 30rpx 0 0;
+}
+.card-lovers .card-symbol .art-accent::after {
+  content:''; position:absolute; bottom:-2rpx; left:8rpx; width:40rpx; height:20rpx;
+  border-radius:0 0 20rpx 20rpx;
+  border:2rpx solid rgba(212,175,55,0.15); border-top:none;
+  background:radial-gradient(ellipse at 50% 0%, rgba(255,215,0,0.15), transparent);
+}
+
+/* ----- VII 战车 · 轮+斯芬克斯 ----- */
+.card-chariot .card-symbol .art-shape {
+  top:40rpx; left:40rpx; width:80rpx; height:80rpx;
+  border:3rpx solid #d4af37;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(212,175,55,0.1) 40%, transparent);
+}
+.card-chariot .card-symbol .art-shape::after {
+  content:''; position:absolute; top:50%; left:50%;
+  width:20rpx; height:20rpx;
+  margin:-10rpx 0 0 -10rpx;
+  border:2rpx solid rgba(212,175,55,0.5);
+  border-radius:50%;
+  background:radial-gradient(circle, #d4af37, transparent);
+}
+.card-chariot .card-symbol .art-accent::before {
+  content:''; position:absolute;
+  top:10rpx; left:5rpx; width:70rpx; height:50rpx;
+  clip-path:polygon(50% 0%, 100% 50%, 80% 100%, 20% 100%, 0% 50%);
+  background:linear-gradient(135deg, rgba(212,175,55,0.05), rgba(212,175,55,0.15));
+  border:1rpx solid rgba(212,175,55,0.2);
+}
+.card-chariot .card-symbol .art-accent::after {
+  content:''; position:absolute; top:10rpx; right:5rpx;
+  width:70rpx; height:50rpx;
+  clip-path:polygon(50% 0%, 100% 50%, 80% 100%, 20% 100%, 0% 50%);
+  background:linear-gradient(225deg, rgba(212,175,55,0.05), rgba(212,175,55,0.15));
+  border:1rpx solid rgba(212,175,55,0.2);
+}
+
+/* ----- VIII 力量 · 狮首+无限 ----- */
+.card-strength .card-symbol .art-shape {
+  top:20rpx; left:40rpx; width:80rpx; height:80rpx;
+  background:radial-gradient(circle at 40% 40%, #ffa500, #cc7700);
+  border-radius:50%;
+  box-shadow:0 0 40rpx rgba(255,165,0,0.3);
+}
+.card-strength .card-symbol .art-shape::after {
+  content:''; position:absolute; top:-6rpx; left:-6rpx; right:-6rpx; bottom:-6rpx;
+  border-radius:50%;
+  border:6rpx solid transparent;
+  box-shadow:
+    0 0 0 2rpx rgba(255,165,0,0.2),
+    inset 0 0 0 2rpx rgba(255,165,0,0.1);
+}
+.card-strength .card-symbol .art-accent {
+  top:90rpx; left:30rpx; width:100rpx; height:40rpx;
+}
+.card-strength .card-symbol .art-accent::before {
+  content:'∞'; position:absolute;
+  font-size:60rpx; color:rgba(212,175,55,0.25);
+  left:20rpx; top:-10rpx;
+}
+
+/* ----- IX 隐士 · 提灯+手杖 ----- */
+.card-hermit .card-symbol .art-shape {
+  top:20rpx; left:55rpx; width:50rpx; height:80rpx;
+  border:2rpx solid rgba(212,175,55,0.3);
+  border-radius:0 0 20rpx 20rpx;
+  background:linear-gradient(180deg, transparent, rgba(255,215,0,0.08));
+}
+.card-hermit .card-symbol .art-shape::after {
+  content:''; position:absolute; top:-10rpx; left:-6rpx;
+  width:56rpx; height:20rpx;
+  border:2rpx solid #d4af37;
+  border-radius:30rpx 30rpx 0 0;
+  background:radial-gradient(ellipse at 50% 100%, rgba(255,215,0,0.3), transparent);
+  box-shadow:0 0 30rpx rgba(255,215,0,0.2);
+}
+.card-hermit .card-symbol .art-accent {
+  top:10rpx; left:20rpx; width:4rpx; height:120rpx;
+  background:linear-gradient(180deg, #d4af37, rgba(212,175,55,0.1));
+  border-radius:2rpx;
+}
+.card-hermit .card-symbol .art-detail {
+  top:55rpx; left:10rpx; width:140rpx; height:60rpx;
+  background:radial-gradient(ellipse at 50% 0%, rgba(255,215,0,0.08), transparent 70%);
+  border-radius:50%;
+}
+
+/* ----- X 命运之轮 · 轮盘+四符号 ----- */
+.card-wheel-of-fortune .card-symbol .art-shape {
+  top:30rpx; left:35rpx; width:90rpx; height:90rpx;
+  border:3rpx solid #d4af37;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(212,175,55,0.08) 30%, transparent);
+  animation:rotate-slow 12s linear infinite;
+}
+.card-wheel-of-fortune .card-symbol .art-shape::after {
+  content:''; position:absolute; top:50%; left:50%;
+  width:50rpx; height:50rpx; margin:-25rpx 0 0 -25rpx;
+  border:2rpx solid rgba(212,175,55,0.3);
+  border-radius:50%;
+  background:radial-gradient(circle, #d4af37 10%, transparent);
+}
+.card-wheel-of-fortune .card-symbol .art-accent::before {
+  content:''; position:absolute;
+  box-shadow:
+    65rpx 15rpx 0 0 rgba(255,100,100,0.3),
+    15rpx 65rpx 0 0 rgba(100,200,255,0.3),
+    -15rpx 45rpx 0 0 rgba(100,255,150,0.3),
+    100rpx 45rpx 0 0 rgba(255,215,0,0.3);
+  width:10rpx; height:10rpx; border-radius:50%;
+  top:10rpx; left:8rpx;
+}
+
+/* ----- XI 正义 · 天平+剑 ----- */
+.card-justice .card-symbol .art-shape {
+  top:20rpx; left:40rpx; width:80rpx; height:60rpx;
+  border-bottom:3rpx solid #d4af37;
+  border-left:2rpx solid rgba(212,175,55,0.2);
+  border-right:2rpx solid rgba(212,175,55,0.2);
+  background:transparent;
+}
+.card-justice .card-symbol .art-shape::before {
+  content:''; position:absolute; top:-20rpx; left:50%; margin-left:-2rpx;
+  width:4rpx; height:80rpx;
+  background:linear-gradient(180deg, rgba(212,175,55,0.5), #d4af37);
+  border-radius:2rpx;
+}
+.card-justice .card-symbol .art-shape::after {
+  content:''; position:absolute; top:-20rpx; left:-20rpx; width:30rpx; height:30rpx;
+  border-radius:0 50% 50% 50%;
+  border:2rpx solid rgba(212,175,55,0.3);
+  background:rgba(212,175,55,0.05);
+  transform:rotate(45deg);
+}
+.card-justice .card-symbol .art-accent::after {
+  content:''; position:absolute; top:-20rpx; right:-20rpx; width:30rpx; height:30rpx;
+  border-radius:50% 0 50% 50%;
+  border:2rpx solid rgba(212,175,55,0.3);
+  background:rgba(212,175,55,0.05);
+  transform:rotate(45deg);
+}
+
+/* ----- XII 倒吊人 · 横梁+倒三角 ----- */
+.card-hanged-man .card-symbol .art-shape {
+  top:10rpx; left:10rpx; width:140rpx; height:4rpx;
+  background:linear-gradient(90deg, transparent, #d4af37, transparent);
+}
+.card-hanged-man .card-symbol .art-shape::after {
+  content:''; position:absolute; bottom:0; left:50%; margin-left:-2rpx;
+  width:4rpx; height:80rpx;
+  background:linear-gradient(180deg, #d4af37, rgba(212,175,55,0.1));
+}
+.card-hanged-man .card-symbol .art-accent {
+  top:50rpx; left:50rpx; width:60rpx; height:50rpx;
+  border:2rpx solid rgba(212,175,55,0.3);
+  clip-path:polygon(50% 0%, 0% 100%, 100% 100%);
+  background:transparent;
+  transform:rotate(180deg);
+}
+.card-hanged-man .card-symbol .art-detail {
+  top:70rpx; left:38rpx; width:84rpx; height:2rpx;
+  background:rgba(212,175,55,0.2);
+  box-shadow:0 10rpx 0 rgba(212,175,55,0.1), 0 20rpx 0 rgba(212,175,55,0.05);
+}
+
+/* ----- XIII 死神 · 镰刀+骷髅+玫瑰 ----- */
+.card-death .card-symbol .art-shape {
+  top:30rpx; left:30rpx; width:100rpx; height:100rpx;
+}
+.card-death .card-symbol .art-shape::before {
+  content:''; position:absolute; top:20rpx; left:10rpx;
+  width:80rpx; height:50rpx;
+  border:3rpx solid #8a7bb5;
+  border-radius:50% 50% 0 0;
+  background:radial-gradient(circle at 50% 60%, rgba(138,123,181,0.1), transparent);
+}
+.card-death .card-symbol .art-shape::after {
+  content:''; position:absolute; top:10rpx; left:30rpx;
+  width:4rpx; height:80rpx;
+  background:linear-gradient(180deg, #8a7bb5, rgba(138,123,181,0.2));
+  transform:rotate(30deg);
+  border-radius:2rpx;
+}
+.card-death .card-symbol .art-accent {
+  top:50rpx; left:48rpx; width:64rpx; height:50rpx;
+  border:2rpx solid rgba(200,180,220,0.2);
+  border-radius:50% 50% 40% 40%;
+}
+.card-death .card-symbol .art-accent::before {
+  content:''; position:absolute; top:10rpx; left:12rpx; width:10rpx; height:10rpx;
+  box-shadow:30rpx 0 0 0 rgba(200,180,220,0.3);
+  border-radius:50%; background:rgba(200,180,220,0.2);
+}
+.card-death .card-symbol .art-accent::after {
+  content:''; position:absolute; bottom:8rpx; left:22rpx; width:20rpx; height:6rpx;
+  border-bottom:2rpx solid rgba(200,180,220,0.2);
+  border-radius:0 0 10rpx 10rpx;
+}
+.card-death .card-symbol .art-detail {
+  bottom:10rpx; top:auto; left:30rpx; width:100rpx; height:40rpx;
+}
+.card-death .card-symbol .art-detail::before {
+  content:''; position:absolute; bottom:0; right:10rpx;
+  width:20rpx; height:20rpx;
+  border-radius:50% 50% 0 0;
+  background:radial-gradient(circle at 50% 60%, #ff4466, #880022);
+  box-shadow:0 0 15rpx rgba(255,68,102,0.3);
+}
+
+/* ----- XIV 节制 · 双杯+水流 ----- */
+.card-temperance .card-symbol .art-shape {
+  top:20rpx; left:20rpx; width:50rpx; height:70rpx;
+  border:2rpx solid rgba(100,180,255,0.4);
+  border-radius:0 0 40% 40%;
+  background:linear-gradient(180deg, transparent 20%, rgba(100,180,255,0.06));
+}
+.card-temperance .card-symbol .art-shape::after {
+  content:''; position:absolute; top:0; left:-4rpx; width:54rpx; height:8rpx;
+  border:2rpx solid rgba(100,180,255,0.4);
+  border-radius:50%;
+  background:rgba(100,180,255,0.06);
+}
+.card-temperance .card-symbol .art-accent {
+  top:30rpx; left:70rpx; width:50rpx; height:70rpx;
+  border:2rpx solid rgba(100,180,255,0.4);
+  border-radius:0 0 40% 40%;
+  background:linear-gradient(180deg, transparent 20%, rgba(100,180,255,0.06));
+}
+.card-temperance .card-symbol .art-accent::after {
+  content:''; position:absolute; top:0; left:-4rpx; width:54rpx; height:8rpx;
+  border:2rpx solid rgba(100,180,255,0.4);
+  border-radius:50%;
+  background:rgba(100,180,255,0.06);
+}
+.card-temperance .card-symbol .art-detail {
+  top:60rpx; left:50rpx; width:60rpx; height:4rpx;
+}
+.card-temperance .card-symbol .art-detail::before {
+  content:''; position:absolute;
+  width:4rpx; height:30rpx;
+  background:linear-gradient(180deg, rgba(100,180,255,0.3), transparent);
+  left:10rpx; top:0;
+  border-radius:2rpx;
+}
+.card-temperance .card-symbol .art-detail::after {
+  content:''; position:absolute;
+  width:4rpx; height:20rpx;
+  background:linear-gradient(180deg, rgba(100,180,255,0.2), transparent);
+  left:28rpx; top:8rpx;
+  border-radius:2rpx;
+}
+
+/* ----- XV 恶魔 · 五芒星+锁链 ----- */
+.card-devil .card-symbol .art-shape {
+  top:20rpx; left:45rpx; width:70rpx; height:68rpx;
+  background:rgba(180,40,60,0.08);
+  clip-path:polygon(50% 0%, 63% 35%, 100% 35%, 69% 57%, 80% 90%, 50% 68%, 20% 90%, 31% 57%, 0% 35%, 37% 35%);
+  border:2rpx solid rgba(180,40,60,0.3);
+  transform:rotate(180deg);
+}
+.card-devil .card-symbol .art-accent {
+  top:90rpx; left:30rpx; width:100rpx; height:30rpx;
+  border-bottom:2rpx solid rgba(180,40,60,0.2);
+  border-left:2rpx solid rgba(180,40,60,0.2);
+  border-right:2rpx solid rgba(180,40,60,0.2);
+  border-radius:0 0 20rpx 20rpx;
+}
+.card-devil .card-symbol .art-accent::before {
+  content:''; position:absolute; top:-10rpx; left:15rpx;
+  width:30rpx; height:20rpx;
+  border:1rpx solid rgba(180,40,60,0.15);
+  border-radius:50%; background:rgba(180,40,60,0.05);
+}
+.card-devil .card-symbol .art-accent::after {
+  content:''; position:absolute; top:-10rpx; right:15rpx;
+  width:30rpx; height:20rpx;
+  border:1rpx solid rgba(180,40,60,0.15);
+  border-radius:50%; background:rgba(180,40,60,0.05);
+}
+
+/* ----- XVI 高塔 · 塔+闪电+火 ----- */
+.card-tower .card-symbol .art-shape {
+  top:15rpx; left:50rpx; width:60rpx; height:100rpx;
+  clip-path:polygon(10% 0%, 90% 0%, 80% 15%, 100% 15%, 85% 30%, 100% 30%, 85% 45%, 100% 45%, 90% 100%, 10% 100%, 0% 45%, 15% 30%, 0% 30%, 15% 15%, 0% 15%);
+  background:linear-gradient(180deg, rgba(120,100,160,0.3), rgba(80,60,100,0.1));
+  border:2rpx solid rgba(180,160,200,0.2);
+}
+.card-tower .card-symbol .art-accent {
+  top:5rpx; left:20rpx; width:120rpx; height:60rpx;
+  clip-path:polygon(50% 0%, 60% 20%, 45% 15%, 70% 40%, 40% 35%, 80% 60%, 50% 50%, 60% 60%, 30% 45%);
+  background:linear-gradient(135deg, rgba(255,215,0,0.3), rgba(255,100,0,0.2));
+  filter:blur(2rpx);
+  animation:spark 1.5s ease-in-out infinite;
+}
+.card-tower .card-symbol .art-detail {
+  bottom:0; top:auto; height:40rpx;
+  box-shadow:
+    30rpx 0 0 0 rgba(255,100,0,0.1), 50rpx 5rpx 0 0 rgba(255,150,0,0.08),
+    70rpx 0 0 0 rgba(255,100,0,0.06), 90rpx 3rpx 0 0 rgba(255,150,0,0.05);
+  width:6rpx; border-radius:50%;
+}
+
+/* ----- XVII 星星 · 大星+水流 ----- */
+.card-star .card-symbol .art-shape {
+  top:15rpx; left:45rpx; width:70rpx; height:70rpx;
+  background:radial-gradient(circle at 40% 40%, #ffd700, #d4af37);
+  clip-path:polygon(50% 0%, 63% 35%, 100% 35%, 69% 57%, 80% 90%, 50% 68%, 20% 90%, 31% 57%, 0% 35%, 37% 35%);
+  box-shadow:0 0 40rpx rgba(212,175,55,0.5);
+  animation:pulse-glow 3s ease-in-out infinite;
+}
+.card-star .card-symbol .art-accent {
+  top:90rpx; left:20rpx; width:120rpx; height:40rpx;
+  border-bottom:2rpx solid rgba(100,180,255,0.2);
+  border-radius:0 0 50% 50%;
+}
+.card-star .card-symbol .art-accent::before {
+  content:''; position:absolute; bottom:0;
+  width:100%; height:20rpx;
+  background:linear-gradient(90deg, transparent 10%, rgba(100,180,255,0.06) 30%, transparent 50%, rgba(100,180,255,0.06) 70%, transparent 90%);
+}
+.card-star .card-symbol .art-detail::before {
+  content:''; position:absolute;
+  box-shadow:
+    10rpx 20rpx 0 0 rgba(212,175,55,0.15), 90rpx 40rpx 0 0 rgba(212,175,55,0.12),
+    20rpx 60rpx 0 0 rgba(212,175,55,0.1), 80rpx 10rpx 0 0 rgba(212,175,55,0.08);
+  width:4rpx; height:4rpx; border-radius:50%;
+  top:0; left:10rpx;
+}
+
+/* ----- XVIII 月亮 · 月+双塔+路 ----- */
+.card-moon .card-symbol .art-shape {
+  top:10rpx; left:45rpx; width:70rpx; height:70rpx;
+  border-radius:50%;
+  background:radial-gradient(circle at 55% 45%, #e8e0f0, transparent 60%);
+  box-shadow:15rpx 0 0 -2rpx rgba(200,184,232,0.15);
+}
+.card-moon .card-symbol .art-shape::after {
+  content:''; position:absolute; top:5rpx; right:-10rpx;
+  width:50rpx; height:50rpx;
+  border-radius:50%;
+  box-shadow:-5rpx -5rpx 0 0 rgba(200,184,232,0.2);
+}
+.card-moon .card-symbol .art-accent::before {
+  content:''; position:absolute; top:80rpx; left:10rpx;
+  width:30rpx; height:50rpx;
+  border:2rpx solid rgba(200,184,232,0.15);
+  border-radius:4rpx 4rpx 0 0;
+  background:rgba(200,184,232,0.03);
+}
+.card-moon .card-symbol .art-accent::after {
+  content:''; position:absolute; top:80rpx; right:10rpx;
+  width:30rpx; height:50rpx;
+  border:2rpx solid rgba(200,184,232,0.15);
+  border-radius:4rpx 4rpx 0 0;
+  background:rgba(200,184,232,0.03);
+}
+.card-moon .card-symbol .art-detail {
+  top:110rpx; left:20rpx; width:120rpx; height:40rpx;
+  border-bottom:2rpx solid rgba(200,184,232,0.1);
+  border-radius:0 0 50% 50%;
+}
+
+/* ----- XIX 太阳 · 巨阳+孩童 ----- */
+.card-sun .card-symbol .art-shape {
+  top:5rpx; left:35rpx; width:90rpx; height:90rpx;
+  background:radial-gradient(circle at 40% 40%, #ffd700, #ff8c00);
+  border-radius:50%;
+  box-shadow:0 0 60rpx rgba(255,215,0,0.5), 0 0 100rpx rgba(255,140,0,0.2);
+  animation:pulse-glow 3s ease-in-out infinite;
+}
+.card-sun .card-symbol .art-shape::after {
+  content:''; position:absolute; top:-10rpx; left:-10rpx; right:-10rpx; bottom:-10rpx;
+  border-radius:50%;
+  border:4rpx solid transparent;
+  box-shadow:0 0 0 2rpx rgba(255,215,0,0.15), 0 0 0 4rpx rgba(255,215,0,0.08);
+}
+.card-sun .card-symbol .art-accent {
+  top:96rpx; left:50rpx; width:60rpx; height:40rpx;
+  border-radius:50% 50% 40% 40%;
+  background:radial-gradient(circle at 50% 60%, rgba(255,215,0,0.08), transparent);
+  border:1rpx solid rgba(255,215,0,0.1);
+}
+.card-sun .card-symbol .art-accent::before {
+  content:''; position:absolute; top:-6rpx; left:10rpx;
+  width:40rpx; height:20rpx;
+  border:1rpx solid rgba(255,215,0,0.1);
+  border-radius:50%; background:rgba(255,215,0,0.03);
+}
+
+/* ----- XX 审判 · 号角+音符+人 ----- */
+.card-judgement .card-symbol .art-shape {
+  top:10rpx; left:55rpx; width:50rpx; height:60rpx;
+  clip-path:polygon(50% 0%, 100% 20%, 100% 60%, 50% 100%, 0% 60%, 0% 20%);
+  background:linear-gradient(180deg, #d4af37, rgba(212,175,55,0.1));
+  box-shadow:0 0 20rpx rgba(212,175,55,0.2);
+}
+.card-judgement .card-symbol .art-shape::after {
+  content:''; position:absolute; top:20rpx; left:-6rpx; width:60rpx; height:30rpx;
+  border:2rpx solid rgba(212,175,55,0.2); border-bottom:none;
+  border-radius:30rpx 30rpx 0 0;
+}
+.card-judgement .card-symbol .art-accent {
+  top:70rpx; left:20rpx; width:120rpx; height:60rpx;
+}
+.card-judgement .card-symbol .art-accent::before {
+  content:''; position:absolute;
+  box-shadow:
+    30rpx 0 0 0 rgba(212,175,55,0.1), 60rpx 5rpx 0 0 rgba(212,175,55,0.08),
+    90rpx 0 0 0 rgba(212,175,55,0.06);
+  width:10rpx; height:20rpx; border-radius:50% 50% 0 0;
+  background:rgba(212,175,55,0.05);
+  top:5rpx; left:10rpx;
+}
+.card-judgement .card-symbol .art-detail::before {
+  content:''; position:absolute; top:90rpx;
+  box-shadow:
+    30rpx 0 0 0 rgba(255,200,200,0.15), 70rpx 0 0 0 rgba(255,200,200,0.1),
+    50rpx 10rpx 0 0 rgba(255,200,200,0.08);
+  width:6rpx; height:6rpx; border-radius:50%;
+  left:20rpx;
+}
+
+/* ----- XXI 世界 · 花环+舞者+四角 ----- */
+.card-world .card-symbol .art-shape {
+  top:20rpx; left:25rpx; width:110rpx; height:120rpx;
+  border:3rpx solid rgba(212,175,55,0.3);
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(212,175,55,0.03) 40%, transparent);
+}
+.card-world .card-symbol .art-shape::after {
+  content:''; position:absolute; top:40rpx; left:35rpx;
+  width:40rpx; height:40rpx;
+  border:2rpx solid rgba(212,175,55,0.2);
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(255,215,0,0.1), transparent);
+}
+.card-world .card-symbol .art-accent::before {
+  content:''; position:absolute;
+  box-shadow:
+    20rpx 10rpx 0 0 rgba(255,100,100,0.2),
+    80rpx 10rpx 0 0 rgba(100,200,255,0.2),
+    5rpx 80rpx 0 0 rgba(100,255,150,0.2),
+    100rpx 80rpx 0 0 rgba(255,215,0,0.2);
+  width:12rpx; height:12rpx; border-radius:50%;
+  top:15rpx; left:10rpx;
+}
+.card-world .card-symbol .art-detail {
+  top:30rpx; left:20rpx; width:120rpx; height:90rpx;
+  border:2rpx solid transparent;
+  border-top:2rpx solid rgba(144,238,144,0.15);
+  border-bottom:2rpx solid rgba(144,238,144,0.15);
+  border-radius:50%;
+  transform:rotate(-15deg);
+  animation:float 4s ease-in-out infinite;
+}
+
+
+/* ================================================================
+   4. 小阿尔卡纳 — 花色主题（56张）
+   ================================================================ */
+
+/* 花色通用 */
+.card-symbol .minor-suit {
+  position:absolute; font-size:50rpx; font-weight:200;
+  top:50%; left:50%; transform:translate(-50%,-50%);
+  opacity:0.6;
+}
+.card-symbol .minor-rank {
+  position:absolute; font-size:40rpx; font-weight:300;
+  top:20rpx; left:50%; transform:translateX(-50%);
+}
+.card-symbol .minor-dec {
+  position:absolute; width:100%; height:100%;
+  top:0; left:0;
+}
+
+/* ----- 权杖 Wands — 火焰红金 ----- */
+.card-ace-wands .tarot-card,
+.card-2-wands .tarot-card,
+.card-3-wands .tarot-card,
+.card-4-wands .tarot-card,
+.card-5-wands .tarot-card,
+.card-6-wands .tarot-card,
+.card-7-wands .tarot-card,
+.card-8-wands .tarot-card,
+.card-9-wands .tarot-card,
+.card-10-wands .tarot-card,
+.card-page-wands .tarot-card,
+.card-knight-wands .tarot-card,
+.card-queen-wands .tarot-card,
+.card-king-wands .tarot-card {
+  background:linear-gradient(160deg, #0a0a1a 0%, #1a1412 30%, #2a1810 60%, #0d0d22 100%);
+}
+.card-ace-wands .card-symbol .art-shape,
+.card-2-wands .card-symbol .art-shape,
+.card-3-wands .card-symbol .art-shape,
+.card-4-wands .card-symbol .art-shape,
+.card-5-wands .card-symbol .art-shape,
+.card-6-wands .card-symbol .art-shape,
+.card-7-wands .card-symbol .art-shape,
+.card-8-wands .card-symbol .art-shape,
+.card-9-wands .card-symbol .art-shape,
+.card-10-wands .card-symbol .art-shape,
+.card-page-wands .card-symbol .art-shape,
+.card-knight-wands .card-symbol .art-shape,
+.card-queen-wands .card-symbol .art-shape,
+.card-king-wands .card-symbol .art-shape {
+  border-left:3rpx solid rgba(255,140,0,0.3);
+  border-right:3rpx solid rgba(255,140,0,0.1);
+  border-bottom:3rpx solid rgba(255,140,0,0.2);
+  border-radius:0 0 20rpx 20rpx;
+  width:10rpx; height:100rpx; left:75rpx; top:30rpx;
+  background:linear-gradient(180deg, rgba(255,140,0,0.1), transparent);
+}
+.card-ace-wands .card-symbol .art-shape::after,
+.card-2-wands .card-symbol .art-shape::after,
+.card-3-wands .card-symbol .art-shape::after,
+.card-4-wands .card-symbol .art-shape::after,
+.card-5-wands .card-symbol .art-shape::after,
+.card-6-wands .card-symbol .art-shape::after,
+.card-7-wands .card-symbol .art-shape::after,
+.card-8-wands .card-symbol .art-shape::after,
+.card-9-wands .card-symbol .art-shape::after,
+.card-10-wands .card-symbol .art-shape::after,
+.card-page-wands .card-symbol .art-shape::after,
+.card-knight-wands .card-symbol .art-shape::after,
+.card-queen-wands .card-symbol .art-shape::after,
+.card-king-wands .card-symbol .art-shape::after {
+  content:''; position:absolute; top:-8rpx; left:-8rpx;
+  width:22rpx; height:22rpx;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(255,200,50,0.3), transparent);
+  box-shadow:0 0 20rpx rgba(255,200,50,0.15);
+}
+
+/* 权杖·数字/花色显示 */
+.card-ace-wands .card-symbol .art-accent::before { content:'A'; font-size:50rpx; color:rgba(255,140,0,0.3); left:30rpx; top:30rpx; }
+.card-2-wands .card-symbol .art-accent::before { content:'II'; font-size:36rpx; color:rgba(255,140,0,0.25); left:30rpx; top:30rpx; }
+.card-3-wands .card-symbol .art-accent::before { content:'III'; font-size:36rpx; color:rgba(255,140,0,0.25); left:25rpx; top:30rpx; }
+.card-4-wands .card-symbol .art-accent::before { content:'IV'; font-size:36rpx; color:rgba(255,140,0,0.25); left:28rpx; top:30rpx; }
+.card-5-wands .card-symbol .art-accent::before { content:'V'; font-size:40rpx; color:rgba(255,140,0,0.25); left:30rpx; top:30rpx; }
+.card-6-wands .card-symbol .art-accent::before { content:'VI'; font-size:36rpx; color:rgba(255,140,0,0.25); left:28rpx; top:30rpx; }
+.card-7-wands .card-symbol .art-accent::before { content:'VII'; font-size:36rpx; color:rgba(255,140,0,0.25); left:25rpx; top:30rpx; }
+.card-8-wands .card-symbol .art-accent::before { content:'VIII'; font-size:30rpx; color:rgba(255,140,0,0.25); left:25rpx; top:30rpx; }
+.card-9-wands .card-symbol .art-accent::before { content:'IX'; font-size:36rpx; color:rgba(255,140,0,0.25); left:28rpx; top:30rpx; }
+.card-10-wands .card-symbol .art-accent::before { content:'X'; font-size:40rpx; color:rgba(255,140,0,0.25); left:30rpx; top:30rpx; }
+.card-page-wands .card-symbol .art-accent::before { content:'P'; font-size:48rpx; color:rgba(255,140,0,0.25); left:30rpx; top:30rpx; }
+.card-knight-wands .card-symbol .art-accent::before { content:'Kt'; font-size:36rpx; color:rgba(255,140,0,0.25); left:25rpx; top:30rpx; }
+.card-queen-wands .card-symbol .art-accent::before { content:'Q'; font-size:48rpx; color:rgba(255,140,0,0.25); left:30rpx; top:30rpx; }
+.card-king-wands .card-symbol .art-accent::before { content:'K'; font-size:48rpx; color:rgba(255,140,0,0.25); left:30rpx; top:30rpx; }
+
+/* 权杖宫廷：额外装饰 */
+.card-page-wands .card-symbol .art-detail::before {
+  content:''; position:absolute; bottom:10rpx; left:30rpx;
+  width:100rpx; height:20rpx;
+  border:1rpx solid rgba(255,140,0,0.1);
+  border-radius:40% 40% 0 0; border-bottom:none;
+}
+.card-knight-wands .card-symbol .art-detail::before {
+  content:''; position:absolute; bottom:10rpx; left:20rpx;
+  width:120rpx; height:30rpx;
+  clip-path:polygon(20% 100%, 40% 0%, 60% 0%, 80% 100%);
+  background:rgba(255,140,0,0.06);
+}
+.card-queen-wands .card-symbol .art-detail::before {
+  content:''; position:absolute; top:10rpx; left:35rpx;
+  clip-path:polygon(20% 100%, 35% 20%, 50% 0%, 65% 20%, 80% 100%);
+  width:90rpx; height:40rpx;
+  background:linear-gradient(180deg, rgba(255,140,0,0.15), transparent);
+}
+.card-king-wands .card-symbol .art-detail::before {
+  content:''; position:absolute; top:5rpx; left:30rpx;
+  clip-path:polygon(10% 100%, 25% 30%, 40% 10%, 50% 0%, 60% 10%, 75% 30%, 90% 100%);
+  width:100rpx; height:50rpx;
+  background:linear-gradient(180deg, rgba(255,200,50,0.15), transparent);
+}
+
+/* ----- 圣杯 Cups — 流水蓝白 ----- */
+.card-ace-cups .tarot-card,
+.card-2-cups .tarot-card,
+.card-3-cups .tarot-card,
+.card-4-cups .tarot-card,
+.card-5-cups .tarot-card,
+.card-6-cups .tarot-card,
+.card-7-cups .tarot-card,
+.card-8-cups .tarot-card,
+.card-9-cups .tarot-card,
+.card-10-cups .tarot-card,
+.card-page-cups .tarot-card,
+.card-knight-cups .tarot-card,
+.card-queen-cups .tarot-card,
+.card-king-cups .tarot-card {
+  background:linear-gradient(160deg, #0a0a1a 0%, #0e1420 30%, #0c1a2a 60%, #0d0d22 100%);
+}
+.card-ace-cups .card-symbol .art-shape,
+.card-2-cups .card-symbol .art-shape,
+.card-3-cups .card-symbol .art-shape,
+.card-4-cups .card-symbol .art-shape,
+.card-5-cups .card-symbol .art-shape,
+.card-6-cups .card-symbol .art-shape,
+.card-7-cups .card-symbol .art-shape,
+.card-8-cups .card-symbol .art-shape,
+.card-9-cups .card-symbol .art-shape,
+.card-10-cups .card-symbol .art-shape,
+.card-page-cups .card-symbol .art-shape,
+.card-knight-cups .card-symbol .art-shape,
+.card-queen-cups .card-symbol .art-shape,
+.card-king-cups .card-symbol .art-shape {
+  width:60rpx; height:50rpx; left:50rpx; top:40rpx;
+  border:2rpx solid rgba(100,180,255,0.3);
+  border-radius:0 0 50% 50% / 0 0 100% 100%;
+  background:linear-gradient(180deg, transparent 30%, rgba(100,180,255,0.05));
+}
+.card-ace-cups .card-symbol .art-shape::after,
+.card-2-cups .card-symbol .art-shape::after,
+.card-3-cups .card-symbol .art-shape::after,
+.card-4-cups .card-symbol .art-shape::after,
+.card-5-cups .card-symbol .art-shape::after,
+.card-6-cups .card-symbol .art-shape::after,
+.card-7-cups .card-symbol .art-shape::after,
+.card-8-cups .card-symbol .art-shape::after,
+.card-9-cups .card-symbol .art-shape::after,
+.card-10-cups .card-symbol .art-shape::after,
+.card-page-cups .card-symbol .art-shape::after,
+.card-knight-cups .card-symbol .art-shape::after,
+.card-queen-cups .card-symbol .art-shape::after,
+.card-king-cups .card-symbol .art-shape::after {
+  content:''; position:absolute; top:-6rpx; left:-5rpx;
+  width:66rpx; height:10rpx;
+  border:2rpx solid rgba(100,180,255,0.3);
+  border-radius:50%;
+  background:rgba(100,180,255,0.04);
+}
+
+/* 圣杯·数字/花色显示 */
+.card-ace-cups .card-symbol .art-accent::before { content:'A'; font-size:50rpx; color:rgba(100,180,255,0.25); left:30rpx; top:20rpx; }
+.card-2-cups .card-symbol .art-accent::before { content:'II'; font-size:36rpx; color:rgba(100,180,255,0.2); left:30rpx; top:20rpx; }
+.card-3-cups .card-symbol .art-accent::before { content:'III'; font-size:36rpx; color:rgba(100,180,255,0.2); left:25rpx; top:20rpx; }
+.card-4-cups .card-symbol .art-accent::before { content:'IV'; font-size:36rpx; color:rgba(100,180,255,0.2); left:28rpx; top:20rpx; }
+.card-5-cups .card-symbol .art-accent::before { content:'V'; font-size:40rpx; color:rgba(100,180,255,0.2); left:30rpx; top:20rpx; }
+.card-6-cups .card-symbol .art-accent::before { content:'VI'; font-size:36rpx; color:rgba(100,180,255,0.2); left:28rpx; top:20rpx; }
+.card-7-cups .card-symbol .art-accent::before { content:'VII'; font-size:36rpx; color:rgba(100,180,255,0.2); left:25rpx; top:20rpx; }
+.card-8-cups .card-symbol .art-accent::before { content:'VIII'; font-size:30rpx; color:rgba(100,180,255,0.2); left:25rpx; top:20rpx; }
+.card-9-cups .card-symbol .art-accent::before { content:'IX'; font-size:36rpx; color:rgba(100,180,255,0.2); left:28rpx; top:20rpx; }
+.card-10-cups .card-symbol .art-accent::before { content:'X'; font-size:40rpx; color:rgba(100,180,255,0.2); left:30rpx; top:20rpx; }
+.card-page-cups .card-symbol .art-accent::before { content:'P'; font-size:48rpx; color:rgba(100,180,255,0.2); left:30rpx; top:20rpx; }
+.card-knight-cups .card-symbol .art-accent::before { content:'Kt'; font-size:36rpx; color:rgba(100,180,255,0.2); left:25rpx; top:20rpx; }
+.card-queen-cups .card-symbol .art-accent::before { content:'Q'; font-size:48rpx; color:rgba(100,180,255,0.2); left:30rpx; top:20rpx; }
+.card-king-cups .card-symbol .art-accent::before { content:'K'; font-size:48rpx; color:rgba(100,180,255,0.2); left:30rpx; top:20rpx; }
+
+/* 圣杯宫廷装饰 */
+.card-page-cups .card-symbol .art-detail::before { content:''; position:absolute; bottom:10rpx; left:40rpx; width:80rpx; height:2rpx; background:rgba(100,180,255,0.1); box-shadow:0 6rpx 0 rgba(100,180,255,0.06); }
+.card-knight-cups .card-symbol .art-detail::before { content:''; position:absolute; bottom:10rpx; left:30rpx; width:100rpx; height:20rpx; border:1rpx solid rgba(100,180,255,0.08); border-radius:50%; border-bottom:none; }
+.card-queen-cups .card-symbol .art-detail::before { content:''; position:absolute; top:10rpx; left:40rpx; width:80rpx; height:30rpx; border-bottom:2rpx solid rgba(100,180,255,0.1); border-radius:0 0 50% 50%; }
+.card-king-cups .card-symbol .art-detail::before { content:''; position:absolute; top:5rpx; left:35rpx; clip-path:polygon(10% 100%, 25% 0%, 50% 30%, 75% 0%, 90% 100%); width:90rpx; height:40rpx; background:rgba(100,180,255,0.08); }
+
+/* ----- 宝剑 Swords — 锐利银紫 ----- */
+.card-ace-swords .tarot-card,
+.card-2-swords .tarot-card,
+.card-3-swords .tarot-card,
+.card-4-swords .tarot-card,
+.card-5-swords .tarot-card,
+.card-6-swords .tarot-card,
+.card-7-swords .tarot-card,
+.card-8-swords .tarot-card,
+.card-9-swords .tarot-card,
+.card-10-swords .tarot-card,
+.card-page-swords .tarot-card,
+.card-knight-swords .tarot-card,
+.card-queen-swords .tarot-card,
+.card-king-swords .tarot-card {
+  background:linear-gradient(160deg, #0a0a1a 0%, #14101a 30%, #1a1420 60%, #0d0d22 100%);
+}
+.card-ace-swords .card-symbol .art-shape,
+.card-2-swords .card-symbol .art-shape,
+.card-3-swords .card-symbol .art-shape,
+.card-4-swords .card-symbol .art-shape,
+.card-5-swords .card-symbol .art-shape,
+.card-6-swords .card-symbol .art-shape,
+.card-7-swords .card-symbol .art-shape,
+.card-8-swords .card-symbol .art-shape,
+.card-9-swords .card-symbol .art-shape,
+.card-10-swords .card-symbol .art-shape,
+.card-page-swords .card-symbol .art-shape,
+.card-knight-swords .card-symbol .art-shape,
+.card-queen-swords .card-symbol .art-shape,
+.card-king-swords .card-symbol .art-shape {
+  width:6rpx; height:90rpx; left:77rpx; top:50rpx;
+  background:linear-gradient(180deg, rgba(200,180,220,0.3), rgba(200,180,220,0.05));
+  border-radius:3rpx;
+}
+.card-ace-swords .card-symbol .art-shape::after,
+.card-2-swords .card-symbol .art-shape::after,
+.card-3-swords .card-symbol .art-shape::after,
+.card-4-swords .card-symbol .art-shape::after,
+.card-5-swords .card-symbol .art-shape::after,
+.card-6-swords .card-symbol .art-shape::after,
+.card-7-swords .card-symbol .art-shape::after,
+.card-8-swords .card-symbol .art-shape::after,
+.card-9-swords .card-symbol .art-shape::after,
+.card-10-swords .card-symbol .art-shape::after,
+.card-page-swords .card-symbol .art-shape::after,
+.card-knight-swords .card-symbol .art-shape::after,
+.card-queen-swords .card-symbol .art-shape::after,
+.card-king-swords .card-symbol .art-shape::after {
+  content:''; position:absolute; top:-15rpx; left:-14rpx;
+  width:30rpx; height:30rpx;
+  clip-path:polygon(50% 0%, 100% 100%, 0% 100%);
+  background:linear-gradient(180deg, rgba(200,180,220,0.2), transparent);
+}
+.card-ace-swords .card-symbol .art-shape::before,
+.card-2-swords .card-symbol .art-shape::before,
+.card-3-swords .card-symbol .art-shape::before,
+.card-4-swords .card-symbol .art-shape::before,
+.card-5-swords .card-symbol .art-shape::before,
+.card-6-swords .card-symbol .art-shape::before,
+.card-7-swords .card-symbol .art-shape::before,
+.card-8-swords .card-symbol .art-shape::before,
+.card-9-swords .card-symbol .art-shape::before,
+.card-10-swords .card-symbol .art-shape::before,
+.card-page-swords .card-symbol .art-shape::before,
+.card-knight-swords .card-symbol .art-shape::before,
+.card-queen-swords .card-symbol .art-shape::before,
+.card-king-swords .card-symbol .art-shape::before {
+  content:''; position:absolute; bottom:-10rpx; left:-12rpx;
+  width:26rpx; height:20rpx;
+  clip-path:polygon(50% 100%, 0% 0%, 100% 0%);
+  background:linear-gradient(0deg, rgba(200,180,220,0.15), transparent);
+}
+
+/* 宝剑·数字/花色显示 */
+.card-ace-swords .card-symbol .art-accent::before { content:'A'; font-size:50rpx; color:rgba(200,180,220,0.2); left:30rpx; top:30rpx; }
+.card-2-swords .card-symbol .art-accent::before { content:'II'; font-size:36rpx; color:rgba(200,180,220,0.18); left:30rpx; top:30rpx; }
+.card-3-swords .card-symbol .art-accent::before { content:'III'; font-size:36rpx; color:rgba(200,180,220,0.18); left:25rpx; top:30rpx; }
+.card-4-swords .card-symbol .art-accent::before { content:'IV'; font-size:36rpx; color:rgba(200,180,220,0.18); left:28rpx; top:30rpx; }
+.card-5-swords .card-symbol .art-accent::before { content:'V'; font-size:40rpx; color:rgba(200,180,220,0.18); left:30rpx; top:30rpx; }
+.card-6-swords .card-symbol .art-accent::before { content:'VI'; font-size:36rpx; color:rgba(200,180,220,0.18); left:28rpx; top:30rpx; }
+.card-7-swords .card-symbol .art-accent::before { content:'VII'; font-size:36rpx; color:rgba(200,180,220,0.18); left:25rpx; top:30rpx; }
+.card-8-swords .card-symbol .art-accent::before { content:'VIII'; font-size:30rpx; color:rgba(200,180,220,0.18); left:25rpx; top:30rpx; }
+.card-9-swords .card-symbol .art-accent::before { content:'IX'; font-size:36rpx; color:rgba(200,180,220,0.18); left:28rpx; top:30rpx; }
+.card-10-swords .card-symbol .art-accent::before { content:'X'; font-size:40rpx; color:rgba(200,180,220,0.18); left:30rpx; top:30rpx; }
+.card-page-swords .card-symbol .art-accent::before { content:'P'; font-size:48rpx; color:rgba(200,180,220,0.18); left:30rpx; top:30rpx; }
+.card-knight-swords .card-symbol .art-accent::before { content:'Kt'; font-size:36rpx; color:rgba(200,180,220,0.18); left:25rpx; top:30rpx; }
+.card-queen-swords .card-symbol .art-accent::before { content:'Q'; font-size:48rpx; color:rgba(200,180,220,0.18); left:30rpx; top:30rpx; }
+.card-king-swords .card-symbol .art-accent::before { content:'K'; font-size:48rpx; color:rgba(200,180,220,0.18); left:30rpx; top:30rpx; }
+
+/* 宝剑宫廷装饰 */
+.card-page-swords .card-symbol .art-detail::before { content:''; position:absolute; bottom:10rpx; left:30rpx; width:100rpx; height:2rpx; background:rgba(200,180,220,0.08); }
+.card-knight-swords .card-symbol .art-detail::before { content:''; position:absolute; bottom:5rpx; left:25rpx; width:110rpx; height:30rpx; border:1rpx solid rgba(200,180,220,0.06); border-radius:50%; background:rgba(200,180,220,0.02); }
+.card-queen-swords .card-symbol .art-detail::before { content:''; position:absolute; top:10rpx; left:40rpx; width:80rpx; height:30rpx; border-left:2rpx solid rgba(200,180,220,0.08); border-bottom:2rpx solid rgba(200,180,220,0.08); border-radius:0 0 0 20rpx; }
+.card-king-swords .card-symbol .art-detail::before { content:''; position:absolute; top:5rpx; left:30rpx; clip-path:polygon(50% 0%, 100% 30%, 80% 100%, 20% 100%, 0% 30%); width:100rpx; height:40rpx; background:rgba(200,180,220,0.06); }
+
+/* ----- 星币 Pentacles — 大地绿金 ----- */
+.card-ace-pentacles .tarot-card,
+.card-2-pentacles .tarot-card,
+.card-3-pentacles .tarot-card,
+.card-4-pentacles .tarot-card,
+.card-5-pentacles .tarot-card,
+.card-6-pentacles .tarot-card,
+.card-7-pentacles .tarot-card,
+.card-8-pentacles .tarot-card,
+.card-9-pentacles .tarot-card,
+.card-10-pentacles .tarot-card,
+.card-page-pentacles .tarot-card,
+.card-knight-pentacles .tarot-card,
+.card-queen-pentacles .tarot-card,
+.card-king-pentacles .tarot-card {
+  background:linear-gradient(160deg, #0a0a1a 0%, #0e1410 30%, #0e1a10 60%, #0d0d22 100%);
+}
+.card-ace-pentacles .card-symbol .art-shape,
+.card-2-pentacles .card-symbol .art-shape,
+.card-3-pentacles .card-symbol .art-shape,
+.card-4-pentacles .card-symbol .art-shape,
+.card-5-pentacles .card-symbol .art-shape,
+.card-6-pentacles .card-symbol .art-shape,
+.card-7-pentacles .card-symbol .art-shape,
+.card-8-pentacles .card-symbol .art-shape,
+.card-9-pentacles .card-symbol .art-shape,
+.card-10-pentacles .card-symbol .art-shape,
+.card-page-pentacles .card-symbol .art-shape,
+.card-knight-pentacles .card-symbol .art-shape,
+.card-queen-pentacles .card-symbol .art-shape,
+.card-king-pentacles .card-symbol .art-shape {
+  width:60rpx; height:60rpx; left:50rpx; top:50rpx;
+  border:3rpx solid rgba(144,238,144,0.2);
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(144,238,144,0.04) 30%, transparent);
+}
+.card-ace-pentacles .card-symbol .art-shape::after,
+.card-2-pentacles .card-symbol .art-shape::after,
+.card-3-pentacles .card-symbol .art-shape::after,
+.card-4-pentacles .card-symbol .art-shape::after,
+.card-5-pentacles .card-symbol .art-shape::after,
+.card-6-pentacles .card-symbol .art-shape::after,
+.card-7-pentacles .card-symbol .art-shape::after,
+.card-8-pentacles .card-symbol .art-shape::after,
+.card-9-pentacles .card-symbol .art-shape::after,
+.card-10-pentacles .card-symbol .art-shape::after,
+.card-page-pentacles .card-symbol .art-shape::after,
+.card-knight-pentacles .card-symbol .art-shape::after,
+.card-queen-pentacles .card-symbol .art-shape::after,
+.card-king-pentacles .card-symbol .art-shape::after {
+  content:''; position:absolute; top:12rpx; left:12rpx;
+  width:32rpx; height:32rpx;
+  border:1rpx solid rgba(144,238,144,0.12);
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(255,215,0,0.06), transparent);
+}
+
+/* 星币·数字/花色显示 */
+.card-ace-pentacles .card-symbol .art-accent::before { content:'A'; font-size:50rpx; color:rgba(144,238,144,0.2); left:30rpx; top:25rpx; }
+.card-2-pentacles .card-symbol .art-accent::before { content:'II'; font-size:36rpx; color:rgba(144,238,144,0.18); left:30rpx; top:25rpx; }
+.card-3-pentacles .card-symbol .art-accent::before { content:'III'; font-size:36rpx; color:rgba(144,238,144,0.18); left:25rpx; top:25rpx; }
+.card-4-pentacles .card-symbol .art-accent::before { content:'IV'; font-size:36rpx; color:rgba(144,238,144,0.18); left:28rpx; top:25rpx; }
+.card-5-pentacles .card-symbol .art-accent::before { content:'V'; font-size:40rpx; color:rgba(144,238,144,0.18); left:30rpx; top:25rpx; }
+.card-6-pentacles .card-symbol .art-accent::before { content:'VI'; font-size:36rpx; color:rgba(144,238,144,0.18); left:28rpx; top:25rpx; }
+.card-7-pentacles .card-symbol .art-accent::before { content:'VII'; font-size:36rpx; color:rgba(144,238,144,0.18); left:25rpx; top:25rpx; }
+.card-8-pentacles .card-symbol .art-accent::before { content:'VIII'; font-size:30rpx; color:rgba(144,238,144,0.18); left:25rpx; top:25rpx; }
+.card-9-pentacles .card-symbol .art-accent::before { content:'IX'; font-size:36rpx; color:rgba(144,238,144,0.18); left:28rpx; top:25rpx; }
+.card-10-pentacles .card-symbol .art-accent::before { content:'X'; font-size:40rpx; color:rgba(144,238,144,0.18); left:30rpx; top:25rpx; }
+.card-page-pentacles .card-symbol .art-accent::before { content:'P'; font-size:48rpx; color:rgba(144,238,144,0.18); left:30rpx; top:25rpx; }
+.card-knight-pentacles .card-symbol .art-accent::before { content:'Kt'; font-size:36rpx; color:rgba(144,238,144,0.18); left:25rpx; top:25rpx; }
+.card-queen-pentacles .card-symbol .art-accent::before { content:'Q'; font-size:48rpx; color:rgba(144,238,144,0.18); left:30rpx; top:25rpx; }
+.card-king-pentacles .card-symbol .art-accent::before { content:'K'; font-size:48rpx; color:rgba(144,238,144,0.18); left:30rpx; top:25rpx; }
+
+/* 星币宫廷装饰 */
+.card-page-pentacles .card-symbol .art-detail::before { content:''; position:absolute; bottom:10rpx; left:35rpx; width:90rpx; height:2rpx; background:rgba(144,238,144,0.08); box-shadow:0 8rpx 0 rgba(144,238,144,0.04); }
+.card-knight-pentacles .card-symbol .art-detail::before { content:''; position:absolute; bottom:5rpx; left:30rpx; width:100rpx; height:25rpx; border:1rpx solid rgba(144,238,144,0.06); border-radius:20rpx 20rpx 0 0; border-bottom:none; }
+.card-queen-pentacles .card-symbol .art-detail::before { content:''; position:absolute; top:10rpx; left:40rpx; width:80rpx; height:30rpx; border:2rpx solid rgba(144,238,144,0.06); border-radius:50% 50% 0 0; border-bottom:none; background:rgba(144,238,144,0.02); }
+.card-king-pentacles .card-symbol .art-detail::before { content:''; position:absolute; top:5rpx; left:35rpx; width:90rpx; height:40rpx; clip-path:polygon(15% 100%, 30% 0%, 50% 20%, 70% 0%, 85% 100%); background:rgba(144,238,144,0.06); }
+
+/* 小阿尔卡纳通用位置微调 */
+.card-ace-wands .card-symbol .art-accent::before,
+.card-2-wands .card-symbol .art-accent::before,
+.card-3-wands .card-symbol .art-accent::before,
+.card-4-wands .card-symbol .art-accent::before,
+.card-5-wands .card-symbol .art-accent::before,
+.card-6-wands .card-symbol .art-accent::before,
+.card-7-wands .card-symbol .art-accent::before,
+.card-8-wands .card-symbol .art-accent::before,
+.card-9-wands .card-symbol .art-accent::before,
+.card-10-wands .card-symbol .art-accent::before,
+.card-page-wands .card-symbol .art-accent::before,
+.card-knight-wands .card-symbol .art-accent::before,
+.card-queen-wands .card-symbol .art-accent::before,
+.card-king-wands .card-symbol .art-accent::before,
+.card-ace-cups .card-symbol .art-accent::before,
+.card-2-cups .card-symbol .art-accent::before,
+.card-3-cups .card-symbol .art-accent::before,
+.card-4-cups .card-symbol .art-accent::before,
+.card-5-cups .card-symbol .art-accent::before,
+.card-6-cups .card-symbol .art-accent::before,
+.card-7-cups .card-symbol .art-accent::before,
+.card-8-cups .card-symbol .art-accent::before,
+.card-9-cups .card-symbol .art-accent::before,
+.card-10-cups .card-symbol .art-accent::before,
+.card-page-cups .card-symbol .art-accent::before,
+.card-knight-cups .card-symbol .art-accent::before,
+.card-queen-cups .card-symbol .art-accent::before,
+.card-king-cups .card-symbol .art-accent::before,
+.card-ace-swords .card-symbol .art-accent::before,
+.card-2-swords .card-symbol .art-accent::before,
+.card-3-swords .card-symbol .art-accent::before,
+.card-4-swords .card-symbol .art-accent::before,
+.card-5-swords .card-symbol .art-accent::before,
+.card-6-swords .card-symbol .art-accent::before,
+.card-7-swords .card-symbol .art-accent::before,
+.card-8-swords .card-symbol .art-accent::before,
+.card-9-swords .card-symbol .art-accent::before,
+.card-10-swords .card-symbol .art-accent::before,
+.card-page-swords .card-symbol .art-accent::before,
+.card-knight-swords .card-symbol .art-accent::before,
+.card-queen-swords .card-symbol .art-accent::before,
+.card-king-swords .card-symbol .art-accent::before,
+.card-ace-pentacles .card-symbol .art-accent::before,
+.card-2-pentacles .card-symbol .art-accent::before,
+.card-3-pentacles .card-symbol .art-accent::before,
+.card-4-pentacles .card-symbol .art-accent::before,
+.card-5-pentacles .card-symbol .art-accent::before,
+.card-6-pentacles .card-symbol .art-accent::before,
+.card-7-pentacles .card-symbol .art-accent::before,
+.card-8-pentacles .card-symbol .art-accent::before,
+.card-9-pentacles .card-symbol .art-accent::before,
+.card-10-pentacles .card-symbol .art-accent::before,
+.card-page-pentacles .card-symbol .art-accent::before,
+.card-knight-pentacles .card-symbol .art-accent::before,
+.card-queen-pentacles .card-symbol .art-accent::before,
+.card-king-pentacles .card-symbol .art-accent::before {
+  position:absolute; font-weight:300; opacity:0.25;
+  font-family:'Georgia',serif;
+  text-shadow:0 0 20rpx currentColor;
 }

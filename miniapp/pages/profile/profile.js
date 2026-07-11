@@ -52,7 +52,7 @@ Page({
         hasMore: history.items ? history.items.length >= 20 : false,
       });
     } catch (err) {
-      this.setData({ pageLoading: false, pageError: err.errMsg || '加载失败' });
+      this.setData({ pageLoading: false, pageError: err.message || '加载失败' });
     }
   },
 

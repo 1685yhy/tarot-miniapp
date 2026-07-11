@@ -31,10 +31,10 @@ Page({
     this.setData({ pageLoading: true });
     try {
       const data = await request('/cards');
-      const cards = data.cards || [];
+      const cards = Array.isArray(data) ? data : (data.cards || []);
       this.setData({ cards, filteredCards: cards, pageLoading: false });
     } catch (err) {
-      this.setData({ pageLoading: false, pageError: err.errMsg || '加载失败' });
+      this.setData({ pageLoading: false, pageError: err.message || '加载失败' });
     }
   },
 
@@ -78,7 +78,7 @@ Page({
         c.name_en.toLowerCase().includes(kw) ||
         (c.meaning_upright && c.meaning_upright.toLowerCase().includes(kw)) ||
         (c.meaning_reversed && c.meaning_reversed.toLowerCase().includes(kw)) ||
-        (c.keywords && c.keywords.some(k => k.toLowerCase().includes(kw)))
+        (c.keywords && Array.isArray(c.keywords) && c.keywords.some(k => k.toLowerCase().includes(kw)))
       );
     }
 

@@ -32,7 +32,7 @@ Page({
       const reading = await request(`/readings/${id}`);
       this.setData({ reading, pageLoading: false });
     } catch (err) {
-      this.setData({ pageLoading: false, pageError: err.errMsg || '加载失败' });
+      this.setData({ pageLoading: false, pageError: err.message || '加载失败' });
     } finally {
       this._stageTimer1 && clearTimeout(this._stageTimer1);
       this._stageTimer2 && clearTimeout(this._stageTimer2);

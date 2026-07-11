@@ -56,7 +56,7 @@
     <input class="chat-input" placeholder="输入你的问题..." placeholder-style="color:#555577"
       value="{{inputText}}" bindinput="onInput" confirm-type="send" bindconfirm="onSend"
     />
-    <button class="send-btn" bindtap="onSend" disabled="{{sending || !inputText.trim()}}">
+    <button class="send-btn" bindtap="onSend" disabled="{{sending || !canSend}}">
       <text>{{sending ? '...' : '发送'}}</text>
     </button>
   </view>

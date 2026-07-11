@@ -107,7 +107,7 @@ Page({
       });
     } catch (err) {
       this.setData({ isDrawing: false });
-      if (err.message.includes('402')) {
+      if (err.statusCode === 402) {
         wx.showModal({
           title: '次数不足',
           content: '今日免费次数已用完，开通会员享无限解读',

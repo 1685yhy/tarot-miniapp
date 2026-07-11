@@ -1,9 +1,17 @@
 /**
- * API client with environment-aware base URL.
+ * API 客户端 —— 环境感知的 Base URL 配置
+ * =============================================
  *
- * Development:  http://localhost:8000
- * Trial/Preview: https://your-dev-domain.com  (extConfig override)
- * Release:       https://your-production-domain.com  (extConfig override)
+ * 【部署前必改】 将下方 ENV_URLS.release 中的占位符替换为真实域名：
+ *
+ *    release: 'https://api.your-domain.com'
+ *
+ * 或通过 第三方平台 (extConfig) 的 BASE_URL 参数注入（优先级更高）。
+ *
+ * 环境检测逻辑：
+ *   - develop  → 自动使用 http://localhost:8000 （即使 release URL 是占位符也不受影响）
+ *   - trial    → 使用 extConfig 中 BASE_URL 或 ENV_URLS.trial
+ *   - release  → 使用 extConfig 中 BASE_URL 或 ENV_URLS.release（发布前必须替换占位符！）
  */
 
 const ENV = (() => {
@@ -15,13 +23,20 @@ const ENV = (() => {
   }
 })();
 
+/**
+ * 环境 URL 映射表
+ * ------------------------------------------------------------
+ * deploy   开发用 http://localhost:8000
+ * trial    体验版域名（替换为你的测试域名）
+ * release  【★ 部署前必须修改 ★】替换为生产域名
+ */
 const ENV_URLS = {
   develop: 'http://localhost:8000',
   trial: 'https://trial-api.tarot.example.com',
-  release: 'https://your-domain.com',
+  release: 'https://your-domain.com',  // ← ★ 部署前将此处改为你的生产域名！
 };
 
-// Allow override via extConfig (deployed through第三方平台)
+// 允许通过 extConfig 覆盖 BASE_URL（第三方平台托管场景）
 let extBaseUrl = null;
 try {
   const ext = wx.getExtConfigSync ? wx.getExtConfigSync() : {};
@@ -30,11 +45,25 @@ try {
   // extConfig not available
 }
 
+// 最终 BASE_URL：extConfig > 环境映射表 > 兜底
 const BASE_URL = extBaseUrl || ENV_URLS[ENV] || 'https://your-domain.com';
 
-// Safety check: fail loudly if placeholder domain leaked into production/trial
+/**
+ * 占位符检测（双重保障）
+ *   - develop 环境下：如果 release URL 仍为占位符，不影响开发（但会在控制台提示）
+ *   - trial/release 下检测到占位符 → 直接报错，防止带着占位符上线
+ */
 if (BASE_URL.includes('your-domain') && ENV !== 'develop') {
-  console.error('[tarot] CRITICAL: BASE_URL contains placeholder domain. Configure via extConfig.BASE_URL or update ENV_URLS.');
+  console.error(
+    '[tarot] 严重错误：BASE_URL 仍包含占位符 "your-domain"！\n' +
+    '  请在 api.js 中将 ENV_URLS.release 替换为真实域名，\n' +
+    '  或通过第三方平台的 extConfig.BASE_URL 传入正确地址。'
+  );
+} else if (BASE_URL.includes('your-domain') && ENV === 'develop') {
+  console.warn(
+    '[tarot] 提醒：release URL 仍为占位符 "your-domain"。\n' +
+    '  开发环境不受影响（已使用 localhost），但部署到正式环境前务必修改。'
+  );
 }
 
 const request = async (url, options = {}) => {
@@ -58,7 +87,9 @@ const request = async (url, options = {}) => {
         } else if (res.statusCode >= 200 && res.statusCode < 300) {
           resolve(res.data);
         } else {
-          reject(new Error(res.data?.detail || '请求失败'));
+          const err = new Error(res.data?.detail || '请求失败');
+          err.statusCode = res.statusCode;
+          reject(err);
         }
       },
       fail: reject,

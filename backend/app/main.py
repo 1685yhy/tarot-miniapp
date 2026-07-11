@@ -36,4 +36,20 @@ app.include_router(share.router)
 
 @app.get("/health")
 async def health():
-    return {"status": "ok"}
+    # ---- 配置自检 ----
+    cfg = settings
+    deepseek_status = "ok" if cfg.DEEPSEEK_API_KEY and not cfg.DEEPSEEK_API_KEY.startswith("sk-your") else "missing"
+    wechat_status = "ok" if cfg.WECHAT_APP_ID and "your" not in cfg.WECHAT_APP_ID else "missing"
+    jwt_secret_raw = cfg.JWT_SECRET.replace("change-me-in-production", "")
+    jwt_status = "ok" if len(jwt_secret_raw) >= 32 else ("weak" if jwt_secret_raw else "missing")
+
+    return {
+        "status": "ok",
+        "service": "塔罗占卜 API",
+        "version": "1.0.0",
+        "config_status": {
+            "deepseek": deepseek_status,
+            "wechat": wechat_status,
+            "jwt": jwt_status,
+        },
+    }

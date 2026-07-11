@@ -6,6 +6,7 @@ Page({
     readingId: '',
     messages: [],
     inputText: '',
+    canSend: false,
     sending: false,
     remainingFree: 0,
     pageLoading: false,
@@ -36,7 +37,7 @@ Page({
         setTimeout(() => this.scrollToBottom(), 200);
       }
     } catch (err) {
-      this.setData({ pageLoading: false });
+      this.setData({ pageLoading: false, pageError: err.message || '加载失败' });
     }
   },
 
@@ -45,7 +46,8 @@ Page({
   },
 
   onInput(e) {
-    this.setData({ inputText: e.detail.value });
+    const val = e.detail.value;
+    this.setData({ inputText: val, canSend: val.trim().length > 0 });
   },
 
   async onSend() {
@@ -53,7 +55,7 @@ Page({
     if (!text || this.data.sending) return;
 
     const messages = [...this.data.messages, { role: 'user', content: text }];
-    this.setData({ messages, inputText: '', sending: true });
+    this.setData({ messages, inputText: '', canSend: false, sending: true });
 
     try {
       const result = await request(`/readings/${this.data.readingId}/chat`, {

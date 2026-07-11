@@ -1,42 +1,48 @@
 <view class="tarot-card-wrapper {{isReversed ? 'reversed' : ''}}">
-  <view class="tarot-card {{isReversed ? 'card-reversed' : ''}}">
-    <!-- 卡牌顶部装饰 -->
+  <view class="tarot-card {{isReversed ? 'card-reversed' : ''}} card-{{cardType}}">
+    <!-- 顶部金色装饰条 -->
     <view class="card-ornament-top"></view>
 
     <!-- 卡牌编号 -->
-    <view class="card-number">{{cardNumber}}</view>
+    <text class="card-number">{{cardNumberDisplay}}</text>
 
-    <!-- 卡面背景：神秘星空 -->
+    <!-- 卡面主区域 -->
     <view class="card-art">
+      <!-- 星空微光背景 -->
       <view class="star-field">
-        <view class="star star-1"></view>
-        <view class="star star-2"></view>
-        <view class="star star-3"></view>
-        <view class="star star-4"></view>
-        <view class="star star-5"></view>
-        <view class="star star-6"></view>
-        <view class="star star-7"></view>
-        <view class="star star-8"></view>
+        <view class="star s1"></view><view class="star s2"></view>
+        <view class="star s3"></view><view class="star s4"></view>
+        <view class="star s5"></view><view class="star s6"></view>
+        <view class="star s7"></view><view class="star s8"></view>
       </view>
-      <view class="card-glyph {{isReversed ? 'glyph-reversed' : ''}}"></view>
+
+      <!-- 卡牌插画核心区：纯CSS艺术 -->
+      <view class="card-symbol">
+        <view class="art-shape"></view>
+        <view class="art-accent"></view>
+        <view class="art-detail"></view>
+      </view>
     </view>
 
     <!-- 卡牌名称 -->
-    <view class="card-name-en">{{nameEn}}</view>
-    <view class="card-name-zh">{{nameZh}}</view>
+    <text class="card-name-en">{{displayNameEn}}</text>
+    <text class="card-name-zh">{{nameZh}}</text>
 
-    <!-- 位置标记 -->
+    <!-- 位置徽章 -->
     <view class="position-badge {{isReversed ? 'badge-reversed' : 'badge-upright'}}">
-      <text class="position-icon">{{isReversed ? '◀' : '▲'}}</text>
+      <text class="position-icon">{{isReversed ? '▼' : '▲'}}</text>
       <text class="position-text">{{positionName}}</text>
     </view>
 
-    <!-- 倒置指示器 -->
+    <!-- 逆位标签 -->
     <block wx:if="{{isReversed}}">
       <view class="reversed-label">逆位</view>
     </block>
 
-    <!-- 底部装饰 -->
+    <!-- 底部装饰条 -->
     <view class="card-ornament-bottom"></view>
+
+    <!-- 暗光晕托底 -->
+    <view class="card-aura"></view>
   </view>
 </view>

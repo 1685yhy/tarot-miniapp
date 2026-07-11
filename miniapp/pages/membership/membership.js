@@ -8,6 +8,7 @@ Page({
     user: null,
     pageLoading: true,
     pageError: null,
+    loading: false,
   },
 
   async onLoad(options) {
@@ -25,7 +26,7 @@ Page({
       }
       this.setData({ user, products, pageLoading: false, loading: false });
     } catch (err) {
-      this.setData({ pageLoading: false, pageError: err.errMsg || '加载失败' });
+      this.setData({ pageLoading: false, pageError: err.message || '加载失败' });
     }
   },
 

@@ -30,7 +30,7 @@ Page({
       wx.setStorageSync('annual_report', report);
     } catch (err) {
       this.setData({ generating: false });
-      if (err.message.includes('402')) {
+      if (err.statusCode === 402) {
         wx.showModal({
           title: '会员专属',
           content: '年度运势报告仅限会员使用',
