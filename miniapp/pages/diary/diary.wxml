@@ -36,15 +36,23 @@
     </button>
 
     <!-- Entries -->
-    <view class="entries">
-      <view class="entry-card anim-fade-in-up" wx:for="{{entries}}" wx:key="id">
-        <view class="entry-header">
-          <text class="text-dim" style="font-size:var(--fs-body-small)">{{item.date}}</text>
-          <text style="font-size:32rpx">{{item.mood === 'happy' ? '😊' : item.mood === 'sad' ? '😢' : item.mood === 'anxious' ? '😰' : item.mood === 'calm' ? '😌' : item.mood === 'excited' ? '🤩' : '💭'}}</text>
+    <scroll-view scroll-y style="max-height:70vh" bindscrolltolower="loadMore" wx:if="{{entries.length > 0}}">
+      <view class="entries">
+        <view class="entry-card anim-fade-in-up" wx:for="{{entries}}" wx:key="id">
+          <view class="entry-header">
+            <text class="text-dim" style="font-size:var(--fs-body-small)">{{item.date}}</text>
+            <text style="font-size:32rpx">{{item.mood === 'happy' ? '😊' : item.mood === 'sad' ? '😢' : item.mood === 'anxious' ? '😰' : item.mood === 'calm' ? '😌' : item.mood === 'excited' ? '🤩' : '💭'}}</text>
+          </view>
+          <view class="entry-card-section" wx:if="{{item.card}}">
+            <text class="card-name">🔮 {{item.card.name_zh}}</text>
+            <text class="card-meaning">{{item.card.meaning_upright}}</text>
+          </view>
+          <text class="entry-reflection" wx:if="{{item.reflection}}">{{item.reflection}}</text>
         </view>
-        <text class="entry-reflection" wx:if="{{item.reflection}}">{{item.reflection}}</text>
       </view>
-    </view>
+      <view wx:if="{{loadingMore}}" style="text-align:center;padding:var(--space-md)" class="text-dim">加载更多...</view>
+      <view wx:elif="{{!hasMore && entries.length > 0}}" style="text-align:center;padding:var(--space-md)" class="text-dim">— 已加载全部 —</view>
+    </scroll-view>
 
     <!-- Empty state -->
     <view wx:if="{{entries.length === 0}}" class="empty-state" style="padding:var(--space-massive) 0">

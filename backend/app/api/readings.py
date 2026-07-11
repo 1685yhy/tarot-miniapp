@@ -20,6 +20,7 @@ from app.models.card import TarotCard
 from app.models.reading import ChatMessage, DrawnCard, Reading
 from app.models.user import User
 from app.schemas.reading import (
+    ChatMessageResponse,
     CreateReadingRequest,
     DrawnCardResponse,
     ReadingHistoryItem,
@@ -111,10 +112,11 @@ async def create_reading(
     # ── Free-tier limit check ──
     if user.is_member and user.member_expires_at and user.member_expires_at < datetime.now(timezone.utc):
         user.is_member = False
+    uses_paid_credit = False
     if not user.is_member and user.free_readings_today >= settings.FREE_DAILY_READINGS:
         # Check if user has paid reading credits
         if user.paid_readings_balance and user.paid_readings_balance > 0:
-            user.paid_readings_balance -= 1
+            uses_paid_credit = True
         else:
             raise HTTPException(
                 status_code=402,
@@ -130,7 +132,7 @@ async def create_reading(
         spread_type=spread_type,
         question=req.question,
         theme=req.theme,
-        is_paid=user.is_member,
+        is_paid=user.is_member or uses_paid_credit,
     )
     db.add(reading)
     await db.flush()
@@ -178,8 +180,13 @@ async def create_reading(
     if interpretation is not None:
         reading.interpretation = interpretation
 
+    # ── Deduct paid balance only after successful AI generation ──
+    if uses_paid_credit:
+        user.paid_readings_balance -= 1
+
     # ── Update user state ──
-    user.free_readings_today += 1
+    if not user.is_member:
+        user.free_readings_today += 1
     user.last_reading_date = datetime.now(timezone.utc)
 
     # ── Flush so the drawn_cards relationship is populated ──
@@ -278,7 +285,7 @@ async def get_reading(
     result = await db.execute(
         select(Reading)
         .where(Reading.id == reading_id)
-        .options(selectinload(Reading.drawn_cards))
+        .options(selectinload(Reading.drawn_cards), selectinload(Reading.chat_messages))
     )
     reading = result.scalar_one_or_none()
 
@@ -298,6 +305,7 @@ async def get_reading(
         is_paid=reading.is_paid,
         created_at=reading.created_at,
         drawn_cards=[DrawnCardResponse(**d) for d in drawn_resp],
+        chat_messages=[ChatMessageResponse.model_validate(m) for m in reading.chat_messages],
     )
 
 

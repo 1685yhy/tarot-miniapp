@@ -98,7 +98,7 @@
       <scroll-view scroll-y style="max-height:70vh" bindscrolltolower="onScrollToBottom">
         <view class="history-item" wx:for="{{readingHistory}}" wx:key="id" data-id="{{item.id}}" bindtap="onViewReading">
           <view>
-            <text class="text-body" style="font-size:var(--fs-body)">{{item.spread_type}}</text>
+            <text class="text-body" style="font-size:var(--fs-body)">{{item.spreadTypeName}}</text>
             <text class="text-dim mt-xs" style="display:block" wx:if="{{item.theme}}">{{item.theme}}</text>
             <text class="text-dim mt-xs" style="display:block;font-size:var(--fs-caption)" wx:if="{{item.first_card_name}}">
               首牌：{{item.first_card_name}}{{item.first_card_is_reversed ? ' (逆位)' : ''}}

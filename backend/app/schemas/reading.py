@@ -3,6 +3,16 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
+class ChatMessageResponse(BaseModel):
+    id: int
+    role: str
+    content: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
 # ── Request ──────────────────────────────────────────────────────────
 
 
@@ -32,6 +42,7 @@ class ReadingResponse(BaseModel):
     is_paid: bool
     created_at: datetime
     drawn_cards: list[DrawnCardResponse]
+    chat_messages: list[ChatMessageResponse] = []
 
     class Config:
         from_attributes = True

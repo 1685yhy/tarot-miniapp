@@ -17,7 +17,7 @@ Page({
     const readingId = options.readingId || '';
     this.setData({ readingId, pageLoading: true });
 
-    // Load reading context for display
+    // Load reading context and chat history
     try {
       const reading = await request(`/readings/${readingId}`);
       this.setData({
@@ -25,8 +25,16 @@ Page({
           question: reading.question || '未指定问题',
           spreadType: reading.spread_type,
         },
+        messages: (reading.chat_messages || []).map(m => ({
+          role: m.role,
+          content: m.content,
+        })),
         pageLoading: false,
       });
+      // Scroll to bottom if there are existing messages
+      if (reading.chat_messages && reading.chat_messages.length > 0) {
+        setTimeout(() => this.scrollToBottom(), 200);
+      }
     } catch (err) {
       this.setData({ pageLoading: false });
     }

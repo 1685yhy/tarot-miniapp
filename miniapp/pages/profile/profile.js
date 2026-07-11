@@ -2,6 +2,18 @@
 const { request } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
 
+// 牌阵英文键名到中文显示名的映射
+const SPREAD_TYPE_NAMES = {
+  three_card: '三张牌',
+  celtic_cross: '凯尔特十字',
+  daily: '每日占卜',
+  relationship: '关系分析',
+  career_path: '事业路线',
+  weekly_outlook: '周运势',
+  love_reading: '爱情占卜',
+  fortune_telling: '财运占卜',
+};
+
 Page({
   data: {
     user: null,
@@ -12,6 +24,7 @@ Page({
     historyPage: 1,
     hasMore: true,
     loadingMore: false,
+    spreadTypeNames: SPREAD_TYPE_NAMES,
   },
 
   async onShow() {
@@ -29,7 +42,10 @@ Page({
       this.setData({
         user,
         memberStatus: status,
-        readingHistory: history.items || [],
+        readingHistory: (history.items || []).map(item => ({
+          ...item,
+          spreadTypeName: SPREAD_TYPE_NAMES[item.spread_type] || item.spread_type,
+        })),
         historyTotal: history.total || (history.items ? history.items.length : 0),
         pageLoading: false,
         historyPage: 1,
@@ -47,7 +63,12 @@ Page({
     try {
       const history = await request(`/readings/history?page=${nextPage}&page_size=20`);
       this.setData({
-        readingHistory: this.data.readingHistory.concat(history.items || []),
+        readingHistory: this.data.readingHistory.concat(
+          (history.items || []).map(item => ({
+            ...item,
+            spreadTypeName: SPREAD_TYPE_NAMES[item.spread_type] || item.spread_type,
+          }))
+        ),
         historyPage: nextPage,
         hasMore: history.items ? history.items.length >= 20 : false,
         loadingMore: false,

@@ -12,6 +12,7 @@ Page({
     hasMore: true,
     pageLoading: true,
     pageError: null,
+    loadingMore: false,
   },
 
   async onShow() {
@@ -33,9 +34,10 @@ Page({
   },
 
   async loadMore() {
-    if (!this.data.hasMore) return;
-    this.setData({ page: this.data.page + 1 });
+    if (!this.data.hasMore || this.data.loadingMore) return;
+    this.setData({ loadingMore: true, page: this.data.page + 1 });
     await this.loadEntries();
+    this.setData({ loadingMore: false });
   },
 
   showCreateModal() {

@@ -32,6 +32,11 @@ try {
 
 const BASE_URL = extBaseUrl || ENV_URLS[ENV] || 'https://your-domain.com';
 
+// Safety check: fail loudly if placeholder domain leaked into production/trial
+if (BASE_URL.includes('your-domain') && ENV !== 'develop') {
+  console.error('[tarot] CRITICAL: BASE_URL contains placeholder domain. Configure via extConfig.BASE_URL or update ENV_URLS.');
+}
+
 const request = async (url, options = {}) => {
   const token = wx.getStorageSync('token');
 
