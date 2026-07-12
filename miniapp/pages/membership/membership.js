@@ -24,6 +24,14 @@ Page({
           products = [...products, annualReportProduct];
         }
       }
+      // Precompute display strings to avoid WXML method calls
+      products = products.map(p => {
+        const display = { ...p };
+        if (p.id === 'membership_yearly') {
+          display.pricePerDay = (p.price / 365).toFixed(2);
+        }
+        return display;
+      });
       this.setData({ user, products, pageLoading: false, loading: false });
     } catch (err) {
       this.setData({ pageLoading: false, pageError: err.message || '加载失败' });

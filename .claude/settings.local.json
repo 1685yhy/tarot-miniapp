@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__weapp-dev-mcp__mp_ensureConnection",
+      "mcp__weapp-dev-mcp__mp_navigate",
+      "mcp__weapp-dev-mcp__mp_screenshot",
+      "mcp__weapp-dev-mcp__mp_getLogs",
+      "mcp__weapp-dev-mcp__mp_currentPage",
+      "mcp__weapp-dev-mcp__mp_listProjects",
+      "mcp__weapp-dev-mcp__page_getData",
+      "mcp__weapp-dev-mcp__page_getElement",
+      "mcp__weapp-dev-mcp__page_getElements",
+      "mcp__weapp-dev-mcp__page_setData",
+      "mcp__weapp-dev-mcp__page_callMethod",
+      "mcp__weapp-dev-mcp__element_tap",
+      "mcp__weapp-dev-mcp__element_input",
+      "mcp__weapp-dev-mcp__element_getWxml",
+      "mcp__weapp-dev-mcp__element_getStyles"
+    ]
+  }
+}
