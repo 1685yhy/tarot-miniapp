@@ -21,6 +21,13 @@ page {
   --color-gold-glow: rgba(212, 175, 55, 0.35);
   --color-gold-subtle: rgba(212, 175, 55, 0.12);
 
+  /* 金色系扩展 */
+  --color-gold-bright: #f0d060;
+  --color-gold-aged: #8b6914;
+  --color-gold-pale: #c4a03a;
+  --color-rose-gold: #d4a0a0;
+  --color-rose-gold-subtle: rgba(212, 160, 160, 0.12);
+
   /* 紫色系 - 辅助色 (Mystic Purple) */
   --color-purple: #9370db;
   --color-purple-light: #b39af0;
@@ -146,7 +153,15 @@ page {
 
   /* 基础 */
   background-color: var(--color-bg);
-  background-image: var(--gradient-bg-radial), var(--gradient-bg-radial-gold);
+  background-image:
+    radial-gradient(1rpx 1rpx at 22% 15%, rgba(255,255,255,0.03), transparent),
+    radial-gradient(1rpx 1rpx at 65% 25%, rgba(212,175,55,0.025), transparent),
+    radial-gradient(1rpx 1rpx at 82% 72%, rgba(147,112,219,0.02), transparent),
+    radial-gradient(1rpx 1rpx at 38% 78%, rgba(255,255,255,0.02), transparent),
+    radial-gradient(1rpx 1rpx at 12% 62%, rgba(212,175,55,0.015), transparent),
+    radial-gradient(1rpx 1rpx at 55% 45%, rgba(255,255,255,0.015), transparent),
+    var(--gradient-bg-radial),
+    var(--gradient-bg-radial-gold);
   color: var(--color-text-primary);
   font-family: var(--font-family);
   font-size: var(--fs-body);
@@ -531,6 +546,18 @@ page {
   color: var(--color-gold);
 }
 
+.text-gold-bright {
+  color: var(--color-gold-bright);
+}
+
+.text-rose-gold {
+  color: var(--color-rose-gold);
+}
+
+.text-gold-aged {
+  color: var(--color-gold-aged);
+}
+
 .text-center {
   text-align: center;
 }
@@ -727,19 +754,34 @@ page {
   display: block;
   margin-bottom: var(--space-lg);
   position: relative;
-  padding-left: var(--space-md);
+  padding-left: var(--space-xxl);
 }
 
 .section-title::before {
   content: '';
   position: absolute;
   left: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 4rpx;
+  bottom: 4rpx;
   width: 4rpx;
-  height: 60%;
-  background: var(--gradient-gold);
+  background: linear-gradient(
+    180deg,
+    var(--color-gold-bright) 0%,
+    var(--color-gold) 40%,
+    var(--color-purple-light) 70%,
+    transparent 100%
+  );
   border-radius: 4rpx;
+}
+
+.section-title::after {
+  content: '✦';
+  position: absolute;
+  left: -6rpx;
+  top: 0;
+  font-size: 16rpx;
+  color: var(--color-gold-bright);
+  opacity: 0.6;
 }
 
 .section-title-center {
@@ -749,6 +791,140 @@ page {
   display: block;
   text-align: center;
   margin-bottom: var(--space-lg);
+}
+
+/* 10.2 符文神秘按钮 */
+.btn-mystical {
+  width: 100%;
+  background: linear-gradient(135deg, #1a1a2e, #0f0f23);
+  color: var(--color-gold-bright);
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-bold);
+  border-radius: var(--radius-button);
+  padding: 28rpx 0;
+  border: 2rpx solid var(--color-gold);
+  box-shadow: var(--shadow-button),
+    inset 0 0 40rpx rgba(212, 175, 55, 0.04);
+  position: relative;
+  overflow: hidden;
+  transition: all var(--duration-normal) var(--ease-out);
+  letter-spacing: 3rpx;
+}
+
+.btn-mystical::before,
+.btn-mystical::after {
+  content: '◈';
+  position: absolute;
+  font-size: 18rpx;
+  color: var(--color-gold);
+  opacity: 0.35;
+}
+
+.btn-mystical::before {
+  top: 8rpx;
+  left: var(--space-lg);
+}
+
+.btn-mystical::after {
+  bottom: 8rpx;
+  right: var(--space-lg);
+  transform: scaleX(-1);
+}
+
+.btn-mystical:active {
+  transform: scale(0.97);
+  box-shadow: 0 2rpx 8rpx var(--color-gold-glow);
+}
+
+/* 10.3 仪式圆环装饰 */
+.ritual-circle {
+  width: 240rpx;
+  height: 240rpx;
+  border-radius: 50%;
+  border: 2rpx solid var(--color-gold-subtle);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.ritual-circle::before {
+  content: '';
+  position: absolute;
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  border: 1rpx solid rgba(212, 175, 55, 0.1);
+  pointer-events: none;
+}
+
+.ritual-circle::after {
+  content: '';
+  position: absolute;
+  width: 90rpx;
+  height: 90rpx;
+  border-radius: 50%;
+  border: 1rpx solid rgba(212, 175, 55, 0.06);
+  animation: mystic-spin 15s linear infinite;
+  pointer-events: none;
+}
+
+/* 10.4 首字下沉 */
+.drop-cap::first-letter {
+  font-size: 56rpx;
+  font-weight: var(--fw-bold);
+  color: var(--color-gold);
+  float: left;
+  margin-right: 8rpx;
+  line-height: 1;
+  font-family: var(--font-family-display);
+}
+
+/* 10.5 天鹅绒布面背景 */
+.cloth-bg {
+  position: relative;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(60, 20, 80, 0.12), transparent 60%),
+    radial-gradient(ellipse at 50% 100%, rgba(212, 175, 55, 0.04), transparent 50%),
+    linear-gradient(180deg, #0c0c1e, #0a0a1a);
+  border-radius: var(--radius-card);
+  border: 1rpx solid var(--color-border-subtle);
+  overflow: hidden;
+}
+
+.cloth-bg::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3rpx,
+    rgba(255, 255, 255, 0.003) 3rpx,
+    rgba(255, 255, 255, 0.003) 4rpx
+  );
+  pointer-events: none;
+}
+
+/* 10.6 符号分隔线 */
+.divider-symbol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  margin: var(--space-xl) 0;
+  color: var(--color-gold);
+  font-size: var(--fs-caption);
+  opacity: 0.5;
+}
+
+.divider-symbol::before,
+.divider-symbol::after {
+  content: '';
+  flex: 1;
+  height: 1rpx;
+  background: linear-gradient(90deg, transparent, var(--color-gold-subtle), transparent);
 }
 
 
@@ -819,6 +995,11 @@ page {
   color: var(--color-text-on-gold);
   font-weight: var(--fw-semibold);
   padding: 6rpx 20rpx;
+}
+
+.badge-rose-gold {
+  background: var(--color-rose-gold-subtle);
+  color: var(--color-rose-gold);
 }
 
 .badge-success {

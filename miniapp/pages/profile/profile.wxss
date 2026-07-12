@@ -10,10 +10,10 @@
 .user-card {
   text-align: center;
   padding: var(--space-xxxl) 0;
-  background: var(--color-bg-card);
+  background: linear-gradient(160deg, var(--color-bg-card), rgba(34, 34, 69, 0.8));
   border-radius: var(--radius-card);
   margin-bottom: var(--space-xl);
-  border: 1rpx solid var(--color-border-subtle);
+  border: 1rpx solid var(--color-border-light);
   position: relative;
   overflow: hidden;
 }
@@ -25,7 +25,9 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle at 50% 0%, var(--color-purple-subtle), transparent 60%);
+  background:
+    radial-gradient(circle at 50% 0%, var(--color-purple-subtle), transparent 60%),
+    radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.04), transparent 40%);
   pointer-events: none;
 }
 
@@ -33,6 +35,7 @@
   font-size: 72rpx;
   position: relative;
   z-index: 1;
+  display: block;
 }
 
 .upgrade-btn {
@@ -51,16 +54,29 @@
 /* Stats */
 .stats-row {
   display: flex;
-  background: var(--color-bg-card);
+  background: linear-gradient(135deg, var(--color-bg-card), rgba(34, 34, 69, 0.6));
   border-radius: var(--radius-lg);
   padding: var(--space-xl);
   margin-bottom: var(--space-xl);
   border: 1rpx solid var(--color-border-subtle);
+  position: relative;
 }
 
 .stat-item {
   flex: 1;
   text-align: center;
+  position: relative;
+}
+
+.stat-item + .stat-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1rpx;
+  height: 60%;
+  background: linear-gradient(180deg, transparent, var(--color-gold-subtle), transparent);
 }
 
 .stat-num {

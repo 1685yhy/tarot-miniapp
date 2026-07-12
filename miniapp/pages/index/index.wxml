@@ -1,6 +1,26 @@
 <!-- pages/index/index.wxml -->
-<!-- 星尘粒子背景 -->
+<!-- 星尘粒子背景（30颗，三层景深，金银紫三色） -->
 <view class="star-field">
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
+  <view class="star-particle"></view>
   <view class="star-particle"></view>
   <view class="star-particle"></view>
   <view class="star-particle"></view>
@@ -67,9 +87,9 @@
   <view class="daily-card-wrapper anim-fade-in-up-3">
     <view class="card-clickable card-daily-back" wx:if="{{!dailyCard}}" bindtap="drawDailyCard">
       <text class="heading-3">点击抽取今日运势</text>
-      <text class="text-dim mt-sm">今日免费</text>
+      <text class="daily-card-free">今日免费</text>
     </view>
-    <view class="card-daily-result anim-glow-pulse" wx:else>
+    <view class="card-daily-result" wx:else>
       <text class="heading-2">{{dailyCard.name_zh}}</text>
       <text class="text-secondary mt-sm text-center">{{dailyCard.keywords_upright}}</text>
     </view>

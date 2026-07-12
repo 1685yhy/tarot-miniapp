@@ -4,17 +4,21 @@
 .search-bar {
   display: flex;
   align-items: center;
-  background: var(--color-bg-card);
+  background: linear-gradient(135deg, var(--color-bg-card), var(--color-bg));
   border-radius: var(--radius-round);
   padding: var(--space-md) var(--space-xl);
   margin-bottom: var(--space-lg);
   border: 1rpx solid var(--color-border-light);
   transition: all var(--duration-normal);
+  position: relative;
+  overflow: hidden;
 }
 
 .search-bar:focus-within {
   border-color: var(--color-gold);
-  box-shadow: var(--shadow-glow-gold);
+  box-shadow:
+    var(--shadow-glow-gold),
+    inset 0 0 30rpx rgba(212, 175, 55, 0.03);
 }
 
 /* Tabs */
@@ -22,6 +26,7 @@
   white-space: nowrap;
   margin-bottom: var(--space-xl);
   height: 64rpx;
+  position: relative;
 }
 
 .tab-item {
@@ -32,9 +37,15 @@
   border-radius: var(--radius-round);
   font-size: var(--fs-body-small);
   color: var(--color-text-secondary);
-  background: var(--color-bg-card);
-  border: 1rpx solid transparent;
+  background: linear-gradient(135deg, var(--color-bg-card), var(--color-bg-mid));
+  border: 1rpx solid var(--color-border-subtle);
   transition: all var(--duration-normal);
+  position: relative;
+}
+
+.tab-item:active {
+  background: var(--color-gold-subtle);
+  color: var(--color-gold);
 }
 
 .tab-active {
@@ -42,6 +53,7 @@
   color: var(--color-text-on-gold);
   font-weight: var(--fw-semibold);
   border-color: transparent;
+  box-shadow: var(--shadow-glow-gold);
 }
 
 /* Card grid */
@@ -60,12 +72,22 @@
   box-sizing: border-box;
   border: 1rpx solid var(--color-border-subtle);
   transition: all var(--duration-normal) var(--ease-out);
+  position: relative;
+  overflow: hidden;
 }
 
 .card-item:active {
   border-color: var(--color-gold);
   transform: scale(0.97);
   box-shadow: var(--shadow-glow-gold);
+}
+
+/* Card number styling */
+.card-item .text-gold {
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  display: inline-block;
+  letter-spacing: 1rpx;
 }
 
 /* Count bar */

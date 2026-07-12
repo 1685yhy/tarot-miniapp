@@ -1,71 +1,619 @@
-/* ===== 首页 - 至尊神秘主题 ===== */
+/* ============================================================
+   首页 - 至尊神秘主题 v3.0
+   Hero area: 神秘几何旋转同心环 + 铭文标题
+   Daily card: 装饰牌背花纹 + 魔法翻开动画
+   Spread grid: 塔罗牌桌微型画 + 金角边框
+   Star field: 30颗星辰 / 3层景深 / 金银紫三色
+   ============================================================ */
 
-/* 顶部神秘学氛围区 */
+/* ===== 1. 页面级动画（全部 < 3s 单次 / 无限循环除外） ===== */
+
+/* 金色呼召 - 每日牌背"抽我"暗示 */
+@keyframes card-call {
+  0%, 100% {
+    box-shadow:
+      0 0 20rpx rgba(212, 175, 55, 0.08),
+      inset 0 0 20rpx rgba(212, 175, 55, 0.02);
+  }
+  50% {
+    box-shadow:
+      0 0 40rpx rgba(212, 175, 55, 0.18),
+      0 0 80rpx rgba(212, 175, 55, 0.06),
+      inset 0 0 30rpx rgba(212, 175, 55, 0.04);
+  }
+}
+
+/* 魔法翻开 - 每日牌结果 */
+@keyframes card-reveal {
+  0% {
+    transform: perspective(800rpx) rotateY(180deg);
+    opacity: 0;
+  }
+  25% {
+    transform: perspective(800rpx) rotateY(100deg);
+    opacity: 0.2;
+  }
+  50% {
+    transform: perspective(800rpx) rotateY(20deg);
+    opacity: 0.7;
+  }
+  75% {
+    transform: perspective(800rpx) rotateY(-5deg);
+    opacity: 0.95;
+  }
+  100% {
+    transform: perspective(800rpx) rotateY(0deg);
+    opacity: 1;
+  }
+}
+
+/* 星辰闪烁 - 金色 */
+@keyframes twinkle-gold {
+  0%, 100% { opacity: 0.1; transform: scale(0.5); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+/* 星辰闪烁 - 银色 */
+@keyframes twinkle-silver {
+  0%, 100% { opacity: 0.06; transform: scale(0.4); }
+  50% { opacity: 0.65; transform: scale(1.0); }
+}
+
+/* 星辰闪烁 - 紫色 */
+@keyframes twinkle-purple {
+  0%, 100% { opacity: 0.04; transform: scale(0.3); }
+  50% { opacity: 0.5; transform: scale(0.9); }
+}
+
+/* 景深漂移 - 远景 (慢) */
+@keyframes drift-slow {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(3rpx, -5rpx); }
+  66% { transform: translate(-2rpx, -8rpx); }
+}
+
+/* 景深漂移 - 中景 (中) */
+@keyframes drift-mid {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(5rpx, -7rpx); }
+  66% { transform: translate(-3rpx, -12rpx); }
+}
+
+/* 景深漂移 - 近景 (快) */
+@keyframes drift-close {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(8rpx, -10rpx); }
+  66% { transform: translate(-5rpx, -16rpx); }
+}
+
+/* 徽章呼吸脉冲 */
+@keyframes badge-glow {
+  0%, 100% {
+    box-shadow: 0 0 4rpx rgba(212, 175, 55, 0.15);
+  }
+  50% {
+    box-shadow:
+      0 0 12rpx rgba(212, 175, 55, 0.3),
+      0 0 24rpx rgba(212, 175, 55, 0.08);
+  }
+}
+
+/* 分割标题下的装饰线游走 */
+@keyframes title-line-glow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.9; }
+}
+
+
+/* ===== 2. 增强版星尘粒子背景 ===== */
+
+/* 基底粒子：继承 common.wxss 的 position/fixed 等，但重写细节 */
+.star-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* ---------- 第一层：远景（2-3rpx，银色/紫色，慢闪，慢漂） ---------- */
+.star-particle:nth-child(1) {
+  top: 4%; left: 50%; width: 2rpx; height: 2rpx;
+  background: #d4af37;
+  animation: twinkle-gold 5s ease-in-out 0s infinite, drift-slow 9s ease-in-out infinite;
+}
+.star-particle:nth-child(2) {
+  top: 10%; left: 18%; width: 3rpx; height: 3rpx;
+  background: #e8e0d4;
+  animation: twinkle-silver 4.5s ease-in-out 0.7s infinite, drift-slow 8s ease-in-out infinite;
+}
+.star-particle:nth-child(3) {
+  top: 6%; left: 78%; width: 2rpx; height: 2rpx;
+  background: #b39af0;
+  animation: twinkle-purple 5.5s ease-in-out 1.2s infinite, drift-slow 9s ease-in-out infinite;
+}
+.star-particle:nth-child(4) {
+  top: 14%; left: 42%; width: 3rpx; height: 3rpx;
+  background: #e8e0d4;
+  animation: twinkle-silver 4.8s ease-in-out 0.4s infinite, drift-slow 8.5s ease-in-out infinite;
+}
+.star-particle:nth-child(5) {
+  top: 22%; left: 65%; width: 2rpx; height: 2rpx;
+  background: #d4af37;
+  animation: twinkle-gold 5.2s ease-in-out 1.8s infinite, drift-slow 9s ease-in-out infinite;
+}
+.star-particle:nth-child(6) {
+  top: 30%; left: 10%; width: 3rpx; height: 3rpx;
+  background: #b39af0;
+  animation: twinkle-purple 4.6s ease-in-out 0.9s infinite, drift-slow 8s ease-in-out infinite;
+}
+.star-particle:nth-child(7) {
+  top: 18%; left: 88%; width: 2rpx; height: 2rpx;
+  background: #e8e0d4;
+  animation: twinkle-silver 5s ease-in-out 2.2s infinite, drift-slow 9s ease-in-out infinite;
+}
+.star-particle:nth-child(8) {
+  top: 36%; left: 52%; width: 3rpx; height: 3rpx;
+  background: #d4af37;
+  animation: twinkle-gold 4.3s ease-in-out 0.1s infinite, drift-slow 8s ease-in-out infinite;
+}
+.star-particle:nth-child(9) {
+  top: 28%; left: 30%; width: 2rpx; height: 2rpx;
+  background: #b39af0;
+  animation: twinkle-purple 5.8s ease-in-out 1.5s infinite, drift-slow 9s ease-in-out infinite;
+}
+.star-particle:nth-child(10) {
+  top: 42%; left: 78%; width: 3rpx; height: 3rpx;
+  background: #e8e0d4;
+  animation: twinkle-silver 4.2s ease-in-out 0.5s infinite, drift-slow 8s ease-in-out infinite;
+}
+
+/* ---------- 第二层：中景（3-4rpx，金银混合，中闪，中漂） ---------- */
+.star-particle:nth-child(11) {
+  top: 5%; left: 35%; width: 4rpx; height: 4rpx;
+  background: #d4af37;
+  animation: twinkle-gold 3.5s ease-in-out 0.3s infinite, drift-mid 6s ease-in-out infinite;
+}
+.star-particle:nth-child(12) {
+  top: 12%; left: 60%; width: 3rpx; height: 3rpx;
+  background: #e8e0d4;
+  animation: twinkle-silver 3.8s ease-in-out 1.0s infinite, drift-mid 6.5s ease-in-out infinite;
+}
+.star-particle:nth-child(13) {
+  top: 20%; left: 5%; width: 4rpx; height: 4rpx;
+  background: #b39af0;
+  animation: twinkle-purple 3.2s ease-in-out 1.6s infinite, drift-mid 5.5s ease-in-out infinite;
+}
+.star-particle:nth-child(14) {
+  top: 26%; left: 75%; width: 3rpx; height: 3rpx;
+  background: #d4af37;
+  animation: twinkle-gold 4s ease-in-out 0.8s infinite, drift-mid 6s ease-in-out infinite;
+}
+.star-particle:nth-child(15) {
+  top: 34%; left: 45%; width: 4rpx; height: 4rpx;
+  background: #e8e0d4;
+  animation: twinkle-silver 3s ease-in-out 2s infinite, drift-mid 5s ease-in-out infinite;
+}
+.star-particle:nth-child(16) {
+  top: 44%; left: 15%; width: 3rpx; height: 3rpx;
+  background: #b39af0;
+  animation: twinkle-purple 3.6s ease-in-out 0.6s infinite, drift-mid 6s ease-in-out infinite;
+}
+.star-particle:nth-child(17) {
+  top: 50%; left: 60%; width: 4rpx; height: 4rpx;
+  background: #d4af37;
+  animation: twinkle-gold 3.3s ease-in-out 1.3s infinite, drift-mid 5.5s ease-in-out infinite;
+}
+.star-particle:nth-child(18) {
+  top: 38%; left: 88%; width: 3rpx; height: 3rpx;
+  background: #e8e0d4;
+  animation: twinkle-silver 4.2s ease-in-out 0.2s infinite, drift-mid 6s ease-in-out infinite;
+}
+.star-particle:nth-child(19) {
+  top: 48%; left: 38%; width: 4rpx; height: 4rpx;
+  background: #b39af0;
+  animation: twinkle-purple 3s ease-in-out 2.4s infinite, drift-mid 5s ease-in-out infinite;
+}
+.star-particle:nth-child(20) {
+  top: 55%; left: 82%; width: 3rpx; height: 3rpx;
+  background: #d4af37;
+  animation: twinkle-gold 3.8s ease-in-out 0.9s infinite, drift-mid 6s ease-in-out infinite;
+}
+
+/* ---------- 第三层：近景（5-6rpx，亮金 / 亮紫，快闪，快漂） ---------- */
+.star-particle:nth-child(21) {
+  top: 8%; left: 55%; width: 5rpx; height: 5rpx;
+  background: #d4af37;
+  animation: twinkle-gold 2.5s ease-in-out 1.1s infinite, drift-close 4s ease-in-out infinite;
+}
+.star-particle:nth-child(22) {
+  top: 16%; left: 25%; width: 6rpx; height: 6rpx;
+  background: #e8c97a;
+  animation: twinkle-gold 2.2s ease-in-out 0.5s infinite, drift-close 3.5s ease-in-out infinite;
+}
+.star-particle:nth-child(23) {
+  top: 24%; left: 72%; width: 5rpx; height: 5rpx;
+  background: #b39af0;
+  animation: twinkle-purple 2.8s ease-in-out 1.8s infinite, drift-close 4s ease-in-out infinite;
+}
+.star-particle:nth-child(24) {
+  top: 32%; left: 20%; width: 6rpx; height: 6rpx;
+  background: #d4af37;
+  animation: twinkle-gold 2s ease-in-out 0.2s infinite, drift-close 3.5s ease-in-out infinite;
+}
+.star-particle:nth-child(25) {
+  top: 40%; left: 68%; width: 5rpx; height: 5rpx;
+  background: #e8e0d4;
+  animation: twinkle-silver 2.6s ease-in-out 1.4s infinite, drift-close 4s ease-in-out infinite;
+}
+.star-particle:nth-child(26) {
+  top: 52%; left: 5%; width: 6rpx; height: 6rpx;
+  background: #d4af37;
+  animation: twinkle-gold 2.3s ease-in-out 0.7s infinite, drift-close 3.5s ease-in-out infinite;
+}
+.star-particle:nth-child(27) {
+  top: 58%; left: 50%; width: 5rpx; height: 5rpx;
+  background: #b39af0;
+  animation: twinkle-purple 2.8s ease-in-out 2s infinite, drift-close 4s ease-in-out infinite;
+}
+.star-particle:nth-child(28) {
+  top: 65%; left: 72%; width: 5rpx; height: 5rpx;
+  background: #e8c97a;
+  animation: twinkle-gold 2.5s ease-in-out 0.4s infinite, drift-close 3.5s ease-in-out infinite;
+}
+.star-particle:nth-child(29) {
+  top: 72%; left: 28%; width: 6rpx; height: 6rpx;
+  background: #d4af37;
+  animation: twinkle-gold 2s ease-in-out 1.6s infinite, drift-close 3.5s ease-in-out infinite;
+}
+.star-particle:nth-child(30) {
+  top: 80%; left: 55%; width: 5rpx; height: 5rpx;
+  background: #e8e0d4;
+  animation: twinkle-silver 2.4s ease-in-out 2.2s infinite, drift-close 4s ease-in-out infinite;
+}
+
+
+/* ===== 3. 顶部神秘学氛围区 - 神秘几何 ===== */
+
 .hero {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: var(--space-massive) 0 var(--space-xxxl);
+  overflow: hidden;
 }
 
+/* 最外层同心圆环 - 金色实线，慢速正转 */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 440rpx;
+  height: 440rpx;
+  transform: translate(-50%, -50%);
+  border: 1.5rpx solid rgba(212, 175, 55, 0.08);
+  border-radius: 50%;
+  animation: ring-cw 25s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 第二层环 - 紫色虚线，中速反转 */
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 370rpx;
+  height: 370rpx;
+  transform: translate(-50%, -50%);
+  border: 1rpx dashed rgba(147, 112, 219, 0.1);
+  border-radius: 50%;
+  animation: ring-ccw 18s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 神秘圆盘容器 */
 .mystic-circle {
+  position: relative;
+  z-index: 1;
   width: 160rpx;
   height: 160rpx;
-  border-radius: var(--radius-full);
-  background: radial-gradient(circle, var(--color-purple-glow), transparent);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(147, 112, 219, 0.25), rgba(212, 175, 55, 0.05) 50%, transparent 70%);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: var(--space-xl);
 }
 
+/* 第三层环 - 金色点线，快转 */
+.mystic-circle::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 270rpx;
+  height: 270rpx;
+  transform: translate(-50%, -50%);
+  border: 1rpx dotted rgba(212, 175, 55, 0.1);
+  border-radius: 50%;
+  animation: ring-cw 12s linear infinite;
+  pointer-events: none;
+}
+
+/* 第四层环 - 紫色辉光，快速反转 */
+.mystic-circle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 210rpx;
+  height: 210rpx;
+  transform: translate(-50%, -50%);
+  border: 1rpx solid rgba(147, 112, 219, 0.07);
+  border-radius: 50%;
+  animation: ring-ccw 8s linear infinite;
+  pointer-events: none;
+}
+
+/* 旋转动画定义（放在这里避免污染全局） */
+@keyframes ring-cw {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+@keyframes ring-ccw {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(-360deg); }
+}
+
+/* ===== 4. 英雄区标题 - 神秘铭文 ===== */
+
 .hero-title {
-  font-size: var(--fs-h1);
-  font-weight: var(--fw-bold);
-  color: var(--color-gold);
-  line-height: var(--lh-tight);
+  position: relative;
+  z-index: 1;
+  font-size: 56rpx;
+  font-weight: 700;
+  background: linear-gradient(
+    135deg,
+    #d4af37 0%,
+    #e8c97a 20%,
+    #f5e6a3 40%,
+    #d4af37 55%,
+    #e8c97a 75%,
+    #d4af37 100%
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s ease-in-out infinite;
+  letter-spacing: 12rpx;
+  line-height: 1.2;
   margin-bottom: var(--space-sm);
+  filter: drop-shadow(0 0 20rpx rgba(212, 175, 55, 0.3))
+          drop-shadow(0 0 50rpx rgba(212, 175, 55, 0.1));
+  text-shadow: none; /* overwrite common.wxss text-shadow; we use filter */
 }
 
 .hero-subtitle {
+  position: relative;
+  z-index: 1;
   font-size: var(--fs-body);
   color: var(--color-text-secondary);
+  letter-spacing: 6rpx;
+  filter: drop-shadow(0 0 12rpx rgba(147, 112, 219, 0.15));
 }
 
-/* 每日一牌卡片 */
+
+/* ===== 5. 每日一牌 - 装饰牌背 ===== */
+
 .daily-card-wrapper {
   margin: var(--space-lg) 0 var(--space-xxxl);
+  position: relative;
 }
 
+/* ---------- 抽取前：华丽牌背 ---------- */
 .card-daily-back {
-  background: linear-gradient(135deg, var(--color-purple-dark), var(--color-bg-card));
-  border: 2rpx solid var(--color-purple);
+  position: relative;
+  overflow: hidden;
+  background:
+    /* 菱形细格纹 */
+    repeating-linear-gradient(
+      45deg, transparent, transparent 18rpx,
+      rgba(212, 175, 55, 0.018) 18rpx, rgba(212, 175, 55, 0.018) 19rpx
+    ),
+    repeating-linear-gradient(
+      -45deg, transparent, transparent 18rpx,
+      rgba(212, 175, 55, 0.018) 18rpx, rgba(212, 175, 55, 0.018) 19rpx
+    ),
+    /* 中央菱形辉光 */
+    linear-gradient(135deg, transparent 46%, rgba(212, 175, 55, 0.06) 46%, rgba(212, 175, 55, 0.06) 54%, transparent 54%),
+    linear-gradient(225deg, transparent 46%, rgba(212, 175, 55, 0.06) 46%, rgba(212, 175, 55, 0.06) 54%, transparent 54%),
+    /* 基底深邃渐变 */
+    linear-gradient(145deg, #120f28 0%, #1a1a2e 50%, #0f0f23 100%);
+  border: 2rpx solid rgba(212, 175, 55, 0.18);
   border-radius: var(--radius-card);
   padding: var(--space-massive) var(--space-xxl);
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  min-height: 240rpx;
+  animation: card-call 3s ease-in-out infinite;
   transition: all var(--duration-normal) var(--ease-out);
 }
 
-.card-daily-back:active {
-  transform: scale(0.97);
+/* 牌背左上角装饰星芒 */
+.card-daily-back::before {
+  content: '✧';
+  position: absolute;
+  top: 16rpx;
+  left: 20rpx;
+  font-size: 20rpx;
+  color: rgba(212, 175, 55, 0.1);
+  pointer-events: none;
 }
 
+/* 牌背右下角装饰星芒 */
+.card-daily-back::after {
+  content: '✧';
+  position: absolute;
+  bottom: 16rpx;
+  right: 20rpx;
+  font-size: 20rpx;
+  color: rgba(212, 175, 55, 0.1);
+  pointer-events: none;
+}
+
+.card-daily-back:active {
+  transform: scale(0.96);
+  border-color: rgba(212, 175, 55, 0.45);
+  box-shadow:
+    0 0 40rpx rgba(212, 175, 55, 0.25),
+    0 0 80rpx rgba(212, 175, 55, 0.08);
+}
+
+/* "点击抽取今日运势" 文本 */
+.card-daily-back .heading-3 {
+  position: relative;
+  z-index: 1;
+  color: var(--color-text-primary);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 3rpx;
+  margin-bottom: 8rpx;
+}
+
+/* "今日免费" */
+.card-daily-free {
+  position: relative;
+  z-index: 1;
+  color: rgba(212, 175, 55, 0.55);
+  font-size: 22rpx;
+  letter-spacing: 4rpx;
+}
+
+/* ---------- 抽取后：魔法翻开 ---------- */
 .card-daily-result {
-  background: linear-gradient(135deg, var(--color-bg-card), var(--color-purple-dark));
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    145deg,
+    rgba(26, 26, 46, 0.95) 0%,
+    rgba(34, 34, 69, 0.85) 50%,
+    rgba(20, 20, 40, 0.95) 100%
+  );
   border: 2rpx solid var(--color-gold);
   border-radius: var(--radius-card);
   padding: var(--space-massive) var(--space-xxl);
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: var(--shadow-glow-gold);
+  justify-content: center;
+  min-height: 240rpx;
+  box-shadow:
+    0 0 30rpx rgba(212, 175, 55, 0.12),
+    0 0 60rpx rgba(212, 175, 55, 0.04);
 }
 
-/* 选择牌阵区块 */
+/* 结果卡左上角金角装饰 */
+.card-daily-result::before {
+  content: '';
+  position: absolute;
+  top: 14rpx;
+  left: 14rpx;
+  width: 36rpx;
+  height: 36rpx;
+  border-top: 2rpx solid rgba(212, 175, 55, 0.2);
+  border-left: 2rpx solid rgba(212, 175, 55, 0.2);
+  border-radius: 10rpx 0 0 0;
+  pointer-events: none;
+}
+
+/* 结果卡右下角金角装饰 + 流光扫过 */
+.card-daily-result::after {
+  content: '';
+  position: absolute;
+  bottom: 14rpx;
+  right: 14rpx;
+  width: 36rpx;
+  height: 36rpx;
+  border-bottom: 2rpx solid rgba(212, 175, 55, 0.2);
+  border-right: 2rpx solid rgba(212, 175, 55, 0.2);
+  border-radius: 0 0 10rpx 0;
+  pointer-events: none;
+}
+
+/* 光面扫过 + 翻开动画合并 */
+.card-daily-result {
+  /* 叠加一个斜向光晕扫面 */
+  background:
+    /* 光晕扫面 */
+    linear-gradient(
+      105deg,
+      transparent 30%,
+      rgba(212, 175, 55, 0.03) 45%,
+      rgba(212, 175, 55, 0.06) 50%,
+      rgba(212, 175, 55, 0.03) 55%,
+      transparent 70%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(26, 26, 46, 0.95) 0%,
+      rgba(34, 34, 69, 0.85) 50%,
+      rgba(20, 20, 40, 0.95) 100%
+    );
+  background-size: 200% 100%, 100% 100%;
+  background-position: 100% 0, 0 0;
+  animation: card-reveal 0.9s var(--ease-out) forwards, result-shimmer 4s ease-in-out 1s infinite;
+}
+
+@keyframes result-shimmer {
+  0%, 100% { background-position: 100% 0, 0 0; }
+  50% { background-position: -50% 0, 0 0; }
+}
+
+.card-daily-result .heading-2 {
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 0 20rpx rgba(212, 175, 55, 0.2);
+}
+
+.card-daily-result .text-secondary {
+  position: relative;
+  z-index: 1;
+  letter-spacing: 2rpx;
+}
+
+
+/* ===== 6. 牌阵入口 - 塔罗牌桌微型画 ===== */
+
 .spread-section {
   margin-bottom: var(--space-massive);
+}
+
+.section-title {
+  position: relative;
+  color: var(--color-gold-light);
+  letter-spacing: 3rpx;
+  font-weight: var(--fw-semibold);
+  margin-bottom: var(--space-lg);
+  padding-left: var(--space-md);
+}
+
+/* 标题左侧金线装饰 - 游走光效 */
+.section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4rpx;
+  height: 55%;
+  background: var(--gradient-gold);
+  border-radius: 4rpx;
+  animation: title-line-glow 3s ease-in-out infinite;
 }
 
 .spread-grid {
@@ -74,69 +622,199 @@
   gap: var(--space-md);
 }
 
-/* ===== 加载骨架 ===== */
+/* ---------- 塔罗牌桌卡片 ---------- */
+.spread-grid .card {
+  position: relative;
+  background: linear-gradient(
+    145deg,
+    rgba(26, 26, 46, 0.92) 0%,
+    rgba(16, 16, 38, 0.96) 100%
+  );
+  border: 1rpx solid rgba(212, 175, 55, 0.1);
+  border-radius: var(--radius-card);
+  padding: 28rpx 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  text-align: center;
+  transition: all 0.3s var(--ease-out);
+  overflow: visible; /* 让金角装饰可见 */
+}
+
+/* 左上金角装饰 (override .card::before from common) */
+.spread-grid .card::before {
+  content: '';
+  position: absolute;
+  top: -1rpx;
+  left: -1rpx;
+  width: 30rpx;
+  height: 30rpx;
+  border-top: 2rpx solid rgba(212, 175, 55, 0.2);
+  border-left: 2rpx solid rgba(212, 175, 55, 0.2);
+  border-radius: 10rpx 0 0 0;
+  pointer-events: none;
+  transition: all var(--duration-normal);
+}
+
+/* 右下金角装饰 (override .card::after from common) */
+.spread-grid .card::after {
+  content: '';
+  position: absolute;
+  bottom: -1rpx;
+  right: -1rpx;
+  width: 30rpx;
+  height: 30rpx;
+  border-bottom: 2rpx solid rgba(212, 175, 55, 0.2);
+  border-right: 2rpx solid rgba(212, 175, 55, 0.2);
+  border-radius: 0 0 10rpx 0;
+  pointer-events: none;
+  transition: all var(--duration-normal);
+  /* 重置来自 common.wxss .card::after 的 shimmer 效果 */
+  top: auto;
+  left: auto;
+  transform: none;
+  background: none;
+  width: 30rpx;
+  height: 30rpx;
+}
+
+/* emoji 辉光盘 */
+.spread-grid .card > text:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 76rpx;
+  height: 76rpx;
+  font-size: 44rpx;
+  background: radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  margin-bottom: 6rpx;
+  transition: all var(--duration-normal);
+  line-height: 1;
+}
+
+/* 按下效果集 */
+.spread-grid .card:active {
+  transform: scale(0.94);
+  border-color: rgba(212, 175, 55, 0.35);
+  box-shadow:
+    0 0 24rpx rgba(212, 175, 55, 0.12),
+    0 0 48rpx rgba(212, 175, 55, 0.04);
+}
+
+.spread-grid .card:active::before,
+.spread-grid .card:active::after {
+  border-color: rgba(212, 175, 55, 0.5);
+}
+
+.spread-grid .card:active > text:first-child {
+  background: radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.18) 0%, transparent 70%);
+  transform: scale(1.08);
+}
+
+/* 牌阵名称文本 */
+.spread-grid .card .text-body {
+  font-size: var(--fs-body-small);
+  color: var(--color-text-primary);
+  font-weight: var(--fw-medium);
+  letter-spacing: 1rpx;
+  position: relative;
+  z-index: 1;
+}
+
+/* 描述文本 */
+.spread-grid .card .text-dim {
+  font-size: var(--fs-caption);
+  color: var(--color-text-dim);
+  letter-spacing: 1rpx;
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- Premium 徽章 ---------- */
+.badge-gold {
+  position: relative;
+  z-index: 1;
+  font-size: 18rpx;
+  padding: 4rpx 14rpx;
+  border-radius: 20rpx;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.08));
+  color: var(--color-gold);
+  border: 1rpx solid rgba(212, 175, 55, 0.12);
+  animation: badge-glow 2.5s ease-in-out infinite;
+  display: inline-block;
+  letter-spacing: 1rpx;
+  margin-top: 2rpx;
+}
+
+
+/* ===== 7. 环境氛围增强 ===== */
+
+/* 顶部辉光 - 增强 */
+.orb-top {
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(147, 112, 219, 0.08) 0%,
+    rgba(212, 175, 55, 0.04) 25%,
+    rgba(147, 112, 219, 0.02) 50%,
+    transparent 75%
+  );
+  width: 700rpx;
+  height: 700rpx;
+  animation: mystic-wave 6s ease-in-out infinite;
+}
+
+/* 底部辉光 - 暖金色更突出 */
+.orb-bottom {
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(212, 175, 55, 0.06) 0%,
+    rgba(147, 112, 219, 0.03) 35%,
+    transparent 70%
+  );
+  width: 700rpx;
+  height: 700rpx;
+  animation: mystic-wave 8s ease-in-out infinite reverse;
+}
+
+
+/* ===== 8. 加载 / 错误 / 空状态增强 ===== */
+
+/* 骨架屏与整体氛围融合 */
 .skeleton {
   padding: var(--space-xxl) 0;
 }
 
-.skeleton-hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-lg);
-  margin-bottom: var(--space-xxxl);
-}
-
 .skeleton-circle {
-  width: 160rpx;
-  height: 160rpx;
-  border-radius: var(--radius-full);
-  background: var(--color-bg-card);
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.8), rgba(34, 34, 69, 0.6));
+  border: 1rpx solid rgba(212, 175, 55, 0.06);
 }
 
 .skeleton-line {
-  height: 32rpx;
-  border-radius: var(--radius-sm);
-  background: var(--color-bg-card);
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
-}
-
-.skeleton-line.wide { width: 300rpx; }
-.skeleton-line.medium { width: 200rpx; }
-
-.skeleton-card-area {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-lg);
-  margin-bottom: var(--space-xxxl);
+  background: linear-gradient(90deg,
+    rgba(26, 26, 46, 0.6),
+    rgba(34, 34, 69, 0.4),
+    rgba(26, 26, 46, 0.6));
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
 }
 
 .skeleton-block {
-  width: 100%;
-  height: 200rpx;
-  border-radius: var(--radius-card);
-  background: var(--color-bg-card);
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
-}
-
-.skeleton-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-md);
+  background: linear-gradient(135deg,
+    rgba(26, 26, 46, 0.6),
+    rgba(34, 34, 69, 0.4));
+  border: 1rpx solid rgba(212, 175, 55, 0.05);
 }
 
 .skeleton-grid-item {
-  height: 180rpx;
-  border-radius: var(--radius-lg);
-  background: var(--color-bg-card);
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+  background: linear-gradient(135deg,
+    rgba(26, 26, 46, 0.6),
+    rgba(34, 34, 69, 0.4));
+  border: 1rpx solid rgba(212, 175, 55, 0.05);
 }
 
-/* ===== 空状态 ===== */
-
-/* ===== 错误状态 ===== */
+/* 错误状态 - 更优雅 */
 .error-state {
   text-align: center;
   padding: var(--space-massive) var(--space-xl);
@@ -146,7 +824,8 @@
   font-size: 80rpx;
   display: block;
   margin-bottom: var(--space-md);
-  opacity: 0.6;
+  opacity: 0.5;
+  filter: drop-shadow(0 0 20rpx rgba(212, 175, 55, 0.15));
 }
 
 .error-text {

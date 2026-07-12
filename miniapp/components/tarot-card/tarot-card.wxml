@@ -1,5 +1,5 @@
 <view class="tarot-card-wrapper {{isReversed ? 'reversed' : ''}}">
-  <view class="tarot-card {{isReversed ? 'card-reversed' : ''}} card-{{cardType}}">
+  <view class="tarot-card {{isReversed ? 'card-reversed' : ''}} card-{{cardType}} {{isMajor ? 'card-major' : ''}}">
     <!-- 顶部金色装饰条 -->
     <view class="card-ornament-top"></view>
 
