@@ -1,5 +1,6 @@
 // pages/annual-report/annual-report.js
 const { request } = require('../../utils/api');
+const { checkLogin } = require('../../utils/auth');
 
 Page({
   data: {
@@ -10,6 +11,14 @@ Page({
   },
 
   async onLoad() {
+    // Check login first
+    try {
+      await checkLogin();
+    } catch (_) {
+      wx.showToast({ title: '请先登录', icon: 'none' });
+      this.setData({ pageLoading: false });
+      return;
+    }
     // Try to load cached report first
     try {
       const cached = wx.getStorageSync('annual_report');
@@ -43,6 +52,7 @@ Page({
         });
       } else {
         wx.showToast({ title: '生成失败', icon: 'none' });
+        this.setData({ pageError: err.message || '生成失败' });
       }
     }
   },
@@ -53,6 +63,7 @@ Page({
   },
 
   onCardPreview(e) {
+    if (!this.data.report?.cards) return;
     const idx = e.currentTarget.dataset.cardidx;
     const card = this.data.report.cards[idx];
     if (!card) return;

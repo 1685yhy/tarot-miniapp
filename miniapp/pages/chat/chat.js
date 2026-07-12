@@ -42,7 +42,10 @@ Page({
   },
 
   onRetry() {
-    this.setData({ pageError: null });
+    this.setData({ pageError: null, pageLoading: true });
+    if (this.data.readingId) {
+      this.onLoad({ readingId: this.data.readingId });
+    }
   },
 
   onInput(e) {

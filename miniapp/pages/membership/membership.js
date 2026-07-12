@@ -5,10 +5,8 @@ const { checkLogin } = require('../../utils/auth');
 Page({
   data: {
     products: [],
-    user: null,
     pageLoading: true,
     pageError: null,
-    loading: false,
   },
 
   async onLoad(options) {
@@ -32,7 +30,7 @@ Page({
         }
         return display;
       });
-      this.setData({ user, products, pageLoading: false, loading: false });
+      this.setData({ products, pageLoading: false });
     } catch (err) {
       this.setData({ pageLoading: false, pageError: err.message || '加载失败' });
     }

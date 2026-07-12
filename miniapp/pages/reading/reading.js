@@ -106,8 +106,8 @@ Page({
         url: `/pages/reading-result/reading-result?id=${result.id}`,
       });
     } catch (err) {
-      this.setData({ isDrawing: false });
       if (err.statusCode === 402) {
+        this.setData({ isDrawing: false });
         wx.showModal({
           title: '次数不足',
           content: '今日免费次数已用完，开通会员享无限解读',
@@ -119,7 +119,7 @@ Page({
           },
         });
       } else {
-        wx.showToast({ title: '占卜失败，请重试', icon: 'none' });
+        this.setData({ isDrawing: false, pageError: err.message || '占卜失败' });
       }
     }
   },
