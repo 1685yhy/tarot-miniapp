@@ -31,6 +31,7 @@ Page({
   },
 
   async onGenerate() {
+    if (this.data.generating) return;
     this.setData({ generating: true });
     try {
       const report = await request('/report/annual');

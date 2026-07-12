@@ -67,6 +67,9 @@ Page({
         method: 'POST',
         data: { mood: this.data.mood, reflection: this.data.reflection },
       });
+      if (!entry) {
+        throw new Error("创建日记失败");
+      }
       this.setData({
         entries: [entry, ...this.data.entries],
         showCreate: false,

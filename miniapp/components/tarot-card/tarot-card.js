@@ -101,6 +101,9 @@ const CARD_REGISTRY = {
   '星币国王':  { type: 'king-pentacles', number: 'K', en: 'King of Pentacles', arcana: 'minor', suit: 'pentacles' },
 };
 
+// 从CARD_REGISTRY自动构建大阿尔卡纳类型列表，保持与注册表同步
+const MAJOR_TYPES = Object.values(CARD_REGISTRY).filter(c => c.arcana === "major").map(c => c.type);
+
 // 查找卡牌（近似匹配，兼容"圣杯·王牌"这类带分隔符的）
 function findCard(nameZh) {
   if (!nameZh) return null;
@@ -166,7 +169,7 @@ Component({
           cardType,
           cardNumberDisplay: cardNumber || '',
           displayNameEn: nameEn || '',
-          isMajor: !cardType.includes('-') || ['fool','magician','high-priestess','empress','emperor','hierophant','lovers','chariot','strength','hermit','wheel-of-fortune','justice','hanged-man','death','temperance','devil','tower','star','moon','sun','judgement','world'].includes(cardType),
+          isMajor: MAJOR_TYPES.includes(cardType),
         });
         return;
       }

@@ -74,8 +74,8 @@ Page({
     if (keyword) {
       const kw = keyword.toLowerCase();
       cards = cards.filter(c =>
-        c.name_zh.includes(kw) ||
-        c.name_en.toLowerCase().includes(kw) ||
+        (c.name_zh && c.name_zh.includes(kw)) ||
+        (c.name_en && c.name_en.toLowerCase().includes(kw)) ||
         (c.meaning_upright && c.meaning_upright.toLowerCase().includes(kw)) ||
         (c.meaning_reversed && c.meaning_reversed.toLowerCase().includes(kw)) ||
         (c.keywords_upright && c.keywords_upright.toLowerCase().includes(kw))

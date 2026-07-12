@@ -7,9 +7,11 @@ Page({
     activeTab: 'upright', // upright / reversed
     pageLoading: true,
     pageError: null,
+    _destroyed: false,
   },
 
   async onLoad(options) {
+    this.options = options;
     const { id } = options;
     if (!id) {
       wx.showToast({ title: '参数错误', icon: 'none' });
@@ -19,7 +21,12 @@ Page({
     await this.loadCard(id);
   },
 
+  onUnload() {
+    this.data._destroyed = true;
+  },
+
   async loadCard(id) {
+    if (this.data._destroyed) return;
     this.setData({ pageLoading: true, pageError: null });
     try {
       const card = await request(`/cards/${id}`);
@@ -29,8 +36,10 @@ Page({
       } else {
         card.keywordsList = [];
       }
+      if (this.data._destroyed) return;
       this.setData({ card, pageLoading: false });
     } catch (err) {
+      if (this.data._destroyed) return;
       this.setData({ pageLoading: false, pageError: err.message || '加载失败' });
     }
   },
