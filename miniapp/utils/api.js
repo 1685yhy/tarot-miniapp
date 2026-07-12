@@ -32,8 +32,8 @@ const ENV = (() => {
  */
 const ENV_URLS = {
   develop: 'http://localhost:8000',
-  trial: 'https://trial-api.tarot.example.com',
-  release: 'https://your-domain.com',  // ← ★ 部署前将此处改为你的生产域名！
+  trial: 'http://47.102.42.238:8000',
+  release: 'http://47.102.42.238:8000',
 };
 
 // 允许通过 extConfig 覆盖 BASE_URL（第三方平台托管场景）
