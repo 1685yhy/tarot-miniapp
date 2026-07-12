@@ -9,6 +9,8 @@ class CardBrief(BaseModel):
     arcana: str
     suit: str | None
     element: str | None
+    keywords_upright: str | None = None
+    meaning_upright: str | None = None
 
     class Config:
         from_attributes = True
