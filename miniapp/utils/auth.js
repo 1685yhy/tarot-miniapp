@@ -21,12 +21,26 @@ const login = async () => {
   });
 };
 
+// 开发模式：后端没有真实微信AppSecret时，用dev-login绕过
+const devLogin = async () => {
+  const data = await request('/auth/dev-login', { method: 'POST' });
+  wx.setStorageSync('token', data.token);
+  wx.setStorageSync('user', data.user);
+  return data.user;
+};
+
 const checkLogin = async () => {
   const token = wx.getStorageSync('token');
-  if (!token) {
-    return await login();
+  if (token) {
+    return wx.getStorageSync('user');
   }
-  return wx.getStorageSync('user');
+  // 先试真登录，失败则fallback到dev登录
+  try {
+    return await login();
+  } catch (err) {
+    console.warn('[auth] 微信登录失败，使用开发模式登录:', err.message);
+    return await devLogin();
+  }
 };
 
 module.exports = { login, checkLogin };
