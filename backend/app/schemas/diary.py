@@ -1,5 +1,5 @@
 from datetime import date
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class DiaryCreate(BaseModel):
@@ -12,8 +12,7 @@ class DiaryCardBrief(BaseModel):
     name_zh: str
     meaning_upright: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class DiaryEntryResponse(BaseModel):
@@ -23,8 +22,7 @@ class DiaryEntryResponse(BaseModel):
     card: DiaryCardBrief | None = None
     reflection: str | None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class DiaryEntryBrief(BaseModel):
@@ -34,8 +32,7 @@ class DiaryEntryBrief(BaseModel):
     card: DiaryCardBrief | None = None
     reflection: str | None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class DiaryListResponse(BaseModel):

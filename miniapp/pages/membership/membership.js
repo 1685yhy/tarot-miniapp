@@ -12,7 +12,7 @@ Page({
 
   async onLoad(options) {
     try {
-      const user = await checkLogin();
+      await checkLogin();
       const allProducts = await request('/membership/products');
       // Filter to show only membership-type products (hide single_reading/annual_report)
       let products = allProducts.filter(p => p.type === 'membership');

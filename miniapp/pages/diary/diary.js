@@ -57,6 +57,7 @@ Page({
   },
 
   async onCreateEntry() {
+    if (this.data.creating) return;
     if (!this.data.mood) {
       wx.showToast({ title: '请选择心情', icon: 'none' });
       return;
