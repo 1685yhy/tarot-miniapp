@@ -39,7 +39,7 @@
     </view>
 
     <!-- Product cards -->
-    <view class="products" wx:if="{{!loading}}">
+    <view class="products" wx:if="{{products.length > 0}}">
       <view
         class="product-card {{item.id === 'membership_yearly' ? 'recommended' : ''}} anim-fade-in-up-{{index + 2}}"
         wx:for="{{products}}"

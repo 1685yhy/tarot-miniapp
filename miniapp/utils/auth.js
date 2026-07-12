@@ -52,7 +52,9 @@ const checkLogin = async (options = {}) => {
   try {
     return await login();
   } catch (err) {
-    console.warn('[auth] 微信登录失败，使用开发模式登录:', err.message);
+    if (typeof __wxConfig !== 'undefined' && __wxConfig.envVersion !== 'release') {
+      console.warn('[auth] 微信登录失败，使用开发模式登录:', err.message);
+    }
     return await devLogin();
   }
 };

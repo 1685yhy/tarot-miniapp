@@ -12,7 +12,7 @@ Page({
 
   async onLoad() {
     try {
-      const user = await checkLogin();
+      await checkLogin();
       this.setData({ pageLoading: false });
     } catch (err) {
       this.setData({ pageLoading: false, pageError: err.message || '加载失败' });

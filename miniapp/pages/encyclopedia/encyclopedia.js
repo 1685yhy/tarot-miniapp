@@ -23,10 +23,6 @@ Page({
     await this.loadCards();
   },
 
-  async onShow() {
-    // Refresh when coming back from card detail
-  },
-
   async loadCards() {
     this.setData({ pageLoading: true });
     try {

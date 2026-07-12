@@ -24,6 +24,7 @@ Page({
     historyPage: 1,
     hasMore: true,
     loadingMore: false,
+    historyTotal: 0,
     spreadTypeNames: SPREAD_TYPE_NAMES,
   },
 
@@ -79,6 +80,7 @@ Page({
       });
     } catch (err) {
       this.setData({ loadingMore: false });
+      wx.showToast({ title: '加载更多失败', icon: 'none' });
     }
   },
 

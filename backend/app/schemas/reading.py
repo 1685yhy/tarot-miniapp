@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class ChatMessageResponse(BaseModel):
@@ -9,8 +9,7 @@ class ChatMessageResponse(BaseModel):
     content: str
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ── Request ──────────────────────────────────────────────────────────
@@ -44,8 +43,7 @@ class ReadingResponse(BaseModel):
     drawn_cards: list[DrawnCardResponse]
     chat_messages: list[ChatMessageResponse] = []
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ReadingHistoryItem(BaseModel):
@@ -60,8 +58,7 @@ class ReadingHistoryItem(BaseModel):
     first_card_name: str | None = None
     first_card_is_reversed: bool | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ReadingHistoryResponse(BaseModel):
