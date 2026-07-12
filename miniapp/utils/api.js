@@ -31,7 +31,7 @@ const ENV = (() => {
  * release  【★ 部署前必须修改 ★】替换为生产域名
  */
 const ENV_URLS = {
-  develop: 'http://47.102.42.238:8000',
+  develop: 'http://localhost:8000',
   trial: 'http://47.102.42.238:8000',
   release: 'http://47.102.42.238:8000',
 };

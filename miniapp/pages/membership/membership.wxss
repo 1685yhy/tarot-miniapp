@@ -26,13 +26,24 @@
 }
 
 .product-card {
-  background: var(--color-bg-card);
+  background: linear-gradient(160deg, var(--color-bg-card), rgba(26, 26, 46, 0.95));
   border-radius: var(--radius-card);
   padding: var(--space-xxl);
   text-align: center;
   border: 2rpx solid var(--color-border-light);
   position: relative;
   transition: all var(--duration-normal) var(--ease-out);
+  overflow: hidden;
+}
+
+.product-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2rpx;
+  background: linear-gradient(90deg, transparent, var(--color-gold-subtle), transparent);
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .product-card:active {
@@ -43,8 +54,13 @@
 
 .product-card.recommended {
   border-color: var(--color-gold);
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.06), var(--color-bg-card));
-  box-shadow: var(--shadow-glow);
+  background: linear-gradient(160deg,
+    rgba(212, 175, 55, 0.08), var(--color-bg-card), rgba(212, 175, 55, 0.04));
+  box-shadow: var(--shadow-glow-gold);
+}
+
+.product-card.recommended::before {
+  opacity: 1;
 }
 
 .recommended-badge {
@@ -57,12 +73,14 @@
   padding: 6rpx 20rpx;
   border-radius: var(--radius-round);
   font-weight: var(--fw-semibold);
+  box-shadow: var(--shadow-glow);
+  z-index: 1;
 }
 
 /* Price */
 .price-symbol {
   font-size: var(--fs-h4);
-  color: var(--color-gold);
+  color: var(--color-gold-bright);
 }
 
 .price-value {

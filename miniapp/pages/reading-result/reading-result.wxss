@@ -3,6 +3,12 @@
 /* Cards swiper */
 .cards-section {
   margin-bottom: var(--space-xxl);
+  position: relative;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(50, 20, 70, 0.08), transparent 60%),
+    radial-gradient(ellipse at 50% 100%, rgba(212, 175, 55, 0.03), transparent 50%);
+  border-radius: var(--radius-card);
+  padding: var(--space-md) 0;
 }
 
 .card-swiper {
@@ -14,6 +20,7 @@
   align-items: center;
   justify-content: center;
   height: 100%;
+  transition: transform var(--duration-normal) var(--ease-out);
 }
 
 /* Loading stages indicator */
@@ -62,18 +69,25 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  background: var(--color-bg-card);
+  background: linear-gradient(145deg, var(--color-bg-card), var(--color-bg-card-elevated));
   border-radius: var(--radius-card);
   margin: 0 var(--space-md);
   border: 2rpx solid var(--color-border-glow);
   padding: var(--space-xxl);
   box-sizing: border-box;
-  box-shadow: var(--shadow-glow);
+  box-shadow:
+    var(--shadow-glow),
+    0 0 40rpx rgba(212, 175, 55, 0.06),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.04);
+  transition: all var(--duration-normal) var(--ease-out);
 }
 
 .drawn-card.reversed {
   border-color: var(--color-purple-glow);
-  box-shadow: var(--shadow-glow-purple);
+  box-shadow:
+    var(--shadow-glow-purple),
+    0 0 40rpx rgba(147, 112, 219, 0.06),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.04);
 }
 
 /* Interpretation */
@@ -86,9 +100,21 @@
   color: var(--color-text-primary);
   line-height: var(--lh-loose);
   white-space: pre-wrap;
+  letter-spacing: 1rpx;
+  display: block;
 }
 
-/* Scrollable interpretation container */
+/* Drop cap for first letter of interpretation */
+.interpretation-text::first-letter {
+  font-size: 52rpx;
+  font-weight: var(--fw-bold);
+  color: var(--color-gold);
+  float: left;
+  margin-right: 6rpx;
+  line-height: 1.1;
+}
+
+/* Scrollable interpretation container - enhanced card styling */
 .interpretation-scroll {
   max-height: 600rpx;
   overflow: hidden;
@@ -113,6 +139,12 @@
 .interpretation-card {
   text-align: center;
   padding: var(--space-xxl);
+}
+
+/* Interpretation card with enhanced border */
+.interpretation-scroll.card {
+  border-color: var(--color-border-glow);
+  background: linear-gradient(180deg, var(--color-bg-card), rgba(26, 26, 46, 0.9));
 }
 
 /* Actions */
