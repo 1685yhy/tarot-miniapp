@@ -9,6 +9,7 @@ Page({
     activeCardIndex: 0,
     showFullInterpretation: false,
     loadingStage: 0,
+    _destroyed: false,
   },
 
   async onLoad(options) {
@@ -30,8 +31,10 @@ Page({
     this._stageTimer3 = setTimeout(() => { this.setData({ loadingStage: 3 }); }, 4000);
     try {
       const reading = await request(`/readings/${id}`);
+      if (this.data._destroyed) return;
       this.setData({ reading, pageLoading: false });
     } catch (err) {
+      if (this.data._destroyed) return;
       this.setData({ pageLoading: false, pageError: err.message || '加载失败' });
     } finally {
       this._stageTimer1 && clearTimeout(this._stageTimer1);
@@ -41,6 +44,7 @@ Page({
   },
 
   onUnload() {
+    this.data._destroyed = true;
     this._stageTimer1 && clearTimeout(this._stageTimer1);
     this._stageTimer2 && clearTimeout(this._stageTimer2);
     this._stageTimer3 && clearTimeout(this._stageTimer3);

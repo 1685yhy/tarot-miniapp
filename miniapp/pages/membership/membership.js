@@ -7,6 +7,7 @@ Page({
     products: [],
     pageLoading: true,
     pageError: null,
+    purchasing: false,
   },
 
   async onLoad(options) {
@@ -42,7 +43,9 @@ Page({
   },
 
   async onPurchase(e) {
+    if (this.data.purchasing) return;
     const product = e.currentTarget.dataset.product;
+    this.setData({ purchasing: true });
     try {
       wx.showLoading({ title: '创建订单...' });
       const order = await request('/orders', {
@@ -54,6 +57,7 @@ Page({
       // Call WeChat Pay JSAPI
       const params = order.payment_params;
       if (!params) {
+        this.setData({ purchasing: false });
         wx.showToast({ title: '支付参数错误', icon: 'none' });
         return;
       }
@@ -65,12 +69,14 @@ Page({
         signType: params.signType || 'MD5',
         paySign: params.paySign,
         success: () => {
+          this.setData({ purchasing: false });
           wx.showToast({ title: '支付成功！', icon: 'success' });
           setTimeout(() => {
             wx.redirectTo({ url: '/pages/reading/reading' });
           }, 1500);
         },
         fail: (err) => {
+          this.setData({ purchasing: false });
           if (err.errMsg && err.errMsg.includes('cancel')) {
             wx.showToast({ title: '支付已取消', icon: 'none' });
           } else {
@@ -79,6 +85,7 @@ Page({
         },
       });
     } catch (err) {
+      this.setData({ purchasing: false });
       wx.hideLoading();
       wx.showToast({ title: '下单失败', icon: 'none' });
     }

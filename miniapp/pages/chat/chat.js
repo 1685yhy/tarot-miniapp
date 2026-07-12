@@ -15,6 +15,7 @@ Page({
   },
 
   async onLoad(options) {
+    this._destroyed = false;
     const readingId = options.readingId || '';
     this.setData({ readingId, pageLoading: true });
 
@@ -34,10 +35,19 @@ Page({
       });
       // Scroll to bottom if there are existing messages
       if (reading.chat_messages && reading.chat_messages.length > 0) {
-        setTimeout(() => this.scrollToBottom(), 200);
+        this._scrollTimer = setTimeout(() => this.scrollToBottom(), 200);
       }
     } catch (err) {
+      if (this._destroyed) return;
       this.setData({ pageLoading: false, pageError: err.message || '加载失败' });
+    }
+  },
+
+  onUnload() {
+    this._destroyed = true;
+    if (this._scrollTimer) {
+      clearTimeout(this._scrollTimer);
+      this._scrollTimer = null;
     }
   },
 
@@ -65,6 +75,7 @@ Page({
         method: 'POST',
         data: { message: text },
       });
+      if (this._destroyed) return;
       messages.push({ role: 'assistant', content: result.reply });
       this.setData({
         messages,
@@ -73,6 +84,7 @@ Page({
       });
       this.scrollToBottom();
     } catch (err) {
+      if (this._destroyed) return;
       wx.showToast({ title: '发送失败', icon: 'none' });
       this.setData({ sending: false });
     }

@@ -74,22 +74,24 @@ Page({
   },
 
   onRetry() {
-    this.setData({ pageError: null });
+    this.setData({ pageError: null, isDrawing: false, selectedSpread: null, showQuestionInput: false });
   },
 
   async onStartReading() {
-    const { selectedSpread } = this.data;
+    const { selectedSpread, isDrawing } = this.data;
     if (!selectedSpread) return;
+    if (isDrawing) return;
+
+    this.setData({ isDrawing: true });
 
     // Check login first
     try {
       await checkLogin();
     } catch (err) {
+      this.setData({ isDrawing: false });
       wx.showToast({ title: '请先登录', icon: 'none' });
       return;
     }
-
-    this.setData({ isDrawing: true });
 
     try {
       const result = await request(`/readings/spread/${selectedSpread.key}`, {
