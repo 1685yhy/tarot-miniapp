@@ -29,9 +29,23 @@ const devLogin = async () => {
   return data.user;
 };
 
-const checkLogin = async () => {
+const checkLogin = async (options = {}) => {
   const token = wx.getStorageSync('token');
   if (token) {
+    // refresh=true 时从服务端拉取最新数据，避免缓存过时（如刚购买的会员状态）
+    if (options.refresh) {
+      try {
+        const freshData = await request('/membership/status');
+        // 合并进缓存，兼容 partial 返回
+        const cachedUser = wx.getStorageSync('user') || {};
+        const freshUser = { ...cachedUser, ...freshData };
+        wx.setStorageSync('user', freshUser);
+        return freshUser;
+      } catch {
+        // 刷新失败降级到缓存
+        return wx.getStorageSync('user');
+      }
+    }
     return wx.getStorageSync('user');
   }
   // 先试真登录，失败则fallback到dev登录

@@ -78,7 +78,7 @@ Page({
         c.name_en.toLowerCase().includes(kw) ||
         (c.meaning_upright && c.meaning_upright.toLowerCase().includes(kw)) ||
         (c.meaning_reversed && c.meaning_reversed.toLowerCase().includes(kw)) ||
-        (c.keywords && Array.isArray(c.keywords) && c.keywords.some(k => k.toLowerCase().includes(kw)))
+        (c.keywords_upright && c.keywords_upright.toLowerCase().includes(kw))
       );
     }
 

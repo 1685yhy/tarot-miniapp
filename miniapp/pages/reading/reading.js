@@ -33,7 +33,7 @@ Page({
     // Premium spreads require membership
     if (spread.premium) {
       try {
-        const user = await checkLogin();
+        const user = await checkLogin({ refresh: true });
         if (user && !user.is_member) {
           wx.showModal({
             title: '会员专属',

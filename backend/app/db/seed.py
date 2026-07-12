@@ -202,7 +202,13 @@ def parse_minor_card(text: str) -> dict:
         elif kw_text.startswith('正位') or kw_text.startswith('逆位'):
             kw_up, kw_rev = _parse_keywords_prefixed(kw_text)
         else:
-            kw_up, kw_rev = kw_text, ''
+            # 兼容 "关键词1、关键词2 / 关键词3、关键词4" 一行分隔格式
+            if '／' in kw_text or ' / ' in kw_text:
+                parts = re.split(r'\s*[／/]\s*', kw_text, maxsplit=1)
+                kw_up = parts[0].strip()
+                kw_rev = parts[1].strip() if len(parts) > 1 else ''
+            else:
+                kw_up, kw_rev = kw_text, ''
     else:
         # 从 基本信息 表格取
         basic = subs.get('基本信息', '')
