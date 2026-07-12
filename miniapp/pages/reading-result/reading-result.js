@@ -40,6 +40,12 @@ Page({
     }
   },
 
+  onUnload() {
+    this._stageTimer1 && clearTimeout(this._stageTimer1);
+    this._stageTimer2 && clearTimeout(this._stageTimer2);
+    this._stageTimer3 && clearTimeout(this._stageTimer3);
+  },
+
   onCardSwiperChange(e) {
     this.setData({ activeCardIndex: e.detail.current });
   },
