@@ -116,20 +116,18 @@
     inset 0 1rpx 0 rgba(255, 255, 255, 0.5);
 }
 
-/* 气泡尾巴 — 右下角小曲弧 */
+/* 气泡尾巴 — 右下角小三角 */
 .bubble-user::after {
   content: '';
   position: absolute;
-  bottom: 8rpx;
-  right: -5rpx;
-  width: 14rpx;
-  height: 14rpx;
-  background: #fcf8f0;
-  border-radius: 0 0 4rpx 0;
-  border-right: 2rpx solid rgba(200, 170, 140, 0.20);
-  border-bottom: 2rpx solid rgba(200, 170, 140, 0.20);
+  bottom: 10rpx;
+  right: -8rpx;
+  width: 0;
+  height: 0;
+  border-left: 10rpx solid #fcf8f0;
+  border-top: 8rpx solid transparent;
+  border-bottom: 8rpx solid transparent;
   transform: rotate(-15deg);
-  clip-path: polygon(0 0, 100% 0, 100% 100%);
 }
 
 /* ========================================================
@@ -146,20 +144,18 @@
     inset 0 1rpx 0 rgba(255, 255, 255, 0.4);
 }
 
-/* 气泡尾巴 — 左下角小曲弧 */
+/* 气泡尾巴 — 左下角小三角 */
 .bubble-ai::after {
   content: '';
   position: absolute;
-  bottom: 8rpx;
-  left: -5rpx;
-  width: 14rpx;
-  height: 14rpx;
-  background: rgba(170, 195, 165, 0.08);
-  border-radius: 0 0 0 4rpx;
-  border-left: 2rpx solid rgba(170, 195, 165, 0.15);
-  border-bottom: 2rpx solid rgba(170, 195, 165, 0.15);
+  bottom: 10rpx;
+  left: -8rpx;
+  width: 0;
+  height: 0;
+  border-right: 10rpx solid rgba(170, 195, 165, 0.08);
+  border-top: 8rpx solid transparent;
+  border-bottom: 8rpx solid transparent;
   transform: rotate(15deg);
-  clip-path: polygon(100% 0, 0 0, 0 100%);
 }
 
 /* ========================================================
@@ -216,9 +212,7 @@
   align-items: center;
   padding: var(--space-md) var(--space-xl);
   padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-md));
-  background: rgba(252, 248, 240, 0.92);
-  backdrop-filter: blur(24rpx);
-  -webkit-backdrop-filter: blur(24rpx);
+  background: rgba(252, 248, 240, 0.98);
   border-top: 2rpx solid rgba(200, 170, 140, 0.08);
   gap: var(--space-sm);
   z-index: var(--z-card);
