@@ -1,124 +1,271 @@
-/* ===== 百科 - 至尊神秘主题 ===== */
+/* ===== 百科 - "暮光圣所" 暖色神秘主题 ===== *
+ * 灵感：泛黄羊皮纸、暮色余晖、古旧手稿   *
+ * 每一张卡片都像从禁书库中取出的神秘典藏  *
+ * ======================================= */
 
-/* Search bar */
+/* ===== 搜索栏 ===== */
 .search-bar {
   display: flex;
   align-items: center;
-  background: linear-gradient(135deg, var(--color-bg-card), var(--color-bg));
-  border-radius: var(--radius-round);
-  padding: var(--space-md) var(--space-xl);
-  margin-bottom: var(--space-lg);
-  border: 1rpx solid var(--color-border-light);
-  transition: all var(--duration-normal);
+  background: linear-gradient(145deg, #2a1f1a 0%, #3d2b22 100%);
+  border-radius: 48rpx;
+  padding: 18rpx 36rpx;
+  margin-bottom: 36rpx;
+  border: 1.5rpx solid rgba(212, 175, 55, 0.15);
+  transition: all 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   position: relative;
   overflow: hidden;
-}
-
-.search-bar:focus-within {
-  border-color: var(--color-gold);
   box-shadow:
-    var(--shadow-glow-gold),
-    inset 0 0 30rpx rgba(212, 175, 55, 0.03);
+    0 4rpx 20rpx rgba(0, 0, 0, 0.25),
+    inset 0 1rpx 0 rgba(212, 175, 55, 0.08);
 }
 
-/* Tabs */
+/* 底部分隔光晕 -- 仿佛暮色透过窗棂 */
+.search-bar::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  width: 80%;
+  height: 1.5rpx;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(212, 175, 55, 0.3) 20%,
+    rgba(255, 167, 38, 0.5) 50%,
+    rgba(212, 175, 55, 0.3) 80%,
+    transparent
+  );
+  pointer-events: none;
+}
+
+/* 聚焦时 —— 暖色内辉，如烛火点亮 */
+.search-bar:focus-within {
+  border-color: rgba(255, 183, 77, 0.5);
+  box-shadow:
+    0 0 40rpx rgba(255, 167, 38, 0.12),
+    0 0 80rpx rgba(255, 152, 0, 0.06),
+    inset 0 0 40rpx rgba(255, 183, 77, 0.08);
+}
+
+/* ===== 分类标签栏 ===== */
 .tab-bar {
   white-space: nowrap;
-  margin-bottom: var(--space-xl);
-  height: 64rpx;
+  margin-bottom: 38rpx;
+  height: 68rpx;
   position: relative;
+  padding: 0 4rpx;
 }
 
 .tab-item {
   display: inline-flex;
   align-items: center;
-  padding: 10rpx 28rpx;
-  margin-right: var(--space-sm);
-  border-radius: var(--radius-round);
-  font-size: var(--fs-body-small);
-  color: var(--color-text-secondary);
-  background: linear-gradient(135deg, var(--color-bg-card), var(--color-bg-mid));
-  border: 1rpx solid var(--color-border-subtle);
-  transition: all var(--duration-normal);
+  padding: 12rpx 34rpx;
+  margin-right: 14rpx;
+  border-radius: 40rpx;
+  font-size: 26rpx;
+  color: rgba(230, 195, 145, 0.6);
+  background: linear-gradient(145deg, #241b16, #2d221c);
+  border: 1rpx solid rgba(212, 175, 55, 0.08);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   position: relative;
+  letter-spacing: 1.5rpx;
 }
 
+/* 非活跃标签 —— 低调褪色，如书架上的旧书脊 */
+.tab-item:not(.tab-active) {
+  opacity: 0.7;
+  backdrop-filter: blur(4rpx);
+}
+
+/* 悬停/按下 —— 微微亮起 */
 .tab-item:active {
-  background: var(--color-gold-subtle);
-  color: var(--color-gold);
+  background: linear-gradient(145deg, #2f221a, #3d2b1e);
+  color: rgba(255, 183, 77, 0.8);
+  border-color: rgba(212, 175, 55, 0.2);
+  transform: translateY(-1rpx);
 }
 
+/* 活跃标签 —— 暖金辉光，如圣坛之火 */
 .tab-active {
-  background: var(--gradient-gold);
-  color: var(--color-text-on-gold);
-  font-weight: var(--fw-semibold);
+  background: linear-gradient(145deg, #8b6b3d 0%, #a67c46 40%, #c4944f 100%);
+  color: #fdf6e3;
+  font-weight: 600;
   border-color: transparent;
-  box-shadow: var(--shadow-glow-gold);
+  box-shadow:
+    0 0 24rpx rgba(255, 183, 77, 0.2),
+    0 4rpx 16rpx rgba(160, 120, 50, 0.25),
+    inset 0 1rpx 0 rgba(255, 235, 200, 0.3);
+  text-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.3);
+  opacity: 1;
+  transform: translateY(-1rpx);
 }
 
-/* Card grid */
+/* 活跃标签底部流光 */
+.tab-active::after {
+  content: '';
+  position: absolute;
+  bottom: -2rpx;
+  left: 15%;
+  width: 70%;
+  height: 3rpx;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 215, 130, 0.6) 30%,
+    rgba(255, 215, 130, 0.8) 50%,
+    rgba(255, 215, 130, 0.6) 70%,
+    transparent
+  );
+  border-radius: 50%;
+  filter: blur(2rpx);
+  pointer-events: none;
+}
+
+/* ===== 卡片网格 ===== */
 .card-grid {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  padding: 0 4rpx;
 }
 
+/* ===== 单张卡片 ===== */
 .card-item {
-  width: calc(50% - 10rpx);
-  background: var(--color-bg-card);
-  border-radius: var(--radius-lg);
-  padding: var(--space-xl);
-  margin-bottom: var(--space-lg);
+  width: calc(50% - 18rpx);
+  background: linear-gradient(165deg, #2b1f18 0%, #372920 50%, #2d221b 100%);
+  border-radius: 28rpx;
+  padding: 30rpx 28rpx 34rpx;
+  margin-bottom: 28rpx;
   box-sizing: border-box;
-  border: 1rpx solid var(--color-border-subtle);
-  transition: all var(--duration-normal) var(--ease-out);
+  border: 1rpx solid rgba(212, 175, 55, 0.1);
+  transition: all 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   position: relative;
   overflow: hidden;
+  box-shadow:
+    0 8rpx 32rpx rgba(0, 0, 0, 0.35),
+    0 2rpx 8rpx rgba(0, 0, 0, 0.2),
+    inset 0 1rpx 0 rgba(212, 175, 55, 0.06);
 }
 
+/* 羊皮纸纹理层 —— 细微杂色营造古旧质感 */
+.card-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 90%, rgba(255, 152, 0, 0.02) 0%, transparent 50%);
+  pointer-events: none;
+  border-radius: 28rpx;
+}
+
+/* 顶部装饰线 —— 如古书章节眉饰 */
+.card-item::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 15%;
+  width: 70%;
+  height: 2rpx;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(212, 175, 55, 0.25) 20%,
+    rgba(255, 183, 77, 0.4) 50%,
+    rgba(212, 175, 55, 0.25) 80%,
+    transparent
+  );
+  pointer-events: none;
+}
+
+/* 卡片按压 —— 向内沉稳，金光浮现 */
 .card-item:active {
-  border-color: var(--color-gold);
-  transform: scale(0.97);
-  box-shadow: var(--shadow-glow-gold);
+  border-color: rgba(255, 183, 77, 0.3);
+  transform: scale(0.96);
+  box-shadow:
+    0 0 36rpx rgba(255, 167, 38, 0.10),
+    0 0 60rpx rgba(212, 175, 55, 0.06),
+    inset 0 0 30rpx rgba(212, 175, 55, 0.04);
 }
 
-/* Card number styling */
+/* 卡片编号（数字/小号文字） */
 .card-item .text-gold {
-  font-size: var(--fs-caption);
-  font-weight: var(--fw-semibold);
+  font-size: 22rpx;
+  font-weight: 600;
   display: inline-block;
-  letter-spacing: 1rpx;
+  letter-spacing: 2rpx;
+  color: rgba(255, 183, 77, 0.7);
+  text-shadow: 0 0 12rpx rgba(255, 183, 77, 0.15);
 }
 
-/* Count bar */
+/* 卡片标题 */
+.card-item .card-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #f0e0c8;
+  margin-top: 12rpx;
+  line-height: 1.35;
+  letter-spacing: 1rpx;
+  text-shadow: 0 1rpx 6rpx rgba(0, 0, 0, 0.3);
+}
+
+/* 卡片描述 */
+.card-item .card-subtitle {
+  font-size: 24rpx;
+  color: rgba(210, 180, 140, 0.6);
+  margin-top: 8rpx;
+  line-height: 1.4;
+  letter-spacing: 0.5rpx;
+}
+
+/* ===== 计数栏 ===== */
 .count-bar {
   text-align: center;
-  padding: var(--space-xl) 0;
-  font-size: var(--fs-body-small);
-  color: var(--color-text-dim);
+  padding: 36rpx 0;
+  font-size: 24rpx;
+  color: rgba(210, 180, 140, 0.45);
+  letter-spacing: 2rpx;
+  position: relative;
 }
 
-/* ===== 加载骨架 ===== */
+/* 计数栏分隔装饰 */
+.count-bar::before,
+.count-bar::after {
+  content: '✦';
+  display: inline-block;
+  margin: 0 16rpx;
+  font-size: 14rpx;
+  color: rgba(212, 175, 55, 0.2);
+  vertical-align: middle;
+}
+
+/* ===== 加载骨架屏 ===== */
 .skeleton-search {
   height: 72rpx;
-  border-radius: var(--radius-round);
-  background: var(--color-bg-card);
-  margin-bottom: var(--space-lg);
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+  border-radius: 48rpx;
+  background: linear-gradient(145deg, #2a1f1a, #3d2b22);
+  margin-bottom: 36rpx;
+  animation: pulse-glow 1.8s ease-in-out infinite;
+  box-shadow: inset 0 0 20rpx rgba(212, 175, 55, 0.02);
 }
 
 .skeleton-tabs {
   display: flex;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-xl);
+  gap: 14rpx;
+  margin-bottom: 38rpx;
 }
 
 .skeleton-tab {
-  width: 120rpx;
+  width: 130rpx;
   height: 56rpx;
-  border-radius: var(--radius-round);
-  background: var(--color-bg-card);
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+  border-radius: 40rpx;
+  background: linear-gradient(145deg, #241b16, #2d221c);
+  animation: pulse-glow 1.8s ease-in-out infinite;
+  box-shadow: inset 0 0 16rpx rgba(212, 175, 55, 0.01);
 }
 
 .skeleton-grid {
@@ -128,37 +275,59 @@
 }
 
 .skeleton-card {
-  width: calc(50% - 10rpx);
-  height: 200rpx;
-  border-radius: var(--radius-lg);
-  background: var(--color-bg-card);
-  margin-bottom: var(--space-lg);
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+  width: calc(50% - 18rpx);
+  height: 220rpx;
+  border-radius: 28rpx;
+  background: linear-gradient(165deg, #2b1f18, #372920, #2d221b);
+  margin-bottom: 28rpx;
+  animation: pulse-glow 1.8s ease-in-out infinite;
+  box-shadow:
+    0 8rpx 32rpx rgba(0, 0, 0, 0.35),
+    inset 0 1rpx 0 rgba(212, 175, 55, 0.04);
 }
 
 /* ===== 错误状态 ===== */
 .error-state {
   text-align: center;
-  padding: var(--space-massive) var(--space-xl);
+  padding: 120rpx 40rpx;
 }
 
 .error-icon {
-  font-size: 80rpx;
+  font-size: 88rpx;
   display: block;
-  margin-bottom: var(--space-md);
-  opacity: 0.6;
+  margin-bottom: 24rpx;
+  opacity: 0.5;
+  filter: sepia(0.6) saturate(0.5);
 }
 
 .error-text {
-  font-size: var(--fs-body);
-  color: var(--color-text-secondary);
+  font-size: 28rpx;
+  color: rgba(230, 195, 145, 0.7);
   display: block;
-  margin-bottom: var(--space-xs);
+  margin-bottom: 10rpx;
+  letter-spacing: 1rpx;
 }
 
 .error-hint {
-  font-size: var(--fs-body-small);
-  color: var(--color-text-dim);
+  font-size: 24rpx;
+  color: rgba(210, 180, 140, 0.4);
   display: block;
-  margin-bottom: var(--space-xxl);
+  margin-bottom: 60rpx;
+  letter-spacing: 1rpx;
+}
+
+/* ===== 骨架动画 ===== */
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.6;
+    box-shadow:
+      0 0 12rpx rgba(212, 175, 55, 0.02),
+      inset 0 0 20rpx rgba(212, 175, 55, 0.01);
+  }
+  50% {
+    opacity: 0.85;
+    box-shadow:
+      0 0 24rpx rgba(212, 175, 55, 0.04),
+      inset 0 0 30rpx rgba(212, 175, 55, 0.02);
+  }
 }

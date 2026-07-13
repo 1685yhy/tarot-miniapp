@@ -1,81 +1,108 @@
 /* ============================================================
-   塔罗占卜 - 至尊神秘主题样式系统 (Premium Mystical Theme)
-   Version 3.0 - 2026
+   塔罗占卜 - 薄暮圣殿主题样式系统 (Twilight Sanctuary)
+   Redesign v4.0 - Warm Indigo + Candlelight Glow
    ============================================================ */
 
 /* ===== 1. CSS 自定义属性 (Design Tokens) ===== */
 page {
   /* ---- 色彩系统 ---- */
-  /* 背景 */
-  --color-bg-deep: #06060f;
-  --color-bg: #0a0a1a;
-  --color-bg-mid: #0f0f23;
-  --color-bg-card: #1a1a2e;
-  --color-bg-card-elevated: #222245;
-  --color-bg-card-glass: rgba(26, 26, 46, 0.85);
 
-  /* 金色系 - 主强调色 (Premium Gold) */
-  --color-gold: #d4af37;
-  --color-gold-light: #e8c97a;
-  --color-gold-dark: #b8952e;
-  --color-gold-glow: rgba(212, 175, 55, 0.35);
-  --color-gold-subtle: rgba(212, 175, 55, 0.12);
+  /* 背景 — 暖调深靛蓝：像黄昏时分的冥想室 */
+  --color-bg-deep: #0d0d2b;
+  --color-bg: #10102e;
+  --color-bg-mid: #16163a;
+  --color-bg-card: #1c1c40;
+  --color-bg-card-elevated: #252550;
+  --color-bg-card-glass: rgba(28, 28, 64, 0.88);
+
+  /* 暖调卡片表面 — 带有一丝烛光暖意 */
+  --color-bg-card-warm: #1e1e44;
+  --color-bg-card-candle: rgba(30, 28, 50, 0.92);
+
+  /* 金色系 — 主强调色 (Sanctuary Gold) */
+  --color-gold: #ddb847;
+  --color-gold-light: #f0d68a;
+  --color-gold-dark: #c4a035;
+  --color-gold-glow: rgba(221, 184, 71, 0.30);
+  --color-gold-subtle: rgba(221, 184, 71, 0.10);
 
   /* 金色系扩展 */
-  --color-gold-bright: #f0d060;
-  --color-gold-aged: #8b6914;
-  --color-gold-pale: #c4a03a;
-  --color-rose-gold: #d4a0a0;
-  --color-rose-gold-subtle: rgba(212, 160, 160, 0.12);
+  --color-gold-bright: #f5df90;
+  --color-gold-aged: #7a5e1a;
+  --color-gold-pale: #c9ad50;
+  --color-rose-gold: #dba8a8;
+  --color-rose-gold-subtle: rgba(219, 168, 168, 0.10);
 
-  /* 紫色系 - 辅助色 (Mystic Purple) */
+  /* 烛光暖色 — 新辅助色 (Candlelight Warmth) */
+  --color-amber: #d4893a;
+  --color-amber-light: #e8a85e;
+  --color-amber-glow: rgba(212, 137, 58, 0.25);
+  --color-amber-subtle: rgba(212, 137, 58, 0.08);
+  --color-candle-core: rgba(255, 200, 120, 0.04);
+  --color-candle-glow: radial-gradient(
+    ellipse 80% 50% at 50% 8%,
+    rgba(255, 200, 120, 0.06) 0%,
+    rgba(212, 137, 58, 0.03) 40%,
+    transparent 100%
+  );
+
+  /* 紫色系 — 辅助色 (Mystic Purple) */
   --color-purple: #9370db;
   --color-purple-light: #b39af0;
   --color-purple-dark: #5a3f9a;
   --color-purple-glow: rgba(147, 112, 219, 0.35);
-  --color-purple-subtle: rgba(147, 112, 219, 0.12);
+  --color-purple-subtle: rgba(147, 112, 219, 0.10);
 
   /* 神秘辉光色 */
-  --color-mystic-glow: rgba(147, 112, 219, 0.15);
+  --color-mystic-glow: rgba(147, 112, 219, 0.12);
 
   /* 卡牌边框色 */
-  --color-card-border: rgba(212, 175, 55, 0.25);
+  --color-card-border: rgba(221, 184, 71, 0.20);
 
   /* 星辰 / 月白 */
-  --color-starlight: #e8e0d4;
-  --color-star-subtle: rgba(232, 224, 212, 0.08);
+  --color-starlight: #ece4d6;
+  --color-star-subtle: rgba(236, 228, 214, 0.06);
 
   /* 语义色 */
   --color-success: #5cd6a0;
   --color-warning: #e8b84b;
   --color-danger: #e85757;
 
-  /* 文字色 */
-  --color-text-primary: #e8e8f0;
-  --color-text-secondary: #9999bb;
-  --color-text-dim: #555577;
-  --color-text-muted: #333355;
-  --color-text-on-gold: #1a1a2e;
+  /* 文字色 — 提高对比度，减少灰色感 */
+  --color-text-primary: #efeff6;
+  --color-text-secondary: #a8a8cc;
+  --color-text-dim: #6868a0;
+  --color-text-muted: #404070;
+  --color-text-on-gold: #1c1c40;
+  --color-text-on-amber: #1a1a30;
 
   /* 边框 / 分割线 */
-  --color-border-subtle: rgba(212, 175, 55, 0.08);
-  --color-border-light: rgba(212, 175, 55, 0.15);
-  --color-border-glow: rgba(212, 175, 55, 0.25);
-  --color-divider: rgba(255, 255, 255, 0.04);
+  --color-border-subtle: rgba(221, 184, 71, 0.06);
+  --color-border-light: rgba(221, 184, 71, 0.12);
+  --color-border-glow: rgba(221, 184, 71, 0.22);
+  --color-divider: rgba(255, 255, 255, 0.03);
 
   /* ---- 渐变 ---- */
-  --gradient-gold: linear-gradient(135deg, #d4af37, #e8c97a);
-  --gradient-gold-reverse: linear-gradient(135deg, #e8c97a, #d4af37);
+  --gradient-gold: linear-gradient(135deg, #ddb847, #f0d68a);
+  --gradient-gold-reverse: linear-gradient(135deg, #f0d68a, #ddb847);
   --gradient-purple: linear-gradient(135deg, #5a3f9a, #9370db);
-  --gradient-mystic: linear-gradient(135deg, #0f0f23, #1a1a2e);
+  --gradient-mystic: linear-gradient(135deg, #16163a, #1c1c40);
   --gradient-card-border: linear-gradient(135deg,
-    rgba(212, 175, 55, 0.25), rgba(147, 112, 219, 0.15), rgba(212, 175, 55, 0.05));
+    rgba(221, 184, 71, 0.22), rgba(147, 112, 219, 0.12), rgba(221, 184, 71, 0.04));
   --gradient-glass: linear-gradient(135deg,
-    rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+    rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
   --gradient-bg-radial: radial-gradient(ellipse at 50% 0%,
-    rgba(147, 112, 219, 0.08) 0%, transparent 70%);
+    rgba(147, 112, 219, 0.06) 0%, transparent 70%);
   --gradient-bg-radial-gold: radial-gradient(ellipse at 50% 100%,
-    rgba(212, 175, 55, 0.05) 0%, transparent 60%);
+    rgba(221, 184, 71, 0.04) 0%, transparent 60%);
+
+  /* 烛光环境光渐变 */
+  --gradient-candle-ambient: radial-gradient(
+    ellipse 70% 40% at 50% 6%,
+    rgba(212, 137, 58, 0.07) 0%,
+    rgba(221, 184, 71, 0.03) 50%,
+    transparent 100%
+  );
 
   /* ---- 排版 ---- */
   --font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC',
@@ -83,17 +110,17 @@ page {
   --font-family-display: 'PingFang SC', 'Hiragino Sans GB',
     'Microsoft YaHei', serif;
 
-  /* 字号 */
+  /* 字号 — 增大标题比例，创造更清晰的层次感 */
   --fs-caption: 20rpx;
   --fs-small: 22rpx;
   --fs-body-small: 24rpx;
   --fs-body: 28rpx;
   --fs-body-large: 30rpx;
-  --fs-h4: 32rpx;
-  --fs-h3: 36rpx;
-  --fs-h2: 40rpx;
-  --fs-h1: 48rpx;
-  --fs-display: 56rpx;
+  --fs-h4: 34rpx;
+  --fs-h3: 38rpx;
+  --fs-h2: 46rpx;
+  --fs-h1: 56rpx;
+  --fs-display: 64rpx;
 
   /* 字重 */
   --fw-regular: 400;
@@ -103,20 +130,26 @@ page {
 
   /* 行高 */
   --lh-tight: 1.2;
-  --lh-normal: 1.5;
-  --lh-loose: 1.8;
+  --lh-normal: 1.6;
+  --lh-loose: 1.9;
 
-  /* ---- 间距 ---- */
+  /* 字间距 — 新：用于庄严感 */
+  --ls-heading: 2rpx;
+  --ls-display: 4rpx;
+  --ls-body: 0.5rpx;
+
+  /* ---- 间距 — 全面增大，给呼吸空间 ---- */
   --space-xxs: 4rpx;
   --space-xs: 8rpx;
   --space-sm: 12rpx;
   --space-md: 16rpx;
-  --space-lg: 20rpx;
-  --space-xl: 24rpx;
-  --space-xxl: 32rpx;
-  --space-xxxl: 40rpx;
-  --space-huge: 48rpx;
-  --space-massive: 60rpx;
+  --space-lg: 24rpx;
+  --space-xl: 32rpx;
+  --space-xxl: 40rpx;
+  --space-xxxl: 48rpx;
+  --space-huge: 56rpx;
+  --space-massive: 72rpx;
+  --space-section: 64rpx;
 
   /* ---- 圆角 ---- */
   --radius-sm: 8rpx;
@@ -129,21 +162,25 @@ page {
   --radius-card: 24rpx;
   --radius-button: 48rpx;
 
-  /* ---- 阴影 ---- */
-  --shadow-card: 0 4rpx 24rpx rgba(0, 0, 0, 0.3);
-  --shadow-card-elevated: 0 8rpx 40rpx rgba(0, 0, 0, 0.4);
-  --shadow-glow: 0 0 20rpx rgba(212, 175, 55, 0.15);
-  --shadow-glow-gold: 0 0 20rpx rgba(212, 175, 55, 0.2);
-  --shadow-glow-purple: 0 0 24rpx rgba(147, 112, 219, 0.2);
-  --shadow-button: 0 4rpx 16rpx rgba(212, 175, 55, 0.25);
+  /* ---- 阴影 — 更深邃、更有戏剧性 ---- */
+  --shadow-card: 0 6rpx 32rpx rgba(0, 0, 0, 0.35);
+  --shadow-card-elevated: 0 12rpx 52rpx rgba(0, 0, 0, 0.45);
+  --shadow-glow: 0 0 20rpx rgba(221, 184, 71, 0.12);
+  --shadow-glow-gold: 0 0 20rpx rgba(221, 184, 71, 0.18);
+  --shadow-glow-amber: 0 0 30rpx rgba(212, 137, 58, 0.15);
+  --shadow-glow-purple: 0 0 24rpx rgba(147, 112, 219, 0.18);
+  --shadow-button: 0 4rpx 16rpx rgba(221, 184, 71, 0.22);
+  --shadow-card-warm: 0 6rpx 32rpx rgba(0, 0, 0, 0.35),
+    0 0 40rpx rgba(212, 137, 58, 0.04);
 
-  /* ---- 动画 ---- */
-  --duration-fast: 0.2s;
-  --duration-normal: 0.3s;
-  --duration-slow: 0.5s;
-  --duration-shimmer: 2s;
+  /* ---- 动画 — 放慢，营造沉思冥想感 ---- */
+  --duration-fast: 0.3s;
+  --duration-normal: 0.45s;
+  --duration-slow: 0.7s;
+  --duration-shimmer: 3s;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-mystical: cubic-bezier(0.4, 0, 0.2, 1);
 
   /* ---- Z 轴层级 ---- */
   --z-base: 1;
@@ -151,47 +188,56 @@ page {
   --z-modal: 100;
   --z-toast: 1000;
 
-  /* 基础 */
+  /* ---- 页面基础 ---- */
   background-color: var(--color-bg);
   background-image:
-    radial-gradient(1rpx 1rpx at 22% 15%, rgba(255,255,255,0.03), transparent),
-    radial-gradient(1rpx 1rpx at 65% 25%, rgba(212,175,55,0.025), transparent),
-    radial-gradient(1rpx 1rpx at 82% 72%, rgba(147,112,219,0.02), transparent),
-    radial-gradient(1rpx 1rpx at 38% 78%, rgba(255,255,255,0.02), transparent),
-    radial-gradient(1rpx 1rpx at 12% 62%, rgba(212,175,55,0.015), transparent),
-    radial-gradient(1rpx 1rpx at 55% 45%, rgba(255,255,255,0.015), transparent),
+    /* 星尘粒子 — 更柔和 */
+    radial-gradient(1rpx 1rpx at 22% 15%, rgba(236,228,214,0.025), transparent),
+    radial-gradient(1rpx 1rpx at 65% 25%, rgba(221,184,71,0.02), transparent),
+    radial-gradient(1rpx 1rpx at 82% 72%, rgba(147,112,219,0.018), transparent),
+    radial-gradient(1rpx 1rpx at 38% 78%, rgba(236,228,214,0.018), transparent),
+    radial-gradient(1rpx 1rpx at 12% 62%, rgba(221,184,71,0.012), transparent),
+    radial-gradient(1rpx 1rpx at 55% 45%, rgba(236,228,214,0.012), transparent),
+    /* 顶部环境光 — 烛光暖晕 */
+    radial-gradient(ellipse 70% 30% at 50% 0%,
+      rgba(255, 200, 120, 0.04) 0%,
+      rgba(212, 137, 58, 0.02) 40%,
+      transparent 100%),
+    /* 原有渐变 — 降低透明度协调 */
     var(--gradient-bg-radial),
     var(--gradient-bg-radial-gold);
   color: var(--color-text-primary);
   font-family: var(--font-family);
   font-size: var(--fs-body);
   line-height: var(--lh-normal);
+  letter-spacing: var(--ls-body);
 }
 
 
 /* ===== 2. 全局动画关键帧 ===== */
+/*    核心原则：放慢节奏，营造沉思冥想的视觉氛围 */
 
-/* 2.1 星尘粒子闪烁 */
+/* 2.1 星尘粒子闪烁 — 更缓、更柔 */
 @keyframes twinkle {
-  0%, 100% { opacity: 0.2; transform: scale(0.8); }
-  50% { opacity: 1; transform: scale(1.2); }
+  0%, 100% { opacity: 0.15; transform: scale(0.6); }
+  50% { opacity: 1; transform: scale(1.1); }
 }
 
-/* 2.2 金色光芒脉冲 (按钮发光) */
+/* 2.2 金色光芒脉冲 (按钮发光) — 更慢的呼吸感 */
 @keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 8rpx var(--color-gold-glow), 0 0 0rpx transparent; }
-  50% { box-shadow: 0 0 24rpx var(--color-gold-glow), 0 0 48rpx var(--color-gold-subtle); }
+  0%, 100% { box-shadow: 0 0 6rpx var(--color-gold-glow), 0 0 0rpx transparent; }
+  50% { box-shadow: 0 0 20rpx var(--color-gold-glow), 0 0 40rpx var(--color-gold-subtle); }
 }
 
-/* 2.3 金色流光 (shimmer) - 卡片扫光 */
+/* 2.3 金色流光 (shimmer) */
 @keyframes shimmer {
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
 }
 
-/* 2.4 淡入上升 */
+/* 2.4 淡入上升 — 更从容 */
 @keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(20rpx); }
+  from { opacity: 0; transform: translateY(24rpx); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -207,16 +253,16 @@ page {
   100% { transform: perspective(800rpx) rotateY(180deg); }
 }
 
-/* 2.7 神秘旋转 (占卜轮盘) */
+/* 2.7 神秘旋转 — 更缓慢庄重 */
 @keyframes mystic-spin {
   0% { transform: rotate(0deg) scale(1); }
-  50% { transform: rotate(180deg) scale(1.15); }
+  50% { transform: rotate(180deg) scale(1.08); }
   100% { transform: rotate(360deg) scale(1); }
 }
 
-/* 2.8 呼吸发光 */
+/* 2.8 呼吸发光 — 更深长的呼吸 */
 @keyframes breathe {
-  0%, 100% { opacity: 0.6; }
+  0%, 100% { opacity: 0.5; }
   50% { opacity: 1; }
 }
 
@@ -230,32 +276,46 @@ page {
 /* 2.10 浮动 */
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10rpx); }
+  50% { transform: translateY(-8rpx); }
 }
 
-/* 2.11 脉冲缩放 (加载用) */
+/* 2.11 脉冲缩放 */
 @keyframes pulse-scale {
-  0%, 100% { transform: scale(1); opacity: 0.7; }
-  50% { transform: scale(1.05); opacity: 1; }
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.04); opacity: 1; }
 }
 
 /* 2.12 卡牌扫光特效 */
 @keyframes card-shimmer {
   0% { transform: translateX(-100%) skewX(-15deg); opacity: 0; }
-  20% { opacity: 0.6; }
+  20% { opacity: 0.5; }
   100% { transform: translateX(200%) skewX(-15deg); opacity: 0; }
 }
 
 /* 2.13 紫色神秘波动 */
 @keyframes mystic-wave {
-  0%, 100% { transform: scale(1); opacity: 0.15; }
-  50% { transform: scale(1.08); opacity: 0.35; }
+  0%, 100% { transform: scale(1); opacity: 0.10; }
+  50% { transform: scale(1.06); opacity: 0.25; }
 }
 
-/* 2.14 文字打字效果闪烁光标 */
+/* 2.14 文字光标闪烁 */
 @keyframes cursor-blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
+}
+
+/* 2.15 烛光摇曳 — 新：环境光微动 */
+@keyframes candle-flicker {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  25% { opacity: 0.8; transform: scale(1.02); }
+  50% { opacity: 0.5; transform: scale(0.98); }
+  75% { opacity: 0.7; transform: scale(1.01); }
+}
+
+/* 2.16 光圈呼吸 — 新：用于聚焦元素 */
+@keyframes halo-breathe {
+  0%, 100% { box-shadow: 0 0 8rpx var(--color-gold-glow), 0 0 16rpx var(--color-gold-subtle); }
+  50% { box-shadow: 0 0 16rpx var(--color-gold-glow), 0 0 40rpx var(--color-gold-subtle); }
 }
 
 
@@ -264,32 +324,38 @@ page {
 .page {
   min-height: 100vh;
   padding: var(--space-xl);
-  padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-huge));
+  padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-massive));
   background: var(--color-bg);
-  background-image: var(--gradient-bg-radial), var(--gradient-bg-radial-gold);
+  background-image:
+    var(--gradient-candle-ambient),
+    var(--gradient-bg-radial),
+    var(--gradient-bg-radial-gold);
 }
 
 .page-full {
   min-height: 100vh;
   background: var(--color-bg);
-  background-image: var(--gradient-bg-radial), var(--gradient-bg-radial-gold);
+  background-image:
+    var(--gradient-candle-ambient),
+    var(--gradient-bg-radial),
+    var(--gradient-bg-radial-gold);
 }
 
 
 /* ===== 4. 卡片表面 ===== */
 
-/* 4.1 基础卡片 */
+/* 4.1 基础卡片 — 暖调底色 + 深沉阴影 */
 .card {
-  background: var(--color-bg-card);
+  background: var(--color-bg-card-warm);
   border-radius: var(--radius-card);
   padding: var(--space-xl);
   border: 1rpx solid var(--color-border-subtle);
-  box-shadow: var(--shadow-card);
+  box-shadow: var(--shadow-card-warm);
   position: relative;
   overflow: hidden;
 }
 
-/* 4.2 毛玻璃卡片 (Glassmorphism) */
+/* 4.2 毛玻璃卡片 */
 .card-glass {
   background: var(--color-bg-card-glass);
   backdrop-filter: blur(20rpx);
@@ -300,10 +366,10 @@ page {
   box-shadow: var(--shadow-card);
 }
 
-/* 4.3 高级金属感卡片 */
+/* 4.3 高级金属感卡片 — 暖色光晕更明显 */
 .card-premium {
   background: linear-gradient(145deg,
-    rgba(26, 26, 46, 0.95), rgba(34, 34, 69, 0.8));
+    rgba(30, 28, 50, 0.95), rgba(37, 37, 80, 0.85));
   border-radius: var(--radius-card);
   padding: var(--space-xxl);
   border: 1rpx solid var(--color-border-glow);
@@ -312,7 +378,7 @@ page {
   overflow: hidden;
 }
 
-/* 4.4 卡片顶部装饰光晕 */
+/* 4.4 卡片顶部装饰光晕 — 从金色变为暖金混合 */
 .card-premium::before {
   content: '';
   position: absolute;
@@ -321,15 +387,15 @@ page {
   width: 200%;
   height: 200%;
   background: radial-gradient(circle at 30% 20%,
-    rgba(212, 175, 55, 0.06), transparent 60%);
+    rgba(221, 184, 71, 0.05), rgba(212, 137, 58, 0.03) 50%, transparent 60%);
   pointer-events: none;
 }
 
-/* 4.5 渐变边框卡片 (利用伪元素制作border渐变) */
+/* 4.5 渐变边框卡片 */
 .card-gradient-border {
   position: relative;
   border-radius: var(--radius-card);
-  background: var(--color-bg-card);
+  background: var(--color-bg-card-warm);
   background-clip: padding-box;
   z-index: 1;
 }
@@ -358,7 +424,7 @@ page {
   border-color: var(--color-border-glow);
 }
 
-/* 4.7 卡片扫光装饰 (放在卡片内使用) */
+/* 4.7 卡片扫光装饰 */
 .card::after {
   content: '';
   position: absolute;
@@ -368,19 +434,19 @@ page {
   height: 100%;
   background: linear-gradient(90deg,
     transparent,
-    rgba(255, 255, 255, 0.04),
+    rgba(255, 255, 255, 0.03),
     transparent);
   transform: translateX(-100%) skewX(-15deg);
   pointer-events: none;
 }
 .card:hover::after {
-  animation: card-shimmer 2s ease-in-out;
+  animation: card-shimmer 2.5s var(--ease-in-out);
 }
 
 
 /* ===== 5. 按钮系统 ===== */
 
-/* 5.1 主按钮 - 金色渐变 + 辉光脉冲 */
+/* 5.1 主按钮 */
 .btn-primary {
   width: 100%;
   background: var(--gradient-gold);
@@ -401,7 +467,7 @@ page {
   box-shadow: 0 2rpx 8rpx var(--color-gold-glow);
 }
 
-/* 5.2 流光按钮 - 金色渐变 + 动态光效 */
+/* 5.2 流光按钮 */
 .btn-shimmer {
   width: 100%;
   background: var(--gradient-gold);
@@ -432,14 +498,14 @@ page {
   border-radius: var(--radius-button);
   padding: 28rpx 0;
   border: none;
-  animation: glow-pulse 2s var(--ease-in-out) infinite;
+  animation: glow-pulse 3s var(--ease-in-out) infinite;
 }
 
 .btn-glow-pulse:active {
   transform: scale(0.97);
 }
 
-/* 5.4 二级按钮 - 金色描边 */
+/* 5.4 二级按钮 */
 .btn-secondary {
   width: 100%;
   background: transparent;
@@ -457,7 +523,7 @@ page {
   transform: scale(0.97);
 }
 
-/* 5.5 幽灵按钮 - 极简 */
+/* 5.5 幽灵按钮 */
 .btn-ghost {
   background: transparent;
   color: var(--color-text-secondary);
@@ -491,20 +557,23 @@ page {
 }
 
 
-/* ===== 6. 文字排版 ===== */
+/* ===== 6. 文字排版 — 增强层次感 ===== */
 
 .heading-1 {
   font-size: var(--fs-h1);
   font-weight: var(--fw-bold);
-  color: var(--color-gold);
+  color: var(--color-gold-light);
   line-height: var(--lh-tight);
+  letter-spacing: var(--ls-heading);
+  text-shadow: 0 0 40rpx rgba(221, 184, 71, 0.15);
 }
 
 .heading-2 {
   font-size: var(--fs-h2);
-  font-weight: var(--fw-semibold);
+  font-weight: var(--fw-bold);
   color: var(--color-gold);
   line-height: var(--lh-tight);
+  letter-spacing: var(--ls-heading);
 }
 
 .heading-3 {
@@ -512,11 +581,12 @@ page {
   font-weight: var(--fw-semibold);
   color: var(--color-text-primary);
   line-height: var(--lh-tight);
+  letter-spacing: var(--ls-heading);
 }
 
 .heading-4 {
   font-size: var(--fs-h4);
-  font-weight: var(--fw-medium);
+  font-weight: var(--fw-semibold);
   color: var(--color-text-primary);
   line-height: var(--lh-tight);
 }
@@ -580,9 +650,9 @@ page {
   position: absolute;
   width: 4rpx;
   height: 4rpx;
-  background: var(--color-gold);
+  background: var(--color-starlight);
   border-radius: var(--radius-full);
-  animation: twinkle 3s ease-in-out infinite;
+  animation: twinkle 4s ease-in-out infinite;
 }
 
 .star-particle:nth-child(1) { top: 10%; left: 15%; animation-delay: 0s; width: 3rpx; height: 3rpx; }
@@ -601,6 +671,10 @@ page {
 
 .glow-gold {
   box-shadow: var(--shadow-glow-gold);
+}
+
+.glow-amber {
+  box-shadow: var(--shadow-glow-amber);
 }
 
 .glow-purple {
@@ -627,7 +701,7 @@ page {
   opacity: 0.3;
 }
 
-/* 顶部光晕装饰 */
+/* 顶部光晕 — 暖色烛光感 */
 .orb-top {
   position: fixed;
   top: -200rpx;
@@ -637,14 +711,15 @@ page {
   height: 600rpx;
   border-radius: var(--radius-full);
   background: radial-gradient(circle,
-    rgba(147, 112, 219, 0.08) 0%,
-    rgba(212, 175, 55, 0.04) 30%,
+    rgba(212, 137, 58, 0.06) 0%,
+    rgba(221, 184, 71, 0.03) 30%,
+    rgba(147, 112, 219, 0.02) 50%,
     transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
 
-/* 底部光晕装饰 */
+/* 底部光晕 */
 .orb-bottom {
   position: fixed;
   bottom: -300rpx;
@@ -654,7 +729,8 @@ page {
   height: 600rpx;
   border-radius: var(--radius-full);
   background: radial-gradient(circle,
-    rgba(212, 175, 55, 0.06) 0%,
+    rgba(221, 184, 71, 0.05) 0%,
+    rgba(212, 137, 58, 0.02) 40%,
     transparent 60%);
   pointer-events: none;
   z-index: 0;
@@ -677,7 +753,7 @@ page {
 .mystic-loading-symbol {
   font-size: 80rpx;
   color: var(--color-gold);
-  animation: mystic-spin 3s var(--ease-in-out) infinite;
+  animation: mystic-spin 5s var(--ease-in-out) infinite;
   display: block;
   margin-bottom: var(--space-xxl);
 }
@@ -686,7 +762,7 @@ page {
   font-size: var(--fs-h4);
   color: var(--color-gold);
   font-weight: var(--fw-semibold);
-  animation: breathe 2s ease-in-out infinite;
+  animation: breathe 3s ease-in-out infinite;
 }
 
 .mystic-loading-sub {
@@ -731,7 +807,7 @@ page {
 }
 
 .card-flip-back {
-  background: var(--color-bg-card);
+  background: var(--color-bg-card-warm);
   border: 2rpx solid var(--color-gold);
   transform: rotateY(180deg);
   display: flex;
@@ -744,7 +820,7 @@ page {
 /* ===== 10. 分段标题与布局 ===== */
 
 .section-block {
-  margin-bottom: var(--space-xxxl);
+  margin-bottom: var(--space-section);
 }
 
 .section-title {
@@ -755,6 +831,7 @@ page {
   margin-bottom: var(--space-lg);
   position: relative;
   padding-left: var(--space-xxl);
+  letter-spacing: var(--ls-heading);
 }
 
 .section-title::before {
@@ -790,13 +867,14 @@ page {
   color: var(--color-gold);
   display: block;
   text-align: center;
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-xl);
+  letter-spacing: var(--ls-heading);
 }
 
 /* 10.2 符文神秘按钮 */
 .btn-mystical {
   width: 100%;
-  background: linear-gradient(135deg, #1a1a2e, #0f0f23);
+  background: linear-gradient(135deg, #1e1e44, #16163a);
   color: var(--color-gold-bright);
   font-size: var(--fs-h4);
   font-weight: var(--fw-bold);
@@ -804,7 +882,7 @@ page {
   padding: 28rpx 0;
   border: 2rpx solid var(--color-gold);
   box-shadow: var(--shadow-button),
-    inset 0 0 40rpx rgba(212, 175, 55, 0.04);
+    inset 0 0 40rpx rgba(221, 184, 71, 0.03);
   position: relative;
   overflow: hidden;
   transition: all var(--duration-normal) var(--ease-out);
@@ -855,7 +933,7 @@ page {
   width: 160rpx;
   height: 160rpx;
   border-radius: 50%;
-  border: 1rpx solid rgba(212, 175, 55, 0.1);
+  border: 1rpx solid rgba(221, 184, 71, 0.08);
   pointer-events: none;
 }
 
@@ -865,14 +943,14 @@ page {
   width: 90rpx;
   height: 90rpx;
   border-radius: 50%;
-  border: 1rpx solid rgba(212, 175, 55, 0.06);
-  animation: mystic-spin 15s linear infinite;
+  border: 1rpx solid rgba(221, 184, 71, 0.05);
+  animation: mystic-spin 20s linear infinite;
   pointer-events: none;
 }
 
 /* 10.4 首字下沉 */
 .drop-cap::first-letter {
-  font-size: 56rpx;
+  font-size: 60rpx;
   font-weight: var(--fw-bold);
   color: var(--color-gold);
   float: left;
@@ -881,13 +959,13 @@ page {
   font-family: var(--font-family-display);
 }
 
-/* 10.5 天鹅绒布面背景 */
+/* 10.5 天鹅绒布面背景 — 更暖、更深邃 */
 .cloth-bg {
   position: relative;
   background:
-    radial-gradient(ellipse at 50% 0%, rgba(60, 20, 80, 0.12), transparent 60%),
-    radial-gradient(ellipse at 50% 100%, rgba(212, 175, 55, 0.04), transparent 50%),
-    linear-gradient(180deg, #0c0c1e, #0a0a1a);
+    radial-gradient(ellipse at 50% 0%, rgba(60, 20, 80, 0.10), transparent 60%),
+    radial-gradient(ellipse at 50% 100%, rgba(221, 184, 71, 0.03), transparent 50%),
+    linear-gradient(180deg, #12122e, #10102e);
   border-radius: var(--radius-card);
   border: 1rpx solid var(--color-border-subtle);
   overflow: hidden;
@@ -901,8 +979,8 @@ page {
     0deg,
     transparent,
     transparent 3rpx,
-    rgba(255, 255, 255, 0.003) 3rpx,
-    rgba(255, 255, 255, 0.003) 4rpx
+    rgba(255, 255, 255, 0.002) 3rpx,
+    rgba(255, 255, 255, 0.002) 4rpx
   );
   pointer-events: none;
 }
@@ -913,7 +991,7 @@ page {
   align-items: center;
   justify-content: center;
   gap: var(--space-md);
-  margin: var(--space-xl) 0;
+  margin: var(--space-xxl) 0;
   color: var(--color-gold);
   font-size: var(--fs-caption);
   opacity: 0.5;
@@ -1063,26 +1141,34 @@ page {
   animation: fade-in-up var(--duration-slow) var(--ease-out) forwards;
 }
 
-.anim-fade-in-up-1 { animation: fade-in-up 0.6s var(--ease-out) 0.1s both; }
-.anim-fade-in-up-2 { animation: fade-in-up 0.6s var(--ease-out) 0.2s both; }
-.anim-fade-in-up-3 { animation: fade-in-up 0.6s var(--ease-out) 0.3s both; }
-.anim-fade-in-up-4 { animation: fade-in-up 0.6s var(--ease-out) 0.4s both; }
-.anim-fade-in-up-5 { animation: fade-in-up 0.6s var(--ease-out) 0.5s both; }
+.anim-fade-in-up-1 { animation: fade-in-up 0.7s var(--ease-out) 0.1s both; }
+.anim-fade-in-up-2 { animation: fade-in-up 0.7s var(--ease-out) 0.2s both; }
+.anim-fade-in-up-3 { animation: fade-in-up 0.7s var(--ease-out) 0.3s both; }
+.anim-fade-in-up-4 { animation: fade-in-up 0.7s var(--ease-out) 0.4s both; }
+.anim-fade-in-up-5 { animation: fade-in-up 0.7s var(--ease-out) 0.5s both; }
 
 .anim-float {
-  animation: float 3s var(--ease-in-out) infinite;
+  animation: float 4s var(--ease-in-out) infinite;
 }
 
 .anim-breathe {
-  animation: breathe 3s var(--ease-in-out) infinite;
+  animation: breathe 4s var(--ease-in-out) infinite;
 }
 
 .anim-glow-pulse {
-  animation: glow-pulse 2s var(--ease-in-out) infinite;
+  animation: glow-pulse 3s var(--ease-in-out) infinite;
 }
 
 .anim-pulse-scale {
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+  animation: pulse-scale 2s var(--ease-in-out) infinite;
+}
+
+.anim-candle-flicker {
+  animation: candle-flicker 6s var(--ease-in-out) infinite;
+}
+
+.anim-halo-breathe {
+  animation: halo-breathe 4s var(--ease-in-out) infinite;
 }
 
 .anim-delay-1  { animation-delay: 0.1s; }
@@ -1139,12 +1225,12 @@ page {
 
 .modal-content {
   width: 100%;
-  background: var(--color-bg-card);
+  background: var(--color-bg-card-warm);
   border-radius: var(--radius-xxl) var(--radius-xxl) 0 0;
   padding: var(--space-xxxl) var(--space-xxl) calc(var(--space-massive) + env(safe-area-inset-bottom));
   max-height: 80vh;
   overflow-y: auto;
-  animation: fade-in-up 0.4s var(--ease-out);
+  animation: fade-in-up 0.5s var(--ease-out);
 }
 
 .modal-title {
@@ -1169,7 +1255,7 @@ page {
   padding: 14rpx var(--space-xl);
   border-radius: var(--radius-round);
   font-size: var(--fs-body);
-  background: var(--color-bg);
+  background: var(--color-bg-card);
   color: var(--color-text-secondary);
   border: 2rpx solid transparent;
   transition: all var(--duration-normal);
@@ -1264,7 +1350,7 @@ page {
   left: 0;
   right: 0;
   height: 120rpx;
-  background: linear-gradient(transparent, var(--color-bg-card));
+  background: linear-gradient(transparent, var(--color-bg-card-warm));
   pointer-events: none;
 }
 

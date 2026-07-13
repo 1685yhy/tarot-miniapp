@@ -1,56 +1,190 @@
-/* ===== 聊天 - 至尊神秘主题 ===== */
+/* ===== 聊天 - 薄暮圣殿主题 (Twilight Sanctuary) ===== */
+/*    神谕对话：智者之言温暖如烛光，灵魂低语深藏星光   */
 
+/* ---------------------------------------------------------------
+   Container
+   --------------------------------------------------------------- */
 .container {
   padding: var(--space-xl);
-  padding-bottom: 200rpx;
+  padding-bottom: 280rpx;
   background: var(--color-bg);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-image:
+    var(--gradient-candle-ambient),
+    var(--gradient-bg-radial),
+    var(--gradient-bg-radial-gold);
 }
 
-/* Chat intro (empty state) */
+/* ---------------------------------------------------------------
+   Chat Intro — 空状态（圣殿静谧）
+   --------------------------------------------------------------- */
 .chat-intro {
   text-align: center;
   padding: var(--space-massive) 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Message list */
+.chat-intro-symbol {
+  font-size: 80rpx;
+  display: block;
+  margin-bottom: var(--space-xl);
+  opacity: 0.7;
+  animation: float 5s var(--ease-in-out) infinite;
+}
+
+.chat-intro-title {
+  font-size: var(--fs-h4);
+  color: var(--color-gold);
+  font-weight: var(--fw-semibold);
+  display: block;
+  margin-bottom: var(--space-sm);
+  letter-spacing: var(--ls-heading);
+}
+
+.chat-intro-sub {
+  font-size: var(--fs-body);
+  color: var(--color-text-dim);
+  display: block;
+  line-height: var(--lh-normal);
+}
+
+/* ---------------------------------------------------------------
+   Message List
+   --------------------------------------------------------------- */
 .message-list {
   flex: 1;
-  margin-bottom: 140rpx;
+  margin-bottom: 20rpx;
 }
 
 .msg-item {
   margin-bottom: var(--space-xl);
+  display: flex;
+  flex-direction: column;
 }
 
+/* ---------- User bubble — 暖金低语 ---------- */
+.msg-item.user {
+  align-items: flex-end;
+}
+
+.msg-item.ai {
+  align-items: flex-start;
+}
+
+.msg-label {
+  font-size: var(--fs-caption);
+  color: var(--color-text-dim);
+  margin-bottom: var(--space-xs);
+  padding: 0 var(--space-sm);
+  letter-spacing: 1rpx;
+}
+
+/* 气泡主体 */
 .msg-bubble {
   padding: var(--space-lg) var(--space-xl);
-  border-radius: var(--radius-lg);
   max-width: 85%;
+  position: relative;
+  line-height: var(--lh-loose);
 }
 
+/* 用户气泡 — 暖金色，如烛光映照 */
 .bubble-user {
-  background: var(--color-gold-subtle);
-  margin-left: auto;
-  border-bottom-right-radius: 6rpx;
+  background: linear-gradient(135deg,
+    rgba(221, 184, 71, 0.12),
+    rgba(212, 137, 58, 0.08));
+  border-radius: var(--radius-xl) var(--radius-xl) 6rpx var(--radius-xl);
+  border: 1rpx solid var(--color-border-glow);
+  box-shadow: 0 4rpx 16rpx rgba(221, 184, 71, 0.06);
 }
 
+.bubble-user::after {
+  content: '';
+  position: absolute;
+  bottom: 8rpx;
+  right: -6rpx;
+  width: 12rpx;
+  height: 12rpx;
+  background: linear-gradient(135deg,
+    rgba(221, 184, 71, 0.12),
+    rgba(212, 137, 58, 0.08));
+  border-radius: 2rpx;
+  border-right: 1rpx solid var(--color-border-glow);
+  border-bottom: 1rpx solid var(--color-border-glow);
+  transform: rotate(-45deg);
+}
+
+/* AI 气泡 — 深邃智慧，紫色暖调 */
 .bubble-ai {
-  background: var(--color-bg-card);
+  background: linear-gradient(135deg,
+    var(--color-bg-card-warm),
+    rgba(30, 28, 52, 0.95));
+  border-radius: var(--radius-xl) var(--radius-xl) var(--radius-xl) 6rpx;
   border: 1rpx solid var(--color-border-subtle);
-  border-bottom-left-radius: 6rpx;
+  box-shadow: var(--shadow-card);
 }
 
+.bubble-ai::after {
+  content: '';
+  position: absolute;
+  bottom: 8rpx;
+  left: -6rpx;
+  width: 12rpx;
+  height: 12rpx;
+  background: var(--color-bg-card-warm);
+  border-radius: 2rpx;
+  border-left: 1rpx solid var(--color-border-subtle);
+  border-bottom: 1rpx solid var(--color-border-subtle);
+  transform: rotate(45deg);
+}
+
+/* 打字指示器 */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: var(--space-md) var(--space-lg);
+}
+
+.typing-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: var(--radius-full);
+  background: var(--color-gold-subtle);
+  animation: breathe 1.8s var(--ease-in-out) infinite;
+}
+
+.typing-dot:nth-child(2) { animation-delay: 0.3s; }
+.typing-dot:nth-child(3) { animation-delay: 0.6s; }
+
+/* 消息文字 */
 .msg-text {
   font-size: var(--fs-body);
   color: var(--color-text-primary);
   line-height: var(--lh-loose);
   white-space: pre-wrap;
+  word-break: break-word;
 }
 
-/* Input bar */
+.msg-time {
+  font-size: var(--fs-caption);
+  color: var(--color-text-muted);
+  margin-top: var(--space-xs);
+  display: block;
+}
+
+.msg-item.user .msg-time {
+  text-align: right;
+}
+
+/* ---------------------------------------------------------------
+   Input Bar — 神谕之井 (glass-morphism + 暖光)
+   --------------------------------------------------------------- */
 .input-bar {
   position: fixed;
   bottom: 0;
@@ -60,12 +194,26 @@
   align-items: center;
   padding: var(--space-md) var(--space-xl);
   padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-md));
-  background: var(--color-bg-card);
-  backdrop-filter: blur(20rpx);
-  -webkit-backdrop-filter: blur(20rpx);
-  border-top: 1rpx solid var(--color-border-subtle);
+  background: var(--color-bg-card-glass);
+  backdrop-filter: blur(24rpx);
+  -webkit-backdrop-filter: blur(24rpx);
+  border-top: 1rpx solid var(--color-border-light);
   gap: var(--space-sm);
   z-index: var(--z-card);
+}
+
+.input-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1rpx;
+  background: linear-gradient(90deg,
+    transparent,
+    var(--color-gold-subtle) 50%,
+    transparent);
+  pointer-events: none;
 }
 
 .chat-input {
@@ -77,6 +225,16 @@
   font-size: var(--fs-body);
   color: var(--color-text-primary);
   border: 1rpx solid var(--color-border-subtle);
+  transition: all var(--duration-fast);
+}
+
+.chat-input:focus {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 12rpx var(--color-gold-glow);
+}
+
+.chat-input::placeholder {
+  color: var(--color-text-muted);
 }
 
 .send-btn {
@@ -91,10 +249,17 @@
   border-radius: var(--radius-round);
   border: none;
   padding: 0;
+  transition: all var(--duration-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.send-btn:active:not([disabled]) {
+  transform: scale(0.94);
 }
 
 .send-btn[disabled] {
-  opacity: 0.4;
+  opacity: 0.35;
 }
 
 .free-hint {
@@ -103,12 +268,56 @@
   font-size: var(--fs-caption);
   color: var(--color-text-dim);
   position: fixed;
-  bottom: 100rpx;
+  bottom: 120rpx;
   left: 0;
   right: 0;
+  letter-spacing: 1rpx;
 }
 
-/* ===== 加载骨架 ===== */
+/* ---------------------------------------------------------------
+   Reading Context Bar — 当前解读上下文
+   --------------------------------------------------------------- */
+.reading-context-bar {
+  border-radius: var(--radius-card);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-xl);
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg,
+    var(--color-bg-card-warm),
+    var(--color-bg-mid));
+  border: 1rpx solid var(--color-border-subtle);
+  border-left: 6rpx solid var(--color-gold);
+  box-shadow: var(--shadow-card);
+}
+
+.context-label {
+  font-size: var(--fs-caption);
+  color: var(--color-gold);
+  font-weight: var(--fw-semibold);
+  display: block;
+  margin-bottom: var(--space-xs);
+  letter-spacing: 2rpx;
+  text-transform: uppercase;
+}
+
+.context-question {
+  font-size: var(--fs-body-small);
+  color: var(--color-text-primary);
+  display: block;
+  margin-bottom: 4rpx;
+  line-height: var(--lh-normal);
+}
+
+.context-spread {
+  font-size: var(--fs-caption);
+  color: var(--color-text-dim);
+  display: block;
+}
+
+/* ---------------------------------------------------------------
+   Skeleton
+   --------------------------------------------------------------- */
 .skeleton-messages {
   flex: 1;
 }
@@ -127,7 +336,9 @@
 .skeleton-bubble.left { width: 60%; }
 .skeleton-bubble.right { width: 50%; margin-left: auto; }
 
-/* ===== 错误状态 ===== */
+/* ---------------------------------------------------------------
+   Error
+   --------------------------------------------------------------- */
 .error-state {
   text-align: center;
   padding: var(--space-massive) var(--space-xl);
@@ -137,7 +348,7 @@
   font-size: 80rpx;
   display: block;
   margin-bottom: var(--space-md);
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
 .error-text {
@@ -152,35 +363,4 @@
   color: var(--color-text-dim);
   display: block;
   margin-bottom: var(--space-xxl);
-}
-
-/* ===== Reading Context Bar ===== */
-.reading-context-bar {
-  background: var(--color-bg-card);
-  border-radius: var(--radius-card);
-  padding: var(--space-md) var(--space-lg);
-  margin-bottom: var(--space-lg);
-  border: 1rpx solid var(--color-border-subtle);
-  border-left: 6rpx solid var(--color-gold, #d4af37);
-}
-
-.context-label {
-  font-size: var(--fs-caption);
-  color: var(--color-gold, #d4af37);
-  font-weight: var(--fw-semibold);
-  display: block;
-  margin-bottom: var(--space-xs);
-}
-
-.context-question {
-  font-size: var(--fs-body-small);
-  color: var(--color-text-primary);
-  display: block;
-  margin-bottom: 4rpx;
-}
-
-.context-spread {
-  font-size: var(--fs-caption);
-  color: var(--color-text-dim);
-  display: block;
 }
