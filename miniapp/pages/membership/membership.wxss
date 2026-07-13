@@ -1,120 +1,38 @@
-/* ===== 会员 - 柔美花笺主题 (Blossom Boutique) ===== */
-/*    精品橱窗：如优雅花店中的珍藏，每一页都是温柔告白   */
+/* ========================================================
+   会员页 · Editorial Minimal
+   精品文具质感 · 纯白背景 · 干净排版
+   ======================================================== */
 
 /* ---------------------------------------------------------------
-   Container — 奶油底色，温暖花店氛围
-   --------------------------------------------------------------- */
-.container {
-  padding: var(--space-xl);
-  padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-massive));
-  background: linear-gradient(180deg, #FFF8F5 0%, #FFF5F0 100%);
-  min-height: 100vh;
-}
-
-/* ---------------------------------------------------------------
-   Page Heading — 花店招牌
-   --------------------------------------------------------------- */
-.page-heading {
-  text-align: center;
-  padding: var(--space-xxl) 0 var(--space-xxxl);
-}
-
-.page-title {
-  font-size: var(--fs-h1);
-  font-weight: var(--fw-bold);
-  color: var(--color-text-primary, #3D3535);
-  letter-spacing: 3rpx;
-  display: block;
-}
-
-.page-subtitle {
-  font-size: var(--fs-body);
-  color: #9A8A8A;
-  display: block;
-  margin-top: var(--space-sm);
-  letter-spacing: 1rpx;
-  line-height: var(--lh-normal);
-}
-
-.page-title-decor {
-  display: block;
-  font-size: var(--fs-caption);
-  color: #C9A96E;
-  margin-top: var(--space-md);
-  opacity: 0.6;
-  letter-spacing: 4rpx;
-  font-style: italic;
-}
-
-/* ---------------------------------------------------------------
-   Benefits — 会员权益，像花束卡片
+   Benefits — 会员权益，轻量卡片
    --------------------------------------------------------------- */
 .benefits {
   position: relative;
-  border-radius: 24rpx;
+  border-radius: 12rpx;
   padding: var(--space-xl);
   margin-bottom: var(--space-xxl);
-  background: linear-gradient(145deg, #FFFFFF, #FFF8F5);
-  border: 1rpx solid rgba(212, 131, 106, 0.15);
-  box-shadow: 0 8rpx 32rpx rgba(212, 131, 106, 0.08);
-}
-
-.benefits::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3rpx;
-  background: linear-gradient(90deg, transparent, #D4836A, #B7C9B1, transparent);
-  border-radius: 24rpx 24rpx 0 0;
-  pointer-events: none;
-}
-
-.benefits-title {
-  font-size: var(--fs-body-small);
-  color: #D4836A;
-  font-weight: var(--fw-semibold);
-  display: block;
-  margin-bottom: var(--space-lg);
-  letter-spacing: 2rpx;
-  text-transform: uppercase;
+  background: #ffffff;
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.02);
 }
 
 .benefit-item {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-md);
   padding: var(--space-md) 0;
-  border-bottom: 1rpx solid rgba(183, 201, 177, 0.25);
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .benefit-item:last-child {
   border-bottom: none;
 }
 
-.benefit-icon {
-  font-size: 28rpx;
-  color: #D4836A;
-  flex-shrink: 0;
-  margin-top: 2rpx;
-  opacity: 0.8;
-}
-
-.benefit-label {
+.benefit-item .text-body {
   font-size: var(--fs-body);
-  color: #3D3535;
+  color: #2c2c2c;
   line-height: var(--lh-normal);
-  flex: 1;
-}
-
-.benefit-label sub {
-  display: block;
-  font-size: var(--fs-body-small);
-  color: #9A8A8A;
-  margin-top: var(--space-xxs);
 }
 
 /* ---------------------------------------------------------------
-   Products — 精品陈列，如花店橱窗展示
+   Products — 精品陈列，文具质感卡片
    --------------------------------------------------------------- */
 .products {
   display: flex;
@@ -124,217 +42,99 @@
 
 .product-card {
   position: relative;
-  border-radius: 28rpx;
+  border-radius: 12rpx;
   padding: var(--space-xxl);
   text-align: center;
-  background: linear-gradient(160deg, #FFFFFF, #FFF8F5);
-  border: 1rpx solid rgba(212, 131, 106, 0.18);
-  box-shadow: 0 6rpx 28rpx rgba(201, 169, 110, 0.08);
-  transition: all var(--duration-normal) var(--ease-out);
+  background: #ffffff;
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1rpx 6rpx rgba(0, 0, 0, 0.03);
+  transition: all 0.25s ease;
   overflow: hidden;
 }
 
-/* 顶部玫瑰色装饰线 */
+/* —— 顶部细线 —— */
 .product-card::before {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 3rpx;
-  background: linear-gradient(90deg,
-    transparent,
-    #D4836A 30%,
-    #C9A96E 60%,
-    transparent);
-  opacity: 0.4;
-  pointer-events: none;
-}
-
-/* 左侧花枝装饰 */
-.product-card::after {
-  content: '✿';
-  position: absolute;
-  top: 16rpx;
-  right: 20rpx;
-  font-size: 24rpx;
-  color: #D4836A;
-  opacity: 0.12;
+  background: #2c2c2c;
+  opacity: 0.08;
   pointer-events: none;
 }
 
 .product-card:active {
-  border-color: #D4836A;
-  transform: scale(0.97);
-  box-shadow: 0 12rpx 40rpx rgba(212, 131, 106, 0.15);
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.04);
 }
 
-/* ---------- 推荐卡片 (花语精选) ---------- */
+/* ---------- 推荐卡片 ---------- */
 .product-card.recommended {
-  border-color: rgba(201, 169, 110, 0.4);
-  background: linear-gradient(160deg, #FFFAF5, #FFF5EE);
-  box-shadow: 0 8rpx 32rpx rgba(201, 169, 110, 0.15), 0 0 0 2rpx rgba(201, 169, 110, 0.1);
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
 }
 
 .product-card.recommended::before {
-  opacity: 0.7;
-  background: linear-gradient(90deg,
-    transparent,
-    #C9A96E 30%,
-    #D4836A 60%,
-    transparent);
-  height: 3rpx;
+  opacity: 0.2;
+  background: #b89a7a;
 }
 
-/* 推荐徽章 — 金色花蕊徽章 */
+/* 推荐徽章 */
 .recommended-badge {
   position: absolute;
   top: -14rpx;
   right: var(--space-xl);
-  background: linear-gradient(135deg, #C9A96E, #D4B87A);
-  color: #FFFFFF;
+  background: #b89a7a;
+  color: #ffffff;
   font-size: var(--fs-caption);
-  padding: 6rpx 24rpx;
-  border-radius: 30rpx;
-  font-weight: var(--fw-bold);
-  box-shadow: 0 4rpx 16rpx rgba(201, 169, 110, 0.3);
+  font-weight: 500;
+  letter-spacing: 0.5rpx;
+  padding: 6rpx 20rpx;
+  border-radius: 6rpx;
   z-index: 2;
-  letter-spacing: 2rpx;
 }
 
-/* ---------- Product card inner ---------- */
-.product-name {
-  font-size: var(--fs-h4);
-  font-weight: var(--fw-semibold);
-  color: #3D3535;
-  display: block;
-  margin-bottom: var(--space-sm);
-  letter-spacing: 1rpx;
-}
-
-.product-desc {
-  font-size: var(--fs-body-small);
-  color: #9A8A8A;
-  display: block;
-  margin-bottom: var(--space-lg);
-  line-height: var(--lh-normal);
-}
-
-/* ---------- Price display — 优雅价签 ---------- */
-.price-area {
-  margin: var(--space-lg) 0;
-}
-
+/* ---------- Price display — 干净价签 ---------- */
 .price-symbol {
   font-size: var(--fs-h4);
-  color: #D4836A;
+  color: #b89a7a;
   vertical-align: super;
 }
 
 .price-value {
   font-size: var(--fs-display);
-  font-weight: var(--fw-bold);
-  color: #C9A96E;
+  font-weight: 600;
+  color: #2c2c2c;
   line-height: 1;
 }
 
-.price-period {
-  font-size: var(--fs-body-small);
-  color: #9A8A8A;
-  display: inline-block;
-  margin-left: var(--space-xs);
-}
-
-.price-original {
-  display: block;
-  font-size: var(--fs-caption);
-  color: #B5A5A5;
-  text-decoration: line-through;
-  margin-top: var(--space-xs);
-}
-
-/* ---------- Subscribe button — 像丝绒缎带 ---------- */
-.subscribe-btn {
-  width: 100%;
-  margin-top: var(--space-lg);
-  background: linear-gradient(135deg, #D4836A, #C9A96E);
-  color: #FFFFFF;
-  font-size: var(--fs-h4);
-  font-weight: var(--fw-bold);
-  border-radius: 40rpx;
-  padding: 26rpx 0;
-  border: none;
-  box-shadow: 0 4rpx 20rpx rgba(212, 131, 106, 0.25);
-  transition: all var(--duration-normal) var(--ease-out);
-  position: relative;
-  overflow: hidden;
-  letter-spacing: 2rpx;
-}
-
-.subscribe-btn:active {
-  transform: scale(0.97);
-  box-shadow: 0 2rpx 8rpx rgba(212, 131, 106, 0.15);
-}
-
-.subscribe-btn-recommended {
-  animation: glow-pulse 3s var(--ease-in-out) infinite;
-}
-
-/* ---------- Feature list inside card ---------- */
-.product-features {
-  margin: var(--space-lg) 0;
-  text-align: left;
-}
-
-.product-feature {
-  font-size: var(--fs-body-small);
-  color: #6B5A5A;
-  display: block;
-  padding: var(--space-xs) 0;
-  padding-left: var(--space-xl);
-  position: relative;
-}
-
-.product-feature::before {
-  content: '🌸';
-  position: absolute;
-  left: 0;
-  font-size: 16rpx;
-  opacity: 0.6;
-}
-
 /* ---------------------------------------------------------------
-   Guarantee — 底部温馨保障
+   Guarantee — 底部保障文字
    --------------------------------------------------------------- */
 .guarantee {
   text-align: center;
   padding: var(--space-xxxl) 0;
-  position: relative;
 }
 
 .guarantee::before {
   content: '';
   display: block;
-  width: 120rpx;
+  width: 80rpx;
   height: 1rpx;
-  background: linear-gradient(90deg, transparent, #D4836A, transparent);
+  background: rgba(0, 0, 0, 0.12);
   margin: 0 auto var(--space-xxl);
-  opacity: 0.4;
-}
-
-.guarantee-icon {
-  font-size: 36rpx;
-  display: block;
-  margin-bottom: var(--space-sm);
-  opacity: 0.5;
 }
 
 .guarantee-text {
   font-size: var(--fs-body-small);
-  color: #9A8A8A;
+  color: rgba(0, 0, 0, 0.35);
   line-height: var(--lh-normal);
 }
 
 /* ---------------------------------------------------------------
-   Load / Skeleton — 柔和骨架屏
+   Load / Skeleton — 干净骨架屏
    --------------------------------------------------------------- */
 .skeleton {
   padding: var(--space-xxl) 0;
@@ -351,15 +151,15 @@
 .skeleton-icon {
   width: 72rpx;
   height: 72rpx;
-  border-radius: var(--radius-full);
-  background: linear-gradient(135deg, #F5EDE8, #F0EBE5);
+  border-radius: 50%;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.02));
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
 
 .skeleton-line {
   height: 32rpx;
-  border-radius: 12rpx;
-  background: linear-gradient(135deg, #F5EDE8, #F0EBE5);
+  border-radius: 8rpx;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.02));
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
 
@@ -369,8 +169,8 @@
 .skeleton-benefits {
   width: 100%;
   height: 280rpx;
-  border-radius: 24rpx;
-  background: linear-gradient(135deg, #F5EDE8, #F0EBE5);
+  border-radius: 12rpx;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.015));
   margin-bottom: var(--space-xxl);
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
@@ -378,38 +178,37 @@
 .skeleton-product {
   width: 100%;
   height: 380rpx;
-  border-radius: 24rpx;
-  background: linear-gradient(135deg, #F5EDE8, #F0EBE5);
+  border-radius: 12rpx;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.015));
   margin-bottom: var(--space-lg);
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
 
 /* ---------------------------------------------------------------
-   Empty / Error — 温柔报错
+   Error
    --------------------------------------------------------------- */
 .error-state {
   text-align: center;
   padding: var(--space-massive) var(--space-xl);
-  position: relative;
 }
 
 .error-icon {
   font-size: 80rpx;
   display: block;
   margin-bottom: var(--space-lg);
-  opacity: 0.5;
+  opacity: 0.25;
 }
 
 .error-text {
   font-size: var(--fs-body);
-  color: #6B5A5A;
+  color: rgba(0, 0, 0, 0.45);
   display: block;
   margin-bottom: var(--space-xs);
 }
 
 .error-hint {
   font-size: var(--fs-body-small);
-  color: #9A8A8A;
+  color: rgba(0, 0, 0, 0.25);
   display: block;
   margin-bottom: var(--space-xxl);
 }

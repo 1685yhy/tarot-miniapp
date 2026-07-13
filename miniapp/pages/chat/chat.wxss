@@ -1,34 +1,19 @@
-/* ========================================================
-   聊天页 · 新艺术流（Art Nouveau Flow）
-   暖象牙对话 · 铜色细边框 · 翡翠柔光
-   ======================================================== */
+/* ==========================================
+   chat · Editorial Minimal
+   Clean white cards · Warm accents
+   ========================================== */
 
-/* -------- 全局动画 -------- */
-@keyframes float-gentle {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-4rpx); }
-}
-
-@keyframes breathe-organic {
-  0%, 100% { opacity: 0.35; transform: scale(1); }
-  50%      { opacity: 0.70; transform: scale(1.05); }
-}
-
-/* ========================================================
-   容器 · 暖象牙底色
-   ======================================================== */
+/* -------- Container -------- */
 .container {
   padding: var(--space-xl);
   padding-bottom: 280rpx;
-  background: linear-gradient(180deg, #faf5ec 0%, #f8f0e6 100%);
+  background: #faf8f6;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* ========================================================
-   空状态 · 花间小憩
-   ======================================================== */
+/* -------- Empty state -------- */
 .chat-intro {
   text-align: center;
   padding: var(--space-massive) 0;
@@ -39,34 +24,30 @@
   justify-content: center;
 }
 
-.chat-intro-symbol {
-  font-size: 80rpx;
+.empty-icon {
+  font-size: 72rpx;
   display: block;
   margin-bottom: var(--space-xl);
-  opacity: 0.50;
-  animation: float-gentle 5s var(--ease-in-out) infinite;
+  opacity: 0.5;
 }
 
-.chat-intro-title {
-  font-size: var(--fs-h4);
-  color: #a67c5b;
-  font-weight: var(--fw-semibold);
+.empty-text {
+  font-size: var(--fs-body);
+  color: var(--color-text-secondary);
   display: block;
   margin-bottom: var(--space-sm);
-  letter-spacing: 3rpx;
+  letter-spacing: 1rpx;
 }
 
-.chat-intro-sub {
-  font-size: var(--fs-body);
-  color: rgba(140, 120, 105, 0.60);
+.empty-hint {
+  font-size: var(--fs-body-small);
+  color: var(--color-text-dim);
   display: block;
   line-height: var(--lh-normal);
   letter-spacing: 1rpx;
 }
 
-/* ========================================================
-   消息列表
-   ======================================================== */
+/* -------- Message list -------- */
 .message-list {
   flex: 1;
   margin-bottom: 20rpx;
@@ -78,24 +59,17 @@
   flex-direction: column;
 }
 
-/* 对齐 */
-.msg-item.user {
-  align-items: flex-end;
-}
+.msg-item.user { align-items: flex-end; }
+.msg-item.ai   { align-items: flex-start; }
 
-.msg-item.ai {
-  align-items: flex-start;
-}
-
-.msg-label {
+.text-caption {
   font-size: var(--fs-caption);
-  color: rgba(140, 120, 105, 0.45);
+  color: rgba(120, 100, 85, 0.4);
   margin-bottom: var(--space-xs);
-  padding: 0 var(--space-sm);
   letter-spacing: 2rpx;
 }
 
-/* -------- 消息气泡主体 -------- */
+/* -------- Bubbles -------- */
 .msg-bubble {
   padding: var(--space-lg) var(--space-xl);
   max-width: 85%;
@@ -103,106 +77,56 @@
   line-height: var(--lh-loose);
 }
 
-/* ========================================================
-   用户气泡 · 暖象牙 + 铜色右边框
-   ======================================================== */
 .bubble-user {
-  background: #fcf8f0;                    /* 暖象牙 */
-  border-radius: 22rpx 22rpx 6rpx 22rpx;
-  border: 1rpx solid rgba(200, 170, 140, 0.12);
-  border-right: 3rpx solid rgba(200, 170, 140, 0.25);  /* 铜色右边框 */
-  box-shadow:
-    0 4rpx 20rpx rgba(160, 130, 100, 0.04),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.5);
+  background: #ffffff;
+  border-radius: 18rpx 18rpx 4rpx 18rpx;
+  border: 1rpx solid rgba(180, 140, 110, 0.06);
+  box-shadow: 0 2rpx 10rpx rgba(160, 130, 100, 0.04);
+  border-right: 3rpx solid rgba(180, 140, 110, 0.15);
 }
 
-/* 气泡尾巴 — 右下角小三角 */
 .bubble-user::after {
   content: '';
   position: absolute;
-  bottom: 10rpx;
-  right: -8rpx;
+  bottom: 8rpx;
+  right: -7rpx;
   width: 0;
   height: 0;
-  border-left: 10rpx solid #fcf8f0;
-  border-top: 8rpx solid transparent;
-  border-bottom: 8rpx solid transparent;
+  border-left: 8rpx solid #ffffff;
+  border-top: 6rpx solid transparent;
+  border-bottom: 6rpx solid transparent;
   transform: rotate(-15deg);
 }
 
-/* ========================================================
-   AI 气泡 · 柔翡翠色调
-   ======================================================== */
 .bubble-ai {
-  background: linear-gradient(135deg,
-    rgba(170, 195, 165, 0.08),
-    rgba(170, 195, 165, 0.04));
-  border-radius: 22rpx 22rpx 22rpx 6rpx;
-  border: 1rpx solid rgba(170, 195, 165, 0.12);
-  box-shadow:
-    0 4rpx 20rpx rgba(160, 180, 150, 0.03),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.4);
+  background: #f8f4f0;
+  border-radius: 18rpx 18rpx 18rpx 4rpx;
+  border: 1rpx solid rgba(180, 140, 110, 0.06);
+  box-shadow: 0 2rpx 10rpx rgba(160, 130, 100, 0.03);
 }
 
-/* 气泡尾巴 — 左下角小三角 */
 .bubble-ai::after {
   content: '';
   position: absolute;
-  bottom: 10rpx;
-  left: -8rpx;
+  bottom: 8rpx;
+  left: -7rpx;
   width: 0;
   height: 0;
-  border-right: 10rpx solid rgba(170, 195, 165, 0.08);
-  border-top: 8rpx solid transparent;
-  border-bottom: 8rpx solid transparent;
+  border-right: 8rpx solid #f8f4f0;
+  border-top: 6rpx solid transparent;
+  border-bottom: 6rpx solid transparent;
   transform: rotate(15deg);
 }
 
-/* ========================================================
-   打字指示器 · 翡翠呼吸
-   ======================================================== */
-.typing-indicator {
-  display: flex;
-  align-items: center;
-  gap: 10rpx;
-  padding: var(--space-md) var(--space-lg);
-}
-
-.typing-dot {
-  width: 12rpx;
-  height: 12rpx;
-  border-radius: var(--radius-full);
-  background: #8fbc8f;
-  animation: breathe-organic 1.8s var(--ease-in-out) infinite;
-  opacity: 0.35;
-}
-
-.typing-dot:nth-child(2) { animation-delay: 0.3s; }
-.typing-dot:nth-child(3) { animation-delay: 0.6s; }
-
-/* -------- 消息文字 -------- */
 .msg-text {
   font-size: var(--fs-body);
-  color: #4a3d30;
+  color: #3d3228;
   line-height: var(--lh-loose);
   white-space: pre-wrap;
   word-break: break-word;
 }
 
-.msg-time {
-  font-size: var(--fs-caption);
-  color: rgba(160, 140, 120, 0.40);
-  margin-top: var(--space-xs);
-  display: block;
-}
-
-.msg-item.user .msg-time {
-  text-align: right;
-}
-
-/* ========================================================
-   输入栏 · 暖象牙 + 有机焦点辉光
-   ======================================================== */
+/* -------- Input bar -------- */
 .input-bar {
   position: fixed;
   bottom: 0;
@@ -212,98 +136,48 @@
   align-items: center;
   padding: var(--space-md) var(--space-xl);
   padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-md));
-  background: rgba(252, 248, 240, 0.98);
-  border-top: 2rpx solid rgba(200, 170, 140, 0.08);
+  background: rgba(255, 255, 255, 0.96);
+  border-top: 1rpx solid rgba(180, 140, 110, 0.08);
   gap: var(--space-sm);
   z-index: var(--z-card);
 }
 
-/* 上沿装饰 — 铜色渐变弧线 */
-.input-bar::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2rpx;
-  background: linear-gradient(90deg,
-    transparent,
-    rgba(200, 170, 140, 0.15) 20%,
-    rgba(200, 170, 140, 0.20) 50%,
-    rgba(200, 170, 140, 0.15) 80%,
-    transparent);
-  pointer-events: none;
-}
-
-/* —— 输入框 · 暖象牙 + 有机焦点辉光 —— */
 .chat-input {
   flex: 1;
   height: 72rpx;
-  background: #fcf8f0;                    /* 暖象牙 */
+  background: #f8f4f0;
   border-radius: 40rpx;
   padding: 0 var(--space-xl);
   font-size: var(--fs-body);
-  color: #4a3d30;
-  border: 1rpx solid rgba(180, 155, 130, 0.12);
+  color: #3d3228;
+  border: 1rpx solid rgba(180, 140, 110, 0.10);
   transition: all var(--duration-fast) ease;
-  caret-color: #b8865a;                   /* 铜色光标 */
+  caret-color: #b8865a;
 }
 
 .chat-input:focus {
-  border-color: rgba(200, 170, 140, 0.25);
-  box-shadow:
-    0 0 0 3rpx rgba(200, 170, 140, 0.06),
-    0 0 20rpx rgba(200, 170, 140, 0.06);   /* 有机辉光 — 如暮色光晕 */
+  border-color: rgba(180, 140, 110, 0.20);
+  box-shadow: 0 0 0 3rpx rgba(180, 140, 110, 0.04);
 }
 
 .chat-input::placeholder {
-  color: rgba(160, 140, 120, 0.35);       /* 暖灰 */
+  color: rgba(140, 120, 105, 0.35);
   letter-spacing: 1rpx;
 }
 
-/* —— 发送按钮 · 铜色渐变 —— */
 .send-btn {
   width: 120rpx;
   height: 72rpx;
   line-height: 72rpx;
   text-align: center;
-  background: linear-gradient(135deg, #d4a574, #b8865a);
+  background: #d4a574;
   color: #ffffff;
   font-size: var(--fs-body-small);
-  font-weight: var(--fw-semibold);
   border-radius: 40rpx;
   border: none;
   padding: 0;
   transition: all var(--duration-fast) ease;
-  position: relative;
-  overflow: hidden;
   letter-spacing: 3rpx;
-}
-
-.send-btn::before {
-  content: '';
-  position: absolute;
-  left: 12rpx;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 20rpx;
-  height: 20rpx;
-  border: 1.5rpx solid rgba(255, 255, 255, 0.12);
-  border-radius: 50% 0 50% 0;
-  pointer-events: none;
-}
-
-.send-btn::after {
-  content: '';
-  position: absolute;
-  right: 12rpx;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 20rpx;
-  height: 20rpx;
-  border: 1.5rpx solid rgba(255, 255, 255, 0.12);
-  border-radius: 0 50% 0 50%;
-  pointer-events: none;
 }
 
 .send-btn:active:not([disabled]) {
@@ -311,14 +185,14 @@
 }
 
 .send-btn[disabled] {
-  opacity: 0.35;
+  opacity: 0.3;
 }
 
 .free-hint {
   text-align: center;
   padding: var(--space-sm) 0;
   font-size: var(--fs-caption);
-  color: rgba(140, 120, 105, 0.45);
+  color: rgba(120, 100, 85, 0.4);
   position: fixed;
   bottom: 120rpx;
   left: 0;
@@ -326,24 +200,20 @@
   letter-spacing: 2rpx;
 }
 
-/* ========================================================
-   上下文提示栏
-   ======================================================== */
+/* -------- Reading context bar -------- */
 .reading-context-bar {
-  border-radius: 20rpx;
+  border-radius: 16rpx;
   padding: var(--space-md) var(--space-lg);
   margin-bottom: var(--space-xl);
-  position: relative;
-  overflow: hidden;
-  background: #fcf8f0;
-  border: 1rpx solid rgba(180, 155, 130, 0.08);
-  border-left: 6rpx solid rgba(200, 170, 140, 0.30);
-  box-shadow: 0 4rpx 16rpx rgba(160, 130, 100, 0.03);
+  background: #ffffff;
+  border: 1rpx solid rgba(180, 140, 110, 0.06);
+  border-left: 4rpx solid rgba(180, 140, 110, 0.20);
+  box-shadow: 0 2rpx 10rpx rgba(160, 130, 100, 0.03);
 }
 
 .context-label {
   font-size: var(--fs-caption);
-  color: #a67c5b;
+  color: #b8865a;
   font-weight: var(--fw-semibold);
   display: block;
   margin-bottom: var(--space-xs);
@@ -353,7 +223,7 @@
 
 .context-question {
   font-size: var(--fs-body-small);
-  color: #4a3d30;
+  color: #3d3228;
   display: block;
   margin-bottom: 4rpx;
   line-height: var(--lh-normal);
@@ -361,13 +231,11 @@
 
 .context-spread {
   font-size: var(--fs-caption);
-  color: rgba(140, 120, 105, 0.45);
+  color: rgba(120, 100, 85, 0.4);
   display: block;
 }
 
-/* ========================================================
-   骨架屏
-   ======================================================== */
+/* -------- Skeleton -------- */
 .skeleton-messages {
   flex: 1;
 }
@@ -377,40 +245,38 @@
 }
 
 .skeleton-bubble {
-  height: 80rpx;
-  border-radius: 20rpx;
-  background: linear-gradient(135deg, #f5ede0, #f0e8da);
+  height: 72rpx;
+  border-radius: 16rpx;
+  background: #f0e8e0;
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
 
-.skeleton-bubble.left { width: 60%; }
+.skeleton-bubble.left  { width: 60%; }
 .skeleton-bubble.right { width: 50%; margin-left: auto; }
 
-/* ========================================================
-   错误状态
-   ======================================================== */
+/* -------- Error state -------- */
 .error-state {
   text-align: center;
   padding: var(--space-massive) var(--space-xl);
 }
 
 .error-icon {
-  font-size: 80rpx;
+  font-size: 72rpx;
   display: block;
   margin-bottom: var(--space-md);
-  opacity: 0.40;
+  opacity: 0.4;
 }
 
 .error-text {
   font-size: var(--fs-body);
-  color: rgba(120, 100, 85, 0.50);
+  color: var(--color-text-secondary);
   display: block;
   margin-bottom: var(--space-xs);
 }
 
 .error-hint {
   font-size: var(--fs-body-small);
-  color: rgba(140, 120, 105, 0.35);
+  color: var(--color-text-dim);
   display: block;
   margin-bottom: var(--space-xxl);
 }

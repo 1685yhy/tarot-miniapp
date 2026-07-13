@@ -1,13 +1,10 @@
-/* ==============================================================
-   Tarot Card Component — Art Nouveau Gallery Frame
-   The image is the artwork, the frame is the gallery.
-   Asymmetrical copper filigree | Handmade-paper shadow
-   ============================================================== */
-
 /* ============================================================
-   1. Base Container
+   Tarot Card Component — Clean Minimal Frame
+   The CDN image is the hero. The component just frames it.
    ============================================================ */
 
+/* 1. Base Container
+   -------------------------- */
 .tarot-card-wrapper {
   display: inline-flex;
   justify-content: center;
@@ -15,20 +12,15 @@
   padding: 8rpx;
 }
 
-/* ============================================================
-   2. Card — Art Nouveau Frame
-   Organic asymmetrical corners, thin copper border
-   ============================================================ */
-
+/* 2. Card Frame
+   Thin warm brown border, soft shadow, uniform rounded corners.
+   -------------------------- */
 .tarot-card {
   position: relative;
   width: 280rpx;
   height: 460rpx;
-  /* Asymmetrical rounded corners — organic, hand-wrought feel */
-  border-radius: 4rpx 18rpx 4rpx 18rpx;
-  /* Thin copper border */
+  border-radius: 16rpx;
   border: 1.5rpx solid #BF7733;
-  /* Warm brown shadow — card resting on handmade paper */
   box-shadow:
     0 2rpx 8rpx rgba(90, 60, 30, 0.10),
     0 8rpx 24rpx rgba(80, 55, 25, 0.07),
@@ -46,51 +38,9 @@
   transform: rotate(180deg);
 }
 
-/* ============================================================
-   3. Botanical Corner Curls (Pseudo-elements)
-   Tiny copper tendrils at top-right and bottom-left.
-   A single quarter-circle arc suggests a curling vine.
-   ============================================================ */
-
-/* Top-right — curl spiralling inward */
-.tarot-card::before {
-  content: '';
-  position: absolute;
-  top: 2rpx;
-  right: 2rpx;
-  width: 20rpx;
-  height: 20rpx;
-  border: 1.5rpx solid rgba(191, 119, 51, 0.45);
-  border-radius: 50%;
-  border-bottom-color: transparent;
-  border-left-color: transparent;
-  transform: rotate(45deg);
-  z-index: 5;
-  pointer-events: none;
-}
-
-/* Bottom-left — mirror curl */
-.tarot-card::after {
-  content: '';
-  position: absolute;
-  bottom: 2rpx;
-  left: 2rpx;
-  width: 20rpx;
-  height: 20rpx;
-  border: 1.5rpx solid rgba(191, 119, 51, 0.45);
-  border-radius: 50%;
-  border-top-color: transparent;
-  border-right-color: transparent;
-  transform: rotate(45deg);
-  z-index: 5;
-  pointer-events: none;
-}
-
-/* ============================================================
-   4. Card Image — Hero
-   Fills inside the frame, behind the corner curls
-   ============================================================ */
-
+/* 3. Card Image — Hero
+   Fills the frame edge-to-edge.
+   -------------------------- */
 .card-image {
   position: absolute;
   top: 0;
@@ -98,68 +48,59 @@
   width: 100%;
   height: 100%;
   z-index: 1;
-  border-radius: 3rpx 17rpx 3rpx 17rpx;
+  border-radius: 16rpx;
   pointer-events: none;
 }
 
-/* ============================================================
-   5. Suit Gem — Tiny Colored Gem at Top-Left Corner
-   Faceted shape, suit-specific hue
-   ============================================================ */
-
+/* 4. Suit Indicator — Tiny Colored Dot
+   Positioned at the top-right corner of the card.
+   -------------------------- */
 .card-art::before {
   content: '';
   position: absolute;
-  top: 10rpx;
-  left: 10rpx;
-  width: 8rpx;
-  height: 11rpx;
-  border-radius: 2rpx 5rpx 5rpx 2rpx;
+  top: 12rpx;
+  right: 12rpx;
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 50%;
   z-index: 6;
   pointer-events: none;
-  opacity: 0.8;
-  /* Faceted shine */
-  box-shadow: inset 0 1rpx 2rpx rgba(255, 255, 255, 0.25);
 }
 
-/* Wands: copper */
+/* Wands  → warm brown */
 .tarot-card[class*="wands"] .card-art::before {
-  background: #CD7F32;
+  background: #BF7733;
 }
 
-/* Cups: soft lavender */
+/* Cups   → dusty rose */
 .tarot-card[class*="cups"] .card-art::before {
-  background: #C9B8E8;
+  background: #C9A0A0;
 }
 
-/* Swords: jade */
+/* Swords → sage */
 .tarot-card[class*="swords"] .card-art::before {
-  background: #5B9E7A;
+  background: #8FBC8F;
 }
 
-/* Pentacles: gold */
+/* Pentacles → warm gold */
 .tarot-card[class*="pentacles"] .card-art::before {
   background: #D4A843;
 }
 
-/* ============================================================
-   6. Typography — Warm Olive, Text-Shadow for Elegance
-   Colour evokes aged botanical plates.
-   Shadow is a soft glow, not a readability crutch.
-   ============================================================ */
-
+/* 5. Typography — Small, Clean, Warm Brown
+   No text-shadow — the card image beneath may be dark or light.
+   -------------------------- */
 .card-number {
   position: absolute;
   top: 14rpx;
   left: 28rpx;
   z-index: 5;
   font-size: 16rpx;
-  color: #95956A;
+  color: #BF7733;
   font-family: 'Georgia', serif;
   letter-spacing: 1rpx;
   line-height: 1.3;
   pointer-events: none;
-  text-shadow: 0 0 6rpx rgba(80, 50, 20, 0.35);
 }
 
 .card-name-en {
@@ -170,12 +111,11 @@
   text-align: center;
   z-index: 5;
   font-size: 14rpx;
-  color: #95956A;
+  color: #BF7733;
   font-family: 'Georgia', serif;
   letter-spacing: 3rpx;
   text-transform: uppercase;
   pointer-events: none;
-  text-shadow: 0 0 6rpx rgba(80, 50, 20, 0.35);
 }
 
 .card-name-zh {
@@ -186,18 +126,15 @@
   text-align: center;
   z-index: 5;
   font-size: 18rpx;
-  color: #A0926B;
+  color: #A08050;
   font-family: 'STKaiti', 'KaiTi', serif;
   letter-spacing: 5rpx;
   font-weight: 400;
   pointer-events: none;
-  text-shadow: 0 0 6rpx rgba(80, 50, 20, 0.35);
 }
 
-/* ============================================================
-   7. Position Badge
-   ============================================================ */
-
+/* 6. Position Badge
+   -------------------------- */
 .position-badge {
   display: flex;
   align-items: center;
@@ -216,129 +153,73 @@
 
 .badge-upright {
   background: rgba(40, 42, 38, 0.55);
-  color: rgba(149, 149, 106, 0.65);
+  color: rgba(191, 119, 51, 0.75);
 }
 
 .badge-reversed {
   background: rgba(50, 35, 30, 0.55);
-  color: rgba(205, 127, 50, 0.65);
+  color: rgba(205, 127, 50, 0.75);
 }
 
 .position-icon { font-size: 13rpx; }
 .position-text { letter-spacing: 1rpx; }
 
-/* ============================================================
-   8. Reversed State — Copper Inner Glow at Bottom Edge
-   A warm bloom rising from the lower edge, like lamplight
-   through vellum. Uses .card-art::after to layer over the
-   image without adding DOM elements.
-   ============================================================ */
-
+/* 7. Reversed — Subtle Warm Edge Glow
+   A warm box-shadow bloom replaces the old gradient overlay.
+   -------------------------- */
 .card-reversed {
-  border-color: rgba(191, 119, 51, 0.5);
+  border-color: rgba(191, 119, 51, 0.6);
+  box-shadow:
+    0 0 16rpx rgba(191, 119, 51, 0.12),
+    0 2rpx 8rpx rgba(90, 60, 30, 0.10),
+    0 8rpx 24rpx rgba(80, 55, 25, 0.07);
 }
 
-/* Overlay gradient — copper glow concentrated at the base */
-.card-reversed .card-art::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 90rpx;
-  background: linear-gradient(to top, rgba(191, 119, 51, 0.09), transparent);
-  z-index: 3;
-  pointer-events: none;
-  border-radius: 0 0 4rpx 18rpx;
-}
-
-/* ============================================================
-   9. Major Arcana — Slightly Elevated Treatment
-   ============================================================ */
-
+/* 8. Major Arcana — Slightly Elevated
+   Thicker border, slightly larger suit dot.
+   -------------------------- */
 .card-major {
   border-width: 2rpx;
   border-color: #BF7733;
 }
 
 .card-major .card-art::before {
-  width: 11rpx;
-  height: 14rpx;
-  opacity: 0.9;
+  width: 12rpx;
+  height: 12rpx;
   background: #BF7733;
-  box-shadow:
-    0 0 6rpx rgba(191, 119, 51, 0.5),
-    inset 0 1rpx 2rpx rgba(255, 255, 255, 0.25);
 }
 
-/* ============================================================
-   10. Card Art Container / Fallback Zone
-   Visible only when no image covers the card.
-   ============================================================ */
-
+/* 9. Art Container
+   Solely needed as the positioning anchor for the suit dot.
+   No background tint — the image is the hero.
+   -------------------------- */
 .card-art {
   position: relative;
   width: 100%;
   height: 100%;
   z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   pointer-events: none;
-  background: radial-gradient(ellipse at 50% 50%, rgba(191, 119, 51, 0.04), transparent 70%);
+  background: transparent;
 }
 
-/* Minimal fallback — suit icon centred */
-.card-symbol {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1;
-  text-align: center;
-  opacity: 0.3;
-}
-
-.card-symbol .minor-suit {
-  font-size: 60rpx;
-  font-weight: 200;
-  display: block;
-}
-
-.card-symbol .minor-rank {
-  font-size: 36rpx;
-  font-weight: 300;
-  display: block;
-  margin-top: 8rpx;
-}
-
+/* 10. Hidden Elements
+     No CSS art, no star fields, no decorative ornament bars.
+     -------------------------- */
+.star-field,
+.card-symbol,
+.card-ornament-top,
+.card-ornament-bottom,
+.card-aura,
+.reversed-label,
 .card-symbol .art-shape,
 .card-symbol .art-accent,
 .card-symbol .art-detail {
   display: none;
 }
 
-.star-field {
-  display: none;
-}
-
-/* ============================================================
-   11. Superseded Elements — Removed for Art Nouveau
-   Kept to silence any template references.
-   ============================================================ */
-
-.reversed-label,
-.card-aura,
-.card-ornament-top,
-.card-ornament-bottom {
-  display: none;
-}
-
-/* ============================================================
-   12. Keyframe Animations
-   Soft fade-up with subtle scale
-   ============================================================ */
-
+/* 11. Keyframe Animation
+      Soft fade-up with subtle scale.
+      -------------------------- */
 @keyframes card-appear {
   0% {
     opacity: 0;

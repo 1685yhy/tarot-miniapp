@@ -1,141 +1,119 @@
-/* ===== 个人中心 - 柔美手札主题 (Gentle Journal) ===== */
-/*    像一本私人手帐封面：温暖、亲切、细腻                */
+/* ============================================================
+   Profile Page — Editorial Minimal
+   Clean, airy white space with warm brown accent
+   ============================================================ */
 
 /* ---------------------------------------------------------------
-   Container — 奶油底色，暖意融融
+   Container
    --------------------------------------------------------------- */
 .container {
   padding: var(--space-xl);
   padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-massive));
-  background: linear-gradient(180deg, #FFF8F5 0%, #FFF5F0 100%);
   min-height: 100vh;
 }
 
 /* ---------------------------------------------------------------
-   User Card — 如手帐封面上的肖像卡片
+   Star field — subtle ambient
+   --------------------------------------------------------------- */
+.star-field {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  opacity: 0.12;
+}
+
+.star-particle {
+  position: absolute;
+  width: 4rpx;
+  height: 4rpx;
+  background: #8D6E63;
+  border-radius: 50%;
+  opacity: 0.25;
+}
+
+.star-particle:nth-child(1) { top: 10%; left: 20%; animation: star-drift 8s ease-in-out infinite; }
+.star-particle:nth-child(2) { top: 28%; left: 72%; animation: star-drift 10s ease-in-out infinite 1s; }
+.star-particle:nth-child(3) { top: 55%; left: 35%; animation: star-drift 7s ease-in-out infinite 2s; }
+.star-particle:nth-child(4) { top: 72%; left: 82%; animation: star-drift 9s ease-in-out infinite 3s; }
+.star-particle:nth-child(5) { top: 15%; left: 65%; animation: star-drift 11s ease-in-out infinite 0.5s; }
+.star-particle:nth-child(6) { top: 85%; left: 12%; animation: star-drift 8s ease-in-out infinite 4s; }
+.star-particle:nth-child(7) { top: 42%; left: 8%; animation: star-drift 12s ease-in-out infinite 1.5s; }
+.star-particle:nth-child(8) { top: 92%; left: 52%; animation: star-drift 9s ease-in-out infinite 2.5s; }
+.star-particle:nth-child(9) { top: 62%; left: 92%; animation: star-drift 10s ease-in-out infinite 3.5s; }
+.star-particle:nth-child(10) { top: 22%; left: 48%; animation: star-drift 7s ease-in-out infinite 0.8s; }
+
+@keyframes star-drift {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.2; }
+  50% { transform: translateY(-24rpx) scale(1.4); opacity: 0.5; }
+}
+
+/* ---------------------------------------------------------------
+   User Card — white bg, centered, clean avatar, md font name
    --------------------------------------------------------------- */
 .user-card {
   text-align: center;
   padding: var(--space-xxxl) var(--space-xl) var(--space-xxl);
-  border-radius: 28rpx;
+  border-radius: 24rpx;
   margin-bottom: var(--space-xl);
+  background: #FFFFFF;
+  box-shadow: 0 2rpx 16rpx rgba(0, 0, 0, 0.04);
   position: relative;
-  overflow: hidden;
-  background: linear-gradient(155deg, #FFFFFF, #FFF8F5);
-  border: 1rpx solid rgba(212, 131, 106, 0.15);
-  box-shadow: 0 8rpx 32rpx rgba(212, 131, 106, 0.08);
-}
-
-/* 左上角花枝装饰 */
-.user-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100rpx;
-  height: 100rpx;
-  background: radial-gradient(circle at 0 0, rgba(212, 131, 106, 0.08), transparent 70%);
-  pointer-events: none;
-}
-
-/* 细腻纹理 — 像手工纸的触感 */
-.user-card::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 3rpx,
-    rgba(183, 201, 177, 0.02) 3rpx,
-    rgba(183, 201, 177, 0.02) 4rpx
-  );
-  pointer-events: none;
-}
-
-/* Avatar — 柔和光晕 */
-.avatar-wrap {
-  position: relative;
-  display: inline-block;
-  z-index: 1;
 }
 
 .avatar {
-  font-size: 80rpx;
+  font-size: 88rpx;
   display: block;
-  position: relative;
-  z-index: 1;
+  line-height: 1;
 }
 
-.avatar-ring {
-  position: absolute;
-  top: -8rpx;
-  left: -8rpx;
-  width: calc(100% + 16rpx);
-  height: calc(100% + 16rpx);
-  border-radius: var(--radius-full);
-  border: 2rpx solid rgba(201, 169, 110, 0.3);
-  box-shadow: 0 0 30rpx rgba(212, 131, 106, 0.1);
-  animation: halo-breathe 4s var(--ease-in-out) infinite;
-  pointer-events: none;
-}
-
-.user-name {
-  font-size: var(--fs-h3);
-  font-weight: var(--fw-semibold);
-  color: #3D3535;
-  display: block;
-  margin-top: var(--space-lg);
-  position: relative;
-  z-index: 1;
-  letter-spacing: 2rpx;
-}
-
-.user-level {
-  font-size: var(--fs-body-small);
-  color: #D4836A;
-  display: block;
-  margin-top: var(--space-xs);
-  position: relative;
-  z-index: 1;
+.badge {
+  display: inline-block;
+  padding: 4rpx 22rpx;
+  border-radius: 20rpx;
+  font-size: var(--fs-caption);
+  background: #EFEBE9;
+  color: #8D6E63;
   letter-spacing: 1rpx;
 }
 
-/* 升级按钮 — 丝绒质感 */
+.badge-premium {
+  background: #8D6E63;
+  color: #FFFFFF;
+}
+
 .upgrade-btn {
   margin-top: var(--space-lg);
-  background: linear-gradient(135deg, #D4836A, #C9A96E);
+  background: #8D6E63;
   color: #FFFFFF;
   font-weight: var(--fw-semibold);
-  border-radius: 40rpx;
-  padding: var(--space-md) var(--space-huge);
   font-size: var(--fs-body);
-  display: inline-block;
   border: none;
-  box-shadow: 0 4rpx 20rpx rgba(212, 131, 106, 0.2);
-  position: relative;
-  z-index: 1;
-  transition: all var(--duration-normal) var(--ease-out);
-  letter-spacing: 2rpx;
+  border-radius: 24rpx;
+  padding: var(--space-md) var(--space-huge);
+  display: inline-block;
+  line-height: 1.4;
+  transition: opacity var(--duration-fast);
 }
 
 .upgrade-btn:active {
-  transform: scale(0.96);
-  box-shadow: 0 2rpx 8rpx rgba(212, 131, 106, 0.1);
+  opacity: 0.75;
 }
 
 /* ---------------------------------------------------------------
-   Stats Row — 三列数据卡片
+   Stats Row — flex row, large numbers, warm brown accent
    --------------------------------------------------------------- */
 .stats-row {
   display: flex;
+  background: #FFFFFF;
   border-radius: 20rpx;
   padding: var(--space-xl);
   margin-bottom: var(--space-xl);
-  position: relative;
-  background: linear-gradient(135deg, #FFFFFF, #FFF8F5);
-  border: 1rpx solid rgba(183, 201, 177, 0.2);
-  box-shadow: 0 4rpx 20rpx rgba(183, 201, 177, 0.06);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.03);
 }
 
 .stat-item {
@@ -151,77 +129,79 @@
   top: 50%;
   transform: translateY(-50%);
   width: 1rpx;
-  height: 50%;
-  background: linear-gradient(180deg,
-    transparent, rgba(212, 131, 106, 0.2), transparent);
+  height: 36%;
+  background: #EEEEEE;
 }
 
 .stat-num {
-  font-size: var(--fs-h3);
-  font-weight: var(--fw-bold);
-  color: #D4836A;
+  font-size: 42rpx;
+  font-weight: var(--fw-bold, 700);
+  color: #8D6E63;
   display: block;
-  line-height: var(--lh-tight);
+  line-height: 1.15;
 }
 
 .stat-label {
   font-size: var(--fs-caption);
-  color: #9A8A8A;
+  color: #AAAAAA;
   display: block;
   margin-top: var(--space-xs);
   letter-spacing: 1rpx;
 }
 
 /* ---------------------------------------------------------------
-   Quick Actions — 快捷操作按钮
+   Quick Actions — white cards, list style with arrow indicators
    --------------------------------------------------------------- */
 .quick-actions {
-  display: flex;
-  gap: var(--space-md);
   margin-bottom: var(--space-xxl);
+  border-radius: 20rpx;
+  overflow: hidden;
+  background: #FFFFFF;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.03);
 }
 
 .action-item {
-  flex: 1;
-  text-align: center;
-  border-radius: 20rpx;
-  padding: var(--space-xl) 0;
-  position: relative;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
   background: #FFFFFF;
-  border: 1rpx solid rgba(212, 131, 106, 0.1);
-  box-shadow: 0 4rpx 16rpx rgba(183, 201, 177, 0.05);
-  transition: all var(--duration-normal) var(--ease-out);
+  padding: var(--space-lg) var(--space-xl);
+  transition: background var(--duration-fast);
+  position: relative;
+}
+
+.action-item + .action-item {
+  border-top: 1rpx solid #F2F2F2;
 }
 
 .action-item:active {
-  background: #FFF5F0;
-  border-color: rgba(212, 131, 106, 0.2);
-  transform: scale(0.96);
+  background: #F8F6F5;
+}
+
+/* Arrow indicator */
+.action-item::after {
+  content: '›';
+  font-size: 36rpx;
+  color: #CCCCCC;
+  line-height: 1;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .action-icon {
-  font-size: 36rpx;
-  display: block;
-  margin-bottom: var(--space-sm);
-  opacity: 0.7;
-}
-
-.action-label {
-  font-size: var(--fs-body-small);
-  color: #6B5A5A;
-  display: block;
+  font-size: 40rpx !important;
+  display: inline !important;
+  margin-right: var(--space-md);
+  flex-shrink: 0;
 }
 
 /* ---------------------------------------------------------------
-   History — 记录卷宗
+   History Section — clean list
    --------------------------------------------------------------- */
 .history-section {
-  border-radius: 24rpx;
+  border-radius: 20rpx;
   overflow: hidden;
-  border: 1rpx solid rgba(183, 201, 177, 0.2);
   background: #FFFFFF;
-  box-shadow: 0 4rpx 20rpx rgba(183, 201, 177, 0.04);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.03);
 }
 
 .history-header {
@@ -229,19 +209,12 @@
   justify-content: space-between;
   align-items: center;
   padding: var(--space-lg) var(--space-xl);
-  border-bottom: 1rpx solid rgba(183, 201, 177, 0.2);
-}
-
-.history-title {
-  font-size: var(--fs-body);
-  font-weight: var(--fw-semibold);
-  color: #3D3535;
-  letter-spacing: 1rpx;
+  border-bottom: 1rpx solid #F2F2F2;
 }
 
 .clear-btn {
   font-size: var(--fs-body-small);
-  color: #9A8A8A;
+  color: #AAAAAA;
   background: none;
   border: none;
   padding: var(--space-xs) var(--space-sm);
@@ -250,13 +223,8 @@
 }
 
 .clear-btn:active {
-  color: #D4836A;
-  background: rgba(212, 131, 106, 0.08);
-}
-
-/* History list */
-.history-list {
-  padding: 0;
+  color: #8D6E63;
+  background: rgba(141, 110, 99, 0.06);
 }
 
 .history-item {
@@ -264,7 +232,7 @@
   justify-content: space-between;
   align-items: center;
   padding: var(--space-lg) var(--space-xl);
-  border-bottom: 1rpx solid rgba(183, 201, 177, 0.15);
+  border-bottom: 1rpx solid #F2F2F2;
   transition: background var(--duration-fast);
 }
 
@@ -273,60 +241,28 @@
 }
 
 .history-item:active {
-  background: rgba(212, 131, 106, 0.04);
-}
-
-.history-left {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xxs);
-}
-
-.history-type {
-  font-size: var(--fs-body);
-  color: #3D3535;
-  display: block;
-}
-
-.history-time {
-  font-size: var(--fs-caption);
-  color: #9A8A8A;
-  display: block;
-}
-
-.history-right {
-  text-align: right;
-}
-
-.history-status {
-  font-size: var(--fs-caption);
-  color: #C9A96E;
-  display: block;
+  background: #F8F6F5;
 }
 
 /* ---------------------------------------------------------------
-   Load / Skeleton — 柔和骨架
+   Loading / Skeleton
    --------------------------------------------------------------- */
-.skeleton {
-  width: 100%;
-}
-
 .skeleton-card {
   width: 100%;
   height: 320rpx;
   border-radius: 24rpx;
-  background: linear-gradient(135deg, #F5EDE8, #F0EBE5);
+  background: #F2F2F2;
   margin-bottom: var(--space-xl);
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
 }
 
 .skeleton-stats {
   width: 100%;
-  height: 120rpx;
+  height: 110rpx;
   border-radius: 20rpx;
-  background: linear-gradient(135deg, #F5EDE8, #F0EBE5);
+  background: #F2F2F2;
   margin-bottom: var(--space-xl);
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
 }
 
 .skeleton-actions {
@@ -337,22 +273,19 @@
 
 .skeleton-action {
   flex: 1;
-  height: 100rpx;
+  height: 96rpx;
   border-radius: 20rpx;
-  background: linear-gradient(135deg, #F5EDE8, #F0EBE5);
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+  background: #F2F2F2;
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
 }
 
-.skeleton-history {
-  width: 100%;
-  height: 300rpx;
-  border-radius: 24rpx;
-  background: linear-gradient(135deg, #F5EDE8, #F0EBE5);
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 /* ---------------------------------------------------------------
-   Error — 温柔报错
+   Error State
    --------------------------------------------------------------- */
 .error-state {
   text-align: center;
@@ -363,19 +296,18 @@
   font-size: 80rpx;
   display: block;
   margin-bottom: var(--space-md);
-  opacity: 0.5;
 }
 
 .error-text {
   font-size: var(--fs-body);
-  color: #6B5A5A;
+  color: #666666;
   display: block;
   margin-bottom: var(--space-xs);
 }
 
 .error-hint {
   font-size: var(--fs-body-small);
-  color: #9A8A8A;
+  color: #AAAAAA;
   display: block;
   margin-bottom: var(--space-xxl);
 }
