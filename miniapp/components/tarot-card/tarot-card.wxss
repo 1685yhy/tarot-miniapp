@@ -196,6 +196,18 @@
   box-shadow: 0 0 6rpx rgba(212,175,55,0.15);
 }
 
+/* --- 2.3b 卡牌图像 (ComfyUI真实PNG) --- */
+.card-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  border-radius: 14rpx;
+  pointer-events: none;
+}
+
 /* --- 2.4 星尘背景 (Stardust Background) --- */
 .star-field {
   position: absolute;
@@ -335,6 +347,7 @@
   text-transform: uppercase;
   text-align: center;
   margin-bottom: 2rpx;
+  position: relative;
   z-index: 2;
   text-shadow:
     0 0 10rpx rgba(200,176,96,0.3),
@@ -348,6 +361,7 @@
   text-align: center;
   margin-bottom: 10rpx;
   font-weight: 500;
+  position: relative;
   z-index: 2;
   text-shadow:
     0 0 12rpx rgba(245,230,184,0.2),
@@ -364,6 +378,7 @@
   font-size: 20rpx;
   margin-bottom: 36rpx;
   white-space: nowrap;
+  position: relative;
   z-index: 2;
 }
 .badge-upright {
@@ -388,6 +403,7 @@
   letter-spacing: 2rpx;
   writing-mode: vertical-rl;
   z-index: 2;
+  text-shadow: 0 1rpx 3rpx rgba(0,0,0,0.7);
 }
 
 
