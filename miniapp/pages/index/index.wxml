@@ -1,39 +1,21 @@
 <!-- pages/index/index.wxml -->
-<!-- 星尘粒子背景（30颗，三层景深，金银紫三色） -->
-<view class="star-field">
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
+<!-- 萤火虫粒子背景（12只暖光） -->
+<view class="firefly-field">
+  <view class="firefly-particle"></view>
+  <view class="firefly-particle"></view>
+  <view class="firefly-particle"></view>
+  <view class="firefly-particle"></view>
+  <view class="firefly-particle"></view>
+  <view class="firefly-particle"></view>
+  <view class="firefly-particle"></view>
+  <view class="firefly-particle"></view>
+  <view class="firefly-particle"></view>
+  <view class="firefly-particle"></view>
+  <view class="firefly-particle"></view>
+  <view class="firefly-particle"></view>
 </view>
 
-<!-- 光晕装饰 -->
+<!-- 环境光晕 -->
 <view class="orb-top"></view>
 <view class="orb-bottom"></view>
 
@@ -63,30 +45,29 @@
 <!-- ===== 错误状态 ===== -->
 <view class="page" wx:elif="{{pageError}}">
   <view class="error-state">
-    <text class="error-icon">🌙</text>
-    <text class="error-text">星象紊乱，占卜台暂时无法连接</text>
+    <text class="error-icon">🌷</text>
+    <text class="error-text">花园暂时静谧，请稍后再来</text>
     <text class="error-hint">{{pageError}}</text>
-    <button class="btn-primary btn-small" bindtap="onRetry">✨ 重新连接</button>
+    <button class="btn-primary btn-small" bindtap="onRetry">🌸 重新连接</button>
   </view>
 </view>
 
 <!-- ===== 主内容 ===== -->
 <view class="page" wx:else>
-  <!-- 顶部神秘学氛围区 -->
+  <!-- 顶部温柔曙光区 -->
   <view class="hero">
-    <view class="mystic-circle">
-      <view class="star-field relative" style="width:100rpx;height:100rpx">
-        <text class="anim-float" style="font-size:64rpx;color:var(--color-gold);display:block">✦</text>
-      </view>
+    <view class="hero-glow-circle"></view>
+    <view class="hero-icon">
+      <text class="hero-icon-inner">✦</text>
     </view>
-    <text class="hero-title anim-fade-in-up-1">星光映照</text>
-    <text class="hero-subtitle anim-fade-in-up-2">揭开命运的面纱</text>
+    <text class="hero-title">星光映照</text>
+    <text class="hero-subtitle">倾听内心的回响</text>
   </view>
 
   <!-- 每日一牌 -->
   <view class="daily-card-wrapper anim-fade-in-up-3">
     <view class="card-clickable card-daily-back" wx:if="{{!dailyCard}}" bindtap="drawDailyCard">
-      <text class="heading-3">点击抽取今日运势</text>
+      <text class="heading-3">轻触卡片，开启今日指引</text>
       <text class="daily-card-free">今日免费</text>
     </view>
     <view class="card-daily-result" wx:else>
@@ -100,30 +81,30 @@
     <text class="section-title">选择牌阵</text>
     <view class="spread-grid">
       <view class="card card-clickable flex-col items-center" style="padding:28rpx 16rpx;gap:8rpx;text-align:center" bindtap="navigateToReading" data-type="triangle">
-        <text style="font-size:48rpx">💕</text>
+        <text style="font-size:52rpx">💕</text>
         <text class="text-body" style="font-size:var(--fs-body-small)">恋人三角</text>
         <text class="badge badge-gold">热门</text>
       </view>
       <view class="card card-clickable flex-col items-center" style="padding:28rpx 16rpx;gap:8rpx;text-align:center" bindtap="navigateToReading" data-type="celtic_cross">
-        <text style="font-size:48rpx">✝️</text>
+        <text style="font-size:52rpx">✝️</text>
         <text class="text-body" style="font-size:var(--fs-body-small)">凯尔特十字</text>
         <text class="text-dim" style="font-size:var(--fs-caption)">最全面</text>
       </view>
       <view class="card card-clickable flex-col items-center" style="padding:28rpx 16rpx;gap:8rpx;text-align:center" bindtap="navigateToReading" data-type="three_card">
-        <text style="font-size:48rpx">🕯️</text>
+        <text style="font-size:52rpx">🕯️</text>
         <text class="text-body" style="font-size:var(--fs-body-small)">三牌占卜</text>
         <text class="text-dim" style="font-size:var(--fs-caption)">过去·现在·未来</text>
       </view>
       <view class="card card-clickable flex-col items-center" style="padding:28rpx 16rpx;gap:8rpx;text-align:center" bindtap="navigateToReading" data-type="career">
-        <text style="font-size:48rpx">💼</text>
+        <text style="font-size:52rpx">💼</text>
         <text class="text-body" style="font-size:var(--fs-body-small)">事业牌阵</text>
       </view>
       <view class="card card-clickable flex-col items-center" style="padding:28rpx 16rpx;gap:8rpx;text-align:center" bindtap="navigateToReading" data-type="finance">
-        <text style="font-size:48rpx">💰</text>
+        <text style="font-size:52rpx">💰</text>
         <text class="text-body" style="font-size:var(--fs-body-small)">财运牌阵</text>
       </view>
       <view class="card card-clickable flex-col items-center" style="padding:28rpx 16rpx;gap:8rpx;text-align:center" bindtap="navigateToReading" data-type="decision">
-        <text style="font-size:48rpx">🔀</text>
+        <text style="font-size:52rpx">🔀</text>
         <text class="text-body" style="font-size:var(--fs-body-small)">二择一</text>
       </view>
     </view>

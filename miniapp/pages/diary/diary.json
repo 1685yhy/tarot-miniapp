@@ -1,1 +1,5 @@
-{"navigationBarTitleText":"星光日记","usingComponents":{}}
+{
+  "navigationBarTitleText": "星光日记",
+  "navigationBarBackgroundColor": "#FAF5EF",
+  "usingComponents": {}
+}
