@@ -308,7 +308,6 @@
 .btn-glow-pulse[disabled] {
   opacity: 0.40;
   animation: none;
-  filter: grayscale(0.5);
 }
 
 /* ========================================================
