@@ -101,6 +101,29 @@ const CARD_REGISTRY = {
   '星币国王':  { type: 'king-pentacles', number: 'K', en: 'King of Pentacles', arcana: 'minor', suit: 'pentacles' },
 };
 
+// ===== 图像路径映射：计算78张卡牌的真实ComfyUI PNG路径 =====
+const ROMAN_MAP = {
+  '0': 0, 'I': 1, 'II': 2, 'III': 3, 'IV': 4, 'V': 5,
+  'VI': 6, 'VII': 7, 'VIII': 8, 'IX': 9, 'X': 10,
+  'XI': 11, 'XII': 12, 'XIII': 13, 'XIV': 14, 'XV': 15,
+  'XVI': 16, 'XVII': 17, 'XVIII': 18, 'XIX': 19, 'XX': 20, 'XXI': 21
+};
+
+// 计算每张卡牌的图像路径，写入card.image字段
+(function computeImagePaths() {
+  const suitCounters = { wands: 0, cups: 0, swords: 0, pentacles: 0 };
+  Object.values(CARD_REGISTRY).forEach(card => {
+    const enSnake = card.en.toLowerCase().replace(/\s+/g, '_');
+    if (card.arcana === 'major') {
+      const idx = ROMAN_MAP[card.number] !== undefined ? ROMAN_MAP[card.number] : 0;
+      card.image = `/images/cards/major_${String(idx).padStart(2, '0')}_${enSnake}.png`;
+    } else if (card.suit && suitCounters[card.suit] !== undefined) {
+      const idx = suitCounters[card.suit]++;
+      card.image = `/images/cards/${card.suit}_${String(idx).padStart(2, '0')}_${enSnake}.png`;
+    }
+  });
+})();
+
 // 从CARD_REGISTRY自动构建大阿尔卡纳类型列表，保持与注册表同步
 const MAJOR_TYPES = Object.values(CARD_REGISTRY).filter(c => c.arcana === "major").map(c => c.type);
 
@@ -165,11 +188,13 @@ Component({
     resolveCard(nameZh, cardType, nameEn, cardNumber) {
       // 如果显式传了cardType，优先使用
       if (cardType) {
+        const cardEntry = Object.values(CARD_REGISTRY).find(c => c.type === cardType);
         this.setData({
           cardType,
           cardNumberDisplay: cardNumber || '',
           displayNameEn: nameEn || '',
           isMajor: MAJOR_TYPES.includes(cardType),
+          imagePath: cardEntry ? cardEntry.image : '',
         });
         return;
       }
@@ -182,6 +207,7 @@ Component({
           cardNumberDisplay: cardNumber || found.number || '',
           displayNameEn: nameEn || found.en || '',
           isMajor: found.arcana === 'major',
+          imagePath: found.image || '',
         });
       } else {
         // 兜底：根据花色生成
@@ -191,6 +217,7 @@ Component({
           cardNumberDisplay: cardNumber || '',
           displayNameEn: nameEn || '',
           isMajor: false,
+          imagePath: '',
         });
       }
     },
