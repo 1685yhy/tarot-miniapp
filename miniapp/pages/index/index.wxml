@@ -1,111 +1,64 @@
 <!-- pages/index/index.wxml -->
-<!-- 植物学花粉粒子背景（12只暖光） -->
-<view class="mote-field">
-  <view class="mote-particle"></view>
-  <view class="mote-particle"></view>
-  <view class="mote-particle"></view>
-  <view class="mote-particle"></view>
-  <view class="mote-particle"></view>
-  <view class="mote-particle"></view>
-  <view class="mote-particle"></view>
-  <view class="mote-particle"></view>
-  <view class="mote-particle"></view>
-  <view class="mote-particle"></view>
-  <view class="mote-particle"></view>
-  <view class="mote-particle"></view>
-</view>
-
-<!-- 环境光晕 -->
-<view class="atelier-glow-top"></view>
-<view class="atelier-glow-bottom"></view>
-
 <!-- ===== 加载骨架 ===== -->
 <view class="page" wx:if="{{pageLoading}}">
-  <view class="skeleton">
-    <view class="skeleton-hero">
-      <view class="skeleton-circle"></view>
-      <view class="skeleton-line wide"></view>
-      <view class="skeleton-line medium"></view>
-    </view>
-    <view class="skeleton-card-area">
-      <view class="skeleton-block"></view>
-    </view>
-    <view class="section-title">选择牌阵</view>
-    <view class="skeleton-grid">
-      <view class="skeleton-grid-item"></view>
-      <view class="skeleton-grid-item"></view>
-      <view class="skeleton-grid-item"></view>
-      <view class="skeleton-grid-item"></view>
-      <view class="skeleton-grid-item"></view>
-      <view class="skeleton-grid-item"></view>
-    </view>
+  <view class="skeleton skeleton-circle" style="margin:100rpx auto 40rpx"></view>
+  <view class="skeleton skeleton-text" style="width:60%;margin:0 auto"></view>
+  <view class="skeleton skeleton-text-sm" style="width:40%;margin:12rpx auto 60rpx"></view>
+  <view class="skeleton skeleton-block" style="margin-bottom:40rpx"></view>
+  <view class="skeleton skeleton-text" style="width:30%;margin-bottom:20rpx"></view>
+  <view style="display:grid;grid-template-columns:repeat(3,1fr);gap:16rpx">
+    <view class="skeleton" style="height:140rpx;border-radius:12rpx"></view>
+    <view class="skeleton" style="height:140rpx;border-radius:12rpx"></view>
+    <view class="skeleton" style="height:140rpx;border-radius:12rpx"></view>
+    <view class="skeleton" style="height:140rpx;border-radius:12rpx"></view>
+    <view class="skeleton" style="height:140rpx;border-radius:12rpx"></view>
+    <view class="skeleton" style="height:140rpx;border-radius:12rpx"></view>
   </view>
 </view>
 
 <!-- ===== 错误状态 ===== -->
 <view class="page" wx:elif="{{pageError}}">
   <view class="error-state">
-    <text class="error-icon">🌷</text>
-    <text class="error-text">花园暂时静谧，请稍后再来</text>
+    <text class="error-icon">&#x2726;</text>
+    <text class="error-text">连接中断</text>
     <text class="error-hint">{{pageError}}</text>
-    <button class="btn-primary btn-small" bindtap="onRetry">🌸 重新连接</button>
+    <button class="btn btn-outline" bindtap="onRetry">重新连接</button>
   </view>
 </view>
 
 <!-- ===== 主内容 ===== -->
 <view class="page" wx:else>
-  <!-- 顶部植物学水彩区 -->
-  <view class="hero">
-    <view class="hero-glow-organic"></view>
-    <view class="hero-emblem">
-      <text class="hero-emblem-inner">🌿</text>
-    </view>
-    <text class="hero-title">星光映照</text>
-    <text class="hero-subtitle">倾听内心的回响</text>
+  <!-- Hero -->
+  <view class="hero anim-fade-in-up-1">
+    <text class="title-1" style="text-align:center;display:block">星光映照</text>
+    <text class="body-text" style="text-align:center;display:block;margin-top:12rpx">每日一牌，遇见自己</text>
   </view>
 
   <!-- 每日一牌 -->
-  <view class="daily-card-wrapper anim-fade-in-up-3">
-    <view class="card-clickable card-daily-back" wx:if="{{!dailyCard}}" bindtap="drawDailyCard">
-      <text class="heading-3">轻触卡片，开启今日指引</text>
-      <text class="daily-card-free">今日免费</text>
+  <view class="anim-fade-in-up-2" style="margin:60rpx 0">
+    <view class="card card-warm card-press" style="padding:56rpx 32rpx;text-align:center" wx:if="{{!dailyCard}}" bindtap="drawDailyCard">
+      <text style="font-size:52rpx;display:block;margin-bottom:24rpx">&#x2726;</text>
+      <text class="title-4" style="display:block;margin-bottom:8rpx">轻触卡片</text>
+      <text class="body-sm">开启今日指引</text>
     </view>
-    <view class="card-daily-result" wx:else>
-      <text class="heading-2">{{dailyCard.name_zh}}</text>
-      <text class="text-secondary mt-sm text-center">{{dailyCard.keywords_upright}}</text>
+    <view class="card" style="padding:56rpx 32rpx;text-align:center;border:2rpx solid var(--color-accent-light)" wx:else>
+      <text class="caption accent-text" style="display:block;margin-bottom:16rpx">今日指引</text>
+      <text class="title-2" style="display:block;margin-bottom:12rpx">{{dailyCard.name_zh}}</text>
+      <text class="body-text">{{dailyCard.keywords_upright}}</text>
     </view>
   </view>
 
-  <!-- 牌阵入口 -->
-  <view class="spread-section anim-fade-in-up-4">
+  <!-- 牌阵 -->
+  <view class="section anim-fade-in-up-3">
     <text class="section-title">选择牌阵</text>
-    <view class="spread-grid">
-      <view class="card card-clickable flex-col items-center" style="padding:28rpx 16rpx;gap:8rpx;text-align:center" bindtap="navigateToReading" data-type="triangle">
-        <text style="font-size:52rpx">💕</text>
-        <text class="text-body" style="font-size:var(--fs-body-small)">恋人三角</text>
-        <text class="badge-copper-diamond">热门</text>
-      </view>
-      <view class="card card-clickable flex-col items-center" style="padding:28rpx 16rpx;gap:8rpx;text-align:center" bindtap="navigateToReading" data-type="celtic_cross">
-        <text style="font-size:52rpx">✝️</text>
-        <text class="text-body" style="font-size:var(--fs-body-small)">凯尔特十字</text>
-        <text class="text-dim" style="font-size:var(--fs-caption)">最全面</text>
-      </view>
-      <view class="card card-clickable flex-col items-center" style="padding:28rpx 16rpx;gap:8rpx;text-align:center" bindtap="navigateToReading" data-type="three_card">
-        <text style="font-size:52rpx">🕯️</text>
-        <text class="text-body" style="font-size:var(--fs-body-small)">三牌占卜</text>
-        <text class="text-dim" style="font-size:var(--fs-caption)">过去·现在·未来</text>
-      </view>
-      <view class="card card-clickable flex-col items-center" style="padding:28rpx 16rpx;gap:8rpx;text-align:center" bindtap="navigateToReading" data-type="career">
-        <text style="font-size:52rpx">💼</text>
-        <text class="text-body" style="font-size:var(--fs-body-small)">事业牌阵</text>
-      </view>
-      <view class="card card-clickable flex-col items-center" style="padding:28rpx 16rpx;gap:8rpx;text-align:center" bindtap="navigateToReading" data-type="finance">
-        <text style="font-size:52rpx">💰</text>
-        <text class="text-body" style="font-size:var(--fs-body-small)">财运牌阵</text>
-      </view>
-      <view class="card card-clickable flex-col items-center" style="padding:28rpx 16rpx;gap:8rpx;text-align:center" bindtap="navigateToReading" data-type="decision">
-        <text style="font-size:52rpx">🔀</text>
-        <text class="text-body" style="font-size:var(--fs-body-small)">二择一</text>
+    <view style="display:grid;grid-template-columns:repeat(3,1fr);gap:16rpx">
+      <view class="card card-press" style="padding:24rpx 16rpx;text-align:center" wx:for="{{['triangle','celtic_cross','three_card','career','finance','decision']}}" wx:key="*this" bindtap="navigateToReading" data-type="{{item}}">
+        <block wx:if="{{item==='triangle'}}"><text style="font-size:36rpx;display:block;margin-bottom:8rpx">&#x2665;</text><text class="body-sm" style="display:block">恋人三角</text></block>
+        <block wx:elif="{{item==='celtic_cross'}}"><text style="font-size:36rpx;display:block;margin-bottom:8rpx">&#x272A;</text><text class="body-sm" style="display:block">凯尔特十字</text></block>
+        <block wx:elif="{{item==='three_card'}}"><text style="font-size:36rpx;display:block;margin-bottom:8rpx">&#x25C6;</text><text class="body-sm" style="display:block">三牌占卜</text></block>
+        <block wx:elif="{{item==='career'}}"><text style="font-size:36rpx;display:block;margin-bottom:8rpx">&#x25A0;</text><text class="body-sm" style="display:block">事业牌阵</text></block>
+        <block wx:elif="{{item==='finance'}}"><text style="font-size:36rpx;display:block;margin-bottom:8rpx">&#x25B2;</text><text class="body-sm" style="display:block">财运牌阵</text></block>
+        <block wx:elif="{{item==='decision'}}"><text style="font-size:36rpx;display:block;margin-bottom:8rpx">&#x25CF;</text><text class="body-sm" style="display:block">二择一</text></block>
       </view>
     </view>
   </view>
