@@ -1,2561 +1,318 @@
 /* ============================================================
-   「Le Jardin Mystique」— Art Nouveau Design Language v4.0
-   Alphonse Mucha aesthetic adapted for mobile wellness UI
-   Flowing organic curves, botanical motifs, copper warmth
+   「星光映照」Design System v5.0
+   Editorial Minimal — clean, bold, sophisticated
    ============================================================ */
 
-/* ============================================================
-   1. DESIGN TOKENS — CSS Custom Properties
-   ============================================================ */
-
+/* ===== Design Tokens ===== */
 page {
-  /* ---- Primary Palette: Vintage Botanical Illustration ---- */
+  /* Colors */
+  --color-bg: #F8F6F2;
+  --color-bg-warm: #F3EFE8;
+  --color-surface: #FFFFFF;
+  --color-surface-warm: #FDFCF9;
+  --color-border: #E8E3DB;
+  --color-border-light: #F0ECE6;
 
-  /* Background — aged handmade paper, never sterile white */
-  --color-parchment: #FBF6F0;
-  --color-parchment-deep: #F5EDE3;
-  --color-parchment-warm: #FFF8EE;
-  --color-parchment-shadow: #EDE4D8;
+  /* Accent */
+  --color-accent: #8B6F5C;
+  --color-accent-light: #B8A393;
+  --color-accent-dark: #5C463A;
 
-  /* Dark accent — deep warm olive/bronze, replaces charcoal */
-  --color-olive: #3D3929;
-  --color-olive-soft: #5A5543;
-  --color-olive-dim: #7D7866;
-  --color-olive-pale: #A9A494;
-  --color-olive-muted: #C5C1B5;
-  --color-olive-wash: rgba(61, 57, 41, 0.04);
-  --color-olive-subtle: rgba(61, 57, 41, 0.06);
-  --color-olive-glass: rgba(61, 57, 41, 0.08);
+  /* Text */
+  --color-text: #2C2416;
+  --color-text-secondary: #6B5F52;
+  --color-text-tertiary: #A0988C;
+  --color-text-inverse: #FFFFFF;
 
-  /* Hero — burnished copper, warm sophisticated, NOT pink */
-  --color-copper: #C5835A;
-  --color-copper-light: #D69D7A;
-  --color-copper-dark: #A86B46;
-  --color-copper-deep: #8C5737;
-  --color-copper-glow: rgba(197, 131, 90, 0.15);
-  --color-copper-subtle: rgba(197, 131, 90, 0.06);
-  --color-copper-wash: rgba(197, 131, 90, 0.03);
-  --color-copper-pale: #E8C9B5;
-  --color-copper-bloom: rgba(197, 131, 90, 0.08);
+  /* Semantic */
+  --color-tag-warm: #F5EDE4;
+  --color-tag-cool: #ECF0ED;
+  --color-tag-text: #8B6F5C;
 
-  /* Secondary — dusty jade, muted elegant green */
-  --color-jade: #8BA89A;
-  --color-jade-light: #A8C0B4;
-  --color-jade-dark: #6E8D7E;
-  --color-jade-pale: #CCDCD4;
-  --color-jade-ice: #E0EBE5;
-  --color-jade-glow: rgba(139, 168, 154, 0.15);
-  --color-jade-subtle: rgba(139, 168, 154, 0.06);
-  --color-jade-wash: rgba(139, 168, 154, 0.03);
+  /* Shadows */
+  --shadow-sm: 0 1rpx 4rpx rgba(44,36,22,0.04);
+  --shadow-md: 0 4rpx 16rpx rgba(44,36,22,0.06);
+  --shadow-lg: 0 8rpx 32rpx rgba(44,36,22,0.08);
 
-  /* Highlight — aged gold, subtle not shiny */
-  --color-gold-aged: #B8975E;
-  --color-gold-light: #CFB282;
-  --color-gold-dark: #9A7C48;
-  --color-gold-glow: rgba(184, 151, 94, 0.14);
-  --color-gold-subtle: rgba(184, 151, 94, 0.05);
-  --color-gold-pale: #E2D2B3;
-
-  /* Card surface — warm ivory with copper-toned shadow */
-  --color-ivory: #FFF9F2;
-  --color-ivory-warm: #FFFCF7;
-  --color-ivory-pure: #FFFFFF;
-
-  /* Semantic — muted botanical */
-  --color-success: #7DBF8A;
-  --color-warning: #C9A05C;
-  --color-danger: #C5786A;
-  --color-info: #7AA1B8;
-
-  /* Text — warm olive/bronze hierarchy */
-  --color-text-primary: var(--color-olive);
-  --color-text-secondary: var(--color-olive-soft);
-  --color-text-dim: var(--color-olive-dim);
-  --color-text-muted: var(--color-olive-pale);
-  --color-text-on-copper: #FFFFFF;
-  --color-text-on-ivory: var(--color-olive);
-  --color-text-on-jade: var(--color-olive);
-
-  /* Borders — thin copper or jade lines */
-  --color-border-copper: rgba(197, 131, 90, 0.15);
-  --color-border-copper-strong: rgba(197, 131, 90, 0.25);
-  --color-border-jade: rgba(139, 168, 154, 0.18);
-  --color-border-ivory: rgba(61, 57, 41, 0.05);
-  --color-border-light: rgba(61, 57, 41, 0.08);
-  --color-border-warm: #E5DDD2;
-
-  /* Dividers — botanical wave-styled */
-  --color-divider-warm: #E8E0D4;
-  --color-divider-copper: rgba(197, 131, 90, 0.12);
-
-  /* ---- Gradients: Art Nouveau inspired ---- */
-  --gradient-copper: linear-gradient(135deg, #C5835A, #D69D7A);
-  --gradient-copper-reverse: linear-gradient(135deg, #D69D7A, #C5835A);
-  --gradient-jade: linear-gradient(135deg, #8BA89A, #A8C0B4);
-  --gradient-gold: linear-gradient(135deg, #B8975E, #CFB282);
-
-  --gradient-parchment: linear-gradient(180deg, #FBF6F0 0%, #F5EDE3 100%);
-  --gradient-parchment-deep: linear-gradient(180deg, #F5EDE3 0%, #EDE4D8 100%);
-
-  --gradient-ivory-card: linear-gradient(145deg,
-    #FFFCF7 0%, #FFF9F2 50%, #FFFCF5 100%);
-
-  --gradient-copper-to-jade: linear-gradient(135deg,
-    var(--color-copper) 0%, var(--color-jade) 100%);
-
-  --gradient-ornament: linear-gradient(90deg,
-    transparent, var(--color-divider-copper) 30%,
-    var(--color-copper-pale) 50%,
-    var(--color-divider-copper) 70%, transparent);
-
-  --gradient-ornament-jade: linear-gradient(90deg,
-    transparent, var(--color-border-jade) 30%,
-    var(--color-jade-pale) 50%,
-    var(--color-border-jade) 70%, transparent);
-
-  --gradient-olive-fade: linear-gradient(180deg,
-    rgba(61, 57, 41, 0.03) 0%, transparent 100%);
-
-  --gradient-radial-copper: radial-gradient(
-    ellipse at 50% 0%,
-    var(--color-copper-subtle) 0%,
-    var(--color-copper-wash) 40%,
-    transparent 70%
-  );
-
-  --gradient-radial-jade: radial-gradient(
-    ellipse at 50% 100%,
-    var(--color-jade-subtle) 0%,
-    transparent 60%
-  );
-
-  --gradient-radial-gold: radial-gradient(
-    ellipse 60% 30% at 50% 0%,
-    var(--color-gold-subtle) 0%,
-    transparent 100%
-  );
-
-  --gradient-warm-bloom: radial-gradient(
-    ellipse 70% 50% at 50% 0%,
-    rgba(197, 131, 90, 0.03) 0%,
-    rgba(139, 168, 154, 0.02) 40%,
-    transparent 70%
-  );
-
-  /* Paper grain texture (subtle noise overlay) */
-  --paper-grain: repeating-linear-gradient(
-    0deg,
-    transparent, transparent 2rpx,
-    rgba(61, 57, 41, 0.003) 2rpx,
-    rgba(61, 57, 41, 0.003) 4rpx
-  );
-
-  --paper-grain-cross: repeating-linear-gradient(
-    90deg,
-    transparent, transparent 3rpx,
-    rgba(61, 57, 41, 0.002) 3rpx,
-    rgba(61, 57, 41, 0.002) 5rpx
-  );
-
-  /* ---- Typography ---- */
-  --font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC',
-    'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-  --font-family-display: 'Noto Serif SC', 'PingFang SC', 'Hiragino Sans GB',
-    'Georgia', 'Times New Roman', serif;
-  --font-family-body: -apple-system, BlinkMacSystemFont, 'PingFang SC',
-    'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-  --font-family-number: 'Georgia', 'Times New Roman', 'Noto Serif SC', serif;
-
-  /* Font sizes — editorially scaled for elegance */
-  --fs-micro: 20rpx;
-  --fs-caption: 22rpx;
-  --fs-small: 24rpx;
-  --fs-body-small: 26rpx;
-  --fs-body: 28rpx;
-  --fs-body-large: 30rpx;
-  --fs-h5: 32rpx;
-  --fs-h4: 36rpx;
-  --fs-h3: 42rpx;
-  --fs-h2: 52rpx;
-  --fs-h1: 64rpx;
-  --fs-display: 76rpx;
-  --fs-number: 80rpx;
-  --fs-number-large: 100rpx;
-
-  /* Font weights */
-  --fw-extralight: 200;
-  --fw-light: 300;
-  --fw-regular: 400;
+  /* Typography */
+  --font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+  --fs-xs: 20rpx;
+  --fs-sm: 24rpx;
+  --fs-base: 28rpx;
+  --fs-md: 32rpx;
+  --fs-lg: 36rpx;
+  --fs-xl: 44rpx;
+  --fs-2xl: 56rpx;
+  --fs-3xl: 68rpx;
+  --fw-normal: 400;
   --fw-medium: 500;
   --fw-semibold: 600;
-  --fw-bold: 700;
+  --lh-tight: 1.25;
+  --lh-normal: 1.6;
+  --lh-relaxed: 1.8;
 
-  /* Line heights — spacious, editorial */
-  --lh-tight: 1.15;
-  --lh-normal: 1.5;
-  --lh-body: 1.7;
-  --lh-loose: 1.9;
-  --lh-xl: 2.1;
-  --lh-display: 1.0;
+  /* Spacing */
+  --sp-2xs: 4rpx;
+  --sp-xs: 8rpx;
+  --sp-sm: 12rpx;
+  --sp-md: 16rpx;
+  --sp-lg: 24rpx;
+  --sp-xl: 32rpx;
+  --sp-2xl: 40rpx;
+  --sp-3xl: 56rpx;
+  --sp-4xl: 72rpx;
 
-  /* Letter spacing — wider, refined */
-  --ls-tight: 0.5rpx;
-  --ls-body: 1rpx;
-  --ls-heading: 4rpx;
-  --ls-display: 6rpx;
-  --ls-caption: 2rpx;
-  --ls-number: 2rpx;
-
-  /* ---- Spacing ---- */
-  --space-xxs: 6rpx;
-  --space-xs: 10rpx;
-  --space-sm: 14rpx;
-  --space-md: 20rpx;
-  --space-lg: 28rpx;
-  --space-xl: 36rpx;
-  --space-xxl: 48rpx;
-  --space-xxxl: 64rpx;
-  --space-huge: 80rpx;
-  --space-massive: 96rpx;
-  --space-section: 88rpx;
-
-  /* ---- Border Radius — organic, flowing ---- */
-  --radius-sm: 8rpx;
+  /* Radius */
+  --radius-sm: 6rpx;
   --radius-md: 12rpx;
-  --radius-lg: 16rpx;
-  --radius-xl: 22rpx;
-  --radius-xxl: 30rpx;
-  --radius-round: 48rpx;
-  --radius-full: 50%;
-  --radius-card: 24rpx;
-  --radius-button: 44rpx;
-  --radius-pill: 100rpx;
-  --radius-ornament: 12rpx 4rpx 12rpx 4rpx;
+  --radius-lg: 20rpx;
+  --radius-xl: 28rpx;
+  --radius-full: 999rpx;
 
-  /* ---- Shadows — warm brown tones, NEVER gray/black ---- */
-  --shadow-card: 0 4rpx 20rpx rgba(61, 57, 41, 0.05),
-    0 2rpx 6rpx rgba(61, 57, 41, 0.03);
-  --shadow-card-elevated: 0 8rpx 36rpx rgba(61, 57, 41, 0.07),
-    0 4rpx 14rpx rgba(61, 57, 41, 0.04);
-  --shadow-card-copper: 0 6rpx 28rpx rgba(197, 131, 90, 0.08),
-    0 2rpx 8rpx rgba(197, 131, 90, 0.04);
-  --shadow-card-jade: 0 6rpx 28rpx rgba(139, 168, 154, 0.08),
-    0 2rpx 8rpx rgba(139, 168, 154, 0.04);
-  --shadow-copper: 0 4rpx 16rpx rgba(197, 131, 90, 0.12);
-  --shadow-copper-strong: 0 8rpx 28rpx rgba(197, 131, 90, 0.18);
-  --shadow-jade: 0 4rpx 16rpx rgba(139, 168, 154, 0.10);
-  --shadow-gold: 0 4rpx 16rpx rgba(184, 151, 94, 0.10);
-  --shadow-button: 0 4rpx 16rpx rgba(197, 131, 90, 0.15),
-    0 2rpx 4rpx rgba(197, 131, 90, 0.05);
-  --shadow-ivory: 0 4rpx 24rpx rgba(61, 57, 41, 0.04);
-  --shadow-ambient: 0 8rpx 48rpx rgba(197, 131, 90, 0.02);
+  /* Transitions */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 0.15s;
+  --dur-normal: 0.25s;
+  --dur-slow: 0.4s;
 
-  /* Inner glow — like light shining through paper */
-  --inner-glow-ivory: inset 0 0 40rpx rgba(255, 249, 242, 0.3),
-    inset 0 0 80rpx rgba(255, 249, 242, 0.1);
-
-  /* ---- Animations — organic, flowing like botanical growth ---- */
-  --duration-fast: 0.3s;
-  --duration-normal: 0.5s;
-  --duration-slow: 0.7s;
-  --duration-xslow: 1s;
-  --duration-unfold: 1.2s;
-  --duration-bloom: 6s;
-  --duration-flow: 8s;
-  --duration-languid: 12s;
-
-  --ease-organic: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  --ease-out-refined: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-flow: cubic-bezier(0.45, 0, 0.55, 1);
-  --ease-bloom: cubic-bezier(0.12, 0.75, 0.4, 1);
-
-  /* ---- Z-index ---- */
-  --z-base: 1;
-  --z-card: 10;
-  --z-ornament: 5;
-  --z-modal: 100;
-  --z-toast: 1000;
-  --z-grain: 0;
-
-  /* ---- Page Base ---- */
-  background-color: var(--color-parchment);
-  background-image:
-    var(--gradient-radial-copper),
-    var(--gradient-radial-jade),
-    var(--paper-grain),
-    var(--paper-grain-cross);
-  color: var(--color-text-primary);
-  font-family: var(--font-family-body);
-  font-size: var(--fs-body);
-  line-height: var(--lh-body);
-  letter-spacing: var(--ls-body);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  font-size: var(--fs-base);
+  line-height: var(--lh-normal);
 }
 
-/* ============================================================
-   2. ART NOUVEAU KEYFRAMES — organic, flowing, botanical
-   ============================================================ */
-
-/* 2.1 Leaf unfurl — like a fern frond opening */
-@keyframes leaf-unfurl {
-  from { opacity: 0; transform: translateY(20rpx) scaleY(0.85); }
-  to { opacity: 1; transform: translateY(0) scaleY(1); }
+/* ===== Animations ===== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
-
-/* 2.2 Gentle bloom — petals opening */
-@keyframes bloom {
-  0% { opacity: 0; transform: scale(0.88); }
-  60% { opacity: 1; transform: scale(1.02); }
-  100% { opacity: 1; transform: scale(1); }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20rpx); }
+  to { opacity: 1; transform: translateY(0); }
 }
-
-/* 2.3 Copper breath — warm, candle-like pulse */
-@keyframes copper-breath {
-  0%, 100% { opacity: 0.7; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.025); }
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
-
-/* 2.4 Vine grow — organic line drawing animation */
-@keyframes vine-grow {
-  from { max-width: 0; overflow: hidden; }
-  to { max-width: 100%; overflow: hidden; }
+@keyframes pulse-light {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
 }
-
-/* 2.5 Sway in breeze — like wheat/stems */
-@keyframes botanical-sway {
-  0%, 100% { transform: rotate(0deg); }
-  33% { transform: rotate(1.5deg); }
-  66% { transform: rotate(-1deg); }
-}
-
-/* 2.6 Ink bloom — watercolor spreading */
-@keyframes ink-bloom {
-  0% { opacity: 0; transform: scale(0.8); }
-  50% { opacity: 0.15; }
-  100% { opacity: 0.08; transform: scale(1); }
-}
-
-/* 2.7 Paper reveal — subtle texture emergence */
-@keyframes paper-reveal {
-  from { opacity: 0; background-position: 0% 0%; }
-  to { opacity: 1; background-position: 0% 0%; }
-}
-
-/* 2.8 Ornamental glow — along curved lines */
-@keyframes ornamental-glow {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.7; }
-}
-
-/* 2.9 Floating seed — drifting down */
-@keyframes seed-drift {
-  0% { transform: translateY(-10rpx) rotate(0deg); opacity: 0; }
-  20% { opacity: 0.4; }
-  80% { opacity: 0.4; }
-  100% { transform: translateY(20rpx) rotate(15deg); opacity: 0; }
-}
-
-/* 2.10 Copper shimmer — light across metal */
-@keyframes copper-shimmer {
+@keyframes shimmer {
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
 }
 
-/* 2.11 Ornamental border flow — gradient moves along path */
-@keyframes border-warm-flow {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
+.anim-fade-in { animation: fadeIn var(--dur-slow) var(--ease-out) forwards; }
+.anim-fade-in-up { animation: fadeInUp 0.5s var(--ease-out) forwards; }
+.anim-fade-in-up-1 { animation: fadeInUp 0.5s var(--ease-out) 0.05s both; }
+.anim-fade-in-up-2 { animation: fadeInUp 0.5s var(--ease-out) 0.15s both; }
+.anim-fade-in-up-3 { animation: fadeInUp 0.5s var(--ease-out) 0.25s both; }
+.anim-fade-in-up-4 { animation: fadeInUp 0.5s var(--ease-out) 0.35s both; }
+.anim-fade-in-up-5 { animation: fadeInUp 0.5s var(--ease-out) 0.45s both; }
+.anim-pulse { animation: pulse-light 2s var(--ease-in-out) infinite; }
 
-/* 2.12 Water stain spread — organic diffusion */
-@keyframes water-stain {
-  0% { opacity: 0; transform: scale(0.7); }
-  50% { opacity: 0.12; transform: scale(1.05); }
-  100% { opacity: 0.06; transform: scale(1); }
-}
-
-/* 2.13 Foliage dance — multiple leaves */
-@keyframes foliage-dance {
-  0%, 100% { transform: rotate(0deg) scale(1); }
-  25% { transform: rotate(2deg) scale(1.01); }
-  50% { transform: rotate(-1.5deg) scale(0.99); }
-  75% { transform: rotate(1deg) scale(1.005); }
-}
-
-/* 2.14 Stained glass flicker — subtle color shift */
-@keyframes stained-glass {
-  0%, 100% { opacity: 0.6; }
-  33% { opacity: 0.8; }
-  66% { opacity: 0.5; }
-}
-
-/* 2.15 Scroll draw — line being drawn */
-@keyframes scroll-draw {
-  from { width: 0; }
-  to { width: 100%; }
-}
-
-/* 2.16 Soft slide for modal — like a drawer opening */
-@keyframes drawer-slide {
-  from { transform: translateY(100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-/* 2.17 Cursor blink — soft, organic */
-@keyframes cursor-organic-blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.25; }
-}
-
-/* 2.18 Card shimmer overlay — organic sweep */
-@keyframes organic-shimmer {
-  0% { transform: translateX(-100%) skewX(-12deg); opacity: 0; }
-  20% { opacity: 0.04; }
-  100% { transform: translateX(250%) skewX(-12deg); opacity: 0; }
-}
-
-/* 2.19 Orbital ring — slow decorative rotation */
-@keyframes orbital-rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* 2.20 Number count-up shimmer */
-@keyframes number-reveal {
-  from { opacity: 0; transform: translateY(8rpx); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Legacy alias keyframes for backward compatibility */
-@keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(20rpx); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-@keyframes slide-up-soft {
-  from { transform: translateY(100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-@keyframes warm-glow {
-  0%, 100% { box-shadow: 0 0 12rpx var(--color-copper-glow); }
-  50% { box-shadow: 0 0 24rpx var(--color-copper-glow), 0 0 40rpx var(--color-copper-subtle); }
-}
-@keyframes gentle-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6rpx); }
-}
-@keyframes gentle-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-@keyframes pulse-scale {
-  0%, 100% { transform: scale(1); opacity: 0.7; }
-  50% { transform: scale(1.03); opacity: 1; }
-}
-@keyframes breath-pulse {
-  0%, 100% { opacity: 0.7; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.03); }
-}
-
-
-/* ============================================================
-   3. PAGE CONTAINERS — parchment gallery, not sterile
-   ============================================================ */
-
+/* ===== Page ===== */
 .page {
   min-height: 100vh;
-  padding: var(--space-xxl);
-  padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-massive));
-  background-color: var(--color-parchment);
-  background-image:
-    var(--gradient-radial-copper),
-    var(--gradient-radial-jade),
-    var(--paper-grain),
-    var(--paper-grain-cross);
-  position: relative;
+  padding: var(--sp-lg);
+  padding-bottom: calc(env(safe-area-inset-bottom) + 100rpx);
+  background: var(--color-bg);
 }
 
-.page-full {
-  min-height: 100vh;
-  background-color: var(--color-parchment);
-  background-image:
-    var(--gradient-warm-bloom),
-    var(--paper-grain),
-    var(--paper-grain-cross);
-  position: relative;
-}
-
-/* Ornamental top border for pages — like an Art Nouveau book header */
-.page::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 10%;
-  right: 10%;
-  height: 2rpx;
-  background: var(--gradient-ornament);
-  opacity: 0.6;
-  pointer-events: none;
-}
-
-.page-ornate {
-  min-height: 100vh;
-  padding: var(--space-xxl);
-  padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-massive));
-  background: var(--color-parchment);
-  background-image:
-    var(--gradient-radial-copper),
-    var(--gradient-radial-jade),
-    var(--gradient-radial-gold),
-    var(--paper-grain),
-    var(--paper-grain-cross);
-  position: relative;
-}
-
-/* Bottom ornamental curl — Mucha-style signature flourish */
-.page-ornate::after {
-  content: '';
-  position: absolute;
-  bottom: 40rpx;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 120rpx;
-  height: 24rpx;
-  border: 1.5rpx solid var(--color-border-copper);
-  border-top: none;
-  border-radius: 0 0 60rpx 60rpx;
-  opacity: 0.35;
-  pointer-events: none;
-}
-
-/* Decorative ambient orb — copper bloom */
-.page-bloom {
-  min-height: 100vh;
-  position: relative;
-  overflow: hidden;
-}
-
-.page-bloom::before {
-  content: '';
-  position: absolute;
-  top: -200rpx;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 500rpx;
-  height: 500rpx;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    var(--color-copper-subtle) 0%,
-    var(--color-copper-wash) 30%,
-    var(--color-jade-wash) 50%,
-    transparent 70%
-  );
-  animation: ink-bloom var(--duration-languid) var(--ease-organic) infinite;
-  pointer-events: none;
-  z-index: var(--z-grain);
-}
-
-
-/* ============================================================
-   4. CARD SURFACES — warm ivory with inner light
-   ============================================================ */
-
-/* 4.1 Base card — warm ivory, copper-toned shadow, organic radius */
+/* ===== Card Surfaces ===== */
 .card {
-  background: var(--color-ivory);
-  border-radius: var(--radius-card);
-  padding: var(--space-xxl);
-  border: 1rpx solid var(--color-border-ivory);
-  box-shadow: var(--shadow-card);
-  position: relative;
-  overflow: hidden;
-}
-
-/* Card inner glow — light shining through fine paper */
-.card::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(
-    ellipse at 30% 20%,
-    rgba(255, 249, 242, 0.25) 0%,
-    transparent 60%
-  );
-  pointer-events: none;
-}
-
-/* Ornamental corner accent — top-left botanical curl */
-.card-ornate {
-  background: var(--color-ivory);
-  border-radius: var(--radius-card);
-  padding: var(--space-xxl);
-  border: 1rpx solid var(--color-border-copper);
-  box-shadow: var(--shadow-card), var(--inner-glow-ivory);
-  position: relative;
-  overflow: hidden;
-}
-
-/* Corner flourish — Mucha-style top-left curl */
-.card-ornate::before {
-  content: '';
-  position: absolute;
-  top: -1rpx;
-  left: -1rpx;
-  width: 40rpx;
-  height: 40rpx;
-  border-top: 2rpx solid var(--color-border-copper-strong);
-  border-left: 2rpx solid var(--color-border-copper-strong);
-  border-radius: var(--radius-card) 0 0 0;
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-/* Corner flourish — bottom-right curl */
-.card-ornate::after {
-  content: '';
-  position: absolute;
-  bottom: -1rpx;
-  right: -1rpx;
-  width: 40rpx;
-  height: 40rpx;
-  border-bottom: 2rpx solid var(--color-border-copper-strong);
-  border-right: 2rpx solid var(--color-border-copper-strong);
-  border-radius: 0 0 var(--radius-card) 0;
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-/* 4.2 Jade card — with jade accent border */
-.card-jade {
-  background: var(--color-ivory);
-  border-radius: var(--radius-card);
-  padding: var(--space-xxl);
-  border: 1rpx solid var(--color-border-jade);
-  box-shadow: var(--shadow-card-jade);
-  position: relative;
-  overflow: hidden;
-}
-
-.card-jade::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 4rpx;
-  height: 100%;
-  background: linear-gradient(
-    180deg,
-    var(--color-jade) 0%,
-    var(--color-jade-light) 50%,
-    transparent 100%
-  );
-  opacity: 0.4;
-  pointer-events: none;
-}
-
-/* 4.3 Copper card — warm copper accent */
-.card-copper {
-  background: var(--gradient-ivory-card);
-  border-radius: var(--radius-card);
-  padding: var(--space-xxl);
-  border: 1rpx solid var(--color-border-copper);
-  box-shadow: var(--shadow-card-copper);
-  position: relative;
-  overflow: hidden;
-}
-
-.card-copper::before {
-  content: '';
-  position: absolute;
-  top: -30%;
-  left: -30%;
-  width: 160%;
-  height: 160%;
-  background: radial-gradient(
-    circle at 20% 20%,
-    var(--color-copper-bloom) 0%,
-    transparent 50%
-  );
-  pointer-events: none;
-}
-
-/* 4.4 Clickable card — refined press state */
-.card-clickable {
-  transition: all var(--duration-normal) var(--ease-organic);
-}
-
-.card-clickable:active {
-  transform: scale(0.975);
-  border-color: var(--color-border-copper-strong);
-  box-shadow: var(--shadow-card-copper);
-}
-
-/* 4.5 Elevated card */
-.card-elevated {
-  background: var(--color-ivory);
-  border-radius: var(--radius-card);
-  padding: var(--space-xxl);
-  border: 1rpx solid var(--color-border-warm);
-  box-shadow: var(--shadow-card-elevated), var(--inner-glow-ivory);
-  position: relative;
-  overflow: hidden;
-}
-
-/* 4.6 Ornamental border card — gradient flowing border */
-.card-filigree {
-  position: relative;
-  border-radius: var(--radius-card);
-  background: var(--color-ivory);
-  background-clip: padding-box;
-  z-index: var(--z-base);
-}
-
-.card-filigree::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  border-radius: var(--radius-card);
-  padding: 1.5rpx;
-  background: linear-gradient(
-    135deg,
-    var(--color-border-copper-strong) 0%,
-    var(--color-border-jade) 40%,
-    var(--color-gold-subtle) 70%,
-    var(--color-border-copper) 100%
-  );
-  border: 1.5rpx solid var(--color-border-copper-strong);
-  pointer-events: none;
-  z-index: -1;
-}
-
-/* 4.7 Card decorative shimmer overlay */
-.card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 80rpx;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(197, 131, 90, 0.02),
-    transparent
-  );
-  transform: translateX(-100%) skewX(-12deg);
-  pointer-events: none;
-}
-
-.card-clickable:hover .card::after,
-.card-clickable:active .card::after {
-  animation: organic-shimmer 3s var(--ease-organic);
-}
-
-/* 4.8 Pressed card (already tapped) */
-.card-pressed {
-  transform: scale(0.975);
-  border-color: var(--color-border-copper-strong);
-  box-shadow: 0 2rpx 8rpx rgba(197, 131, 90, 0.08);
-}
-
-
-/* ============================================================
-   5. ORNAMENTAL ELEMENTS — hand-drawn, botanical
-   ============================================================ */
-
-/* 5.1 Section divider — organic wave, not a straight line */
-.divider-organic {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: var(--space-xxxl) 0;
-  height: 32rpx;
-  position: relative;
-  overflow: hidden;
-}
-
-.divider-organic::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 1.5rpx;
-  background: var(--gradient-ornament);
-}
-
-/* Decorative center symbol — Mucha-style star/floret */
-.divider-organic::after {
-  content: '✦';
-  position: relative;
-  font-size: 18rpx;
-  color: var(--color-copper-light);
-  background: var(--color-parchment);
-  padding: 0 var(--space-lg);
-  opacity: 0.5;
-  line-height: 1;
-  z-index: var(--z-ornament);
-}
-
-.divider-floret {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-md);
-  margin: var(--space-xxl) 0;
-  color: var(--color-copper-pale);
-  font-size: 16rpx;
-  opacity: 0.45;
-}
-
-.divider-floret::before,
-.divider-floret::after {
-  content: '';
-  flex: 1;
-  height: 1rpx;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--color-divider-copper) 50%,
-    transparent
-  );
-}
-
-/* 5.2 Section title with ornamental left curl — Mucha-style */
-.section-title {
-  font-size: var(--fs-h5);
-  font-weight: var(--fw-medium);
-  color: var(--color-text-primary);
-  display: block;
-  margin-bottom: var(--space-xl);
-  position: relative;
-  padding-left: var(--space-xxl);
-  letter-spacing: var(--ls-heading);
-  font-family: var(--font-family-display);
-}
-
-/* Ornamental bracket — flowing curve, not a flat bar */
-.section-title::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 20rpx;
-  height: 20rpx;
-  border-left: 2rpx solid var(--color-copper);
-  border-top: 2rpx solid var(--color-copper);
-  border-radius: 6rpx 0 0 0;
-  opacity: 0.4;
-}
-
-.section-title::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 50%;
-  transform: translateY(50%);
-  width: 20rpx;
-  height: 20rpx;
-  border-left: 2rpx solid var(--color-copper);
-  border-bottom: 2rpx solid var(--color-copper);
-  border-radius: 0 0 0 6rpx;
-  opacity: 0.4;
-}
-
-/* 5.3 Section title centered — copper, display font */
-.section-title-center {
-  font-size: var(--fs-h5);
-  font-weight: var(--fw-medium);
-  color: var(--color-copper);
-  font-family: var(--font-family-display);
-  display: block;
-  text-align: center;
-  margin-bottom: var(--space-xxl);
-  letter-spacing: var(--ls-heading);
-  position: relative;
-}
-
-/* Copper underline accent */
-.section-title-center::after {
-  content: '';
-  display: block;
-  width: 60rpx;
-  height: 2rpx;
-  background: var(--gradient-copper);
-  margin: var(--space-sm) auto 0;
-  opacity: 0.5;
-  border-radius: 2rpx;
-}
-
-/* 5.4 Section title with jade accent */
-.section-title-jade {
-  font-size: var(--fs-h5);
-  font-weight: var(--fw-medium);
-  color: var(--color-jade-dark);
-  display: block;
-  margin-bottom: var(--space-xl);
-  padding-right: var(--space-xxl);
-  text-align: right;
-  letter-spacing: var(--ls-heading);
-  font-family: var(--font-family-display);
-  position: relative;
-}
-
-.section-title-jade::before {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 20rpx;
-  height: 20rpx;
-  border-right: 2rpx solid var(--color-jade);
-  border-top: 2rpx solid var(--color-jade);
-  border-radius: 0 6rpx 0 0;
-  opacity: 0.35;
-}
-
-.section-title-jade::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  bottom: 50%;
-  transform: translateY(50%);
-  width: 20rpx;
-  height: 20rpx;
-  border-right: 2rpx solid var(--color-jade);
-  border-bottom: 2rpx solid var(--color-jade);
-  border-radius: 0 0 6rpx 0;
-  opacity: 0.35;
-}
-
-/* 5.5 Section block */
-.section-block {
-  margin-bottom: var(--space-section);
-}
-
-/* 5.6 Divider — simple warm line */
-.divider-warm {
-  height: 1rpx;
-  background: var(--color-divider-warm);
-  margin: var(--space-xl) 0;
-}
-
-/* 5.7 Active indicator — flowing underline, not rectangular */
-.indicator-active {
-  position: relative;
-  display: inline-block;
-  color: var(--color-copper);
-}
-
-.indicator-active::after {
-  content: '';
-  position: absolute;
-  bottom: -6rpx;
-  left: 0;
-  right: 0;
-  height: 2rpx;
-  background: linear-gradient(
-    90deg,
-    var(--color-copper) 0%,
-    var(--color-copper-light) 50%,
-    transparent 100%
-  );
-  border-radius: 2rpx;
-}
-
-/* 5.8 Organic dot indicator — like a botanical seed */
-.dot-organic {
-  width: 10rpx;
-  height: 10rpx;
-  border-radius: 50%;
-  background: var(--color-copper);
-  opacity: 0.35;
-  transition: all var(--duration-normal) var(--ease-organic);
-}
-
-.dot-organic.active {
-  width: 28rpx;
-  height: 10rpx;
-  border-radius: 6rpx;
-  background: var(--gradient-copper);
-  opacity: 1;
-}
-
-/* 5.9 Pagination dots */
-.dots-organic {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-sm);
-  padding: var(--space-lg) 0;
-}
-
-/* 5.10 Corner flourish — for decorative boxes */
-.ornament-corner-tl {
-  position: absolute;
-  top: -1rpx;
-  left: -1rpx;
-  width: 30rpx;
-  height: 30rpx;
-  border-top: 2rpx solid var(--color-border-copper-strong);
-  border-left: 2rpx solid var(--color-border-copper-strong);
-  border-radius: 8rpx 0 0 0;
-  opacity: 0.35;
-  pointer-events: none;
-}
-
-.ornament-corner-br {
-  position: absolute;
-  bottom: -1rpx;
-  right: -1rpx;
-  width: 30rpx;
-  height: 30rpx;
-  border-bottom: 2rpx solid var(--color-border-copper-strong);
-  border-right: 2rpx solid var(--color-border-copper-strong);
-  border-radius: 0 0 8rpx 0;
-  opacity: 0.35;
-  pointer-events: none;
-}
-
-/* 5.11 Decorative botanical frame — for featured content */
-.frame-botanical {
-  position: relative;
-  border-radius: var(--radius-card);
-  padding: var(--space-xxl);
-  background: var(--color-ivory);
-  box-shadow: var(--shadow-ivory);
-  overflow: hidden;
-}
-
-/* Top vine border */
-.frame-botanical::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3rpx;
-  background: linear-gradient(
-    90deg,
-    transparent 5%,
-    var(--color-divider-copper) 15%,
-    var(--color-copper-pale) 30%,
-    var(--color-copper) 50%,
-    var(--color-copper-pale) 70%,
-    var(--color-divider-copper) 85%,
-    transparent 95%
-  );
-  opacity: 0.5;
-  animation: border-warm-flow var(--duration-flow) var(--ease-flow) infinite;
-  background-size: 200% 100%;
-  pointer-events: none;
-}
-
-/* Bottom vine border */
-.frame-botanical::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 3rpx;
-  background: linear-gradient(
-    90deg,
-    transparent 5%,
-    var(--color-divider-jade) 15%,
-    var(--color-jade-pale) 30%,
-    var(--color-jade) 50%,
-    var(--color-jade-pale) 70%,
-    var(--color-divider-jade) 85%,
-    transparent 95%
-  );
-  opacity: 0.35;
-  animation: border-warm-flow var(--duration-flow) var(--ease-flow) infinite;
-  background-size: 200% 100%;
-  animation-delay: -4s;
-  pointer-events: none;
-}
-
-/* 5.12 Gold accent line */
-.accent-line-gold {
-  width: 60rpx;
-  height: 2rpx;
-  background: var(--gradient-gold);
-  margin: var(--space-md) auto;
-  border-radius: 2rpx;
-  opacity: 0.5;
-}
-
-.accent-line-copper {
-  width: 60rpx;
-  height: 2rpx;
-  background: var(--gradient-copper);
-  margin: var(--space-md) auto;
-  border-radius: 2rpx;
-  opacity: 0.5;
-}
-
-
-/* ============================================================
-   6. TYPOGRAPHY — editorial, generous, distinctive
-   ============================================================ */
-
-.heading-1 {
-  font-size: var(--fs-h1);
-  font-weight: var(--fw-extralight);
-  color: var(--color-text-primary);
-  line-height: var(--lh-display);
-  letter-spacing: var(--ls-display);
-  font-family: var(--font-family-display);
-  margin-bottom: var(--space-md);
-}
-
-.heading-2 {
-  font-size: var(--fs-h2);
-  font-weight: var(--fw-light);
-  color: var(--color-text-primary);
-  line-height: var(--lh-tight);
-  letter-spacing: var(--ls-heading);
-  font-family: var(--font-family-display);
-  margin-bottom: var(--space-sm);
-}
-
-.heading-3 {
-  font-size: var(--fs-h3);
-  font-weight: var(--fw-light);
-  color: var(--color-text-primary);
-  line-height: var(--lh-tight);
-  letter-spacing: var(--ls-heading);
-  font-family: var(--font-family-display);
-  margin-bottom: var(--space-sm);
-}
-
-.heading-4 {
-  font-size: var(--fs-h4);
-  font-weight: var(--fw-medium);
-  color: var(--color-text-primary);
-  line-height: var(--lh-normal);
-  letter-spacing: var(--ls-heading);
-  margin-bottom: var(--space-xs);
-}
-
-.heading-5 {
-  font-size: var(--fs-h5);
-  font-weight: var(--fw-regular);
-  color: var(--color-text-primary);
-  line-height: var(--lh-normal);
-  letter-spacing: var(--ls-body);
-}
-
-/* Copper heading — for emphasis */
-.heading-copper {
-  color: var(--color-copper);
-  font-family: var(--font-family-display);
-  letter-spacing: var(--ls-heading);
-}
-
-/* Jade heading */
-.heading-jade {
-  color: var(--color-jade-dark);
-  font-family: var(--font-family-display);
-  letter-spacing: var(--ls-heading);
-}
-
-/* Body text */
-.text-body {
-  font-size: var(--fs-body);
-  color: var(--color-text-primary);
-  line-height: var(--lh-body);
-  letter-spacing: var(--ls-body);
-}
-
-.text-secondary {
-  font-size: var(--fs-body);
-  color: var(--color-text-secondary);
-  line-height: var(--lh-loose);
-}
-
-.text-dim {
-  font-size: var(--fs-body-small);
-  color: var(--color-text-dim);
-}
-
-.text-caption {
-  font-size: var(--fs-caption);
-  color: var(--color-text-dim);
-  letter-spacing: var(--ls-caption);
-  text-transform: uppercase;
-}
-
-.text-micro {
-  font-size: var(--fs-micro);
-  color: var(--color-text-muted);
-  letter-spacing: var(--ls-caption);
-  text-transform: uppercase;
-}
-
-/* Number / stat styling — serif, copper accent */
-.text-number {
-  font-size: var(--fs-number);
-  font-weight: var(--fw-extralight);
-  color: var(--color-copper);
-  font-family: var(--font-family-number);
-  line-height: 1;
-  letter-spacing: var(--ls-number);
-}
-
-.text-number-large {
-  font-size: var(--fs-number-large);
-  font-weight: var(--fw-extralight);
-  color: var(--color-copper);
-  font-family: var(--font-family-number);
-  line-height: 1;
-  letter-spacing: var(--ls-number);
-}
-
-.text-number-label {
-  font-size: var(--fs-small);
-  color: var(--color-text-dim);
-  letter-spacing: var(--ls-caption);
-  font-family: var(--font-family-body);
-}
-
-/* Colored text helpers */
-.text-copper {
-  color: var(--color-copper);
-}
-
-.text-jade {
-  color: var(--color-jade);
-}
-
-.text-jade-dark {
-  color: var(--color-jade-dark);
-}
-
-.text-gold {
-  color: var(--color-gold-aged);
-}
-
-.text-olive {
-  color: var(--color-olive);
-}
-
-.text-olive-soft {
-  color: var(--color-olive-soft);
-}
-
-.text-center {
-  text-align: center;
-}
-
-.text-right {
-  text-align: right;
-}
-
-/* Drop cap — Art Nouveau initial letter */
-.drop-cap {
-  color: var(--color-text-primary);
-}
-
-.drop-cap::first-letter {
-  font-size: 68rpx;
-  font-weight: var(--fw-light);
-  color: var(--color-copper);
-  font-family: var(--font-family-display);
-  float: left;
-  margin-right: 12rpx;
-  line-height: 0.9;
-  letter-spacing: 0;
-}
-
-
-/* ============================================================
-   7. BUTTON SYSTEM — sculpted, warm, organic
-   ============================================================ */
-
-/* 7.1 Primary button — copper gradient, pill-shaped */
-.btn-primary {
-  width: 100%;
-  background: var(--gradient-copper);
-  color: var(--color-text-on-copper);
-  font-size: var(--fs-h5);
-  font-weight: var(--fw-medium);
-  border-radius: var(--radius-button);
-  padding: 28rpx 0;
-  border: none;
-  box-shadow: var(--shadow-button);
-  transition: all var(--duration-normal) var(--ease-organic);
-  position: relative;
-  overflow: hidden;
-  letter-spacing: var(--ls-caption);
-}
-
-.btn-primary:active {
-  transform: scale(0.97);
-  box-shadow: 0 2rpx 8rpx rgba(197, 131, 90, 0.10);
-}
-
-/* 7.2 Primary with copper shimmer */
-.btn-copper-shimmer {
-  width: 100%;
-  background: var(--gradient-copper);
-  background-size: 200% 100%;
-  animation: copper-shimmer var(--duration-bloom) ease-in-out infinite;
-  color: var(--color-text-on-copper);
-  font-size: var(--fs-h5);
-  font-weight: var(--fw-medium);
-  border-radius: var(--radius-button);
-  padding: 28rpx 0;
-  border: none;
-  box-shadow: var(--shadow-button);
-  position: relative;
-  overflow: hidden;
-  letter-spacing: var(--ls-caption);
-}
-
-.btn-copper-shimmer:active {
-  transform: scale(0.97);
-}
-
-/* 7.3 Secondary button — copper outline */
-.btn-secondary {
-  width: 100%;
-  background: transparent;
-  color: var(--color-copper);
-  font-size: var(--fs-body-large);
-  font-weight: var(--fw-medium);
-  border-radius: var(--radius-button);
-  padding: 24rpx 0;
-  border: 1.5rpx solid var(--color-copper);
-  transition: all var(--duration-normal) var(--ease-organic);
-  letter-spacing: var(--ls-body);
-}
-
-.btn-secondary:active {
-  background: var(--color-copper-wash);
-  transform: scale(0.97);
-}
-
-/* 7.4 Ghost button */
-.btn-ghost {
-  background: transparent;
-  color: var(--color-text-secondary);
-  font-size: var(--fs-body);
-  border: none;
-  padding: var(--space-sm) var(--space-lg);
-  border-radius: var(--radius-round);
-  transition: all var(--duration-fast) var(--ease-organic);
-}
-
-.btn-ghost:active {
-  background: var(--color-copper-wash);
-  color: var(--color-copper);
-}
-
-/* 7.5 Text button */
-.btn-text {
-  background: none;
-  border: none;
-  color: var(--color-copper);
-  font-size: var(--fs-body);
-  padding: var(--space-xs);
-  display: inline-block;
-  transition: color var(--duration-fast);
-}
-
-.btn-text:active {
-  color: var(--color-copper-dark);
-}
-
-/* 7.6 Small button */
-.btn-small {
-  font-size: var(--fs-body-small);
-  padding: 16rpx 36rpx;
+  background: var(--color-surface);
   border-radius: var(--radius-lg);
+  padding: var(--sp-lg);
+  box-shadow: var(--shadow-sm);
 }
+.card-warm { background: var(--color-surface-warm); }
+.card-press { transition: transform var(--dur-fast) var(--ease-out); }
+.card-press:active { transform: scale(0.98); }
 
-/* 7.7 Jade secondary — for jade-themed actions */
-.btn-jade {
-  width: 100%;
-  background: transparent;
-  color: var(--color-jade-dark);
-  font-size: var(--fs-body-large);
+/* ===== Typography ===== */
+.title-1 {
+  font-size: var(--fs-3xl);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-tight);
+  letter-spacing: 2rpx;
+}
+.title-2 {
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-tight);
+}
+.title-3 { font-size: var(--fs-xl); font-weight: var(--fw-medium); }
+.title-4 { font-size: var(--fs-lg); font-weight: var(--fw-medium); }
+.body-text { font-size: var(--fs-base); color: var(--color-text-secondary); line-height: var(--lh-relaxed); }
+.body-sm { font-size: var(--fs-sm); color: var(--color-text-tertiary); }
+.caption { font-size: var(--fs-xs); color: var(--color-text-tertiary); letter-spacing: 4rpx; }
+.accent-text { color: var(--color-accent); }
+
+/* ===== Buttons ===== */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-base);
   font-weight: var(--fw-medium);
-  border-radius: var(--radius-button);
-  padding: 24rpx 0;
-  border: 1.5rpx solid var(--color-jade);
-  transition: all var(--duration-normal) var(--ease-organic);
-  letter-spacing: var(--ls-body);
+  border-radius: var(--radius-full);
+  padding: var(--sp-md) var(--sp-2xl);
+  transition: transform var(--dur-fast);
+  border: none;
 }
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--color-text); color: var(--color-text-inverse); }
+.btn-accent { background: var(--color-accent); color: var(--color-text-inverse); }
+.btn-outline { background: transparent; border: 1.5rpx solid var(--color-border); color: var(--color-text); }
+.btn-ghost { background: transparent; color: var(--color-text-secondary); padding: var(--sp-sm) var(--sp-md); }
+.btn-block { width: 100%; }
+.btn-lg { padding: var(--sp-lg) var(--sp-3xl); font-size: var(--fs-md); }
 
-.btn-jade:active {
-  background: var(--color-jade-wash);
-  transform: scale(0.97);
+/* ===== Tags ===== */
+.tag {
+  display: inline-flex;
+  font-size: var(--fs-xs);
+  padding: var(--sp-2xs) var(--sp-sm);
+  border-radius: var(--radius-full);
 }
+.tag-warm { background: var(--color-tag-warm); color: var(--color-accent); }
+.tag-cool { background: var(--color-tag-cool); color: var(--color-accent-light); }
+.tag-dark { background: var(--color-text); color: var(--color-text-inverse); }
 
-/* 7.8 Gold outline button */
-.btn-gold {
-  width: 100%;
-  background: transparent;
-  color: var(--color-gold-dark);
-  font-size: var(--fs-body-large);
-  font-weight: var(--fw-medium);
-  border-radius: var(--radius-button);
-  padding: 24rpx 0;
-  border: 1.5rpx solid var(--color-gold-aged);
-  transition: all var(--duration-normal) var(--ease-organic);
-  letter-spacing: var(--ls-body);
-}
-
-.btn-gold:active {
-  background: var(--color-gold-subtle);
-  transform: scale(0.97);
-}
-
-/* 7.9 Mystical button — elegant Art Nouveau inspired */
-.btn-mystical {
-  width: 100%;
-  background: var(--gradient-ivory-card);
-  color: var(--color-copper);
-  font-size: var(--fs-h5);
-  font-weight: var(--fw-medium);
-  border-radius: var(--radius-button);
-  padding: 28rpx 0;
-  border: 1rpx solid var(--color-border-copper);
-  box-shadow: var(--shadow-card), inset 0 0 30rpx rgba(197, 131, 90, 0.03);
-  position: relative;
-  overflow: hidden;
-  transition: all var(--duration-normal) var(--ease-organic);
-  letter-spacing: var(--ls-heading);
-  font-family: var(--font-family-display);
-}
-
-/* Ornamental dots on mystical button */
-.btn-mystical::before {
-  content: '';
-  position: absolute;
-  top: 12rpx;
-  left: var(--space-lg);
-  width: 6rpx;
-  height: 6rpx;
-  border-radius: 50%;
-  background: var(--color-copper-pale);
-  opacity: 0.4;
-  box-shadow: 0 14rpx 0 var(--color-copper-pale);
-}
-
-.btn-mystical::after {
-  content: '';
-  position: absolute;
-  bottom: 12rpx;
-  right: var(--space-lg);
-  width: 6rpx;
-  height: 6rpx;
-  border-radius: 50%;
-  background: var(--color-copper-pale);
-  opacity: 0.4;
-  box-shadow: 0 -14rpx 0 var(--color-copper-pale);
-}
-
-.btn-mystical:active {
-  transform: scale(0.97);
-  background: var(--color-copper-wash);
-  box-shadow: var(--shadow-card);
-}
-
-
-/* ============================================================
-   8. FORMS & INPUTS — refined, botanical
-   ============================================================ */
-
-.input-box {
-  background: var(--color-ivory);
-  border-radius: var(--radius-xl);
-  padding: var(--space-xl);
-  border: 1.5rpx solid var(--color-border-light);
-  transition: border-color var(--duration-normal), box-shadow var(--duration-normal);
-  box-shadow: var(--shadow-card);
-}
-
-.input-box:focus-within {
-  border-color: var(--color-copper);
-  box-shadow: var(--shadow-card-copper);
-}
-
-.input-label {
-  font-size: var(--fs-body);
-  color: var(--color-text-secondary);
-  display: block;
-  margin-bottom: var(--space-sm);
-  letter-spacing: var(--ls-body);
-}
-
+/* ===== Input ===== */
 .input-field {
   width: 100%;
-  min-height: 160rpx;
-  background: transparent;
-  font-size: var(--fs-body);
-  color: var(--color-text-primary);
-  line-height: var(--lh-xl);
-  border: none;
-  outline: none;
-  padding: 0;
-  caret-color: var(--color-copper);
+  background: var(--color-surface);
+  border: 1.5rpx solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--sp-md) var(--sp-lg);
+  font-size: var(--fs-base);
+  color: var(--color-text);
 }
 
-.input-field::placeholder {
-  color: var(--color-text-dim);
-  font-family: var(--font-family-body);
+/* ===== Section ===== */
+.section { margin-bottom: var(--sp-3xl); }
+.section-title {
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+  margin-bottom: var(--sp-lg);
 }
-
-.input-count {
-  font-size: var(--fs-caption);
-  color: var(--color-text-dim);
-  text-align: right;
-  display: block;
-  margin-top: var(--space-xs);
-}
-
-/* Copper-underline input style */
-.input-copper {
-  background: transparent;
-  border: none;
-  border-bottom: 1.5rpx solid var(--color-border-copper);
-  border-radius: 0;
-  padding: var(--space-md) 0;
-  box-shadow: none;
-}
-
-.input-copper:focus-within {
-  border-bottom-color: var(--color-copper);
-  box-shadow: none;
-}
-
-/* Jade-underline input */
-.input-jade {
-  background: transparent;
-  border: none;
-  border-bottom: 1.5rpx solid var(--color-border-jade);
-  border-radius: 0;
-  padding: var(--space-md) 0;
-  box-shadow: none;
-}
-
-.input-jade:focus-within {
-  border-bottom-color: var(--color-jade);
-  box-shadow: none;
-}
-
-
-/* ============================================================
-   9. TAGS / BADGES
-   ============================================================ */
-
-.badge {
-  display: inline-block;
-  font-size: var(--fs-caption);
-  padding: 6rpx 22rpx;
-  border-radius: var(--radius-pill);
-  letter-spacing: var(--ls-caption);
-  font-weight: var(--fw-regular);
-}
-
-.badge-copper {
-  background: var(--color-copper-subtle);
-  color: var(--color-copper-dark);
-  border: 0.5rpx solid var(--color-border-copper);
-}
-
-.badge-copper-solid {
-  background: var(--gradient-copper);
-  color: var(--color-text-on-copper);
-  font-weight: var(--fw-medium);
-  padding: 8rpx 24rpx;
-}
-
-.badge-jade {
-  background: var(--color-jade-subtle);
-  color: var(--color-jade-dark);
-  border: 0.5rpx solid var(--color-border-jade);
-}
-
-.badge-jade-solid {
-  background: var(--gradient-jade);
-  color: var(--color-text-on-jade);
-  font-weight: var(--fw-medium);
-  padding: 8rpx 24rpx;
-}
-
-.badge-gold {
-  background: var(--color-gold-subtle);
-  color: var(--color-gold-dark);
-}
-
-.badge-gold-solid {
-  background: var(--gradient-gold);
-  color: var(--color-text-on-copper);
-  font-weight: var(--fw-medium);
-  padding: 8rpx 24rpx;
-}
-
-.badge-success {
-  background: rgba(125, 191, 138, 0.10);
-  color: var(--color-success);
-  border: 0.5rpx solid rgba(125, 191, 138, 0.15);
-}
-
-.badge-warning {
-  background: rgba(201, 160, 92, 0.10);
-  color: var(--color-warning);
-  border: 0.5rpx solid rgba(201, 160, 92, 0.15);
-}
-
-.badge-danger {
-  background: rgba(197, 120, 106, 0.10);
-  color: var(--color-danger);
-  border: 0.5rpx solid rgba(197, 120, 106, 0.15);
-}
-
-.badge-info {
-  background: rgba(122, 161, 184, 0.10);
-  color: var(--color-info);
-  border: 0.5rpx solid rgba(122, 161, 184, 0.15);
-}
-
-
-/* ============================================================
-   10. LOADING & READING STATES
-   ============================================================ */
-
-/* 10.1 Loading page */
-.loading-botanical {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: var(--space-xxl);
-  background: var(--color-parchment);
-  background-image:
-    var(--gradient-radial-copper),
-    var(--paper-grain),
-    var(--paper-grain-cross);
-}
-
-.loading-ornament {
-  position: relative;
-  width: 120rpx;
-  height: 120rpx;
-  margin-bottom: var(--space-xxl);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Concentric rings — like a botanical cross-section */
-.loading-ornament::before {
-  content: '';
-  position: absolute;
-  width: 100rpx;
-  height: 100rpx;
-  border: 1rpx solid var(--color-border-copper);
-  border-radius: 50%;
-  animation: orbital-rotate var(--duration-languid) linear infinite;
-}
-
-.loading-ornament::after {
-  content: '';
-  position: absolute;
-  width: 70rpx;
-  height: 70rpx;
-  border: 1rpx solid var(--color-border-jade);
-  border-radius: 50%;
-  animation: orbital-rotate 10s linear infinite reverse;
-}
-
-.loading-center-dot {
-  width: 8rpx;
-  height: 8rpx;
-  border-radius: 50%;
-  background: var(--color-copper);
-  animation: copper-breath var(--duration-bloom) var(--ease-organic) infinite;
-}
-
-.loading-title {
-  font-size: var(--fs-h5);
-  color: var(--color-copper);
-  font-weight: var(--fw-medium);
-  font-family: var(--font-family-display);
-  animation: copper-breath var(--duration-bloom) var(--ease-organic) infinite;
-  letter-spacing: var(--ls-heading);
-}
-
-.loading-sub {
-  font-size: var(--fs-body);
-  color: var(--color-text-dim);
-  margin-top: var(--space-md);
-}
-
-/* 10.2 Loading placeholder */
-.loading-placeholder {
+.section-title-center {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
   text-align: center;
-  padding: 200rpx 0;
-  color: var(--color-text-dim);
+  margin-bottom: var(--sp-lg);
 }
 
-/* 10.3 Skeleton shimmer — copper-tinted */
+/* ===== Divider ===== */
+.divider { height: 1rpx; background: var(--color-border); margin: var(--sp-lg) 0; }
+
+/* ===== Flex/Spacing Utils ===== */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-center { align-items: center; justify-content: center; }
+.flex-between { justify-content: space-between; }
+.items-center { align-items: center; }
+.gap-sm { gap: var(--sp-sm); }
+.gap-md { gap: var(--sp-md); }
+.gap-lg { gap: var(--sp-lg); }
+.flex-1 { flex: 1; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+.mt-xs { margin-top: var(--sp-xs); }
+.mt-sm { margin-top: var(--sp-sm); }
+.mt-md { margin-top: var(--sp-md); }
+.mt-lg { margin-top: var(--sp-lg); }
+.mt-xl { margin-top: var(--sp-xl); }
+.mt-2xl { margin-top: var(--sp-2xl); }
+.mb-sm { margin-bottom: var(--sp-sm); }
+.mb-md { margin-bottom: var(--sp-md); }
+.mb-lg { margin-bottom: var(--sp-lg); }
+.mb-xl { margin-bottom: var(--sp-xl); }
+.mb-2xl { margin-bottom: var(--sp-2xl); }
+.mb-3xl { margin-bottom: var(--sp-3xl); }
+
+/* ===== Skeleton ===== */
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--color-parchment-shadow) 25%,
-    var(--color-parchment-warm) 50%,
-    var(--color-parchment-shadow) 75%
-  );
+  background: linear-gradient(90deg, var(--color-bg-warm) 25%, var(--color-border) 50%, var(--color-bg-warm) 75%);
   background-size: 200% 100%;
-  animation: copper-shimmer 2s ease-in-out infinite;
+  animation: shimmer 1.5s ease-in-out infinite;
   border-radius: var(--radius-sm);
 }
+.skeleton-text { height: 28rpx; margin-bottom: var(--sp-sm); }
+.skeleton-text-sm { height: 20rpx; width: 60%; }
+.skeleton-block { height: 200rpx; border-radius: var(--radius-md); }
+.skeleton-circle { width: 96rpx; height: 96rpx; border-radius: var(--radius-full); }
 
-/* 10.4 Card flip container */
-.card-flip-container {
-  perspective: 1000rpx;
-  width: 300rpx;
-  height: 420rpx;
-}
+/* ===== Error / Empty ===== */
+.error-state { text-align: center; padding: var(--sp-4xl) var(--sp-2xl); }
+.error-icon { font-size: 56rpx; margin-bottom: var(--sp-lg); opacity: 0.5; display: block; }
+.error-text { font-size: var(--fs-base); color: var(--color-text-secondary); margin-bottom: var(--sp-sm); display: block; }
+.error-hint { font-size: var(--fs-sm); color: var(--color-text-tertiary); margin-bottom: var(--sp-xl); display: block; }
 
-.card-flip-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transition: transform var(--duration-xslow) var(--ease-organic);
-  transform-style: preserve-3d;
-}
+.empty-state { text-align: center; padding: var(--sp-4xl) var(--sp-2xl); }
+.empty-icon { font-size: 48rpx; margin-bottom: var(--sp-md); opacity: 0.4; display: block; }
+.empty-text { font-size: var(--fs-base); color: var(--color-text-secondary); display: block; }
+.empty-hint { font-size: var(--fs-sm); color: var(--color-text-tertiary); margin-top: var(--sp-xs); display: block; }
 
-.card-flip-inner.flipped {
-  transform: rotateY(180deg);
-}
-
-.card-flip-front,
-.card-flip-back {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-  border-radius: var(--radius-card);
-}
-
-.card-flip-front {
-  background: var(--gradient-copper);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-card-copper);
-}
-
-.card-flip-back {
-  background: var(--color-ivory);
-  border: 1.5rpx solid var(--color-border-copper);
-  box-shadow: var(--shadow-card-copper);
-  transform: rotateY(180deg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-
-/* ============================================================
-   11. AMBIENT DECORATIONS
-   ============================================================ */
-
-/* 11.1 Floating botanical particles — like leaves/petals */
-.floating-petal {
-  position: fixed;
-  width: 12rpx;
-  height: 12rpx;
-  border-radius: 50% 0 50% 0;
-  background: var(--color-copper-pale);
-  opacity: 0;
-  pointer-events: none;
-  z-index: var(--z-ornament);
-  animation: seed-drift var(--duration-languid) var(--ease-organic) infinite;
-}
-
-.floating-petal:nth-child(1) { left: 10%; animation-delay: 0s; }
-.floating-petal:nth-child(2) { left: 30%; animation-delay: 3s; width: 8rpx; height: 8rpx; }
-.floating-petal:nth-child(3) { left: 55%; animation-delay: 6s; }
-.floating-petal:nth-child(4) { left: 75%; animation-delay: 2.5s; width: 14rpx; height: 14rpx; }
-.floating-petal:nth-child(5) { left: 90%; animation-delay: 8s; width: 10rpx; height: 10rpx; }
-
-/* 11.2 Copper ambient orb */
-.orb-copper {
-  position: fixed;
-  top: -200rpx;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 500rpx;
-  height: 500rpx;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    var(--color-copper-subtle) 0%,
-    var(--color-copper-wash) 30%,
-    transparent 65%
-  );
-  pointer-events: none;
-  z-index: var(--z-grain);
-}
-
-/* 11.3 Jade ambient orb */
-.orb-jade {
-  position: fixed;
-  bottom: -250rpx;
-  right: -100rpx;
-  width: 400rpx;
-  height: 400rpx;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    var(--color-jade-subtle) 0%,
-    var(--color-jade-wash) 35%,
-    transparent 60%
-  );
-  pointer-events: none;
-  z-index: var(--z-grain);
-}
-
-/* 11.4 Warm background texture overlay */
-.texture-grain {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background:
-    var(--paper-grain),
-    var(--paper-grain-cross);
-  pointer-events: none;
-  z-index: var(--z-grain);
-  opacity: 0.5;
-}
-
-/* 11.5 Subtle top warm bloom */
-.bloom-top {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 200rpx;
-  background: linear-gradient(
-    180deg,
-    var(--color-copper-wash) 0%,
-    transparent 100%
-  );
-  pointer-events: none;
-  z-index: var(--z-grain);
-  opacity: 0.5;
-}
-
-
-/* ============================================================
-   12. OPTION SELECTOR
-   ============================================================ */
-
-.options-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
-}
-
-.option-item {
-  padding: 16rpx var(--space-xl);
-  border-radius: var(--radius-round);
-  font-size: var(--fs-body);
-  background: var(--color-ivory);
-  color: var(--color-text-secondary);
-  border: 1.5rpx solid var(--color-border-light);
-  transition: all var(--duration-normal) var(--ease-organic);
-  box-shadow: var(--shadow-card);
-}
-
-.option-item.selected {
-  border-color: var(--color-copper);
-  color: var(--color-copper);
-  background: var(--color-copper-wash);
-  box-shadow: var(--shadow-card-copper);
-}
-
-.option-item-copper {
-  composes: option-item;
-}
-
-.option-item-copper.selected {
-  border-color: var(--color-copper);
-  color: var(--color-copper);
-  background: var(--color-copper-wash);
-  box-shadow: var(--shadow-card-copper);
-}
-
-.option-item-jade {
-  composes: option-item;
-}
-
-.option-item-jade.selected {
-  border-color: var(--color-jade);
-  color: var(--color-jade-dark);
-  background: var(--color-jade-wash);
-  box-shadow: var(--shadow-card-jade);
-}
-
-.option-item:active {
-  transform: scale(0.96);
-}
-
-
-/* ============================================================
-   13. MODAL / BOTTOM SHEET
-   ============================================================ */
-
+/* ===== Modal ===== */
 .modal-mask {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(61, 57, 41, 0.65);
+  inset: 0;
+  background: rgba(44,36,22,0.5);
   display: flex;
   align-items: flex-end;
-  z-index: var(--z-modal);
+  z-index: 100;
 }
-
 .modal-content {
   width: 100%;
-  background: var(--color-ivory);
-  border-radius: var(--radius-xxl) var(--radius-xxl) 0 0;
-  padding: var(--space-xxxl) var(--space-xxl)
-    calc(var(--space-massive) + env(safe-area-inset-bottom));
+  background: var(--color-surface);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  padding: var(--sp-2xl) var(--sp-xl) calc(var(--sp-3xl) + env(safe-area-inset-bottom));
   max-height: 80vh;
   overflow-y: auto;
-  animation: drawer-slide 0.5s var(--ease-out-refined);
-  box-shadow: 0 -8rpx 40rpx rgba(61, 57, 41, 0.06);
-  position: relative;
+  animation: fadeInUp 0.3s var(--ease-out);
 }
-
-/* Ornamental top border on modal */
-.modal-content::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 15%;
-  right: 15%;
-  height: 2rpx;
-  background: var(--gradient-ornament);
-  opacity: 0.4;
-  pointer-events: none;
-}
-
 .modal-title {
-  font-size: var(--fs-h5);
-  font-weight: var(--fw-medium);
-  color: var(--color-copper);
-  font-family: var(--font-family-display);
-  display: block;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
   text-align: center;
-  margin-bottom: var(--space-xxl);
-  letter-spacing: var(--ls-heading);
-  position: relative;
-}
-
-/* Copper dot above modal title */
-.modal-title::before {
-  content: '';
+  margin-bottom: var(--sp-xl);
   display: block;
-  width: 8rpx;
-  height: 8rpx;
-  border-radius: 50%;
-  background: var(--color-copper);
-  margin: 0 auto var(--space-sm);
-  opacity: 0.4;
 }
 
-
-/* ============================================================
-   14. ACTION BAR
-   ============================================================ */
-
-.action-bar {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-huge);
-  margin-top: var(--space-sm);
-}
-
-.action-link {
-  font-size: var(--fs-body);
-  color: var(--color-text-dim);
-  padding: var(--space-sm) 0;
-  background: none;
-  border: none;
-  transition: color var(--duration-fast);
-}
-
-.action-link:active {
-  color: var(--color-copper);
-}
-
-
-/* ============================================================
-   15. EMPTY STATE
-   ============================================================ */
-
-.empty-state {
-  text-align: center;
-  padding: var(--space-massive) 0;
-}
-
-.empty-icon {
-  font-size: 64rpx;
-  display: block;
-  margin-bottom: var(--space-lg);
-  opacity: 0.3;
-}
-
-.empty-text {
-  font-size: var(--fs-body);
+/* ===== Filter Pills ===== */
+.filter-row { display: flex; gap: var(--sp-sm); flex-wrap: wrap; }
+.filter-pill {
+  font-size: var(--fs-sm);
+  padding: var(--sp-xs) var(--sp-lg);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  border: 1rpx solid var(--color-border);
   color: var(--color-text-secondary);
-  display: block;
+}
+.filter-pill-active {
+  background: var(--color-text);
+  color: var(--color-text-inverse);
+  border-color: var(--color-text);
 }
 
-.empty-hint {
-  font-size: var(--fs-body-small);
-  color: var(--color-text-dim);
-  display: block;
-  margin-top: var(--space-sm);
-}
-
-
-/* ============================================================
-   16. READING / INTERPRETATION RESULTS
-   ============================================================ */
-
-.interpretation-scroll {
-  max-height: 600rpx;
-  overflow: hidden;
-  position: relative;
-}
-
-.interpretation-scroll.expanded {
-  max-height: none;
-}
-
-.interpretation-scroll:not(.expanded)::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 120rpx;
-  background: linear-gradient(transparent, var(--color-ivory));
-  pointer-events: none;
-}
-
-.interpretation-text {
-  font-size: var(--fs-body);
-  color: var(--color-text-primary);
-  line-height: var(--lh-xl);
-  white-space: pre-wrap;
-}
-
-.expand-hint {
-  display: block;
-  text-align: center;
-  color: var(--color-copper);
-  font-size: var(--fs-body);
-  padding: var(--space-md) 0;
-}
-
-/* Decorative drop cap for interpretation */
-.interpretation-text.drop-cap::first-letter {
-  font-size: 72rpx;
-  font-weight: var(--fw-light);
-  color: var(--color-copper);
-  font-family: var(--font-family-display);
-  float: left;
-  margin-right: 10rpx;
-  margin-top: -4rpx;
-  line-height: 0.85;
-}
-
-
-/* ============================================================
-   17. PREMIUM / VIP BORDER
-   ============================================================ */
-
-.premium-border {
-  border: 2rpx solid transparent;
-  background-clip: padding-box;
-  position: relative;
-}
-
-.premium-border::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  border-radius: inherit;
-  padding: 2rpx;
-  background: linear-gradient(
-    135deg,
-    var(--color-copper) 0%,
-    var(--color-jade) 40%,
-    var(--color-gold-aged) 70%,
-    var(--color-copper-light) 100%
-  );
-  border: 2rpx solid var(--color-copper);
-  pointer-events: none;
-}
-
-
-/* ============================================================
-   18. GLOW EFFECTS
-   ============================================================ */
-
-.glow-copper {
-  box-shadow: 0 0 24rpx var(--color-copper-glow),
-    0 0 48rpx var(--color-copper-subtle);
-}
-
-.glow-jade {
-  box-shadow: 0 0 24rpx var(--color-jade-glow),
-    0 0 48rpx var(--color-jade-subtle);
-}
-
-.glow-gold {
-  box-shadow: 0 0 20rpx var(--color-gold-glow);
-}
-
-.glow-border {
-  position: relative;
-}
-
-.glow-border::after {
-  content: '';
-  position: absolute;
-  top: -2rpx;
-  left: -2rpx;
-  right: -2rpx;
-  bottom: -2rpx;
-  border-radius: inherit;
-  background: var(--gradient-copper-to-jade);
-  opacity: 0;
-  z-index: -1;
-  transition: opacity var(--duration-normal);
-}
-
-.glow-border:hover::after {
-  opacity: 0.12;
-}
-
-
-/* ============================================================
-   19. ANIMATION UTILITY CLASSES
-   ============================================================ */
-
-.anim-leaf-unfurl {
-  animation: leaf-unfurl var(--duration-slow) var(--ease-organic) forwards;
-}
-
-.anim-bloom {
-  animation: bloom var(--duration-xslow) var(--ease-bloom) forwards;
-}
-
-.anim-copper-breath {
-  animation: copper-breath var(--duration-bloom) var(--ease-organic) infinite;
-}
-
-.anim-botanical-sway {
-  animation: botanical-sway var(--duration-languid) var(--ease-flow) infinite;
-}
-
-.anim-fade-in {
-  animation: fade-in var(--duration-slow) var(--ease-out-refined) forwards;
-}
-
-.anim-fade-in-up {
-  animation: fade-in-up var(--duration-slow) var(--ease-out-refined) forwards;
-}
-
-/* Staggered entrance — like leaves unfolding sequentially */
-.anim-fade-in-up-1 { animation: fade-in-up 0.6s var(--ease-out-refined) 0.08s both; }
-.anim-fade-in-up-2 { animation: fade-in-up 0.6s var(--ease-out-refined) 0.16s both; }
-.anim-fade-in-up-3 { animation: fade-in-up 0.6s var(--ease-out-refined) 0.24s both; }
-.anim-fade-in-up-4 { animation: fade-in-up 0.6s var(--ease-out-refined) 0.32s both; }
-.anim-fade-in-up-5 { animation: fade-in-up 0.6s var(--ease-out-refined) 0.40s both; }
-.anim-fade-in-up-6 { animation: fade-in-up 0.6s var(--ease-out-refined) 0.48s both; }
-
-/* Staggered bloom — more dramatic entrance */
-.anim-bloom-1 { animation: bloom 0.8s var(--ease-bloom) 0.05s both; }
-.anim-bloom-2 { animation: bloom 0.8s var(--ease-bloom) 0.15s both; }
-.anim-bloom-3 { animation: bloom 0.8s var(--ease-bloom) 0.25s both; }
-.anim-bloom-4 { animation: bloom 0.8s var(--ease-bloom) 0.35s both; }
-
-.anim-float {
-  animation: gentle-float 6s var(--ease-flow) infinite;
-}
-
-.anim-breathe {
-  animation: copper-breath var(--duration-bloom) var(--ease-organic) infinite;
-}
-
-.anim-pulse-scale {
-  animation: pulse-scale 3s var(--ease-organic) infinite;
-}
-
-.anim-orbital {
-  animation: orbital-rotate var(--duration-languid) linear infinite;
-}
-
-.anim-delay-1  { animation-delay: 0.1s; }
-.anim-delay-2  { animation-delay: 0.2s; }
-.anim-delay-3  { animation-delay: 0.3s; }
-.anim-delay-4  { animation-delay: 0.4s; }
-.anim-delay-5  { animation-delay: 0.5s; }
-.anim-delay-6  { animation-delay: 0.6s; }
-.anim-delay-8  { animation-delay: 0.8s; }
-.anim-delay-10 { animation-delay: 1.0s; }
-
-
-/* ============================================================
-   20. SPACING UTILITY CLASSES
-   ============================================================ */
-
-.mt-xs { margin-top: var(--space-xs); }
-.mt-sm { margin-top: var(--space-sm); }
-.mt-md { margin-top: var(--space-md); }
-.mt-lg { margin-top: var(--space-lg); }
-.mt-xl { margin-top: var(--space-xl); }
-.mt-xxl { margin-top: var(--space-xxl); }
-.mt-xxxl { margin-top: var(--space-xxxl); }
-
-.mb-xs { margin-bottom: var(--space-xs); }
-.mb-sm { margin-bottom: var(--space-sm); }
-.mb-md { margin-bottom: var(--space-md); }
-.mb-lg { margin-bottom: var(--space-lg); }
-.mb-xl { margin-bottom: var(--space-xl); }
-.mb-xxl { margin-bottom: var(--space-xxl); }
-.mb-xxxl { margin-bottom: var(--space-xxxl); }
-
-.p-xs { padding: var(--space-xs); }
-.p-sm { padding: var(--space-sm); }
-.p-md { padding: var(--space-md); }
-.p-lg { padding: var(--space-lg); }
-.p-xl { padding: var(--space-xl); }
-.p-xxl { padding: var(--space-xxl); }
-.p-xxxl { padding: var(--space-xxxl); }
-
-.px-lg { padding-left: var(--space-lg); padding-right: var(--space-lg); }
-.px-xl { padding-left: var(--space-xl); padding-right: var(--space-xl); }
-.py-lg { padding-top: var(--space-lg); padding-bottom: var(--space-lg); }
-.py-xl { padding-top: var(--space-xl); padding-bottom: var(--space-xl); }
-
-
-/* ============================================================
-   21. LAYOUT UTILITY CLASSES
-   ============================================================ */
-
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.flex-col {
-  display: flex;
-  flex-direction: column;
-}
-
-.flex-row {
-  display: flex;
-  flex-direction: row;
-}
-
-.flex-between {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.flex-wrap {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.gap-xs { gap: var(--space-xs); }
-.gap-sm { gap: var(--space-sm); }
-.gap-md { gap: var(--space-md); }
-.gap-lg { gap: var(--space-lg); }
-.gap-xl { gap: var(--space-xl); }
-.gap-xxl { gap: var(--space-xxl); }
-
-.relative {
-  position: relative;
-}
-
-.absolute {
-  position: absolute;
-}
-
-.overflow-hidden {
-  overflow: hidden;
-}
-
-.w-full {
-  width: 100%;
-}
-
-.h-full {
-  height: 100%;
-}
-
-
-/* ============================================================
-   22. DECORATIVE SYMBOLS — Mucha-style flourishes
-   ============================================================ */
-
-/* 22.1 Ornamental star — like Art Nouveau asterisk */
-.ornament-star {
+/* ===== Badge ===== */
+.badge {
   display: inline-block;
-  color: var(--color-copper-light);
-  font-size: 14rpx;
-  opacity: 0.4;
-  letter-spacing: var(--space-xxs);
-  text-align: center;
+  font-size: var(--fs-xs);
+  padding: 2rpx var(--sp-sm);
+  border-radius: var(--radius-full);
 }
+.badge-gold { background: var(--color-tag-warm); color: var(--color-accent); }
+.badge-success { background: var(--color-tag-cool); color: var(--color-accent-light); }
+.badge-danger { background: #F5E8E8; color: #C06050; }
 
-/* 22.2 Copper floret cluster */
-.floret-cluster {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-xs);
-  color: var(--color-copper-pale);
-  font-size: 12rpx;
-  opacity: 0.35;
-}
-
-/* 22.3 Signature line — like an artist's signature bottom */
-.signature-line {
-  display: block;
-  text-align: center;
-  font-size: var(--fs-micro);
-  color: var(--color-text-muted);
-  font-family: var(--font-family-display);
-  letter-spacing: var(--ls-caption);
-  font-style: italic;
-  opacity: 0.4;
-  margin: var(--space-xxl) 0;
-}
-
-/* 22.4 Decorative rule — three diamonds */
-.divider-diamonds {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-sm);
-  margin: var(--space-xxl) 0;
-  opacity: 0.25;
-}
-
-.divider-diamonds::before,
-.divider-diamonds::after {
-  content: '';
-  flex: 1;
-  height: 1rpx;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--color-divider-copper),
-    transparent
-  );
-}
-
-.divider-diamonds span {
-  display: flex;
-  gap: var(--space-xxs);
-  color: var(--color-copper-light);
-  font-size: 12rpx;
-  letter-spacing: var(--space-xxs);
-}
-
-
-/* ============================================================
-   23. DECORATIVE BORDER FRAME — Art Nouveau picture frame
-   ============================================================ */
-
-.frame-nouveau {
-  position: relative;
-  border-radius: var(--radius-card);
-  padding: var(--space-xxxl);
-  background: var(--color-ivory);
-  box-shadow: var(--shadow-ivory);
-  overflow: hidden;
-}
-
-/* Top-left ornamental bracket cluster */
-.frame-nouveau::before {
-  content: '';
-  position: absolute;
-  top: 8rpx;
-  left: 8rpx;
-  width: 36rpx;
-  height: 36rpx;
-  border-top: 2rpx solid var(--color-border-copper-strong);
-  border-left: 2rpx solid var(--color-border-copper-strong);
-  border-radius: 8rpx 0 0 0;
-  opacity: 0.35;
-}
-
-/* Inner top-left curl */
-.frame-nouveau::after {
-  content: '';
-  position: absolute;
-  top: 16rpx;
-  left: 16rpx;
-  width: 20rpx;
-  height: 20rpx;
-  border-top: 1.5rpx solid var(--color-border-copper);
-  border-left: 1.5rpx solid var(--color-border-copper);
-  border-radius: 6rpx 0 0 0;
-  opacity: 0.2;
-}
-
-/* Bottom-right accent (requires extra element in WXML) */
-/* Use class on inner element if needed */
-
-
-/* ============================================================
-   24. COPPER TOAST / NOTIFICATION
-   ============================================================ */
-
-.toast-copper {
-  background: var(--color-olive);
-  color: var(--color-ivory-warm);
-  border-radius: var(--radius-round);
-  padding: var(--space-md) var(--space-xl);
-  font-size: var(--fs-body);
-  box-shadow: 0 4rpx 20rpx rgba(61, 57, 41, 0.12);
-  letter-spacing: var(--ls-body);
-}
-
-
-/* ============================================================
-   25. MISC UTILITIES
-   ============================================================ */
-
-/* Truncate text */
-.text-truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Hide scrollbar — for graceful overflow */
-.scroll-hide {
-  overflow: auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.scroll-hide::-webkit-scrollbar {
-  display: none;
-}
-
-/* Safe area bottom */
-.safe-bottom {
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-/* Copper divider — short centered line */
-.divider-copper-short {
-  width: 80rpx;
-  height: 2rpx;
-  background: var(--gradient-copper);
-  margin: var(--space-lg) auto;
-  border-radius: 2rpx;
-  opacity: 0.4;
-}
-
-.divider-jade-short {
-  width: 80rpx;
-  height: 2rpx;
-  background: var(--gradient-jade);
-  margin: var(--space-lg) auto;
-  border-radius: 2rpx;
-  opacity: 0.4;
-}
-
-/* Glass effect — subtle frosted */
-.glass-ivory {
-  background: rgba(255, 249, 242, 0.95);
-  border: 1rpx solid var(--color-border-ivory);
-}
-
-/* Copper top accent bar */
-.accent-top-copper {
-  height: 3rpx;
-  background: linear-gradient(
-    90deg,
-    transparent 10%,
-    var(--color-copper-light) 30%,
-    var(--color-copper) 50%,
-    var(--color-copper-light) 70%,
-    transparent 90%
-  );
-  opacity: 0.3;
-  margin: 0;
-}
-
-/* Closing ornamental flourish */
-.signature-seal {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: var(--space-sm);
-  margin: var(--space-massive) auto;
-  opacity: 0.2;
-}
-
-.signature-seal-circle {
-  width: 40rpx;
-  height: 40rpx;
-  border-radius: 50%;
-  border: 1rpx solid var(--color-copper);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.signature-seal-dot {
-  width: 6rpx;
-  height: 6rpx;
-  border-radius: 50%;
-  background: var(--color-copper);
-}
-
-.signature-seal-line {
-  width: 60rpx;
-  height: 1rpx;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--color-divider-copper),
-    transparent
-  );
-}
+/* ===== Utilities ===== */
+.relative { position: relative; }
+.overflow-hidden { overflow: hidden; }
