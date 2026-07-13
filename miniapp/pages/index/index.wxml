@@ -1,23 +1,23 @@
 <!-- pages/index/index.wxml -->
-<!-- 萤火虫粒子背景（12只暖光） -->
-<view class="firefly-field">
-  <view class="firefly-particle"></view>
-  <view class="firefly-particle"></view>
-  <view class="firefly-particle"></view>
-  <view class="firefly-particle"></view>
-  <view class="firefly-particle"></view>
-  <view class="firefly-particle"></view>
-  <view class="firefly-particle"></view>
-  <view class="firefly-particle"></view>
-  <view class="firefly-particle"></view>
-  <view class="firefly-particle"></view>
-  <view class="firefly-particle"></view>
-  <view class="firefly-particle"></view>
+<!-- 植物学花粉粒子背景（12只暖光） -->
+<view class="mote-field">
+  <view class="mote-particle"></view>
+  <view class="mote-particle"></view>
+  <view class="mote-particle"></view>
+  <view class="mote-particle"></view>
+  <view class="mote-particle"></view>
+  <view class="mote-particle"></view>
+  <view class="mote-particle"></view>
+  <view class="mote-particle"></view>
+  <view class="mote-particle"></view>
+  <view class="mote-particle"></view>
+  <view class="mote-particle"></view>
+  <view class="mote-particle"></view>
 </view>
 
 <!-- 环境光晕 -->
-<view class="orb-top"></view>
-<view class="orb-bottom"></view>
+<view class="atelier-glow-top"></view>
+<view class="atelier-glow-bottom"></view>
 
 <!-- ===== 加载骨架 ===== -->
 <view class="page" wx:if="{{pageLoading}}">
@@ -54,11 +54,11 @@
 
 <!-- ===== 主内容 ===== -->
 <view class="page" wx:else>
-  <!-- 顶部温柔曙光区 -->
+  <!-- 顶部植物学水彩区 -->
   <view class="hero">
-    <view class="hero-glow-circle"></view>
-    <view class="hero-icon">
-      <text class="hero-icon-inner">✦</text>
+    <view class="hero-glow-organic"></view>
+    <view class="hero-emblem">
+      <text class="hero-emblem-inner">🌿</text>
     </view>
     <text class="hero-title">星光映照</text>
     <text class="hero-subtitle">倾听内心的回响</text>
@@ -83,7 +83,7 @@
       <view class="card card-clickable flex-col items-center" style="padding:28rpx 16rpx;gap:8rpx;text-align:center" bindtap="navigateToReading" data-type="triangle">
         <text style="font-size:52rpx">💕</text>
         <text class="text-body" style="font-size:var(--fs-body-small)">恋人三角</text>
-        <text class="badge badge-gold">热门</text>
+        <text class="badge-copper-diamond">热门</text>
       </view>
       <view class="card card-clickable flex-col items-center" style="padding:28rpx 16rpx;gap:8rpx;text-align:center" bindtap="navigateToReading" data-type="celtic_cross">
         <text style="font-size:52rpx">✝️</text>

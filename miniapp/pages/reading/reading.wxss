@@ -1,12 +1,22 @@
-/* ===== 占卜页 - 柔和玫瑰选牌 ===== */
+/* ========================================================
+   占卜页 · 新艺术流（Art Nouveau Flow）
+   有机曲线 · 暖象牙基调 · 植物装饰语汇
+   ======================================================== */
 
-/* -------- 全局装饰 ---------- */
-@keyframes pulse-soft {
-  0%, 100% { transform: scale(1); box-shadow: 0 4rpx 16rpx rgba(200, 130, 140, 0.15); }
-  50%      { transform: scale(1.015); box-shadow: 0 6rpx 24rpx rgba(200, 130, 140, 0.25); }
+/* -------- 全局装饰：植物呼吸 -------- */
+@keyframes leaf-sway {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(2deg); }
 }
 
-/* -------- 牌阵选择卡片 -------- */
+@keyframes glow-soft {
+  0%, 100% { box-shadow: 0 4rpx 24rpx rgba(180, 140, 110, 0.12); }
+  50%      { box-shadow: 0 6rpx 32rpx rgba(180, 140, 110, 0.22); }
+}
+
+/* ========================================================
+   牌阵选择 · 画廊展陈
+   ======================================================== */
 .spread-grid {
   display: flex;
   flex-direction: column;
@@ -14,111 +24,191 @@
   padding: var(--space-md) 0;
 }
 
+/* -------- 单张牌阵卡片 -------- */
 .spread-card {
   display: flex;
   align-items: center;
-  background: #fff9f7;
-  border-radius: 20rpx;
+  background: #fcf8f0;                    /* 暖象牙 */
+  border-radius: 0 22rpx 22rpx 0;          /* 直角左侧，圆角右侧 — 如同书页 */
   padding: var(--space-xl) var(--space-xxl);
-  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4rpx 20rpx rgba(180, 120, 130, 0.08);
-  border: 1rpx solid rgba(200, 150, 160, 0.08);
+  box-shadow:
+    0 6rpx 28rpx rgba(160, 130, 100, 0.07),
+    0 2rpx 8rpx rgba(160, 130, 100, 0.04);
+  border: 1rpx solid rgba(180, 150, 120, 0.08);
+  border-left: none;                       /* 左侧由伪元素接管 */
+}
+
+/* —— 植物垂饰左边框 —— */
+.spread-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 8rpx;
+  background:
+    /* 藤蔓主脉 — 蜿蜒 S 形曲线 */
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(160, 140, 100, 0.10) 8%,
+      rgba(160, 140, 100, 0.22) 20%,
+      rgba(160, 140, 100, 0.08) 35%,
+      rgba(160, 140, 100, 0.25) 50%,
+      rgba(160, 140, 100, 0.06) 65%,
+      rgba(160, 140, 100, 0.18) 80%,
+      rgba(160, 140, 100, 0.05) 92%,
+      transparent 100%
+    );
+  border-radius: 0 4rpx 4rpx 0;
+}
+
+/* —— 左上角叶片装饰 —— */
+.spread-card::after {
+  content: '~';
+  position: absolute;
+  top: -4rpx;
+  left: 12rpx;
+  font-size: 36rpx;
+  color: rgba(160, 140, 100, 0.10);
+  transform: rotate(-15deg);
+  font-family: serif;
+  pointer-events: none;
 }
 
 .spread-card:active {
-  transform: scale(0.98);
-  box-shadow: 0 2rpx 12rpx rgba(180, 120, 130, 0.12);
-  border-color: rgba(200, 150, 160, 0.15);
+  transform: scale(0.97);
+  box-shadow: 0 2rpx 16rpx rgba(160, 130, 100, 0.10);
 }
 
-/* Premium variant */
-.spread-card.premium {
-  background: #fff9f7;
-  box-shadow: 0 4rpx 20rpx rgba(200, 130, 140, 0.12);
-  border-color: rgba(210, 160, 170, 0.18);
-}
-
-/* Premium badge */
+/* -------- Premium 标记：铜色圆点 -------- */
 .premium-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4rpx;
-  padding: 4rpx 16rpx 4rpx 12rpx;
+  gap: 8rpx;
+  padding: 4rpx 18rpx 4rpx 14rpx;
   border-radius: 30rpx;
   font-size: 18rpx;
   font-weight: 500;
-  color: #b8865a;
-  background: linear-gradient(135deg, rgba(210, 140, 155, 0.15), rgba(210, 140, 155, 0.05));
-  border: 1rpx solid rgba(210, 140, 155, 0.2);
+  color: #a67c5b;                        /* 暖铜色 */
+  background: rgba(200, 160, 120, 0.08);
+  border: 1rpx solid rgba(200, 160, 120, 0.15);
   letter-spacing: 2rpx;
+  position: relative;
 }
 
-/* Popular badge */
+/* 铜点 */
+.premium-badge::before {
+  content: '';
+  display: inline-block;
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #d4a574, #b8865a);
+  box-shadow: 0 0 6rpx rgba(200, 160, 120, 0.25);
+  flex-shrink: 0;
+}
+
+/* -------- Popular 标记：翡翠色圆点 -------- */
 .popular-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4rpx;
-  padding: 4rpx 16rpx;
+  gap: 8rpx;
+  padding: 4rpx 18rpx 4rpx 14rpx;
   border-radius: 30rpx;
   font-size: 18rpx;
   font-weight: 500;
-  color: #6b8e6b;
-  background: linear-gradient(135deg, rgba(130, 170, 130, 0.12), rgba(130, 170, 130, 0.04));
-  border: 1rpx solid rgba(130, 170, 130, 0.2);
+  color: #6b8e6b;                        /* 柔翡翠 */
+  background: rgba(130, 170, 130, 0.08);
+  border: 1rpx solid rgba(130, 170, 130, 0.15);
   letter-spacing: 2rpx;
+  position: relative;
 }
 
-/* -------- 问题输入 -------- */
+/* 翡翠点 */
+.popular-badge::before {
+  content: '';
+  display: inline-block;
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #8fbc8f, #5f8b5f);
+  box-shadow: 0 0 6rpx rgba(130, 170, 130, 0.25);
+  flex-shrink: 0;
+}
+
+/* ========================================================
+   问题输入 · 暖象牙写字台
+   ======================================================== */
 .selected-info {
   text-align: center;
   padding: var(--space-lg) 0 var(--space-lg);
 }
 
 .question-box {
-  background: #ffffff;
-  border-radius: 18rpx;
+  background: #fcf8f0;                    /* 暖象牙 */
+  border-radius: 24rpx 24rpx 24rpx 8rpx;  /* 左下角小曲弧 */
   padding: var(--space-xl);
   margin-bottom: var(--space-lg);
-  border: 1rpx solid rgba(200, 160, 170, 0.18);
-  transition: border-color 0.4s ease, box-shadow 0.4s ease;
-  box-shadow: 0 2rpx 12rpx rgba(180, 120, 130, 0.05);
+  border: 1rpx solid rgba(180, 150, 120, 0.15);
+  transition: border-color 0.5s ease, box-shadow 0.5s ease;
+  box-shadow: 0 2rpx 16rpx rgba(160, 130, 100, 0.04);
+  position: relative;
+}
+
+/* 左上角小藤芽装饰 */
+.question-box::before {
+  content: '';
+  position: absolute;
+  top: -1rpx;
+  left: 24rpx;
+  width: 40rpx;
+  height: 1rpx;
+  background: linear-gradient(90deg, rgba(180, 150, 120, 0.25), transparent);
+  border-radius: 1rpx;
 }
 
 .question-box:focus-within {
-  border-color: rgba(200, 140, 155, 0.35);
-  box-shadow: 0 4rpx 20rpx rgba(200, 130, 140, 0.08);
+  border-color: rgba(180, 150, 120, 0.30);
+  box-shadow:
+    0 4rpx 24rpx rgba(160, 130, 100, 0.06),
+    inset 0 0 0 1rpx rgba(200, 170, 140, 0.04);
 }
 
 .question-input {
   width: 100%;
   min-height: 140rpx;
   font-size: var(--fs-body);
-  color: #4a3a3a;
+  color: #4a3d30;                        /* 深暖棕 */
   line-height: var(--lh-loose);
   background: transparent;
-  caret-color: #c8889a;
-  letter-spacing: 1rpx;
+  caret-color: #b8865a;                  /* 铜色光标 */
+  letter-spacing: 1.5rpx;
 }
 
 .question-input::placeholder {
-  color: rgba(160, 130, 135, 0.4);
+  color: rgba(160, 140, 120, 0.40);       /* 暖灰 */
   font-style: italic;
+  letter-spacing: 2rpx;
 }
 
 .selected-spread-hint {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8rpx;
+  gap: 10rpx;
   padding: var(--space-sm) 0;
   font-size: var(--fs-body-small);
-  color: rgba(180, 130, 140, 0.6);
+  color: rgba(160, 140, 120, 0.50);
   letter-spacing: 2rpx;
 }
 
-/* -------- 主题选择 -------- */
+/* ========================================================
+   主题选择
+   ======================================================== */
 .theme-options {
   display: flex;
   gap: var(--space-md);
@@ -128,14 +218,14 @@
 .theme-item {
   flex: 1;
   text-align: center;
-  background: #fffaf8;
-  border-radius: 16rpx;
+  background: #fcf8f0;
+  border-radius: 20rpx 20rpx 20rpx 6rpx;
   padding: var(--space-md) 0;
   font-size: var(--fs-body-small);
-  color: rgba(160, 130, 135, 0.55);
-  border: 1rpx solid rgba(200, 160, 170, 0.1);
+  color: rgba(160, 140, 120, 0.50);
+  border: 1rpx solid rgba(180, 150, 120, 0.08);
   transition: all 0.35s ease;
-  letter-spacing: 1rpx;
+  letter-spacing: 1.5rpx;
 }
 
 .theme-item:active {
@@ -143,46 +233,87 @@
 }
 
 .theme-active {
-  border-color: rgba(200, 140, 155, 0.3);
-  color: #c8889a;
-  background: linear-gradient(180deg, rgba(210, 140, 155, 0.06), rgba(210, 140, 155, 0.02));
-  box-shadow: 0 2rpx 12rpx rgba(200, 130, 140, 0.06);
+  border-color: rgba(180, 150, 120, 0.25);
+  color: #a67c5b;
+  background: linear-gradient(180deg, rgba(200, 170, 140, 0.06), rgba(200, 170, 140, 0.02));
+  box-shadow: 0 2rpx 16rpx rgba(160, 130, 100, 0.05);
 }
 
-/* -------- 启动按钮 · 柔和玫瑰脉冲 -------- */
+/* ========================================================
+   启动按钮 · 铜色渐变药丸 + 植物边缘装饰
+   ======================================================== */
 .btn-glow-pulse {
   position: relative;
   overflow: hidden;
-  letter-spacing: 3rpx;
+  letter-spacing: 4rpx;
   font-size: var(--fs-body);
   font-weight: 500;
   padding: var(--space-lg) 0;
-  border-radius: 46rpx;
-  background: linear-gradient(135deg, #d496a6, #c47e92);
+  border-radius: 48rpx;
+  background: linear-gradient(135deg, #d4a574 0%, #b8865a 50%, #a67c5b 100%);
   border: none;
   color: #ffffff;
-  animation: pulse-soft 3s ease-in-out infinite;
-  box-shadow: 0 6rpx 24rpx rgba(196, 126, 146, 0.25);
+  animation: glow-soft 3.5s ease-in-out infinite;
+  box-shadow: 0 8rpx 32rpx rgba(184, 134, 90, 0.30);
+  z-index: 0;
+}
+
+/* —— 左侧植物卷须 —— */
+.btn-glow-pulse::before {
+  content: '';
+  position: absolute;
+  left: 20rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32rpx;
+  height: 32rpx;
+  border: 2rpx solid rgba(255, 255, 255, 0.15);
+  border-radius: 50% 0 50% 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* —— 右侧植物卷须 —— */
+.btn-glow-pulse::after {
+  content: '';
+  position: absolute;
+  right: 20rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32rpx;
+  height: 32rpx;
+  border: 2rpx solid rgba(255, 255, 255, 0.15);
+  border-radius: 0 50% 0 50%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* —— 按钮文字上的微妙光泽 —— */
+.btn-glow-pulse .btn-text {
+  position: relative;
+  z-index: 2;
 }
 
 .btn-glow-pulse:active {
   transform: scale(0.96);
   animation: none;
-  box-shadow: 0 3rpx 12rpx rgba(196, 126, 146, 0.2);
+  box-shadow: 0 4rpx 16rpx rgba(184, 134, 90, 0.25);
 }
 
 .btn-glow-pulse.drawing {
   opacity: 0.75;
-  animation: pulse-soft 1.2s ease-in-out infinite;
+  animation: glow-soft 1.2s ease-in-out infinite;
 }
 
 .btn-glow-pulse[disabled] {
-  opacity: 0.4;
+  opacity: 0.40;
   animation: none;
   filter: grayscale(0.5);
 }
 
-/* -------- 加载骨架屏 -------- */
+/* ========================================================
+   加载骨架屏
+   ======================================================== */
 .skeleton {
   padding: var(--space-xxl) 0;
 }
@@ -191,7 +322,7 @@
   width: 280rpx;
   height: 36rpx;
   border-radius: 10rpx;
-  background: linear-gradient(90deg, rgba(200, 160, 170, 0.2), rgba(210, 180, 185, 0.1));
+  background: linear-gradient(90deg, rgba(180, 150, 120, 0.15), rgba(200, 170, 140, 0.06));
   margin: 0 auto var(--space-sm);
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
@@ -200,7 +331,7 @@
   width: 200rpx;
   height: 26rpx;
   border-radius: 10rpx;
-  background: linear-gradient(90deg, rgba(200, 160, 170, 0.2), rgba(210, 180, 185, 0.1));
+  background: linear-gradient(90deg, rgba(180, 150, 120, 0.15), rgba(200, 170, 140, 0.06));
   margin: 0 auto var(--space-xxxl);
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
@@ -209,12 +340,14 @@
   width: 100%;
   height: 130rpx;
   border-radius: 18rpx;
-  background: linear-gradient(90deg, rgba(200, 160, 170, 0.15), rgba(210, 180, 185, 0.08));
+  background: linear-gradient(90deg, rgba(180, 150, 120, 0.10), rgba(200, 170, 140, 0.04));
   margin-bottom: var(--space-md);
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
 
-/* -------- 错误状态 -------- */
+/* ========================================================
+   错误状态
+   ======================================================== */
 .error-state {
   text-align: center;
   padding: var(--space-massive) var(--space-xl);
@@ -224,19 +357,19 @@
   font-size: 80rpx;
   display: block;
   margin-bottom: var(--space-md);
-  opacity: 0.35;
+  opacity: 0.30;
 }
 
 .error-text {
   font-size: var(--fs-body);
-  color: rgba(120, 90, 95, 0.55);
+  color: rgba(120, 100, 85, 0.50);
   display: block;
   margin-bottom: var(--space-xs);
 }
 
 .error-hint {
   font-size: var(--fs-body-small);
-  color: rgba(120, 90, 95, 0.35);
+  color: rgba(120, 100, 85, 0.30);
   display: block;
   margin-bottom: var(--space-xxl);
 }

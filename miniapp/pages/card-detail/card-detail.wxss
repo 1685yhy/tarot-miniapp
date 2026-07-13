@@ -1,92 +1,382 @@
-/* ===== 卡牌详情 - 至尊神秘主题 ===== */
+/* ===== 卡牌详情 - 新艺术 "珍本书页" 主题 ===== *
+ * 灵感：新艺术运动、穆夏装饰板、            *
+ * 古董植物图鉴内页、珐琅彩绘                *
+ * 翻开珍本画册的仪式感与静谧                *
+ * 色调：羊皮纸暖白 / 古铜色 / 翡翠绿      *
+ * ========================================== */
 
-/* Header */
+/* ===== Header ===== */
 .card-header {
   text-align: center;
-  padding: var(--space-xxxl) 0 var(--space-xl);
-  margin-bottom: var(--space-xl);
+  padding: 48rpx 0 36rpx;
+  margin-bottom: 36rpx;
+  position: relative;
 }
 
+/* 顶部新艺术装饰弧线 */
+.card-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 160rpx;
+  height: 3rpx;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(196, 148, 58, 0.15) 15%,
+    rgba(196, 148, 58, 0.35) 35%,
+    rgba(45, 138, 110, 0.25) 50%,
+    rgba(196, 148, 58, 0.35) 65%,
+    rgba(196, 148, 58, 0.15) 85%,
+    transparent 100%
+  );
+  border-radius: 2rpx;
+}
+
+/* 底部装饰波浪线 */
+.card-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  width: 80%;
+  height: 2rpx;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(180, 150, 120, 0.08) 20%,
+    rgba(180, 150, 120, 0.12) 50%,
+    rgba(180, 150, 120, 0.08) 80%,
+    transparent 100%
+  );
+}
+
+/* 编号徽章 - 珐琅圆章 */
 .card-number-badge {
-  width: 64rpx;
-  height: 64rpx;
-  line-height: 64rpx;
-  border-radius: var(--radius-full);
-  background: var(--gradient-gold);
-  color: var(--color-text-on-gold);
-  font-size: var(--fs-body);
-  font-weight: var(--fw-bold);
-  margin: 0 auto var(--space-md);
-  box-shadow: var(--shadow-glow-gold);
+  width: 72rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #c4943a, #b8862e);
+  color: #fefcf7;
+  font-size: 28rpx;
+  font-weight: 500;
+  margin: 0 auto 18rpx;
+  box-shadow:
+    0 4rpx 20rpx rgba(196, 148, 58, 0.25),
+    inset 0 1rpx 0 rgba(255, 248, 235, 0.3);
+  letter-spacing: 1rpx;
+  position: relative;
 }
 
-/* Sections */
-.section-text {
-  font-size: var(--fs-body);
-  color: var(--color-text-primary);
-  line-height: var(--lh-loose);
+/* 徽章外围 - 铜环装饰 */
+.card-number-badge::after {
+  content: '';
+  position: absolute;
+  top: -4rpx;
+  left: -4rpx;
+  right: -4rpx;
+  bottom: -4rpx;
+  border-radius: 50%;
+  border: 1.5rpx solid rgba(196, 148, 58, 0.15);
+  pointer-events: none;
+}
+
+/* 标题行 - 卡牌名称 */
+.card-title-row {
+  margin-bottom: 8rpx;
+}
+
+.card-title {
+  font-size: 36rpx;
+  font-weight: 450;
+  color: #3d322a;
+  letter-spacing: 3rpx;
+  line-height: 1.3;
+}
+
+.card-subtitle {
+  font-size: 26rpx;
+  color: rgba(130, 110, 90, 0.45);
+  letter-spacing: 2rpx;
+  font-style: italic;
+  font-weight: 350;
+  margin-top: 6rpx;
+}
+
+/* ===== 卡牌图片 - 有机装饰框架 ===== */
+.card-image-wrapper {
+  position: relative;
+  margin: 36rpx 0 40rpx;
+  padding: 16rpx;
+}
+
+/* 外层装饰框 - 新艺术线条 */
+.card-image-frame {
+  position: relative;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+.card-image-frame::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 2rpx solid rgba(196, 148, 58, 0.15);
+  border-radius: 16rpx;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 四角植物卷须装饰 */
+.card-image-frame .corner-tl,
+.card-image-frame .corner-tr,
+.card-image-frame .corner-bl,
+.card-image-frame .corner-br {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.card-image-frame .corner-tl {
+  top: -4rpx;
+  left: -4rpx;
+  width: 40rpx;
+  height: 40rpx;
+  border-top: 2.5rpx solid rgba(196, 148, 58, 0.3);
+  border-left: 2.5rpx solid rgba(196, 148, 58, 0.3);
+  border-radius: 8rpx 0 0 0;
+}
+
+.card-image-frame .corner-tr {
+  top: -4rpx;
+  right: -4rpx;
+  width: 40rpx;
+  height: 40rpx;
+  border-top: 2.5rpx solid rgba(196, 148, 58, 0.3);
+  border-right: 2.5rpx solid rgba(196, 148, 58, 0.3);
+  border-radius: 0 8rpx 0 0;
+}
+
+.card-image-frame .corner-bl {
+  bottom: -4rpx;
+  left: -4rpx;
+  width: 40rpx;
+  height: 40rpx;
+  border-bottom: 2.5rpx solid rgba(45, 138, 110, 0.2);
+  border-left: 2.5rpx solid rgba(45, 138, 110, 0.2);
+  border-radius: 0 0 0 8rpx;
+}
+
+.card-image-frame .corner-br {
+  bottom: -4rpx;
+  right: -4rpx;
+  width: 40rpx;
+  height: 40rpx;
+  border-bottom: 2.5rpx solid rgba(45, 138, 110, 0.2);
+  border-right: 2.5rpx solid rgba(45, 138, 110, 0.2);
+  border-radius: 0 0 8rpx 0;
+}
+
+/* 底部装饰波浪线 */
+.card-image-wrapper::after {
+  content: '';
   display: block;
+  width: 60%;
+  height: 2rpx;
+  margin: 28rpx auto 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(196, 148, 58, 0.12) 20%,
+    rgba(45, 138, 110, 0.08) 50%,
+    rgba(196, 148, 58, 0.12) 80%,
+    transparent 100%
+  );
+  border-radius: 1rpx;
 }
 
-/* Keywords */
+/* ===== 信息区域 - 典雅排版 ===== */
+.card-info {
+  padding: 8rpx 8rpx 0;
+}
+
+/* 章节标题 - 铜色 + 装饰下划线 */
+.section-header {
+  font-size: 28rpx;
+  font-weight: 450;
+  color: #c4943a;
+  letter-spacing: 3rpx;
+  margin-bottom: 16rpx;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 6rpx;
+}
+
+.section-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1.5rpx;
+  background: linear-gradient(
+    90deg,
+    rgba(196, 148, 58, 0.3) 0%,
+    rgba(196, 148, 58, 0.1) 80%,
+    transparent 100%
+  );
+  border-radius: 1rpx;
+}
+
+/* 正文文本 - 书卷气息 */
+.section-text {
+  font-size: 28rpx;
+  color: #4a3d33;
+  line-height: 1.7;
+  display: block;
+  letter-spacing: 1rpx;
+  font-weight: 350;
+  margin-bottom: 28rpx;
+  padding: 0 4rpx;
+}
+
+/* ===== 关键词 - 铜质 pill 标签 ===== */
 .keyword-list {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-sm);
+  gap: 12rpx;
+  margin-bottom: 32rpx;
 }
 
-/* Toggle */
+.keyword-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 8rpx 24rpx;
+  border-radius: 32rpx;
+  background: rgba(196, 148, 58, 0.06);
+  border: 1rpx solid rgba(196, 148, 58, 0.12);
+  font-size: 22rpx;
+  color: rgba(196, 148, 58, 0.75);
+  letter-spacing: 1.5rpx;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* 标签前小点装饰 */
+.keyword-tag::before {
+  content: '';
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background: rgba(196, 148, 58, 0.2);
+  margin-right: 10rpx;
+  flex-shrink: 0;
+}
+
+.keyword-tag:active {
+  background: rgba(196, 148, 58, 0.1);
+  border-color: rgba(196, 148, 58, 0.2);
+  transform: translateY(-1rpx);
+}
+
+/* ===== 切换栏 - 分页书签样式 ===== */
 .toggle-bar {
   display: flex;
-  background: var(--color-bg-card);
-  border-radius: var(--radius-round);
+  background: rgba(247, 242, 234, 0.5);
+  border-radius: 40rpx;
   padding: 6rpx;
-  margin-bottom: var(--space-xl);
+  margin-bottom: 36rpx;
+  border: 1rpx solid rgba(180, 150, 120, 0.08);
 }
 
 .toggle-item {
   flex: 1;
   text-align: center;
-  padding: var(--space-md) 0;
-  border-radius: var(--radius-round);
-  font-size: var(--fs-body);
-  color: var(--color-text-secondary);
-  transition: all var(--duration-normal);
+  padding: 16rpx 0;
+  border-radius: 36rpx;
+  font-size: 26rpx;
+  color: rgba(130, 110, 90, 0.5);
+  transition: all 0.4s ease;
+  letter-spacing: 2rpx;
+  font-weight: 350;
 }
 
 .toggle-active {
-  background: var(--gradient-gold);
-  color: var(--color-text-on-gold);
-  font-weight: var(--fw-semibold);
-  box-shadow: var(--shadow-button);
+  background: linear-gradient(145deg, #c4943a, #b8862e);
+  color: #fefcf7;
+  font-weight: 450;
+  box-shadow:
+    0 4rpx 16rpx rgba(196, 148, 58, 0.2),
+    inset 0 1rpx 0 rgba(255, 248, 235, 0.25);
+  letter-spacing: 2.5rpx;
 }
 
-/* ===== 加载骨架 ===== */
+/* ===== 导航 - 翡翠绿返回按钮 ===== */
+.nav-back {
+  display: inline-flex;
+  align-items: center;
+  padding: 14rpx 32rpx;
+  border-radius: 40rpx;
+  background: rgba(45, 138, 110, 0.06);
+  border: 1rpx solid rgba(45, 138, 110, 0.12);
+  color: rgba(45, 138, 110, 0.65);
+  font-size: 26rpx;
+  letter-spacing: 2rpx;
+  transition: all 0.35s ease;
+  margin-bottom: 40rpx;
+}
+
+/* 返回箭头 - 简约卷须 */
+.nav-back::before {
+  content: '';
+  display: inline-block;
+  width: 16rpx;
+  height: 16rpx;
+  border-left: 2rpx solid rgba(45, 138, 110, 0.5);
+  border-bottom: 2rpx solid rgba(45, 138, 110, 0.5);
+  transform: rotate(45deg);
+  margin-right: 14rpx;
+  flex-shrink: 0;
+}
+
+.nav-back:active {
+  background: rgba(45, 138, 110, 0.1);
+  border-color: rgba(45, 138, 110, 0.2);
+  transform: translateX(-2rpx);
+}
+
+/* ===== 加载骨架 - 书页质感 ===== */
 .skeleton {
-  padding: var(--space-xxl) 0;
+  padding: 48rpx 0;
 }
 
 .skeleton-header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-md);
-  margin-bottom: var(--space-xxl);
+  gap: 18rpx;
+  margin-bottom: 48rpx;
 }
 
 .skeleton-badge {
-  width: 64rpx;
-  height: 64rpx;
-  border-radius: var(--radius-full);
-  background: var(--color-bg-card);
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f2ece3, #ece5da);
+  animation: art-pulse 2s ease-in-out infinite;
 }
 
 .skeleton-line {
   height: 32rpx;
-  border-radius: var(--radius-sm);
-  background: var(--color-bg-card);
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+  border-radius: 8rpx;
+  background: linear-gradient(135deg, #f2ece3, #ece5da);
+  animation: art-pulse 2s ease-in-out infinite;
 }
 
 .skeleton-line.wide { width: 280rpx; }
@@ -95,40 +385,68 @@
 .skeleton-body {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: 24rpx;
 }
 
 .skeleton-block {
   width: 100%;
-  height: 160rpx;
-  border-radius: var(--radius-card);
-  background: var(--color-bg-card);
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+  height: 180rpx;
+  border-radius: 16rpx;
+  background: linear-gradient(135deg, #f2ece3, #ece5da);
+  animation: art-pulse 2s ease-in-out infinite;
 }
 
 /* ===== 错误状态 ===== */
 .error-state {
   text-align: center;
-  padding: var(--space-massive) var(--space-xl);
+  padding: 160rpx 48rpx;
+  position: relative;
+}
+
+/* 顶部装饰 */
+.error-state::before {
+  content: '';
+  position: absolute;
+  top: 120rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100rpx;
+  height: 2rpx;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(196, 148, 58, 0.15),
+    rgba(45, 138, 110, 0.1),
+    transparent
+  );
 }
 
 .error-icon {
-  font-size: 80rpx;
+  font-size: 88rpx;
   display: block;
-  margin-bottom: var(--space-md);
-  opacity: 0.6;
+  margin-bottom: 24rpx;
+  opacity: 0.25;
 }
 
 .error-text {
-  font-size: var(--fs-body);
-  color: var(--color-text-secondary);
+  font-size: 28rpx;
+  color: rgba(130, 110, 90, 0.45);
   display: block;
-  margin-bottom: var(--space-xs);
+  margin-bottom: 10rpx;
+  letter-spacing: 2rpx;
 }
 
 .error-hint {
-  font-size: var(--fs-body-small);
-  color: var(--color-text-dim);
+  font-size: 24rpx;
+  color: rgba(180, 155, 130, 0.3);
   display: block;
-  margin-bottom: var(--space-xxl);
+  margin-bottom: 60rpx;
+  letter-spacing: 1.5rpx;
+  font-style: italic;
+}
+
+/* ===== 新艺术风格动画 ===== */
+@keyframes art-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.7; }
 }

@@ -1,6 +1,6 @@
 {
   "navigationBarTitleText": "占卜结果",
-  "navigationBarBackgroundColor": "#FAF5EF",
+  "navigationBarBackgroundColor": "#FBF6F0",
   "usingComponents": {
     "tarot-card": "../../components/tarot-card/tarot-card"
   }
