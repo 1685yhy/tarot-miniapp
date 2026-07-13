@@ -28,7 +28,7 @@
     <view class="flex-center flex-col" style="padding:var(--space-xxxl) 0 var(--space-lg)">
       <text style="font-size:72rpx;display:block" class="anim-float">👑</text>
       <text class="heading-1 mt-sm">开通会员</text>
-      <text class="text-secondary mt-xs">解锁无限塔罗解读</text>
+      <text class="text-secondary mt-xs">解锁无限卡牌解读</text>
     </view>
 
     <!-- Benefits -->

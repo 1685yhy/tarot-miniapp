@@ -79,7 +79,7 @@
         <text class="anim-float" style="font-size:64rpx;color:var(--color-gold);display:block">✦</text>
       </view>
     </view>
-    <text class="hero-title anim-fade-in-up-1">塔罗占卜</text>
+    <text class="hero-title anim-fade-in-up-1">星光映照</text>
     <text class="hero-subtitle anim-fade-in-up-2">揭开命运的面纱</text>
   </view>
 

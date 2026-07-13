@@ -26,7 +26,7 @@
   <view wx:else>
     <!-- Header -->
     <view class="flex-center flex-col" style="padding:var(--space-xl) 0">
-      <text class="heading-2">📝 塔罗日记</text>
+      <text class="heading-2">📝 星光日记</text>
       <text class="text-dim mt-sm">每天一张牌，记录内心旅程</text>
     </view>
 
@@ -65,7 +65,7 @@
   <!-- Create modal -->
   <view class="modal-mask" wx:if="{{showCreate}}" bindtap="hideCreateModal">
     <view class="modal-content" catchtap="">
-      <text class="modal-title">今日塔罗日记</text>
+      <text class="modal-title">今日星光日记</text>
 
       <text class="text-secondary" style="display:block;margin-bottom:var(--space-sm)">今天的心情</text>
       <view class="mood-grid">
