@@ -1,5 +1,462 @@
-/* 首页 — Editorial Minimal */
+/* ============================================================
+   首页 — 柔光星辰 (Soft Starlight)
+   First impression — warm, magical, like a summer night sky
+   ============================================================ */
+
+/* -----------------------------------------------------------
+   1. HERO — Warm stargazing at twilight
+   Overrides common.wxss .hero
+   ----------------------------------------------------------- */
 
 .hero {
-  padding: 80rpx 0 40rpx;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 100rpx var(--spacing-md) 60rpx;
+  min-height: 420rpx;
+  overflow: hidden;
+  z-index: var(--z-base);
+}
+
+/* --- Main golden radial glow behind the title --- */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  width: 560rpx;
+  height: 560rpx;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle at center,
+    rgba(244, 212, 140, 0.12) 0%,
+    rgba(244, 212, 140, 0.06) 25%,
+    rgba(244, 212, 140, 0.02) 50%,
+    transparent 72%
+  );
+  pointer-events: none;
+  z-index: 0;
+  animation: hero-glow-pulse 6s ease-in-out infinite;
+}
+
+@keyframes hero-glow-pulse {
+  0%, 100% {
+    opacity: 0.7;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+}
+
+/* --- Scattered twinkling stars in the hero --- */
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 18%;
+  right: 22%;
+  width: 4rpx;
+  height: 4rpx;
+  background: var(--color-gold-light, #FADE9E);
+  border-radius: var(--radius-full);
+  box-shadow:
+    -220rpx 80rpx 0 0 var(--color-lavender, #B8A9E0),
+    140rpx 120rpx 0 1rpx var(--color-gold, #F4D48C),
+    -100rpx -40rpx 0 0 rgba(244, 212, 140, 0.7);
+  pointer-events: none;
+  z-index: 0;
+  animation: hero-star-drift 7s ease-in-out infinite;
+}
+
+@keyframes hero-star-drift {
+  0%, 100% {
+    opacity: 0.25;
+    transform: translateY(0) scale(1);
+  }
+  25% {
+    opacity: 0.55;
+    transform: translateY(-8rpx) scale(1.15);
+  }
+  50% {
+    opacity: 0.15;
+    transform: translateY(4rpx) scale(0.85);
+  }
+  75% {
+    opacity: 0.45;
+    transform: translateY(-4rpx) scale(1.05);
+  }
+}
+
+/* --- Additional star via .title-1 ::before (WeChat text supports ::before) --- */
+.title-1::before {
+  content: '';
+  position: absolute;
+  top: 20rpx;
+  left: -70rpx;
+  width: 3rpx;
+  height: 3rpx;
+  background: var(--color-lavender-light, #D0C4EE);
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 6rpx rgba(184, 169, 224, 0.25);
+  animation: hero-star-twinkle 5s ease-in-out infinite;
+  animation-delay: -1.5s;
+  pointer-events: none;
+}
+
+.title-1::after {
+  content: '';
+  position: absolute;
+  top: -30rpx;
+  right: -60rpx;
+  width: 3rpx;
+  height: 3rpx;
+  background: var(--color-gold, #F4D48C);
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 6rpx rgba(244, 212, 140, 0.2);
+  animation: hero-star-twinkle 6s ease-in-out infinite;
+  animation-delay: -3s;
+  pointer-events: none;
+}
+
+@keyframes hero-star-twinkle {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(0.8);
+  }
+  30% {
+    opacity: 0.1;
+    transform: scale(0.6);
+  }
+  60% {
+    opacity: 0.7;
+    transform: scale(1.3);
+  }
+}
+
+/* -----------------------------------------------------------
+   2. HERO TITLE & SUBTITLE
+   ----------------------------------------------------------- */
+
+.title-1 {
+  font-size: 58rpx;
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-text-primary, #F0EDE8);
+  line-height: var(--line-height-tight, 1.3);
+  letter-spacing: 10rpx;
+  text-shadow:
+    0 0 40rpx rgba(244, 212, 140, 0.10),
+    0 0 80rpx rgba(244, 212, 140, 0.04);
+  position: relative;
+  z-index: 1;
+}
+
+.hero .body-text {
+  color: var(--color-lavender, #B8A9E0);
+  font-size: var(--font-size-md, 30rpx);
+  letter-spacing: 4rpx;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 0 30rpx rgba(184, 169, 224, 0.08);
+}
+
+/* -----------------------------------------------------------
+   3. PAGE ANIMATIONS — Staggered entrance
+   ----------------------------------------------------------- */
+
+.anim-fade-in-up-1 {
+  animation: page-fade-up 0.8s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94)) forwards;
+}
+
+.anim-fade-in-up-2 {
+  opacity: 0;
+  animation: page-fade-up 0.8s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94)) 0.25s forwards;
+}
+
+.anim-fade-in-up-3 {
+  opacity: 0;
+  animation: page-fade-up 0.8s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94)) 0.5s forwards;
+}
+
+@keyframes page-fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(30rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -----------------------------------------------------------
+   4. CARD VARIANTS
+   ----------------------------------------------------------- */
+
+/* --- Warm variant — dark indigo, golden promise --- */
+.card-warm {
+  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 40%, #303065 100%);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.30);
+  box-shadow:
+    0 4rpx 24rpx rgba(0, 0, 0, 0.28),
+    0 0 50rpx rgba(244, 212, 140, 0.04),
+    inset 0 0 50rpx rgba(244, 212, 140, 0.03);
+  animation: card-breathe 4s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Inner shimmer overlay */
+.card-warm::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    ellipse at 30% 20%,
+    rgba(244, 212, 140, 0.04) 0%,
+    transparent 60%
+  );
+  pointer-events: none;
+}
+
+@keyframes card-breathe {
+  0%, 100% {
+    border-color: rgba(244, 212, 140, 0.28);
+    box-shadow:
+      0 4rpx 24rpx rgba(0, 0, 0, 0.28),
+      0 0 40rpx rgba(244, 212, 140, 0.03),
+      inset 0 0 40rpx rgba(244, 212, 140, 0.02);
+  }
+  50% {
+    border-color: rgba(244, 212, 140, 0.52);
+    box-shadow:
+      0 4rpx 24rpx rgba(0, 0, 0, 0.28),
+      0 0 60rpx rgba(244, 212, 140, 0.10),
+      inset 0 0 60rpx rgba(244, 212, 140, 0.05);
+  }
+}
+
+/* --- Pressable interaction --- */
+.card-press {
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.card-press:active {
+  transform: scale(0.96);
+  border-color: rgba(244, 212, 140, 0.55) !important;
+  box-shadow:
+    0 2rpx 12rpx rgba(0, 0, 0, 0.30),
+    0 0 40rpx rgba(244, 212, 140, 0.12),
+    inset 0 0 30rpx rgba(244, 212, 140, 0.04);
+}
+
+/* --- After-draw state: warm golden highlight --- */
+.card.card--revealed {
+  border-color: var(--color-gold-dark, #D4B06A) !important;
+  background: linear-gradient(145deg, #2A2A5E 0%, #2E2E62 100%);
+  box-shadow:
+    0 4rpx 24rpx rgba(0, 0, 0, 0.28),
+    0 0 40rpx rgba(244, 212, 140, 0.06);
+}
+
+/* -----------------------------------------------------------
+   5. TYPOGRAPHY ALIASES (page-specific)
+   ----------------------------------------------------------- */
+
+/* Big hero title — handled by .title-1 above */
+
+/* Card title inside daily card */
+.title-2 {
+  font-size: var(--font-size-2xl, 48rpx);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-gold, #F4D48C);
+  line-height: var(--line-height-tight, 1.3);
+  text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.08);
+}
+
+/* Card subtitle / small label */
+.title-4 {
+  font-size: var(--font-size-lg, 34rpx);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-text-primary, #F0EDE8);
+  line-height: var(--line-height-tight, 1.3);
+  letter-spacing: 2rpx;
+}
+
+/* Small body text */
+.body-sm {
+  font-size: var(--font-size-sm, 24rpx);
+  font-weight: var(--font-weight-normal, 400);
+  color: var(--color-lavender, #B8A9E0);
+  line-height: var(--line-height-base, 1.6);
+  letter-spacing: 1rpx;
+}
+
+/* Accent-colored caption */
+.accent-text {
+  color: var(--color-gold, #F4D48C);
+  font-weight: var(--font-weight-medium, 500);
+  letter-spacing: 2rpx;
+}
+
+/* -----------------------------------------------------------
+   6. SECTION TITLE (spread grid header)
+   ----------------------------------------------------------- */
+
+.section-title {
+  font-size: var(--font-size-lg, 34rpx);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text-primary, #F0EDE8);
+  display: block;
+  margin-bottom: var(--spacing-md, 24rpx);
+  letter-spacing: 2rpx;
+  position: relative;
+  padding-left: 24rpx;
+}
+
+.section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4rpx;
+  height: 24rpx;
+  background: var(--color-gold, #F4D48C);
+  border-radius: 2rpx;
+  box-shadow: 0 0 8rpx rgba(244, 212, 140, 0.20);
+}
+
+/* --- Spread grid cards: constellation map feel --- */
+.section .card-press {
+  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 100%);
+  border: 1rpx solid rgba(244, 212, 140, 0.15);
+  border-radius: var(--radius-lg, 24rpx);
+  padding: 24rpx 16rpx;
+  box-shadow:
+    0 2rpx 12rpx rgba(0, 0, 0, 0.20),
+    0 0 20rpx rgba(244, 212, 140, 0.02);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.section .card-press:active {
+  transform: scale(0.94);
+  border-color: rgba(244, 212, 140, 0.55);
+  box-shadow:
+    0 4rpx 20rpx rgba(0, 0, 0, 0.25),
+    0 0 40rpx rgba(244, 212, 140, 0.08);
+}
+
+/* Spread card icons and text */
+.section .card-press text:first-child {
+  color: var(--color-gold, #F4D48C) !important;
+  text-shadow: 0 0 12rpx rgba(244, 212, 140, 0.10);
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.section .card-press .body-sm {
+  color: var(--color-text-primary, #F0EDE8);
+  font-size: var(--font-size-sm, 24rpx);
+  letter-spacing: 1rpx;
+}
+
+/* -----------------------------------------------------------
+   7. ERROR STATE
+   ----------------------------------------------------------- */
+
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx var(--spacing-lg, 32rpx) 80rpx;
+  text-align: center;
+  animation: page-fade-up 0.8s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94)) forwards;
+}
+
+.error-icon {
+  font-size: 72rpx;
+  color: var(--color-gold, #F4D48C);
+  opacity: 0.50;
+  margin-bottom: var(--spacing-lg, 32rpx);
+  display: block;
+  text-shadow: 0 0 30rpx rgba(244, 212, 140, 0.10);
+}
+
+.error-text {
+  font-size: var(--font-size-xl, 40rpx);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text-primary, #F0EDE8);
+  margin-bottom: var(--spacing-xs, 12rpx);
+  display: block;
+}
+
+.error-hint {
+  font-size: var(--font-size-sm, 24rpx);
+  color: var(--color-text-tertiary, #6A6588);
+  margin-bottom: var(--spacing-xl, 48rpx);
+  display: block;
+  line-height: var(--line-height-base, 1.6);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-gold, #F4D48C);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.30);
+  border-radius: var(--radius-pill, 999rpx);
+  padding: 20rpx 48rpx;
+  font-size: var(--font-size-base, 28rpx);
+  font-weight: var(--font-weight-medium, 500);
+  transition: all 0.3s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94));
+}
+
+.btn-outline:active {
+  background: rgba(244, 212, 140, 0.08);
+  border-color: rgba(244, 212, 140, 0.50);
+  transform: scale(0.96);
+}
+
+/* -----------------------------------------------------------
+   8. SKELETON TWEAKS (page-level)
+   ----------------------------------------------------------- */
+
+.page > .skeleton-circle {
+  border-radius: var(--radius-full, 100%);
+}
+
+.page > .skeleton-text-sm {
+  height: 24rpx;
+}
+
+/* -----------------------------------------------------------
+   9. DECORATIVE: Daily card icon (✦) special treatment
+   ----------------------------------------------------------- */
+
+.card-warm > text:first-child {
+  display: block;
+  margin-bottom: 24rpx;
+  font-size: 52rpx;
+  color: var(--color-gold, #F4D48C);
+  text-shadow: 0 0 30rpx rgba(244, 212, 140, 0.15);
+  animation: icon-pulse 4s ease-in-out infinite;
+}
+
+@keyframes icon-pulse {
+  0%, 100% {
+    text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.10);
+    opacity: 0.85;
+  }
+  50% {
+    text-shadow: 0 0 40rpx rgba(244, 212, 140, 0.25);
+    opacity: 1;
+  }
 }

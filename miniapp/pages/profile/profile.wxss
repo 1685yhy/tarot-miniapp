@@ -1,19 +1,48 @@
 /* ============================================================
-   Profile Page — Editorial Minimal
-   Clean, airy white space with warm brown accent
+   Profile Page — 柔光星辰
+   Dark indigo backdrop · Golden starlight accents · Premium user card
    ============================================================ */
 
-/* ---------------------------------------------------------------
-   Container
-   --------------------------------------------------------------- */
+/* ---- Old variable aliases (WXML inline style compat) ---- */
+page {
+  --space-massive: var(--spacing-5xl);
+  --space-xxxl: var(--spacing-3xl);
+  --space-xxl: var(--spacing-2xl);
+  --space-xl: var(--spacing-xl);
+  --space-lg: var(--spacing-lg);
+  --space-md: var(--spacing-md);
+  --space-sm: var(--spacing-sm);
+  --space-xs: var(--spacing-xs);
+  --fs-h3: var(--font-size-xl);
+  --fs-h4: var(--font-size-lg);
+  --fs-body: var(--font-size-base);
+  --fs-body-small: var(--font-size-sm);
+  --fs-caption: var(--font-size-xs);
+  --lh-loose: var(--line-height-loose);
+  --lh-normal: var(--line-height-base);
+  --fw-semibold: var(--font-weight-semibold);
+  --fw-bold: var(--font-weight-bold);
+  --fw-medium: var(--font-weight-medium);
+  --duration-normal: var(--duration-base);
+  --duration-fast: var(--duration-fast);
+  --ease-out: var(--ease-out);
+  --ease-in-out: var(--ease-in-out);
+  --color-star-subtle: rgba(244, 212, 140, 0.12);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-primary: var(--color-text-primary);
+}
+
+/* ---- Container ---- */
 .container {
-  padding: var(--space-xl);
-  padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-massive));
+  padding: var(--spacing-xl);
+  padding-bottom: calc(var(--safe-area-bottom) + var(--spacing-5xl));
   min-height: 100vh;
+  position: relative;
+  z-index: 1;
 }
 
 /* ---------------------------------------------------------------
-   Star field — subtle ambient
+   Star field — golden starlight particles
    --------------------------------------------------------------- */
 .star-field {
   position: fixed;
@@ -24,16 +53,17 @@
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
-  opacity: 0.12;
+  opacity: 0.20;
 }
 
 .star-particle {
   position: absolute;
   width: 4rpx;
   height: 4rpx;
-  background: #8D6E63;
+  background: var(--color-gold);
   border-radius: 50%;
   opacity: 0.25;
+  box-shadow: 0 0 6rpx var(--color-gold-glow);
 }
 
 .star-particle:nth-child(1) { top: 10%; left: 20%; animation: star-drift 8s ease-in-out infinite; }
@@ -48,72 +78,179 @@
 .star-particle:nth-child(10) { top: 22%; left: 48%; animation: star-drift 7s ease-in-out infinite 0.8s; }
 
 @keyframes star-drift {
-  0%, 100% { transform: translateY(0) scale(1); opacity: 0.2; }
-  50% { transform: translateY(-24rpx) scale(1.4); opacity: 0.5; }
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.15; box-shadow: 0 0 4rpx rgba(244, 212, 140, 0.10); }
+  50% { transform: translateY(-24rpx) scale(1.5); opacity: 0.55; box-shadow: 0 0 12rpx rgba(244, 212, 140, 0.25); }
 }
 
 /* ---------------------------------------------------------------
-   User Card — white bg, centered, clean avatar, md font name
+   text-dim / text-body — class aliases for old WXML
+   --------------------------------------------------------------- */
+.text-dim {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.text-body {
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-base);
+}
+
+/* ---------------------------------------------------------------
+   Error State
+   --------------------------------------------------------------- */
+.error-state {
+  text-align: center;
+  padding: var(--spacing-5xl) var(--spacing-xl);
+}
+
+.error-icon {
+  font-size: 80rpx;
+  display: block;
+  margin-bottom: var(--spacing-md);
+  opacity: 0.50;
+}
+
+.error-text {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  display: block;
+  margin-bottom: var(--spacing-xs);
+}
+
+.error-hint {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+  display: block;
+  margin-bottom: var(--spacing-2xl);
+}
+
+/* ---- btn-small override for error state ---- */
+.btn-small {
+  font-size: var(--font-size-sm);
+  padding: 16rpx 36rpx;
+}
+
+/* ---------------------------------------------------------------
+   Empty State
+   --------------------------------------------------------------- */
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-5xl) 0;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  display: block;
+  margin-bottom: var(--spacing-md);
+  opacity: 0.40;
+}
+
+.empty-text {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  display: block;
+  margin-bottom: var(--spacing-xs);
+}
+
+.empty-hint {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+  display: block;
+}
+
+/* ---------------------------------------------------------------
+   User Card — Dark indigo surface with golden glow
    --------------------------------------------------------------- */
 .user-card {
   text-align: center;
-  padding: var(--space-xxxl) var(--space-xl) var(--space-xxl);
-  border-radius: 24rpx;
-  margin-bottom: var(--space-xl);
-  background: #FFFFFF;
-  box-shadow: 0 2rpx 16rpx rgba(0, 0, 0, 0.04);
+  padding: var(--spacing-3xl) var(--spacing-xl) var(--spacing-2xl);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-xl);
+  background: var(--color-card);
+  border: 1rpx solid var(--color-card-border);
+  box-shadow: var(--shadow-card);
   position: relative;
+  overflow: hidden;
 }
 
-.avatar {
+/* Soft golden top glow */
+.user-card::before {
+  content: '';
+  position: absolute;
+  top: -120rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400rpx;
+  height: 240rpx;
+  background: radial-gradient(circle, rgba(244, 212, 140, 0.10) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Avatar override (emoji-based, not image) */
+.user-card .avatar {
   font-size: 88rpx;
   display: block;
   line-height: 1;
+  width: auto;
+  height: auto;
+  border: none;
+  background: none;
+  border-radius: 0;
+  margin-bottom: var(--spacing-sm);
 }
 
+/* Badge */
 .badge {
   display: inline-block;
   padding: 4rpx 22rpx;
-  border-radius: 20rpx;
-  font-size: var(--fs-caption);
-  background: #EFEBE9;
-  color: #8D6E63;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-xs);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  border: 1rpx solid rgba(244, 212, 140, 0.15);
   letter-spacing: 1rpx;
 }
 
 .badge-premium {
-  background: #8D6E63;
-  color: #FFFFFF;
+  background: rgba(244, 212, 140, 0.12);
+  color: var(--color-gold);
+  border-color: rgba(244, 212, 140, 0.25);
 }
 
+/* Upgrade button — golden gradient */
 .upgrade-btn {
-  margin-top: var(--space-lg);
-  background: #8D6E63;
-  color: #FFFFFF;
-  font-weight: var(--fw-semibold);
-  font-size: var(--fs-body);
+  margin-top: var(--spacing-lg);
+  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
+  color: var(--color-text-inverse);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
   border: none;
-  border-radius: 24rpx;
-  padding: var(--space-md) var(--space-huge);
+  border-radius: var(--radius-pill);
+  padding: var(--spacing-md) var(--spacing-huge);
   display: inline-block;
   line-height: 1.4;
-  transition: opacity var(--duration-fast);
+  box-shadow: var(--shadow-gold-button);
+  transition: all var(--duration-fast) var(--ease-soft);
 }
 
 .upgrade-btn:active {
-  opacity: 0.75;
+  transform: scale(0.96);
+  opacity: 0.85;
+  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.20);
 }
 
 /* ---------------------------------------------------------------
-   Stats Row — flex row, large numbers, warm brown accent
+   Stats Row — Glass dark cards with golden numbers
    --------------------------------------------------------------- */
 .stats-row {
   display: flex;
-  background: #FFFFFF;
-  border-radius: 20rpx;
-  padding: var(--space-xl);
-  margin-bottom: var(--space-xl);
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.03);
+  background: var(--color-card);
+  border: 1rpx solid var(--color-card-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+  box-shadow: var(--shadow-card);
 }
 
 .stat-item {
@@ -129,110 +266,120 @@
   top: 50%;
   transform: translateY(-50%);
   width: 1rpx;
-  height: 36%;
-  background: #EEEEEE;
+  height: 40%;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(244, 212, 140, 0.20) 50%,
+    transparent 100%
+  );
 }
 
 .stat-num {
-  font-size: 42rpx;
-  font-weight: var(--fw-bold, 700);
-  color: #8D6E63;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-gold);
   display: block;
   line-height: 1.15;
+  text-shadow: 0 0 16rpx rgba(244, 212, 140, 0.15);
 }
 
 .stat-label {
-  font-size: var(--fs-caption);
-  color: #AAAAAA;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
   display: block;
-  margin-top: var(--space-xs);
-  letter-spacing: 1rpx;
+  margin-top: var(--spacing-xs);
+  letter-spacing: 2rpx;
+  text-transform: uppercase;
 }
 
 /* ---------------------------------------------------------------
-   Quick Actions — white cards, list style with arrow indicators
+   Quick Actions — Dark cards with golden borders
    --------------------------------------------------------------- */
 .quick-actions {
-  margin-bottom: var(--space-xxl);
-  border-radius: 20rpx;
+  margin-bottom: var(--spacing-2xl);
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  background: #FFFFFF;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.03);
+  background: var(--color-card);
+  border: 1rpx solid var(--color-card-border);
+  box-shadow: var(--shadow-card);
 }
 
 .action-item {
   display: flex;
   align-items: center;
-  background: #FFFFFF;
-  padding: var(--space-lg) var(--space-xl);
-  transition: background var(--duration-fast);
+  background: transparent;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  transition: all var(--duration-fast) var(--ease-soft);
   position: relative;
 }
 
 .action-item + .action-item {
-  border-top: 1rpx solid #F2F2F2;
+  border-top: 1rpx solid rgba(244, 212, 140, 0.08);
 }
 
 .action-item:active {
-  background: #F8F6F5;
+  background: var(--color-card-hover);
 }
 
-/* Arrow indicator */
+/* Arrow indicator — golden */
 .action-item::after {
   content: '›';
   font-size: 36rpx;
-  color: #CCCCCC;
+  color: var(--color-gold);
+  opacity: 0.40;
   line-height: 1;
   margin-left: auto;
   flex-shrink: 0;
 }
 
 .action-icon {
-  font-size: 40rpx !important;
-  display: inline !important;
-  margin-right: var(--space-md);
+  font-size: 40rpx;
+  margin-right: var(--spacing-md);
   flex-shrink: 0;
+  opacity: 0.80;
 }
 
 /* ---------------------------------------------------------------
-   History Section — clean list
+   History Section — Dark card list
    --------------------------------------------------------------- */
 .history-section {
-  border-radius: 20rpx;
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  background: #FFFFFF;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.03);
+  background: var(--color-card);
+  border: 1rpx solid var(--color-card-border);
+  box-shadow: var(--shadow-card);
 }
 
 .history-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-lg) var(--space-xl);
-  border-bottom: 1rpx solid #F2F2F2;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-bottom: 1rpx solid rgba(244, 212, 140, 0.08);
 }
 
 .clear-btn {
-  font-size: var(--fs-body-small);
-  color: #AAAAAA;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
   background: none;
   border: none;
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: 12rpx;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
   transition: all var(--duration-fast);
 }
 
 .clear-btn:active {
-  color: #8D6E63;
-  background: rgba(141, 110, 99, 0.06);
+  color: var(--color-gold);
+  background: rgba(244, 212, 140, 0.06);
 }
 
 .history-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-lg) var(--space-xl);
-  border-bottom: 1rpx solid #F2F2F2;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-bottom: 1rpx solid rgba(244, 212, 140, 0.06);
   transition: background var(--duration-fast);
 }
 
@@ -241,73 +388,54 @@
 }
 
 .history-item:active {
-  background: #F8F6F5;
+  background: var(--color-card-hover);
 }
 
 /* ---------------------------------------------------------------
-   Loading / Skeleton
+   Skeleton — Dark indigo shimmer
    --------------------------------------------------------------- */
 .skeleton-card {
   width: 100%;
   height: 320rpx;
-  border-radius: 24rpx;
-  background: #F2F2F2;
-  margin-bottom: var(--space-xl);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  margin-bottom: var(--spacing-xl);
   animation: skeleton-pulse 1.4s ease-in-out infinite;
 }
 
 .skeleton-stats {
   width: 100%;
   height: 110rpx;
-  border-radius: 20rpx;
-  background: #F2F2F2;
-  margin-bottom: var(--space-xl);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  margin-bottom: var(--spacing-xl);
   animation: skeleton-pulse 1.4s ease-in-out infinite;
 }
 
 .skeleton-actions {
   display: flex;
-  gap: var(--space-md);
-  margin-bottom: var(--space-xxl);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-2xl);
 }
 
 .skeleton-action {
   flex: 1;
   height: 96rpx;
-  border-radius: 20rpx;
-  background: #F2F2F2;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
   animation: skeleton-pulse 1.4s ease-in-out infinite;
 }
 
 @keyframes skeleton-pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  50% { opacity: 0.45; }
 }
 
 /* ---------------------------------------------------------------
-   Error State
+   Staggered entrance animations (WXML compat)
    --------------------------------------------------------------- */
-.error-state {
-  text-align: center;
-  padding: var(--space-massive) var(--space-xl);
-}
-
-.error-icon {
-  font-size: 80rpx;
-  display: block;
-  margin-bottom: var(--space-md);
-}
-
-.error-text {
-  font-size: var(--fs-body);
-  color: #666666;
-  display: block;
-  margin-bottom: var(--space-xs);
-}
-
-.error-hint {
-  font-size: var(--fs-body-small);
-  color: #AAAAAA;
-  display: block;
-  margin-bottom: var(--space-xxl);
-}
+.anim-fade-in-up-1 { opacity: 0; animation: fade-up 0.6s var(--ease-soft) 0.05s forwards; }
+.anim-fade-in-up-2 { opacity: 0; animation: fade-up 0.6s var(--ease-soft) 0.10s forwards; }
+.anim-fade-in-up-3 { opacity: 0; animation: fade-up 0.6s var(--ease-soft) 0.15s forwards; }
+.anim-fade-in-up-4 { opacity: 0; animation: fade-up 0.6s var(--ease-soft) 0.20s forwards; }
+.anim-fade-in-up-5 { opacity: 0; animation: fade-up 0.6s var(--ease-soft) 0.25s forwards; }

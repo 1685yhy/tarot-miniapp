@@ -1,88 +1,207 @@
-/* ===== 年度报告 - 轻奢简约主题 ===== */
-/*    深色基调的高级感，月度卡片精致布局    */
+/* ============================================================
+   Annual Report Page — 柔光星辰
+   Celestial calendar aesthetic · Monthly dark cards
+   Golden section headers · Deep cosmic indigo
+   ============================================================ */
 
-/* ---------------------------------------------------------------
-   Container — 深色基底，衬托内容
-   --------------------------------------------------------------- */
-.container {
-  padding: var(--space-xl);
-  padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-massive));
-  background: linear-gradient(180deg, #1A1720 0%, #221F2A 100%);
-  min-height: 100vh;
+/* ---- Old variable aliases (WXML inline style compat) ---- */
+page {
+  --space-massive: var(--spacing-5xl);
+  --space-xxxl: var(--spacing-3xl);
+  --space-xxl: var(--spacing-2xl);
+  --space-xl: var(--spacing-xl);
+  --space-lg: var(--spacing-lg);
+  --space-md: var(--spacing-md);
+  --space-sm: var(--spacing-sm);
+  --space-xs: var(--spacing-xs);
+  --fs-h3: var(--font-size-xl);
+  --fs-h4: var(--font-size-lg);
+  --fs-body: var(--font-size-base);
+  --fs-body-small: var(--font-size-sm);
+  --fs-caption: var(--font-size-xs);
+  --lh-loose: var(--line-height-loose);
+  --lh-normal: var(--line-height-base);
+  --fw-semibold: var(--font-weight-semibold);
+  --fw-bold: var(--font-weight-bold);
+  --fw-medium: var(--font-weight-medium);
+  --duration-normal: var(--duration-base);
+  --duration-fast: var(--duration-fast);
+  --ease-out: var(--ease-out);
+  --ease-in-out: var(--ease-in-out);
+  --color-star-subtle: rgba(244, 212, 140, 0.12);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-primary: var(--color-text-primary);
 }
 
 /* ---------------------------------------------------------------
-   Intro — 卷首语
+   Container — Deep cosmic indigo gradient
+   --------------------------------------------------------------- */
+.container {
+  padding: var(--spacing-xl);
+  padding-bottom: calc(var(--safe-area-bottom) + var(--spacing-5xl));
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------------------------------------------------------------
+   text-dim / text-secondary — class aliases for old WXML
+   --------------------------------------------------------------- */
+.text-dim {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.text-secondary {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+}
+
+/* ---------------------------------------------------------------
+   Intro — Preamble before generation
    --------------------------------------------------------------- */
 .intro {
   text-align: center;
-  padding: var(--space-huge) var(--space-xl) var(--space-xxl);
+  padding: var(--spacing-5xl) var(--spacing-xl) var(--spacing-2xl);
+}
+
+.heading-1 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  text-align: center;
+  letter-spacing: 2rpx;
+}
+
+/* ---- Glow pulse button ---- */
+.btn-glow-pulse {
+  width: 80%;
+  margin: var(--spacing-xl) auto 0;
+  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
+  color: var(--color-text-inverse);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-pill);
+  padding: 28rpx 0;
+  border: none;
+  box-shadow: var(--shadow-gold-button);
+  letter-spacing: 2rpx;
+  transition: all var(--duration-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: glow-pulse 2.5s ease-in-out infinite;
+}
+
+.btn-glow-pulse:active {
+  transform: scale(0.96);
+  opacity: 0.90;
+  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.20);
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 10rpx rgba(244, 212, 140, 0.08), var(--shadow-gold-button); }
+  50% { box-shadow: 0 0 30rpx rgba(244, 212, 140, 0.20), var(--shadow-gold-button); }
+}
+
+/* ---- Secondary button (outline style) ---- */
+.btn-secondary {
+  width: 80%;
+  background: transparent;
+  border: 1rpx solid rgba(244, 212, 140, 0.20);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+  border-radius: var(--radius-pill);
+  padding: 24rpx 0;
+  letter-spacing: 1rpx;
+  transition: all var(--duration-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-secondary:active {
+  border-color: rgba(244, 212, 140, 0.40);
+  color: var(--color-gold);
+  background: rgba(244, 212, 140, 0.04);
 }
 
 /* ---------------------------------------------------------------
-   Mystic Loading — 深邃等待
+   Mystic Loading — Deep cosmic waiting state
    --------------------------------------------------------------- */
 .mystic-loading {
   text-align: center;
-  padding: var(--space-massive) var(--space-xl);
+  padding: var(--spacing-5xl) var(--spacing-xl);
 }
 
 .mystic-loading-symbol {
   font-size: 72rpx;
   display: block;
-  margin-bottom: var(--space-xl);
-  opacity: 0.8;
+  margin-bottom: var(--spacing-xl);
+  opacity: 0.80;
+  animation: mystic-rotate 3s ease-in-out infinite;
+}
+
+@keyframes mystic-rotate {
+  0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.70; }
+  50% { transform: rotate(180deg) scale(1.10); opacity: 1; }
 }
 
 .mystic-loading-title {
-  font-size: var(--fs-h4);
-  color: #E8E4F0;
-  font-weight: var(--fw-semibold);
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
   display: block;
-  margin-bottom: var(--space-sm);
+  margin-bottom: var(--spacing-sm);
   letter-spacing: 2rpx;
 }
 
 .mystic-loading-sub {
-  font-size: var(--fs-body);
-  color: #8A84A0;
+  font-size: var(--font-size-base);
+  color: var(--color-text-tertiary);
   display: block;
 }
 
 /* ---------------------------------------------------------------
-   Report — 报告正文
+   Report — Main report body
    --------------------------------------------------------------- */
 .report {
-  padding: var(--space-lg) 0;
+  padding: var(--spacing-lg) 0;
 }
 
+/* ---- Golden section title (centered) ---- */
 .section-title-center {
-  font-size: var(--fs-h3);
-  color: #E8E4F0;
-  font-weight: var(--fw-bold);
+  font-size: var(--font-size-xl);
+  color: var(--color-gold);
+  font-weight: var(--font-weight-bold);
   display: block;
   text-align: center;
-  margin-bottom: var(--space-xxl);
+  margin-bottom: var(--spacing-2xl);
   letter-spacing: 2rpx;
+  text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.08);
 }
 
-/* Monthly cards section — 白色卡片展示 */
+/* ---------------------------------------------------------------
+   Monthly Cards — Celestial calendar
+   --------------------------------------------------------------- */
 .report-cards-section {
-  margin-bottom: var(--space-xxl);
+  margin-bottom: var(--spacing-2xl);
 }
 
 .section-subtitle {
-  font-size: var(--fs-body);
-  color: #8A84A0;
+  font-size: var(--font-size-base);
+  color: var(--color-gold);
+  font-weight: var(--font-weight-medium);
   display: block;
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--spacing-lg);
   text-align: center;
   letter-spacing: 2rpx;
+  opacity: 0.85;
 }
 
 .monthly-cards-scroll {
   white-space: nowrap;
-  padding-bottom: var(--space-md);
+  padding-bottom: var(--spacing-md);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -90,125 +209,182 @@
 .monthly-cards-row {
   display: flex;
   flex-direction: row;
-  gap: var(--space-md);
-  padding: 0 var(--space-sm);
+  gap: var(--spacing-md);
+  padding: 0 var(--spacing-sm);
 }
 
+/* ---- Individual month card (celestial inspired) ---- */
 .monthly-card-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   flex-shrink: 0;
   width: 300rpx;
-  padding: var(--space-lg) var(--space-md);
-  border-radius: 24rpx;
-  background: #FFFFFF;
-  border: 1rpx solid rgba(255, 255, 255, 0.06);
-  transition: all var(--duration-normal) var(--ease-out);
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.15);
+  padding: var(--spacing-lg) var(--spacing-md);
+  border-radius: var(--radius-lg);
+  background: var(--color-card);
+  border: 1rpx solid var(--color-card-border);
+  transition: all var(--duration-base) var(--ease-soft);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Celestial starlight accent */
+.monthly-card-item::before {
+  content: '';
+  position: absolute;
+  top: -60rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200rpx;
+  height: 120rpx;
+  background: radial-gradient(circle, rgba(244, 212, 140, 0.06) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 .monthly-card-item:active {
-  transform: translateY(-4rpx);
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.2);
+  transform: translateY(-6rpx);
+  border-color: var(--color-card-border-hover);
+  box-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.30), 0 0 60rpx rgba(244, 212, 140, 0.06);
 }
 
+/* Month label — golden --tarot-card */
 .month-label {
-  font-size: var(--fs-body-small);
-  color: #6A6280;
+  font-size: var(--font-size-sm);
+  color: var(--color-gold);
   text-align: center;
-  margin-top: var(--space-sm);
-  letter-spacing: 1rpx;
-  font-weight: var(--fw-medium);
+  margin-top: var(--spacing-sm);
+  letter-spacing: 2rpx;
+  font-weight: var(--font-weight-medium);
+  opacity: 0.80;
 }
 
-/* Report body — 深色卡片中的文字内容 */
+/* ---------------------------------------------------------------
+   Report Body — Dark cosmic card with report text
+   --------------------------------------------------------------- */
 .report-body {
-  border-radius: 28rpx;
-  padding: var(--space-xxl);
-  margin-bottom: var(--space-xl);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-2xl);
+  margin-bottom: var(--spacing-xl);
   position: relative;
   overflow: hidden;
-  background: linear-gradient(160deg, #2A2735, #24212E);
-  border: 1rpx solid rgba(255, 255, 255, 0.04);
-  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.2);
+  background: var(--color-card);
+  border: 1rpx solid var(--color-card-border);
+  box-shadow: var(--shadow-card);
+}
+
+/* Gold rim glow */
+.report-body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2rpx;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(244, 212, 140, 0.20) 30%,
+    rgba(244, 212, 140, 0.35) 50%,
+    rgba(244, 212, 140, 0.20) 70%,
+    transparent 100%
+  );
+  pointer-events: none;
 }
 
 .report-text {
-  font-size: var(--fs-body);
-  color: #D0CCE0;
-  line-height: var(--lh-loose);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-loose);
   white-space: pre-wrap;
   letter-spacing: 1rpx;
 }
 
-/* ---------------------------------------------------------------
-   Buttons — 深色背景按钮
-   --------------------------------------------------------------- */
-.btn-glow-pulse {
-  width: 80%;
-  margin: var(--space-xl) auto 0;
-  background: linear-gradient(135deg, #6B5B9E, #8B7BBE);
-  color: #FFFFFF;
-  font-size: var(--fs-h4);
-  font-weight: var(--fw-semibold);
-  border-radius: 44rpx;
-  padding: 28rpx 0;
+/* ---- Primary button (share) ---- */
+.btn-primary {
+  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
+  color: var(--color-text-inverse);
   border: none;
-  box-shadow: 0 4rpx 24rpx rgba(107, 91, 158, 0.3);
-  letter-spacing: 2rpx;
-  transition: all var(--duration-normal);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-pill);
+  padding: 24rpx 48rpx;
+  box-shadow: var(--shadow-gold-button);
+  transition: all var(--duration-base) var(--ease-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
-.btn-glow-pulse:active {
-  transform: scale(0.96);
-  opacity: 0.9;
-}
-
-.btn-secondary {
-  width: 80%;
-  background: transparent;
-  border: 2rpx solid rgba(255, 255, 255, 0.12);
-  color: #A09AB8;
-  font-size: var(--fs-body);
-  border-radius: 44rpx;
-  padding: 24rpx 0;
-  letter-spacing: 1rpx;
-  transition: all var(--duration-normal);
-}
-
-.btn-secondary:active {
-  border-color: rgba(255, 255, 255, 0.25);
-  color: #C8C4D8;
+.btn-primary:active {
+  transform: scale(0.97);
+  opacity: 0.90;
+  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.20);
 }
 
 /* ---------------------------------------------------------------
-   Skeleton — 深色骨架
+   Error State
+   --------------------------------------------------------------- */
+.error-state {
+  text-align: center;
+  padding: var(--spacing-5xl) var(--spacing-xl);
+}
+
+.error-icon {
+  font-size: 80rpx;
+  display: block;
+  margin-bottom: var(--spacing-md);
+  opacity: 0.50;
+}
+
+.error-text {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  display: block;
+  margin-bottom: var(--spacing-xs);
+}
+
+.error-hint {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+  display: block;
+  margin-bottom: var(--spacing-2xl);
+}
+
+.btn-small {
+  font-size: var(--font-size-sm);
+  padding: 16rpx 36rpx;
+}
+
+/* ---------------------------------------------------------------
+   Skeleton — Dark cosmic shimmer
    --------------------------------------------------------------- */
 .skeleton {
-  padding: var(--space-xxl) 0;
+  padding: var(--spacing-2xl) 0;
 }
 
 .skeleton-hero-area {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-md);
-  margin-bottom: var(--space-xxxl);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-3xl);
 }
 
 .skeleton-icon {
   width: 80rpx;
   height: 80rpx;
   border-radius: var(--radius-full);
-  background: linear-gradient(135deg, #2E2B3A, #353240);
+  background: var(--color-surface);
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
 
 .skeleton-line {
   height: 32rpx;
-  border-radius: 12rpx;
-  background: linear-gradient(135deg, #2E2B3A, #353240);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
 
@@ -218,46 +394,36 @@
 .skeleton-desc {
   width: 80%;
   height: 80rpx;
-  border-radius: 12rpx;
-  background: linear-gradient(135deg, #2E2B3A, #353240);
-  margin-bottom: var(--space-xxl);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  margin-bottom: var(--spacing-2xl);
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
 
 .skeleton-btn {
   width: 80%;
   height: 88rpx;
-  border-radius: 40rpx;
-  background: linear-gradient(135deg, #2E2B3A, #353240);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
   margin: 0 auto;
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
 
+@keyframes pulse-scale {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
 /* ---------------------------------------------------------------
-   Error — 深色报错
+   Entrance animations
    --------------------------------------------------------------- */
-.error-state {
-  text-align: center;
-  padding: var(--space-massive) var(--space-xl);
-}
+.anim-fade-in-up-1 { opacity: 0; animation: fade-up 0.6s var(--ease-soft) 0.05s forwards; }
+.anim-fade-in-up-2 { opacity: 0; animation: fade-up 0.6s var(--ease-soft) 0.10s forwards; }
+.anim-fade-in-up-3 { opacity: 0; animation: fade-up 0.6s var(--ease-soft) 0.15s forwards; }
+.anim-fade-in-up-4 { opacity: 0; animation: fade-up 0.6s var(--ease-soft) 0.20s forwards; }
+.anim-fade-in-up-5 { opacity: 0; animation: fade-up 0.6s var(--ease-soft) 0.25s forwards; }
 
-.error-icon {
-  font-size: 80rpx;
-  display: block;
-  margin-bottom: var(--space-md);
-  opacity: 0.5;
-}
-
-.error-text {
-  font-size: var(--fs-body);
-  color: #A09AB8;
-  display: block;
-  margin-bottom: var(--space-xs);
-}
-
-.error-hint {
-  font-size: var(--fs-body-small);
-  color: #6A6280;
-  display: block;
-  margin-bottom: var(--space-xxl);
+@keyframes fade-up {
+  0% { opacity: 0; transform: translateY(24rpx); }
+  100% { opacity: 1; transform: translateY(0); }
 }

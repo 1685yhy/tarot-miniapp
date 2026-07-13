@@ -1,5 +1,6 @@
 {
   "navigationBarTitleText": "卡牌百科",
-  "navigationBarBackgroundColor": "#F8F6F2",
+  "navigationBarBackgroundColor": "#1A1A3E",
+  "navigationBarTextStyle": "white",
   "usingComponents": {}
 }
