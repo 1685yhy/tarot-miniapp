@@ -1,35 +1,166 @@
-/* ===== 年度报告 - 至尊神秘主题 ===== */
+/* ===== 年度报告 - 薄暮圣殿主题 (Twilight Sanctuary) ===== */
+/*    星辰年鉴：一整年的灵性旅程，如古老卷轴缓缓展开   */
 
+/* ---------------------------------------------------------------
+   Container
+   --------------------------------------------------------------- */
 .container {
   padding: var(--space-xl);
+  padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-massive));
   background: var(--color-bg);
   min-height: 100vh;
-  padding-bottom: var(--space-massive);
+  background-image:
+    var(--gradient-candle-ambient),
+    var(--gradient-bg-radial),
+    var(--gradient-bg-radial-gold);
 }
 
-/* Intro */
+/* ---------------------------------------------------------------
+   Intro — 星辰年鉴开篇
+   --------------------------------------------------------------- */
 .intro {
   text-align: center;
-  padding: var(--space-huge) 0;
+  padding: var(--space-huge) 0 var(--space-xxl);
+  position: relative;
 }
 
-/* Generating (loading) */
+.intro-symbol {
+  font-size: 80rpx;
+  display: block;
+  margin-bottom: var(--space-xl);
+  animation: float 5s var(--ease-in-out) infinite;
+  opacity: 0.8;
+}
+
+.intro-title {
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-bold);
+  color: var(--color-gold-light);
+  display: block;
+  letter-spacing: var(--ls-display);
+  text-shadow: 0 0 50rpx var(--color-gold-glow);
+}
+
+.intro-subtitle {
+  font-size: var(--fs-body);
+  color: var(--color-text-dim);
+  display: block;
+  margin-top: var(--space-md);
+  line-height: var(--lh-normal);
+  letter-spacing: 2rpx;
+}
+
+.intro-divider {
+  display: block;
+  margin: var(--space-xxl) auto 0;
+  width: 200rpx;
+  height: 2rpx;
+  background: linear-gradient(90deg,
+    transparent, var(--color-gold-subtle), transparent);
+}
+
+/* ---------------------------------------------------------------
+   Generating (loading) — 星盘推演中
+   --------------------------------------------------------------- */
 .generating {
   text-align: center;
   padding: var(--space-massive) 0;
 }
 
-/* Report result */
+.generating-symbol {
+  font-size: 64rpx;
+  display: block;
+  color: var(--color-gold);
+  animation: mystic-spin 5s var(--ease-in-out) infinite;
+  margin-bottom: var(--space-xl);
+}
+
+.generating-text {
+  font-size: var(--fs-h4);
+  color: var(--color-gold);
+  font-weight: var(--fw-semibold);
+  display: block;
+  animation: breathe 3s ease-in-out infinite;
+  letter-spacing: 2rpx;
+}
+
+.generating-sub {
+  font-size: var(--fs-body);
+  color: var(--color-text-dim);
+  display: block;
+  margin-top: var(--space-sm);
+}
+
+/* ---------------------------------------------------------------
+   Report — 年鉴正文
+   --------------------------------------------------------------- */
 .report {
   padding: var(--space-lg) 0;
 }
 
 .report-body {
-  background: var(--color-bg-card);
   border-radius: var(--radius-card);
-  padding: var(--space-xl);
-  border: 1rpx solid var(--color-border-light);
+  padding: var(--space-xxl);
   margin-bottom: var(--space-xl);
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg,
+    var(--color-bg-card-warm),
+    var(--color-bg-mid));
+  border: 1rpx solid var(--color-border-subtle);
+  box-shadow: var(--shadow-card-warm);
+}
+
+/* 顶部暖光 */
+.report-body::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2rpx;
+  background: linear-gradient(90deg,
+    transparent, var(--color-gold-subtle), transparent);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* 左上角装饰符文 */
+.report-body::after {
+  content: '☽';
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  font-size: 24rpx;
+  color: var(--color-gold);
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+.report-section {
+  margin-bottom: var(--space-xxl);
+}
+
+.report-section:last-child {
+  margin-bottom: 0;
+}
+
+.report-section-title {
+  font-size: var(--fs-body);
+  font-weight: var(--fw-semibold);
+  color: var(--color-gold);
+  display: block;
+  margin-bottom: var(--space-md);
+  letter-spacing: 2rpx;
+  position: relative;
+  padding-left: var(--space-xl);
+}
+
+.report-section-title::before {
+  content: '✦';
+  position: absolute;
+  left: 0;
+  color: var(--color-gold);
+  font-size: 18rpx;
+  opacity: 0.7;
 }
 
 .report-text {
@@ -37,9 +168,103 @@
   color: var(--color-text-primary);
   line-height: var(--lh-loose);
   white-space: pre-wrap;
+  letter-spacing: var(--ls-body);
 }
 
-/* ===== 加载骨架 ===== */
+/* 段落首字下沉 */
+.report-text.drop-cap::first-letter {
+  font-size: 56rpx;
+  font-weight: var(--fw-bold);
+  color: var(--color-gold);
+  float: left;
+  margin-right: 8rpx;
+  line-height: 1;
+  font-family: var(--font-family-display);
+}
+
+/* Stats highlight in report */
+.report-stat-highlight {
+  display: inline-block;
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-bold);
+  color: var(--color-gold);
+  text-shadow: 0 0 20rpx var(--color-gold-glow);
+}
+
+.report-stat-label {
+  font-size: var(--fs-body-small);
+  color: var(--color-text-dim);
+  display: block;
+  margin-top: var(--space-xs);
+}
+
+/* ---------------------------------------------------------------
+   Monthly Cards Scroll — 月度卡牌星系
+   --------------------------------------------------------------- */
+.report-cards-section {
+  margin-bottom: var(--space-xxl);
+}
+
+.section-subtitle {
+  font-size: var(--fs-body);
+  color: var(--color-text-secondary);
+  display: block;
+  margin-bottom: var(--space-md);
+  text-align: center;
+  letter-spacing: 2rpx;
+}
+
+.monthly-cards-scroll {
+  white-space: nowrap;
+  padding-bottom: var(--space-md);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.monthly-cards-row {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-md);
+  padding: 0 var(--space-sm);
+}
+
+.monthly-card-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 300rpx;
+  padding: var(--space-lg) 0;
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-card-warm);
+  border: 1rpx solid var(--color-border-subtle);
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.monthly-card-item:active {
+  border-color: var(--color-border-glow);
+  transform: scale(0.96);
+  box-shadow: var(--shadow-glow-gold);
+}
+
+.monthly-card-image {
+  width: 200rpx;
+  height: 280rpx;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-sm);
+  box-shadow: var(--shadow-card);
+}
+
+.month-label {
+  font-size: var(--fs-body-small);
+  color: var(--color-text-secondary);
+  text-align: center;
+  letter-spacing: 1rpx;
+}
+
+/* ---------------------------------------------------------------
+   Skeleton
+   --------------------------------------------------------------- */
 .skeleton {
   padding: var(--space-xxl) 0;
 }
@@ -88,7 +313,9 @@
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
 
-/* ===== 错误状态 ===== */
+/* ---------------------------------------------------------------
+   Error
+   --------------------------------------------------------------- */
 .error-state {
   text-align: center;
   padding: var(--space-massive) var(--space-xl);
@@ -98,7 +325,7 @@
   font-size: 80rpx;
   display: block;
   margin-bottom: var(--space-md);
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
 .error-text {
@@ -113,44 +340,4 @@
   color: var(--color-text-dim);
   display: block;
   margin-bottom: var(--space-xxl);
-}
-
-/* ===== 月度卡牌滚动展示 ===== */
-.report-cards-section {
-  margin-bottom: var(--space-xxl);
-}
-
-.section-subtitle {
-  font-size: var(--fs-body);
-  color: var(--color-text-secondary);
-  display: block;
-  margin-bottom: var(--space-md);
-  text-align: center;
-}
-
-.monthly-cards-scroll {
-  white-space: nowrap;
-  padding-bottom: var(--space-md);
-}
-
-.monthly-cards-row {
-  display: flex;
-  flex-direction: row;
-  gap: var(--space-md);
-  padding: 0 var(--space-sm);
-}
-
-.monthly-card-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex-shrink: 0;
-  width: 300rpx;
-}
-
-.month-label {
-  font-size: var(--fs-body-small);
-  color: var(--color-text-secondary);
-  margin-top: var(--space-xs);
-  text-align: center;
 }

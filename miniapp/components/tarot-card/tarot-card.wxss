@@ -1,7 +1,7 @@
 /* ==============================================================
-   塔罗卡牌组件 v3.0 — 至尊神秘视觉系统
-   Premium Tarot Card CSS Art System
-   78 Cards | 4 Suits + Major Arcana | Pure CSS Art
+   塔罗卡牌组件 v4.0 — 臻品艺术画框系统
+   Premium Tarot Card Display for ComfyUI Art
+   78 Cards | Golden Filigree Frame | Art-First Design
    ============================================================== */
 
 /* ============================================================
@@ -25,30 +25,26 @@
   height: 460rpx;
   border-radius: 16rpx;
   border: 2rpx solid;
-  border-image: linear-gradient(135deg,
-    #d4af37, #e8c97a, #b8860b, #f5d680, #d4af37
+  border-image: linear-gradient(160deg,
+    #8b6914 0%, #d4af37 10%, #f5d680 22%, #fff8dc 40%,
+    #f5d680 52%, #e8c97a 65%, #d4af37 78%, #b8860b 90%, #8b6914 100%
   ) 1;
   box-shadow:
-    0 0 20rpx rgba(212,175,55,0.2),
-    0 0 60rpx rgba(212,175,55,0.06),
-    inset 0 0 40rpx rgba(0,0,0,0.25),
-    inset 0 0 80rpx rgba(147,112,219,0.04);
+    0 2rpx 8rpx rgba(0,0,0,0.50),
+    0 8rpx 28rpx rgba(0,0,0,0.35),
+    0 20rpx 60rpx rgba(0,0,0,0.20),
+    0 40rpx 100rpx rgba(0,0,0,0.10),
+    0 0 30rpx rgba(212,175,55,0.08),
+    0 0 80rpx rgba(212,175,55,0.03),
+    inset 0 0 30rpx rgba(0,0,0,0.15);
   overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
   transition: transform 0.8s cubic-bezier(0.23,1,0.32,1);
   animation: card-appear 0.8s ease-out forwards;
-  /* Simulated card stock texture with subtle grain */
-  background:
-    radial-gradient(circle at 15% 25%, rgba(255,255,255,0.018) 0%, transparent 2%),
-    radial-gradient(circle at 85% 35%, rgba(255,255,255,0.015) 0%, transparent 2%),
-    radial-gradient(circle at 45% 75%, rgba(255,255,255,0.016) 0%, transparent 2%),
-    radial-gradient(circle at 70% 15%, rgba(212,175,55,0.008) 0%, transparent 3%),
-    radial-gradient(circle at 25% 85%, rgba(147,112,219,0.008) 0%, transparent 3%),
-    radial-gradient(ellipse at 50% 0%, rgba(147,112,219,0.07) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 100%, rgba(212,175,55,0.04) 0%, transparent 40%),
-    linear-gradient(160deg, #0a0a1a 0%, #16163a 40%, #1a1a3e 70%, #0d0d22 100%);
+  /* Deep fallback background — real image sits above via .card-image */
+  background: linear-gradient(160deg, #0a0a1a 0%, #16163a 40%, #1a1a3e 70%, #0d0d22 100%);
 }
 .tarot-card.card-reversed {
   transform: rotate(180deg);
@@ -62,36 +58,37 @@
 .tarot-card::before {
   content: '';
   position: absolute;
-  top: 8rpx;
-  left: 8rpx;
-  right: 8rpx;
-  bottom: 8rpx;
-  border: 1rpx solid rgba(212,175,55,0.18);
-  border-radius: 10rpx;
+  top: 6rpx;
+  left: 6rpx;
+  right: 6rpx;
+  bottom: 6rpx;
+  border: 1rpx solid rgba(212,175,55,0.10);
+  border-radius: 11rpx;
   pointer-events: none;
   z-index: 3;
   background:
-    radial-gradient(ellipse at 50% 40%, rgba(212,175,55,0.03) 0%, transparent 60%);
+    radial-gradient(ellipse at 50% 40%, rgba(212,175,55,0.02) 0%, transparent 60%);
 }
 
-/* --- 2.2 四角金钻 (Corner Diamond Ornaments) --- */
+/* --- 2.2 四角金丝细工 (Corner Gold Filigree) --- */
 .tarot-card::after {
   content: '';
   position: absolute;
-  width: 14rpx;
-  height: 14rpx;
-  top: 14rpx;
-  left: 14rpx;
-  border: 1.5rpx solid rgba(212,175,55,0.45);
-  border-radius: 2rpx;
-  background: rgba(212,175,55,0.04);
+  width: 8rpx;
+  height: 8rpx;
+  top: 12rpx;
+  left: 12rpx;
+  border: 1rpx solid rgba(212,175,55,0.25);
+  border-radius: 1rpx;
+  background: transparent;
   transform: rotate(45deg);
   z-index: 6;
   pointer-events: none;
   box-shadow:
-    238rpx 0 0 0 rgba(212,175,55,0.35),
-    0 418rpx 0 0 rgba(212,175,55,0.35),
-    238rpx 418rpx 0 0 rgba(212,175,55,0.35);
+    0 0 4rpx 1rpx rgba(212,175,55,0.06),
+    246rpx 0 0 0 rgba(212,175,55,0.22),
+    0 426rpx 0 0 rgba(212,175,55,0.22),
+    246rpx 426rpx 0 0 rgba(212,175,55,0.22);
 }
 
 /* --- 2.3 顶部/底部装饰带 (Ornamental Bands) --- */
@@ -196,7 +193,7 @@
   box-shadow: 0 0 6rpx rgba(212,175,55,0.15);
 }
 
-/* --- 2.3b 卡牌图像 (ComfyUI真实PNG) --- */
+/* --- 2.3b 卡牌图像 (ComfyUI真实PNG) — clean, full-bleed --- */
 .card-image {
   position: absolute;
   top: 0;
@@ -206,103 +203,13 @@
   z-index: 0;
   border-radius: 14rpx;
   pointer-events: none;
+  /* Fills the card without obstruction — no competing CSS overlays */
 }
 
-/* --- 2.4 星尘背景 (Stardust Background) --- */
-.star-field {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  pointer-events: none;
-}
-.star {
-  position: absolute;
-  width: 4rpx;
-  height: 4rpx;
-  background: #fff;
-  border-radius: 50%;
-  animation: twinkle 2.5s ease-in-out infinite;
-}
-/* Individual star positions + expanded constellation via box-shadow */
-.star.s1 {
-  top: 15%; left: 20%;
-  box-shadow:
-    60rpx 80rpx 0 0 rgba(255,255,255,0.5),
-    140rpx 160rpx 0 0 rgba(255,255,255,0.3),
-    30rpx 200rpx 0 0 rgba(255,255,255,0.4),
-    180rpx 40rpx 0 0 rgba(255,255,255,0.25);
-}
-.star.s2 {
-  top: 30%; left: 70%;
-  animation-delay: 0.4s;
-  width: 3rpx;
-  height: 3rpx;
-  box-shadow:
-    -40rpx 100rpx 0 0 rgba(255,255,255,0.35),
-    50rpx 180rpx 0 0 rgba(255,255,255,0.25),
-    -80rpx 50rpx 0 0 rgba(212,175,55,0.3);
-}
-.star.s3 {
-  top: 55%; left: 30%;
-  animation-delay: 0.8s;
-  box-shadow:
-    100rpx -30rpx 0 0 rgba(255,255,255,0.3),
-    120rpx 120rpx 0 0 rgba(255,255,255,0.2),
-    30rpx 160rpx 0 0 rgba(212,175,55,0.25);
-}
-.star.s4 {
-  top: 70%; left: 65%;
-  animation-delay: 1.2s;
-  width: 5rpx;
-  height: 5rpx;
-  opacity: 0.8;
-  box-shadow:
-    -80rpx -60rpx 0 0 rgba(255,255,255,0.25),
-    60rpx -120rpx 0 0 rgba(255,255,255,0.2),
-    -30rpx 100rpx 0 0 rgba(212,175,55,0.2);
-}
-.star.s5 {
-  top: 40%; left: 45%;
-  animation-delay: 0.2s;
-  width: 3rpx;
-  height: 3rpx;
-  box-shadow:
-    90rpx 60rpx 0 0 rgba(255,255,255,0.4),
-    -50rpx 140rpx 0 0 rgba(255,255,255,0.2),
-    150rpx -50rpx 0 0 rgba(255,255,255,0.15);
-}
-.star.s6 {
-  top: 80%; left: 25%;
-  animation-delay: 1.6s;
-  box-shadow:
-    70rpx -80rpx 0 0 rgba(255,255,255,0.3),
-    150rpx 40rpx 0 0 rgba(212,175,55,0.2),
-    30rpx 120rpx 0 0 rgba(255,255,255,0.15);
-}
-.star.s7 {
-  top: 20%; left: 55%;
-  animation-delay: 0.6s;
-  width: 5rpx;
-  height: 5rpx;
-  opacity: 0.6;
-  box-shadow:
-    -40rpx 140rpx 0 0 rgba(255,255,255,0.2),
-    80rpx 200rpx 0 0 rgba(255,255,255,0.15),
-    -70rpx 60rpx 0 0 rgba(212,175,55,0.2);
-}
-.star.s8 {
-  top: 60%; left: 80%;
-  animation-delay: 1.0s;
-  width: 3rpx;
-  height: 3rpx;
-  box-shadow:
-    -140rpx -40rpx 0 0 rgba(255,255,255,0.25),
-    -80rpx 100rpx 0 0 rgba(255,255,255,0.15),
-    20rpx 160rpx 0 0 rgba(212,175,55,0.2);
-}
+/* --- 2.4 星尘背景 (Stardust Background) — removed for image-first layout --- */
+/* Star particles removed. The ComfyUI-generated image is the visual focus. */
 
-/* --- 2.5 卡牌辉光 (Card Aura) --- */
+/* --- 2.5 卡牌辉光 (Card Aura) — subtle ambiance only --- */
 .card-aura {
   position: absolute;
   inset: 0;
@@ -310,8 +217,7 @@
   pointer-events: none;
   z-index: 1;
   background:
-    radial-gradient(circle at 50% 30%, rgba(212,175,55,0.05) 0%, transparent 60%),
-    radial-gradient(circle at 50% 70%, rgba(147,112,219,0.03) 0%, transparent 50%);
+    radial-gradient(circle at 50% 20%, rgba(212,175,55,0.03) 0%, transparent 50%);
 }
 
 
@@ -326,22 +232,24 @@
   left: 22rpx;
   z-index: 5;
   font-size: 18rpx;
-  color: #d4af37;
+  color: #e8c97a;
   font-family: 'Georgia', serif;
   letter-spacing: 2rpx;
-  opacity: 0.85;
-  background: rgba(0,0,0,0.3);
-  border: 1rpx solid rgba(212,175,55,0.15);
+  opacity: 0.9;
+  background: rgba(0,0,0,0.4);
+  border: 1rpx solid rgba(212,175,55,0.12);
   border-radius: 4rpx;
   padding: 2rpx 10rpx;
   line-height: 1.4;
-  text-shadow: 0 0 8rpx rgba(212,175,55,0.15);
+  text-shadow:
+    0 0 6rpx rgba(0,0,0,0.5),
+    0 1rpx 2rpx rgba(0,0,0,0.8);
 }
 
 /* --- 3.2 卡牌名称 (Card Name) --- */
 .card-name-en {
   font-size: 20rpx;
-  color: #c8b060;
+  color: #e8c97a;
   font-family: 'Georgia', serif;
   letter-spacing: 4rpx;
   text-transform: uppercase;
@@ -350,8 +258,9 @@
   position: relative;
   z-index: 2;
   text-shadow:
-    0 0 10rpx rgba(200,176,96,0.3),
-    0 2rpx 4rpx rgba(0,0,0,0.5);
+    0 0 10rpx rgba(0,0,0,0.7),
+    0 2rpx 4rpx rgba(0,0,0,0.9),
+    0 0 20rpx rgba(212,175,55,0.08);
 }
 .card-name-zh {
   font-size: 26rpx;
@@ -364,8 +273,9 @@
   position: relative;
   z-index: 2;
   text-shadow:
-    0 0 12rpx rgba(245,230,184,0.2),
-    0 2rpx 4rpx rgba(0,0,0,0.5);
+    0 0 12rpx rgba(0,0,0,0.6),
+    0 2rpx 6rpx rgba(0,0,0,0.9),
+    0 0 30rpx rgba(212,175,55,0.06);
 }
 
 /* --- 3.3 位置徽章 (Position Badge) --- */
@@ -384,7 +294,7 @@
 .badge-upright {
   background: linear-gradient(135deg, rgba(44,62,80,0.85), rgba(52,73,94,0.85));
   border: 1rpx solid rgba(212,175,55,0.4);
-  color: #d4af37;
+  color: #e8c97a;
 }
 .badge-reversed {
   background: linear-gradient(135deg, rgba(80,44,55,0.85), rgba(94,52,66,0.85));
@@ -415,34 +325,39 @@
 .card-major {
   border-width: 3rpx;
   box-shadow:
-    0 0 25rpx rgba(212,175,55,0.25),
-    0 0 70rpx rgba(212,175,55,0.08),
-    inset 0 0 40rpx rgba(0,0,0,0.25),
-    inset 0 0 80rpx rgba(147,112,219,0.05);
+    0 2rpx 8rpx rgba(0,0,0,0.50),
+    0 8rpx 28rpx rgba(0,0,0,0.35),
+    0 20rpx 60rpx rgba(0,0,0,0.20),
+    0 40rpx 100rpx rgba(0,0,0,0.10),
+    0 0 40rpx rgba(212,175,55,0.12),
+    0 0 100rpx rgba(212,175,55,0.05),
+    inset 0 0 30rpx rgba(0,0,0,0.15);
 }
 
 .card-major::before {
-  top: 10rpx;
-  left: 10rpx;
-  right: 10rpx;
-  bottom: 10rpx;
+  top: 8rpx;
+  left: 8rpx;
+  right: 8rpx;
+  bottom: 8rpx;
   border-width: 1.5rpx;
-  border-color: rgba(212,175,55,0.25);
+  border-color: rgba(212,175,55,0.18);
   background:
-    radial-gradient(ellipse at 50% 40%, rgba(212,175,55,0.04) 0%, transparent 60%);
+    radial-gradient(ellipse at 50% 40%, rgba(212,175,55,0.03) 0%, transparent 60%);
 }
 
 .card-major::after {
-  width: 18rpx;
-  height: 18rpx;
-  top: 16rpx;
-  left: 16rpx;
-  border-color: rgba(212,175,55,0.55);
-  background: rgba(212,175,55,0.06);
+  width: 12rpx;
+  height: 12rpx;
+  top: 14rpx;
+  left: 14rpx;
+  border-color: rgba(212,175,55,0.40);
+  background: transparent;
+  border-width: 1rpx;
   box-shadow:
-    230rpx 0 0 0 rgba(212,175,55,0.45),
-    0 410rpx 0 0 rgba(212,175,55,0.45),
-    230rpx 410rpx 0 0 rgba(212,175,55,0.45);
+    0 0 4rpx 1rpx rgba(212,175,55,0.06),
+    238rpx 0 0 0 rgba(212,175,55,0.35),
+    0 418rpx 0 0 rgba(212,175,55,0.35),
+    238rpx 418rpx 0 0 rgba(212,175,55,0.35);
 }
 
 /* Major arcana: enhanced ornament bands */
@@ -1781,28 +1696,37 @@
 
 
 /* ============================================================
-   11. 逆位状态 | Reversed State
+   11. 逆位状态 | Reversed State — "Bleeding" Energy
    ============================================================ */
 
-/* Red/ purple edge glow for reversed cards */
+/* Warm red-purple energy bleeding upward from the bottom edge */
 .card-reversed {
   box-shadow:
-    0 0 15rpx rgba(200,60,80,0.15),
-    0 0 35rpx rgba(150,40,80,0.08),
-    inset 0 0 40rpx rgba(200,60,80,0.04);
-  border-image: linear-gradient(135deg,
-    #c85070, #d4af37, #b8860b, #d4af37, #c85070
+    /* Layered depth shadow (same as upright) */
+    0 2rpx 8rpx rgba(0,0,0,0.50),
+    0 8rpx 28rpx rgba(0,0,0,0.35),
+    0 20rpx 60rpx rgba(0,0,0,0.20),
+    0 40rpx 100rpx rgba(0,0,0,0.10),
+    /* Bleeding energy glow concentrated at bottom edge */
+    0 10rpx 40rpx rgba(200,60,90,0.10),
+    0 30rpx 70rpx rgba(180,40,80,0.06),
+    0 60rpx 120rpx rgba(160,30,70,0.04),
+    /* Top edge gets a faint whisper of the same */
+    0 -8rpx 30rpx rgba(200,60,90,0.04);
+  border-image: linear-gradient(160deg,
+    #8b6914 0%, #d4af37 10%, #f5d680 22%, #fff8dc 40%,
+    #f5d680 52%, #e8c97a 65%, #d4af37 78%, #c85070 90%, #a03050 100%
   ) 1;
 }
 
 .card-reversed::before {
-  border-color: rgba(200,60,80,0.15);
+  border-color: rgba(200,60,80,0.10);
 }
 
 .card-reversed .card-aura {
   background:
-    radial-gradient(circle at 50% 30%, rgba(200,60,80,0.04) 0%, transparent 50%),
-    radial-gradient(circle at 50% 70%, rgba(147,80,120,0.03) 0%, transparent 45%);
+    radial-gradient(ellipse at 50% 100%, rgba(200,60,90,0.10) 0%, rgba(180,40,80,0.05) 20%, transparent 50%),
+    radial-gradient(ellipse at 50% 0%, rgba(200,60,90,0.03) 0%, transparent 30%);
 }
 
 /* Reversed card ornaments shift */
@@ -1838,11 +1762,6 @@
 @keyframes glow-pulse-reversed {
   0%, 100% { filter: drop-shadow(0 0 8rpx rgba(200,60,80,0.25)); }
   50% { filter: drop-shadow(0 0 20rpx rgba(200,60,80,0.5)); }
-}
-
-@keyframes twinkle {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.5); }
 }
 
 @keyframes float {

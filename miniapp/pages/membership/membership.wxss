@@ -1,16 +1,83 @@
-/* ===== 会员 - 至尊神秘主题 ===== */
+/* ===== 会员 - 薄暮圣殿主题 (Twilight Sanctuary) ===== */
+/*    圣殿供奉感：金色浮雕卡片，神圣层级结构          */
 
-/* Benefits section */
+/* ---------------------------------------------------------------
+   Container — 继承全局 page 底色 + 星尘
+   --------------------------------------------------------------- */
+.container {
+  padding: var(--space-xl);
+  padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-massive));
+  background: var(--color-bg);
+  min-height: 100vh;
+  background-image:
+    var(--gradient-candle-ambient),
+    var(--gradient-bg-radial),
+    var(--gradient-bg-radial-gold);
+}
+
+/* ---------------------------------------------------------------
+   Page Heading — 殿堂标题
+   --------------------------------------------------------------- */
+.page-heading {
+  text-align: center;
+  padding: var(--space-xxl) 0 var(--space-xxxl);
+}
+
+.page-title {
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-bold);
+  color: var(--color-gold-light);
+  letter-spacing: var(--ls-display);
+  display: block;
+  text-shadow: 0 0 40rpx var(--color-gold-glow);
+}
+
+.page-subtitle {
+  font-size: var(--fs-body);
+  color: var(--color-text-dim);
+  display: block;
+  margin-top: var(--space-sm);
+  letter-spacing: 2rpx;
+}
+
+.page-title-decor {
+  display: block;
+  font-size: var(--fs-caption);
+  color: var(--color-gold);
+  margin-top: var(--space-md);
+  opacity: 0.5;
+  letter-spacing: 6rpx;
+}
+
+/* ---------------------------------------------------------------
+   Benefits — 会员特权列表，每项带钻石装饰
+   --------------------------------------------------------------- */
 .benefits {
-  background: var(--color-bg-card);
+  position: relative;
   border-radius: var(--radius-card);
   padding: var(--space-xl);
-  margin-bottom: var(--space-xl);
-  border: 1rpx solid var(--color-border-light);
+  margin-bottom: var(--space-xxl);
+  border: 1rpx solid var(--color-border-subtle);
+  background: linear-gradient(145deg,
+    var(--color-bg-card-warm), var(--color-bg-mid));
+  box-shadow: var(--shadow-card-warm);
+}
+
+.benefits-title {
+  font-size: var(--fs-body-small);
+  color: var(--color-gold);
+  font-weight: var(--fw-semibold);
+  display: block;
+  margin-bottom: var(--space-lg);
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
 }
 
 .benefit-item {
-  padding: var(--space-sm) 0;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
   border-bottom: 1rpx solid var(--color-divider);
 }
 
@@ -18,51 +85,109 @@
   border-bottom: none;
 }
 
-/* Products */
+.benefit-icon {
+  font-size: 28rpx;
+  color: var(--color-gold);
+  flex-shrink: 0;
+  margin-top: 2rpx;
+  opacity: 0.8;
+}
+
+.benefit-label {
+  font-size: var(--fs-body);
+  color: var(--color-text-primary);
+  line-height: var(--lh-normal);
+  flex: 1;
+}
+
+.benefit-label sub {
+  display: block;
+  font-size: var(--fs-body-small);
+  color: var(--color-text-dim);
+  margin-top: var(--space-xxs);
+}
+
+/* ---------------------------------------------------------------
+   Products — 供奉级卡片，金色浮雕边框
+   --------------------------------------------------------------- */
 .products {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-xl);
 }
 
 .product-card {
-  background: linear-gradient(160deg, var(--color-bg-card), rgba(26, 26, 46, 0.95));
+  position: relative;
   border-radius: var(--radius-card);
   padding: var(--space-xxl);
   text-align: center;
-  border: 2rpx solid var(--color-border-light);
-  position: relative;
+  background: linear-gradient(160deg,
+    rgba(30, 28, 50, 0.95), var(--color-bg-mid));
+  border: 2rpx solid var(--color-border-subtle);
+  box-shadow: var(--shadow-card);
   transition: all var(--duration-normal) var(--ease-out);
   overflow: hidden;
 }
 
+/* 顶部暖光扫线 */
 .product-card::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 2rpx;
-  background: linear-gradient(90deg, transparent, var(--color-gold-subtle), transparent);
-  opacity: 0.5;
+  background: linear-gradient(90deg,
+    transparent,
+    var(--color-gold-light) 30%,
+    var(--color-gold) 60%,
+    transparent);
+  opacity: 0.3;
   pointer-events: none;
 }
 
-.product-card:active {
-  border-color: var(--color-gold);
-  transform: scale(0.98);
-  box-shadow: var(--shadow-glow-gold);
+/* 扫光特效 */
+.product-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 80rpx;
+  height: 100%;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(255, 255, 255, 0.04),
+    transparent);
+  transform: translateX(-100%) skewX(-15deg);
+  pointer-events: none;
+  animation: card-shimmer 6s var(--ease-in-out) infinite;
+  animation-delay: 2s;
 }
 
+.product-card:active {
+  border-color: var(--color-border-glow);
+  transform: scale(0.97);
+  box-shadow: var(--shadow-card-elevated), var(--shadow-glow-gold);
+}
+
+/* ---------- 推荐卡片 (殿堂级) ---------- */
 .product-card.recommended {
-  border-color: var(--color-gold);
+  border-color: var(--color-border-glow);
   background: linear-gradient(160deg,
-    rgba(212, 175, 55, 0.08), var(--color-bg-card), rgba(212, 175, 55, 0.04));
-  box-shadow: var(--shadow-glow-gold);
+    rgba(37, 37, 80, 0.92),
+    rgba(28, 28, 64, 0.95));
+  box-shadow: var(--shadow-card-elevated), var(--shadow-glow-gold);
 }
 
 .product-card.recommended::before {
-  opacity: 1;
+  opacity: 0.7;
+  background: linear-gradient(90deg,
+    transparent,
+    var(--color-gold-bright) 30%,
+    var(--color-gold) 60%,
+    transparent);
+  height: 3rpx;
 }
 
+/* 推荐徽章 — 皇家封印 */
 .recommended-badge {
   position: absolute;
   top: -14rpx;
@@ -70,37 +195,150 @@
   background: var(--gradient-gold);
   color: var(--color-text-on-gold);
   font-size: var(--fs-caption);
-  padding: 6rpx 20rpx;
+  padding: 6rpx 24rpx;
   border-radius: var(--radius-round);
-  font-weight: var(--fw-semibold);
-  box-shadow: var(--shadow-glow);
-  z-index: 1;
+  font-weight: var(--fw-bold);
+  box-shadow: 0 0 20rpx var(--color-gold-glow);
+  z-index: 2;
+  letter-spacing: 2rpx;
 }
 
-/* Price */
+/* ---------- Product card inner ---------- */
+.product-name {
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-semibold);
+  color: var(--color-text-primary);
+  display: block;
+  margin-bottom: var(--space-sm);
+  letter-spacing: var(--ls-heading);
+}
+
+.product-desc {
+  font-size: var(--fs-body-small);
+  color: var(--color-text-dim);
+  display: block;
+  margin-bottom: var(--space-lg);
+  line-height: var(--lh-normal);
+}
+
+/* ---------- Price display — 神圣供奉 ---------- */
+.price-area {
+  margin: var(--space-lg) 0;
+}
+
 .price-symbol {
   font-size: var(--fs-h4);
   color: var(--color-gold-bright);
+  vertical-align: super;
 }
 
 .price-value {
   font-size: var(--fs-display);
   font-weight: var(--fw-bold);
   color: var(--color-gold);
+  line-height: 1;
+  text-shadow: 0 0 30rpx var(--color-gold-glow);
 }
 
-/* Guarantee */
+.price-period {
+  font-size: var(--fs-body-small);
+  color: var(--color-text-dim);
+  display: inline-block;
+  margin-left: var(--space-xs);
+}
+
+.price-original {
+  display: block;
+  font-size: var(--fs-caption);
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+  margin-top: var(--space-xs);
+}
+
+/* ---------- Subscribe button ---------- */
+.subscribe-btn {
+  width: 100%;
+  margin-top: var(--space-lg);
+  background: var(--gradient-gold);
+  color: var(--color-text-on-gold);
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-bold);
+  border-radius: var(--radius-button);
+  padding: 26rpx 0;
+  border: none;
+  box-shadow: var(--shadow-button);
+  transition: all var(--duration-normal) var(--ease-out);
+  position: relative;
+  overflow: hidden;
+}
+
+.subscribe-btn:active {
+  transform: scale(0.97);
+  box-shadow: 0 2rpx 8rpx var(--color-gold-glow);
+}
+
+.subscribe-btn-recommended {
+  animation: glow-pulse 3s var(--ease-in-out) infinite;
+}
+
+/* ---------- Feature list inside card ---------- */
+.product-features {
+  margin: var(--space-lg) 0;
+  text-align: left;
+}
+
+.product-feature {
+  font-size: var(--fs-body-small);
+  color: var(--color-text-secondary);
+  display: block;
+  padding: var(--space-xs) 0;
+  padding-left: var(--space-xl);
+  position: relative;
+}
+
+.product-feature::before {
+  content: '✦';
+  position: absolute;
+  left: 0;
+  color: var(--color-gold);
+  font-size: 16rpx;
+  opacity: 0.6;
+}
+
+/* ---------------------------------------------------------------
+   Guarantee — 底部保障声明
+   --------------------------------------------------------------- */
 .guarantee {
   text-align: center;
-  padding: var(--space-xxl) 0;
+  padding: var(--space-xxxl) 0;
+  position: relative;
+}
+
+.guarantee::before {
+  content: '';
+  display: block;
+  width: 120rpx;
+  height: 1rpx;
+  background: linear-gradient(90deg, transparent, var(--color-gold-subtle), transparent);
+  margin: 0 auto var(--space-xxl);
+}
+
+.guarantee-icon {
+  font-size: 36rpx;
+  display: block;
+  margin-bottom: var(--space-sm);
+  opacity: 0.5;
 }
 
 .guarantee-text {
   font-size: var(--fs-body-small);
   color: var(--color-text-dim);
+  line-height: var(--lh-normal);
 }
 
-/* ===== 加载骨架 ===== */
+/* ---------------------------------------------------------------
+   Load / Skeleton — 骨架屏保持主题一致
+   --------------------------------------------------------------- */
 .skeleton {
   padding: var(--space-xxl) 0;
 }
@@ -142,26 +380,27 @@
 
 .skeleton-product {
   width: 100%;
-  height: 260rpx;
+  height: 380rpx;
   border-radius: var(--radius-card);
   background: var(--color-bg-card);
   margin-bottom: var(--space-lg);
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
 
-/* ===== 空状态 ===== */
-
-/* ===== 错误状态 ===== */
+/* ---------------------------------------------------------------
+   Empty / Error — 与全局样式统一，加暖色辉光
+   --------------------------------------------------------------- */
 .error-state {
   text-align: center;
   padding: var(--space-massive) var(--space-xl);
+  position: relative;
 }
 
 .error-icon {
   font-size: 80rpx;
   display: block;
-  margin-bottom: var(--space-md);
-  opacity: 0.6;
+  margin-bottom: var(--space-lg);
+  opacity: 0.5;
 }
 
 .error-text {
