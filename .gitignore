@@ -8,3 +8,6 @@ venv/
 node_modules/
 *.log
 .superpowers/
+miniapp/images/cards/*.png
+miniapp/images/cards/*.jpg
+miniapp/images/cards/preview.html
