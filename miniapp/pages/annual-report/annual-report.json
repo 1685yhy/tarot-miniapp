@@ -1,6 +1,6 @@
 {
-  "navigationBarTitleText": "年度运势报告",
-  "navigationBarBackgroundColor": "#FAF5EF",
+  "navigationBarTitleText": "年度报告",
+  "navigationBarBackgroundColor": "#F8F6F2",
   "usingComponents": {
     "tarot-card": "../../components/tarot-card/tarot-card"
   }

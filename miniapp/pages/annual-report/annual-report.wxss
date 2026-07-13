@@ -1,211 +1,81 @@
-/* ===== 年度报告 - 暖金年鉴主题 (Golden Yearbook) ===== */
-/*    像一本手工制作的年册：温暖、珍贵、每一页都值得珍藏  */
+/* ===== 年度报告 - 轻奢简约主题 ===== */
+/*    深色基调的高级感，月度卡片精致布局    */
 
 /* ---------------------------------------------------------------
-   Container — 暖白底色，宛如精装书页
+   Container — 深色基底，衬托内容
    --------------------------------------------------------------- */
 .container {
   padding: var(--space-xl);
   padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-massive));
-  background: linear-gradient(180deg, #FFFAF5 0%, #FFF5EB 100%);
+  background: linear-gradient(180deg, #1A1720 0%, #221F2A 100%);
   min-height: 100vh;
 }
 
 /* ---------------------------------------------------------------
-   Intro — 卷首语，像年鉴扉页
+   Intro — 卷首语
    --------------------------------------------------------------- */
 .intro {
   text-align: center;
-  padding: var(--space-huge) 0 var(--space-xxl);
-  position: relative;
-}
-
-.intro-symbol {
-  font-size: 80rpx;
-  display: block;
-  margin-bottom: var(--space-xl);
-  animation: float 5s var(--ease-in-out) infinite;
-  opacity: 0.7;
-}
-
-.intro-title {
-  font-size: var(--fs-h1);
-  font-weight: var(--fw-bold);
-  color: #3D3535;
-  display: block;
-  letter-spacing: 4rpx;
-}
-
-.intro-subtitle {
-  font-size: var(--fs-body);
-  color: #9A8A8A;
-  display: block;
-  margin-top: var(--space-md);
-  line-height: var(--lh-normal);
-  letter-spacing: 1rpx;
-}
-
-.intro-divider {
-  display: block;
-  margin: var(--space-xxl) auto 0;
-  width: 200rpx;
-  height: 2rpx;
-  background: linear-gradient(90deg,
-    transparent, #D4836A, transparent);
-  opacity: 0.4;
+  padding: var(--space-huge) var(--space-xl) var(--space-xxl);
 }
 
 /* ---------------------------------------------------------------
-   Generating (loading) — 翻页等待中
+   Mystic Loading — 深邃等待
    --------------------------------------------------------------- */
-.generating {
+.mystic-loading {
   text-align: center;
-  padding: var(--space-massive) 0;
+  padding: var(--space-massive) var(--space-xl);
 }
 
-.generating-symbol {
-  font-size: 64rpx;
+.mystic-loading-symbol {
+  font-size: 72rpx;
   display: block;
-  color: #C9A96E;
-  animation: mystic-spin 5s var(--ease-in-out) infinite;
   margin-bottom: var(--space-xl);
-  opacity: 0.7;
+  opacity: 0.8;
 }
 
-.generating-text {
+.mystic-loading-title {
   font-size: var(--fs-h4);
-  color: #D4836A;
+  color: #E8E4F0;
   font-weight: var(--fw-semibold);
   display: block;
-  animation: breathe 3s ease-in-out infinite;
+  margin-bottom: var(--space-sm);
   letter-spacing: 2rpx;
 }
 
-.generating-sub {
+.mystic-loading-sub {
   font-size: var(--fs-body);
-  color: #9A8A8A;
+  color: #8A84A0;
   display: block;
-  margin-top: var(--space-sm);
 }
 
 /* ---------------------------------------------------------------
-   Report — 年鉴正文
+   Report — 报告正文
    --------------------------------------------------------------- */
 .report {
   padding: var(--space-lg) 0;
 }
 
-.report-body {
-  border-radius: 28rpx;
-  padding: var(--space-xxl);
-  margin-bottom: var(--space-xl);
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(160deg, #FFFFFF, #FFFAF5);
-  border: 1rpx solid rgba(201, 169, 110, 0.15);
-  box-shadow: 0 6rpx 28rpx rgba(183, 201, 177, 0.06);
-}
-
-/* 顶部暖色装饰线 */
-.report-body::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3rpx;
-  background: linear-gradient(90deg,
-    transparent,
-    rgba(201, 169, 110, 0.3) 30%,
-    rgba(212, 131, 106, 0.3) 70%,
-    transparent);
-  opacity: 0.4;
-  pointer-events: none;
-}
-
-/* 右上角装饰花 */
-.report-body::after {
-  content: '✿';
-  position: absolute;
-  top: var(--space-md);
-  right: var(--space-md);
-  font-size: 24rpx;
-  color: #C9A96E;
-  opacity: 0.12;
-  pointer-events: none;
-}
-
-.report-section {
+.section-title-center {
+  font-size: var(--fs-h3);
+  color: #E8E4F0;
+  font-weight: var(--fw-bold);
+  display: block;
+  text-align: center;
   margin-bottom: var(--space-xxl);
-}
-
-.report-section:last-child {
-  margin-bottom: 0;
-}
-
-.report-section-title {
-  font-size: var(--fs-body);
-  font-weight: var(--fw-semibold);
-  color: #D4836A;
-  display: block;
-  margin-bottom: var(--space-md);
   letter-spacing: 2rpx;
-  position: relative;
-  padding-left: var(--space-xl);
 }
 
-.report-section-title::before {
-  content: '🌸';
-  position: absolute;
-  left: 0;
-  font-size: 18rpx;
-  opacity: 0.5;
-}
-
-.report-text {
-  font-size: var(--fs-body);
-  color: #3D3535;
-  line-height: var(--lh-loose);
-  white-space: pre-wrap;
-  letter-spacing: 1rpx;
-}
-
-/* 段落首字下沉 — 如精装书的装饰首字母 */
-.report-text.drop-cap::first-letter {
-  font-size: 56rpx;
-  font-weight: var(--fw-bold);
-  color: #D4836A;
-  float: left;
-  margin-right: 8rpx;
-  line-height: 1;
-  font-family: var(--font-family-display, serif);
-}
-
-/* Stats highlight in report */
-.report-stat-highlight {
-  display: inline-block;
-  font-size: var(--fs-h2);
-  font-weight: var(--fw-bold);
-  color: #C9A96E;
-}
-
-.report-stat-label {
-  font-size: var(--fs-body-small);
-  color: #9A8A8A;
-  display: block;
-  margin-top: var(--space-xs);
-}
-
-/* ---------------------------------------------------------------
-   Monthly Cards Scroll — 月度卡片长廊
-   --------------------------------------------------------------- */
+/* Monthly cards section — 白色卡片展示 */
 .report-cards-section {
   margin-bottom: var(--space-xxl);
 }
 
 .section-subtitle {
   font-size: var(--fs-body);
-  color: #6B5A5A;
+  color: #8A84A0;
   display: block;
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-lg);
   text-align: center;
   letter-spacing: 2rpx;
 }
@@ -230,37 +100,90 @@
   align-items: center;
   flex-shrink: 0;
   width: 300rpx;
-  padding: var(--space-lg) 0;
-  border-radius: 20rpx;
+  padding: var(--space-lg) var(--space-md);
+  border-radius: 24rpx;
   background: #FFFFFF;
-  border: 1rpx solid rgba(212, 131, 106, 0.1);
+  border: 1rpx solid rgba(255, 255, 255, 0.06);
   transition: all var(--duration-normal) var(--ease-out);
-  box-shadow: 0 4rpx 16rpx rgba(183, 201, 177, 0.04);
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.15);
 }
 
 .monthly-card-item:active {
-  border-color: rgba(212, 131, 106, 0.25);
-  transform: scale(0.96);
-  box-shadow: 0 8rpx 24rpx rgba(212, 131, 106, 0.1);
-}
-
-.monthly-card-image {
-  width: 200rpx;
-  height: 280rpx;
-  border-radius: 12rpx;
-  margin-bottom: var(--space-sm);
-  box-shadow: 0 4rpx 12rpx rgba(183, 201, 177, 0.08);
+  transform: translateY(-4rpx);
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.2);
 }
 
 .month-label {
   font-size: var(--fs-body-small);
-  color: #6B5A5A;
+  color: #6A6280;
   text-align: center;
+  margin-top: var(--space-sm);
+  letter-spacing: 1rpx;
+  font-weight: var(--fw-medium);
+}
+
+/* Report body — 深色卡片中的文字内容 */
+.report-body {
+  border-radius: 28rpx;
+  padding: var(--space-xxl);
+  margin-bottom: var(--space-xl);
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, #2A2735, #24212E);
+  border: 1rpx solid rgba(255, 255, 255, 0.04);
+  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.2);
+}
+
+.report-text {
+  font-size: var(--fs-body);
+  color: #D0CCE0;
+  line-height: var(--lh-loose);
+  white-space: pre-wrap;
   letter-spacing: 1rpx;
 }
 
 /* ---------------------------------------------------------------
-   Skeleton — 暖色骨架
+   Buttons — 深色背景按钮
+   --------------------------------------------------------------- */
+.btn-glow-pulse {
+  width: 80%;
+  margin: var(--space-xl) auto 0;
+  background: linear-gradient(135deg, #6B5B9E, #8B7BBE);
+  color: #FFFFFF;
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-semibold);
+  border-radius: 44rpx;
+  padding: 28rpx 0;
+  border: none;
+  box-shadow: 0 4rpx 24rpx rgba(107, 91, 158, 0.3);
+  letter-spacing: 2rpx;
+  transition: all var(--duration-normal);
+}
+
+.btn-glow-pulse:active {
+  transform: scale(0.96);
+  opacity: 0.9;
+}
+
+.btn-secondary {
+  width: 80%;
+  background: transparent;
+  border: 2rpx solid rgba(255, 255, 255, 0.12);
+  color: #A09AB8;
+  font-size: var(--fs-body);
+  border-radius: 44rpx;
+  padding: 24rpx 0;
+  letter-spacing: 1rpx;
+  transition: all var(--duration-normal);
+}
+
+.btn-secondary:active {
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #C8C4D8;
+}
+
+/* ---------------------------------------------------------------
+   Skeleton — 深色骨架
    --------------------------------------------------------------- */
 .skeleton {
   padding: var(--space-xxl) 0;
@@ -278,14 +201,14 @@
   width: 80rpx;
   height: 80rpx;
   border-radius: var(--radius-full);
-  background: linear-gradient(135deg, #F5EDE8, #F0EBE5);
+  background: linear-gradient(135deg, #2E2B3A, #353240);
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
 
 .skeleton-line {
   height: 32rpx;
   border-radius: 12rpx;
-  background: linear-gradient(135deg, #F5EDE8, #F0EBE5);
+  background: linear-gradient(135deg, #2E2B3A, #353240);
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
 
@@ -296,7 +219,7 @@
   width: 80%;
   height: 80rpx;
   border-radius: 12rpx;
-  background: linear-gradient(135deg, #F5EDE8, #F0EBE5);
+  background: linear-gradient(135deg, #2E2B3A, #353240);
   margin-bottom: var(--space-xxl);
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
@@ -305,13 +228,13 @@
   width: 80%;
   height: 88rpx;
   border-radius: 40rpx;
-  background: linear-gradient(135deg, #F5EDE8, #F0EBE5);
+  background: linear-gradient(135deg, #2E2B3A, #353240);
   margin: 0 auto;
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
 
 /* ---------------------------------------------------------------
-   Error — 温柔报错
+   Error — 深色报错
    --------------------------------------------------------------- */
 .error-state {
   text-align: center;
@@ -327,14 +250,14 @@
 
 .error-text {
   font-size: var(--fs-body);
-  color: #6B5A5A;
+  color: #A09AB8;
   display: block;
   margin-bottom: var(--space-xs);
 }
 
 .error-hint {
   font-size: var(--fs-body-small);
-  color: #9A8A8A;
+  color: #6A6280;
   display: block;
   margin-bottom: var(--space-xxl);
 }
