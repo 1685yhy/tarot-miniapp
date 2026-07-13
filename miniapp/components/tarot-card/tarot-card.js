@@ -102,6 +102,7 @@ const CARD_REGISTRY = {
 };
 
 // ===== 图像路径映射：计算78张卡牌的真实ComfyUI PNG路径 =====
+const IMAGE_BASE = 'https://xingxiang.chat/images/cards';
 const ROMAN_MAP = {
   '0': 0, 'I': 1, 'II': 2, 'III': 3, 'IV': 4, 'V': 5,
   'VI': 6, 'VII': 7, 'VIII': 8, 'IX': 9, 'X': 10,
@@ -116,10 +117,10 @@ const ROMAN_MAP = {
     const enSnake = card.en.toLowerCase().replace(/\s+/g, '_');
     if (card.arcana === 'major') {
       const idx = ROMAN_MAP[card.number] !== undefined ? ROMAN_MAP[card.number] : 0;
-      card.image = `/images/cards/major_${String(idx).padStart(2, '0')}_${enSnake}.png`;
+      card.image = `${IMAGE_BASE}/major_${String(idx).padStart(2, '0')}_${enSnake}.png`;
     } else if (card.suit && suitCounters[card.suit] !== undefined) {
       const idx = suitCounters[card.suit]++;
-      card.image = `/images/cards/${card.suit}_${String(idx).padStart(2, '0')}_${enSnake}.png`;
+      card.image = `${IMAGE_BASE}/${card.suit}_${String(idx).padStart(2, '0')}_${enSnake}.png`;
     }
   });
 })();
