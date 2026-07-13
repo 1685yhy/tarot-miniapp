@@ -13,16 +13,15 @@
   ],
   "window": {
     "backgroundTextStyle": "dark",
-    "navigationBarBackgroundColor": "#1a1a2e",
+    "navigationBarBackgroundColor": "#FBF6F0",
     "navigationBarTitleText": "星光映照",
-    "navigationBarTextStyle": "white",
-    "backgroundColor": "#0f0f23"
+    "navigationBarTextStyle": "black"
   },
   "tabBar": {
-    "color": "#C4B8B0",
-    "selectedColor": "#D4836A",
-    "backgroundColor": "#FAF5EF",
-    "borderStyle": "white",
+    "color": "#B0A99A",
+    "selectedColor": "#C5835A",
+    "backgroundColor": "#FBF6F0",
+    "borderStyle": "none",
     "list": [
       {
         "pagePath": "pages/index/index",
@@ -32,7 +31,7 @@
       },
       {
         "pagePath": "pages/encyclopedia/encyclopedia",
-        "text": "百科",
+        "text": "卡牌",
         "iconPath": "/images/tabbar/encyclopedia.png",
         "selectedIconPath": "/images/tabbar/encyclopedia-active.png"
       },
