@@ -32,8 +32,8 @@ const ENV = (() => {
  */
 const ENV_URLS = {
   develop: 'http://localhost:8000',
-  trial: 'http://47.102.42.238:8000',
-  release: 'http://47.102.42.238:8000',
+  trial: 'https://xingxiang.chat/api',
+  release: 'https://xingxiang.chat/api',
 };
 
 // 允许通过 extConfig 覆盖 BASE_URL（第三方平台托管场景）
