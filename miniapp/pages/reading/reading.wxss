@@ -1,120 +1,46 @@
-/* ===== 占卜页 - 神秘牌阵选择 · 羊皮卷宗 ===== */
+/* ===== 占卜页 - 柔和玫瑰选牌 ===== */
 
 /* -------- 全局装饰 ---------- */
-@keyframes heart-pulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 20rpx rgba(212, 175, 55, 0.3), 0 0 40rpx rgba(212, 175, 55, 0.1); }
-  50%      { transform: scale(1.02); box-shadow: 0 0 30rpx rgba(212, 175, 55, 0.5), 0 0 60rpx rgba(212, 175, 55, 0.2); }
+@keyframes pulse-soft {
+  0%, 100% { transform: scale(1); box-shadow: 0 4rpx 16rpx rgba(200, 130, 140, 0.15); }
+  50%      { transform: scale(1.015); box-shadow: 0 6rpx 24rpx rgba(200, 130, 140, 0.25); }
 }
 
-@keyframes card-glint {
-  0%   { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
-
-@keyframes ember-float {
-  0%   { opacity: 0; transform: translateY(0) scale(0.8); }
-  30%  { opacity: 0.6; }
-  70%  { opacity: 0.3; }
-  100% { opacity: 0; transform: translateY(-60rpx) scale(1.2); }
-}
-
-/* -------- 牌阵选择卡片 · 典藏牌盒 -------- */
+/* -------- 牌阵选择卡片 -------- */
 .spread-grid {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-md);
   padding: var(--space-md) 0;
 }
 
 .spread-card {
   display: flex;
   align-items: center;
-  background: linear-gradient(
-    145deg,
-    rgba(60, 40, 80, 0.7),
-    rgba(40, 25, 55, 0.85)
-  );
-  border-radius: 18rpx;
+  background: #fff9f7;
+  border-radius: 20rpx;
   padding: var(--space-xl) var(--space-xxl);
-  border: 1rpx solid rgba(212, 175, 55, 0.15);
-  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
   overflow: hidden;
-  backdrop-filter: blur(4rpx);
-  box-shadow:
-    0 4rpx 20rpx rgba(0, 0, 0, 0.25),
-    inset 0 1rpx 0 rgba(212, 175, 55, 0.08);
-}
-
-/* Ornate edge ornament */
-.spread-card::before {
-  content: '╌';
-  position: absolute;
-  top: -2rpx;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-size: 14rpx;
-  color: rgba(212, 175, 55, 0.12);
-  letter-spacing: 12rpx;
-  line-height: 1;
-}
-
-/* Deck card back texture shimmer */
-.spread-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(212, 175, 55, 0.04) 30%,
-    rgba(212, 175, 55, 0.08) 50%,
-    rgba(212, 175, 55, 0.04) 70%,
-    transparent 100%
-  );
-  background-size: 200% 100%;
-  background-repeat: no-repeat;
-  pointer-events: none;
-  border-radius: inherit;
+  box-shadow: 0 4rpx 20rpx rgba(180, 120, 130, 0.08);
+  border: 1rpx solid rgba(200, 150, 160, 0.08);
 }
 
 .spread-card:active {
-  border-color: rgba(212, 175, 55, 0.4);
-  transform: scale(0.97) translateY(2rpx);
-  box-shadow:
-    0 2rpx 12rpx rgba(0, 0, 0, 0.3),
-    0 0 30rpx rgba(212, 175, 55, 0.15);
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 12rpx rgba(180, 120, 130, 0.12);
+  border-color: rgba(200, 150, 160, 0.15);
 }
 
-/* Premium variant — gilded deck */
+/* Premium variant */
 .spread-card.premium {
-  border: 1rpx solid rgba(212, 175, 55, 0.35);
-  background: linear-gradient(
-    145deg,
-    rgba(70, 45, 90, 0.75),
-    rgba(45, 28, 60, 0.9)
-  );
-  box-shadow:
-    0 4rpx 20rpx rgba(0, 0, 0, 0.25),
-    0 0 30rpx rgba(212, 175, 55, 0.08),
-    inset 0 1rpx 0 rgba(212, 175, 55, 0.12);
+  background: #fff9f7;
+  box-shadow: 0 4rpx 20rpx rgba(200, 130, 140, 0.12);
+  border-color: rgba(210, 160, 170, 0.18);
 }
 
-/* Premium card golden corner flourish */
-.spread-card.premium::before {
-  content: '✦';
-  position: absolute;
-  top: 6rpx;
-  right: 10rpx;
-  font-size: 18rpx;
-  color: rgba(212, 175, 55, 0.5);
-  text-shadow: 0 0 12rpx rgba(212, 175, 55, 0.3);
-  opacity: 1;
-  letter-spacing: normal;
-}
-
-/* Premium badge — warm gleam */
+/* Premium badge */
 .premium-badge {
   display: inline-flex;
   align-items: center;
@@ -123,90 +49,61 @@
   border-radius: 30rpx;
   font-size: 18rpx;
   font-weight: 500;
-  color: #d4af37;
-  background: linear-gradient(
-    135deg,
-    rgba(212, 175, 55, 0.15),
-    rgba(212, 175, 55, 0.06)
-  );
-  border: 1rpx solid rgba(212, 175, 55, 0.25);
-  box-shadow:
-    0 0 12rpx rgba(212, 175, 55, 0.1),
-    inset 0 1rpx 0 rgba(255, 215, 0, 0.08);
-  position: relative;
+  color: #b8865a;
+  background: linear-gradient(135deg, rgba(210, 140, 155, 0.15), rgba(210, 140, 155, 0.05));
+  border: 1rpx solid rgba(210, 140, 155, 0.2);
   letter-spacing: 2rpx;
 }
 
-.premium-badge::before {
-  content: '✦';
-  font-size: 14rpx;
-  margin-right: 4rpx;
-  animation: card-glint 3s linear infinite;
+/* Popular badge */
+.popular-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 30rpx;
+  font-size: 18rpx;
+  font-weight: 500;
+  color: #6b8e6b;
+  background: linear-gradient(135deg, rgba(130, 170, 130, 0.12), rgba(130, 170, 130, 0.04));
+  border: 1rpx solid rgba(130, 170, 130, 0.2);
+  letter-spacing: 2rpx;
 }
 
-/* -------- 问题输入 · 羊皮纸书写区 -------- */
+/* -------- 问题输入 -------- */
 .selected-info {
   text-align: center;
-  padding: var(--space-xl) 0 var(--space-lg);
+  padding: var(--space-lg) 0 var(--space-lg);
 }
 
 .question-box {
-  background: linear-gradient(
-    145deg,
-    rgba(55, 42, 65, 0.6),
-    rgba(42, 30, 52, 0.75)
-  );
-  border-radius: 16rpx;
+  background: #ffffff;
+  border-radius: 18rpx;
   padding: var(--space-xl);
   margin-bottom: var(--space-lg);
-  border: 1rpx solid rgba(192, 168, 96, 0.12);
-  transition: border-color 0.5s ease, box-shadow 0.5s ease;
-  position: relative;
-}
-
-/* Parchment-like inner shadow */
-.question-box::before {
-  content: '';
-  position: absolute;
-  inset: 4rpx;
-  border-radius: 12rpx;
-  border: 1rpx solid rgba(192, 168, 96, 0.06);
-  pointer-events: none;
-}
-
-/* Decorative corner ornaments */
-.question-box::after {
-  content: '✧ ──── ✧';
-  position: absolute;
-  bottom: -10rpx;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 14rpx;
-  color: rgba(212, 175, 55, 0.08);
-  letter-spacing: 6rpx;
-  white-space: nowrap;
+  border: 1rpx solid rgba(200, 160, 170, 0.18);
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+  box-shadow: 0 2rpx 12rpx rgba(180, 120, 130, 0.05);
 }
 
 .question-box:focus-within {
-  border-color: rgba(212, 175, 55, 0.3);
-  box-shadow:
-    0 0 30rpx rgba(212, 175, 55, 0.06),
-    0 0 60rpx rgba(212, 175, 55, 0.03);
+  border-color: rgba(200, 140, 155, 0.35);
+  box-shadow: 0 4rpx 20rpx rgba(200, 130, 140, 0.08);
 }
 
 .question-input {
   width: 100%;
-  min-height: 160rpx;
+  min-height: 140rpx;
   font-size: var(--fs-body);
-  color: rgba(230, 220, 240, 0.92);
+  color: #4a3a3a;
   line-height: var(--lh-loose);
   background: transparent;
-  caret-color: #d4af37;
-  letter-spacing: 1.5rpx;
+  caret-color: #c8889a;
+  letter-spacing: 1rpx;
 }
 
 .question-input::placeholder {
-  color: rgba(192, 168, 120, 0.35);
+  color: rgba(160, 130, 135, 0.4);
   font-style: italic;
 }
 
@@ -217,15 +114,8 @@
   gap: 8rpx;
   padding: var(--space-sm) 0;
   font-size: var(--fs-body-small);
-  color: rgba(212, 175, 55, 0.7);
+  color: rgba(180, 130, 140, 0.6);
   letter-spacing: 2rpx;
-}
-
-.selected-spread-hint::before,
-.selected-spread-hint::after {
-  content: '┅';
-  font-size: 14rpx;
-  color: rgba(212, 175, 55, 0.15);
 }
 
 /* -------- 主题选择 -------- */
@@ -238,20 +128,14 @@
 .theme-item {
   flex: 1;
   text-align: center;
-  background: linear-gradient(
-    180deg,
-    rgba(55, 40, 70, 0.6),
-    rgba(40, 28, 55, 0.7)
-  );
+  background: #fffaf8;
   border-radius: 16rpx;
   padding: var(--space-md) 0;
   font-size: var(--fs-body-small);
-  color: rgba(200, 190, 210, 0.6);
-  border: 1rpx solid rgba(212, 175, 55, 0.06);
-  transition: all 0.4s ease;
+  color: rgba(160, 130, 135, 0.55);
+  border: 1rpx solid rgba(200, 160, 170, 0.1);
+  transition: all 0.35s ease;
   letter-spacing: 1rpx;
-  position: relative;
-  overflow: hidden;
 }
 
 .theme-item:active {
@@ -259,101 +143,43 @@
 }
 
 .theme-active {
-  border-color: rgba(212, 175, 55, 0.3);
-  color: #d4af37;
-  background: linear-gradient(
-    180deg,
-    rgba(212, 175, 55, 0.1),
-    rgba(212, 175, 55, 0.04)
-  );
-  box-shadow:
-    0 0 20rpx rgba(212, 175, 55, 0.08),
-    inset 0 0 20rpx rgba(212, 175, 55, 0.04);
+  border-color: rgba(200, 140, 155, 0.3);
+  color: #c8889a;
+  background: linear-gradient(180deg, rgba(210, 140, 155, 0.06), rgba(210, 140, 155, 0.02));
+  box-shadow: 0 2rpx 12rpx rgba(200, 130, 140, 0.06);
 }
 
-.theme-active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 20%;
-  right: 20%;
-  height: 2rpx;
-  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
-}
-
-/* -------- 启动按钮 · 心跳脉冲 -------- */
+/* -------- 启动按钮 · 柔和玫瑰脉冲 -------- */
 .btn-glow-pulse {
   position: relative;
   overflow: hidden;
-  letter-spacing: 4rpx;
+  letter-spacing: 3rpx;
   font-size: var(--fs-body);
+  font-weight: 500;
   padding: var(--space-lg) 0;
-  border-radius: 40rpx;
-  background: linear-gradient(
-    135deg,
-    rgba(180, 140, 60, 0.8),
-    rgba(212, 175, 55, 0.7)
-  );
-  border: 1rpx solid rgba(212, 175, 55, 0.3);
-  color: #1a1025;
-  font-weight: 600;
-  animation: heart-pulse 3s ease-in-out infinite;
-  text-shadow: 0 1rpx 0 rgba(255, 215, 0, 0.3);
-}
-
-/* Ember particles floating up */
-.btn-glow-pulse::before {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 10%;
-  width: 4rpx;
-  height: 4rpx;
-  border-radius: 50%;
-  background: rgba(255, 200, 100, 0.6);
-  box-shadow:
-    0 0 6rpx 2rpx rgba(255, 200, 100, 0.3),
-    80rpx -30rpx 0 2rpx rgba(255, 180, 80, 0.4),
-    -60rpx -50rpx 0 1rpx rgba(255, 200, 100, 0.2),
-    120rpx -20rpx 0 3rpx rgba(255, 180, 80, 0.3);
-  animation: ember-float 4s ease-out infinite;
-  pointer-events: none;
-}
-
-/* ✧ decoration */
-.btn-glow-pulse::after {
-  content: '✧';
-  position: absolute;
-  right: var(--space-xl);
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 22rpx;
-  opacity: 0.35;
-  transition: opacity 0.4s;
-  color: #1a1025;
+  border-radius: 46rpx;
+  background: linear-gradient(135deg, #d496a6, #c47e92);
+  border: none;
+  color: #ffffff;
+  animation: pulse-soft 3s ease-in-out infinite;
+  box-shadow: 0 6rpx 24rpx rgba(196, 126, 146, 0.25);
 }
 
 .btn-glow-pulse:active {
   transform: scale(0.96);
   animation: none;
+  box-shadow: 0 3rpx 12rpx rgba(196, 126, 146, 0.2);
 }
 
 .btn-glow-pulse.drawing {
-  opacity: 0.7;
-  animation: heart-pulse 1.2s ease-in-out infinite;
-}
-
-.btn-glow-pulse.drawing::after {
-  content: '✦';
-  opacity: 0.7;
-  animation: mystic-spin 2s linear infinite;
-  color: #1a1025;
+  opacity: 0.75;
+  animation: pulse-soft 1.2s ease-in-out infinite;
 }
 
 .btn-glow-pulse[disabled] {
-  opacity: 0.45;
+  opacity: 0.4;
   animation: none;
-  filter: grayscale(0.6);
+  filter: grayscale(0.5);
 }
 
 /* -------- 加载骨架屏 -------- */
@@ -363,27 +189,27 @@
 
 .skeleton-title {
   width: 280rpx;
-  height: 40rpx;
+  height: 36rpx;
   border-radius: 10rpx;
-  background: linear-gradient(90deg, rgba(55, 40, 70, 0.5), rgba(70, 50, 85, 0.3));
+  background: linear-gradient(90deg, rgba(200, 160, 170, 0.2), rgba(210, 180, 185, 0.1));
   margin: 0 auto var(--space-sm);
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
 
 .skeleton-subtitle {
   width: 200rpx;
-  height: 28rpx;
+  height: 26rpx;
   border-radius: 10rpx;
-  background: linear-gradient(90deg, rgba(55, 40, 70, 0.5), rgba(70, 50, 85, 0.3));
+  background: linear-gradient(90deg, rgba(200, 160, 170, 0.2), rgba(210, 180, 185, 0.1));
   margin: 0 auto var(--space-xxxl);
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
 
 .skeleton-spread {
   width: 100%;
-  height: 140rpx;
+  height: 130rpx;
   border-radius: 18rpx;
-  background: linear-gradient(90deg, rgba(55, 40, 70, 0.4), rgba(70, 50, 85, 0.25));
+  background: linear-gradient(90deg, rgba(200, 160, 170, 0.15), rgba(210, 180, 185, 0.08));
   margin-bottom: var(--space-md);
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
@@ -398,19 +224,19 @@
   font-size: 80rpx;
   display: block;
   margin-bottom: var(--space-md);
-  opacity: 0.45;
+  opacity: 0.35;
 }
 
 .error-text {
   font-size: var(--fs-body);
-  color: rgba(200, 190, 210, 0.6);
+  color: rgba(120, 90, 95, 0.55);
   display: block;
   margin-bottom: var(--space-xs);
 }
 
 .error-hint {
   font-size: var(--fs-body-small);
-  color: rgba(200, 190, 210, 0.35);
+  color: rgba(120, 90, 95, 0.35);
   display: block;
   margin-bottom: var(--space-xxl);
 }

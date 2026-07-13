@@ -1,22 +1,18 @@
-/* ===== 年度报告 - 薄暮圣殿主题 (Twilight Sanctuary) ===== */
-/*    星辰年鉴：一整年的灵性旅程，如古老卷轴缓缓展开   */
+/* ===== 年度报告 - 暖金年鉴主题 (Golden Yearbook) ===== */
+/*    像一本手工制作的年册：温暖、珍贵、每一页都值得珍藏  */
 
 /* ---------------------------------------------------------------
-   Container
+   Container — 暖白底色，宛如精装书页
    --------------------------------------------------------------- */
 .container {
   padding: var(--space-xl);
   padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-massive));
-  background: var(--color-bg);
+  background: linear-gradient(180deg, #FFFAF5 0%, #FFF5EB 100%);
   min-height: 100vh;
-  background-image:
-    var(--gradient-candle-ambient),
-    var(--gradient-bg-radial),
-    var(--gradient-bg-radial-gold);
 }
 
 /* ---------------------------------------------------------------
-   Intro — 星辰年鉴开篇
+   Intro — 卷首语，像年鉴扉页
    --------------------------------------------------------------- */
 .intro {
   text-align: center;
@@ -29,25 +25,24 @@
   display: block;
   margin-bottom: var(--space-xl);
   animation: float 5s var(--ease-in-out) infinite;
-  opacity: 0.8;
+  opacity: 0.7;
 }
 
 .intro-title {
   font-size: var(--fs-h1);
   font-weight: var(--fw-bold);
-  color: var(--color-gold-light);
+  color: #3D3535;
   display: block;
-  letter-spacing: var(--ls-display);
-  text-shadow: 0 0 50rpx var(--color-gold-glow);
+  letter-spacing: 4rpx;
 }
 
 .intro-subtitle {
   font-size: var(--fs-body);
-  color: var(--color-text-dim);
+  color: #9A8A8A;
   display: block;
   margin-top: var(--space-md);
   line-height: var(--lh-normal);
-  letter-spacing: 2rpx;
+  letter-spacing: 1rpx;
 }
 
 .intro-divider {
@@ -56,11 +51,12 @@
   width: 200rpx;
   height: 2rpx;
   background: linear-gradient(90deg,
-    transparent, var(--color-gold-subtle), transparent);
+    transparent, #D4836A, transparent);
+  opacity: 0.4;
 }
 
 /* ---------------------------------------------------------------
-   Generating (loading) — 星盘推演中
+   Generating (loading) — 翻页等待中
    --------------------------------------------------------------- */
 .generating {
   text-align: center;
@@ -70,14 +66,15 @@
 .generating-symbol {
   font-size: 64rpx;
   display: block;
-  color: var(--color-gold);
+  color: #C9A96E;
   animation: mystic-spin 5s var(--ease-in-out) infinite;
   margin-bottom: var(--space-xl);
+  opacity: 0.7;
 }
 
 .generating-text {
   font-size: var(--fs-h4);
-  color: var(--color-gold);
+  color: #D4836A;
   font-weight: var(--fw-semibold);
   display: block;
   animation: breathe 3s ease-in-out infinite;
@@ -86,7 +83,7 @@
 
 .generating-sub {
   font-size: var(--fs-body);
-  color: var(--color-text-dim);
+  color: #9A8A8A;
   display: block;
   margin-top: var(--space-sm);
 }
@@ -99,39 +96,40 @@
 }
 
 .report-body {
-  border-radius: var(--radius-card);
+  border-radius: 28rpx;
   padding: var(--space-xxl);
   margin-bottom: var(--space-xl);
   position: relative;
   overflow: hidden;
-  background: linear-gradient(160deg,
-    var(--color-bg-card-warm),
-    var(--color-bg-mid));
-  border: 1rpx solid var(--color-border-subtle);
-  box-shadow: var(--shadow-card-warm);
+  background: linear-gradient(160deg, #FFFFFF, #FFFAF5);
+  border: 1rpx solid rgba(201, 169, 110, 0.15);
+  box-shadow: 0 6rpx 28rpx rgba(183, 201, 177, 0.06);
 }
 
-/* 顶部暖光 */
+/* 顶部暖色装饰线 */
 .report-body::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 2rpx;
+  height: 3rpx;
   background: linear-gradient(90deg,
-    transparent, var(--color-gold-subtle), transparent);
-  opacity: 0.3;
+    transparent,
+    rgba(201, 169, 110, 0.3) 30%,
+    rgba(212, 131, 106, 0.3) 70%,
+    transparent);
+  opacity: 0.4;
   pointer-events: none;
 }
 
-/* 左上角装饰符文 */
+/* 右上角装饰花 */
 .report-body::after {
-  content: '☽';
+  content: '✿';
   position: absolute;
   top: var(--space-md);
   right: var(--space-md);
   font-size: 24rpx;
-  color: var(--color-gold);
-  opacity: 0.15;
+  color: #C9A96E;
+  opacity: 0.12;
   pointer-events: none;
 }
 
@@ -146,7 +144,7 @@
 .report-section-title {
   font-size: var(--fs-body);
   font-weight: var(--fw-semibold);
-  color: var(--color-gold);
+  color: #D4836A;
   display: block;
   margin-bottom: var(--space-md);
   letter-spacing: 2rpx;
@@ -155,31 +153,30 @@
 }
 
 .report-section-title::before {
-  content: '✦';
+  content: '🌸';
   position: absolute;
   left: 0;
-  color: var(--color-gold);
   font-size: 18rpx;
-  opacity: 0.7;
+  opacity: 0.5;
 }
 
 .report-text {
   font-size: var(--fs-body);
-  color: var(--color-text-primary);
+  color: #3D3535;
   line-height: var(--lh-loose);
   white-space: pre-wrap;
-  letter-spacing: var(--ls-body);
+  letter-spacing: 1rpx;
 }
 
-/* 段落首字下沉 */
+/* 段落首字下沉 — 如精装书的装饰首字母 */
 .report-text.drop-cap::first-letter {
   font-size: 56rpx;
   font-weight: var(--fw-bold);
-  color: var(--color-gold);
+  color: #D4836A;
   float: left;
   margin-right: 8rpx;
   line-height: 1;
-  font-family: var(--font-family-display);
+  font-family: var(--font-family-display, serif);
 }
 
 /* Stats highlight in report */
@@ -187,19 +184,18 @@
   display: inline-block;
   font-size: var(--fs-h2);
   font-weight: var(--fw-bold);
-  color: var(--color-gold);
-  text-shadow: 0 0 20rpx var(--color-gold-glow);
+  color: #C9A96E;
 }
 
 .report-stat-label {
   font-size: var(--fs-body-small);
-  color: var(--color-text-dim);
+  color: #9A8A8A;
   display: block;
   margin-top: var(--space-xs);
 }
 
 /* ---------------------------------------------------------------
-   Monthly Cards Scroll — 月度卡牌星系
+   Monthly Cards Scroll — 月度卡片长廊
    --------------------------------------------------------------- */
 .report-cards-section {
   margin-bottom: var(--space-xxl);
@@ -207,7 +203,7 @@
 
 .section-subtitle {
   font-size: var(--fs-body);
-  color: var(--color-text-secondary);
+  color: #6B5A5A;
   display: block;
   margin-bottom: var(--space-md);
   text-align: center;
@@ -235,35 +231,36 @@
   flex-shrink: 0;
   width: 300rpx;
   padding: var(--space-lg) 0;
-  border-radius: var(--radius-lg);
-  background: var(--color-bg-card-warm);
-  border: 1rpx solid var(--color-border-subtle);
+  border-radius: 20rpx;
+  background: #FFFFFF;
+  border: 1rpx solid rgba(212, 131, 106, 0.1);
   transition: all var(--duration-normal) var(--ease-out);
+  box-shadow: 0 4rpx 16rpx rgba(183, 201, 177, 0.04);
 }
 
 .monthly-card-item:active {
-  border-color: var(--color-border-glow);
+  border-color: rgba(212, 131, 106, 0.25);
   transform: scale(0.96);
-  box-shadow: var(--shadow-glow-gold);
+  box-shadow: 0 8rpx 24rpx rgba(212, 131, 106, 0.1);
 }
 
 .monthly-card-image {
   width: 200rpx;
   height: 280rpx;
-  border-radius: var(--radius-md);
+  border-radius: 12rpx;
   margin-bottom: var(--space-sm);
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 4rpx 12rpx rgba(183, 201, 177, 0.08);
 }
 
 .month-label {
   font-size: var(--fs-body-small);
-  color: var(--color-text-secondary);
+  color: #6B5A5A;
   text-align: center;
   letter-spacing: 1rpx;
 }
 
 /* ---------------------------------------------------------------
-   Skeleton
+   Skeleton — 暖色骨架
    --------------------------------------------------------------- */
 .skeleton {
   padding: var(--space-xxl) 0;
@@ -281,14 +278,14 @@
   width: 80rpx;
   height: 80rpx;
   border-radius: var(--radius-full);
-  background: var(--color-bg-card);
+  background: linear-gradient(135deg, #F5EDE8, #F0EBE5);
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
 
 .skeleton-line {
   height: 32rpx;
-  border-radius: var(--radius-sm);
-  background: var(--color-bg-card);
+  border-radius: 12rpx;
+  background: linear-gradient(135deg, #F5EDE8, #F0EBE5);
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
 
@@ -298,8 +295,8 @@
 .skeleton-desc {
   width: 80%;
   height: 80rpx;
-  border-radius: var(--radius-sm);
-  background: var(--color-bg-card);
+  border-radius: 12rpx;
+  background: linear-gradient(135deg, #F5EDE8, #F0EBE5);
   margin-bottom: var(--space-xxl);
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
@@ -307,14 +304,14 @@
 .skeleton-btn {
   width: 80%;
   height: 88rpx;
-  border-radius: var(--radius-round);
-  background: var(--color-bg-card);
+  border-radius: 40rpx;
+  background: linear-gradient(135deg, #F5EDE8, #F0EBE5);
   margin: 0 auto;
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
 
 /* ---------------------------------------------------------------
-   Error
+   Error — 温柔报错
    --------------------------------------------------------------- */
 .error-state {
   text-align: center;
@@ -330,14 +327,14 @@
 
 .error-text {
   font-size: var(--fs-body);
-  color: var(--color-text-secondary);
+  color: #6B5A5A;
   display: block;
   margin-bottom: var(--space-xs);
 }
 
 .error-hint {
   font-size: var(--fs-body-small);
-  color: var(--color-text-dim);
+  color: #9A8A8A;
   display: block;
   margin-bottom: var(--space-xxl);
 }

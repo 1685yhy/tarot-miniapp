@@ -1,22 +1,18 @@
-/* ===== 星光日记 - 薄暮圣殿主题 (Twilight Sanctuary) ===== */
-/*    灵魂手札：烛光下的私密记录，暖色羊皮纸质感       */
+/* ===== 星光日记 - 柔美手帐主题 (Paper Journal) ===== */
+/*    像一本精美的纸质手帐：暖黄纸页、丝带书签、手写感   */
 
 /* ---------------------------------------------------------------
-   Container
+   Container — 暖黄纸页底色
    --------------------------------------------------------------- */
 .container {
   padding: var(--space-xl);
   padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-massive));
-  background: var(--color-bg);
+  background: linear-gradient(180deg, #FFF9F0 0%, #FFF5EB 100%);
   min-height: 100vh;
-  background-image:
-    var(--gradient-candle-ambient),
-    var(--gradient-bg-radial),
-    var(--gradient-bg-radial-gold);
 }
 
 /* ---------------------------------------------------------------
-   Page Heading
+   Page Heading — 手帐标题栏
    --------------------------------------------------------------- */
 .page-heading {
   display: flex;
@@ -24,36 +20,37 @@
   align-items: center;
   margin-bottom: var(--space-xxl);
   padding-bottom: var(--space-lg);
-  border-bottom: 1rpx solid var(--color-divider);
+  border-bottom: 1rpx solid rgba(212, 131, 106, 0.12);
 }
 
 .page-title {
   font-size: var(--fs-h3);
   font-weight: var(--fw-bold);
-  color: var(--color-gold-light);
-  letter-spacing: var(--ls-heading);
+  color: #3D3535;
+  letter-spacing: 2rpx;
   display: block;
 }
 
 .new-entry-btn {
   font-size: var(--fs-body-small);
-  color: var(--color-gold);
-  background: var(--color-gold-subtle);
+  color: #D4836A;
+  background: rgba(212, 131, 106, 0.08);
   border: none;
   padding: var(--space-sm) var(--space-xl);
-  border-radius: var(--radius-round);
+  border-radius: 40rpx;
   font-weight: var(--fw-semibold);
   transition: all var(--duration-fast);
+  letter-spacing: 1rpx;
 }
 
 .new-entry-btn:active {
-  background: var(--color-gold);
-  color: var(--color-text-on-gold);
+  background: #D4836A;
+  color: #FFFFFF;
   transform: scale(0.95);
 }
 
 /* ---------------------------------------------------------------
-   Entries — 日记条目（暖色羊皮纸卡片）
+   Entries — 日记条目（仿手工纸卡片）
    --------------------------------------------------------------- */
 .entries {
   display: flex;
@@ -62,37 +59,38 @@
 }
 
 .entry-card {
-  border-radius: var(--radius-lg);
+  border-radius: 20rpx;
   padding: var(--space-xl);
   position: relative;
   overflow: hidden;
-  background: linear-gradient(145deg,
-    var(--color-bg-card-warm),
-    var(--color-bg-mid));
-  border: 1rpx solid var(--color-border-subtle);
-  box-shadow: var(--shadow-card-warm);
+  background: linear-gradient(145deg, #FFFFFF, #FFFAF5);
+  border: 1rpx solid rgba(183, 201, 177, 0.2);
+  box-shadow: 0 6rpx 24rpx rgba(183, 201, 177, 0.06);
   transition: all var(--duration-normal) var(--ease-out);
 }
 
 .entry-card:active {
-  border-color: var(--color-border-glow);
+  border-color: rgba(212, 131, 106, 0.2);
   transform: scale(0.98);
-  box-shadow: var(--shadow-card-elevated), var(--shadow-glow-gold);
+  box-shadow: 0 10rpx 32rpx rgba(212, 131, 106, 0.1);
 }
 
-/* 顶部暖光扫线 */
+/* 顶部暖色线 — 像手帐上的装饰胶带 */
 .entry-card::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 2rpx;
+  height: 3rpx;
   background: linear-gradient(90deg,
-    transparent, var(--color-gold-subtle), transparent);
-  opacity: 0.4;
+    transparent,
+    rgba(212, 131, 106, 0.3) 30%,
+    rgba(201, 169, 110, 0.3) 70%,
+    transparent);
+  opacity: 0.5;
   pointer-events: none;
 }
 
-/* 左边界装饰 — 金色竖线（像书签线） */
+/* 左侧书签线 — 像手帐中垂下的丝带 */
 .entry-card::after {
   content: '';
   position: absolute;
@@ -101,10 +99,11 @@
   bottom: var(--space-xl);
   width: 3rpx;
   background: linear-gradient(180deg,
-    var(--color-gold-subtle),
-    var(--color-purple-subtle),
+    #D4836A,
+    #C9A96E,
     transparent);
   border-radius: 2rpx;
+  opacity: 0.5;
 }
 
 .entry-header {
@@ -117,7 +116,7 @@
 
 .entry-date {
   font-size: var(--fs-caption);
-  color: var(--color-text-dim);
+  color: #9A8A8A;
   display: block;
   letter-spacing: 1rpx;
 }
@@ -130,7 +129,7 @@
 
 .entry-reflection {
   font-size: var(--fs-body);
-  color: var(--color-text-primary);
+  color: #3D3535;
   line-height: var(--lh-loose);
   display: block;
   padding-left: var(--space-lg);
@@ -153,26 +152,24 @@
 
 .entries-empty-text {
   font-size: var(--fs-body);
-  color: var(--color-text-secondary);
+  color: #6B5A5A;
   display: block;
   margin-bottom: var(--space-xs);
 }
 
 .entries-empty-hint {
   font-size: var(--fs-body-small);
-  color: var(--color-text-dim);
+  color: #9A8A8A;
   display: block;
 }
 
 /* ---------------------------------------------------------------
-   Modal / Sheet — 新建条目弹窗 (底部弹出)
+   Modal / Sheet — 新建条目弹窗（像翻开新手帐页）
    --------------------------------------------------------------- */
 .modal-content {
   width: 100%;
-  background: linear-gradient(180deg,
-    var(--color-bg-card-warm),
-    var(--color-bg-mid));
-  border-radius: var(--radius-xxl) var(--radius-xxl) 0 0;
+  background: linear-gradient(180deg, #FFFFFF, #FFF8F0);
+  border-radius: 32rpx 32rpx 0 0;
   padding: var(--space-xxxl) var(--space-xxl) calc(var(--space-massive) + env(safe-area-inset-bottom));
   max-height: 80vh;
   overflow-y: auto;
@@ -182,17 +179,17 @@
 .modal-title {
   font-size: var(--fs-h4);
   font-weight: var(--fw-bold);
-  color: var(--color-gold);
+  color: #3D3535;
   display: block;
   text-align: center;
   margin-bottom: var(--space-xxl);
-  letter-spacing: var(--ls-heading);
+  letter-spacing: 2rpx;
 }
 
-/* Mood grid — 情绪选择 (暖色系) */
+/* Mood grid — 情绪选择（柔和水彩色系） */
 .mood-label {
   font-size: var(--fs-body-small);
-  color: var(--color-text-secondary);
+  color: #6B5A5A;
   display: block;
   margin-bottom: var(--space-md);
   letter-spacing: 1rpx;
@@ -207,10 +204,10 @@
 
 .mood-item {
   padding: 14rpx var(--space-xl);
-  border-radius: var(--radius-round);
+  border-radius: 40rpx;
   font-size: var(--fs-body);
-  background: var(--color-bg);
-  color: var(--color-text-secondary);
+  background: #FFFFFF;
+  color: #6B5A5A;
   border: 2rpx solid transparent;
   transition: all var(--duration-normal);
 }
@@ -220,54 +217,55 @@
 }
 
 .mood-item.selected {
-  border-color: var(--color-gold);
-  color: var(--color-gold);
-  background: var(--color-gold-subtle);
-  box-shadow: 0 0 16rpx var(--color-gold-glow);
+  border-color: #D4836A;
+  color: #D4836A;
+  background: rgba(212, 131, 106, 0.06);
+  box-shadow: 0 0 16rpx rgba(212, 131, 106, 0.08);
 }
 
 /* Reflection textarea */
 .reflection-input {
   width: 100%;
   min-height: 200rpx;
-  background: var(--color-bg);
-  border-radius: var(--radius-lg);
+  background: #FFFFFF;
+  border-radius: 20rpx;
   padding: var(--space-lg);
   font-size: var(--fs-body);
-  color: var(--color-text-primary);
+  color: #3D3535;
   line-height: var(--lh-loose);
   box-sizing: border-box;
-  border: 1rpx solid var(--color-border-subtle);
+  border: 1rpx solid rgba(183, 201, 177, 0.25);
   transition: border-color var(--duration-fast);
 }
 
 .reflection-input:focus {
-  border-color: var(--color-gold);
-  box-shadow: var(--shadow-glow-gold);
+  border-color: #D4836A;
+  box-shadow: 0 0 12rpx rgba(212, 131, 106, 0.08);
 }
 
 .reflection-input::placeholder {
-  color: var(--color-text-muted);
+  color: #B5A5A5;
 }
 
 /* Save button */
 .save-btn {
   width: 100%;
   margin-top: var(--space-xxl);
-  background: var(--gradient-gold);
-  color: var(--color-text-on-gold);
+  background: linear-gradient(135deg, #D4836A, #C9A96E);
+  color: #FFFFFF;
   font-size: var(--fs-h4);
   font-weight: var(--fw-bold);
-  border-radius: var(--radius-button);
+  border-radius: 40rpx;
   padding: 26rpx 0;
   border: none;
-  box-shadow: var(--shadow-button);
+  box-shadow: 0 4rpx 20rpx rgba(212, 131, 106, 0.2);
   transition: all var(--duration-normal) var(--ease-out);
+  letter-spacing: 2rpx;
 }
 
 .save-btn:active {
   transform: scale(0.97);
-  box-shadow: 0 2rpx 8rpx var(--color-gold-glow);
+  box-shadow: 0 2rpx 8rpx rgba(212, 131, 106, 0.1);
 }
 
 .save-btn[disabled] {
@@ -291,8 +289,8 @@
 
 .skeleton-line {
   height: 32rpx;
-  border-radius: var(--radius-sm);
-  background: var(--color-bg-card);
+  border-radius: 12rpx;
+  background: linear-gradient(135deg, #F5EDE8, #F0EBE5);
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
 
@@ -302,8 +300,8 @@
 .skeleton-btn {
   width: 100%;
   height: 80rpx;
-  border-radius: var(--radius-round);
-  background: var(--color-bg-card);
+  border-radius: 40rpx;
+  background: linear-gradient(135deg, #F5EDE8, #F0EBE5);
   margin-bottom: var(--space-xxl);
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
@@ -311,14 +309,14 @@
 .skeleton-entry {
   width: 100%;
   height: 140rpx;
-  border-radius: var(--radius-lg);
-  background: var(--color-bg-card);
+  border-radius: 20rpx;
+  background: linear-gradient(135deg, #F5EDE8, #F0EBE5);
   margin-bottom: var(--space-md);
   animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
 
 /* ---------------------------------------------------------------
-   Error
+   Error — 温柔报错
    --------------------------------------------------------------- */
 .error-state {
   text-align: center;
@@ -334,14 +332,14 @@
 
 .error-text {
   font-size: var(--fs-body);
-  color: var(--color-text-secondary);
+  color: #6B5A5A;
   display: block;
   margin-bottom: var(--space-xs);
 }
 
 .error-hint {
   font-size: var(--fs-body-small);
-  color: var(--color-text-dim);
+  color: #9A8A8A;
   display: block;
   margin-bottom: var(--space-xxl);
 }
