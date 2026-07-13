@@ -1,17 +1,339 @@
-/* ==========================================
-   reading-result · Editorial Minimal
-   Clean white cards · Warm accents
-   ========================================== */
+/* ==============================
+   柔光星辰 — Reading Result
+   Cards as stars in the night sky
+   Dark indigo + warm golden starlight
+   ============================== */
 
-/* -------- Cards section -------- */
+/* ----- CSS Variables ----- */
+page {
+  --bg-deep: #0d0b1a;
+  --bg-card: #161329;
+  --bg-elevated: #201d3e;
+  --gold: #d4af37;
+  --gold-light: #f0d68a;
+  --gold-glow: rgba(212, 175, 55, 0.35);
+  --gold-dim: rgba(212, 175, 55, 0.15);
+  --text-primary: #e8e4f0;
+  --text-secondary: #b8b0d0;
+  --text-dim: #7b7299;
+  --text-gold: #e8c84a;
+  --fs-caption: 22rpx;
+  --fs-body-small: 24rpx;
+  --fs-body: 28rpx;
+  --fs-body-large: 32rpx;
+  --space-xs: 6rpx;
+  --space-sm: 12rpx;
+  --space-md: 20rpx;
+  --space-lg: 28rpx;
+  --space-xl: 36rpx;
+  --space-xxl: 48rpx;
+  --space-xxxl: 64rpx;
+  --radius-card: 24rpx;
+  --radius-sm: 12rpx;
+  --radius-round: 999rpx;
+  font-family: system-ui, -apple-system, 'PingFang SC', 'Noto Sans SC', sans-serif;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ==============================
+   Star-field background
+   ============================== */
+.star-field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.star-particle {
+  position: absolute;
+  width: 4rpx;
+  height: 4rpx;
+  background: var(--gold-light);
+  border-radius: 50%;
+  box-shadow: 0 0 6rpx 2rpx var(--gold-glow);
+  animation: starTwinkle 3s ease-in-out infinite alternate;
+}
+
+.star-particle:nth-child(1) { top: 8%; left: 12%; animation-delay: 0s; }
+.star-particle:nth-child(2) { top: 20%; left: 78%; width: 3rpx; height: 3rpx; animation-delay: 0.4s; opacity: 0.6; }
+.star-particle:nth-child(3) { top: 35%; left: 5%; width: 5rpx; height: 5rpx; animation-delay: 0.8s; }
+.star-particle:nth-child(4) { top: 50%; left: 88%; animation-delay: 1.2s; opacity: 0.7; }
+.star-particle:nth-child(5) { top: 65%; left: 22%; width: 3rpx; height: 3rpx; animation-delay: 1.6s; }
+.star-particle:nth-child(6) { top: 78%; left: 60%; animation-delay: 2s; opacity: 0.5; }
+.star-particle:nth-child(7) { top: 12%; left: 45%; width: 6rpx; height: 6rpx; animation-delay: 0.2s; }
+.star-particle:nth-child(8) { top: 45%; left: 55%; width: 2rpx; height: 2rpx; animation-delay: 1s; }
+.star-particle:nth-child(9) { top: 85%; left: 42%; animation-delay: 0.6s; }
+.star-particle:nth-child(10) { top: 55%; left: 95%; width: 3rpx; height: 3rpx; animation-delay: 1.8s; opacity: 0.4; }
+
+@keyframes starTwinkle {
+  0% { opacity: 0.2; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1.2); }
+}
+
+/* ==============================
+   Orbs
+   ============================== */
+.orb-top {
+  position: fixed;
+  top: -200rpx;
+  right: -150rpx;
+  width: 500rpx;
+  height: 500rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(212,175,55,0.12) 0%, transparent 70%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.orb-bottom {
+  position: fixed;
+  bottom: -250rpx;
+  left: -180rpx;
+  width: 600rpx;
+  height: 600rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(100,80,180,0.10) 0%, transparent 70%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ==============================
+   Page wrapper
+   ============================== */
+.page {
+  position: relative;
+  z-index: 1;
+  padding: var(--space-xxl) var(--space-xl) 80rpx;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* ==============================
+   Animations
+   ============================== */
+.anim-fade-in-up-1 {
+  animation: fadeInUp 0.5s ease both;
+}
+.anim-fade-in-up-2 {
+  animation: fadeInUp 0.5s ease 0.2s both;
+}
+.anim-fade-in-up-3 {
+  animation: fadeInUp 0.5s ease 0.4s both;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==============================
+   Typography helpers
+   ============================== */
+.text-center { text-align: center; }
+.text-secondary { color: var(--text-secondary); }
+.text-dim { color: var(--text-dim); }
+.text-gold { color: var(--text-gold); }
+.text-caption { font-size: var(--fs-caption); }
+
+.mt-xs { margin-top: var(--space-xs); }
+.mt-sm { margin-top: var(--space-sm); }
+.mt-md { margin-top: var(--space-md); }
+.mb-md { margin-bottom: var(--space-md); }
+.mb-xxl { margin-bottom: var(--space-xxl); }
+
+/* ==============================
+   Loading page — mystic
+   ============================== */
+.loading-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+.mystic-loading {
+  text-align: center;
+  padding: var(--space-xl);
+}
+
+.mystic-loading-symbol {
+  font-size: 72rpx;
+  color: var(--gold);
+  display: block;
+  margin-bottom: var(--space-lg);
+  animation: rotateSymbol 3s ease-in-out infinite;
+}
+
+@keyframes rotateSymbol {
+  0% { transform: rotate(0deg) scale(1); opacity: 0.6; }
+  50% { transform: rotate(180deg) scale(1.15); opacity: 1; }
+  100% { transform: rotate(360deg) scale(1); opacity: 0.6; }
+}
+
+.mystic-loading-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: var(--space-xs);
+}
+
+.mystic-loading-sub {
+  font-size: var(--fs-body-small);
+  color: var(--text-dim);
+  display: block;
+}
+
+/* Loading stages */
+.loading-stages {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  margin-top: var(--space-xxxl);
+}
+
+.stage-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+  opacity: 0.25;
+  transition: opacity 0.5s ease;
+}
+
+.stage-item.stage-done {
+  opacity: 1;
+}
+
+.stage-icon {
+  font-size: 24rpx;
+}
+
+.stage-text {
+  font-size: var(--fs-caption);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.stage-arrow {
+  font-size: 20rpx;
+  color: var(--gold-dim);
+  margin-top: -20rpx;
+}
+
+/* ==============================
+   Error state
+   ============================== */
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 160rpx var(--space-xl);
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.error-icon {
+  font-size: 72rpx;
+  margin-bottom: var(--space-lg);
+  display: block;
+}
+
+.error-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+  display: block;
+}
+
+.error-hint {
+  font-size: var(--fs-body-small);
+  color: var(--text-dim);
+  margin-bottom: var(--space-xxl);
+  display: block;
+  word-break: break-all;
+}
+
+/* Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: 20rpx 48rpx;
+  border: none;
+  border-radius: var(--radius-round);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: #0d0b1a;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  box-shadow: 0 4rpx 24rpx var(--gold-glow);
+  transition: all 0.25s;
+}
+
+.btn-primary::after {
+  border: none;
+}
+
+.btn-primary:active {
+  transform: scale(0.96);
+}
+
+.btn-small {
+  padding: 16rpx 36rpx;
+  font-size: var(--fs-body-small);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: 22rpx 0;
+  border: 1.5rpx solid var(--gold-dim);
+  border-radius: var(--radius-round);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--gold-light);
+  background: transparent;
+  transition: all 0.25s;
+}
+
+.btn-secondary::after {
+  border: none;
+}
+
+.btn-secondary:active {
+  background: rgba(212,175,55,0.08);
+  border-color: var(--gold);
+}
+
+/* ==============================
+   Cards section — night sky
+   ============================== */
 .cards-section {
   margin-bottom: var(--space-xxl);
   position: relative;
-  border-radius: 16rpx;
+  border-radius: var(--radius-card);
   padding: var(--space-xl) var(--space-md);
-  background: #ffffff;
-  box-shadow: 0 2rpx 12rpx rgba(160, 130, 100, 0.06);
-  border: 1rpx solid rgba(180, 140, 110, 0.06);
+  background: var(--bg-card);
+  border: 1.5rpx solid var(--gold-dim);
+  box-shadow: 0 0 40rpx rgba(212,175,55,0.06), inset 0 0 60rpx rgba(212,175,55,0.03);
 }
 
 .card-swiper {
@@ -25,41 +347,14 @@
   height: 100%;
 }
 
-.drawn-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  background: #ffffff;
-  border-radius: 16rpx;
-  margin: 0 var(--space-lg);
-  padding: var(--space-xxl);
-  box-sizing: border-box;
-  box-shadow: 0 4rpx 20rpx rgba(160, 130, 100, 0.08);
-  border: 1rpx solid rgba(180, 140, 110, 0.06);
-  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+/* Swiper indicator overrides */
+.card-swiper .wx-swiper-dots {
+  margin-top: 8rpx;
 }
 
-.card-name {
-  font-size: var(--fs-body-large);
-  font-weight: var(--fw-bold);
-  color: #3d3228;
-  letter-spacing: 2rpx;
-}
-
-.card-suit {
-  font-size: var(--fs-caption);
-  color: rgba(120, 100, 85, 0.4);
-  letter-spacing: 2rpx;
-  margin-top: 6rpx;
-}
-
-.drawn-card.reversed {
-  background: #fcfaf8;
-}
-
-/* -------- Dots -------- */
+/* ==============================
+   Dot navigation
+   ============================== */
 .dots {
   display: flex;
   justify-content: center;
@@ -71,17 +366,20 @@
   width: 8rpx;
   height: 8rpx;
   border-radius: 50%;
-  background: rgba(180, 140, 110, 0.15);
-  transition: all var(--duration-normal);
+  background: rgba(212,175,55,0.15);
+  transition: all 0.35s;
 }
 
 .dot-active {
-  background: #d4a574;
-  width: 24rpx;
-  border-radius: 6rpx;
+  background: var(--gold);
+  width: 28rpx;
+  border-radius: var(--radius-round);
+  box-shadow: 0 0 12rpx var(--gold-glow);
 }
 
-/* -------- Interpretation -------- */
+/* ==============================
+   Interpretation — starlight reading
+   ============================== */
 .interpretation-section {
   margin-bottom: var(--space-xxl);
 }
@@ -90,11 +388,11 @@
   max-height: 600rpx;
   overflow: hidden;
   position: relative;
-  background: #ffffff;
-  border-radius: 16rpx;
-  border: 1rpx solid rgba(180, 140, 110, 0.06);
+  background: var(--bg-card);
+  border-radius: var(--radius-card);
+  border: 1.5rpx solid var(--gold-dim);
   padding: var(--space-lg) var(--space-xl);
-  box-shadow: 0 2rpx 12rpx rgba(160, 130, 100, 0.06);
+  box-shadow: 0 0 30rpx rgba(212,175,55,0.05);
 }
 
 .interpretation-scroll.expanded {
@@ -110,24 +408,23 @@
   left: 0;
   right: 0;
   height: 80rpx;
-  background: linear-gradient(transparent, #ffffff);
+  background: linear-gradient(transparent, var(--bg-card));
   pointer-events: none;
 }
 
 .interpretation-text {
   font-size: var(--fs-body);
-  color: #3d3228;
+  color: var(--text-primary);
   line-height: 1.9;
   white-space: pre-wrap;
-  letter-spacing: 1rpx;
   display: block;
   text-align: justify;
 }
 
 .interpretation-text::first-letter {
   font-size: 48rpx;
-  font-weight: 600;
-  color: #b8865a;
+  font-weight: 700;
+  color: var(--gold);
   float: left;
   margin-right: 6rpx;
   line-height: 1;
@@ -136,103 +433,59 @@
 .interpretation-card {
   text-align: center;
   padding: var(--space-xl);
+  background: var(--bg-card);
+  border-radius: var(--radius-card);
+  border: 1.5rpx solid var(--gold-dim);
 }
 
-/* -------- Loading stages -------- */
-.loading-stages {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12rpx;
-  margin-top: var(--space-xxl);
-}
-
-.stage-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6rpx;
-  opacity: 0.3;
-  transition: opacity 0.5s ease;
-}
-
-.stage-item.stage-done {
-  opacity: 1;
-}
-
-.stage-icon {
-  font-size: 24rpx;
-}
-
-.stage-text {
-  font-size: var(--fs-caption);
-  color: rgba(120, 100, 85, 0.5);
-  white-space: nowrap;
-  letter-spacing: 1rpx;
-}
-
-.stage-arrow {
-  font-size: 20rpx;
-  color: rgba(180, 140, 110, 0.15);
-  margin-top: -20rpx;
-}
-
-/* -------- Actions -------- */
+/* ==============================
+   Actions
+   ============================== */
 .actions {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
   padding-top: var(--space-lg);
-  border-top: 1rpx solid rgba(180, 140, 110, 0.08);
+  border-top: 1rpx solid var(--gold-dim);
 }
 
 .action-row {
   display: flex;
   justify-content: center;
-  gap: var(--space-huge);
+  gap: var(--space-xxxl);
   margin-top: var(--space-xs);
 }
 
 .action-link {
   font-size: var(--fs-body-small);
-  color: rgba(120, 100, 85, 0.5);
-  letter-spacing: 1rpx;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: color 0.2s;
 }
 
-/* -------- Loading page -------- */
-.loading-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background: #faf8f6;
+.action-link:active {
+  color: var(--gold);
 }
 
-/* -------- Error state -------- */
-.error-state {
-  text-align: center;
-  padding: var(--space-massive) var(--space-xl);
-}
-
-.error-icon {
-  font-size: 72rpx;
-  display: block;
-  margin-bottom: var(--space-md);
-  opacity: 0.4;
-}
-
-.error-text {
+/* ==============================
+   Expand/collapse toggle
+   ============================== */
+.btn-text {
   font-size: var(--fs-body);
-  color: var(--color-text-secondary);
-  display: block;
-  margin-bottom: var(--space-xs);
-  letter-spacing: 1rpx;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: var(--space-sm) 0;
 }
 
-.error-hint {
-  font-size: var(--fs-body-small);
-  color: var(--color-text-dim);
-  display: block;
-  margin-bottom: var(--space-xxl);
+.btn-text:active {
+  color: var(--gold);
+}
+
+/* ==============================
+   Scrollbar hidden
+   ============================== */
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }

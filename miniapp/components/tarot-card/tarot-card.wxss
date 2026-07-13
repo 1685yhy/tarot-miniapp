@@ -1,46 +1,70 @@
 /* ============================================================
-   Tarot Card Component — Clean Minimal Frame
-   The CDN image is the hero. The component just frames it.
+   柔光星辰 — Tarot Card Component
+   "A window into another world — mysterious, beautiful, inviting"
    ============================================================ */
 
-/* 1. Base Container
-   -------------------------- */
-.tarot-card-wrapper {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  padding: 8rpx;
-}
+/* ---- Card Wrapper ---- */
 
-/* 2. Card Frame
-   Thin warm brown border, soft shadow, uniform rounded corners.
-   -------------------------- */
-.tarot-card {
-  position: relative;
-  width: 280rpx;
-  height: 460rpx;
-  border-radius: 16rpx;
-  border: 1.5rpx solid #BF7733;
-  box-shadow:
-    0 2rpx 8rpx rgba(90, 60, 30, 0.10),
-    0 8rpx 24rpx rgba(80, 55, 25, 0.07),
-    0 20rpx 56rpx rgba(70, 45, 20, 0.04);
-  overflow: hidden;
+.tarot-card-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #1a1512;
-  animation: card-appear 0.7s ease-out forwards;
-  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  justify-content: center;
+  padding: 16rpx;
+  width: 100%;
+  box-sizing: border-box;
+  perspective: 1200rpx;
 }
 
-.tarot-card.card-reversed {
+/* ---- Card Body ---- */
+
+.tarot-card {
+  position: relative;
+  width: 380rpx;
+  height: 600rpx;
+  border-radius: 18rpx;
+  overflow: hidden;
+
+  /* Dark indigo card surface */
+  background: linear-gradient(
+    150deg,
+    #19103a 0%,
+    #20174a 30%,
+    #1b1340 65%,
+    #140d30 100%
+  );
+
+  /* Golden border */
+  border: 1.5rpx solid #c9a04a;
+
+  /* Soft warm golden glow shadow */
+  box-shadow:
+    0 0 30rpx 6rpx rgba(212, 168, 83, 0.20),
+    0 0 70rpx 18rpx rgba(212, 168, 83, 0.08),
+    0 0 120rpx 36rpx rgba(212, 168, 83, 0.04),
+    inset 0 0 50rpx 8rpx rgba(212, 168, 83, 0.03);
+
+  animation: card-appear 0.8s ease-out forwards;
+  transition:
+    transform 0.6s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 0.6s ease;
+}
+
+/* ---- Reversed: rotate card + rose-gold inner glow ---- */
+
+.tarot-card-wrapper.reversed .tarot-card {
   transform: rotate(180deg);
+  box-shadow:
+    0 0 30rpx 6rpx rgba(212, 168, 83, 0.20),
+    0 0 70rpx 18rpx rgba(212, 168, 83, 0.08),
+    0 0 120rpx 36rpx rgba(212, 168, 83, 0.04),
+    inset 0 -50rpx 80rpx -10rpx rgba(225, 150, 140, 0.30),
+    inset 0 0 40rpx 6rpx rgba(225, 150, 140, 0.10),
+    inset 0 0 80rpx 20rpx rgba(225, 150, 140, 0.04);
 }
 
-/* 3. Card Image — Hero
-   Fills the frame edge-to-edge.
-   -------------------------- */
+/* ---- Card Image (ComfyUI-generated) ---- */
+
 .card-image {
   position: absolute;
   top: 0;
@@ -48,185 +72,516 @@
   width: 100%;
   height: 100%;
   z-index: 1;
-  border-radius: 16rpx;
   pointer-events: none;
 }
 
-/* 4. Suit Indicator — Tiny Colored Dot
-   Positioned at the top-right corner of the card.
-   -------------------------- */
-.card-art::before {
-  content: '';
+/* ---- Ornament Bars (golden decorative strips) ---- */
+
+.card-ornament-top,
+.card-ornament-bottom {
   position: absolute;
-  top: 12rpx;
-  right: 12rpx;
-  width: 10rpx;
-  height: 10rpx;
-  border-radius: 50%;
-  z-index: 6;
+  left: 0;
+  right: 0;
+  height: 4rpx;
+  z-index: 5;
   pointer-events: none;
 }
 
-/* Wands  → warm brown */
-.tarot-card[class*="wands"] .card-art::before {
-  background: #BF7733;
+.card-ornament-top {
+  top: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(242, 214, 138, 0.15) 8%,
+    #d4a853 25%,
+    #f2d68a 50%,
+    #d4a853 75%,
+    rgba(242, 214, 138, 0.15) 92%,
+    transparent 100%
+  );
 }
 
-/* Cups   → dusty rose */
-.tarot-card[class*="cups"] .card-art::before {
-  background: #C9A0A0;
+.card-ornament-bottom {
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(242, 214, 138, 0.15) 8%,
+    #d4a853 25%,
+    #f2d68a 50%,
+    #d4a853 75%,
+    rgba(242, 214, 138, 0.15) 92%,
+    transparent 100%
+  );
 }
 
-/* Swords → sage */
-.tarot-card[class*="swords"] .card-art::before {
-  background: #8FBC8F;
-}
+/* ---- Card Number ---- */
 
-/* Pentacles → warm gold */
-.tarot-card[class*="pentacles"] .card-art::before {
-  background: #D4A843;
-}
-
-/* 5. Typography — Small, Clean, Warm Brown
-   No text-shadow — the card image beneath may be dark or light.
-   -------------------------- */
 .card-number {
   position: absolute;
-  top: 14rpx;
-  left: 28rpx;
-  z-index: 5;
-  font-size: 16rpx;
-  color: #BF7733;
-  font-family: 'Georgia', serif;
-  letter-spacing: 1rpx;
-  line-height: 1.3;
+  top: 20rpx;
+  left: 24rpx;
+  z-index: 10;
+
+  font-size: 20rpx;
+  font-weight: 500;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  letter-spacing: 2rpx;
+
+  color: #f2e6c9;
+  text-shadow:
+    0 0 6rpx rgba(212, 168, 83, 0.50),
+    0 0 12rpx rgba(212, 168, 83, 0.20),
+    0 1rpx 2rpx rgba(0, 0, 0, 0.50);
   pointer-events: none;
 }
+
+/* ---- Card Art Area ---- */
+
+.card-art {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ---- Star Field (fallback when no CDN image) ---- */
+
+.star-field {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at 50% 40%,
+    rgba(50, 30, 100, 0.35) 0%,
+    transparent 70%
+  );
+}
+
+.star {
+  position: absolute;
+  width: 4rpx;
+  height: 4rpx;
+  border-radius: 50%;
+  background: #f2e6c9;
+  animation: twinkle var(--dur, 3s) ease-in-out infinite alternate;
+  box-shadow: 0 0 6rpx 2rpx rgba(242, 230, 201, 0.30);
+}
+
+.s1 { top: 10%; left: 18%; --dur: 2.4s; }
+.s2 { top: 6%;  left: 62%; --dur: 3.8s; width: 3rpx; height: 3rpx; opacity: 0.7; }
+.s3 { top: 22%; left: 38%; --dur: 2.0s; width: 5rpx; height: 5rpx; }
+.s4 { top: 42%; left: 72%; --dur: 4.2s; width: 3rpx; height: 3rpx; opacity: 0.6; }
+.s5 { top: 18%; left: 78%; --dur: 2.8s; }
+.s6 { top: 36%; left: 14%; --dur: 3.4s; width: 3rpx; height: 3rpx; opacity: 0.5; }
+.s7 { top: 52%; left: 48%; --dur: 2.2s; width: 5rpx; height: 5rpx; opacity: 0.8; }
+.s8 { top: 64%; left: 28%; --dur: 4.0s; width: 3rpx; height: 3rpx; }
+
+@keyframes twinkle {
+  0%   { opacity: 0.25; transform: scale(0.6); }
+  100% { opacity: 1;    transform: scale(1.1); }
+}
+
+/* ---- Fallback Symbol (when no CDN image) ---- */
+
+.card-symbol {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.art-shape {
+  width: 120rpx;
+  height: 170rpx;
+  border: 1.5rpx solid rgba(212, 168, 83, 0.30);
+  border-radius: 12rpx;
+  background: radial-gradient(
+    ellipse at 50% 35%,
+    rgba(60, 35, 130, 0.40) 0%,
+    rgba(26, 16, 53, 0.60) 100%
+  );
+  box-shadow:
+    inset 0 0 30rpx rgba(212, 168, 83, 0.10),
+    0 0 20rpx rgba(212, 168, 83, 0.06);
+}
+
+.art-accent {
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70rpx;
+  height: 70rpx;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(242, 230, 201, 0.12) 0%,
+    transparent 70%
+  );
+  box-shadow: 0 0 30rpx 15rpx rgba(212, 168, 83, 0.05);
+}
+
+.art-detail {
+  position: absolute;
+  bottom: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50rpx;
+  height: 1.5rpx;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(212, 168, 83, 0.25),
+    transparent
+  );
+}
+
+/* ---- Card Name (English) ---- */
 
 .card-name-en {
-  position: absolute;
-  bottom: 34rpx;
-  left: 0;
-  right: 0;
-  text-align: center;
-  z-index: 5;
-  font-size: 14rpx;
-  color: #BF7733;
-  font-family: 'Georgia', serif;
-  letter-spacing: 3rpx;
-  text-transform: uppercase;
-  pointer-events: none;
-}
-
-.card-name-zh {
-  position: absolute;
-  bottom: 14rpx;
-  left: 0;
-  right: 0;
-  text-align: center;
-  z-index: 5;
-  font-size: 18rpx;
-  color: #A08050;
-  font-family: 'STKaiti', 'KaiTi', serif;
-  letter-spacing: 5rpx;
-  font-weight: 400;
-  pointer-events: none;
-}
-
-/* 6. Position Badge
-   -------------------------- */
-.position-badge {
-  display: flex;
-  align-items: center;
-  gap: 4rpx;
-  padding: 3rpx 12rpx;
-  border-radius: 16rpx;
-  font-size: 15rpx;
   position: absolute;
   bottom: 64rpx;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 5;
+  z-index: 10;
+
+  font-size: 26rpx;
+  font-weight: 600;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  white-space: nowrap;
+  max-width: 80%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  color: #f2e6c9;
+  text-shadow:
+    0 0 8rpx rgba(212, 168, 83, 0.50),
+    0 0 16rpx rgba(212, 168, 83, 0.20),
+    0 2rpx 4rpx rgba(0, 0, 0, 0.50);
+  pointer-events: none;
+}
+
+/* ---- Card Name (Chinese) ---- */
+
+.card-name-zh {
+  position: absolute;
+  bottom: 32rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+
+  font-size: 20rpx;
+  font-weight: 400;
+  letter-spacing: 4rpx;
+  white-space: nowrap;
+  max-width: 80%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  color: #d4c4a0;
+  text-shadow:
+    0 0 6rpx rgba(212, 168, 83, 0.30),
+    0 1rpx 3rpx rgba(0, 0, 0, 0.40);
+  pointer-events: none;
+}
+
+/* ---- Position Badge ---- */
+
+.position-badge {
+  position: absolute;
+  bottom: 10rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+
+  font-size: 18rpx;
+  line-height: 1.4;
   white-space: nowrap;
   pointer-events: none;
 }
 
 .badge-upright {
-  background: rgba(40, 42, 38, 0.55);
-  color: rgba(191, 119, 51, 0.75);
+  background: rgba(212, 168, 83, 0.12);
+  border: 0.5rpx solid rgba(212, 168, 83, 0.25);
+  color: #d4c4a0;
 }
 
 .badge-reversed {
-  background: rgba(50, 35, 30, 0.55);
-  color: rgba(205, 127, 50, 0.75);
+  background: rgba(225, 150, 140, 0.12);
+  border: 0.5rpx solid rgba(225, 150, 140, 0.25);
+  color: #dbb5b0;
 }
 
-.position-icon { font-size: 13rpx; }
-.position-text { letter-spacing: 1rpx; }
-
-/* 7. Reversed — Subtle Warm Edge Glow
-   A warm box-shadow bloom replaces the old gradient overlay.
-   -------------------------- */
-.card-reversed {
-  border-color: rgba(191, 119, 51, 0.6);
-  box-shadow:
-    0 0 16rpx rgba(191, 119, 51, 0.12),
-    0 2rpx 8rpx rgba(90, 60, 30, 0.10),
-    0 8rpx 24rpx rgba(80, 55, 25, 0.07);
+.position-icon {
+  font-size: 16rpx;
 }
 
-/* 8. Major Arcana — Slightly Elevated
-   Thicker border, slightly larger suit dot.
-   -------------------------- */
-.card-major {
-  border-width: 2rpx;
-  border-color: #BF7733;
+.position-text {
+  font-size: 16rpx;
+  letter-spacing: 1rpx;
 }
 
-.card-major .card-art::before {
-  width: 12rpx;
-  height: 12rpx;
-  background: #BF7733;
+/* ---- Reversed Label (vertical text on right side) ---- */
+
+.reversed-label {
+  position: absolute;
+  bottom: 104rpx;
+  right: 16rpx;
+  z-index: 10;
+
+  font-size: 16rpx;
+  font-weight: 300;
+  letter-spacing: 4rpx;
+  writing-mode: vertical-rl;
+
+  color: rgba(225, 150, 140, 0.40);
+  text-shadow: 0 0 8rpx rgba(225, 150, 140, 0.20);
+  pointer-events: none;
 }
 
-/* 9. Art Container
-   Solely needed as the positioning anchor for the suit dot.
-   No background tint — the image is the hero.
-   -------------------------- */
-.card-art {
-  position: relative;
+/* ---- Dark Aura (deep backing glow) ---- */
+
+.card-aura {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  z-index: 2;
+  z-index: 0;
   pointer-events: none;
-  background: transparent;
+
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(20, 8, 50, 0.30) 0%,
+    transparent 75%
+  );
 }
 
-/* 10. Hidden Elements
-     No CSS art, no star fields, no decorative ornament bars.
-     -------------------------- */
-.star-field,
-.card-symbol,
-.card-ornament-top,
-.card-ornament-bottom,
-.card-aura,
-.reversed-label,
-.card-symbol .art-shape,
-.card-symbol .art-accent,
-.card-symbol .art-detail {
-  display: none;
+/* ============================================================
+   SUIT INDICATORS — tiny colored dot at top-right corner
+   Applied via .card-{{cardType}} class on .tarot-card
+   ============================================================ */
+
+.tarot-card.card-wands::before,
+.tarot-card.card-cups::before,
+.tarot-card.card-swords::before,
+.tarot-card.card-pentacles::before {
+  content: '';
+  position: absolute;
+  top: 16rpx;
+  right: 16rpx;
+  z-index: 10;
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow: 0 0 8rpx 4rpx currentColor;
+  opacity: 0.90;
 }
 
-/* 11. Keyframe Animation
-      Soft fade-up with subtle scale.
-      -------------------------- */
+/* Wands — warm gold */
+.tarot-card.card-wands::before {
+  color: rgba(212, 168, 83, 0.55);
+  background: radial-gradient(
+    circle at 35% 30%,
+    #f2d68a,
+    #c9a04a 55%,
+    #8a6a30
+  );
+}
+
+/* Cups — soft lavender */
+.tarot-card.card-cups::before {
+  color: rgba(180, 155, 220, 0.50);
+  background: radial-gradient(
+    circle at 35% 30%,
+    #d8c4f0,
+    #b498d8 55%,
+    #8068b0
+  );
+}
+
+/* Swords — icy silver */
+.tarot-card.card-swords::before {
+  color: rgba(200, 215, 235, 0.50);
+  background: radial-gradient(
+    circle at 35% 30%,
+    #eaf0fa,
+    #c0d0e4 55%,
+    #8098b8
+  );
+}
+
+/* Pentacles — warm amber */
+.tarot-card.card-pentacles::before {
+  color: rgba(220, 175, 85, 0.50);
+  background: radial-gradient(
+    circle at 35% 30%,
+    #f2d898,
+    #d4a848 55%,
+    #a07830
+  );
+}
+
+/* Major Arcana — tiny golden diamond instead of dot */
+.tarot-card.card-major::before {
+  content: '';
+  position: absolute;
+  top: 16rpx;
+  right: 16rpx;
+  z-index: 10;
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 2rpx;
+  transform: rotate(45deg);
+  pointer-events: none;
+  color: rgba(212, 168, 83, 0.50);
+  background: radial-gradient(
+    circle at 35% 30%,
+    #f2d68a,
+    #c9a04a 55%,
+    #8a6a30
+  );
+  box-shadow: 0 0 8rpx 4rpx currentColor;
+  opacity: 0.90;
+}
+
+/* ---- Reversed: keep suit dot at visual top-right ---- */
+.tarot-card-wrapper.reversed .tarot-card.card-wands::before,
+.tarot-card-wrapper.reversed .tarot-card.card-cups::before,
+.tarot-card-wrapper.reversed .tarot-card.card-swords::before,
+.tarot-card-wrapper.reversed .tarot-card.card-pentacles::before,
+.tarot-card-wrapper.reversed .tarot-card.card-major::before {
+  transform: rotate(180deg);
+}
+
+/* ---- Reversed Major: compensate for diamond rotation ---- */
+.tarot-card-wrapper.reversed .tarot-card.card-major::before {
+  transform: rotate(180deg) rotate(45deg);
+}
+
+/* ============================================================
+   RESPONSIVE SIZING
+   ============================================================ */
+
+@media screen and (max-width: 480rpx) {
+  .tarot-card {
+    width: 300rpx;
+    height: 490rpx;
+    border-radius: 16rpx;
+  }
+
+  .card-number {
+    font-size: 16rpx;
+    top: 16rpx;
+    left: 18rpx;
+  }
+
+  .card-name-en {
+    font-size: 20rpx;
+    bottom: 52rpx;
+    letter-spacing: 2rpx;
+  }
+
+  .card-name-zh {
+    font-size: 16rpx;
+    bottom: 26rpx;
+    letter-spacing: 3rpx;
+  }
+
+  .position-badge {
+    font-size: 14rpx;
+    padding: 3rpx 12rpx;
+    bottom: 8rpx;
+  }
+
+  .position-icon { font-size: 13rpx; }
+  .position-text { font-size: 14rpx; }
+
+  .reversed-label {
+    font-size: 14rpx;
+    bottom: 86rpx;
+    right: 12rpx;
+  }
+
+  .tarot-card.card-wands::before,
+  .tarot-card.card-cups::before,
+  .tarot-card.card-swords::before,
+  .tarot-card.card-pentacles::before {
+    width: 10rpx;
+    height: 10rpx;
+    top: 12rpx;
+    right: 12rpx;
+  }
+
+  .tarot-card.card-major::before {
+    width: 8rpx;
+    height: 8rpx;
+    top: 12rpx;
+    right: 12rpx;
+  }
+}
+
+@media screen and (min-width: 750rpx) {
+  .tarot-card {
+    width: 420rpx;
+    height: 640rpx;
+    border-radius: 18rpx;
+  }
+
+  .card-name-en {
+    font-size: 30rpx;
+    letter-spacing: 4rpx;
+  }
+}
+
+/* ============================================================
+   KEYFRAME: fade-in with subtle rise
+   ============================================================ */
+
 @keyframes card-appear {
   0% {
     opacity: 0;
-    transform: translateY(16rpx) scale(0.96);
+    transform: translateY(20rpx) scale(0.96);
   }
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+/* ============================================================
+   ACCESSIBILITY: reduced motion
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .star {
+    animation: none;
+    opacity: 0.6;
+  }
+
+  .tarot-card {
+    animation: none;
+    opacity: 1;
   }
 }

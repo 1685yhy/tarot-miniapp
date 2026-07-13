@@ -1,126 +1,176 @@
-/* ==========================================
-   card-detail · Editorial Minimal
-   Clean white cards · Warm accents
-   ========================================== */
+/* ============================================================
+   Card Detail · A Single Star's Story
+   柔光星辰 — Warm cream on deep indigo, golden starlight
+   ============================================================ */
 
-/* -------- Header -------- */
+/* ============================================================
+   HEADER — Star's identity
+   ============================================================ */
 .card-header {
   text-align: center;
-  padding: var(--space-xxl) 0 var(--space-xl);
-  margin-bottom: var(--space-lg);
-  border-bottom: 1rpx solid rgba(180, 140, 110, 0.10);
+  padding: var(--spacing-xl) 0 var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  border-bottom: 1rpx solid rgba(244, 212, 140, 0.08);
 }
 
 .card-number-badge {
-  width: 56rpx;
-  height: 56rpx;
-  line-height: 56rpx;
+  width: 64rpx;
+  height: 64rpx;
+  line-height: 64rpx;
   border-radius: var(--radius-full);
-  background: #d4a574;
-  color: #fff;
-  font-size: var(--fs-caption);
-  font-weight: var(--fw-bold);
-  margin: 0 auto var(--space-md);
+  background: var(--color-gold);
+  color: var(--color-text-inverse);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  margin: 0 auto var(--spacing-md);
   letter-spacing: 1rpx;
+  box-shadow: 0 0 20rpx rgba(244, 212, 140, 0.20);
 }
 
-/* -------- Section card -------- */
+.card-header .heading-1 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+  letter-spacing: 2rpx;
+}
+
+.card-header .text-dim {
+  font-size: var(--font-size-base);
+  color: var(--color-text-tertiary);
+}
+
+.card-header .badge-purple {
+  background: rgba(184, 169, 224, 0.12);
+  color: var(--color-lavender);
+  border-color: rgba(184, 169, 224, 0.18);
+}
+
+.card-header .badge-gold {
+  background: rgba(244, 212, 140, 0.10);
+  color: var(--color-gold);
+  border-color: rgba(244, 212, 140, 0.18);
+}
+
+/* ============================================================
+   SECTION CARDS — Info on dark indigo surface
+   ============================================================ */
 .card {
-  background: #ffffff;
-  border-radius: 16rpx;
-  padding: var(--space-lg) var(--space-xl);
-  margin-bottom: var(--space-lg);
-  box-shadow: 0 2rpx 12rpx rgba(160, 130, 100, 0.06);
-  border: 1rpx solid rgba(180, 140, 110, 0.06);
+  background: var(--color-card);
+  border: 1rpx solid var(--color-card-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  margin-bottom: var(--spacing-lg);
+  box-shadow: var(--shadow-card);
+  transition: border-color var(--duration-base) var(--ease-soft);
 }
 
 .section-title {
-  font-size: var(--fs-body-small);
-  font-weight: var(--fw-semibold);
-  color: #b8865a;
-  letter-spacing: 2rpx;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gold);
+  letter-spacing: 3rpx;
   display: block;
-  margin-bottom: var(--space-sm);
+  margin-bottom: var(--spacing-sm);
   text-transform: uppercase;
+  opacity: 0.85;
 }
 
 .section-text {
-  font-size: var(--fs-body);
+  font-size: var(--font-size-base);
   color: var(--color-text-primary);
-  line-height: var(--lh-loose);
+  line-height: var(--line-height-loose);
   display: block;
 }
 
-/* -------- Keywords -------- */
+/* ============================================================
+   KEYWORDS — Tiny golden tags
+   ============================================================ */
 .keyword-list {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-sm);
+  gap: var(--spacing-xs);
 }
 
-.badge-gold {
-  background: rgba(180, 140, 110, 0.08);
-  color: #7a5c3f;
-  border: 1rpx solid rgba(180, 140, 110, 0.12);
-  border-radius: 40rpx;
+.keyword-list .badge-gold {
+  background: rgba(244, 212, 140, 0.08);
+  color: var(--color-gold);
+  border: 1rpx solid rgba(244, 212, 140, 0.15);
+  border-radius: var(--radius-pill);
   padding: 6rpx 18rpx;
-  font-size: var(--fs-body-small);
+  font-size: var(--font-size-xs);
   letter-spacing: 1rpx;
+  transition: all var(--duration-fast) var(--ease-soft);
 }
 
-/* -------- Toggle (upright / reversed) -------- */
+.keyword-list .badge-gold:active {
+  background: rgba(244, 212, 140, 0.18);
+  border-color: rgba(244, 212, 140, 0.35);
+}
+
+/* ============================================================
+   TOGGLE — Upright / Reversed
+   ============================================================ */
 .toggle-bar {
   display: flex;
-  background: #f8f4f0;
-  border-radius: 40rpx;
+  background: var(--color-surface);
+  border-radius: var(--radius-pill);
   padding: 4rpx;
-  margin-bottom: var(--space-xl);
-  border: 1rpx solid rgba(180, 140, 110, 0.08);
+  margin-bottom: var(--spacing-xl);
+  border: 1rpx solid rgba(244, 212, 140, 0.10);
 }
 
 .toggle-item {
   flex: 1;
   text-align: center;
-  padding: var(--space-sm) 0;
-  border-radius: 40rpx;
-  font-size: var(--fs-body);
+  padding: var(--spacing-sm) 0;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-base);
   color: var(--color-text-secondary);
-  transition: all var(--duration-normal);
+  transition: all var(--duration-base) var(--ease-soft);
+  letter-spacing: 1rpx;
+}
+
+.toggle-item:active {
+  color: var(--color-gold);
 }
 
 .toggle-active {
-  background: #ffffff;
-  color: #b8865a;
-  font-weight: var(--fw-semibold);
-  box-shadow: 0 2rpx 8rpx rgba(160, 130, 100, 0.08);
+  background: var(--color-card);
+  color: var(--color-gold);
+  font-weight: var(--font-weight-semibold);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.20),
+              0 0 16rpx rgba(244, 212, 140, 0.06);
 }
 
-/* -------- Skeleton -------- */
+/* ============================================================
+   SKELETON LOADING
+   ============================================================ */
 .skeleton {
-  padding: var(--space-xxl) 0;
+  padding: var(--spacing-xl) 0;
 }
 
 .skeleton-header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-md);
-  margin-bottom: var(--space-xxl);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-3xl);
 }
 
 .skeleton-badge {
-  width: 56rpx;
-  height: 56rpx;
+  width: 64rpx;
+  height: 64rpx;
   border-radius: var(--radius-full);
-  background: #f0e8e0;
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+  background: var(--color-surface);
+  animation: skeleton-pulse 1.5s var(--ease-in-out) infinite;
 }
 
 .skeleton-line {
   height: 28rpx;
   border-radius: 8rpx;
-  background: #f0e8e0;
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+  background: var(--color-surface);
+  animation: skeleton-pulse 1.5s var(--ease-in-out) infinite;
 }
 
 .skeleton-line.wide  { width: 240rpx; }
@@ -129,40 +179,61 @@
 .skeleton-body {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--spacing-lg);
 }
 
 .skeleton-block {
   width: 100%;
   height: 140rpx;
-  border-radius: 16rpx;
-  background: #f0e8e0;
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  animation: skeleton-pulse 1.5s var(--ease-in-out) infinite;
 }
 
-/* -------- Error state -------- */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.40; }
+  50%      { opacity: 0.70; }
+}
+
+/* ============================================================
+   ERROR STATE
+   ============================================================ */
 .error-state {
   text-align: center;
-  padding: var(--space-massive) var(--space-xl);
+  padding: var(--spacing-4xl) var(--spacing-xl);
 }
 
 .error-icon {
   font-size: 72rpx;
   display: block;
-  margin-bottom: var(--space-md);
-  opacity: 0.5;
+  margin-bottom: var(--spacing-md);
+  opacity: 0.50;
 }
 
 .error-text {
-  font-size: var(--fs-body);
+  font-size: var(--font-size-base);
   color: var(--color-text-secondary);
   display: block;
-  margin-bottom: var(--space-xs);
+  margin-bottom: var(--spacing-xs);
 }
 
 .error-hint {
-  font-size: var(--fs-body-small);
-  color: var(--color-text-dim);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
   display: block;
-  margin-bottom: var(--space-xxl);
+  margin-bottom: var(--spacing-xl);
+}
+
+/* ============================================================
+   UTILITY OVERRIDES for stagger animation delay
+   ============================================================ */
+.anim-fade-in-up-1 { animation: fade-up var(--duration-slow) var(--ease-soft) forwards; animation-delay: 0.05s; }
+.anim-fade-in-up-2 { animation: fade-up var(--duration-slow) var(--ease-soft) forwards; animation-delay: 0.12s; }
+.anim-fade-in-up-3 { animation: fade-up var(--duration-slow) var(--ease-soft) forwards; animation-delay: 0.20s; }
+.anim-fade-in-up-4 { animation: fade-up var(--duration-slow) var(--ease-soft) forwards; animation-delay: 0.28s; }
+.anim-fade-in-up-5 { animation: fade-up var(--duration-slow) var(--ease-soft) forwards; animation-delay: 0.36s; }
+
+@keyframes fade-up {
+  0% { opacity: 0; transform: translateY(24rpx); }
+  100% { opacity: 1; transform: translateY(0); }
 }

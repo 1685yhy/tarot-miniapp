@@ -1,6 +1,7 @@
 {
   "navigationBarTitleText": "解读结果",
-  "navigationBarBackgroundColor": "#F8F6F2",
+  "navigationBarBackgroundColor": "#1A1A3E",
+  "navigationBarTextStyle": "white",
   "usingComponents": {
     "tarot-card": "../../components/tarot-card/tarot-card"
   }
