@@ -14,33 +14,33 @@
   "window": {
     "backgroundTextStyle": "dark",
     "navigationBarBackgroundColor": "#1a1a2e",
-    "navigationBarTitleText": "塔罗占卜",
+    "navigationBarTitleText": "星光映照",
     "navigationBarTextStyle": "white",
     "backgroundColor": "#0f0f23"
   },
   "tabBar": {
-    "color": "#8888aa",
-    "selectedColor": "#c9a96e",
-    "backgroundColor": "#1a1a2e",
+    "color": "#9999bb",
+    "selectedColor": "#ddb847",
+    "backgroundColor": "#10102e",
     "borderStyle": "black",
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "占卜",
-        "iconPath": "images/tab-divine.png",
-        "selectedIconPath": "images/tab-divine-active.png"
+        "text": "映照",
+        "iconPath": "/images/tabbar/home.png",
+        "selectedIconPath": "/images/tabbar/home-active.png"
       },
       {
         "pagePath": "pages/encyclopedia/encyclopedia",
         "text": "百科",
-        "iconPath": "images/tab-book.png",
-        "selectedIconPath": "images/tab-book-active.png"
+        "iconPath": "/images/tabbar/encyclopedia.png",
+        "selectedIconPath": "/images/tabbar/encyclopedia-active.png"
       },
       {
         "pagePath": "pages/profile/profile",
         "text": "我的",
-        "iconPath": "images/tab-profile.png",
-        "selectedIconPath": "images/tab-profile-active.png"
+        "iconPath": "/images/tabbar/profile.png",
+        "selectedIconPath": "/images/tabbar/profile-active.png"
       }
     ]
   },

@@ -90,7 +90,7 @@
 
   <!-- Interpretation -->
   <view class="interpretation-section anim-fade-in-up-2">
-    <text class="text-secondary text-center" style="display:block;margin-bottom:var(--space-md)">AI 塔罗解读</text>
+    <text class="text-secondary text-center" style="display:block;margin-bottom:var(--space-md)">AI 星光解读</text>
     <view class="interpretation-scroll card {{showFullInterpretation ? 'expanded' : ''}}" wx:if="{{reading.interpretation}}">
       <text class="interpretation-text">{{reading.interpretation}}</text>
     </view>

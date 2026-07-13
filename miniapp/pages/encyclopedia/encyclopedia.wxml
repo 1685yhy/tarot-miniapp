@@ -22,7 +22,7 @@
   <!-- ===== 错误状态 ===== -->
   <view wx:elif="{{pageError}}" class="error-state">
     <text class="error-icon">🃏</text>
-    <text class="error-text">塔罗档案馆暂时打不开</text>
+    <text class="error-text">卡牌档案馆暂时打不开</text>
     <text class="error-hint">{{pageError}}</text>
     <button class="btn-primary btn-small" bindtap="onRetry">✨ 重新加载</button>
   </view>
@@ -35,7 +35,7 @@
       <input
         class="search-input"
         style="flex:1;font-size:var(--fs-body);color:var(--color-text-primary);background:transparent"
-        placeholder="搜索塔罗牌名称..."
+        placeholder="搜索卡牌名称..."
         placeholder-style="color:#555577"
         value="{{searchKeyword}}"
         bindinput="onSearchInput"

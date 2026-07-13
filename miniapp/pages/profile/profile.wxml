@@ -38,7 +38,7 @@
     <!-- User info + membership -->
     <view class="user-card anim-fade-in-up-1">
       <view class="avatar">🔮</view>
-      <text class="heading-3 mt-md" style="display:block">{{user.nickname || '塔罗旅人'}}</text>
+      <text class="heading-3 mt-md" style="display:block">{{user.nickname || '星光旅人'}}</text>
       <view class="mt-sm">
         <text class="badge {{memberStatus.is_member ? 'badge-premium' : 'badge'}}" style="{{memberStatus.is_member ? '' : 'background:var(--color-star-subtle);color:var(--color-text-secondary)'}}">
           {{memberStatus.is_member ? '👑 会员' : '免费用户'}}
@@ -72,7 +72,7 @@
     <view class="quick-actions anim-fade-in-up-3">
       <view class="action-item" bindtap="onGoDiary">
         <text class="action-icon" style="font-size:40rpx;display:block">📝</text>
-        <text class="text-dim" style="font-size:var(--fs-body-small);display:block;margin-top:var(--space-xs)">塔罗日记</text>
+        <text class="text-dim" style="font-size:var(--fs-body-small);display:block;margin-top:var(--space-xs)">星光日记</text>
       </view>
       <view class="action-item" bindtap="onGoAnnualReport">
         <text class="action-icon" style="font-size:40rpx;display:block">📊</text>
