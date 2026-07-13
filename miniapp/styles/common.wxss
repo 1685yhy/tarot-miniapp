@@ -304,9 +304,9 @@ page {
 
 /* 2.2 Gentle bloom — petals opening */
 @keyframes bloom {
-  0% { opacity: 0; transform: scale(0.88); filter: blur(4rpx); }
-  60% { opacity: 1; transform: scale(1.02); filter: blur(0); }
-  100% { opacity: 1; transform: scale(1); filter: blur(0); }
+  0% { opacity: 0; transform: scale(0.88); }
+  60% { opacity: 1; transform: scale(1.02); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
 /* 2.3 Copper breath — warm, candle-like pulse */
@@ -317,8 +317,8 @@ page {
 
 /* 2.4 Vine grow — organic line drawing animation */
 @keyframes vine-grow {
-  from { clip-path: inset(0 100% 0 0); }
-  to { clip-path: inset(0 0 0 0); }
+  from { max-width: 0; overflow: hidden; }
+  to { max-width: 100%; overflow: hidden; }
 }
 
 /* 2.5 Sway in breeze — like wheat/stems */
@@ -330,9 +330,9 @@ page {
 
 /* 2.6 Ink bloom — watercolor spreading */
 @keyframes ink-bloom {
-  0% { opacity: 0; filter: blur(12rpx); transform: scale(0.8); }
-  50% { opacity: 0.15; filter: blur(6rpx); }
-  100% { opacity: 0.08; filter: blur(0); transform: scale(1); }
+  0% { opacity: 0; transform: scale(0.8); }
+  50% { opacity: 0.15; }
+  100% { opacity: 0.08; transform: scale(1); }
 }
 
 /* 2.7 Paper reveal — subtle texture emergence */
@@ -731,9 +731,7 @@ page {
     var(--color-gold-subtle) 70%,
     var(--color-border-copper) 100%
   );
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
+  border: 1.5rpx solid var(--color-border-copper-strong);
   pointer-events: none;
   z-index: -1;
 }
@@ -1931,9 +1929,7 @@ page {
 .modal-mask {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(61, 57, 41, 0.50);
-  backdrop-filter: blur(6rpx);
-  -webkit-backdrop-filter: blur(6rpx);
+  background: rgba(61, 57, 41, 0.65);
   display: flex;
   align-items: flex-end;
   z-index: var(--z-modal);
@@ -2121,9 +2117,7 @@ page {
     var(--color-gold-aged) 70%,
     var(--color-copper-light) 100%
   );
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
+  border: 2rpx solid var(--color-copper);
   pointer-events: none;
 }
 
@@ -2508,9 +2502,7 @@ page {
 
 /* Glass effect — subtle frosted */
 .glass-ivory {
-  background: rgba(255, 249, 242, 0.88);
-  backdrop-filter: blur(16rpx);
-  -webkit-backdrop-filter: blur(16rpx);
+  background: rgba(255, 249, 242, 0.95);
   border: 1rpx solid var(--color-border-ivory);
 }
 
