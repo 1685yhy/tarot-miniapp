@@ -546,7 +546,7 @@ page {
 .loading-sub-text {
   font-size: var(--fs-body);
   color: #b8b0d0;
-  margin-top: -var(--space-sm);
+  margin-top: calc(-1 * var(--space-sm));
 }
 
 /* ---- 3 progress dots ---- */
@@ -896,6 +896,9 @@ page {
   color: var(--text-dim);
   cursor: pointer;
   transition: color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4rpx;
 }
 
 .action-link:active {

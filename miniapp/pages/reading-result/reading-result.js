@@ -54,6 +54,20 @@ Page({
     this.setData({ activeCardIndex: e.detail.current });
   },
 
+  onSwiperPrev() {
+    const total = this.data.reading?.drawn_cards?.length || 0;
+    if (total === 0) return;
+    const prev = (this.data.activeCardIndex - 1 + total) % total;
+    this.setData({ activeCardIndex: prev });
+  },
+
+  onSwiperNext() {
+    const total = this.data.reading?.drawn_cards?.length || 0;
+    if (total === 0) return;
+    const next = (this.data.activeCardIndex + 1) % total;
+    this.setData({ activeCardIndex: next });
+  },
+
   onCardTap(e) {
     const index = e.currentTarget.dataset.index;
     this.setData({ activeCardIndex: index });

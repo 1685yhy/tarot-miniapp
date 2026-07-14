@@ -8,7 +8,7 @@ class Settings(BaseSettings):
 
     # DeepSeek API (OpenAI-compatible)
     DEEPSEEK_API_KEY: str = ""
-    DEEPSEEK_MODEL: str = "deepseek-chat"
+    DEEPSEEK_MODEL: str = "deepseek-v4-pro"
     DEEPSEEK_BASE_URL: str = "https://api.deepseek.com/v1"
     AI_MAX_TOKENS: int = 4096
 
