@@ -36,16 +36,48 @@
 
   <!-- 每日一牌 -->
   <view class="anim-fade-in-up-2" style="margin:60rpx 0">
-    <view class="card card-warm card-press" style="padding:56rpx 32rpx;text-align:center" wx:if="{{!dailyCard}}" bindtap="drawDailyCard">
-      <text style="font-size:52rpx;display:block;margin-bottom:24rpx">&#x2726;</text>
-      <text class="title-4" style="display:block;margin-bottom:8rpx">轻触卡片</text>
-      <text class="body-sm">开启今日指引</text>
+
+    <!-- BEFORE DRAW — card awaiting tap with shimmer, sparkles, float -->
+    <view class="daily-card-wrap" wx:if="{{!dailyCard}}" bindtap="drawDailyCard">
+      <view class="card card-warm card-float">
+        <!-- Shimmer sweep — light glint across surface -->
+        <view class="card-shimmer"></view>
+        <!-- Orbiting sparkle dots -->
+        <view class="card-sparkles"></view>
+        <!-- Ripple effect container (triggers via rippleActive state) -->
+        <view class="ripple-box">
+          <view class="ripple-circle {{rippleActive?'ripple-run':''}}"></view>
+        </view>
+        <!-- Card content (shakes on tap via shaking state) -->
+        <view class="card-body {{shaking?'card-shake':''}}">
+          <text style="font-size:52rpx;display:block;margin-bottom:24rpx">&#x2726;</text>
+          <text class="title-4" style="display:block;margin-bottom:8rpx">轻触卡片</text>
+          <text class="body-sm">开启今日指引</text>
+        </view>
+      </view>
     </view>
-    <view class="card" style="padding:56rpx 32rpx;text-align:center;border:2rpx solid var(--color-accent-light)" wx:else>
-      <text class="caption accent-text" style="display:block;margin-bottom:16rpx">今日指引</text>
-      <text class="title-2" style="display:block;margin-bottom:12rpx">{{dailyCard.name_zh}}</text>
-      <text class="body-text">{{dailyCard.keywords_upright}}</text>
+
+    <!-- AFTER DRAW — card revealed with rise, particles, and staggered text -->
+    <view class="daily-card-wrap" wx:else>
+      <view class="card card--revealed card-rise">
+        <!-- Golden particles burst (8 dots radiating outward) -->
+        <view class="particle-field">
+          <view class="particle p1"></view>
+          <view class="particle p2"></view>
+          <view class="particle p3"></view>
+          <view class="particle p4"></view>
+          <view class="particle p5"></view>
+          <view class="particle p6"></view>
+          <view class="particle p7"></view>
+          <view class="particle p8"></view>
+        </view>
+        <!-- Reveal text with staggered animation-delay via inline style -->
+        <text class="caption accent-text reveal-text" style="display:block;margin-bottom:16rpx">今日指引</text>
+        <text class="title-2 reveal-text" style="display:block;margin-bottom:12rpx;animation-delay:0.15s">{{dailyCard.name_zh}}</text>
+        <text class="body-text reveal-text" style="animation-delay:0.3s">{{dailyCard.keywords_upright}}</text>
+      </view>
     </view>
+
   </view>
 
   <!-- 牌阵 -->

@@ -160,7 +160,6 @@
     0 4rpx 24rpx rgba(0, 0, 0, 0.28),
     0 0 50rpx rgba(244, 212, 140, 0.04),
     inset 0 0 50rpx rgba(244, 212, 140, 0.03);
-  animation: card-breathe 4s ease-in-out infinite;
   position: relative;
   overflow: hidden;
 }
@@ -181,6 +180,13 @@
   pointer-events: none;
 }
 
+/* --- FLOAT — gentle levitation, breathing pulse --- */
+.card-float {
+  animation:
+    card-breathe 4s ease-in-out infinite,
+    card-float-drift 6s ease-in-out infinite;
+}
+
 @keyframes card-breathe {
   0%, 100% {
     border-color: rgba(244, 212, 140, 0.28);
@@ -190,11 +196,172 @@
       inset 0 0 40rpx rgba(244, 212, 140, 0.02);
   }
   50% {
-    border-color: rgba(244, 212, 140, 0.52);
+    border-color: rgba(244, 212, 140, 0.65);
     box-shadow:
       0 4rpx 24rpx rgba(0, 0, 0, 0.28),
-      0 0 60rpx rgba(244, 212, 140, 0.10),
-      inset 0 0 60rpx rgba(244, 212, 140, 0.05);
+      0 0 80rpx rgba(244, 212, 140, 0.15),
+      inset 0 0 80rpx rgba(244, 212, 140, 0.07);
+  }
+}
+
+@keyframes card-float-drift {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8rpx);
+  }
+}
+
+/* --- SHIMMER SWEEP — light glint across card surface every 3s --- */
+.card-shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+  z-index: 1;
+}
+
+.card-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -80%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(244, 212, 140, 0.03) 30%,
+    rgba(244, 212, 140, 0.10) 50%,
+    rgba(244, 212, 140, 0.03) 70%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  animation: shimmer-sweep 3s ease-in-out infinite;
+}
+
+@keyframes shimmer-sweep {
+  0%, 100% {
+    transform: skewX(-20deg) translateX(0);
+  }
+  50% {
+    transform: skewX(-20deg) translateX(350%);
+  }
+}
+
+/* --- SPARKLE DOTS — 3 tiny lights orbiting the card --- */
+.card-sparkles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+  z-index: 1;
+}
+
+.card-sparkles::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  box-shadow:
+    56rpx 0 0 3rpx rgba(244, 212, 140, 0.7),
+    -28rpx 48rpx 0 3rpx rgba(244, 212, 140, 0.4),
+    -28rpx -48rpx 0 3rpx rgba(244, 212, 140, 0.55);
+  animation: sparkle-orbit 10s linear infinite;
+}
+
+@keyframes sparkle-orbit {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- RIPPLE EFFECT — expanding circle from center on tap --- */
+.ripple-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+  z-index: 2;
+}
+
+.ripple-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16rpx;
+  height: 16rpx;
+  margin: -8rpx 0 0 -8rpx;
+  background: rgba(244, 212, 140, 0.30);
+  border-radius: 50%;
+  transform: scale(0);
+  opacity: 0;
+}
+
+.ripple-run {
+  animation: ripple-expand 0.6s ease-out forwards;
+}
+
+@keyframes ripple-expand {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(24);
+    opacity: 0;
+  }
+}
+
+/* --- SHAKE — brief oscillation simulating shuffle --- */
+.card-body {
+  position: relative;
+  z-index: 1;
+}
+
+.card-shake {
+  animation: card-shake-fx 0.3s ease-out;
+}
+
+@keyframes card-shake-fx {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  15% {
+    transform: translateX(-3rpx);
+  }
+  30% {
+    transform: translateX(3rpx);
+  }
+  45% {
+    transform: translateX(-2rpx);
+  }
+  60% {
+    transform: translateX(2rpx);
+  }
+  75% {
+    transform: translateX(-1rpx);
+  }
+  90% {
+    transform: translateX(1rpx);
   }
 }
 
@@ -214,13 +381,124 @@
     inset 0 0 30rpx rgba(244, 212, 140, 0.04);
 }
 
-/* --- After-draw state: warm golden highlight --- */
+/* -----------------------------------------------------------
+   4b. AFTER-DRAW — Card Reveal & Particles
+   ----------------------------------------------------------- */
+
+/* --- Revealed state base --- */
 .card.card--revealed {
+  position: relative;
+  overflow: hidden;
   border-color: var(--color-gold-dark, #D4B06A) !important;
   background: linear-gradient(145deg, #2A2A5E 0%, #2E2E62 100%);
   box-shadow:
     0 4rpx 24rpx rgba(0, 0, 0, 0.28),
     0 0 40rpx rgba(244, 212, 140, 0.06);
+}
+
+/* --- Card rise reveal (dramatic entrance) --- */
+.card-rise {
+  animation: card-rise-reveal 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s both;
+}
+
+@keyframes card-rise-reveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* --- Golden particles burst --- */
+.particle-field {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.particle {
+  position: absolute;
+  width: 6rpx;
+  height: 6rpx;
+  background: var(--color-gold, #F4D48C);
+  border-radius: 50%;
+  opacity: 0;
+  box-shadow: 0 0 6rpx rgba(244, 212, 140, 0.3);
+}
+
+.p1 { animation: part-burst-1 0.7s ease-out 0.05s forwards; }
+.p2 { animation: part-burst-2 0.7s ease-out 0.1s forwards; }
+.p3 { animation: part-burst-3 0.7s ease-out 0.15s forwards; }
+.p4 { animation: part-burst-4 0.7s ease-out 0.2s forwards; }
+.p5 { animation: part-burst-5 0.7s ease-out 0.1s forwards; }
+.p6 { animation: part-burst-6 0.7s ease-out 0.15s forwards; }
+.p7 { animation: part-burst-7 0.7s ease-out 0.2s forwards; }
+.p8 { animation: part-burst-8 0.7s ease-out 0.25s forwards; }
+
+@keyframes part-burst-1 {
+  0%   { transform: translate(0,0) scale(0); opacity: 0; }
+  15%  { opacity: 1; transform: translate(20rpx,-15rpx) scale(1.2); }
+  100% { transform: translate(70rpx,-55rpx) scale(0.15); opacity: 0; }
+}
+@keyframes part-burst-2 {
+  0%   { transform: translate(0,0) scale(0); opacity: 0; }
+  15%  { opacity: 1; transform: translate(-18rpx,-20rpx) scale(1); }
+  100% { transform: translate(-65rpx,-60rpx) scale(0.1); opacity: 0; }
+}
+@keyframes part-burst-3 {
+  0%   { transform: translate(0,0) scale(0); opacity: 0; }
+  15%  { opacity: 1; transform: translate(25rpx,15rpx) scale(1.1); }
+  100% { transform: translate(80rpx,50rpx) scale(0.2); opacity: 0; }
+}
+@keyframes part-burst-4 {
+  0%   { transform: translate(0,0) scale(0); opacity: 0; }
+  15%  { opacity: 1; transform: translate(-22rpx,18rpx) scale(1); }
+  100% { transform: translate(-75rpx,55rpx) scale(0.12); opacity: 0; }
+}
+@keyframes part-burst-5 {
+  0%   { transform: translate(0,0) scale(0); opacity: 0; }
+  15%  { opacity: 1; transform: translate(15rpx,-5rpx) scale(1.3); }
+  100% { transform: translate(60rpx,10rpx) scale(0.15); opacity: 0; }
+}
+@keyframes part-burst-6 {
+  0%   { transform: translate(0,0) scale(0); opacity: 0; }
+  15%  { opacity: 1; transform: translate(-15rpx,-8rpx) scale(1.1); }
+  100% { transform: translate(-60rpx,15rpx) scale(0.1); opacity: 0; }
+}
+@keyframes part-burst-7 {
+  0%   { transform: translate(0,0) scale(0); opacity: 0; }
+  15%  { opacity: 1; transform: translate(10rpx,22rpx) scale(1); }
+  100% { transform: translate(40rpx,75rpx) scale(0.18); opacity: 0; }
+}
+@keyframes part-burst-8 {
+  0%   { transform: translate(0,0) scale(0); opacity: 0; }
+  15%  { opacity: 1; transform: translate(-10rpx,-25rpx) scale(1.2); }
+  100% { transform: translate(-40rpx,-75rpx) scale(0.15); opacity: 0; }
+}
+
+/* --- Text reveal — slide up with stagger --- */
+.reveal-text {
+  animation: slide-up-reveal 0.5s ease-out 0s both;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes slide-up-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* -----------------------------------------------------------
@@ -289,6 +567,8 @@
   border: 1rpx solid rgba(244, 212, 140, 0.15);
   border-radius: var(--radius-lg, 24rpx);
   padding: 24rpx 16rpx;
+  position: relative;
+  overflow: hidden;
   box-shadow:
     0 2rpx 12rpx rgba(0, 0, 0, 0.20),
     0 0 20rpx rgba(244, 212, 140, 0.02);
@@ -296,11 +576,11 @@
 }
 
 .section .card-press:active {
-  transform: scale(0.94);
-  border-color: rgba(244, 212, 140, 0.55);
+  transform: scale(0.96);
+  border-color: rgba(244, 212, 140, 0.7) !important;
   box-shadow:
     0 4rpx 20rpx rgba(0, 0, 0, 0.25),
-    0 0 40rpx rgba(244, 212, 140, 0.08);
+    0 0 50rpx rgba(244, 212, 140, 0.18);
 }
 
 /* Spread card icons and text */
@@ -389,7 +669,7 @@
    9. DECORATIVE: Daily card icon (✦) special treatment
    ----------------------------------------------------------- */
 
-.card-warm > text:first-child {
+.card-body > text:first-child {
   display: block;
   margin-bottom: 24rpx;
   font-size: 52rpx;
@@ -407,4 +687,133 @@
     text-shadow: 0 0 40rpx rgba(244, 212, 140, 0.25);
     opacity: 1;
   }
+}
+
+/* ============================================================
+   10. SPREAD GRID — Staggered entrance
+   Each card rises with scale + opacity, 50ms apart
+   ============================================================ */
+
+@keyframes card-staggered {
+  0% {
+    opacity: 0;
+    transform: translateY(24rpx) scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.section > view > .card-press {
+  opacity: 0;
+  animation: card-staggered 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.section > view > .card-press:nth-child(1) { animation-delay: 0.70s; }
+.section > view > .card-press:nth-child(2) { animation-delay: 0.75s; }
+.section > view > .card-press:nth-child(3) { animation-delay: 0.80s; }
+.section > view > .card-press:nth-child(4) { animation-delay: 0.85s; }
+.section > view > .card-press:nth-child(5) { animation-delay: 0.90s; }
+.section > view > .card-press:nth-child(6) { animation-delay: 0.95s; }
+
+/* ============================================================
+   11. SPREAD GRID — Golden shimmer sweep on tap
+   ============================================================ */
+
+.section .card-press::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(244, 212, 140, 0.04) 30%,
+    rgba(244, 212, 140, 0.12) 50%,
+    rgba(244, 212, 140, 0.04) 70%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.section .card-press:active::before {
+  animation: tap-shimmer-sweep 0.45s ease-out forwards;
+}
+
+@keyframes tap-shimmer-sweep {
+  0%   { left: -100%; }
+  100% { left: 200%; }
+}
+
+/* ============================================================
+   12. SPREAD GRID — Icon pulse on tap
+   ============================================================ */
+
+.section .card-press:active text:first-child {
+  animation: icon-tap-pulse 0.35s ease-out forwards;
+}
+
+@keyframes icon-tap-pulse {
+  0%, 100% {
+    font-size: 36rpx;
+    text-shadow: 0 0 12rpx rgba(244, 212, 140, 0.10);
+  }
+  30% {
+    font-size: 52rpx;
+    text-shadow: 0 0 36rpx rgba(244, 212, 140, 0.35);
+  }
+  60% {
+    font-size: 44rpx;
+    text-shadow: 0 0 24rpx rgba(244, 212, 140, 0.20);
+  }
+}
+
+/* ============================================================
+   13. PREMIUM CARDS — Golden border glow + rotating diamond
+   Applied to celtic_cross (2nd grid card)
+   ============================================================ */
+
+.section > view > .card-press:nth-child(2) {
+  animation:
+    card-staggered 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.75s forwards,
+    premium-border-glow 3s ease-in-out infinite;
+}
+
+/* Rotating gold diamond in top-right corner */
+.section > view > .card-press:nth-child(2)::after {
+  content: '\25C6';
+  position: absolute;
+  top: 6rpx;
+  right: 8rpx;
+  font-size: 20rpx;
+  color: var(--color-gold, #F4D48C);
+  opacity: 0.6;
+  z-index: 2;
+  pointer-events: none;
+  animation: diamond-spin 5s linear infinite;
+}
+
+@keyframes premium-border-glow {
+  0%, 100% {
+    border-color: rgba(244, 212, 140, 0.25);
+    box-shadow:
+      0 2rpx 12rpx rgba(0, 0, 0, 0.20),
+      0 0 20rpx rgba(244, 212, 140, 0.06);
+  }
+  50% {
+    border-color: rgba(244, 212, 140, 0.55);
+    box-shadow:
+      0 2rpx 12rpx rgba(0, 0, 0, 0.20),
+      0 0 50rpx rgba(244, 212, 140, 0.18);
+  }
+}
+
+@keyframes diamond-spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

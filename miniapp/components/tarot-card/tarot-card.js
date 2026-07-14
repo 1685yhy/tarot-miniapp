@@ -159,6 +159,7 @@ Component({
     isReversed: { type: Boolean, value: false },
     cardNumber: { type: String, value: '' },
     cardType: { type: String, value: '' },
+    flipping: { type: Boolean, value: false },
   },
 
   data: {
@@ -234,6 +235,13 @@ Component({
 
     getOrientationText() {
       return this.properties.isReversed ? '逆位' : '正位';
+    },
+
+    triggerFlip() {
+      this.setData({ flipping: true });
+      setTimeout(() => {
+        this.setData({ flipping: false });
+      }, 800);
     },
   },
 });

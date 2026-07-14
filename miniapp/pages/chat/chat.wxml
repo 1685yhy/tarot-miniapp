@@ -40,7 +40,7 @@
 
   <!-- ===== 消息列表 ===== -->
   <view wx:elif="{{!pageLoading}}" class="message-list anim-fade-in">
-    <view class="msg-item {{item.role === 'user' ? 'msg-user' : 'msg-ai'}}" wx:for="{{messages}}" wx:key="index">
+    <view class="msg-item msg-enter {{item.role === 'user' ? 'msg-user' : 'msg-ai'}}" wx:for="{{messages}}" wx:key="index">
       <text class="text-caption" style="display:block;margin-bottom:6rpx;padding:0 8rpx;text-align:{{item.role === 'user' ? 'right' : 'left'}}">
         {{item.role === 'user' ? '你' : '🔮 星光解读'}}
       </text>
@@ -48,6 +48,18 @@
         <text class="msg-text">{{item.content}}</text>
       </view>
     </view>
+
+    <!-- ===== AI打字指示器 ===== -->
+    <view wx:if="{{aiThinking}}" class="typing-indicator msg-enter msg-ai">
+      <view class="msg-bubble bubble-ai bubble-typing">
+        <view class="typing-dots">
+          <view class="typing-dot"></view>
+          <view class="typing-dot"></view>
+          <view class="typing-dot"></view>
+        </view>
+      </view>
+    </view>
+
     <view id="chat-bottom"></view>
   </view>
 
