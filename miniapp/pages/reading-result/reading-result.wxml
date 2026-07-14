@@ -148,10 +148,10 @@
       </button>
     </view>
     <view wx:if="{{reading.interpretation && reading.interpretation.length > 300}}">
-      <text class="btn-text btn-toggle-text" style="text-align:center;display:block;width:100%" bindtap="onToggleInterpretation">
+      <view class="btn-text btn-toggle-text" bindtap="onToggleInterpretation">
         <text>{{showFullInterpretation ? '收起' : '展开全文'}}</text>
         <text class="toggle-arrow">{{showFullInterpretation ? '▲' : '▼'}}</text>
-      </text>
+      </view>
     </view>
   </view>
 
@@ -166,11 +166,11 @@
       <text>分享给朋友</text>
     </button>
     <view class="action-row">
-      <text class="action-link" bindtap="onNewReading">
+      <view class="action-link" bindtap="onNewReading">
         <image class="link-icon" src="/images/icons/refresh.png" mode="aspectFit" />
         <text>再来一次</text>
-      </text>
-      <text class="action-link" bindtap="onBackHome">回到首页</text>
+      </view>
+      <view class="action-link" bindtap="onBackHome">回到首页</view>
     </view>
   </view>
 </view>
