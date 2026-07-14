@@ -29,14 +29,36 @@ Page({
 
   onLoad(options) {
     // 首页点击牌阵直接进入问答，跳过选择页
-    if (options && options.type) {
-      const spread = SPREADS.find(s => s.key === options.type);
+    const type = (options && options.type) || '';
+    if (type) {
+      const spread = SPREADS.find(s => s.key === type);
       if (spread) {
+        // 先设置数据，再处理会员检查
         this.setData({
           selectedSpread: spread,
           theme: spread.theme || '',
-          showQuestionInput: true,
+          showQuestionInput: !spread.premium,
         });
+        // 会员牌阵需要登录检查
+        if (spread.premium) {
+          checkLogin({ refresh: true }).then(user => {
+            if (user && user.is_member) {
+              this.setData({ showQuestionInput: true });
+            } else {
+              wx.showModal({
+                title: '会员专属',
+                content: `「${spread.name}」为会员专属牌阵，开通会员即可使用`,
+                confirmText: '开通会员',
+                cancelText: '取消',
+                success: (res) => {
+                  if (res.confirm) wx.navigateTo({ url: '/pages/membership/membership' });
+                },
+              });
+            }
+          }).catch(() => {
+            wx.showToast({ title: '请先登录', icon: 'none' });
+          });
+        }
       }
     }
   },
