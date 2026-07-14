@@ -22,28 +22,45 @@
 <view class="orb-top"></view>
 <view class="orb-bottom"></view>
 
-<!-- ===== Loading (占卜中) ===== -->
+<!-- ===== Loading (神秘占卜中) ===== -->
 <view wx:if="{{pageLoading}}" class="loading-page">
+  <!-- Cosmic dust particles -->
+  <view class="cosmic-dust">
+    <view class="dust-particle"></view>
+    <view class="dust-particle"></view>
+    <view class="dust-particle"></view>
+    <view class="dust-particle"></view>
+    <view class="dust-particle"></view>
+    <view class="dust-particle"></view>
+    <view class="dust-particle"></view>
+    <view class="dust-particle"></view>
+  </view>
+
   <view class="mystic-loading">
-    <text class="mystic-loading-symbol">✧</text>
-    <text class="mystic-loading-title">塔罗牌灵正在回应...</text>
-    <text class="mystic-loading-sub">AI正在为你解读命运</text>
-    <!-- 阶段进度提示 -->
-    <view class="loading-stages">
-      <view class="stage-item {{loadingStage >= 1 ? 'stage-done' : ''}}">
-        <text class="stage-icon">{{loadingStage >= 1 ? '✅' : '⬜'}}</text>
-        <text class="stage-text">抽牌完成</text>
-      </view>
-      <view class="stage-arrow">→</view>
-      <view class="stage-item {{loadingStage >= 2 ? 'stage-done' : ''}}">
-        <text class="stage-icon">{{loadingStage >= 2 ? '✅' : '⬜'}}</text>
-        <text class="stage-text">AI解读中</text>
-      </view>
-      <view class="stage-arrow">→</view>
-      <view class="stage-item {{loadingStage >= 3 ? 'stage-done' : ''}}">
-        <text class="stage-icon">{{loadingStage >= 3 ? '✅' : '⬜'}}</text>
-        <text class="stage-text">生成报告</text>
-      </view>
+    <!-- Central glowing star -->
+    <view class="loading-star">
+      <view class="loading-star-core"></view>
+      <view class="loading-star-glow"></view>
+    </view>
+
+    <!-- 3 orbiting golden dots -->
+    <view class="orbit-container">
+      <view class="orbit-dot dot-1"></view>
+      <view class="orbit-dot dot-2"></view>
+      <view class="orbit-dot dot-3"></view>
+    </view>
+
+    <!-- Shimmer title -->
+    <text class="loading-shimmer-text">星光解读中</text>
+
+    <!-- Subtext -->
+    <text class="loading-sub-text">请稍候...</text>
+
+    <!-- 3 progress dots that pulse one by one -->
+    <view class="loading-progress-dots">
+      <view class="progress-dot {{loadingStage >= 1 ? 'dot-lit' : ''}}"></view>
+      <view class="progress-dot {{loadingStage >= 2 ? 'dot-lit' : ''}}"></view>
+      <view class="progress-dot {{loadingStage >= 3 ? 'dot-lit' : ''}}"></view>
     </view>
   </view>
 </view>
@@ -53,32 +70,52 @@
   <text class="error-icon">🌙</text>
   <text class="error-text">解读过程出现了一些干扰</text>
   <text class="error-hint">{{pageError}}</text>
-  <button class="btn-primary btn-small" bindtap="onRetry">✨ 重新解读</button>
+  <button class="btn-primary btn-small" bindtap="onRetry">
+    <image class="btn-icon" src="/images/icons/refresh.png" mode="aspectFit" />
+    <text>重新解读</text>
+  </button>
 </view>
 
 <!-- ===== 结果内容 ===== -->
 <view class="page" wx:elif="{{reading}}">
   <!-- Card swiper -->
   <view class="cards-section anim-fade-in-up-1">
-    <text class="text-secondary text-center" style="display:block;margin-bottom:var(--space-md)">你抽到的牌</text>
-    <swiper
-      class="card-swiper"
-      current="{{activeCardIndex}}"
-      bindchange="onCardSwiperChange"
-      indicator-dots
-      indicator-color="rgba(212,175,55,0.2)"
-      indicator-active-color="#d4af37"
-    >
-      <swiper-item wx:for="{{reading.drawn_cards}}" wx:key="id" wx:for-index="idx" class="card-enter card-enter-{{idx}}">
-        <view class="swiper-card-wrapper">
-          <tarot-card
-            nameZh="{{item.card_name}}"
-            positionName="{{item.position_name}}"
-            isReversed="{{item.is_reversed}}"
-          />
-        </view>
-      </swiper-item>
-    </swiper>
+    <!-- Gold divider ornament header -->
+    <view class="section-ornament-header">
+      <view class="ornament-line"></view>
+      <view class="ornament-diamond"></view>
+      <view class="ornament-line"></view>
+    </view>
+    <text class="text-secondary text-center section-label">你抽到的牌</text>
+    <view class="card-swiper-container">
+      <image
+        class="swiper-nav-arrow arrow-left"
+        src="/images/icons/arrow_left.png"
+        mode="aspectFit"
+        bindtap="onSwiperPrev"
+      />
+      <swiper
+        class="card-swiper"
+        current="{{activeCardIndex}}"
+        bindchange="onCardSwiperChange"
+      >
+        <swiper-item wx:for="{{reading.drawn_cards}}" wx:key="id" wx:for-index="idx" class="card-enter card-enter-{{idx}}">
+          <view class="swiper-card-wrapper">
+            <tarot-card
+              nameZh="{{item.card_name}}"
+              positionName="{{item.position_name}}"
+              isReversed="{{item.is_reversed}}"
+            />
+          </view>
+        </swiper-item>
+      </swiper>
+      <image
+        class="swiper-nav-arrow arrow-right"
+        src="/images/icons/arrow_right.png"
+        mode="aspectFit"
+        bindtap="onSwiperNext"
+      />
+    </view>
 
     <!-- Card quick nav dots -->
     <view class="dots">
@@ -95,17 +132,25 @@
 
   <!-- Interpretation -->
   <view class="interpretation-section anim-fade-in-up-2">
-    <text class="text-secondary text-center section-header-underline" style="display:block;margin-bottom:var(--space-md)">AI 星光解读</text>
+    <view class="section-ornament-header">
+      <view class="ornament-line"></view>
+      <view class="ornament-diamond"></view>
+      <view class="ornament-line"></view>
+    </view>
     <view class="interpretation-scroll card {{showFullInterpretation ? 'expanded' : ''}}" wx:if="{{reading.interpretation}}">
       <text class="interpretation-text">{{reading.interpretation}}</text>
     </view>
     <view wx:else class="interpretation-card card">
       <text class="interpretation-text text-dim">解读生成失败</text>
-      <button class="btn-primary btn-small" bindtap="onReinterpret" style="margin-top:var(--space-md)">✨ 重新生成解读</button>
+      <button class="btn-primary btn-small" bindtap="onReinterpret" style="margin-top:var(--space-md)">
+        <image class="btn-icon" src="/images/icons/refresh.png" mode="aspectFit" />
+        <text>重新生成解读</text>
+      </button>
     </view>
     <view wx:if="{{reading.interpretation && reading.interpretation.length > 300}}">
-      <text class="btn-text" style="text-align:center;display:block;width:100%" bindtap="onToggleInterpretation">
-        {{showFullInterpretation ? '收起 ▲' : '展开全文 ▼'}}
+      <text class="btn-text btn-toggle-text" style="text-align:center;display:block;width:100%" bindtap="onToggleInterpretation">
+        <text>{{showFullInterpretation ? '收起' : '展开全文'}}</text>
+        <text class="toggle-arrow">{{showFullInterpretation ? '▲' : '▼'}}</text>
       </text>
     </view>
   </view>
@@ -113,14 +158,19 @@
   <!-- Actions -->
   <view class="actions anim-fade-in-up-3">
     <button class="btn-primary btn-glow-pulse" bindtap="onAskMore">
-      <text>💬 追问更多</text>
+      <image class="btn-icon" src="/images/icons/chat_ask.png" mode="aspectFit" />
+      <text>追问更多</text>
     </button>
-    <button class="btn-secondary btn-lavender-shimmer" open-type="share">
-      <text>📤 分享给朋友</text>
+    <button class="btn-secondary" open-type="share">
+      <image class="btn-icon" src="/images/icons/share.png" mode="aspectFit" />
+      <text>分享给朋友</text>
     </button>
     <view class="action-row">
-      <text class="action-link" bindtap="onNewReading">🔄 再来一次</text>
-      <text class="action-link" bindtap="onBackHome">🏠 回到首页</text>
+      <text class="action-link" bindtap="onNewReading">
+        <image class="link-icon" src="/images/icons/refresh.png" mode="aspectFit" />
+        <text>再来一次</text>
+      </text>
+      <text class="action-link" bindtap="onBackHome">回到首页</text>
     </view>
   </view>
 </view>
