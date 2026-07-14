@@ -56,6 +56,11 @@
     <!-- Subtext -->
     <text class="loading-sub-text">请稍候...</text>
 
+    <!-- Rotating philosophical quote -->
+    <view class="loading-quote-box">
+      <text class="loading-quote-text anim-fade-in">{{loadingQuote}}</text>
+    </view>
+
     <!-- 3 progress dots that pulse one by one -->
     <view class="loading-progress-dots">
       <view class="progress-dot {{loadingStage >= 1 ? 'dot-lit' : ''}}"></view>
