@@ -549,6 +549,27 @@ page {
   margin-top: calc(-1 * var(--space-sm));
 }
 
+/* ---- Rotating philosophical quote ---- */
+.loading-quote-box {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  max-width: 560rpx;
+  text-align: center;
+  min-height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-quote-text {
+  font-size: 26rpx;
+  color: var(--color-gold);
+  line-height: 1.6;
+  letter-spacing: 2rpx;
+  opacity: 0.85;
+  text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.15);
+}
+
 /* ---- 3 progress dots ---- */
 .loading-progress-dots {
   display: flex;
