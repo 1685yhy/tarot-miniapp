@@ -27,29 +27,37 @@
 
   <!-- ===== 主内容 ===== -->
   <view wx:elif="{{card}}">
+    <!-- Card image — prominent with golden frame -->
+    <view class="card-image-section anim-fade-in-up-1">
+      <view class="card-image-frame">
+        <image class="card-image" src="{{card.imagePath}}" mode="aspectFill" wx:if="{{card.imagePath}}"></image>
+        <view class="card-image-placeholder" wx:else></view>
+      </view>
+    </view>
+
     <!-- Card header -->
     <view class="card-header anim-fade-in-up-1">
       <view class="card-number-badge flex-center">{{card.card_number}}</view>
-      <text class="heading-1">{{card.name_zh}}</text>
-      <text class="text-dim mt-xs">{{card.name_en}}</text>
-      <view class="flex-center gap-sm mt-md">
+      <text class="card-name-zh">{{card.name_zh}}</text>
+      <text class="card-name-en">{{card.name_en}}</text>
+      <view class="flex-center gap-sm mt-sm">
         <text class="badge badge-purple">{{card.arcana === 'major' ? '大阿尔卡纳' : '小阿尔卡纳'}}</text>
         <text class="badge badge-gold" wx:if="{{card.suit}}">{{card.suit === 'wands' ? '权杖' : card.suit === 'cups' ? '圣杯' : card.suit === 'swords' ? '宝剑' : '星币'}}</text>
-        <text class="badge" style="background:var(--color-star-subtle);color:var(--color-text-secondary)" wx:if="{{card.element}}">{{card.element}}</text>
+        <text class="badge" style="background:rgba(184,169,224,0.10);color:var(--color-lavender)" wx:if="{{card.element}}">{{card.element}}</text>
       </view>
     </view>
 
     <!-- Image description -->
-    <view class="card anim-fade-in-up-2">
-      <text class="section-title">🖼️ 牌面描述</text>
+    <view class="section-card anim-fade-in-up-2">
+      <text class="section-title">🔮 牌面描述</text>
       <text class="section-text mt-sm">{{card.image_description}}</text>
     </view>
 
     <!-- Keywords -->
-    <view class="card anim-fade-in-up-3">
+    <view class="section-card anim-fade-in-up-3">
       <text class="section-title">🔑 关键词</text>
       <view class="keyword-list mt-sm">
-        <text class="badge badge-gold" wx:for="{{card.keywordsList}}" wx:key="*this" style="font-size:var(--fs-body-small);padding:8rpx 18rpx">{{item}}</text>
+        <text class="badge badge-gold" wx:for="{{card.keywordsList}}" wx:key="*this" style="font-size:var(--font-size-sm);padding:8rpx 20rpx">{{item}}</text>
       </view>
     </view>
 
@@ -73,47 +81,47 @@
 
     <!-- Meanings -->
     <view wx:if="{{activeTab === 'upright'}}" class="anim-fade-in-up-5">
-      <view class="card mb-lg">
-        <text class="section-title">📜 正位含义</text>
+      <view class="section-card">
+        <text class="section-title">✨ 正位含义</text>
         <text class="section-text mt-sm">{{card.meaning_upright}}</text>
       </view>
-      <view class="card mb-lg">
+      <view class="section-card">
         <text class="section-title">💕 爱情</text>
         <text class="section-text mt-sm">{{card.love_upright}}</text>
       </view>
-      <view class="card mb-lg">
+      <view class="section-card">
         <text class="section-title">💼 事业</text>
         <text class="section-text mt-sm">{{card.career_upright}}</text>
       </view>
-      <view class="card mb-lg">
+      <view class="section-card">
         <text class="section-title">💰 财运</text>
         <text class="section-text mt-sm">{{card.finance_upright}}</text>
       </view>
-      <view class="card">
-        <text class="section-title">💚 健康</text>
+      <view class="section-card">
+        <text class="section-title">⭐ 健康</text>
         <text class="section-text mt-sm">{{card.health_upright}}</text>
       </view>
     </view>
 
     <view wx:else class="anim-fade-in-up-5">
-      <view class="card mb-lg">
-        <text class="section-title">📜 逆位含义</text>
+      <view class="section-card">
+        <text class="section-title">✨ 逆位含义</text>
         <text class="section-text mt-sm">{{card.meaning_reversed}}</text>
       </view>
-      <view class="card mb-lg">
+      <view class="section-card">
         <text class="section-title">💕 爱情</text>
         <text class="section-text mt-sm">{{card.love_reversed}}</text>
       </view>
-      <view class="card mb-lg">
+      <view class="section-card">
         <text class="section-title">💼 事业</text>
         <text class="section-text mt-sm">{{card.career_reversed}}</text>
       </view>
-      <view class="card mb-lg">
+      <view class="section-card">
         <text class="section-title">💰 财运</text>
         <text class="section-text mt-sm">{{card.finance_reversed}}</text>
       </view>
-      <view class="card">
-        <text class="section-title">💚 健康</text>
+      <view class="section-card">
+        <text class="section-title">⭐ 健康</text>
         <text class="section-text mt-sm">{{card.health_reversed}}</text>
       </view>
     </view>

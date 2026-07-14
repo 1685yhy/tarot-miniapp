@@ -33,7 +33,7 @@
 
     <!-- Benefits -->
     <view class="benefits anim-fade-in-up-1">
-      <view class="benefit-item" wx:for="{{['🔮 全部牌阵无限使用','💬 AI追问不限次数','📊 年度运势报告','🎴 每日多次抽牌','📤 专属运势卡片']}}" wx:key="*this">
+      <view class="benefit-item" wx:for="{{['全部牌阵无限使用','AI追问不限次数','年度运势报告','每日多次抽牌','专属运势卡片']}}" wx:key="*this">
         <text class="text-body">{{item}}</text>
       </view>
     </view>

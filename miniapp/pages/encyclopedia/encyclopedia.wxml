@@ -64,13 +64,15 @@
         data-id="{{item.id}}"
         bindtap="onCardTap"
       >
-        <text class="text-gold" style="font-size:var(--fs-caption)">{{item.card_number}}</text>
-        <text class="heading-4 mt-xs">{{item.name_zh}}</text>
-        <text class="text-dim" style="font-size:var(--fs-caption);display:block;margin-bottom:var(--space-sm)">{{item.name_en}}</text>
-        <view class="flex-center" style="justify-content:flex-start;gap:var(--space-xs);flex-wrap:wrap">
+        <image class="card-thumb" src="{{item.imagePath}}" mode="aspectFill" wx:if="{{item.imagePath}}"></image>
+        <view class="card-thumb-placeholder" wx:else></view>
+        <text class="card-number">{{item.card_number}}</text>
+        <text class="card-name">{{item.name_zh}}</text>
+        <text class="card-name-en">{{item.name_en}}</text>
+        <view class="card-badges">
           <text class="badge badge-purple">{{item.arcana === 'major' ? '大牌' : '小牌'}}</text>
-          <text class="badge badge-gold" wx:if="{{item.suit}}">{{item.suit}}</text>
-          <text class="badge" style="background:var(--color-star-subtle);color:var(--color-text-secondary)" wx:if="{{item.element}}">{{item.element}}</text>
+          <text class="badge badge-gold" wx:if="{{item.suit}}">{{item.suitZh}}</text>
+          <text class="badge" style="background:rgba(184,169,224,0.10);color:var(--color-lavender)" wx:if="{{item.element}}">{{item.element}}</text>
         </view>
       </view>
     </view>

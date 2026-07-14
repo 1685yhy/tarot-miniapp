@@ -1,6 +1,32 @@
 // pages/encyclopedia/encyclopedia.js
 const { request } = require('../../utils/api');
 
+// ---- Image path computation (mirrors tarot-card component logic) ----
+const IMAGE_BASE = 'https://xingxiang.chat/images/cards';
+const RANK_MAP = {
+  ace: 0, two: 1, three: 2, four: 3, five: 4,
+  six: 5, seven: 6, eight: 7, nine: 8, ten: 9,
+  page: 10, knight: 11, queen: 12, king: 13,
+};
+
+function computeImagePath(card) {
+  if (!card || !card.name_en) return '';
+  const enSnake = card.name_en.toLowerCase().replace(/\s+/g, '_');
+  if (card.arcana === 'major') {
+    const idx = String(card.card_number).padStart(2, '0');
+    return `${IMAGE_BASE}/major_${idx}_${enSnake}.png`;
+  }
+  if (card.suit) {
+    const firstWord = card.name_en.toLowerCase().split(' ')[0];
+    const idx = RANK_MAP[firstWord] !== undefined ? RANK_MAP[firstWord] : 0;
+    return `${IMAGE_BASE}/${card.suit}_${String(idx).padStart(2, '0')}_${enSnake}.png`;
+  }
+  return '';
+}
+
+// Suit English → Chinese map
+const SUIT_ZH = { wands: '权杖', cups: '圣杯', swords: '宝剑', pentacles: '星币' };
+
 Page({
   data: {
     cards: [],
@@ -17,6 +43,7 @@ Page({
       { key: 'swords', label: '宝剑' },
       { key: 'pentacles', label: '星币' },
     ],
+    suitZh: SUIT_ZH,
   },
 
   async onLoad() {
@@ -27,7 +54,12 @@ Page({
     this.setData({ pageLoading: true });
     try {
       const data = await request('/cards');
-      const cards = Array.isArray(data) ? data : (data.cards || []);
+      const rawCards = Array.isArray(data) ? data : (data.cards || []);
+      const cards = rawCards.map(c => ({
+        ...c,
+        imagePath: computeImagePath(c),
+        suitZh: SUIT_ZH[c.suit] || c.suit || '',
+      }));
       this.setData({ cards, filteredCards: cards, pageLoading: false });
     } catch (err) {
       this.setData({ pageLoading: false, pageError: err.message || '加载失败' });

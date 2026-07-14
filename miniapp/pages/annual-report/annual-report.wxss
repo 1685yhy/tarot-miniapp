@@ -1,11 +1,16 @@
 /* ============================================================
-   Annual Report Page — 柔光星辰
+   Annual Report Page — Starlight Design System
+   #1A1A3E bg · #F4D48C gold · #B8A9E0 lavender accent
    Celestial calendar aesthetic · Monthly dark cards
    Golden section headers · Deep cosmic indigo
    ============================================================ */
 
-/* ---- Old variable aliases (WXML inline style compat) ---- */
 page {
+  background: #1A1A3E;
+  --color-star-subtle: rgba(244, 212, 140, 0.12);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-primary: var(--color-text-primary);
+  /* Inline style compat aliases */
   --space-massive: var(--spacing-5xl);
   --space-xxxl: var(--spacing-3xl);
   --space-xxl: var(--spacing-2xl);
@@ -28,14 +33,11 @@ page {
   --duration-fast: var(--duration-fast);
   --ease-out: var(--ease-out);
   --ease-in-out: var(--ease-in-out);
-  --color-star-subtle: rgba(244, 212, 140, 0.12);
-  --color-text-secondary: var(--color-text-secondary);
-  --color-text-primary: var(--color-text-primary);
 }
 
-/* ---------------------------------------------------------------
-   Container — Deep cosmic indigo gradient
-   --------------------------------------------------------------- */
+/* ============================================================
+   Container
+   ============================================================ */
 .container {
   padding: var(--spacing-xl);
   padding-bottom: calc(var(--safe-area-bottom) + var(--spacing-5xl));
@@ -44,9 +46,19 @@ page {
   z-index: 1;
 }
 
-/* ---------------------------------------------------------------
-   text-dim / text-secondary — class aliases for old WXML
-   --------------------------------------------------------------- */
+/* ============================================================
+   Gold / Lavender utilities
+   ============================================================ */
+.gold {
+  color: #F4D48C;
+}
+.lavender {
+  color: #B8A9E0;
+}
+
+/* ============================================================
+   Text helpers
+   ============================================================ */
 .text-dim {
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
@@ -57,9 +69,15 @@ page {
   font-size: var(--font-size-base);
 }
 
-/* ---------------------------------------------------------------
-   Intro — Preamble before generation
-   --------------------------------------------------------------- */
+.text-body {
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-base);
+}
+
+/* ============================================================
+   INTRO — Preamble before generation
+   ============================================================ */
 .intro {
   text-align: center;
   padding: var(--spacing-5xl) var(--spacing-xl) var(--spacing-2xl);
@@ -68,12 +86,14 @@ page {
 .heading-1 {
   font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
+  color: #F4D48C;
   text-align: center;
   letter-spacing: 2rpx;
 }
 
-/* ---- Glow pulse button ---- */
+/* ============================================================
+   Generate Button — Golden pill
+   ============================================================ */
 .btn-glow-pulse {
   width: 80%;
   margin: var(--spacing-xl) auto 0;
@@ -104,7 +124,7 @@ page {
   50% { box-shadow: 0 0 30rpx rgba(244, 212, 140, 0.20), var(--shadow-gold-button); }
 }
 
-/* ---- Secondary button (outline style) ---- */
+/* Secondary button (outline) */
 .btn-secondary {
   width: 80%;
   background: transparent;
@@ -122,13 +142,13 @@ page {
 
 .btn-secondary:active {
   border-color: rgba(244, 212, 140, 0.40);
-  color: var(--color-gold);
+  color: #F4D48C;
   background: rgba(244, 212, 140, 0.04);
 }
 
-/* ---------------------------------------------------------------
-   Mystic Loading — Deep cosmic waiting state
-   --------------------------------------------------------------- */
+/* ============================================================
+   Mystic Loading
+   ============================================================ */
 .mystic-loading {
   text-align: center;
   padding: var(--spacing-5xl) var(--spacing-xl);
@@ -162,17 +182,17 @@ page {
   display: block;
 }
 
-/* ---------------------------------------------------------------
-   Report — Main report body
-   --------------------------------------------------------------- */
+/* ============================================================
+   REPORT — Main report body
+   ============================================================ */
 .report {
   padding: var(--spacing-lg) 0;
 }
 
-/* ---- Golden section title (centered) ---- */
+/* Golden section title (centered) */
 .section-title-center {
   font-size: var(--font-size-xl);
-  color: var(--color-gold);
+  color: #F4D48C;
   font-weight: var(--font-weight-bold);
   display: block;
   text-align: center;
@@ -181,16 +201,16 @@ page {
   text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.08);
 }
 
-/* ---------------------------------------------------------------
-   Monthly Cards — Celestial calendar
-   --------------------------------------------------------------- */
+/* ============================================================
+   MONTHLY CARDS — Dark indigo, golden month labels
+   ============================================================ */
 .report-cards-section {
   margin-bottom: var(--spacing-2xl);
 }
 
 .section-subtitle {
   font-size: var(--font-size-base);
-  color: var(--color-gold);
+  color: #F4D48C;
   font-weight: var(--font-weight-medium);
   display: block;
   margin-bottom: var(--spacing-lg);
@@ -213,7 +233,7 @@ page {
   padding: 0 var(--spacing-sm);
 }
 
-/* ---- Individual month card (celestial inspired) ---- */
+/* Individual month card */
 .monthly-card-item {
   display: flex;
   flex-direction: column;
@@ -230,7 +250,7 @@ page {
   overflow: hidden;
 }
 
-/* Celestial starlight accent */
+/* Starlight accent glow */
 .monthly-card-item::before {
   content: '';
   position: absolute;
@@ -249,20 +269,20 @@ page {
   box-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.30), 0 0 60rpx rgba(244, 212, 140, 0.06);
 }
 
-/* Month label — golden --tarot-card */
+/* Month label — golden */
 .month-label {
   font-size: var(--font-size-sm);
-  color: var(--color-gold);
+  color: #F4D48C;
   text-align: center;
   margin-top: var(--spacing-sm);
   letter-spacing: 2rpx;
   font-weight: var(--font-weight-medium);
-  opacity: 0.80;
+  opacity: 0.85;
 }
 
-/* ---------------------------------------------------------------
-   Report Body — Dark cosmic card with report text
-   --------------------------------------------------------------- */
+/* ============================================================
+   REPORT BODY — Dark card with report text
+   ============================================================ */
 .report-body {
   border-radius: var(--radius-xl);
   padding: var(--spacing-2xl);
@@ -274,7 +294,7 @@ page {
   box-shadow: var(--shadow-card);
 }
 
-/* Gold rim glow */
+/* Golden top rim glow */
 .report-body::before {
   content: '';
   position: absolute;
@@ -301,7 +321,9 @@ page {
   letter-spacing: 1rpx;
 }
 
-/* ---- Primary button (share) ---- */
+/* ============================================================
+   Primary Button (share / actions)
+   ============================================================ */
 .btn-primary {
   background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
   color: var(--color-text-inverse);
@@ -324,9 +346,9 @@ page {
   box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.20);
 }
 
-/* ---------------------------------------------------------------
+/* ============================================================
    Error State
-   --------------------------------------------------------------- */
+   ============================================================ */
 .error-state {
   text-align: center;
   padding: var(--spacing-5xl) var(--spacing-xl);
@@ -358,9 +380,9 @@ page {
   padding: 16rpx 36rpx;
 }
 
-/* ---------------------------------------------------------------
-   Skeleton — Dark cosmic shimmer
-   --------------------------------------------------------------- */
+/* ============================================================
+   SKELETON — Dark cosmic shimmer
+   ============================================================ */
 .skeleton {
   padding: var(--spacing-2xl) 0;
 }
@@ -414,9 +436,9 @@ page {
   50% { opacity: 0.45; }
 }
 
-/* ---------------------------------------------------------------
+/* ============================================================
    Entrance animations
-   --------------------------------------------------------------- */
+   ============================================================ */
 .anim-fade-in-up-1 { opacity: 0; animation: fade-up 0.5s var(--ease-soft) 0.08s forwards; }
 .anim-fade-in-up-2 { opacity: 0; animation: fade-up 0.5s var(--ease-soft) 0.23s forwards; }
 .anim-fade-in-up-3 { opacity: 0; animation: fade-up 0.5s var(--ease-soft) 0.38s forwards; }

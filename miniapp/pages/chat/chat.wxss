@@ -1,31 +1,29 @@
-/* ==============================
-   柔光星辰 — Chat
-   Warm cream bubbles on dark indigo
-   Golden accent on AI messages
-   ============================== */
+/* ============================================================
+   Chat Page — Starlight Design System
+   Dark indigo chat · Cream bubbles · Gold accents
+   ============================================================ */
 
-/* ----- CSS Variables ----- */
+/* ---- Design Tokens ---- */
 page {
-  --bg-deep: #0d0b1a;
-  --bg-card: #161329;
-  --bg-elevated: #201d3e;
   --gold: #d4af37;
   --gold-light: #f0d68a;
   --gold-glow: rgba(212, 175, 55, 0.35);
   --gold-dim: rgba(212, 175, 55, 0.15);
+  --bg-deep: #0d0b1a;
+  --bg-card: #161329;
+  --bg-elevated: #1e1a38;
+  --bg-user: #1e1a38;
+  --bg-ai: #232048;
+  --cream: #f5eedc;
+  --cream-dim: #e0d8c4;
   --text-primary: #e8e4f0;
   --text-secondary: #b8b0d0;
-  --text-dim: #7b7299;
-  --text-gold: #e8c84a;
-  --bubble-user-bg: #1e1a38;
-  --bubble-user-text: #e8e4f0;
-  --bubble-ai-bg: #f5eedc;
-  --bubble-ai-text: #2c2430;
-  --input-bar-bg: rgba(13, 11, 26, 0.96);
-  --input-bg: #1e1a38;
-  --fs-caption: 22rpx;
-  --fs-body-small: 24rpx;
-  --fs-body: 28rpx;
+  --text-tertiary: #7b7299;
+  --radius-sm: 12rpx;
+  --radius-md: 18rpx;
+  --radius-lg: 24rpx;
+  --radius-round: 999rpx;
+  --radius-bubble: 18rpx;
   --space-xs: 6rpx;
   --space-sm: 12rpx;
   --space-md: 20rpx;
@@ -33,20 +31,18 @@ page {
   --space-xl: 36rpx;
   --space-xxl: 48rpx;
   --space-xxxl: 64rpx;
-  --radius-card: 24rpx;
-  --radius-round: 999rpx;
   font-family: system-ui, -apple-system, 'PingFang SC', 'Noto Sans SC', sans-serif;
   background: var(--bg-deep);
   color: var(--text-primary);
-  font-size: var(--fs-body);
+  font-size: 28rpx;
   line-height: 1.6;
   min-height: 100vh;
   overflow-x: hidden;
 }
 
-/* ==============================
+/* ================================================================
    Container
-   ============================== */
+   ================================================================ */
 .container {
   padding: var(--space-xl) var(--space-xl) 320rpx;
   min-height: 100vh;
@@ -57,9 +53,9 @@ page {
   box-sizing: border-box;
 }
 
-/* ==============================
+/* ================================================================
    Animations
-   ============================== */
+   ================================================================ */
 .anim-fade-in {
   animation: fadeIn 0.4s ease both;
 }
@@ -68,8 +64,6 @@ page {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-
-/* -- Individual message slide-up + fade -- */
 
 .msg-enter {
   animation: msgSlideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -80,7 +74,6 @@ page {
   100% { opacity: 1; transform: translateY(0); }
 }
 
-/* User messages slide from right */
 .msg-user .msg-bubble {
   animation: slideInRight 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -90,7 +83,6 @@ page {
   100% { opacity: 1; transform: translateX(0); }
 }
 
-/* AI messages slide from left */
 .msg-ai .msg-bubble {
   animation: slideInLeft 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -100,10 +92,9 @@ page {
   100% { opacity: 1; transform: translateX(0); }
 }
 
-/* ==============================
-   Typing indicator — 3 golden dots
-   ============================== */
-
+/* ================================================================
+   Typing indicator — golden bouncing dots
+   ================================================================ */
 .typing-indicator {
   margin-bottom: var(--space-xl);
   display: flex;
@@ -133,13 +124,8 @@ page {
   animation: typingBounce 1.4s ease-in-out infinite;
 }
 
-.typing-dot:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.typing-dot:nth-child(3) {
-  animation-delay: 0.4s;
-}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
 
 @keyframes typingBounce {
   0%, 80%, 100% {
@@ -152,9 +138,9 @@ page {
   }
 }
 
-/* ==============================
+/* ================================================================
    Empty / Intro state
-   ============================== */
+   ================================================================ */
 .chat-intro {
   text-align: center;
   padding: var(--space-xxxl) 0;
@@ -173,22 +159,22 @@ page {
 }
 
 .empty-text {
-  font-size: var(--fs-body);
+  font-size: 28rpx;
   color: var(--text-secondary);
   display: block;
   margin-bottom: var(--space-sm);
 }
 
 .empty-hint {
-  font-size: var(--fs-body-small);
-  color: var(--text-dim);
+  font-size: 24rpx;
+  color: var(--text-tertiary);
   display: block;
   line-height: 1.6;
 }
 
-/* ==============================
+/* ================================================================
    Error state
-   ============================== */
+   ================================================================ */
 .error-state {
   display: flex;
   flex-direction: column;
@@ -213,12 +199,13 @@ page {
 }
 
 .error-hint {
-  font-size: var(--fs-body-small);
-  color: var(--text-dim);
+  font-size: 24rpx;
+  color: var(--text-tertiary);
   margin-bottom: var(--space-xxl);
   display: block;
 }
 
+/* ---- Shared button — golden pill ---- */
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -227,43 +214,38 @@ page {
   padding: 20rpx 48rpx;
   border: none;
   border-radius: var(--radius-round);
-  font-size: var(--fs-body);
+  font-size: 28rpx;
   font-weight: 600;
-  color: #0d0b1a;
+  color: var(--bg-deep);
   background: linear-gradient(135deg, var(--gold-light), var(--gold));
   box-shadow: 0 4rpx 24rpx var(--gold-glow);
   transition: all 0.25s;
 }
 
-.btn-primary::after {
-  border: none;
-}
-
-.btn-primary:active {
-  transform: scale(0.96);
-}
+.btn-primary::after { border: none; }
+.btn-primary:active { transform: scale(0.96); }
 
 .btn-small {
   padding: 16rpx 36rpx;
-  font-size: var(--fs-body-small);
+  font-size: 24rpx;
 }
 
-/* ==============================
+/* ================================================================
    Reading context bar
-   ============================== */
+   ================================================================ */
 .reading-context-bar {
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-lg);
   padding: var(--space-md) var(--space-lg);
   margin-bottom: var(--space-xl);
   background: var(--bg-card);
   border: 1.5rpx solid var(--gold-dim);
   border-left: 4rpx solid var(--gold);
-  box-shadow: 0 2rpx 20rpx rgba(212,175,55,0.05);
+  box-shadow: 0 2rpx 20rpx rgba(212, 175, 55, 0.05);
 }
 
 .context-label {
-  font-size: var(--fs-caption);
-  color: var(--text-gold);
+  font-size: 22rpx;
+  color: var(--gold);
   font-weight: 600;
   display: block;
   margin-bottom: var(--space-xs);
@@ -272,7 +254,7 @@ page {
 }
 
 .context-question {
-  font-size: var(--fs-body-small);
+  font-size: 24rpx;
   color: var(--text-primary);
   display: block;
   margin-bottom: 4rpx;
@@ -280,14 +262,14 @@ page {
 }
 
 .context-spread {
-  font-size: var(--fs-caption);
-  color: var(--text-dim);
+  font-size: 22rpx;
+  color: var(--text-tertiary);
   display: block;
 }
 
-/* ==============================
+/* ================================================================
    Message list
-   ============================== */
+   ================================================================ */
 .message-list {
   flex: 1;
   margin-bottom: 20rpx;
@@ -307,18 +289,16 @@ page {
   align-items: flex-start;
 }
 
-/* ==============================
-   Role label
-   ============================== */
+/* ---- Role label ---- */
 .text-caption {
-  font-size: var(--fs-caption);
-  color: var(--text-dim);
+  font-size: 22rpx;
+  color: var(--text-tertiary);
   margin-bottom: var(--space-xs);
 }
 
-/* ==============================
+/* ================================================================
    Chat bubbles
-   ============================== */
+   ================================================================ */
 .msg-bubble {
   padding: var(--space-lg) var(--space-xl);
   max-width: 85%;
@@ -327,21 +307,21 @@ page {
 }
 
 .msg-text {
-  font-size: var(--fs-body);
+  font-size: 28rpx;
   white-space: pre-wrap;
   word-break: break-word;
 }
 
-/* User bubble — dark indigo surface */
+/* ---- User bubble: cream text on dark indigo, right-aligned ---- */
 .bubble-user {
-  background: var(--bubble-user-bg);
-  border-radius: 18rpx 4rpx 18rpx 18rpx;
-  border: 1rpx solid rgba(255,255,255,0.04);
-  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.15);
+  background: var(--bg-user);
+  border-radius: var(--radius-bubble) 4rpx var(--radius-bubble) var(--radius-bubble);
+  border: 1rpx solid rgba(255, 255, 255, 0.04);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.15);
 }
 
 .bubble-user .msg-text {
-  color: var(--bubble-user-text);
+  color: var(--cream);
 }
 
 .bubble-user::after {
@@ -351,23 +331,23 @@ page {
   right: -6rpx;
   width: 0;
   height: 0;
-  border-left: 8rpx solid var(--bubble-user-bg);
+  border-left: 8rpx solid var(--bg-user);
   border-top: 6rpx solid transparent;
   border-bottom: 6rpx solid transparent;
   transform: rotate(-20deg);
 }
 
-/* AI bubble — warm cream with golden accent */
+/* ---- AI bubble: cream text on lighter indigo, left-aligned ---- */
 .bubble-ai {
-  background: var(--bubble-ai-bg);
-  border-radius: 4rpx 18rpx 18rpx 18rpx;
+  background: var(--bg-ai);
+  border-radius: 4rpx var(--radius-bubble) var(--radius-bubble) var(--radius-bubble);
   border: 1rpx solid var(--gold-dim);
-  box-shadow: 0 2rpx 16rpx rgba(212,175,55,0.08);
+  box-shadow: 0 2rpx 16rpx rgba(212, 175, 55, 0.08);
   border-left: 3rpx solid var(--gold);
 }
 
 .bubble-ai .msg-text {
-  color: var(--bubble-ai-text);
+  color: var(--cream-dim);
 }
 
 .bubble-ai::after {
@@ -377,15 +357,15 @@ page {
   left: -6rpx;
   width: 0;
   height: 0;
-  border-right: 8rpx solid var(--bubble-ai-bg);
+  border-right: 8rpx solid var(--bg-ai);
   border-top: 6rpx solid transparent;
   border-bottom: 6rpx solid transparent;
   transform: rotate(20deg);
 }
 
-/* ==============================
+/* ================================================================
    Input bar — fixed bottom
-   ============================== */
+   ================================================================ */
 .input-bar {
   position: fixed;
   bottom: 0;
@@ -395,52 +375,54 @@ page {
   align-items: center;
   padding: var(--space-md) var(--space-xl);
   padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-md));
-  background: rgba(22, 19, 41, 0.92);
-  border-top: 1rpx solid var(--gold-dim);
+  background: rgba(22, 19, 41, 0.96);
+  border-top: 1.5rpx solid var(--gold-dim);
   gap: var(--space-sm);
   z-index: 100;
+  backdrop-filter: blur(12rpx);
+  -webkit-backdrop-filter: blur(12rpx);
 }
 
 .chat-input {
   flex: 1;
   height: 72rpx;
-  background: var(--input-bg);
+  background: var(--bg-elevated);
   border-radius: var(--radius-round);
   padding: 0 var(--space-xl);
-  font-size: var(--fs-body);
-  color: var(--text-primary);
-  border: 1rpx solid rgba(212,175,55,0.08);
+  font-size: 28rpx;
+  color: var(--cream);
+  border: 1.5rpx solid rgba(212, 175, 55, 0.1);
   transition: border-color 0.25s, box-shadow 0.25s;
   caret-color: var(--gold);
 }
 
 .chat-input:focus {
   border-color: var(--gold-dim);
-  box-shadow: 0 0 0 3rpx rgba(212,175,55,0.06);
+  box-shadow: 0 0 0 3rpx rgba(212, 175, 55, 0.06);
 }
 
 .chat-input::placeholder {
   color: #555577;
 }
 
+/* ---- Send button: golden pill ---- */
 .send-btn {
   width: 120rpx;
   height: 72rpx;
   line-height: 72rpx;
   text-align: center;
   background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  color: #0d0b1a;
-  font-size: var(--fs-body-small);
-  font-weight: 600;
+  color: var(--bg-deep);
+  font-size: 24rpx;
+  font-weight: 700;
   border-radius: var(--radius-round);
   border: none;
   padding: 0;
   transition: all 0.25s;
+  box-shadow: 0 4rpx 16rpx var(--gold-glow);
 }
 
-.send-btn::after {
-  border: none;
-}
+.send-btn::after { border: none; }
 
 .send-btn:active:not([disabled]) {
   transform: scale(0.94);
@@ -450,23 +432,23 @@ page {
   opacity: 0.35;
 }
 
-/* ==============================
+/* ================================================================
    Free query hint
-   ============================== */
+   ================================================================ */
 .free-hint {
   text-align: center;
   padding: var(--space-sm) 0;
-  font-size: var(--fs-caption);
-  color: var(--text-dim);
+  font-size: 22rpx;
+  color: var(--text-tertiary);
   position: fixed;
   bottom: 112rpx;
   left: 0;
   right: 0;
 }
 
-/* ==============================
-   Skeleton loading
-   ============================== */
+/* ================================================================
+   Skeleton loading — dark indigo shimmer
+   ================================================================ */
 .skeleton-messages {
   flex: 1;
   padding: var(--space-xl);
@@ -478,29 +460,23 @@ page {
 
 .skeleton-bubble {
   height: 72rpx;
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-lg);
   background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-elevated) 50%, var(--bg-card) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.6s infinite;
 }
 
-.skeleton-bubble.left {
-  width: 60%;
-}
-
-.skeleton-bubble.right {
-  width: 50%;
-  margin-left: auto;
-}
+.skeleton-bubble.left { width: 60%; }
+.skeleton-bubble.right { width: 50%; margin-left: auto; }
 
 @keyframes shimmer {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
 
-/* ==============================
+/* ================================================================
    Scrollbar hidden
-   ============================== */
+   ================================================================ */
 ::-webkit-scrollbar {
   width: 0;
   height: 0;
