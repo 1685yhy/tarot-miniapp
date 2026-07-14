@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     DEEPSEEK_API_KEY: str = ""
     DEEPSEEK_MODEL: str = "deepseek-chat"
     DEEPSEEK_BASE_URL: str = "https://api.deepseek.com/v1"
-    AI_MAX_TOKENS: int = 2048
+    AI_MAX_TOKENS: int = 4096
 
     # WeChat
     WECHAT_APP_ID: str = ""

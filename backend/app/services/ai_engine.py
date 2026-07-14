@@ -145,7 +145,7 @@ async def generate_reading(
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": user_prompt},
                 ],
-                timeout=60.0,
+                timeout=120.0,
             )
             content = response.choices[0].message.content
             if content and content.strip():

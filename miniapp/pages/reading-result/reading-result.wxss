@@ -355,7 +355,7 @@ page {
 .mb-xxl { margin-bottom: var(--space-xxl); }
 
 /* ==============================
-   Loading page — mystic
+   Loading page — mystical
    ============================== */
 .loading-page {
   display: flex;
@@ -365,77 +365,220 @@ page {
   min-height: 100vh;
   position: relative;
   z-index: 1;
+  overflow: hidden;
+}
+
+/* ---- Cosmic dust particles ---- */
+.cosmic-dust {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.dust-particle {
+  position: absolute;
+  width: 4rpx;
+  height: 4rpx;
+  background: var(--gold);
+  border-radius: 50%;
+  opacity: 0;
+  box-shadow: 0 0 6rpx 2rpx var(--gold-glow);
+  animation: dustFloat 4s ease-in infinite;
+}
+
+.dust-particle:nth-child(1) { left: 20%; bottom: 10%; width: 3rpx; height: 3rpx; animation-delay: 0s; }
+.dust-particle:nth-child(2) { left: 40%; bottom: 5%;  width: 5rpx; height: 5rpx; animation-delay: 0.8s; }
+.dust-particle:nth-child(3) { left: 60%; bottom: 15%; width: 2rpx; height: 2rpx; animation-delay: 1.6s; }
+.dust-particle:nth-child(4) { left: 80%; bottom: 8%;  width: 4rpx; height: 4rpx; animation-delay: 0.5s; }
+.dust-particle:nth-child(5) { left: 10%; bottom: 20%; width: 3rpx; height: 3rpx; animation-delay: 2.2s; }
+.dust-particle:nth-child(6) { left: 50%; bottom: 12%; width: 4rpx; height: 4rpx; animation-delay: 1.2s; }
+.dust-particle:nth-child(7) { left: 70%; bottom: 6%;  width: 2rpx; height: 2rpx; animation-delay: 2.8s; }
+.dust-particle:nth-child(8) { left: 30%; bottom: 18%; width: 3rpx; height: 3rpx; animation-delay: 3.5s; }
+
+@keyframes dustFloat {
+  0%   { transform: translateY(0) translateX(0) scale(0.3); opacity: 0; }
+  20%  { opacity: 0.8; }
+  80%  { opacity: 0.5; }
+  100% { transform: translateY(-70vh) translateX(20rpx) scale(1); opacity: 0; }
 }
 
 .mystic-loading {
   text-align: center;
-  padding: var(--space-xl);
-}
-
-.mystic-loading-symbol {
-  font-size: 72rpx;
-  color: var(--gold);
-  display: block;
-  margin-bottom: var(--space-lg);
-  animation: rotateSymbol 3s ease-in-out infinite;
-}
-
-@keyframes rotateSymbol {
-  0% { transform: rotate(0deg) scale(1); opacity: 0.6; }
-  50% { transform: rotate(180deg) scale(1.15); opacity: 1; }
-  100% { transform: rotate(360deg) scale(1); opacity: 0.6; }
-}
-
-.mystic-loading-title {
-  font-size: 32rpx;
-  font-weight: 700;
-  color: var(--text-primary);
-  display: block;
-  margin-bottom: var(--space-xs);
-}
-
-.mystic-loading-sub {
-  font-size: var(--fs-body-small);
-  color: var(--text-dim);
-  display: block;
-}
-
-/* Loading stages */
-.loading-stages {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12rpx;
-  margin-top: var(--space-xxxl);
-}
-
-.stage-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6rpx;
-  opacity: 0.25;
-  transition: opacity 0.5s ease;
+  gap: var(--space-lg);
 }
 
-.stage-item.stage-done {
-  opacity: 1;
+/* ---- Central glowing star ---- */
+.loading-star {
+  position: relative;
+  width: 120rpx;
+  height: 120rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-sm);
 }
 
-.stage-icon {
-  font-size: 24rpx;
+.loading-star-core {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fae6b0, var(--gold) 50%, #c9a04a);
+  box-shadow:
+    0 0 20rpx 8rpx rgba(244, 212, 140, 0.4),
+    0 0 40rpx 16rpx rgba(244, 212, 140, 0.2),
+    0 0 80rpx 30rpx rgba(244, 212, 140, 0.08);
+  animation: glowPulseStar 2.5s ease-in-out infinite;
+  z-index: 2;
 }
 
-.stage-text {
-  font-size: var(--fs-caption);
-  color: var(--text-secondary);
-  white-space: nowrap;
+.loading-star-glow {
+  position: absolute;
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(244, 212, 140, 0.15) 0%, transparent 70%);
+  animation: glowPulseRing 2.5s ease-in-out infinite;
+  z-index: 1;
 }
 
-.stage-arrow {
-  font-size: 20rpx;
-  color: var(--gold-dim);
-  margin-top: -20rpx;
+@keyframes glowPulseStar {
+  0%, 100% { box-shadow: 0 0 20rpx 8rpx rgba(244, 212, 140, 0.4), 0 0 40rpx 16rpx rgba(244, 212, 140, 0.2), 0 0 80rpx 30rpx rgba(244, 212, 140, 0.08); transform: scale(1); }
+  50% { box-shadow: 0 0 30rpx 12rpx rgba(244, 212, 140, 0.6), 0 0 60rpx 24rpx rgba(244, 212, 140, 0.3), 0 0 100rpx 40rpx rgba(244, 212, 140, 0.12); transform: scale(1.08); }
+}
+
+@keyframes glowPulseRing {
+  0%, 100% { opacity: 0.4; transform: scale(0.9); }
+  50% { opacity: 0.8; transform: scale(1.2); }
+}
+
+/* ---- 3 orbiting golden dots ---- */
+.orbit-container {
+  position: absolute;
+  width: 180rpx;
+  height: 180rpx;
+  top: calc(50% - 90rpx - 60rpx);
+  left: calc(50% - 90rpx);
+  pointer-events: none;
+}
+
+.orbit-dot {
+  position: absolute;
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 10rpx 4rpx var(--gold-glow);
+  top: 50%;
+  left: 50%;
+}
+
+.dot-1 {
+  animation: orbitDot1 3s linear infinite;
+}
+
+.dot-2 {
+  width: 10rpx;
+  height: 10rpx;
+  animation: orbitDot2 3.6s linear infinite;
+}
+
+.dot-3 {
+  width: 12rpx;
+  height: 12rpx;
+  animation: orbitDot3 4.2s linear infinite;
+}
+
+@keyframes orbitDot1 {
+  0%   { transform: translate(-50%, -50%) rotate(0deg) translateX(80rpx); opacity: 0.6; }
+  25%  { opacity: 1; }
+  50%  { opacity: 0.5; }
+  75%  { opacity: 1; }
+  100% { transform: translate(-50%, -50%) rotate(360deg) translateX(80rpx); opacity: 0.6; }
+}
+
+@keyframes orbitDot2 {
+  0%   { transform: translate(-50%, -50%) rotate(120deg) translateX(65rpx); opacity: 0.5; }
+  25%  { opacity: 1; }
+  50%  { opacity: 0.4; }
+  75%  { opacity: 1; }
+  100% { transform: translate(-50%, -50%) rotate(480deg) translateX(65rpx); opacity: 0.5; }
+}
+
+@keyframes orbitDot3 {
+  0%   { transform: translate(-50%, -50%) rotate(240deg) translateX(90rpx); opacity: 0.7; }
+  25%  { opacity: 1; }
+  50%  { opacity: 0.5; }
+  75%  { opacity: 1; }
+  100% { transform: translate(-50%, -50%) rotate(600deg) translateX(90rpx); opacity: 0.7; }
+}
+
+/* ---- Shimmer gold gradient text ---- */
+.loading-shimmer-text {
+  font-size: 40rpx;
+  font-weight: 700;
+  letter-spacing: 4rpx;
+  background: linear-gradient(
+    90deg,
+    #c9a04a 0%,
+    #fae6b0 25%,
+    #F4D48C 50%,
+    #fae6b0 75%,
+    #c9a04a 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: textShimmer 3s linear infinite;
+}
+
+@keyframes textShimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+/* ---- Sub text ---- */
+.loading-sub-text {
+  font-size: var(--fs-body);
+  color: #b8b0d0;
+  margin-top: -var(--space-sm);
+}
+
+/* ---- 3 progress dots ---- */
+.loading-progress-dots {
+  display: flex;
+  gap: 20rpx;
+  margin-top: var(--space-md);
+}
+
+.progress-dot {
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  background: rgba(244, 212, 140, 0.15);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.25);
+  transition: all 0.6s ease;
+}
+
+.progress-dot:nth-child(1) { animation: dotBreathe 2.4s ease-in-out infinite; }
+.progress-dot:nth-child(2) { animation: dotBreathe 2.4s ease-in-out 0.8s infinite; }
+.progress-dot:nth-child(3) { animation: dotBreathe 2.4s ease-in-out 1.6s infinite; }
+
+.progress-dot.dot-lit {
+  background: var(--gold);
+  border-color: var(--gold);
+  box-shadow: 0 0 12rpx 4rpx var(--gold-glow);
+  animation: none;
+}
+
+@keyframes dotBreathe {
+  0%, 100% { opacity: 0.3; transform: scale(0.85); }
+  50% { opacity: 0.8; transform: scale(1.15); }
 }
 
 /* ==============================
@@ -529,6 +672,71 @@ page {
   border-color: var(--gold);
 }
 
+/* ---- Icon inside buttons ---- */
+.btn-icon {
+  width: 32rpx;
+  height: 32rpx;
+  flex-shrink: 0;
+}
+
+/* ---- Inline icon for toggle text ---- */
+.btn-toggle-text {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+}
+
+.toggle-arrow {
+  font-size: 20rpx;
+  color: var(--gold);
+  opacity: 0.7;
+}
+
+/* ---- Link icon ---- */
+.link-icon {
+  width: 24rpx;
+  height: 24rpx;
+  vertical-align: middle;
+  margin-right: 4rpx;
+}
+
+/* ==============================
+   Section Ornament Header (gold divider)
+   ============================== */
+.section-ornament-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  margin-bottom: var(--space-md);
+}
+
+.ornament-line {
+  width: 60rpx;
+  height: 1.5rpx;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.6;
+}
+
+.ornament-diamond {
+  width: 10rpx;
+  height: 10rpx;
+  background: var(--gold);
+  transform: rotate(45deg);
+  opacity: 0.8;
+  box-shadow: 0 0 8rpx 2rpx var(--gold-glow);
+}
+
+.section-label {
+  display: block !important;
+  text-align: center;
+  margin-bottom: var(--space-md);
+  font-size: var(--fs-body);
+  letter-spacing: 2rpx;
+  color: var(--text-secondary);
+}
+
 /* ==============================
    Cards section — night sky
    ============================== */
@@ -542,8 +750,33 @@ page {
   box-shadow: 0 0 40rpx rgba(244,212,140,0.06), inset 0 0 60rpx rgba(244,212,140,0.03);
 }
 
+.card-swiper-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  position: relative;
+}
+
 .card-swiper {
   height: 480rpx;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Swiper nav arrow buttons */
+.swiper-nav-arrow {
+  width: 44rpx;
+  height: 44rpx;
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition: opacity 0.25s, transform 0.25s;
+  z-index: 5;
+}
+
+.swiper-nav-arrow:active {
+  opacity: 1;
+  transform: scale(1.15);
 }
 
 .swiper-card-wrapper {
@@ -552,11 +785,6 @@ page {
   justify-content: center;
   height: 100%;
   position: relative;
-}
-
-/* Swiper indicator overrides */
-.card-swiper .wx-swiper-dots {
-  margin-top: 8rpx;
 }
 
 /* ==============================
