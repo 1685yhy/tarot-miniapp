@@ -10,15 +10,50 @@ Page({
     drawingLoading: false,
     rippleActive: false,
     shaking: false,
+    showOnboarding: false,
+    onboardingStep: 0,
+    onboardingSteps: [
+      { emoji: '✨', title: '每日一牌', desc: '轻触卡片，获得今日专属指引' },
+      { emoji: '🔮', title: '牌阵解读', desc: '选择牌阵，AI为您深度解读' },
+      { emoji: '💫', title: '星光陪伴', desc: '记录心灵旅程，发现内在力量' },
+    ],
   },
 
   async onLoad() {
-    try {
-      await checkLogin();
-      this.setData({ pageLoading: false });
-    } catch (err) {
-      this.setData({ pageLoading: false, pageError: err.message || '加载失败' });
+    const onboardingDone = wx.getStorageSync('onboarding_done');
+    if (onboardingDone) {
+      try {
+        await checkLogin();
+        this.setData({ pageLoading: false });
+      } catch (err) {
+        this.setData({ pageLoading: false, pageError: err.message || '加载失败' });
+      }
+    } else {
+      this.setData({ showOnboarding: true, pageLoading: false });
     }
+  },
+
+  onOnboardingSwipe(e) {
+    const { current } = e.detail;
+    this.setData({ onboardingStep: current });
+  },
+
+  onOnboardingNext() {
+    const next = this.data.onboardingStep + 1;
+    if (next < this.data.onboardingSteps.length) {
+      this.setData({ onboardingStep: next });
+    }
+  },
+
+  onOnboardingDone() {
+    wx.setStorageSync('onboarding_done', true);
+    this.setData({ showOnboarding: false });
+    this.onLoad();
+  },
+
+  onTapDot(e) {
+    const idx = e.currentTarget.dataset.index;
+    this.setData({ onboardingStep: idx });
   },
 
   onRetry() {

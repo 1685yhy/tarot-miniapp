@@ -882,3 +882,190 @@
   transform: translateX(6rpx);
   opacity: 1;
 }
+
+/* ============================================================
+   15. ONBOARDING — First-time guide overlay
+   Dark indigo full screen with gold accents
+   ============================================================ */
+
+.onboarding-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  background: #1A1A3E;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: page-fade-up 0.6s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94)) forwards;
+}
+
+.onboarding-swiper {
+  flex: 1;
+  width: 100%;
+}
+
+.onboarding-slide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.onboarding-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 60rpx;
+  text-align: center;
+  animation: onboarding-fade-in 0.4s ease-out forwards;
+}
+
+@keyframes onboarding-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(20rpx) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.onboarding-emoji {
+  font-size: 100rpx;
+  display: block;
+  margin-bottom: 48rpx;
+  filter: drop-shadow(0 0 30rpx rgba(244, 212, 140, 0.20));
+  animation: onboarding-emoji-float 4s ease-in-out infinite;
+}
+
+@keyframes onboarding-emoji-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12rpx); }
+}
+
+.onboarding-title {
+  font-size: 52rpx;
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-gold, #F4D48C);
+  display: block;
+  margin-bottom: 20rpx;
+  letter-spacing: 6rpx;
+  text-shadow: 0 0 40rpx rgba(244, 212, 140, 0.12);
+}
+
+.onboarding-desc {
+  font-size: 30rpx;
+  font-weight: var(--font-weight-normal, 400);
+  color: var(--color-lavender, #B8A9E0);
+  display: block;
+  line-height: 1.8;
+  letter-spacing: 2rpx;
+  max-width: 520rpx;
+}
+
+/* --- Dots indicator --- */
+
+.onboarding-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+  padding: 0 0 40rpx;
+}
+
+.onboarding-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: rgba(184, 169, 224, 0.25);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
+}
+
+.onboarding-dot.active {
+  width: 48rpx;
+  border-radius: 12rpx;
+  background: var(--color-gold, #F4D48C);
+  box-shadow: 0 0 20rpx rgba(244, 212, 140, 0.30);
+}
+
+/* --- Bottom buttons --- */
+
+.onboarding-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24rpx;
+  padding: 0 60rpx 80rpx;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.onboarding-next {
+  background: rgba(244, 212, 140, 0.12);
+  color: var(--color-gold, #F4D48C);
+  font-size: 30rpx;
+  font-weight: var(--font-weight-medium, 500);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.30);
+  border-radius: 999rpx;
+  padding: 24rpx 60rpx;
+  text-align: center;
+  transition: all 0.3s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94));
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.onboarding-next:active {
+  background: rgba(244, 212, 140, 0.20);
+  border-color: rgba(244, 212, 140, 0.55);
+  transform: scale(0.96);
+}
+
+.onboarding-skip {
+  font-size: 26rpx;
+  color: rgba(184, 169, 224, 0.45);
+  padding: 24rpx 20rpx;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.3s ease;
+}
+
+.onboarding-skip:active {
+  color: rgba(184, 169, 224, 0.75);
+}
+
+.onboarding-start {
+  background: linear-gradient(135deg, #F4D48C 0%, #E6C070 100%);
+  color: #1A1A3E;
+  font-size: 32rpx;
+  font-weight: var(--font-weight-semibold, 600);
+  border: none;
+  border-radius: 999rpx;
+  padding: 26rpx 80rpx;
+  text-align: center;
+  letter-spacing: 4rpx;
+  box-shadow: 0 4rpx 30rpx rgba(244, 212, 140, 0.30);
+  transition: all 0.3s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94));
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  animation: onboarding-start-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes onboarding-start-pulse {
+  0%, 100% {
+    box-shadow: 0 4rpx 30rpx rgba(244, 212, 140, 0.30);
+  }
+  50% {
+    box-shadow: 0 4rpx 50rpx rgba(244, 212, 140, 0.55);
+  }
+}
+
+.onboarding-start:active {
+  transform: scale(0.96);
+  box-shadow: 0 2rpx 20rpx rgba(244, 212, 140, 0.40);
+}

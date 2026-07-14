@@ -1,19 +1,8 @@
 <!-- pages/profile/profile.wxml -->
-<!-- 星尘粒子背景 -->
-<view class="star-field">
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-  <view class="star-particle"></view>
-</view>
+<!-- 星辰背景由 app.wxss/common.wxss 的 cosmic-layer 提供 -->
 
 <view class="container">
+
   <!-- ===== 加载骨架 ===== -->
   <view wx:if="{{pageLoading}}">
     <view class="skeleton-card"></view>
@@ -35,15 +24,18 @@
 
   <!-- ===== 主内容 ===== -->
   <view wx:else>
-    <!-- User info + membership -->
+    <!-- ============ User info + membership ============ -->
     <view class="user-card anim-fade-in-up-1">
-      <view class="avatar">🔮</view>
-      <text class="heading-3 mt-md" style="display:block">{{user.nickname || '星光旅人'}}</text>
-      <view class="mt-sm">
-        <text class="badge {{memberStatus.is_member ? 'badge-premium' : 'badge'}}" style="{{memberStatus.is_member ? '' : 'background:var(--color-star-subtle);color:var(--color-text-secondary)'}}">
-          {{memberStatus.is_member ? '👑 会员' : '免费用户'}}
+      <!-- Avatar: 金色星星剪影 -->
+      <view class="avatar-circle">
+        <text class="avatar-emoji">✨</text>
+      </view>
+      <text class="user-name">{{user.nickname || '星光旅人'}}</text>
+      <view class="user-badge-row">
+        <text class="badge {{memberStatus.is_member ? 'badge-premium' : 'badge-free'}}">
+          {{memberStatus.is_member ? '👑 会员' : '✨ 免费用户'}}
         </text>
-        <text class="text-dim mt-xs" style="display:block;font-size:var(--fs-caption)" wx:if="{{memberStatus.is_member && memberStatus.expires_at}}">
+        <text class="badge-date" wx:if="{{memberStatus.is_member && memberStatus.expires_at}}">
           有效期至 {{memberStatus.expiresAtFormatted}}
         </text>
       </view>
@@ -52,8 +44,12 @@
       </button>
     </view>
 
-    <!-- Stats -->
+    <!-- ============ Stats ============ -->
     <view class="stats-row anim-fade-in-up-2">
+      <view class="stat-item">
+        <text class="stat-num">{{memberStatus.total_readings || historyTotal || 0}}</text>
+        <text class="stat-label">解读次数</text>
+      </view>
       <view class="stat-item">
         <text class="stat-num">{{memberStatus.free_readings_today || 0}}</text>
         <text class="stat-label">今日占卜</text>
@@ -62,52 +58,114 @@
         <text class="stat-num">{{memberStatus.free_chats_today || 0}}</text>
         <text class="stat-label">今日追问</text>
       </view>
-      <view class="stat-item">
-        <text class="stat-num">{{historyTotal}}</text>
-        <text class="stat-label">历史记录</text>
+    </view>
+
+    <!-- ============ Menu items ============ -->
+    <view class="menu-section anim-fade-in-up-3">
+      <view class="menu-item" bindtap="onGoDiary">
+        <view class="menu-icon-wrap">
+          <text class="menu-icon">📖</text>
+        </view>
+        <view class="menu-content">
+          <text class="menu-title">我的日记</text>
+          <text class="menu-desc">记录你的星光感悟</text>
+        </view>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-item" bindtap="onGoMembership">
+        <view class="menu-icon-wrap icon-wrap-gold">
+          <text class="menu-icon">👑</text>
+        </view>
+        <view class="menu-content">
+          <text class="menu-title">{{memberStatus.is_member ? '会员中心' : '开通会员'}}</text>
+          <text class="menu-desc">{{memberStatus.is_member ? '管理你的会员权益' : '解锁无限占卜与追问'}}</text>
+        </view>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-item" bindtap="onGoAnnualReport">
+        <view class="menu-icon-wrap">
+          <text class="menu-icon">📊</text>
+        </view>
+        <view class="menu-content">
+          <text class="menu-title">年度报告</text>
+          <text class="menu-desc">回顾你一年的星途旅程</text>
+        </view>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-item" bindtap="onGoAbout">
+        <view class="menu-icon-wrap">
+          <text class="menu-icon">ℹ️</text>
+        </view>
+        <view class="menu-content">
+          <text class="menu-title">关于我们</text>
+          <text class="menu-desc">了解星光塔罗的故事</text>
+        </view>
+        <text class="menu-arrow">›</text>
       </view>
     </view>
 
-    <!-- Quick actions -->
-    <view class="quick-actions anim-fade-in-up-3">
-      <view class="action-item" bindtap="onGoDiary">
-        <text class="action-icon" style="font-size:40rpx;display:block">📝</text>
-        <text class="text-dim" style="font-size:var(--fs-body-small);display:block;margin-top:var(--space-xs)">星光日记</text>
-      </view>
-      <view class="action-item" bindtap="onGoAnnualReport">
-        <text class="action-icon" style="font-size:40rpx;display:block">📊</text>
-        <text class="text-dim" style="font-size:var(--fs-body-small);display:block;margin-top:var(--space-xs)">年度报告</text>
-      </view>
-      <view class="action-item" bindtap="onGoMembership">
-        <text class="action-icon" style="font-size:40rpx;display:block">👑</text>
-        <text class="text-dim" style="font-size:var(--fs-body-small);display:block;margin-top:var(--space-xs)">{{memberStatus.is_member ? '管理会员' : '开通会员'}}</text>
-      </view>
-    </view>
-
-    <!-- History -->
+    <!-- ============ History ============ -->
     <view class="history-section anim-fade-in-up-4">
       <view class="history-header">
-        <text class="heading-4" style="margin:0">占卜历史</text>
+        <view class="history-header-left">
+          <text class="history-header-icon">📜</text>
+          <text class="history-header-title">占卜历史</text>
+        </view>
         <button class="clear-btn" bindtap="onClearHistory" wx:if="{{readingHistory.length > 0}}">清除</button>
       </view>
-      <view wx:if="{{readingHistory.length === 0}}" class="empty-state" style="padding:var(--space-massive) 0">
-        <text class="empty-icon">📜</text>
+
+      <!-- 空状态 -->
+      <view wx:if="{{readingHistory.length === 0}}" class="empty-state-inline">
+        <text class="empty-icon">🕯️</text>
         <text class="empty-text">暂无占卜记录</text>
         <text class="empty-hint">开始你的第一次占卜吧</text>
       </view>
-      <scroll-view scroll-y style="max-height:70vh" bindscrolltolower="onScrollToBottom">
-        <view class="history-item" wx:for="{{readingHistory}}" wx:key="id" data-id="{{item.id}}" bindtap="onViewReading">
-          <view>
-            <text class="text-body" style="font-size:var(--fs-body)">{{item.spreadTypeName}}</text>
-            <text class="text-dim mt-xs" style="display:block" wx:if="{{item.theme}}">{{item.theme}}</text>
-            <text class="text-dim mt-xs" style="display:block;font-size:var(--fs-caption)" wx:if="{{item.first_card_name}}">
-              🃏 {{item.first_card_name}}{{item.first_card_is_reversed ? ' (逆位)' : ''}}
-            </text>
+
+      <!-- 历史列表 -->
+      <scroll-view scroll-y style="max-height:70vh" bindscrolltolower="onScrollToBottom" wx:else>
+        <view class="history-list">
+          <view
+            class="history-item"
+            wx:for="{{readingHistory}}"
+            wx:key="id"
+            data-id="{{item.id}}"
+            bindtap="onViewReading"
+          >
+            <!-- 左侧卡牌缩略图 -->
+            <image
+              class="history-thumb"
+              src="{{item.firstCardImage || ''}}"
+              mode="aspectFill"
+              wx:if="{{item.firstCardImage}}"
+            />
+            <view class="history-thumb-placeholder" wx:else>
+              <text class="thumb-placeholder-text">🃏</text>
+            </view>
+
+            <!-- 中间文字 -->
+            <view class="history-info">
+              <text class="history-spread-name">{{item.spreadTypeName}}</text>
+              <text class="history-theme" wx:if="{{item.theme}}">{{item.theme}}</text>
+              <text class="history-meta" wx:if="{{item.first_card_name}}">
+                {{item.first_card_name}}{{item.first_card_is_reversed ? ' (逆位)' : ''}} · {{item.created_at ? item.created_at.split('T')[0] : ''}}
+              </text>
+            </view>
+
+            <!-- 右侧箭头 -->
+            <text class="history-arrow">›</text>
           </view>
-          <text class="history-arrow">➡️</text>
         </view>
-        <view wx:if="{{loadingMore}}" style="text-align:center;padding:var(--space-md)" class="text-dim">加载更多...</view>
-        <view wx:elif="{{!hasMore && readingHistory.length > 0}}" style="text-align:center;padding:var(--space-md)" class="text-dim">— 已加载全部 —</view>
+
+        <!-- 加载更多 -->
+        <view wx:if="{{loadingMore}}" class="loading-more">
+          <view class="loading-spinner"></view>
+          <text class="loading-text">加载更多...</text>
+        </view>
+        <view wx:elif="{{!hasMore && readingHistory.length > 0}}" class="loaded-all">
+          <text class="loaded-all-line"></text>
+          <text class="loaded-all-text">已加载全部</text>
+          <text class="loaded-all-line"></text>
+        </view>
       </scroll-view>
     </view>
   </view>
