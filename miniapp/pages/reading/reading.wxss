@@ -5,17 +5,17 @@
 
 /* ----- CSS Variables ----- */
 page {
-  --bg-deep: #0d0b1a;
+  --bg-deep: var(--color-bg);
   --bg-card: #161329;
   --bg-card-hover: #1c1938;
   --bg-elevated: #201d3e;
-  --gold: #d4af37;
-  --gold-light: #f0d68a;
-  --gold-glow: rgba(212, 175, 55, 0.35);
-  --gold-dim: rgba(212, 175, 55, 0.15);
+  --gold: #F4D48C;
+  --gold-light: #FADE9E;
+  --gold-glow: rgba(244, 212, 140, 0.35);
+  --gold-dim: rgba(244, 212, 140, 0.15);
   --text-primary: #e8e4f0;
   --text-secondary: #b8b0d0;
-  --text-dim: #7b7299;
+  --text-dim: #A098C0;
   --text-gold: #e8c84a;
   --danger: #ff6b6b;
   --fs-caption: 22rpx;
@@ -31,7 +31,7 @@ page {
   --radius-card: 24rpx;
   --radius-sm: 12rpx;
   --radius-round: 999rpx;
-  font-family: system-ui, -apple-system, 'PingFang SC', 'Noto Sans SC', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   background: var(--bg-deep);
   color: var(--text-primary);
   font-size: var(--fs-body);
@@ -105,7 +105,7 @@ page {
   width: 500rpx;
   height: 500rpx;
   border-radius: 50%;
-  background: radial-gradient(circle at center, rgba(212,175,55,0.12) 0%, transparent 70%);
+  background: radial-gradient(circle at center, rgba(244,212,140,0.12) 0%, transparent 70%);
   z-index: 0;
   pointer-events: none;
 }
@@ -268,7 +268,7 @@ page {
   border-radius: var(--radius-round);
   font-size: var(--fs-body);
   font-weight: 600;
-  color: #0d0b1a;
+  color: var(--color-text-inverse);
   background: linear-gradient(135deg, var(--gold-light), var(--gold));
   box-shadow: 0 4rpx 24rpx var(--gold-glow);
   transition: all 0.25s;
@@ -320,7 +320,7 @@ page {
   position: absolute;
   inset: 0;
   border-radius: var(--radius-card);
-  background: linear-gradient(135deg, transparent 50%, rgba(212,175,55,0.04));
+  background: linear-gradient(135deg, transparent 50%, rgba(244,212,140,0.04));
   pointer-events: none;
 }
 
@@ -333,7 +333,7 @@ page {
 
 .spread-card.premium {
   border-color: var(--gold);
-  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(212,175,55,0.06) 100%);
+  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(244,212,140,0.06) 100%);
 }
 
 /* Badges */
@@ -346,9 +346,9 @@ page {
 }
 
 .badge-gold {
-  background: rgba(212,175,55,0.18);
+  background: rgba(244,212,140,0.18);
   color: var(--gold-light);
-  border: 1rpx solid rgba(212,175,55,0.3);
+  border: 1rpx solid rgba(244,212,140,0.3);
 }
 
 .badge-danger {
@@ -384,7 +384,7 @@ page {
   min-height: 140rpx;
   padding: var(--space-md);
   background: var(--bg-deep);
-  border: 1rpx solid rgba(212,175,55,0.08);
+  border: 1rpx solid rgba(244,212,140,0.08);
   border-radius: var(--radius-sm);
   color: var(--text-primary);
   font-size: var(--fs-body);
@@ -399,7 +399,7 @@ page {
 }
 
 .question-input::placeholder {
-  color: #555577;
+  color: #8A85A8;
   font-style: italic;
 }
 
@@ -431,7 +431,7 @@ page {
 }
 
 .theme-active {
-  background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05));
+  background: linear-gradient(135deg, rgba(244,212,140,0.15), rgba(244,212,140,0.05));
   border-color: var(--gold);
   color: var(--text-gold);
   box-shadow: 0 0 20rpx var(--gold-dim);
@@ -450,7 +450,7 @@ page {
   border-radius: var(--radius-round);
   font-size: 32rpx;
   font-weight: 700;
-  color: #0d0b1a;
+  color: var(--color-text-inverse);
   background: linear-gradient(135deg, var(--gold-light), var(--gold));
   box-shadow: 0 0 40rpx var(--gold-glow);
   transition: all 0.3s;
@@ -469,7 +469,7 @@ page {
 
 .btn-glow-pulse.drawing {
   opacity: 0.8;
-  background: linear-gradient(135deg, #b89530, #a08020);
+  background: linear-gradient(135deg, #D4B06A, #C8A050);
   animation: pulseGlow 1.6s ease-in-out infinite;
 }
 
@@ -479,7 +479,7 @@ page {
 
 @keyframes pulseGlow {
   0%, 100% { box-shadow: 0 0 30rpx var(--gold-glow); }
-  50% { box-shadow: 0 0 60rpx var(--gold-glow), 0 0 100rpx rgba(212,175,55,0.15); }
+  50% { box-shadow: 0 0 60rpx var(--gold-glow), 0 0 100rpx rgba(244,212,140,0.15); }
 }
 
 /* ==============================

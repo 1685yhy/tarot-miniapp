@@ -6,7 +6,7 @@
    ============================================================ */
 
 page {
-  background: #1A1A3E;
+  background: var(--color-bg);
   --color-star-subtle: rgba(244, 212, 140, 0.12);
   --color-text-secondary: var(--color-text-secondary);
   --color-text-primary: var(--color-text-primary);
@@ -50,7 +50,7 @@ page {
    Gold / Lavender utilities
    ============================================================ */
 .gold {
-  color: #F4D48C;
+  color: var(--color-gold);
 }
 .lavender {
   color: #B8A9E0;
@@ -86,7 +86,7 @@ page {
 .heading-1 {
   font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
-  color: #F4D48C;
+  color: var(--color-gold);
   text-align: center;
   letter-spacing: 2rpx;
 }
@@ -142,7 +142,7 @@ page {
 
 .btn-secondary:active {
   border-color: rgba(244, 212, 140, 0.40);
-  color: #F4D48C;
+  color: var(--color-gold);
   background: rgba(244, 212, 140, 0.04);
 }
 
@@ -192,7 +192,7 @@ page {
 /* Golden section title (centered) */
 .section-title-center {
   font-size: var(--font-size-xl);
-  color: #F4D48C;
+  color: var(--color-gold);
   font-weight: var(--font-weight-bold);
   display: block;
   text-align: center;
@@ -210,13 +210,12 @@ page {
 
 .section-subtitle {
   font-size: var(--font-size-base);
-  color: #F4D48C;
+  color: var(--color-gold);
   font-weight: var(--font-weight-medium);
   display: block;
   margin-bottom: var(--spacing-lg);
   text-align: center;
   letter-spacing: 2rpx;
-  opacity: 0.85;
 }
 
 .monthly-cards-scroll {
@@ -272,12 +271,11 @@ page {
 /* Month label — golden */
 .month-label {
   font-size: var(--font-size-sm);
-  color: #F4D48C;
+  color: var(--color-gold);
   text-align: center;
   margin-top: var(--spacing-sm);
   letter-spacing: 2rpx;
   font-weight: var(--font-weight-medium);
-  opacity: 0.85;
 }
 
 /* ============================================================

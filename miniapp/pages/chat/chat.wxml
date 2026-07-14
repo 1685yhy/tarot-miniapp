@@ -65,7 +65,7 @@
 
   <!-- Input bar -->
   <view class="input-bar">
-    <input class="chat-input" placeholder="输入你的问题..." placeholder-style="color:#555577"
+    <input class="chat-input" placeholder="输入你的问题..." placeholder-style="color:#8A85A8"
       value="{{inputText}}" bindinput="onInput" confirm-type="send" bindconfirm="onSend"
     />
     <button class="send-btn" bindtap="onSend" disabled="{{sending || !canSend}}">

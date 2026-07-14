@@ -5,11 +5,11 @@
 
 /* ---- Design Tokens ---- */
 page {
-  --gold: #d4af37;
-  --gold-light: #f0d68a;
-  --gold-glow: rgba(212, 175, 55, 0.35);
-  --gold-dim: rgba(212, 175, 55, 0.15);
-  --bg-deep: #0d0b1a;
+  --gold: #F4D48C;
+  --gold-light: #FADE9E;
+  --gold-glow: rgba(244, 212, 140, 0.35);
+  --gold-dim: rgba(244, 212, 140, 0.15);
+  --bg-deep: var(--color-bg);
   --bg-card: #161329;
   --bg-elevated: #1e1a38;
   --bg-user: #1e1a38;
@@ -18,7 +18,7 @@ page {
   --cream-dim: #e0d8c4;
   --text-primary: #e8e4f0;
   --text-secondary: #b8b0d0;
-  --text-tertiary: #7b7299;
+  --text-tertiary: #A098C0;
   --radius-sm: 12rpx;
   --radius-md: 18rpx;
   --radius-lg: 24rpx;
@@ -31,7 +31,7 @@ page {
   --space-xl: 36rpx;
   --space-xxl: 48rpx;
   --space-xxxl: 64rpx;
-  font-family: system-ui, -apple-system, 'PingFang SC', 'Noto Sans SC', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   background: var(--bg-deep);
   color: var(--text-primary);
   font-size: 28rpx;
@@ -216,7 +216,7 @@ page {
   border-radius: var(--radius-round);
   font-size: 28rpx;
   font-weight: 600;
-  color: var(--bg-deep);
+  color: var(--color-text-inverse);
   background: linear-gradient(135deg, var(--gold-light), var(--gold));
   box-shadow: 0 4rpx 24rpx var(--gold-glow);
   transition: all 0.25s;
@@ -379,8 +379,7 @@ page {
   border-top: 1.5rpx solid var(--gold-dim);
   gap: var(--space-sm);
   z-index: 100;
-  backdrop-filter: blur(12rpx);
-  -webkit-backdrop-filter: blur(12rpx);
+  /* backdrop-filter not supported in WXSS */
 }
 
 .chat-input {
@@ -402,7 +401,7 @@ page {
 }
 
 .chat-input::placeholder {
-  color: #555577;
+  color: #8A85A8;
 }
 
 /* ---- Send button: golden pill ---- */
@@ -412,7 +411,7 @@ page {
   line-height: 72rpx;
   text-align: center;
   background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  color: var(--bg-deep);
+  color: var(--color-text-inverse);
   font-size: 24rpx;
   font-weight: 700;
   border-radius: var(--radius-round);

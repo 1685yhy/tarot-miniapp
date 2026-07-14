@@ -38,33 +38,33 @@
 /* ============================================================
    TAB / FILTER PILLS — Constellation filter row
    ============================================================ */
-.tab-bar {
+.filter-bar {
   white-space: nowrap;
   margin-bottom: var(--spacing-xl);
   height: 76rpx;
   padding: 0 2rpx;
 }
 
-.tab-item {
+.filter-item {
   display: inline-flex;
   align-items: center;
   padding: var(--spacing-xs) var(--spacing-lg);
   margin-right: var(--spacing-sm);
   border-radius: var(--radius-pill);
   font-size: var(--font-size-sm);
-  color: var(--color-lavender);
+  color: #F0EDE8;
   background: var(--color-surface);
   border: 1rpx solid rgba(184, 169, 224, 0.12);
   transition: all var(--duration-fast) var(--ease-soft);
   letter-spacing: 1rpx;
 }
 
-.tab-item:active {
+.filter-item:active {
   transform: translateY(-1rpx);
 }
 
 /* Active pill — golden background, dark text */
-.tab-active {
+.filter-active {
   background: var(--color-gold);
   color: var(--color-text-inverse);
   border-color: var(--color-gold);
@@ -146,7 +146,7 @@
   font-weight: var(--font-weight-medium);
   letter-spacing: 3rpx;
   color: var(--color-gold);
-  opacity: 0.70;
+  opacity: 0.90;
   margin-bottom: var(--spacing-xxs);
 }
 
@@ -187,15 +187,15 @@
 }
 
 .badge-purple {
-  background: rgba(184, 169, 224, 0.12);
+  background: var(--color-lavender-glow);
   color: var(--color-lavender);
   border-color: rgba(184, 169, 224, 0.18);
 }
 
 .badge-gold {
-  background: rgba(244, 212, 140, 0.10);
+  background: var(--color-gold-glow);
   color: var(--color-gold);
-  border-color: rgba(244, 212, 140, 0.18);
+  border-color: rgba(184, 169, 224, 0.18);
 }
 
 /* ============================================================

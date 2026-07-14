@@ -132,7 +132,6 @@
   display: block;
   margin-bottom: var(--spacing-sm);
   text-transform: uppercase;
-  opacity: 0.85;
 }
 
 .section-text {

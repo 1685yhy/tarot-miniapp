@@ -36,16 +36,16 @@
         class="search-input"
         style="flex:1;font-size:var(--fs-body);color:var(--color-text-primary);background:transparent"
         placeholder="搜索卡牌名称..."
-        placeholder-style="color:#555577"
+        placeholder-style="color:#8A85A8"
         value="{{searchKeyword}}"
         bindinput="onSearchInput"
       />
     </view>
 
     <!-- Tab bar -->
-    <scroll-view class="tab-bar anim-fade-in-up-2" scroll-x>
+    <scroll-view class="filter-bar anim-fade-in-up-2" scroll-x>
       <view
-        class="tab-item {{activeTab === item.key ? 'tab-active' : ''}}"
+        class="filter-item {{activeTab === item.key ? 'filter-active' : ''}}"
         wx:for="{{tabs}}"
         wx:key="key"
         data-key="{{item.key}}"

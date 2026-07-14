@@ -86,7 +86,7 @@
         <textarea
           class="question-input"
           placeholder="例如：我最近的感情运势怎么样？这份工作要不要换？..."
-          placeholder-style="color:#555577"
+          placeholder-style="color:#8A85A8"
           maxlength="200"
           value="{{question}}"
           bindinput="onQuestionInput"
