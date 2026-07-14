@@ -80,6 +80,7 @@ const request = async (url, options = {}) => {
       url: `${BASE_URL}${url}`,
       method: options.method || 'GET',
       data: options.data,
+      timeout: 120000,  // DeepSeek v4-pro 可能需要较长时间
       header: {
         'Content-Type': 'application/json',
         'Authorization': token ? `Bearer ${token}` : '',
