@@ -6,16 +6,16 @@
 
 /* ----- CSS Variables ----- */
 page {
-  --bg-deep: #0d0b1a;
+  --bg-deep: var(--color-bg);
   --bg-card: #161329;
   --bg-elevated: #201d3e;
-  --gold: #d4af37;
-  --gold-light: #f0d68a;
-  --gold-glow: rgba(212, 175, 55, 0.35);
-  --gold-dim: rgba(212, 175, 55, 0.15);
+  --gold: #F4D48C;
+  --gold-light: #FADE9E;
+  --gold-glow: rgba(244, 212, 140, 0.35);
+  --gold-dim: rgba(244, 212, 140, 0.15);
   --text-primary: #e8e4f0;
   --text-secondary: #b8b0d0;
-  --text-dim: #7b7299;
+  --text-dim: #A098C0;
   --text-gold: #e8c84a;
   --fs-caption: 22rpx;
   --fs-body-small: 24rpx;
@@ -31,7 +31,7 @@ page {
   --radius-card: 24rpx;
   --radius-sm: 12rpx;
   --radius-round: 999rpx;
-  font-family: system-ui, -apple-system, 'PingFang SC', 'Noto Sans SC', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   background: var(--bg-deep);
   color: var(--text-primary);
   font-size: var(--fs-body);
@@ -105,7 +105,7 @@ page {
   width: 500rpx;
   height: 500rpx;
   border-radius: 50%;
-  background: radial-gradient(circle at center, rgba(212,175,55,0.12) 0%, transparent 70%);
+  background: radial-gradient(circle at center, rgba(244,212,140,0.12) 0%, transparent 70%);
   z-index: 0;
   pointer-events: none;
 }
@@ -189,11 +189,11 @@ page {
 }
 
 @keyframes cardShimmer {
-  0% { box-shadow: 0 0 10rpx rgba(212,175,55,0.06); }
-  25% { box-shadow: 0 0 40rpx rgba(212,175,55,0.20), 0 0 80rpx rgba(212,175,55,0.08); }
-  50% { box-shadow: 0 0 8rpx rgba(212,175,55,0.04); }
-  75% { box-shadow: 0 0 30rpx rgba(212,175,55,0.15), 0 0 60rpx rgba(212,175,55,0.05); }
-  100% { box-shadow: 0 0 10rpx rgba(212,175,55,0.06); }
+  0% { box-shadow: 0 0 10rpx rgba(244,212,140,0.06); }
+  25% { box-shadow: 0 0 40rpx rgba(244,212,140,0.20), 0 0 80rpx rgba(244,212,140,0.08); }
+  50% { box-shadow: 0 0 8rpx rgba(244,212,140,0.04); }
+  75% { box-shadow: 0 0 30rpx rgba(244,212,140,0.15), 0 0 60rpx rgba(244,212,140,0.05); }
+  100% { box-shadow: 0 0 10rpx rgba(244,212,140,0.06); }
 }
 
 /* Shimmer sweep overlay on cards */
@@ -242,8 +242,8 @@ page {
 }
 
 @keyframes firstLetterGlow {
-  0% { color: #f5e6a0; text-shadow: 0 0 20rpx rgba(212,175,55,0.8), 0 0 40rpx rgba(212,175,55,0.4); }
-  50% { color: #f5e6a0; text-shadow: 0 0 20rpx rgba(212,175,55,0.8), 0 0 40rpx rgba(212,175,55,0.4); }
+  0% { color: #f5e6a0; text-shadow: 0 0 20rpx rgba(244,212,140,0.8), 0 0 40rpx rgba(244,212,140,0.4); }
+  50% { color: #f5e6a0; text-shadow: 0 0 20rpx rgba(244,212,140,0.8), 0 0 40rpx rgba(244,212,140,0.4); }
   100% { color: var(--gold); text-shadow: none; }
 }
 
@@ -485,7 +485,7 @@ page {
   border-radius: var(--radius-round);
   font-size: var(--fs-body);
   font-weight: 600;
-  color: #0d0b1a;
+  color: var(--color-text-inverse);
   background: linear-gradient(135deg, var(--gold-light), var(--gold));
   box-shadow: 0 4rpx 24rpx var(--gold-glow);
   transition: all 0.25s;
@@ -525,7 +525,7 @@ page {
 }
 
 .btn-secondary:active {
-  background: rgba(212,175,55,0.08);
+  background: rgba(244,212,140,0.08);
   border-color: var(--gold);
 }
 
@@ -539,7 +539,7 @@ page {
   padding: var(--space-xl) var(--space-md);
   background: var(--bg-card);
   border: 1.5rpx solid var(--gold-dim);
-  box-shadow: 0 0 40rpx rgba(212,175,55,0.06), inset 0 0 60rpx rgba(212,175,55,0.03);
+  box-shadow: 0 0 40rpx rgba(244,212,140,0.06), inset 0 0 60rpx rgba(244,212,140,0.03);
 }
 
 .card-swiper {
@@ -573,7 +573,7 @@ page {
   width: 8rpx;
   height: 8rpx;
   border-radius: 50%;
-  background: rgba(212,175,55,0.15);
+  background: rgba(244,212,140,0.15);
   transition: all 0.35s;
 }
 
@@ -599,7 +599,7 @@ page {
   border-radius: var(--radius-card);
   border: 1.5rpx solid var(--gold-dim);
   padding: var(--space-lg) var(--space-xl);
-  box-shadow: 0 0 30rpx rgba(212,175,55,0.05);
+  box-shadow: 0 0 30rpx rgba(244,212,140,0.05);
 }
 
 .interpretation-scroll.expanded {

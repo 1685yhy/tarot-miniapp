@@ -5,7 +5,7 @@
    ============================================================ */
 
 page {
-  background: #1A1A3E;
+  background: var(--color-bg);
   --color-star-subtle: rgba(244, 212, 140, 0.12);
   --color-text-secondary: var(--color-text-secondary);
   --color-text-primary: var(--color-text-primary);
@@ -49,7 +49,7 @@ page {
    Gold / Lavender utilities
    ============================================================ */
 .gold {
-  color: #F4D48C;
+  color: var(--color-gold);
 }
 .lavender {
   color: #B8A9E0;
@@ -77,7 +77,7 @@ page {
 .heading-2 {
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
-  color: #F4D48C;
+  color: var(--color-gold);
   text-align: center;
   letter-spacing: 2rpx;
 }
@@ -228,7 +228,7 @@ page {
 }
 
 .entry-header .text-dim {
-  color: #F4D48C;
+  color: var(--color-gold);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   letter-spacing: 2rpx;
@@ -246,7 +246,7 @@ page {
 .card-name {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
-  color: #F4D48C;
+  color: var(--color-gold);
   display: block;
   margin-bottom: var(--spacing-xs);
   letter-spacing: 1rpx;
@@ -313,7 +313,7 @@ page {
 .modal-title {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
-  color: #F4D48C;
+  color: var(--color-gold);
   display: block;
   text-align: center;
   margin-bottom: var(--spacing-2xl);
@@ -343,8 +343,8 @@ page {
 }
 
 .mood-item.selected {
-  border-color: #F4D48C;
-  color: #F4D48C;
+  border-color: var(--color-gold);
+  color: var(--color-gold);
   background: rgba(244, 212, 140, 0.12);
   box-shadow: 0 0 12rpx rgba(244, 212, 140, 0.10);
 }

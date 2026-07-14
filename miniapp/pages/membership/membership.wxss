@@ -5,19 +5,19 @@
 
 /* ---- Design Tokens ---- */
 page {
-  --gold: #d4af37;
-  --gold-light: #f0d68a;
-  --gold-glow: rgba(212, 175, 55, 0.35);
-  --gold-dim: rgba(212, 175, 55, 0.15);
+  --gold: #F4D48C;
+  --gold-light: #FADE9E;
+  --gold-glow: rgba(244, 212, 140, 0.35);
+  --gold-dim: rgba(244, 212, 140, 0.15);
   --gold-subtle: rgba(244, 212, 140, 0.08);
-  --lavender: #b8b0d0;
-  --lavender-dim: #7b7299;
-  --bg-deep: #0d0b1a;
+  --lavender: var(--color-lavender);
+  --lavender-dim: var(--color-text-tertiary);
+  --bg-deep: var(--color-bg);
   --bg-card: #161329;
   --bg-elevated: #1e1a38;
   --text-primary: #e8e4f0;
   --text-secondary: #c8c0d8;
-  --text-tertiary: #7b7299;
+  --text-tertiary: #A098C0;
   --radius-sm: 12rpx;
   --radius-md: 18rpx;
   --radius-lg: 24rpx;
@@ -31,7 +31,7 @@ page {
   --space-3xl: 64rpx;
   --space-4xl: 80rpx;
   --space-5xl: 100rpx;
-  font-family: system-ui, -apple-system, 'PingFang SC', 'Noto Sans SC', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   background: var(--bg-deep);
   color: var(--text-primary);
 }
@@ -147,7 +147,7 @@ page {
   border-radius: var(--radius-round);
   font-size: 28rpx;
   font-weight: 600;
-  color: var(--bg-deep);
+  color: var(--color-text-inverse);
   background: linear-gradient(135deg, var(--gold-light), var(--gold));
   box-shadow: 0 4rpx 24rpx var(--gold-glow);
   transition: all 0.25s;
@@ -293,7 +293,7 @@ page {
   top: -14rpx;
   right: var(--space-xl);
   background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  color: var(--bg-deep);
+  color: var(--color-text-inverse);
   font-size: 22rpx;
   font-weight: 600;
   letter-spacing: 1rpx;
@@ -351,7 +351,7 @@ page {
   border-radius: var(--radius-round);
   font-size: 28rpx;
   font-weight: 700;
-  color: var(--bg-deep);
+  color: var(--color-text-inverse);
   background: linear-gradient(135deg, var(--gold-light), var(--gold));
   box-shadow: 0 4rpx 28rpx var(--gold-glow), inset 0 1rpx 0 rgba(255, 255, 255, 0.3);
   transition: all 0.25s ease;

@@ -542,7 +542,7 @@
 .body-xs {
   font-size: var(--font-size-xs, 20rpx);
   font-weight: var(--font-weight-normal, 400);
-  color: var(--color-text-tertiary, #6A6588);
+  color: var(--color-text-tertiary, #A098C0);
   line-height: var(--line-height-base, 1.6);
   letter-spacing: 0.5rpx;
 }
@@ -643,7 +643,7 @@
 
 .error-hint {
   font-size: var(--font-size-sm, 24rpx);
-  color: var(--color-text-tertiary, #6A6588);
+  color: var(--color-text-tertiary, #A098C0);
   margin-bottom: var(--spacing-xl, 48rpx);
   display: block;
   line-height: var(--line-height-base, 1.6);

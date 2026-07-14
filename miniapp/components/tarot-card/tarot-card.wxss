@@ -13,7 +13,7 @@
   padding: 16rpx;
   width: 100%;
   box-sizing: border-box;
-  perspective: 1200rpx;
+  /* perspective not supported in WXSS — flip uses scaleX */
 }
 
 /* ---- Card Body ---- */

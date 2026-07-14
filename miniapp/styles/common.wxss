@@ -34,8 +34,8 @@ page {
 
   /* -- Text -- */
   --color-text-primary: #F0EDE8;
-  --color-text-secondary: #9A95B8;
-  --color-text-tertiary: #6A6588;
+  --color-text-secondary: #B8A9E0;
+  --color-text-tertiary: #A098C0;
   --color-text-inverse: #1A1A3E;
   --color-text-link: #F4D48C;
   --color-text-link-hover: #FADE9E;

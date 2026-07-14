@@ -4,7 +4,7 @@
    ============================================================ */
 
 page {
-  background: #1A1A3E;
+  background: var(--color-bg);
   --color-star-subtle: rgba(244, 212, 140, 0.12);
   --color-text-secondary: var(--color-text-secondary);
   --color-text-primary: var(--color-text-primary);
@@ -44,7 +44,7 @@ page {
 
 /* ---- Gold / lavender utilities ---- */
 .gold {
-  color: #F4D48C;
+  color: var(--color-gold);
 }
 .lavender {
   color: #B8A9E0;
@@ -69,7 +69,7 @@ page {
   position: absolute;
   width: 4rpx;
   height: 4rpx;
-  background: #F4D48C;
+  background: var(--color-gold);
   border-radius: 50%;
   opacity: 0.25;
   box-shadow: 0 0 6rpx rgba(244, 212, 140, 0.30);
@@ -205,7 +205,7 @@ page {
 
 /* Username — gold */
 .user-card .heading-3 {
-  color: #F4D48C;
+  color: var(--color-gold);
   font-weight: var(--font-weight-bold);
   letter-spacing: 2rpx;
 }
@@ -224,7 +224,7 @@ page {
 
 .badge-premium {
   background: rgba(244, 212, 140, 0.12);
-  color: #F4D48C;
+  color: var(--color-gold);
   border-color: rgba(244, 212, 140, 0.25);
 }
 
@@ -287,7 +287,7 @@ page {
 .stat-num {
   font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
-  color: #F4D48C;
+  color: var(--color-gold);
   display: block;
   line-height: 1.15;
   text-shadow: 0 0 16rpx rgba(244, 212, 140, 0.15);
@@ -330,7 +330,7 @@ page {
 
 .action-item:active {
   background: var(--color-card-hover);
-  border-left-color: #F4D48C;
+  border-left-color: var(--color-gold);
 }
 
 /* Right arrow */
@@ -348,6 +348,11 @@ page {
   margin-right: var(--spacing-md);
   flex-shrink: 0;
   opacity: 0.80;
+}
+
+/* Menu item labels — must be cream-white for readability */
+.action-item .text-dim {
+  color: #F0EDE8;
 }
 
 /* ============================================================
@@ -370,7 +375,7 @@ page {
 }
 
 .history-header .heading-4 {
-  color: #F4D48C;
+  color: var(--color-gold);
   font-weight: var(--font-weight-bold);
   letter-spacing: 2rpx;
   margin: 0;
@@ -387,7 +392,7 @@ page {
 }
 
 .clear-btn:active {
-  color: #F4D48C;
+  color: var(--color-gold);
   background: rgba(244, 212, 140, 0.06);
 }
 
