@@ -96,7 +96,15 @@ const CARD_REGISTRY = {
   '星币国王':  { type: 'king-pentacles', number: 'K', en: 'King of Pentacles', arcana: 'minor', suit: 'pentacles' },
 };
 
-const IMAGE_BASE = 'https://xingxiang.chat/images/cards';
+const IMAGE_BASE = (() => {
+  try {
+    const info = wx.getAccountInfoSync();
+    const env = info.miniProgram ? info.miniProgram.envVersion : 'release';
+    return env === 'develop' ? 'http://xingxiang.chat/images/cards' : 'https://xingxiang.chat/images/cards';
+  } catch {
+    return 'https://xingxiang.chat/images/cards';
+  }
+})();
 const ROMAN_MAP = {
   '0': 0, 'I': 1, 'II': 2, 'III': 3, 'IV': 4, 'V': 5,
   'VI': 6, 'VII': 7, 'VIII': 8, 'IX': 9, 'X': 10,

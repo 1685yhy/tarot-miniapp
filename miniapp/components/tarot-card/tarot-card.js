@@ -102,7 +102,16 @@ const CARD_REGISTRY = {
 };
 
 // ===== 图像路径映射：计算78张卡牌的真实ComfyUI PNG路径 =====
-const IMAGE_BASE = 'https://xingxiang.chat/images/cards';
+// 开发环境用 HTTP 避免 SSL 问题，正式环境用 HTTPS
+const IMAGE_BASE = (() => {
+  try {
+    const info = wx.getAccountInfoSync();
+    const env = info.miniProgram ? info.miniProgram.envVersion : 'release';
+    return env === 'develop' ? 'http://xingxiang.chat/images/cards' : 'https://xingxiang.chat/images/cards';
+  } catch {
+    return 'https://xingxiang.chat/images/cards';
+  }
+})();
 const ROMAN_MAP = {
   '0': 0, 'I': 1, 'II': 2, 'III': 3, 'IV': 4, 'V': 5,
   'VI': 6, 'VII': 7, 'VIII': 8, 'IX': 9, 'X': 10,
