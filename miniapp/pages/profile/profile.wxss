@@ -340,6 +340,13 @@ page {
   display: block;
 }
 
+/* Custom icon images — 48x48rpx inside gold-tinted circle */
+.menu-icon-img {
+  width: 48rpx;
+  height: 48rpx;
+  display: block;
+}
+
 /* Content area */
 .menu-content {
   flex: 1;
@@ -402,6 +409,14 @@ page {
   font-size: 28rpx;
   line-height: 1;
   opacity: 0.70;
+}
+
+/* History header icon image */
+.history-header-icon-img {
+  width: 32rpx;
+  height: 32rpx;
+  display: block;
+  opacity: 0.85;
 }
 
 .history-header-title {
