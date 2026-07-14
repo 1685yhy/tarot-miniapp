@@ -190,6 +190,279 @@ page {
 }
 
 /* -----------------------------------------------------------
+   2.5. COSMIC ENHANCEMENTS — Parallax layers, shooting stars, nebula
+   ----------------------------------------------------------- */
+
+/* ---------- Shared layer base ---------- */
+.cosmic-layer-distant,
+.cosmic-layer-mid,
+.cosmic-layer-close {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* ---------- Distant layer: 1rpx dim stars, 30s drift ---------- */
+.cosmic-layer-distant::after {
+  content: '';
+  position: absolute;
+  width: 1rpx;
+  height: 1rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.20);
+  box-shadow:
+    23rpx 45rpx rgba(255,255,255,0.18),
+    67rpx 120rpx rgba(255,255,255,0.12),
+    112rpx 34rpx rgba(184,169,224,0.10),
+    145rpx 210rpx rgba(255,255,255,0.15),
+    189rpx 78rpx rgba(255,255,255,0.20),
+    203rpx 310rpx rgba(184,169,224,0.08),
+    247rpx 155rpx rgba(255,255,255,0.14),
+    280rpx 420rpx rgba(255,255,255,0.10),
+    315rpx 60rpx rgba(184,169,224,0.12),
+    352rpx 280rpx rgba(255,255,255,0.18),
+    388rpx 130rpx rgba(255,255,255,0.14),
+    420rpx 380rpx rgba(255,255,255,0.10),
+    455rpx 25rpx rgba(255,255,255,0.20),
+    490rpx 200rpx rgba(184,169,224,0.08),
+    525rpx 90rpx rgba(255,255,255,0.15),
+    560rpx 350rpx rgba(255,255,255,0.12),
+    598rpx 170rpx rgba(255,255,255,0.18),
+    632rpx 440rpx rgba(184,169,224,0.10),
+    670rpx 50rpx rgba(255,255,255,0.15),
+    710rpx 300rpx rgba(255,255,255,0.12),
+    35rpx 520rpx rgba(184,169,224,0.10),
+    78rpx 620rpx rgba(255,255,255,0.14),
+    130rpx 480rpx rgba(255,255,255,0.18),
+    175rpx 650rpx rgba(255,255,255,0.10),
+    220rpx 550rpx rgba(184,169,224,0.12),
+    268rpx 700rpx rgba(255,255,255,0.15),
+    310rpx 590rpx rgba(255,255,255,0.10),
+    356rpx 740rpx rgba(255,255,255,0.20),
+    400rpx 510rpx rgba(184,169,224,0.08),
+    445rpx 680rpx rgba(255,255,255,0.14),
+    490rpx 460rpx rgba(255,255,255,0.10),
+    535rpx 720rpx rgba(255,255,255,0.18),
+    575rpx 530rpx rgba(184,169,224,0.10),
+    618rpx 670rpx rgba(255,255,255,0.12),
+    660rpx 490rpx rgba(255,255,255,0.15),
+    700rpx 640rpx rgba(255,255,255,0.10),
+    42rpx 880rpx rgba(255,255,255,0.14),
+    95rpx 950rpx rgba(184,169,224,0.10),
+    150rpx 820rpx rgba(255,255,255,0.18),
+    200rpx 1020rpx rgba(255,255,255,0.10),
+    248rpx 900rpx rgba(255,255,255,0.15),
+    295rpx 1080rpx rgba(184,169,224,0.08),
+    340rpx 860rpx rgba(255,255,255,0.20),
+    385rpx 1120rpx rgba(255,255,255,0.12),
+    430rpx 980rpx rgba(255,255,255,0.14),
+    478rpx 1180rpx rgba(184,169,224,0.10),
+    520rpx 920rpx rgba(255,255,255,0.18),
+    565rpx 1100rpx rgba(255,255,255,0.10),
+    610rpx 850rpx rgba(255,255,255,0.15),
+    658rpx 1150rpx rgba(255,255,255,0.12),
+    700rpx 940rpx rgba(184,169,224,0.08),
+    730rpx 1050rpx rgba(255,255,255,0.14);
+  animation: cosmic-drift-distant 30s linear infinite;
+}
+
+/* ---------- Mid layer: 2rpx stars, 20s drift, some lavender ---------- */
+.cosmic-layer-mid::after {
+  content: '';
+  position: absolute;
+  width: 2rpx;
+  height: 2rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  box-shadow:
+    56rpx 88rpx rgba(255,255,255,0.35),
+    120rpx 240rpx rgba(184,169,224,0.30),
+    180rpx 65rpx rgba(255,255,255,0.40),
+    235rpx 400rpx rgba(255,255,255,0.30),
+    290rpx 150rpx rgba(184,169,224,0.25),
+    345rpx 500rpx rgba(255,255,255,0.35),
+    410rpx 110rpx rgba(255,255,255,0.40),
+    465rpx 350rpx rgba(184,169,224,0.30),
+    520rpx 200rpx rgba(255,255,255,0.35),
+    580rpx 450rpx rgba(255,255,255,0.30),
+    640rpx 80rpx rgba(255,255,255,0.40),
+    700rpx 320rpx rgba(184,169,224,0.25),
+    85rpx 600rpx rgba(255,255,255,0.35),
+    145rpx 720rpx rgba(255,255,255,0.30),
+    210rpx 580rpx rgba(184,169,224,0.30),
+    270rpx 780rpx rgba(255,255,255,0.40),
+    330rpx 650rpx rgba(255,255,255,0.30),
+    395rpx 820rpx rgba(184,169,224,0.25),
+    455rpx 700rpx rgba(255,255,255,0.35),
+    515rpx 850rpx rgba(255,255,255,0.30),
+    575rpx 630rpx rgba(255,255,255,0.40),
+    635rpx 790rpx rgba(184,169,224,0.30),
+    695rpx 560rpx rgba(255,255,255,0.35),
+    30rpx 1000rpx rgba(184,169,224,0.25),
+    100rpx 1100rpx rgba(255,255,255,0.35),
+    170rpx 960rpx rgba(255,255,255,0.30),
+    240rpx 1150rpx rgba(255,255,255,0.40),
+    310rpx 1020rpx rgba(184,169,224,0.30),
+    380rpx 1180rpx rgba(255,255,255,0.35),
+    450rpx 1050rpx rgba(255,255,255,0.30),
+    520rpx 1200rpx rgba(255,255,255,0.40),
+    590rpx 980rpx rgba(184,169,224,0.25),
+    660rpx 1120rpx rgba(255,255,255,0.35),
+    720rpx 950rpx rgba(255,255,255,0.30);
+  animation: cosmic-drift-mid 20s linear infinite;
+}
+
+/* ---------- Close layer: 3-4rpx bright golden stars, 12s drift ---------- */
+.cosmic-layer-close::after {
+  content: '';
+  position: absolute;
+  width: 3rpx;
+  height: 3rpx;
+  border-radius: 50%;
+  background: rgba(244, 212, 140, 0.60);
+  box-shadow:
+    80rpx 180rpx rgba(244,212,140,0.50),
+    170rpx 60rpx rgba(244,212,140,0.65),
+    260rpx 420rpx rgba(244,212,140,0.45),
+    350rpx 130rpx rgba(244,212,140,0.70),
+    440rpx 380rpx rgba(244,212,140,0.55),
+    530rpx 90rpx rgba(244,212,140,0.60),
+    620rpx 340rpx rgba(244,212,140,0.50),
+    710rpx 220rpx rgba(244,212,140,0.65),
+    45rpx 550rpx rgba(244,212,140,0.55),
+    140rpx 700rpx rgba(244,212,140,0.45),
+    230rpx 620rpx rgba(244,212,140,0.65),
+    320rpx 780rpx rgba(244,212,140,0.50),
+    410rpx 670rpx rgba(244,212,140,0.60),
+    500rpx 820rpx rgba(244,212,140,0.45),
+    590rpx 580rpx rgba(244,212,140,0.65),
+    680rpx 730rpx rgba(244,212,140,0.55),
+    110rpx 1050rpx rgba(244,212,140,0.50),
+    260rpx 960rpx rgba(244,212,140,0.65),
+    400rpx 1150rpx rgba(244,212,140,0.55),
+    540rpx 1000rpx rgba(244,212,140,0.45);
+  animation: cosmic-drift-close 12s linear infinite;
+}
+
+/* Some extra-bright close stars — 4rpx with glow */
+.cosmic-layer-close::before {
+  content: '';
+  position: absolute;
+  width: 4rpx;
+  height: 4rpx;
+  border-radius: 50%;
+  background: rgba(244, 212, 140, 0.80);
+  box-shadow:
+    155rpx 400rpx rgba(244,212,140,0.70),
+    490rpx 250rpx rgba(244,212,140,0.75),
+    660rpx 600rpx rgba(244,212,140,0.65),
+    320rpx 1080rpx rgba(244,212,140,0.70),
+    0 0 8rpx rgba(244,212,140,0.15),
+    155rpx 400rpx 8rpx rgba(244,212,140,0.15),
+    490rpx 250rpx 8rpx rgba(244,212,140,0.15),
+    660rpx 600rpx 8rpx rgba(244,212,140,0.12),
+    320rpx 1080rpx 8rpx rgba(244,212,140,0.15);
+  animation: cosmic-drift-close 12s linear infinite;
+}
+
+/* ---------- Drift keyframes for parallax effect ---------- */
+@keyframes cosmic-drift-distant {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(6rpx, -10rpx); }
+  50%  { transform: translate(-4rpx, 6rpx); }
+  75%  { transform: translate(8rpx, -4rpx); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes cosmic-drift-mid {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(-12rpx, 8rpx); }
+  50%  { transform: translate(10rpx, -15rpx); }
+  75%  { transform: translate(-6rpx, 12rpx); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes cosmic-drift-close {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(18rpx, -12rpx); }
+  50%  { transform: translate(-15rpx, 22rpx); }
+  75%  { transform: translate(12rpx, -18rpx); }
+  100% { transform: translate(0, 0); }
+}
+
+/* ---------- Shooting star ---------- */
+.shooting-star {
+  position: fixed;
+  width: 160rpx;
+  height: 2rpx;
+  background: linear-gradient(to left, transparent, rgba(244, 212, 140, 0.70));
+  border-radius: 1rpx;
+  box-shadow: 0 0 8rpx rgba(244, 212, 140, 0.30), 0 0 24rpx rgba(244, 212, 140, 0.08);
+  pointer-events: none;
+  z-index: 1;
+  animation: shooting-star 18s ease-out infinite;
+}
+
+/* Staggered delays spread shooting stars across the cycle (~ every 3-6s) */
+.shooting-star--n2 { animation-delay: 4.5s; }
+.shooting-star--n3 { animation-delay: 9s; }
+.shooting-star--n4 { animation-delay: 13.5s; }
+.shooting-star--n5 { animation-delay: 2s; }
+.shooting-star--n6 { animation-delay: 7s; }
+.shooting-star--n7 { animation-delay: 11s; }
+.shooting-star--n8 { animation-delay: 16s; }
+
+@keyframes shooting-star {
+  0% {
+    transform: translate(800rpx, -30rpx) rotate(-35deg);
+    opacity: 0;
+  }
+  3% {
+    opacity: 1;
+  }
+  8% {
+    opacity: 0.90;
+  }
+  12% {
+    transform: translate(-60rpx, 600rpx) rotate(-35deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-60rpx, 600rpx) rotate(-35deg);
+    opacity: 0;
+  }
+}
+
+/* ---------- Nebula glow ---------- */
+.cosmic-nebula {
+  position: fixed;
+  top: -300rpx;
+  right: -300rpx;
+  width: 800rpx;
+  height: 800rpx;
+  background: radial-gradient(
+    circle at 35% 35%,
+    rgba(184, 169, 224, 0.06) 0%,
+    rgba(244, 212, 140, 0.03) 20%,
+    transparent 55%
+  );
+  pointer-events: none;
+  z-index: 0;
+  animation: rotate-nebula 60s linear infinite;
+}
+
+@keyframes rotate-nebula {
+  0%   { transform: rotate(0deg) scale(1); }
+  50%  { transform: rotate(180deg) scale(1.08); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+/* -----------------------------------------------------------
    3. RADIAL GLOW — Hero backdrop
    ----------------------------------------------------------- */
 
@@ -1682,4 +1955,597 @@ page {
   width: 48rpx;
   height: 48rpx;
   opacity: 0.20;
+}
+
+/* ============================================================
+   23. ANIMATION LIBRARY — Professional Keyframes & Utility Classes
+       WXSS-compatible: opacity, transform, box-shadow, background-position only
+   ============================================================ */
+
+/* -----------------------------------------------------------
+   23-A. STAR & SPARKLE KEYFRAMES
+   ----------------------------------------------------------- */
+
+/* Quick magical twinkle for sparkle effects (0.4s cycle) */
+@keyframes star-twinkle-fast {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    opacity: 0.30;
+    transform: scale(0.60) rotate(90deg);
+  }
+  50% {
+    opacity: 0.90;
+    transform: scale(1.15) rotate(180deg);
+  }
+  75% {
+    opacity: 0.40;
+    transform: scale(0.70) rotate(270deg);
+  }
+}
+
+/* Rapid scale+opacity burst for magical moments (0.5s) */
+@keyframes star-burst {
+  0% {
+    opacity: 0;
+    transform: scale(0.20);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1.40);
+  }
+  60% {
+    opacity: 0.85;
+    transform: scale(1.10);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.80);
+  }
+}
+
+/* -----------------------------------------------------------
+   23-B. FLOATING & DRIFT KEYFRAMES
+   ----------------------------------------------------------- */
+
+/* Slow vertical float with subtle rotation (4s cycle) */
+@keyframes float-gentle {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-12rpx) rotate(1deg);
+  }
+  50% {
+    transform: translateY(-20rpx) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-8rpx) rotate(-1deg);
+  }
+}
+
+/* Horizontal+vertical drift like a constellation (6s cycle) */
+@keyframes float-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  20% {
+    transform: translate(10rpx, -8rpx) rotate(0.50deg);
+  }
+  40% {
+    transform: translate(-6rpx, -16rpx) rotate(-0.50deg);
+  }
+  60% {
+    transform: translate(14rpx, -20rpx) rotate(0.30deg);
+  }
+  80% {
+    transform: translate(4rpx, -10rpx) rotate(-0.30deg);
+  }
+}
+
+/* -----------------------------------------------------------
+   23-C. CARD & SURFACE KEYFRAMES
+   ----------------------------------------------------------- */
+
+/* Background-position sweep for light glint effect (2s) */
+@keyframes card-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Card appears to rise up from below with opacity (0.5s) */
+@keyframes card-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(40rpx) scale(0.97);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-6rpx) scale(1);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Dramatic scale+opacity reveal (0.8->1 scale, 0->1 opacity, 0.45s) */
+@keyframes card-reveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.80);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* -----------------------------------------------------------
+   23-D. GLOW & BREATHING KEYFRAMES
+   ----------------------------------------------------------- */
+
+/* Box-shadow pulse in golden tones (2.5s cycle) */
+@keyframes glow-pulse-gold {
+  0%,
+  100% {
+    box-shadow: 0 0 10rpx rgba(244, 212, 140, 0.08), 0 0 30rpx rgba(244, 212, 140, 0.04);
+  }
+  50% {
+    box-shadow: 0 0 20rpx rgba(244, 212, 140, 0.25), 0 0 50rpx rgba(244, 212, 140, 0.10);
+  }
+}
+
+/* Box-shadow pulse in lavender tones (2.5s cycle) */
+@keyframes glow-pulse-lavender {
+  0%,
+  100% {
+    box-shadow: 0 0 10rpx rgba(184, 169, 224, 0.08), 0 0 30rpx rgba(184, 169, 224, 0.04);
+  }
+  50% {
+    box-shadow: 0 0 20rpx rgba(184, 169, 224, 0.25), 0 0 50rpx rgba(184, 169, 224, 0.10);
+  }
+}
+
+/* Very gentle scale oscillation (1->1.02->1, 4s cycle) */
+@keyframes breathing-subtle {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+/* Ultra-slow rotation (360deg over 30s, for background elements) */
+@keyframes rotate-cosmic {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* -----------------------------------------------------------
+   23-E. SHIMMER SWEEP KEYFRAME
+   ----------------------------------------------------------- */
+
+/* Fast shimmer sweep using background-position (1.2s) */
+@keyframes shimmer-sweep {
+  0% {
+    background-position: -100% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+/* -----------------------------------------------------------
+   23-F. INTERACTION KEYFRAMES
+   ----------------------------------------------------------- */
+
+/* Scale+opacity outward like a water ripple (0.4s) */
+@keyframes ripple-expand {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.60;
+  }
+  50% {
+    opacity: 0.80;
+  }
+  100% {
+    transform: scale(1.15);
+    opacity: 0;
+  }
+}
+
+/* Playful overshoot entrance (scale 0->1.05->0.97->1, 0.5s) */
+@keyframes bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Elegant entrance from below (0.45s) */
+@keyframes slide-up-fade {
+  0% {
+    opacity: 0;
+    transform: translateY(30rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -----------------------------------------------------------
+   23-G. DATA / NUMBER KEYFRAMES
+   ----------------------------------------------------------- */
+
+/* Brief scale bump for number changes (0.35s) */
+@keyframes count-up-pulse {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.20);
+  }
+  60% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* -----------------------------------------------------------
+   23-H. ANIMATION UTILITY CLASSES
+   ----------------------------------------------------------- */
+
+/* --- Floating / Drifting --- */
+.anim-float {
+  animation: float-gentle 4s ease-in-out infinite;
+}
+
+.anim-drift {
+  animation: float-drift 6s ease-in-out infinite;
+}
+
+.anim-rotate-cosmic {
+  animation: rotate-cosmic 30s linear infinite;
+}
+
+/* --- Shimmer on card surfaces --- */
+.anim-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(244, 212, 140, 0.06) 45%,
+    rgba(244, 212, 140, 0.10) 50%,
+    rgba(244, 212, 140, 0.06) 55%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-sweep 1.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* --- Breathing --- */
+.anim-breathe {
+  animation: breathing-subtle 4s ease-in-out infinite;
+}
+
+/* --- Entrance Classes (one-shot, use forwards) --- */
+.anim-bounce-in {
+  animation: bounce-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.anim-rise {
+  animation: card-rise 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.anim-reveal {
+  animation: card-reveal 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.anim-slide-up {
+  animation: slide-up-fade 0.45s cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+/* --- Glow Classes (infinite) --- */
+.anim-glow-gold {
+  animation: glow-pulse-gold 2.5s ease-in-out infinite;
+}
+
+.anim-glow-lav {
+  animation: glow-pulse-lavender 2.5s ease-in-out infinite;
+}
+
+/* --- Interaction Classes --- */
+.anim-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.anim-ripple:active::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100rpx;
+  height: 100rpx;
+  margin-left: -50rpx;
+  margin-top: -50rpx;
+  border-radius: 100%;
+  background: rgba(244, 212, 140, 0.20);
+  animation: ripple-expand 0.4s ease-out forwards;
+  pointer-events: none;
+}
+
+.anim-ripple--lav:active::after {
+  background: rgba(184, 169, 224, 0.20);
+}
+
+/* --- Star / Sparkle (one-shot or infinite via forwards/infinite) --- */
+.anim-twinkle-fast {
+  animation: star-twinkle-fast 0.4s ease-in-out infinite;
+}
+
+.anim-star-burst {
+  animation: star-burst 0.5s ease-out forwards;
+}
+
+/* --- Data / Count --- */
+.anim-count-pulse {
+  animation: count-up-pulse 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* -----------------------------------------------------------
+   23-I. STAGGERED ENTRANCE (card-rise with increasing delays)
+   ----------------------------------------------------------- */
+
+.anim-rise-1 {
+  animation: card-rise 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation-delay: 0.05s;
+}
+
+.anim-rise-2 {
+  animation: card-rise 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation-delay: 0.12s;
+}
+
+.anim-rise-3 {
+  animation: card-rise 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation-delay: 0.20s;
+}
+
+.anim-rise-4 {
+  animation: card-rise 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation-delay: 0.30s;
+}
+
+.anim-rise-5 {
+  animation: card-rise 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation-delay: 0.42s;
+}
+
+/* ============================================================
+   24. PAGE-LEVEL ANIMATIONS
+       Skeleton→Content, Tab Shimmer, Error→Retry,
+       Empty State, List Entrance
+   ============================================================ */
+
+/* -----------------------------------------------------------
+   24-A. SKELETON → CONTENT TRANSITION
+   ----------------------------------------------------------- */
+
+/* When pageLoading becomes false, apply to skeleton wrapper */
+.page-skeleton-exit {
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+  pointer-events: none;
+}
+
+/* Content enters with fade + slight rise */
+.page-content-entering {
+  opacity: 0;
+  animation: content-rise-in 0.4s cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+@keyframes content-rise-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -----------------------------------------------------------
+   24-B. TAB SWITCH SHIMMER
+   ----------------------------------------------------------- */
+
+/* Apply to the new tab page container on switch */
+.tab-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.tab-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(244, 212, 140, 0.04) 40%,
+    rgba(244, 212, 140, 0.08) 50%,
+    rgba(244, 212, 140, 0.04) 60%,
+    transparent 100%
+  );
+  background-size: 50% 100%;
+  animation: tab-shimmer-sweep 0.8s ease-out forwards;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes tab-shimmer-sweep {
+  0% {
+    background-position: 200% 50%;
+  }
+  100% {
+    background-position: -100% 50%;
+  }
+}
+
+/* -----------------------------------------------------------
+   24-C. ERROR → RETRY TRANSITION
+   ----------------------------------------------------------- */
+
+/* Shake the error container when retry is triggered */
+.error-shake {
+  animation: error-shake-key 0.4s ease-out;
+}
+
+@keyframes error-shake-key {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  15% {
+    transform: translateX(-12rpx);
+  }
+  30% {
+    transform: translateX(10rpx);
+  }
+  45% {
+    transform: translateX(-8rpx);
+  }
+  60% {
+    transform: translateX(6rpx);
+  }
+  75% {
+    transform: translateX(-4rpx);
+  }
+  90% {
+    transform: translateX(2rpx);
+  }
+}
+
+/* Error fades out after shake (triggered simultaneously or after delay) */
+.error-fade-out {
+  animation: error-fade-out-key 0.35s ease-in forwards;
+}
+
+@keyframes error-fade-out-key {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+/* Content slides in from below after error resolves */
+.content-slide-in {
+  animation: content-slide-in-key 0.45s cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+@keyframes content-slide-in-key {
+  0% {
+    opacity: 0;
+    transform: translateY(30rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -----------------------------------------------------------
+   24-D. EMPTY STATE ANIMATION
+   ----------------------------------------------------------- */
+
+/* Gentle floating up and down for empty state icon */
+.empty-icon-animated {
+  animation: empty-float 3s ease-in-out infinite;
+}
+
+@keyframes empty-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12rpx);
+  }
+}
+
+/* -----------------------------------------------------------
+   24-E. LIST ITEM ENTRANCE (Staggered Rise)
+   ----------------------------------------------------------- */
+
+/* Container — children animate on mount */
+.list-entrance {
+  /* Children will be animated; no transform on container itself */
+}
+
+.list-entrance-item {
+  opacity: 0;
+  animation: list-item-rise 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Stagger delays for up to 12 items */
+.list-entrance-item:nth-child(1)  { animation-delay: 0.04s; }
+.list-entrance-item:nth-child(2)  { animation-delay: 0.08s; }
+.list-entrance-item:nth-child(3)  { animation-delay: 0.12s; }
+.list-entrance-item:nth-child(4)  { animation-delay: 0.16s; }
+.list-entrance-item:nth-child(5)  { animation-delay: 0.20s; }
+.list-entrance-item:nth-child(6)  { animation-delay: 0.24s; }
+.list-entrance-item:nth-child(7)  { animation-delay: 0.28s; }
+.list-entrance-item:nth-child(8)  { animation-delay: 0.32s; }
+.list-entrance-item:nth-child(9)  { animation-delay: 0.36s; }
+.list-entrance-item:nth-child(10) { animation-delay: 0.40s; }
+.list-entrance-item:nth-child(11) { animation-delay: 0.44s; }
+.list-entrance-item:nth-child(12) { animation-delay: 0.48s; }
+
+@keyframes list-item-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

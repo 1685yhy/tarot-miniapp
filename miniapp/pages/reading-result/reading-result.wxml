@@ -64,7 +64,7 @@
       indicator-color="rgba(212,175,55,0.2)"
       indicator-active-color="#d4af37"
     >
-      <swiper-item wx:for="{{reading.drawn_cards}}" wx:key="id" wx:for-index="idx">
+      <swiper-item wx:for="{{reading.drawn_cards}}" wx:key="id" wx:for-index="idx" class="card-enter card-enter-{{idx}}">
         <view class="swiper-card-wrapper">
           <tarot-card
             nameZh="{{item.card_name}}"
@@ -90,7 +90,7 @@
 
   <!-- Interpretation -->
   <view class="interpretation-section anim-fade-in-up-2">
-    <text class="text-secondary text-center" style="display:block;margin-bottom:var(--space-md)">AI 星光解读</text>
+    <text class="text-secondary text-center section-header-underline" style="display:block;margin-bottom:var(--space-md)">AI 星光解读</text>
     <view class="interpretation-scroll card {{showFullInterpretation ? 'expanded' : ''}}" wx:if="{{reading.interpretation}}">
       <text class="interpretation-text">{{reading.interpretation}}</text>
     </view>
@@ -107,10 +107,10 @@
 
   <!-- Actions -->
   <view class="actions anim-fade-in-up-3">
-    <button class="btn-primary" bindtap="onAskMore">
+    <button class="btn-primary btn-glow-pulse" bindtap="onAskMore">
       <text>💬 追问更多</text>
     </button>
-    <button class="btn-secondary" open-type="share">
+    <button class="btn-secondary btn-lavender-shimmer" open-type="share">
       <text>📤 分享给朋友</text>
     </button>
     <view class="action-row">
