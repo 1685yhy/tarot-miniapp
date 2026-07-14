@@ -101,10 +101,10 @@
             <text class="text-body" style="font-size:var(--fs-body)">{{item.spreadTypeName}}</text>
             <text class="text-dim mt-xs" style="display:block" wx:if="{{item.theme}}">{{item.theme}}</text>
             <text class="text-dim mt-xs" style="display:block;font-size:var(--fs-caption)" wx:if="{{item.first_card_name}}">
-              首牌：{{item.first_card_name}}{{item.first_card_is_reversed ? ' (逆位)' : ''}}
+              🃏 {{item.first_card_name}}{{item.first_card_is_reversed ? ' (逆位)' : ''}}
             </text>
           </view>
-          <text class="text-dim" style="font-size:var(--fs-h3)">›</text>
+          <text class="history-arrow">➡️</text>
         </view>
         <view wx:if="{{loadingMore}}" style="text-align:center;padding:var(--space-md)" class="text-dim">加载更多...</view>
         <view wx:elif="{{!hasMore && readingHistory.length > 0}}" style="text-align:center;padding:var(--space-md)" class="text-dim">— 已加载全部 —</view>

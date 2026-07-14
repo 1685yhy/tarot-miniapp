@@ -1,11 +1,15 @@
 /* ============================================================
-   Diary Page — 柔光星辰
+   Diary Page — Starlight Design System
+   #1A1A3E bg · #F4D48C gold · #B8A9E0 lavender accent
    Night journal aesthetic · Dark cards with golden date headers
-   Soft starlight on every entry
    ============================================================ */
 
-/* ---- Old variable aliases (WXML inline style compat) ---- */
 page {
+  background: #1A1A3E;
+  --color-star-subtle: rgba(244, 212, 140, 0.12);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-primary: var(--color-text-primary);
+  /* Inline style compat aliases */
   --space-massive: var(--spacing-5xl);
   --space-xxxl: var(--spacing-3xl);
   --space-xxl: var(--spacing-2xl);
@@ -28,14 +32,11 @@ page {
   --duration-fast: var(--duration-fast);
   --ease-out: var(--ease-out);
   --ease-in-out: var(--ease-in-out);
-  --color-star-subtle: rgba(244, 212, 140, 0.12);
-  --color-text-secondary: var(--color-text-secondary);
-  --color-text-primary: var(--color-text-primary);
 }
 
-/* ---------------------------------------------------------------
-   Container — Dark indigo night sky
-   --------------------------------------------------------------- */
+/* ============================================================
+   Container
+   ============================================================ */
 .container {
   padding: var(--spacing-xl);
   padding-bottom: calc(var(--safe-area-bottom) + var(--spacing-5xl));
@@ -44,9 +45,19 @@ page {
   z-index: 1;
 }
 
-/* ---------------------------------------------------------------
-   text-dim — class alias for old WXML
-   --------------------------------------------------------------- */
+/* ============================================================
+   Gold / Lavender utilities
+   ============================================================ */
+.gold {
+  color: #F4D48C;
+}
+.lavender {
+  color: #B8A9E0;
+}
+
+/* ============================================================
+   Text helpers
+   ============================================================ */
 .text-dim {
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
@@ -63,17 +74,17 @@ page {
   line-height: var(--line-height-base);
 }
 
-/* ---- Heading overrides ---- */
 .heading-2 {
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
+  color: #F4D48C;
   text-align: center;
+  letter-spacing: 2rpx;
 }
 
-/* ---------------------------------------------------------------
+/* ============================================================
    Error State
-   --------------------------------------------------------------- */
+   ============================================================ */
 .error-state {
   text-align: center;
   padding: var(--spacing-5xl) var(--spacing-xl);
@@ -105,9 +116,9 @@ page {
   padding: 16rpx 36rpx;
 }
 
-/* ---------------------------------------------------------------
+/* ============================================================
    Empty State
-   --------------------------------------------------------------- */
+   ============================================================ */
 .empty-state {
   text-align: center;
   padding: var(--spacing-5xl) 0;
@@ -133,7 +144,32 @@ page {
   display: block;
 }
 
-/* ---- anim-glow-pulse ---- */
+/* ============================================================
+   Create Button — Golden pill, warm glow
+   ============================================================ */
+.btn-primary {
+  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
+  color: var(--color-text-inverse);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-pill);
+  padding: 26rpx 0;
+  border: none;
+  box-shadow: var(--shadow-gold-button);
+  transition: all var(--duration-base) var(--ease-soft);
+  letter-spacing: 2rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary:active {
+  transform: scale(0.97);
+  opacity: 0.90;
+  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.20);
+}
+
+/* Glow pulse animation for create button */
 .anim-glow-pulse {
   animation: glow-pulse 2.5s ease-in-out infinite;
 }
@@ -143,9 +179,9 @@ page {
   50% { box-shadow: 0 0 30rpx rgba(244, 212, 140, 0.20), var(--shadow-gold-button); }
 }
 
-/* ---------------------------------------------------------------
-   Entries — Dark cards with golden date headers
-   --------------------------------------------------------------- */
+/* ============================================================
+   Entries — Dark indigo cards with golden date headers
+   ============================================================ */
 .entries {
   display: flex;
   flex-direction: column;
@@ -181,6 +217,7 @@ page {
   transform: translateY(-2rpx);
 }
 
+/* Entry header with golden date */
 .entry-header {
   display: flex;
   justify-content: space-between;
@@ -190,14 +227,14 @@ page {
   border-bottom: 1rpx solid rgba(244, 212, 140, 0.10);
 }
 
-/* Golden date text */
 .entry-header .text-dim {
-  color: var(--color-gold);
+  color: #F4D48C;
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: 1rpx;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 2rpx;
 }
 
+/* Card name section — golden */
 .entry-card-section {
   background: rgba(244, 212, 140, 0.06);
   border: 1rpx solid rgba(244, 212, 140, 0.10);
@@ -209,9 +246,10 @@ page {
 .card-name {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
-  color: var(--color-gold);
+  color: #F4D48C;
   display: block;
   margin-bottom: var(--spacing-xs);
+  letter-spacing: 1rpx;
 }
 
 .card-meaning {
@@ -230,16 +268,16 @@ page {
   word-break: break-word;
 }
 
-/* ---------------------------------------------------------------
-   Modal — Bottom sheet for creating diary entry
-   --------------------------------------------------------------- */
+/* ============================================================
+   MODAL — Dark indigo bg with golden border
+   ============================================================ */
 .modal-mask {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(10, 10, 30, 0.60);
+  background: rgba(10, 10, 30, 0.65);
   z-index: var(--z-overlay);
   animation: overlay-in var(--duration-base) var(--ease-soft) forwards;
 }
@@ -254,14 +292,17 @@ page {
   bottom: 0;
   left: 0;
   right: 0;
-  background: var(--color-surface);
+  /* Dark indigo background — matches #1A1A3E family */
+  background: #242048;
+  /* Golden border top */
+  border-top: 2rpx solid rgba(244, 212, 140, 0.25);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   z-index: var(--z-modal);
   padding: var(--spacing-3xl) var(--spacing-2xl) calc(var(--spacing-5xl) + var(--safe-area-bottom));
   max-height: 80vh;
   overflow-y: auto;
   animation: modal-in 0.5s var(--ease-soft);
-  box-shadow: 0 -8rpx 40rpx rgba(0, 0, 0, 0.30);
+  box-shadow: 0 -8rpx 40rpx rgba(0, 0, 0, 0.35);
 }
 
 @keyframes modal-in {
@@ -270,9 +311,9 @@ page {
 }
 
 .modal-title {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
-  color: var(--color-gold);
+  color: #F4D48C;
   display: block;
   text-align: center;
   margin-bottom: var(--spacing-2xl);
@@ -302,8 +343,8 @@ page {
 }
 
 .mood-item.selected {
-  border-color: var(--color-gold);
-  color: var(--color-gold);
+  border-color: #F4D48C;
+  color: #F4D48C;
   background: rgba(244, 212, 140, 0.12);
   box-shadow: 0 0 12rpx rgba(244, 212, 140, 0.10);
 }
@@ -345,7 +386,10 @@ page {
   border: none;
   box-shadow: var(--shadow-gold-button);
   transition: all var(--duration-base) var(--ease-soft);
-  letter-spacing: 1rpx;
+  letter-spacing: 2rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .submit-btn:active {
@@ -360,9 +404,9 @@ page {
   pointer-events: none;
 }
 
-/* ---------------------------------------------------------------
-   Skeleton — Dark indigo shimmer
-   --------------------------------------------------------------- */
+/* ============================================================
+   SKELETON — Dark indigo shimmer
+   ============================================================ */
 .skeleton {
   padding: var(--spacing-2xl) 0;
 }
@@ -408,9 +452,9 @@ page {
   50% { opacity: 0.45; }
 }
 
-/* ---------------------------------------------------------------
+/* ============================================================
    Entrance animation
-   --------------------------------------------------------------- */
+   ============================================================ */
 .anim-fade-in-up {
   opacity: 0;
   animation: fade-up 0.6s var(--ease-soft) forwards;

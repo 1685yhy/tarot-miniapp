@@ -1,18 +1,11 @@
 /* ============================================================
    百科 · Star Catalog / Constellation Map
    柔光星辰 — Deep indigo sky, warm golden starlight
-   ============================================================ */
 
-/* ===== Back-compat variable aliases ===== */
-page {
-  --space-sm: var(--spacing-sm);
-  --space-xs: var(--spacing-xs);
-  --fs-body: var(--font-size-base);
-  --fs-caption: var(--font-size-xs);
-  --color-text-primary: var(--color-text-primary);
-  --color-star-subtle: var(--color-lavender-glow);
-  --color-text-secondary: var(--color-text-secondary);
-}
+   Card grid: 3-column with thumbnails + names
+   Search bar: dark indigo bg, golden border, cream text
+   Filter pills: dark pills, gold active, lavender inactive
+   ============================================================ */
 
 /* ============================================================
    SEARCH BAR — Dark indigo field, golden border
@@ -59,9 +52,9 @@ page {
   margin-right: var(--spacing-sm);
   border-radius: var(--radius-pill);
   font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+  color: var(--color-lavender);
   background: var(--color-surface);
-  border: 1rpx solid rgba(244, 212, 140, 0.18);
+  border: 1rpx solid rgba(184, 169, 224, 0.12);
   transition: all var(--duration-fast) var(--ease-soft);
   letter-spacing: 1rpx;
 }
@@ -81,6 +74,7 @@ page {
 
 /* ============================================================
    CARD GRID — 3-column star catalog
+   Each card: thumbnail image top, name below
    ============================================================ */
 .card-grid {
   display: flex;
@@ -91,14 +85,13 @@ page {
 .card-item {
   width: calc((100% - 48rpx) / 3);
   background: var(--color-card);
-  border: 1rpx solid var(--color-card-border);
+  border: 1rpx solid rgba(244, 212, 140, 0.15);
   border-radius: var(--radius-lg);
-  padding: var(--spacing-lg) var(--spacing-sm) var(--spacing-xl);
+  padding: var(--spacing-md) var(--spacing-sm) var(--spacing-lg);
   box-sizing: border-box;
   box-shadow: var(--shadow-card);
   transition: transform var(--duration-fast) var(--ease-soft),
-              border-color var(--duration-fast) var(--ease-soft),
-              box-shadow var(--duration-fast) var(--ease-soft);
+              border-color var(--duration-fast) var(--ease-soft);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -107,56 +100,92 @@ page {
 
 .card-item:active {
   transform: scale(0.97);
-  border-color: var(--color-card-border-hover);
+  border-color: rgba(244, 212, 140, 0.35);
   box-shadow: var(--shadow-elevated);
 }
 
-/* Card number — subtle golden constellation label */
-.card-item .text-gold {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
-  display: inline-block;
-  letter-spacing: 3rpx;
-  color: var(--color-gold);
-  opacity: 0.70;
-  margin-bottom: var(--spacing-xs);
+/* ---- Card Thumbnail Image ---- */
+
+.card-thumb {
+  width: 160rpx;
+  height: 224rpx;
+  border-radius: var(--radius-md);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.18);
+  flex-shrink: 0;
+  margin-bottom: var(--spacing-sm);
+  background: var(--color-surface);
 }
 
-/* Card image thumbnail area — placeholder for actual card image */
-.card-item::before {
-  content: '';
-  display: block;
-  width: 120rpx;
-  height: 168rpx;
+.card-thumb-placeholder {
+  width: 160rpx;
+  height: 224rpx;
   border-radius: var(--radius-md);
+  border: 1rpx solid rgba(244, 212, 140, 0.08);
+  flex-shrink: 0;
+  margin-bottom: var(--spacing-sm);
   background: linear-gradient(
     145deg,
     var(--color-surface) 0%,
     var(--color-card-hover) 100%
   );
-  border: 1rpx solid rgba(244, 212, 140, 0.08);
-  margin-bottom: var(--spacing-sm);
-  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Card name in cream */
-.card-item .heading-4 {
+.card-thumb-placeholder::after {
+  content: '🃏';
+  font-size: 48rpx;
+  opacity: 0.30;
+}
+
+/* ---- Card Number — subtle golden label ---- */
+
+.card-number {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 3rpx;
+  color: var(--color-gold);
+  opacity: 0.70;
+  margin-bottom: var(--spacing-xxs);
+}
+
+/* ---- Card Name ---- */
+
+.card-name {
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
   line-height: var(--line-height-tight);
-  margin-top: var(--spacing-xs);
   letter-spacing: 1rpx;
+  margin-bottom: var(--spacing-xxs);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 100%;
 }
 
-.card-item .text-dim {
-  font-size: var(--font-size-sm);
+.card-name-en {
+  font-size: var(--font-size-xs);
   color: var(--color-text-tertiary);
-  display: block;
   margin-bottom: var(--spacing-sm);
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 100%;
 }
 
-/* Badges inside card */
+/* ---- Badges inside card ---- */
+
+.card-badges {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+  width: 100%;
+}
+
 .badge-purple {
   background: rgba(184, 169, 224, 0.12);
   color: var(--color-lavender);
@@ -273,7 +302,7 @@ page {
 
 .skeleton-card {
   width: calc((100% - 48rpx) / 3);
-  height: 280rpx;
+  height: 340rpx;
   border-radius: var(--radius-lg);
   background: linear-gradient(90deg, var(--color-surface) 25%, var(--color-surface-hover) 50%, var(--color-surface) 75%);
   background-size: 400% 100%;

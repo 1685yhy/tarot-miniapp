@@ -1,10 +1,14 @@
 /* ============================================================
-   Profile Page — 柔光星辰
-   Dark indigo backdrop · Golden starlight accents · Premium user card
+   Profile Page — Starlight Design System
+   #1A1A3E bg · #F4D48C gold · #B8A9E0 lavender accent
    ============================================================ */
 
-/* ---- Old variable aliases (WXML inline style compat) ---- */
 page {
+  background: #1A1A3E;
+  --color-star-subtle: rgba(244, 212, 140, 0.12);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-primary: var(--color-text-primary);
+  /* Inline style compat aliases */
   --space-massive: var(--spacing-5xl);
   --space-xxxl: var(--spacing-3xl);
   --space-xxl: var(--spacing-2xl);
@@ -27,9 +31,6 @@ page {
   --duration-fast: var(--duration-fast);
   --ease-out: var(--ease-out);
   --ease-in-out: var(--ease-in-out);
-  --color-star-subtle: rgba(244, 212, 140, 0.12);
-  --color-text-secondary: var(--color-text-secondary);
-  --color-text-primary: var(--color-text-primary);
 }
 
 /* ---- Container ---- */
@@ -41,9 +42,17 @@ page {
   z-index: 1;
 }
 
-/* ---------------------------------------------------------------
+/* ---- Gold / lavender utilities ---- */
+.gold {
+  color: #F4D48C;
+}
+.lavender {
+  color: #B8A9E0;
+}
+
+/* ============================================================
    Star field — golden starlight particles
-   --------------------------------------------------------------- */
+   ============================================================ */
 .star-field {
   position: fixed;
   top: 0;
@@ -60,10 +69,10 @@ page {
   position: absolute;
   width: 4rpx;
   height: 4rpx;
-  background: var(--color-gold);
+  background: #F4D48C;
   border-radius: 50%;
   opacity: 0.25;
-  box-shadow: 0 0 6rpx var(--color-gold-glow);
+  box-shadow: 0 0 6rpx rgba(244, 212, 140, 0.30);
 }
 
 .star-particle:nth-child(1) { top: 10%; left: 20%; animation: star-drift 8s ease-in-out infinite; }
@@ -82,9 +91,9 @@ page {
   50% { transform: translateY(-24rpx) scale(1.5); opacity: 0.55; box-shadow: 0 0 12rpx rgba(244, 212, 140, 0.25); }
 }
 
-/* ---------------------------------------------------------------
-   text-dim / text-body — class aliases for old WXML
-   --------------------------------------------------------------- */
+/* ============================================================
+   Text helpers
+   ============================================================ */
 .text-dim {
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
@@ -96,9 +105,9 @@ page {
   line-height: var(--line-height-base);
 }
 
-/* ---------------------------------------------------------------
+/* ============================================================
    Error State
-   --------------------------------------------------------------- */
+   ============================================================ */
 .error-state {
   text-align: center;
   padding: var(--spacing-5xl) var(--spacing-xl);
@@ -125,15 +134,14 @@ page {
   margin-bottom: var(--spacing-2xl);
 }
 
-/* ---- btn-small override for error state ---- */
 .btn-small {
   font-size: var(--font-size-sm);
   padding: 16rpx 36rpx;
 }
 
-/* ---------------------------------------------------------------
+/* ============================================================
    Empty State
-   --------------------------------------------------------------- */
+   ============================================================ */
 .empty-state {
   text-align: center;
   padding: var(--spacing-5xl) 0;
@@ -159,9 +167,9 @@ page {
   display: block;
 }
 
-/* ---------------------------------------------------------------
-   User Card — Dark indigo surface with golden glow
-   --------------------------------------------------------------- */
+/* ============================================================
+   USER CARD — Centered · Gold name · Golden stats
+   ============================================================ */
 .user-card {
   text-align: center;
   padding: var(--spacing-3xl) var(--spacing-xl) var(--spacing-2xl);
@@ -174,7 +182,7 @@ page {
   overflow: hidden;
 }
 
-/* Soft golden top glow */
+/* Golden top glow */
 .user-card::before {
   content: '';
   position: absolute;
@@ -187,17 +195,19 @@ page {
   pointer-events: none;
 }
 
-/* Avatar override (emoji-based, not image) */
+/* Avatar — centered emoji */
 .user-card .avatar {
   font-size: 88rpx;
   display: block;
   line-height: 1;
-  width: auto;
-  height: auto;
-  border: none;
-  background: none;
-  border-radius: 0;
   margin-bottom: var(--spacing-sm);
+}
+
+/* Username — gold */
+.user-card .heading-3 {
+  color: #F4D48C;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 2rpx;
 }
 
 /* Badge */
@@ -214,7 +224,7 @@ page {
 
 .badge-premium {
   background: rgba(244, 212, 140, 0.12);
-  color: var(--color-gold);
+  color: #F4D48C;
   border-color: rgba(244, 212, 140, 0.25);
 }
 
@@ -240,9 +250,9 @@ page {
   box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.20);
 }
 
-/* ---------------------------------------------------------------
-   Stats Row — Glass dark cards with golden numbers
-   --------------------------------------------------------------- */
+/* ============================================================
+   STATS ROW — Golden numbers on dark indigo
+   ============================================================ */
 .stats-row {
   display: flex;
   background: var(--color-card);
@@ -268,8 +278,7 @@ page {
   width: 1rpx;
   height: 40%;
   background: linear-gradient(
-    180deg,
-    transparent 0%,
+    180deg, transparent 0%,
     rgba(244, 212, 140, 0.20) 50%,
     transparent 100%
   );
@@ -278,7 +287,7 @@ page {
 .stat-num {
   font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
-  color: var(--color-gold);
+  color: #F4D48C;
   display: block;
   line-height: 1.15;
   text-shadow: 0 0 16rpx rgba(244, 212, 140, 0.15);
@@ -293,9 +302,9 @@ page {
   text-transform: uppercase;
 }
 
-/* ---------------------------------------------------------------
-   Quick Actions — Dark cards with golden borders
-   --------------------------------------------------------------- */
+/* ============================================================
+   QUICK ACTIONS — Dark indigo · Golden left-border accent
+   ============================================================ */
 .quick-actions {
   margin-bottom: var(--spacing-2xl);
   border-radius: var(--radius-lg);
@@ -308,10 +317,11 @@ page {
 .action-item {
   display: flex;
   align-items: center;
-  background: transparent;
   padding: var(--spacing-lg) var(--spacing-xl);
   transition: all var(--duration-fast) var(--ease-soft);
   position: relative;
+  /* Golden left-border accent */
+  border-left: 4rpx solid rgba(244, 212, 140, 0.20);
 }
 
 .action-item + .action-item {
@@ -320,13 +330,13 @@ page {
 
 .action-item:active {
   background: var(--color-card-hover);
+  border-left-color: #F4D48C;
 }
 
-/* Arrow indicator — golden */
+/* Right arrow */
 .action-item::after {
-  content: '›';
-  font-size: 36rpx;
-  color: var(--color-gold);
+  content: '➡️';
+  font-size: 28rpx;
   opacity: 0.40;
   line-height: 1;
   margin-left: auto;
@@ -340,9 +350,9 @@ page {
   opacity: 0.80;
 }
 
-/* ---------------------------------------------------------------
-   History Section — Dark card list
-   --------------------------------------------------------------- */
+/* ============================================================
+   HISTORY SECTION — Card list with first card thumbnail
+   ============================================================ */
 .history-section {
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -359,6 +369,13 @@ page {
   border-bottom: 1rpx solid rgba(244, 212, 140, 0.08);
 }
 
+.history-header .heading-4 {
+  color: #F4D48C;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 2rpx;
+  margin: 0;
+}
+
 .clear-btn {
   font-size: var(--font-size-sm);
   color: var(--color-text-tertiary);
@@ -370,13 +387,12 @@ page {
 }
 
 .clear-btn:active {
-  color: var(--color-gold);
+  color: #F4D48C;
   background: rgba(244, 212, 140, 0.06);
 }
 
 .history-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   padding: var(--spacing-lg) var(--spacing-xl);
   border-bottom: 1rpx solid rgba(244, 212, 140, 0.06);
@@ -391,9 +407,30 @@ page {
   background: var(--color-card-hover);
 }
 
-/* ---------------------------------------------------------------
-   Skeleton — Dark indigo shimmer
-   --------------------------------------------------------------- */
+.history-item .text-body {
+  font-weight: var(--font-weight-medium);
+}
+
+/* First card thumbnail */
+.history-item text:first-child text:last-child {
+  /* The first_card_name line with 🃏 emoji */
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  letter-spacing: 1rpx;
+}
+
+/* Right arrow */
+.history-arrow {
+  font-size: 28rpx;
+  opacity: 0.40;
+  margin-left: auto;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* ============================================================
+   SKELETON — Dark indigo shimmer
+   ============================================================ */
 .skeleton-card {
   width: 100%;
   height: 320rpx;
@@ -431,11 +468,16 @@ page {
   50% { opacity: 0.45; }
 }
 
-/* ---------------------------------------------------------------
-   Staggered entrance animations (WXML compat)
-   --------------------------------------------------------------- */
+/* ============================================================
+   Entrance animations
+   ============================================================ */
 .anim-fade-in-up-1 { opacity: 0; animation: fade-up 0.5s var(--ease-soft) 0.08s forwards; }
 .anim-fade-in-up-2 { opacity: 0; animation: fade-up 0.5s var(--ease-soft) 0.20s forwards; }
 .anim-fade-in-up-3 { opacity: 0; animation: fade-up 0.5s var(--ease-soft) 0.32s forwards; }
 .anim-fade-in-up-4 { opacity: 0; animation: fade-up 0.5s var(--ease-soft) 0.44s forwards; }
 .anim-fade-in-up-5 { opacity: 0; animation: fade-up 0.5s var(--ease-soft) 0.56s forwards; }
+
+@keyframes fade-up {
+  0% { opacity: 0; transform: translateY(24rpx); }
+  100% { opacity: 1; transform: translateY(0); }
+}
