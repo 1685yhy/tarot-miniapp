@@ -27,6 +27,20 @@ Page({
     pageError: null,
   },
 
+  onLoad(options) {
+    // 首页点击牌阵直接进入问答，跳过选择页
+    if (options && options.type) {
+      const spread = SPREADS.find(s => s.key === options.type);
+      if (spread) {
+        this.setData({
+          selectedSpread: spread,
+          theme: spread.theme || '',
+          showQuestionInput: true,
+        });
+      }
+    }
+  },
+
   async onSelectSpread(e) {
     const spread = e.currentTarget.dataset.spread;
 
