@@ -39,17 +39,21 @@
   );
   pointer-events: none;
   z-index: 0;
-  animation: hero-glow-pulse 6s ease-in-out infinite;
+  animation: hero-glow-pulse 5s ease-in-out infinite;
 }
 
 @keyframes hero-glow-pulse {
   0%, 100% {
-    opacity: 0.7;
+    opacity: 0.6;
     transform: translate(-50%, -50%) scale(1);
   }
-  50% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.08);
+  40% {
+    opacity: 0.95;
+    transform: translate(-50%, -50%) scale(1.06);
+  }
+  70% {
+    opacity: 0.75;
+    transform: translate(-50%, -50%) scale(1.02);
   }
 }
 
@@ -534,6 +538,15 @@
   letter-spacing: 1rpx;
 }
 
+/* Extra small body text — spread card descriptions */
+.body-xs {
+  font-size: var(--font-size-xs, 20rpx);
+  font-weight: var(--font-weight-normal, 400);
+  color: var(--color-text-tertiary, #6A6588);
+  line-height: var(--line-height-base, 1.6);
+  letter-spacing: 0.5rpx;
+}
+
 /* Accent-colored caption */
 .accent-text {
   color: var(--color-gold, #F4D48C);
@@ -714,8 +727,11 @@
 .section > view > .card-press:nth-child(2) { animation-delay: 0.75s; }
 .section > view > .card-press:nth-child(3) { animation-delay: 0.80s; }
 .section > view > .card-press:nth-child(4) { animation-delay: 0.85s; }
-.section > view > .card-press:nth-child(5) { animation-delay: 0.90s; }
-.section > view > .card-press:nth-child(6) { animation-delay: 0.95s; }
+
+.more-spreads {
+  opacity: 0;
+  animation: card-staggered 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.90s forwards;
+}
 
 /* ============================================================
    11. SPREAD GRID — Golden shimmer sweep on tap
@@ -775,17 +791,17 @@
 
 /* ============================================================
    13. PREMIUM CARDS — Golden border glow + rotating diamond
-   Applied to celtic_cross (2nd grid card)
+   Applied to celtic_cross (3rd grid card)
    ============================================================ */
 
-.section > view > .card-press:nth-child(2) {
+.section > view > .card-press:nth-child(3) {
   animation:
-    card-staggered 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.75s forwards,
+    card-staggered 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.80s forwards,
     premium-border-glow 3s ease-in-out infinite;
 }
 
 /* Rotating gold diamond in top-right corner */
-.section > view > .card-press:nth-child(2)::after {
+.section > view > .card-press:nth-child(3)::after {
   content: '\25C6';
   position: absolute;
   top: 6rpx;
@@ -816,4 +832,53 @@
 @keyframes diamond-spin {
   0%   { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* -----------------------------------------------------------
+   14. MORE SPREADS — "查看更多" entry card
+   ----------------------------------------------------------- */
+
+.more-spreads {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--spacing-md, 24rpx);
+  padding: 28rpx 24rpx;
+  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 100%);
+  border: 1rpx solid rgba(244, 212, 140, 0.15);
+  border-radius: var(--radius-lg, 24rpx);
+  box-shadow:
+    0 2rpx 12rpx rgba(0, 0, 0, 0.20),
+    0 0 20rpx rgba(244, 212, 140, 0.02);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.more-spreads:active {
+  transform: scale(0.98);
+  border-color: rgba(244, 212, 140, 0.55) !important;
+  box-shadow:
+    0 2rpx 12rpx rgba(0, 0, 0, 0.30),
+    0 0 40rpx rgba(244, 212, 140, 0.12);
+}
+
+.more-text {
+  font-size: var(--font-size-sm, 24rpx);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-gold, #F4D48C);
+  letter-spacing: 1rpx;
+}
+
+.more-arrow {
+  font-size: 28rpx;
+  color: var(--color-gold, #F4D48C);
+  opacity: 0.6;
+  margin-left: 12rpx;
+  transition: transform 0.3s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94));
+}
+
+.more-spreads:active .more-arrow {
+  transform: translateX(6rpx);
+  opacity: 1;
 }

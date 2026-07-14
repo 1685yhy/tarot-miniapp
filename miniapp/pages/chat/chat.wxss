@@ -395,12 +395,10 @@ page {
   align-items: center;
   padding: var(--space-md) var(--space-xl);
   padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-md));
-  background: var(--input-bar-bg);
+  background: rgba(22, 19, 41, 0.92);
   border-top: 1rpx solid var(--gold-dim);
   gap: var(--space-sm);
   z-index: 100;
-  backdrop-filter: blur(16rpx);
-  -webkit-backdrop-filter: blur(16rpx);
 }
 
 .chat-input {
