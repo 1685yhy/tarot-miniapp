@@ -19,7 +19,7 @@
 <!-- ===== 错误状态 ===== -->
 <view class="page" wx:elif="{{pageError}}">
   <view class="error-state">
-    <text class="error-icon">&#x2726;</text>
+    <text class="error-icon">🔮</text>
     <text class="error-text">连接中断</text>
     <text class="error-hint">{{pageError}}</text>
     <button class="btn btn-outline" bindtap="onRetry">重新连接</button>
@@ -50,7 +50,7 @@
         </view>
         <!-- Card content (shakes on tap via shaking state) -->
         <view class="card-body {{shaking?'card-shake':''}}">
-          <text style="font-size:52rpx;display:block;margin-bottom:24rpx">&#x2726;</text>
+          <text style="font-size:52rpx;display:block;margin-bottom:24rpx">🌟</text>
           <text class="title-4" style="display:block;margin-bottom:8rpx">轻触卡片</text>
           <text class="body-sm">开启今日指引</text>
         </view>
@@ -85,12 +85,12 @@
     <text class="section-title">选择牌阵</text>
     <view style="display:grid;grid-template-columns:repeat(3,1fr);gap:16rpx">
       <view class="card card-press" style="padding:24rpx 16rpx;text-align:center" wx:for="{{['triangle','celtic_cross','three_card','career','finance','decision']}}" wx:key="*this" bindtap="navigateToReading" data-type="{{item}}">
-        <block wx:if="{{item==='triangle'}}"><text style="font-size:36rpx;display:block;margin-bottom:8rpx">&#x2665;</text><text class="body-sm" style="display:block">恋人三角</text></block>
-        <block wx:elif="{{item==='celtic_cross'}}"><text style="font-size:36rpx;display:block;margin-bottom:8rpx">&#x272A;</text><text class="body-sm" style="display:block">凯尔特十字</text></block>
-        <block wx:elif="{{item==='three_card'}}"><text style="font-size:36rpx;display:block;margin-bottom:8rpx">&#x25C6;</text><text class="body-sm" style="display:block">三牌占卜</text></block>
-        <block wx:elif="{{item==='career'}}"><text style="font-size:36rpx;display:block;margin-bottom:8rpx">&#x25A0;</text><text class="body-sm" style="display:block">事业牌阵</text></block>
-        <block wx:elif="{{item==='finance'}}"><text style="font-size:36rpx;display:block;margin-bottom:8rpx">&#x25B2;</text><text class="body-sm" style="display:block">财运牌阵</text></block>
-        <block wx:elif="{{item==='decision'}}"><text style="font-size:36rpx;display:block;margin-bottom:8rpx">&#x25CF;</text><text class="body-sm" style="display:block">二择一</text></block>
+        <block wx:if="{{item==='triangle'}}"><text style="font-size:36rpx;display:block;margin-bottom:8rpx">💕</text><text class="body-sm" style="display:block">恋人三角</text></block>
+        <block wx:elif="{{item==='celtic_cross'}}"><text style="font-size:36rpx;display:block;margin-bottom:8rpx">⭐</text><text class="body-sm" style="display:block">凯尔特十字</text></block>
+        <block wx:elif="{{item==='three_card'}}"><text style="font-size:36rpx;display:block;margin-bottom:8rpx">🔮</text><text class="body-sm" style="display:block">三牌占卜</text></block>
+        <block wx:elif="{{item==='career'}}"><text style="font-size:36rpx;display:block;margin-bottom:8rpx">💼</text><text class="body-sm" style="display:block">事业牌阵</text></block>
+        <block wx:elif="{{item==='finance'}}"><text style="font-size:36rpx;display:block;margin-bottom:8rpx">💰</text><text class="body-sm" style="display:block">财运牌阵</text></block>
+        <block wx:elif="{{item==='decision'}}"><text style="font-size:36rpx;display:block;margin-bottom:8rpx">🔀</text><text class="body-sm" style="display:block">二择一</text></block>
       </view>
     </view>
   </view>
