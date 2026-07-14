@@ -268,7 +268,7 @@ page {
     658rpx 1150rpx rgba(255,255,255,0.12),
     700rpx 940rpx rgba(184,169,224,0.08),
     730rpx 1050rpx rgba(255,255,255,0.14);
-  animation: cosmic-drift-distant 30s linear infinite;
+  animation: cosmic-drift-distant 25s ease-in-out infinite;
 }
 
 /* ---------- Mid layer: 2rpx stars, 20s drift, some lavender ---------- */
@@ -314,7 +314,7 @@ page {
     590rpx 980rpx rgba(184,169,224,0.25),
     660rpx 1120rpx rgba(255,255,255,0.35),
     720rpx 950rpx rgba(255,255,255,0.30);
-  animation: cosmic-drift-mid 20s linear infinite;
+  animation: cosmic-drift-mid 20s ease-in-out infinite;
 }
 
 /* ---------- Close layer: 3-4rpx bright golden stars, 12s drift ---------- */
@@ -346,7 +346,7 @@ page {
     260rpx 960rpx rgba(244,212,140,0.65),
     400rpx 1150rpx rgba(244,212,140,0.55),
     540rpx 1000rpx rgba(244,212,140,0.45);
-  animation: cosmic-drift-close 12s linear infinite;
+  animation: cosmic-drift-close 12s ease-in-out infinite;
 }
 
 /* Some extra-bright close stars — 4rpx with glow */
@@ -367,7 +367,7 @@ page {
     490rpx 250rpx 8rpx rgba(244,212,140,0.15),
     660rpx 600rpx 8rpx rgba(244,212,140,0.12),
     320rpx 1080rpx 8rpx rgba(244,212,140,0.15);
-  animation: cosmic-drift-close 12s linear infinite;
+  animation: cosmic-drift-close 12s ease-in-out infinite;
 }
 
 /* ---------- Drift keyframes for parallax effect ---------- */
@@ -453,7 +453,7 @@ page {
   );
   pointer-events: none;
   z-index: 0;
-  animation: rotate-nebula 60s linear infinite;
+  animation: rotate-nebula 45s ease-in-out infinite;
 }
 
 @keyframes rotate-nebula {

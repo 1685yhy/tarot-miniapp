@@ -83,15 +83,31 @@
   <!-- 牌阵 -->
   <view class="section anim-fade-in-up-3">
     <text class="section-title">选择牌阵</text>
-    <view style="display:grid;grid-template-columns:repeat(3,1fr);gap:16rpx">
-      <view class="card card-press" style="padding:24rpx 16rpx;text-align:center" wx:for="{{['triangle','celtic_cross','three_card','career','finance','decision']}}" wx:key="*this" bindtap="navigateToReading" data-type="{{item}}">
-        <block wx:if="{{item==='triangle'}}"><text style="font-size:36rpx;display:block;margin-bottom:8rpx">💕</text><text class="body-sm" style="display:block">恋人三角</text></block>
-        <block wx:elif="{{item==='celtic_cross'}}"><text style="font-size:36rpx;display:block;margin-bottom:8rpx">⭐</text><text class="body-sm" style="display:block">凯尔特十字</text></block>
-        <block wx:elif="{{item==='three_card'}}"><text style="font-size:36rpx;display:block;margin-bottom:8rpx">🔮</text><text class="body-sm" style="display:block">三牌占卜</text></block>
-        <block wx:elif="{{item==='career'}}"><text style="font-size:36rpx;display:block;margin-bottom:8rpx">💼</text><text class="body-sm" style="display:block">事业牌阵</text></block>
-        <block wx:elif="{{item==='finance'}}"><text style="font-size:36rpx;display:block;margin-bottom:8rpx">💰</text><text class="body-sm" style="display:block">财运牌阵</text></block>
-        <block wx:elif="{{item==='decision'}}"><text style="font-size:36rpx;display:block;margin-bottom:8rpx">🔀</text><text class="body-sm" style="display:block">二择一</text></block>
+    <view style="display:grid;grid-template-columns:repeat(2,1fr);gap:16rpx">
+      <view class="card card-press" style="padding:24rpx 16rpx;text-align:center" bindtap="navigateToReading" data-type="three_card">
+        <text style="font-size:36rpx;display:block;margin-bottom:8rpx">🔮</text>
+        <text class="body-sm" style="display:block;font-weight:600">三牌占卜</text>
+        <text class="body-xs" style="display:block;margin-top:6rpx">过去·现在·未来</text>
       </view>
+      <view class="card card-press" style="padding:24rpx 16rpx;text-align:center" bindtap="navigateToReading" data-type="triangle">
+        <text style="font-size:36rpx;display:block;margin-bottom:8rpx">💕</text>
+        <text class="body-sm" style="display:block;font-weight:600">恋人三角</text>
+        <text class="body-xs" style="display:block;margin-top:6rpx">感情关系深度解读</text>
+      </view>
+      <view class="card card-press" style="padding:24rpx 16rpx;text-align:center" bindtap="navigateToReading" data-type="celtic_cross">
+        <text style="font-size:36rpx;display:block;margin-bottom:8rpx">⭐</text>
+        <text class="body-sm" style="display:block;font-weight:600">凯尔特十字</text>
+        <text class="body-xs" style="display:block;margin-top:6rpx">全方位综合解牌</text>
+      </view>
+      <view class="card card-press" style="padding:24rpx 16rpx;text-align:center" bindtap="navigateToReading" data-type="career">
+        <text style="font-size:36rpx;display:block;margin-bottom:8rpx">💼</text>
+        <text class="body-sm" style="display:block;font-weight:600">事业牌阵</text>
+        <text class="body-xs" style="display:block;margin-top:6rpx">职场方向与机遇</text>
+      </view>
+    </view>
+    <view class="card card-press more-spreads" bindtap="goToAllSpreads">
+      <text class="more-text">查看更多 · 共10种牌阵</text>
+      <text class="more-arrow">→</text>
     </view>
   </view>
 </view>
