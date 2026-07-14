@@ -988,6 +988,8 @@ page {
   padding-bottom: calc(var(--page-padding) + var(--safe-area-bottom));
   position: relative;
   z-index: var(--z-base);
+  background: var(--color-bg);
+  background-image: var(--color-bg-gradient);
 }
 
 .page--wide {
