@@ -78,7 +78,7 @@ Page({
         reflection: '',
         creating: false,
       });
-      wx.showToast({ title: '记录成功 ✨', icon: 'success' });
+      wx.showToast({ title: '记录成功', icon: 'success' });
     } catch (err) {
       wx.showToast({ title: '记录失败', icon: 'none' });
       this.setData({ creating: false });

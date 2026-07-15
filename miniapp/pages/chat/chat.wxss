@@ -1,109 +1,71 @@
 /* ============================================================
-   Chat Page — Starlight Design System
-   Dark indigo chat · Cream bubbles · Gold accents
+   Chat — Warm Paper Design System
+   Warm ivory base, deep rose accent, sage subtle
+   Chat bubbles, input bar, reading context bar
    ============================================================ */
 
-/* ---- Design Tokens ---- */
-page {
-  --gold: #F4D48C;
-  --gold-light: #FADE9E;
-  --gold-glow: rgba(244, 212, 140, 0.35);
-  --gold-dim: rgba(244, 212, 140, 0.15);
-  --bg-deep: var(--color-bg);
-  --bg-card: #161329;
-  --bg-elevated: #1e1a38;
-  --bg-user: #1e1a38;
-  --bg-ai: #232048;
-  --cream: #f5eedc;
-  --cream-dim: #e0d8c4;
-  --text-primary: #e8e4f0;
-  --text-secondary: #b8b0d0;
-  --text-tertiary: #A098C0;
-  --radius-sm: 12rpx;
-  --radius-md: 18rpx;
-  --radius-lg: 24rpx;
-  --radius-round: 999rpx;
-  --radius-bubble: 18rpx;
-  --space-xs: 6rpx;
-  --space-sm: 12rpx;
-  --space-md: 20rpx;
-  --space-lg: 28rpx;
-  --space-xl: 36rpx;
-  --space-xxl: 48rpx;
-  --space-xxxl: 64rpx;
-  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  background: var(--bg-deep);
-  color: var(--text-primary);
-  font-size: 28rpx;
-  line-height: 1.6;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
+/* -----------------------------------------------------------
+   1. CONTAINER
+   ----------------------------------------------------------- */
 
-/* ================================================================
-   Container
-   ================================================================ */
 .container {
-  padding: var(--space-xl) var(--space-xl) 320rpx;
+  padding: var(--page-padding) var(--page-padding) 320rpx;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   position: relative;
-  z-index: 1;
+  z-index: var(--z-base);
   box-sizing: border-box;
 }
 
-/* ================================================================
-   Animations
-   ================================================================ */
-.anim-fade-in {
-  animation: fadeIn 0.4s ease both;
-}
+/* -----------------------------------------------------------
+   2. ANIMATIONS
+   ----------------------------------------------------------- */
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.anim-fade-in {
+  animation: fade-in var(--duration-navigation) ease both;
 }
 
 .msg-enter {
-  animation: msgSlideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: msg-slide-up var(--duration-emphasis) ease both;
 }
 
-@keyframes msgSlideUp {
+@keyframes msg-slide-up {
   0% { opacity: 0; transform: translateY(20rpx); }
   100% { opacity: 1; transform: translateY(0); }
 }
 
 .msg-user .msg-bubble {
-  animation: slideInRight 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: slide-in-right var(--duration-emphasis) ease both;
 }
 
-@keyframes slideInRight {
+@keyframes slide-in-right {
   0% { opacity: 0; transform: translateX(30rpx); }
   100% { opacity: 1; transform: translateX(0); }
 }
 
 .msg-ai .msg-bubble {
-  animation: slideInLeft 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: slide-in-left var(--duration-emphasis) ease both;
 }
 
-@keyframes slideInLeft {
+@keyframes slide-in-left {
   0% { opacity: 0; transform: translateX(-30rpx); }
   100% { opacity: 1; transform: translateX(0); }
 }
 
-/* ================================================================
-   Typing indicator — golden bouncing dots
-   ================================================================ */
+/* -----------------------------------------------------------
+   3. TYPING INDICATOR
+   ----------------------------------------------------------- */
+
 .typing-indicator {
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--spacing-6);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 
 .bubble-typing {
-  padding: var(--space-lg) var(--space-xl);
+  padding: var(--spacing-5) var(--spacing-6);
   min-height: 0;
   display: flex;
   align-items: center;
@@ -113,37 +75,39 @@ page {
 .typing-dots {
   display: flex;
   align-items: center;
-  gap: 10rpx;
+  gap: var(--spacing-3);
 }
 
 .typing-dot {
-  width: 14rpx;
-  height: 14rpx;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  animation: typingBounce 1.4s ease-in-out infinite;
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  opacity: 0.30;
+  animation: typing-bounce 1.4s ease-in-out infinite;
 }
 
 .typing-dot:nth-child(2) { animation-delay: 0.2s; }
 .typing-dot:nth-child(3) { animation-delay: 0.4s; }
 
-@keyframes typingBounce {
+@keyframes typing-bounce {
   0%, 80%, 100% {
-    transform: translateY(0) scale(0.7);
-    opacity: 0.35;
+    transform: translateY(0);
+    opacity: 0.30;
   }
   40% {
-    transform: translateY(-10rpx) scale(1);
-    opacity: 1;
+    transform: translateY(-10rpx);
+    opacity: 0.80;
   }
 }
 
-/* ================================================================
-   Empty / Intro state
-   ================================================================ */
+/* -----------------------------------------------------------
+   4. EMPTY / INTRO STATE
+   ----------------------------------------------------------- */
+
 .chat-intro {
   text-align: center;
-  padding: var(--space-xxxl) 0;
+  padding: var(--spacing-7) 0;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -152,131 +116,140 @@ page {
 }
 
 .empty-icon {
-  font-size: 72rpx;
+  width: 72rpx;
+  height: 72rpx;
   display: block;
-  margin-bottom: var(--space-xl);
-  opacity: 0.7;
+  margin-bottom: var(--spacing-6);
+  opacity: 0.50;
 }
 
 .empty-text {
-  font-size: 28rpx;
-  color: var(--text-secondary);
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
   display: block;
-  margin-bottom: var(--space-sm);
+  margin-bottom: var(--spacing-3);
 }
 
 .empty-hint {
-  font-size: 24rpx;
-  color: var(--text-tertiary);
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
   display: block;
-  line-height: 1.6;
+  line-height: var(--line-height-body);
+  opacity: 0.70;
 }
 
-/* ================================================================
-   Error state
-   ================================================================ */
+/* -----------------------------------------------------------
+   5. ERROR STATE
+   ----------------------------------------------------------- */
+
 .error-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 160rpx var(--space-xl);
+  padding: var(--spacing-8) var(--spacing-6);
   text-align: center;
 }
 
 .error-icon {
-  font-size: 72rpx;
-  margin-bottom: var(--space-lg);
+  width: 72rpx;
+  height: 72rpx;
+  margin-bottom: var(--spacing-5);
   display: block;
+  opacity: 0.30;
 }
 
 .error-text {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: var(--space-sm);
+  font-size: var(--font-size-body-large);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-3);
   display: block;
 }
 
 .error-hint {
-  font-size: 24rpx;
-  color: var(--text-tertiary);
-  margin-bottom: var(--space-xxl);
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-6);
   display: block;
 }
 
-/* ---- Shared button — golden pill ---- */
+/* -----------------------------------------------------------
+   6. BUTTONS
+   ----------------------------------------------------------- */
+
 .btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-sm);
-  padding: 20rpx 48rpx;
+  gap: var(--spacing-3);
+  padding: var(--spacing-5) var(--spacing-7);
   border: none;
-  border-radius: var(--radius-round);
-  font-size: 28rpx;
-  font-weight: 600;
-  color: var(--color-text-inverse);
-  background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  box-shadow: 0 4rpx 24rpx var(--gold-glow);
-  transition: all 0.25s;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-surface);
+  background: var(--color-accent);
+  box-shadow: var(--shadow-subtle);
+  transition: all var(--duration-feedback) ease;
 }
 
-.btn-primary::after { border: none; }
-.btn-primary:active { transform: scale(0.96); }
+.btn-primary:active { transform: scale(0.97); opacity: 0.90; }
 
 .btn-small {
-  padding: 16rpx 36rpx;
-  font-size: 24rpx;
+  padding: var(--spacing-4) var(--spacing-6);
+  font-size: var(--font-size-body);
 }
 
-/* ================================================================
-   Reading context bar
-   ================================================================ */
+/* -----------------------------------------------------------
+   7. READING CONTEXT BAR
+   ----------------------------------------------------------- */
+
 .reading-context-bar {
-  border-radius: var(--radius-lg);
-  padding: var(--space-md) var(--space-lg);
-  margin-bottom: var(--space-xl);
-  background: var(--bg-card);
-  border: 1.5rpx solid var(--gold-dim);
-  border-left: 4rpx solid var(--gold);
-  box-shadow: 0 2rpx 20rpx rgba(212, 175, 55, 0.05);
+  border-radius: var(--radius-medium);
+  padding: var(--spacing-4) var(--spacing-5);
+  margin-bottom: var(--spacing-6);
+  background: var(--color-surface);
+  border: 1rpx solid rgba(139, 126, 110, 0.12);
+  border-left: 3rpx solid var(--color-accent);
+  box-shadow: var(--shadow-subtle);
 }
 
 .context-label {
-  font-size: 22rpx;
-  color: var(--gold);
-  font-weight: 600;
+  font-size: var(--font-size-body);
+  color: var(--color-accent);
+  font-weight: var(--font-weight-semibold);
   display: block;
-  margin-bottom: var(--space-xs);
-  letter-spacing: 3rpx;
-  text-transform: uppercase;
+  margin-bottom: var(--spacing-3);
+  letter-spacing: var(--letter-spacing-none);
 }
 
 .context-question {
-  font-size: 24rpx;
-  color: var(--text-primary);
+  font-size: var(--font-size-body);
+  color: var(--color-text-primary);
   display: block;
   margin-bottom: 4rpx;
-  line-height: 1.5;
+  line-height: var(--line-height-body);
 }
 
 .context-spread {
-  font-size: 22rpx;
-  color: var(--text-tertiary);
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
   display: block;
+  opacity: 0.70;
 }
 
-/* ================================================================
-   Message list
-   ================================================================ */
+/* -----------------------------------------------------------
+   8. MESSAGE LIST
+   ----------------------------------------------------------- */
+
 .message-list {
   flex: 1;
-  margin-bottom: 20rpx;
+  margin-bottom: var(--spacing-5);
 }
 
 .msg-item {
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--spacing-6);
   display: flex;
   flex-direction: column;
 }
@@ -289,83 +262,60 @@ page {
   align-items: flex-start;
 }
 
-/* ---- Role label ---- */
+/* Role label */
 .text-caption {
-  font-size: 22rpx;
-  color: var(--text-tertiary);
-  margin-bottom: var(--space-xs);
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-3);
+  opacity: 0.70;
 }
 
-/* ================================================================
-   Chat bubbles
-   ================================================================ */
+/* -----------------------------------------------------------
+   9. CHAT BUBBLES
+   ----------------------------------------------------------- */
+
 .msg-bubble {
-  padding: var(--space-lg) var(--space-xl);
+  padding: var(--spacing-5) var(--spacing-6);
   max-width: 85%;
   position: relative;
-  line-height: 1.7;
+  line-height: var(--line-height-body);
 }
 
 .msg-text {
-  font-size: 28rpx;
+  font-size: var(--font-size-body);
   white-space: pre-wrap;
   word-break: break-word;
 }
 
-/* ---- User bubble: cream text on dark indigo, right-aligned ---- */
+/* User bubble — right-aligned */
 .bubble-user {
-  background: var(--bg-user);
-  border-radius: var(--radius-bubble) 4rpx var(--radius-bubble) var(--radius-bubble);
-  border: 1rpx solid rgba(255, 255, 255, 0.04);
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.15);
+  background: var(--color-surface);
+  border-radius: var(--radius-medium) var(--radius-small) var(--radius-medium) var(--radius-medium);
+  border: 1rpx solid rgba(139, 126, 110, 0.12);
+  box-shadow: var(--shadow-subtle);
 }
 
 .bubble-user .msg-text {
-  color: var(--cream);
+  color: var(--color-text-primary);
 }
 
-.bubble-user::after {
-  content: '';
-  position: absolute;
-  top: 18rpx;
-  right: -6rpx;
-  width: 0;
-  height: 0;
-  border-left: 8rpx solid var(--bg-user);
-  border-top: 6rpx solid transparent;
-  border-bottom: 6rpx solid transparent;
-  transform: rotate(-20deg);
-}
-
-/* ---- AI bubble: cream text on lighter indigo, left-aligned ---- */
+/* AI bubble — left-aligned */
 .bubble-ai {
-  background: var(--bg-ai);
-  border-radius: 4rpx var(--radius-bubble) var(--radius-bubble) var(--radius-bubble);
-  border: 1rpx solid var(--gold-dim);
-  box-shadow: 0 2rpx 16rpx rgba(212, 175, 55, 0.08);
-  border-left: 3rpx solid var(--gold);
+  background: var(--color-surface);
+  border-radius: var(--radius-small) var(--radius-medium) var(--radius-medium) var(--radius-medium);
+  border: 1rpx solid rgba(139, 126, 110, 0.12);
+  border-left: 3rpx solid var(--color-accent);
+  box-shadow: var(--shadow-subtle);
 }
 
 .bubble-ai .msg-text {
-  color: var(--cream-dim);
+  color: var(--color-text-primary);
 }
 
-.bubble-ai::after {
-  content: '';
-  position: absolute;
-  top: 18rpx;
-  left: -6rpx;
-  width: 0;
-  height: 0;
-  border-right: 8rpx solid var(--bg-ai);
-  border-top: 6rpx solid transparent;
-  border-bottom: 6rpx solid transparent;
-  transform: rotate(20deg);
-}
+/* -----------------------------------------------------------
+   10. INPUT BAR — Fixed bottom
+   ----------------------------------------------------------- */
 
-/* ================================================================
-   Input bar — fixed bottom
-   ================================================================ */
 .input-bar {
   position: fixed;
   bottom: 0;
@@ -373,109 +323,109 @@ page {
   right: 0;
   display: flex;
   align-items: center;
-  padding: var(--space-md) var(--space-xl);
-  padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-md));
-  background: rgba(22, 19, 41, 0.96);
-  border-top: 1.5rpx solid var(--gold-dim);
-  gap: var(--space-sm);
-  z-index: 100;
-  /* backdrop-filter not supported in WXSS */
+  padding: var(--spacing-4) var(--page-padding);
+  padding-bottom: calc(var(--safe-area-bottom) + var(--spacing-4));
+  background: var(--color-surface);
+  border-top: 1rpx solid rgba(139, 126, 110, 0.12);
+  gap: var(--spacing-3);
+  z-index: var(--z-sticky);
+  box-shadow: 0 -2rpx 8rpx rgba(61, 50, 40, 0.04);
 }
 
 .chat-input {
   flex: 1;
   height: 72rpx;
-  background: var(--bg-elevated);
-  border-radius: var(--radius-round);
-  padding: 0 var(--space-xl);
-  font-size: 28rpx;
-  color: var(--cream);
-  border: 1.5rpx solid rgba(212, 175, 55, 0.1);
-  transition: border-color 0.25s, box-shadow 0.25s;
-  caret-color: var(--gold);
+  background: var(--color-bg);
+  border-radius: var(--radius-pill);
+  padding: 0 var(--spacing-6);
+  font-size: var(--font-size-body);
+  color: var(--color-text-primary);
+  border: 1rpx solid rgba(139, 126, 110, 0.15);
+  transition: border-color var(--duration-feedback) ease, box-shadow var(--duration-feedback) ease;
+  caret-color: var(--color-accent);
 }
 
 .chat-input:focus {
-  border-color: var(--gold-dim);
-  box-shadow: 0 0 0 3rpx rgba(212, 175, 55, 0.06);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2rpx rgba(176, 102, 80, 0.10);
 }
 
 .chat-input::placeholder {
-  color: #8A85A8;
+  color: var(--color-text-secondary);
+  opacity: 0.50;
 }
 
-/* ---- Send button: golden pill ---- */
+/* Send button */
 .send-btn {
   width: 120rpx;
   height: 72rpx;
   line-height: 72rpx;
   text-align: center;
-  background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  color: var(--color-text-inverse);
-  font-size: 24rpx;
-  font-weight: 700;
-  border-radius: var(--radius-round);
+  background: var(--color-accent);
+  color: var(--color-surface);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-pill);
   border: none;
   padding: 0;
-  transition: all 0.25s;
-  box-shadow: 0 4rpx 16rpx var(--gold-glow);
+  transition: all var(--duration-feedback) ease;
+  box-shadow: var(--shadow-subtle);
 }
-
-.send-btn::after { border: none; }
 
 .send-btn:active:not([disabled]) {
   transform: scale(0.94);
+  opacity: 0.90;
 }
 
 .send-btn[disabled] {
-  opacity: 0.35;
+  opacity: 0.30;
+  box-shadow: none;
+  pointer-events: none;
 }
 
-/* ================================================================
-   Free query hint
-   ================================================================ */
+/* -----------------------------------------------------------
+   11. FREE QUERY HINT
+   ----------------------------------------------------------- */
+
 .free-hint {
   text-align: center;
-  padding: var(--space-sm) 0;
-  font-size: 22rpx;
-  color: var(--text-tertiary);
+  padding: var(--spacing-3) 0;
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
   position: fixed;
   bottom: 112rpx;
   left: 0;
   right: 0;
+  opacity: 0.60;
 }
 
-/* ================================================================
-   Skeleton loading — dark indigo shimmer
-   ================================================================ */
+/* -----------------------------------------------------------
+   12. SKELETON LOADING
+   ----------------------------------------------------------- */
+
 .skeleton-messages {
   flex: 1;
-  padding: var(--space-xl);
+  padding: var(--spacing-6);
 }
 
 .skeleton-msg {
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--spacing-6);
 }
 
 .skeleton-bubble {
   height: 72rpx;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-elevated) 50%, var(--bg-card) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.6s infinite;
+  border-radius: var(--radius-medium);
+  background: rgba(139, 126, 110, 0.08);
+  animation: pulse-soft 1500ms ease-in-out infinite;
 }
 
 .skeleton-bubble.left { width: 60%; }
 .skeleton-bubble.right { width: 50%; margin-left: auto; }
 
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
+/* -----------------------------------------------------------
+   13. SCROLLBAR
+   ----------------------------------------------------------- */
 
-/* ================================================================
-   Scrollbar hidden
-   ================================================================ */
 ::-webkit-scrollbar {
   width: 0;
   height: 0;

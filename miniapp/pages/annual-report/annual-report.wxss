@@ -1,226 +1,200 @@
 /* ============================================================
-   Annual Report Page — Starlight Design System
-   #1A1A3E bg · #F4D48C gold · #B8A9E0 lavender accent
-   Celestial calendar aesthetic · Monthly dark cards
-   Golden section headers · Deep cosmic indigo
+   Annual Report — Warm Paper Design System
+   Warm ivory base, deep rose accent, sage subtle
+   Monthly card scroll, report body, intro section
    ============================================================ */
 
-page {
-  background: var(--color-bg);
-  --color-star-subtle: rgba(244, 212, 140, 0.12);
-  --color-text-secondary: var(--color-text-secondary);
-  --color-text-primary: var(--color-text-primary);
-  /* Inline style compat aliases */
-  --space-massive: var(--spacing-5xl);
-  --space-xxxl: var(--spacing-3xl);
-  --space-xxl: var(--spacing-2xl);
-  --space-xl: var(--spacing-xl);
-  --space-lg: var(--spacing-lg);
-  --space-md: var(--spacing-md);
-  --space-sm: var(--spacing-sm);
-  --space-xs: var(--spacing-xs);
-  --fs-h3: var(--font-size-xl);
-  --fs-h4: var(--font-size-lg);
-  --fs-body: var(--font-size-base);
-  --fs-body-small: var(--font-size-sm);
-  --fs-caption: var(--font-size-xs);
-  --lh-loose: var(--line-height-loose);
-  --lh-normal: var(--line-height-base);
-  --fw-semibold: var(--font-weight-semibold);
-  --fw-bold: var(--font-weight-bold);
-  --fw-medium: var(--font-weight-medium);
-  --duration-normal: var(--duration-base);
-  --duration-fast: var(--duration-fast);
-  --ease-out: var(--ease-out);
-  --ease-in-out: var(--ease-in-out);
-}
+/* -----------------------------------------------------------
+   1. CONTAINER
+   ----------------------------------------------------------- */
 
-/* ============================================================
-   Container
-   ============================================================ */
 .container {
-  padding: var(--spacing-xl);
-  padding-bottom: calc(var(--safe-area-bottom) + var(--spacing-5xl));
+  padding: var(--page-padding);
+  padding-bottom: calc(var(--page-padding) + var(--safe-area-bottom));
   min-height: 100vh;
   position: relative;
-  z-index: 1;
+  z-index: var(--z-base);
 }
 
-/* ============================================================
-   Gold / Lavender utilities
-   ============================================================ */
-.gold {
-  color: var(--color-gold);
-}
-.lavender {
-  color: #B8A9E0;
+/* -----------------------------------------------------------
+   2. COLOR UTILITIES
+   ----------------------------------------------------------- */
+
+.accent {
+  color: var(--color-accent);
 }
 
-/* ============================================================
-   Text helpers
-   ============================================================ */
+.subtle {
+  color: var(--color-subtle);
+}
+
+/* -----------------------------------------------------------
+   3. TEXT HELPERS
+   ----------------------------------------------------------- */
+
 .text-dim {
   color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-body);
 }
 
 .text-secondary {
   color: var(--color-text-secondary);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-body);
 }
 
 .text-body {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-body);
   color: var(--color-text-primary);
-  line-height: var(--line-height-base);
+  line-height: var(--line-height-body);
 }
 
-/* ============================================================
-   INTRO — Preamble before generation
-   ============================================================ */
+/* -----------------------------------------------------------
+   4. INTRO
+   ----------------------------------------------------------- */
+
 .intro {
   text-align: center;
-  padding: var(--spacing-5xl) var(--spacing-xl) var(--spacing-2xl);
+  padding: var(--spacing-8) var(--spacing-6) var(--spacing-6);
 }
 
 .heading-1 {
-  font-size: var(--font-size-3xl);
+  font-size: var(--font-size-display);
   font-weight: var(--font-weight-bold);
-  color: var(--color-gold);
+  color: var(--color-text-primary);
   text-align: center;
-  letter-spacing: 2rpx;
+  letter-spacing: var(--letter-spacing-display);
+  line-height: var(--line-height-heading);
 }
 
-/* ============================================================
-   Generate Button — Golden pill
-   ============================================================ */
+/* -----------------------------------------------------------
+   5. GENERATE BUTTON
+   ----------------------------------------------------------- */
+
 .btn-glow-pulse {
   width: 80%;
-  margin: var(--spacing-xl) auto 0;
-  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
-  color: var(--color-text-inverse);
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  border-radius: var(--radius-pill);
-  padding: 28rpx 0;
-  border: none;
-  box-shadow: var(--shadow-gold-button);
-  letter-spacing: 2rpx;
-  transition: all var(--duration-base);
+  margin: var(--spacing-6) auto 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: glow-pulse 2.5s ease-in-out infinite;
+  background: var(--color-accent);
+  color: var(--color-surface);
+  font-size: var(--font-size-body-large);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-pill);
+  padding: var(--spacing-5) 0;
+  border: none;
+  box-shadow: var(--shadow-subtle);
+  letter-spacing: var(--letter-spacing-none);
+  transition: all var(--duration-navigation) ease;
 }
 
 .btn-glow-pulse:active {
-  transform: scale(0.96);
+  transform: scale(0.97);
   opacity: 0.90;
-  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.20);
+  box-shadow: var(--shadow-subtle);
 }
 
-@keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 10rpx rgba(244, 212, 140, 0.08), var(--shadow-gold-button); }
-  50% { box-shadow: 0 0 30rpx rgba(244, 212, 140, 0.20), var(--shadow-gold-button); }
+.btn-glow-pulse[disabled] {
+  opacity: 0.30;
+  box-shadow: none;
+  pointer-events: none;
 }
 
 /* Secondary button (outline) */
 .btn-secondary {
   width: 80%;
-  background: transparent;
-  border: 1rpx solid rgba(244, 212, 140, 0.20);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-base);
-  border-radius: var(--radius-pill);
-  padding: 24rpx 0;
-  letter-spacing: 1rpx;
-  transition: all var(--duration-base);
+  margin: var(--spacing-4) auto 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: transparent;
+  border: 1rpx solid rgba(176, 102, 80, 0.20);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body);
+  border-radius: var(--radius-pill);
+  padding: var(--spacing-5) 0;
+  letter-spacing: var(--letter-spacing-none);
+  transition: all var(--duration-navigation) ease;
 }
 
 .btn-secondary:active {
-  border-color: rgba(244, 212, 140, 0.40);
-  color: var(--color-gold);
-  background: rgba(244, 212, 140, 0.04);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  background: rgba(176, 102, 80, 0.04);
 }
 
-/* ============================================================
-   Mystic Loading
-   ============================================================ */
+/* -----------------------------------------------------------
+   6. MYSTIC LOADING
+   ----------------------------------------------------------- */
+
 .mystic-loading {
   text-align: center;
-  padding: var(--spacing-5xl) var(--spacing-xl);
+  padding: var(--spacing-8) var(--spacing-6);
 }
 
 .mystic-loading-symbol {
-  font-size: 72rpx;
+  width: 72rpx;
+  height: 72rpx;
   display: block;
-  margin-bottom: var(--spacing-xl);
-  opacity: 0.80;
-  animation: mystic-rotate 3s ease-in-out infinite;
-}
-
-@keyframes mystic-rotate {
-  0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.70; }
-  50% { transform: rotate(180deg) scale(1.10); opacity: 1; }
+  margin: 0 auto var(--spacing-6);
+  opacity: 0.60;
 }
 
 .mystic-loading-title {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-body-large);
   color: var(--color-text-primary);
   font-weight: var(--font-weight-semibold);
   display: block;
-  margin-bottom: var(--spacing-sm);
-  letter-spacing: 2rpx;
+  margin-bottom: var(--spacing-3);
+  letter-spacing: var(--letter-spacing-none);
 }
 
 .mystic-loading-sub {
-  font-size: var(--font-size-base);
-  color: var(--color-text-tertiary);
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
   display: block;
+  opacity: 0.70;
 }
 
-/* ============================================================
-   REPORT — Main report body
-   ============================================================ */
+/* -----------------------------------------------------------
+   7. REPORT BODY
+   ----------------------------------------------------------- */
+
 .report {
-  padding: var(--spacing-lg) 0;
+  padding: var(--spacing-5) 0;
 }
 
-/* Golden section title (centered) */
 .section-title-center {
-  font-size: var(--font-size-xl);
-  color: var(--color-gold);
+  font-size: var(--font-size-subhead);
+  color: var(--color-text-primary);
   font-weight: var(--font-weight-bold);
   display: block;
   text-align: center;
-  margin-bottom: var(--spacing-2xl);
-  letter-spacing: 2rpx;
-  text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.08);
+  margin-bottom: var(--spacing-6);
+  letter-spacing: var(--letter-spacing-none);
 }
 
-/* ============================================================
-   MONTHLY CARDS — Dark indigo, golden month labels
-   ============================================================ */
+/* -----------------------------------------------------------
+   8. MONTHLY CARDS
+   ----------------------------------------------------------- */
+
 .report-cards-section {
-  margin-bottom: var(--spacing-2xl);
+  margin-bottom: var(--spacing-6);
 }
 
 .section-subtitle {
-  font-size: var(--font-size-base);
-  color: var(--color-gold);
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
   font-weight: var(--font-weight-medium);
   display: block;
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-5);
   text-align: center;
-  letter-spacing: 2rpx;
+  letter-spacing: var(--letter-spacing-none);
 }
 
 .monthly-cards-scroll {
   white-space: nowrap;
-  padding-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-4);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -228,71 +202,57 @@ page {
 .monthly-cards-row {
   display: flex;
   flex-direction: row;
-  gap: var(--spacing-md);
-  padding: 0 var(--spacing-sm);
+  gap: var(--spacing-4);
+  padding: 0 var(--spacing-3);
 }
 
-/* Individual month card */
 .monthly-card-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   flex-shrink: 0;
   width: 300rpx;
-  padding: var(--spacing-lg) var(--spacing-md);
-  border-radius: var(--radius-lg);
-  background: var(--color-card);
-  border: 1rpx solid var(--color-card-border);
-  transition: all var(--duration-base) var(--ease-soft);
-  box-shadow: var(--shadow-card);
+  padding: var(--spacing-5) var(--spacing-4);
+  border-radius: var(--radius-medium);
+  background: var(--color-surface);
+  border: 1rpx solid rgba(139, 126, 110, 0.12);
+  transition: all var(--duration-navigation) ease;
+  box-shadow: var(--shadow-subtle);
   position: relative;
   overflow: hidden;
-}
-
-/* Starlight accent glow */
-.monthly-card-item::before {
-  content: '';
-  position: absolute;
-  top: -60rpx;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 200rpx;
-  height: 120rpx;
-  background: radial-gradient(circle, rgba(244, 212, 140, 0.06) 0%, transparent 70%);
-  pointer-events: none;
 }
 
 .monthly-card-item:active {
-  transform: translateY(-6rpx);
-  border-color: var(--color-card-border-hover);
-  box-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.30), 0 0 60rpx rgba(244, 212, 140, 0.06);
+  border-color: rgba(176, 102, 80, 0.20);
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-2rpx);
 }
 
-/* Month label — golden */
 .month-label {
-  font-size: var(--font-size-sm);
-  color: var(--color-gold);
+  font-size: var(--font-size-body);
+  color: var(--color-accent);
   text-align: center;
-  margin-top: var(--spacing-sm);
-  letter-spacing: 2rpx;
+  margin-top: var(--spacing-3);
+  letter-spacing: var(--letter-spacing-none);
   font-weight: var(--font-weight-medium);
 }
 
-/* ============================================================
-   REPORT BODY — Dark card with report text
-   ============================================================ */
+/* -----------------------------------------------------------
+   9. REPORT TEXT BODY
+   ----------------------------------------------------------- */
+
 .report-body {
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-2xl);
-  margin-bottom: var(--spacing-xl);
+  border-radius: var(--radius-medium);
+  padding: var(--spacing-6);
+  margin-bottom: var(--spacing-6);
   position: relative;
   overflow: hidden;
-  background: var(--color-card);
-  border: 1rpx solid var(--color-card-border);
-  box-shadow: var(--shadow-card);
+  background: var(--color-surface);
+  border: 1rpx solid rgba(139, 126, 110, 0.12);
+  box-shadow: var(--shadow-subtle);
 }
 
-/* Golden top rim glow */
+/* Top accent rim */
 .report-body::before {
   content: '';
   position: absolute;
@@ -300,112 +260,110 @@ page {
   left: 0;
   right: 0;
   height: 2rpx;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(244, 212, 140, 0.20) 30%,
-    rgba(244, 212, 140, 0.35) 50%,
-    rgba(244, 212, 140, 0.20) 70%,
-    transparent 100%
-  );
+  background: rgba(139, 126, 110, 0.15);
   pointer-events: none;
 }
 
 .report-text {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-body);
   color: var(--color-text-primary);
-  line-height: var(--line-height-loose);
+  line-height: var(--line-height-body);
   white-space: pre-wrap;
-  letter-spacing: 1rpx;
+  letter-spacing: var(--letter-spacing-none);
 }
 
-/* ============================================================
-   Primary Button (share / actions)
-   ============================================================ */
+/* -----------------------------------------------------------
+   10. PRIMARY BUTTON (share / actions)
+   ----------------------------------------------------------- */
+
 .btn-primary {
-  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
-  color: var(--color-text-inverse);
-  border: none;
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
-  border-radius: var(--radius-pill);
-  padding: 24rpx 48rpx;
-  box-shadow: var(--shadow-gold-button);
-  transition: all var(--duration-base) var(--ease-soft);
   display: flex;
   align-items: center;
   justify-content: center;
+  background: var(--color-accent);
+  color: var(--color-surface);
+  border: none;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-pill);
+  padding: var(--spacing-5) var(--spacing-7);
+  box-shadow: var(--shadow-subtle);
+  transition: all var(--duration-navigation) ease;
   width: 100%;
 }
 
 .btn-primary:active {
   transform: scale(0.97);
   opacity: 0.90;
-  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.20);
+  box-shadow: var(--shadow-subtle);
 }
 
-/* ============================================================
-   Error State
-   ============================================================ */
+/* -----------------------------------------------------------
+   11. ERROR STATE
+   ----------------------------------------------------------- */
+
 .error-state {
   text-align: center;
-  padding: var(--spacing-5xl) var(--spacing-xl);
+  padding: var(--spacing-8) var(--spacing-6);
 }
 
 .error-icon {
-  font-size: 80rpx;
+  width: 80rpx;
+  height: 80rpx;
   display: block;
-  margin-bottom: var(--spacing-md);
-  opacity: 0.50;
+  margin: 0 auto var(--spacing-5);
+  opacity: 0.30;
 }
 
 .error-text {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-body);
   color: var(--color-text-secondary);
   display: block;
-  margin-bottom: var(--spacing-xs);
+  margin-bottom: var(--spacing-3);
 }
 
 .error-hint {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-tertiary);
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
   display: block;
-  margin-bottom: var(--spacing-2xl);
+  margin-bottom: var(--spacing-6);
+  opacity: 0.70;
 }
 
 .btn-small {
-  font-size: var(--font-size-sm);
-  padding: 16rpx 36rpx;
+  font-size: var(--font-size-body);
+  padding: var(--spacing-4) var(--spacing-6);
 }
 
-/* ============================================================
-   SKELETON — Dark cosmic shimmer
-   ============================================================ */
+/* -----------------------------------------------------------
+   12. SKELETON
+   ----------------------------------------------------------- */
+
 .skeleton {
-  padding: var(--spacing-2xl) 0;
+  padding: var(--spacing-6) 0;
 }
 
 .skeleton-hero-area {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-3xl);
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-7);
 }
 
 .skeleton-icon {
   width: 80rpx;
   height: 80rpx;
-  border-radius: var(--radius-full);
-  background: var(--color-surface);
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+  border-radius: var(--radius-pill);
+  background: rgba(139, 126, 110, 0.08);
+  animation: pulse-soft 1500ms ease-in-out infinite;
 }
 
 .skeleton-line {
   height: 32rpx;
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+  border-radius: var(--radius-small);
+  background: rgba(139, 126, 110, 0.08);
+  animation: pulse-soft 1500ms ease-in-out infinite;
 }
 
 .skeleton-line.wide { width: 300rpx; }
@@ -414,36 +372,27 @@ page {
 .skeleton-desc {
   width: 80%;
   height: 80rpx;
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
-  margin-bottom: var(--spacing-2xl);
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+  border-radius: var(--radius-small);
+  background: rgba(139, 126, 110, 0.08);
+  margin-bottom: var(--spacing-6);
+  animation: pulse-soft 1500ms ease-in-out infinite;
 }
 
 .skeleton-btn {
   width: 80%;
   height: 88rpx;
   border-radius: var(--radius-pill);
-  background: var(--color-surface);
+  background: rgba(139, 126, 110, 0.08);
   margin: 0 auto;
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+  animation: pulse-soft 1500ms ease-in-out infinite;
 }
 
-@keyframes pulse-scale {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.45; }
-}
+/* -----------------------------------------------------------
+   13. ENTRANCE ANIMATIONS
+   ----------------------------------------------------------- */
 
-/* ============================================================
-   Entrance animations
-   ============================================================ */
-.anim-fade-in-up-1 { opacity: 0; animation: fade-up 0.5s var(--ease-soft) 0.08s forwards; }
-.anim-fade-in-up-2 { opacity: 0; animation: fade-up 0.5s var(--ease-soft) 0.23s forwards; }
-.anim-fade-in-up-3 { opacity: 0; animation: fade-up 0.5s var(--ease-soft) 0.38s forwards; }
-.anim-fade-in-up-4 { opacity: 0; animation: fade-up 0.5s var(--ease-soft) 0.53s forwards; }
-.anim-fade-in-up-5 { opacity: 0; animation: fade-up 0.5s var(--ease-soft) 0.68s forwards; }
-
-@keyframes fade-up {
-  0% { opacity: 0; transform: translateY(24rpx); }
-  100% { opacity: 1; transform: translateY(0); }
-}
+.anim-fade-in-up-1 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0.08s forwards; }
+.anim-fade-in-up-2 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0.23s forwards; }
+.anim-fade-in-up-3 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0.38s forwards; }
+.anim-fade-in-up-4 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0.53s forwards; }
+.anim-fade-in-up-5 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0.68s forwards; }

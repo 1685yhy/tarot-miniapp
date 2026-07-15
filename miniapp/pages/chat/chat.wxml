@@ -25,24 +25,24 @@
 
   <!-- ===== 空状态（intro） ===== -->
   <view wx:elif="{{messages.length === 0 && !pageError && !pageLoading}}" class="chat-intro empty-state">
-    <text class="empty-icon">🔮</text>
+    <view class="empty-icon" style="width:64rpx;height:64rpx;border-radius:50%;background:linear-gradient(135deg,var(--color-purple),var(--color-gold));margin:0 auto 24rpx"></view>
     <text class="empty-text">对刚才的解读有什么想问的吗？</text>
     <text class="empty-hint">星光解读会基于你的牌面继续为你解读</text>
   </view>
 
   <!-- ===== 错误状态 ===== -->
   <view wx:elif="{{pageError && !readingContext}}" class="error-state">
-    <text class="error-icon">🌙</text>
+    <view class="error-icon" style="width:64rpx;height:64rpx;border-radius:50%;background:linear-gradient(135deg,var(--color-purple),var(--color-gold));margin:0 auto 24rpx"></view>
     <text class="error-text">星光解读暂时无法回应</text>
     <text class="error-hint">{{pageError}}</text>
-    <button class="btn-primary btn-small" bindtap="onRetry">✨ 重试</button>
+    <button class="btn-primary btn-small" bindtap="onRetry"><image class="btn-icon" src="/images/icons/refresh.png" mode="aspectFit" /><text>重试</text></button>
   </view>
 
   <!-- ===== 消息列表 ===== -->
   <view wx:elif="{{!pageLoading}}" class="message-list anim-fade-in">
     <view class="msg-item msg-enter {{item.role === 'user' ? 'msg-user' : 'msg-ai'}}" wx:for="{{messages}}" wx:key="index">
       <text class="text-caption" style="display:block;margin-bottom:6rpx;padding:0 8rpx;text-align:{{item.role === 'user' ? 'right' : 'left'}}">
-        {{item.role === 'user' ? '你' : '🔮 星光解读'}}
+        {{item.role === 'user' ? '你' : '星光解读'}}
       </text>
       <view class="msg-bubble {{item.role === 'user' ? 'bubble-user' : 'bubble-ai'}}">
         <text class="msg-text">{{item.content}}</text>

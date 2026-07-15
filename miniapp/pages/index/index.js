@@ -13,9 +13,9 @@ Page({
     showOnboarding: false,
     onboardingStep: 0,
     onboardingSteps: [
-      { emoji: '✨', title: '每日一牌', desc: '轻触卡片，获得今日专属指引' },
-      { emoji: '🔮', title: '牌阵解读', desc: '选择牌阵，AI为您深度解读' },
-      { emoji: '💫', title: '星光陪伴', desc: '记录心灵旅程，发现内在力量' },
+      { title: '每日一牌', desc: '轻触卡片，获得今日专属指引' },
+      { title: '牌阵解读', desc: '选择牌阵，AI为您深度解读' },
+      { title: '星光陪伴', desc: '记录心灵旅程，发现内在力量' },
     ],
   },
 
