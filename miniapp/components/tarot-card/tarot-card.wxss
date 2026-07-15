@@ -1,236 +1,35 @@
 /* ============================================================
-   柔光星辰 — Tarot Card Component
-   "A window into another world — mysterious, beautiful, inviting"
+   Tarot Card — Craft stylesheet
+   Principle: the image is the content. The frame is silent.
    ============================================================ */
 
 /* ---- Card Wrapper ---- */
 
 .tarot-card-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 16rpx;
-  width: 100%;
-  box-sizing: border-box;
-  /* perspective not supported in WXSS — flip uses scaleX */
+  position: relative;
+  width: 280rpx;
+  height: 460rpx;
+  flex-shrink: 0;
 }
 
 /* ---- Card Body ---- */
 
 .tarot-card {
   position: relative;
-  width: 380rpx;
-  height: 600rpx;
-  border-radius: 18rpx;
+  width: 100%;
+  height: 100%;
+  border-radius: 16rpx;
   overflow: hidden;
+  background: #1a1a1a;
 
-  /* Dark indigo card surface */
-  background: linear-gradient(
-    150deg,
-    #19103a 0%,
-    #20174a 30%,
-    #1b1340 65%,
-    #140d30 100%
-  );
+  /* Frame: 1rpx solid warm taupe, no glow */
+  border: 1rpx solid #e0d8cf;
 
-  /* Golden border */
-  border: 1.5rpx solid #c9a04a;
-
-  /* Soft warm golden glow shadow (resting state) */
-  box-shadow:
-    0 0 30rpx 6rpx rgba(212, 168, 83, 0.20),
-    0 0 70rpx 18rpx rgba(212, 168, 83, 0.08),
-    0 0 120rpx 36rpx rgba(212, 168, 83, 0.04),
-    inset 0 0 50rpx 8rpx rgba(212, 168, 83, 0.03);
-
-  /* Mount animations: rise + border glow play concurrently.
-     Opacity and transform are separate keyframes so the
-     reversed selector can override one without losing the other. */
-  animation:
-    card-rise-opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards,
-    card-rise-transform 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards,
-    card-border-glow 1.4s ease-out forwards;
-
-  transition:
-    transform 0.6s cubic-bezier(0.23, 1, 0.32, 1),
-    box-shadow 0.6s ease;
+  /* Single-level warm brown shadow */
+  box-shadow: 0 4rpx 16rpx rgba(120, 100, 80, 0.18);
 }
 
-/* ============================================================
-   MOUNT ANIMATION 1a — Card Rise (opacity)
-   Fades in on mount
-   ============================================================ */
-
-@keyframes card-rise-opacity {
-  0%   { opacity: 0; }
-  100% { opacity: 1; }
-}
-
-/* ============================================================
-   MOUNT ANIMATION 1b — Card Rise (transform)
-   Slides up 40rpx on mount
-   ============================================================ */
-
-@keyframes card-rise-transform {
-  0%   { transform: translateY(40rpx) scale(0.96); }
-  100% { transform: translateY(0) scale(1); }
-}
-
-/* ============================================================
-   MOUNT ANIMATION 2 — Golden Border Glow Flash
-   Brief intense golden glow on first appearance
-   ============================================================ */
-
-@keyframes card-border-glow {
-  0% {
-    box-shadow:
-      0 0 10rpx 2rpx rgba(212, 168, 83, 0.08),
-      0 0 30rpx 8rpx rgba(212, 168, 83, 0.03),
-      inset 0 0 20rpx 4rpx rgba(212, 168, 83, 0.01);
-  }
-  30% {
-    box-shadow:
-      0 0 60rpx 20rpx rgba(212, 168, 83, 0.35),
-      0 0 120rpx 36rpx rgba(212, 168, 83, 0.15),
-      0 0 180rpx 50rpx rgba(212, 168, 83, 0.06),
-      inset 0 0 70rpx 14rpx rgba(212, 168, 83, 0.07);
-  }
-  60% {
-    box-shadow:
-      0 0 40rpx 10rpx rgba(212, 168, 83, 0.25),
-      0 0 90rpx 24rpx rgba(212, 168, 83, 0.10),
-      0 0 140rpx 40rpx rgba(212, 168, 83, 0.05),
-      inset 0 0 60rpx 10rpx rgba(212, 168, 83, 0.05);
-  }
-  100% {
-    box-shadow:
-      0 0 30rpx 6rpx rgba(212, 168, 83, 0.20),
-      0 0 70rpx 18rpx rgba(212, 168, 83, 0.08),
-      0 0 120rpx 36rpx rgba(212, 168, 83, 0.04),
-      inset 0 0 50rpx 8rpx rgba(212, 168, 83, 0.03);
-  }
-}
-
-/* ============================================================
-   MOUNT ANIMATION 3 — Shimmer Sweep (0.5s delay)
-   A subtle light sheen glides diagonally across the card face
-   ============================================================ */
-
-.tarot-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 4;
-  border-radius: inherit;
-  pointer-events: none;
-  background: linear-gradient(
-    105deg,
-    transparent 0%,
-    transparent 35%,
-    rgba(242, 230, 201, 0.10) 45%,
-    rgba(242, 230, 201, 0.18) 50%,
-    rgba(242, 230, 201, 0.10) 55%,
-    transparent 65%,
-    transparent 100%
-  );
-  transform: translateX(-100%);
-  animation: card-shimmer 1s ease-out 0.5s forwards;
-}
-
-@keyframes card-shimmer {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-/* ============================================================
-   SUIT-SPECIFIC SPARKLE on mount
-   The suit-indicator dot (::before) briefly flashes with
-   a colored pulse at mount time.
-   ============================================================ */
-
-.tarot-card.card-wands::before,
-.tarot-card.card-cups::before,
-.tarot-card.card-swords::before,
-.tarot-card.card-pentacles::before {
-  animation: suit-sparkle 1.6s ease-out 0.3s;
-}
-
-.tarot-card.card-major::before {
-  animation: suit-sparkle-major 1.6s ease-out 0.3s;
-}
-
-@keyframes suit-sparkle {
-  0%   { opacity: 0; transform: scale(0); }
-  12%  { opacity: 1; transform: scale(2); }
-  28%  { opacity: 0.9; transform: scale(1); }
-  100% { opacity: 0.9; transform: scale(1); }
-}
-
-@keyframes suit-sparkle-major {
-  0%   { opacity: 0; transform: scale(0) rotate(45deg); }
-  12%  { opacity: 1; transform: scale(2) rotate(45deg); }
-  28%  { opacity: 0.9; transform: scale(1) rotate(45deg); }
-  100% { opacity: 0.9; transform: scale(1) rotate(45deg); }
-}
-
-/* ---- Reversed: rotate card + enhanced blood-rose inner glow ---- */
-
-.tarot-card-wrapper.reversed .tarot-card {
-  transform: rotate(180deg);
-
-  /* Combine mount animations (fade-in + border glow only — no rise transform)
-     with the continuous blood-rose glow pulse that starts after mount. */
-  animation:
-    card-rise-opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards,
-    card-border-glow 1.4s ease-out forwards,
-    reversed-glow 4s ease-in-out 1.5s infinite alternate;
-}
-
-@keyframes reversed-glow {
-  0% {
-    box-shadow:
-      0 0 30rpx 6rpx rgba(212, 168, 83, 0.20),
-      0 0 70rpx 18rpx rgba(212, 168, 83, 0.08),
-      0 0 120rpx 36rpx rgba(212, 168, 83, 0.04),
-      inset 0 -60rpx 90rpx -10rpx rgba(225, 150, 140, 0.30),
-      inset 0 0 50rpx 8rpx rgba(225, 150, 140, 0.10),
-      inset 0 0 100rpx 24rpx rgba(225, 150, 140, 0.03);
-  }
-  100% {
-    box-shadow:
-      0 0 30rpx 6rpx rgba(212, 168, 83, 0.20),
-      0 0 70rpx 18rpx rgba(212, 168, 83, 0.08),
-      0 0 120rpx 36rpx rgba(212, 168, 83, 0.04),
-      inset 0 -60rpx 90rpx -10rpx rgba(225, 150, 140, 0.40),
-      inset 0 0 60rpx 12rpx rgba(225, 150, 140, 0.15),
-      inset 0 0 120rpx 30rpx rgba(225, 150, 140, 0.05);
-  }
-}
-
-/* ============================================================
-   FLIP ANIMATION — Card Reveal Flip
-   Flipping occurs when .flipping class is set on wrapper.
-   Uses scaleX trick since 3D transforms are limited in WXSS.
-   Must appear AFTER the reversed rule in the CSS so it
-   wins the cascade when both .flipping and .reversed match.
-   ============================================================ */
-
-.tarot-card-wrapper.flipping .tarot-card {
-  animation: card-flip 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-}
-
-.tarot-card-wrapper.flipping {
-  --flip-glow: 0 0 80rpx 30rpx rgba(212, 168, 83, 0.45);
-}
-
-@keyframes card-flip {
-  0%   { transform: scaleX(0); }
-  50%  { transform: scaleX(0.08); }
-  100% { transform: scaleX(1); }
-}
-
-/* ---- Card Image (ComfyUI-generated) ---- */
+/* ---- Card Image — fills the card ---- */
 
 .card-image {
   position: absolute;
@@ -242,227 +41,52 @@
   pointer-events: none;
 }
 
-/* ---- Ornament Bars (golden decorative strips) ---- */
+/* ---- Text Overlay — dark strip at bottom ---- */
 
-.card-ornament-top,
-.card-ornament-bottom {
+.card-text-overlay {
   position: absolute;
+  bottom: 0;
   left: 0;
   right: 0;
-  height: 4rpx;
-  z-index: 5;
-  pointer-events: none;
-}
-
-.card-ornament-top {
-  top: 0;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(242, 214, 138, 0.15) 8%,
-    #d4a853 25%,
-    #f2d68a 50%,
-    #d4a853 75%,
-    rgba(242, 214, 138, 0.15) 92%,
-    transparent 100%
-  );
-}
-
-.card-ornament-bottom {
-  bottom: 0;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(242, 214, 138, 0.15) 8%,
-    #d4a853 25%,
-    #f2d68a 50%,
-    #d4a853 75%,
-    rgba(242, 214, 138, 0.15) 92%,
-    transparent 100%
-  );
-}
-
-/* ---- Card Number ---- */
-
-.card-number {
-  position: absolute;
-  top: 20rpx;
-  left: 24rpx;
   z-index: 10;
-
-  font-size: 20rpx;
-  font-weight: 500;
-  font-family: 'Georgia', 'Times New Roman', serif;
-  letter-spacing: 2rpx;
-
-  color: #f2e6c9;
-  text-shadow:
-    0 0 6rpx rgba(212, 168, 83, 0.50),
-    0 0 12rpx rgba(212, 168, 83, 0.20),
-    0 1rpx 2rpx rgba(0, 0, 0, 0.50);
   pointer-events: none;
-}
-
-/* ---- Card Art Area ---- */
-
-.card-art {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
-  pointer-events: none;
-}
-
-/* ---- Star Field (fallback when no CDN image) ---- */
-
-.star-field {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(
-    ellipse at 50% 40%,
-    rgba(50, 30, 100, 0.35) 0%,
-    transparent 70%
+  padding: 16rpx 20rpx 18rpx;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.72) 0%,
+    rgba(0, 0, 0, 0.72) 60%,
+    rgba(0, 0, 0, 0) 100%
   );
-}
-
-.star {
-  position: absolute;
-  width: 4rpx;
-  height: 4rpx;
-  border-radius: 50%;
-  background: #f2e6c9;
-  animation: twinkle var(--dur, 3s) ease-in-out infinite alternate;
-  box-shadow: 0 0 6rpx 2rpx rgba(242, 230, 201, 0.30);
-}
-
-.s1 { top: 10%; left: 18%; --dur: 2.4s; }
-.s2 { top: 6%;  left: 62%; --dur: 3.8s; width: 3rpx; height: 3rpx; opacity: 0.7; }
-.s3 { top: 22%; left: 38%; --dur: 2.0s; width: 5rpx; height: 5rpx; }
-.s4 { top: 42%; left: 72%; --dur: 4.2s; width: 3rpx; height: 3rpx; opacity: 0.6; }
-.s5 { top: 18%; left: 78%; --dur: 2.8s; }
-.s6 { top: 36%; left: 14%; --dur: 3.4s; width: 3rpx; height: 3rpx; opacity: 0.5; }
-.s7 { top: 52%; left: 48%; --dur: 2.2s; width: 5rpx; height: 5rpx; opacity: 0.8; }
-.s8 { top: 64%; left: 28%; --dur: 4.0s; width: 3rpx; height: 3rpx; }
-
-@keyframes twinkle {
-  0%   { opacity: 0.25; transform: scale(0.6); }
-  100% { opacity: 1;    transform: scale(1.1); }
-}
-
-/* ---- Fallback Symbol (when no CDN image) ---- */
-
-.card-symbol {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 3;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20rpx;
+  gap: 4rpx;
 }
-
-.art-shape {
-  width: 120rpx;
-  height: 170rpx;
-  border: 1.5rpx solid rgba(212, 168, 83, 0.30);
-  border-radius: 12rpx;
-  background: radial-gradient(
-    ellipse at 50% 35%,
-    rgba(60, 35, 130, 0.40) 0%,
-    rgba(26, 16, 53, 0.60) 100%
-  );
-  box-shadow:
-    inset 0 0 30rpx rgba(212, 168, 83, 0.10),
-    0 0 20rpx rgba(212, 168, 83, 0.06);
-}
-
-.art-accent {
-  position: absolute;
-  top: 38%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 70rpx;
-  height: 70rpx;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(242, 230, 201, 0.12) 0%,
-    transparent 70%
-  );
-  box-shadow: 0 0 30rpx 15rpx rgba(212, 168, 83, 0.05);
-}
-
-.art-detail {
-  position: absolute;
-  bottom: 30%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 50rpx;
-  height: 1.5rpx;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(212, 168, 83, 0.25),
-    transparent
-  );
-}
-
-/* ---- Card Name (English) ---- */
 
 .card-name-en {
-  position: absolute;
-  bottom: 64rpx;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-
-  font-size: 26rpx;
+  font-size: 20rpx;
   font-weight: 600;
   font-family: 'Georgia', 'Times New Roman', serif;
-  letter-spacing: 3rpx;
+  letter-spacing: 2rpx;
   text-transform: uppercase;
   white-space: nowrap;
-  max-width: 80%;
   overflow: hidden;
   text-overflow: ellipsis;
-
-  color: #f2e6c9;
-  text-shadow:
-    0 0 8rpx rgba(212, 168, 83, 0.50),
-    0 0 16rpx rgba(212, 168, 83, 0.20),
-    0 2rpx 4rpx rgba(0, 0, 0, 0.50);
-  pointer-events: none;
+  max-width: 100%;
+  color: #fffdfa;
+  line-height: 1.4;
 }
 
-/* ---- Card Name (Chinese) ---- */
-
 .card-name-zh {
-  position: absolute;
-  bottom: 32rpx;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-
-  font-size: 20rpx;
+  font-size: 16rpx;
   font-weight: 400;
-  letter-spacing: 4rpx;
+  letter-spacing: 3rpx;
   white-space: nowrap;
-  max-width: 80%;
   overflow: hidden;
   text-overflow: ellipsis;
-
-  color: #d4c4a0;
-  text-shadow:
-    0 0 6rpx rgba(212, 168, 83, 0.30),
-    0 1rpx 3rpx rgba(0, 0, 0, 0.40);
-  pointer-events: none;
+  max-width: 100%;
+  color: rgba(255, 253, 250, 0.7);
+  line-height: 1.4;
 }
 
 /* ---- Position Badge ---- */
@@ -473,290 +97,117 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
-
-  display: flex;
-  align-items: center;
-  gap: 6rpx;
-
-  padding: 4rpx 16rpx;
+  pointer-events: none;
+  padding: 3rpx 14rpx;
   border-radius: 20rpx;
-
-  font-size: 18rpx;
+  font-size: 14rpx;
   line-height: 1.4;
   white-space: nowrap;
-  pointer-events: none;
 }
 
 .badge-upright {
-  background: rgba(212, 168, 83, 0.12);
-  border: 0.5rpx solid rgba(212, 168, 83, 0.25);
-  color: #d4c4a0;
+  background: rgba(224, 216, 207, 0.12);
+  border: 0.5rpx solid rgba(224, 216, 207, 0.25);
+  color: #e0d8cf;
 }
 
 .badge-reversed {
-  background: rgba(225, 150, 140, 0.12);
-  border: 0.5rpx solid rgba(225, 150, 140, 0.25);
-  color: #dbb5b0;
+  background: rgba(232, 160, 160, 0.12);
+  border: 0.5rpx solid rgba(232, 160, 160, 0.25);
+  color: #e8a0a0;
 }
 
 .position-icon {
-  font-size: 16rpx;
+  font-size: 14rpx;
 }
 
 .position-text {
-  font-size: 16rpx;
+  font-size: 14rpx;
   letter-spacing: 1rpx;
 }
 
-/* ---- Reversed Label (vertical text on right side) ---- */
-
-.reversed-label {
-  position: absolute;
-  bottom: 104rpx;
-  right: 16rpx;
-  z-index: 10;
-
-  font-size: 16rpx;
-  font-weight: 300;
-  letter-spacing: 4rpx;
-  writing-mode: vertical-rl;
-
-  color: rgba(225, 150, 140, 0.40);
-  text-shadow: 0 0 8rpx rgba(225, 150, 140, 0.20);
-  pointer-events: none;
-}
-
-/* ---- Dark Aura (deep backing glow) ---- */
-
-.card-aura {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  pointer-events: none;
-
-  background: radial-gradient(
-    ellipse at 50% 50%,
-    rgba(20, 8, 50, 0.30) 0%,
-    transparent 75%
-  );
-}
-
-/* ============================================================
-   SUIT INDICATORS — tiny colored dot at top-right corner
-   Applied via .card-{{cardType}} class on .tarot-card
-   ============================================================ */
+/* ---- Suit Indicator — 4rpx dot at top-right ---- */
 
 .tarot-card.card-wands::before,
 .tarot-card.card-cups::before,
 .tarot-card.card-swords::before,
-.tarot-card.card-pentacles::before {
-  content: '';
-  position: absolute;
-  top: 16rpx;
-  right: 16rpx;
-  z-index: 10;
-  width: 12rpx;
-  height: 12rpx;
-  border-radius: 50%;
-  pointer-events: none;
-  box-shadow: 0 0 8rpx 4rpx currentColor;
-  opacity: 0.90;
-}
-
-/* Wands — warm gold sparkle */
-.tarot-card.card-wands::before {
-  color: rgba(212, 168, 83, 0.55);
-  background: radial-gradient(
-    circle at 35% 30%,
-    #f2d68a,
-    #c9a04a 55%,
-    #8a6a30
-  );
-}
-
-/* Cups — soft lavender sparkle */
-.tarot-card.card-cups::before {
-  color: rgba(180, 155, 220, 0.50);
-  background: radial-gradient(
-    circle at 35% 30%,
-    #d8c4f0,
-    #b498d8 55%,
-    #8068b0
-  );
-}
-
-/* Swords — icy silver sparkle */
-.tarot-card.card-swords::before {
-  color: rgba(200, 215, 235, 0.50);
-  background: radial-gradient(
-    circle at 35% 30%,
-    #eaf0fa,
-    #c0d0e4 55%,
-    #8098b8
-  );
-}
-
-/* Pentacles — warm amber sparkle */
-.tarot-card.card-pentacles::before {
-  color: rgba(220, 175, 85, 0.50);
-  background: radial-gradient(
-    circle at 35% 30%,
-    #f2d898,
-    #d4a848 55%,
-    #a07830
-  );
-}
-
-/* Major Arcana — tiny golden diamond instead of dot */
+.tarot-card.card-pentacles::before,
 .tarot-card.card-major::before {
   content: '';
   position: absolute;
-  top: 16rpx;
-  right: 16rpx;
+  top: 12rpx;
+  right: 12rpx;
   z-index: 10;
-  width: 10rpx;
-  height: 10rpx;
-  border-radius: 2rpx;
-  transform: rotate(45deg);
+  width: 4rpx;
+  height: 4rpx;
+  border-radius: 50%;
   pointer-events: none;
-  color: rgba(212, 168, 83, 0.50);
-  background: radial-gradient(
-    circle at 35% 30%,
-    #f2d68a,
-    #c9a04a 55%,
-    #8a6a30
-  );
-  box-shadow: 0 0 8rpx 4rpx currentColor;
-  opacity: 0.90;
 }
 
-/* ---- Reversed: keep suit dot at visual top-right ---- */
-.tarot-card-wrapper.reversed .tarot-card.card-wands::before,
-.tarot-card-wrapper.reversed .tarot-card.card-cups::before,
-.tarot-card-wrapper.reversed .tarot-card.card-swords::before,
-.tarot-card-wrapper.reversed .tarot-card.card-pentacles::before,
-.tarot-card-wrapper.reversed .tarot-card.card-major::before {
+/* Wands — amber */
+.tarot-card.card-wands::before {
+  background: #d4a853;
+}
+
+/* Cups — rose */
+.tarot-card.card-cups::before {
+  background: #e8a0a0;
+}
+
+/* Swords — sage */
+.tarot-card.card-swords::before {
+  background: #a0b894;
+}
+
+/* Pentacles — gold */
+.tarot-card.card-pentacles::before {
+  background: #c9a04a;
+}
+
+/* Major Arcana — gold */
+.tarot-card.card-major::before {
+  background: #c9a04a;
+}
+
+/* ---- Reversed: rotate card + subtle rose border at bottom edge ---- */
+
+.tarot-card-wrapper.reversed .tarot-card {
+  transform: rotate(180deg);
+  /* Subtle 2rpx rose border at bottom edge */
+  border-bottom: 2rpx solid rgba(232, 160, 160, 0.5);
+}
+
+/* Keep suit indicator at visual top-right when reversed */
+.tarot-card-wrapper.reversed .tarot-card::before {
   transform: rotate(180deg);
 }
 
-/* ---- Reversed Major: compensate for diamond rotation ---- */
-.tarot-card-wrapper.reversed .tarot-card.card-major::before {
-  transform: rotate(180deg) rotate(45deg);
+/* ---- FLIP ANIMATION ---- */
+
+.tarot-card-wrapper.flipping .tarot-card {
+  animation: card-flip 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
 }
 
-/* ============================================================
-   RESPONSIVE SIZING
-   ============================================================ */
-
-@media screen and (max-width: 480rpx) {
-  .tarot-card {
-    width: 300rpx;
-    height: 490rpx;
-    border-radius: 16rpx;
-  }
-
-  .card-number {
-    font-size: 16rpx;
-    top: 16rpx;
-    left: 18rpx;
-  }
-
-  .card-name-en {
-    font-size: 20rpx;
-    bottom: 52rpx;
-    letter-spacing: 2rpx;
-  }
-
-  .card-name-zh {
-    font-size: 16rpx;
-    bottom: 26rpx;
-    letter-spacing: 3rpx;
-  }
-
-  .position-badge {
-    font-size: 14rpx;
-    padding: 3rpx 12rpx;
-    bottom: 8rpx;
-  }
-
-  .position-icon { font-size: 13rpx; }
-  .position-text { font-size: 14rpx; }
-
-  .reversed-label {
-    font-size: 14rpx;
-    bottom: 86rpx;
-    right: 12rpx;
-  }
-
-  .tarot-card.card-wands::before,
-  .tarot-card.card-cups::before,
-  .tarot-card.card-swords::before,
-  .tarot-card.card-pentacles::before {
-    width: 10rpx;
-    height: 10rpx;
-    top: 12rpx;
-    right: 12rpx;
-  }
-
-  .tarot-card.card-major::before {
-    width: 8rpx;
-    height: 8rpx;
-    top: 12rpx;
-    right: 12rpx;
-  }
+@keyframes card-flip {
+  0%   { transform: scaleX(0); }
+  50%  { transform: scaleX(0.08); }
+  100% { transform: scaleX(1); }
 }
 
-@media screen and (min-width: 750rpx) {
-  .tarot-card {
-    width: 420rpx;
-    height: 640rpx;
-    border-radius: 18rpx;
-  }
-
-  .card-name-en {
-    font-size: 30rpx;
-    letter-spacing: 4rpx;
-  }
+.tarot-card-wrapper.flipping.reversed .tarot-card {
+  animation: card-flip-reversed 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
 }
 
-/* ============================================================
-   ACCESSIBILITY: reduced motion
-   ============================================================ */
+@keyframes card-flip-reversed {
+  0%   { transform: scaleX(0); }
+  50%  { transform: scaleX(0.08); }
+  100% { transform: scaleX(1) rotate(180deg); }
+}
+
+/* ---- Accessibility: reduced motion ---- */
 
 @media (prefers-reduced-motion: reduce) {
-  .star {
-    animation: none;
-    opacity: 0.6;
-  }
-
-  .tarot-card {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
-
-  .tarot-card::after {
-    animation: none;
-    transform: none;
-    display: none;
-  }
-
-  .tarot-card.card-wands::before,
-  .tarot-card.card-cups::before,
-  .tarot-card.card-swords::before,
-  .tarot-card.card-pentacles::before,
-  .tarot-card.card-major::before {
-    animation: none;
-  }
-
   .tarot-card-wrapper.flipping .tarot-card {
-    animation: none;
-  }
-
-  .tarot-card-wrapper.reversed .tarot-card {
     animation: none;
   }
 }

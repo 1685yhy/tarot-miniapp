@@ -1,97 +1,100 @@
 /* ============================================================
-   百科 · Star Catalog / Constellation Map
-   柔光星辰 — Deep indigo sky, warm golden starlight
-
-   Card grid: 3-column with thumbnails + names
-   Search bar: dark indigo bg, golden border, cream text
-   Filter pills: dark pills, gold active, lavender inactive
+   百科 — Warm Paper Design System
+   Card grid with thumbnails, search bar, filter pills
+   Warm ivory base, deep rose accent, sage subtle
    ============================================================ */
 
-/* ============================================================
-   SEARCH BAR — Dark indigo field, golden border
-   ============================================================ */
+/* -----------------------------------------------------------
+   1. SEARCH BAR
+   ----------------------------------------------------------- */
+
 .search-bar {
   display: flex;
   align-items: center;
   background: var(--color-surface);
+  border: 1rpx solid rgba(139, 126, 110, 0.20);
   border-radius: var(--radius-pill);
-  padding: 20rpx var(--spacing-lg);
-  margin-bottom: var(--spacing-xl);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.15);
-  transition: border-color var(--duration-base) var(--ease-soft),
-              box-shadow var(--duration-base) var(--ease-soft);
+  padding: 0 var(--spacing-5);
+  height: 80rpx;
+  margin-bottom: var(--spacing-6);
+  transition: border-color var(--duration-feedback) ease, box-shadow var(--duration-feedback) ease;
 }
 
 .search-bar:focus-within {
-  border-color: rgba(244, 212, 140, 0.45);
-  box-shadow: 0 0 0 4rpx rgba(244, 212, 140, 0.06),
-              0 0 30rpx rgba(244, 212, 140, 0.04);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2rpx rgba(176, 102, 80, 0.10);
 }
 
 .search-input {
   flex: 1;
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-body);
   color: var(--color-text-primary);
   background: transparent;
+  height: 100%;
+  line-height: 80rpx;
 }
 
-/* ============================================================
-   TAB / FILTER PILLS — Constellation filter row
-   ============================================================ */
+.search-input::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 0.50;
+}
+
+/* -----------------------------------------------------------
+   2. FILTER PILLS
+   ----------------------------------------------------------- */
+
 .filter-bar {
   white-space: nowrap;
-  margin-bottom: var(--spacing-xl);
-  height: 76rpx;
+  margin-bottom: var(--spacing-6);
+  height: 72rpx;
   padding: 0 2rpx;
 }
 
 .filter-item {
   display: inline-flex;
   align-items: center;
-  padding: var(--spacing-xs) var(--spacing-lg);
-  margin-right: var(--spacing-sm);
+  padding: var(--spacing-3) var(--spacing-5);
+  margin-right: var(--spacing-3);
   border-radius: var(--radius-pill);
-  font-size: var(--font-size-sm);
-  color: #F0EDE8;
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
   background: var(--color-surface);
-  border: 1rpx solid rgba(184, 169, 224, 0.12);
-  transition: all var(--duration-fast) var(--ease-soft);
-  letter-spacing: 1rpx;
+  border: 1rpx solid rgba(139, 126, 110, 0.12);
+  transition: all var(--duration-feedback) ease;
+  letter-spacing: var(--letter-spacing-none);
 }
 
 .filter-item:active {
-  transform: translateY(-1rpx);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
 }
 
-/* Active pill — golden background, dark text */
 .filter-active {
-  background: var(--color-gold);
-  color: var(--color-text-inverse);
-  border-color: var(--color-gold);
-  font-weight: var(--font-weight-semibold);
-  box-shadow: 0 0 20rpx rgba(244, 212, 140, 0.15);
+  background: rgba(176, 102, 80, 0.08);
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+  font-weight: var(--font-weight-medium);
 }
 
-/* ============================================================
-   CARD GRID — 3-column star catalog
-   Each card: thumbnail image top, name below
-   ============================================================ */
+/* -----------------------------------------------------------
+   3. CARD GRID — 3-column
+   ----------------------------------------------------------- */
+
 .card-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-md);
+  gap: var(--spacing-4);
 }
 
 .card-item {
-  width: calc((100% - 48rpx) / 3);
-  background: var(--color-card);
-  border: 1rpx solid rgba(244, 212, 140, 0.15);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-md) var(--spacing-sm) var(--spacing-lg);
+  width: calc((100% - 32rpx) / 3);
+  background: var(--color-surface);
+  border: 1rpx solid rgba(139, 126, 110, 0.12);
+  border-radius: var(--radius-medium);
+  padding: var(--spacing-4) var(--spacing-3) var(--spacing-5);
   box-sizing: border-box;
-  box-shadow: var(--shadow-card);
-  transition: transform var(--duration-fast) var(--ease-soft),
-              border-color var(--duration-fast) var(--ease-soft);
+  box-shadow: var(--shadow-subtle);
+  transition: all var(--duration-navigation) ease;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -99,243 +102,220 @@
 }
 
 .card-item:active {
-  transform: scale(0.97);
-  border-color: rgba(244, 212, 140, 0.35);
-  box-shadow: var(--shadow-elevated);
+  border-color: rgba(176, 102, 80, 0.20);
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-2rpx);
 }
 
-/* ---- Card Thumbnail Image ---- */
-
 .card-thumb {
-  width: 160rpx;
-  height: 224rpx;
-  border-radius: var(--radius-md);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.18);
+  width: 140rpx;
+  height: 196rpx;
+  border-radius: var(--radius-small);
+  border: 1rpx solid rgba(139, 126, 110, 0.12);
   flex-shrink: 0;
-  margin-bottom: var(--spacing-sm);
-  background: var(--color-surface);
+  margin-bottom: var(--spacing-4);
+  background: rgba(139, 126, 110, 0.06);
 }
 
 .card-thumb-placeholder {
-  width: 160rpx;
-  height: 224rpx;
-  border-radius: var(--radius-md);
-  border: 1rpx solid rgba(244, 212, 140, 0.08);
+  width: 140rpx;
+  height: 196rpx;
+  border-radius: var(--radius-small);
+  border: 1rpx solid rgba(139, 126, 110, 0.08);
   flex-shrink: 0;
-  margin-bottom: var(--spacing-sm);
-  background: linear-gradient(
-    145deg,
-    var(--color-surface) 0%,
-    var(--color-card-hover) 100%
-  );
+  margin-bottom: var(--spacing-4);
+  background: rgba(139, 126, 110, 0.04);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .card-thumb-placeholder::after {
-  content: '🃏';
-  font-size: 48rpx;
-  opacity: 0.30;
+  content: '';
+  width: 40rpx;
+  height: 40rpx;
+  border: 2rpx solid rgba(139, 126, 110, 0.15);
+  border-radius: var(--radius-small);
+  opacity: 0.25;
 }
-
-/* ---- Card Number — subtle golden label ---- */
 
 .card-number {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-body);
   font-weight: var(--font-weight-medium);
-  letter-spacing: 3rpx;
-  color: var(--color-gold);
-  opacity: 0.90;
-  margin-bottom: var(--spacing-xxs);
+  letter-spacing: var(--letter-spacing-display);
+  color: var(--color-accent);
+  opacity: 0.70;
+  margin-bottom: var(--spacing-2);
+  display: block;
 }
 
-/* ---- Card Name ---- */
-
 .card-name {
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-body);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
-  line-height: var(--line-height-tight);
-  letter-spacing: 1rpx;
-  margin-bottom: var(--spacing-xxs);
-  text-overflow: ellipsis;
+  line-height: var(--line-height-heading);
+  margin-bottom: var(--spacing-2);
   overflow: hidden;
   white-space: nowrap;
+  text-overflow: ellipsis;
   max-width: 100%;
+  display: block;
 }
 
 .card-name-en {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-tertiary);
-  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-3);
   line-height: 1.2;
-  text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  text-overflow: ellipsis;
   max-width: 100%;
+  display: block;
 }
-
-/* ---- Badges inside card ---- */
 
 .card-badges {
   display: flex;
   justify-content: center;
-  gap: var(--spacing-xs);
+  gap: var(--spacing-3);
   flex-wrap: wrap;
   width: 100%;
 }
 
-.badge-purple {
-  background: var(--color-lavender-glow);
-  color: var(--color-lavender);
-  border-color: rgba(184, 169, 224, 0.18);
-}
+/* -----------------------------------------------------------
+   4. COUNT BAR
+   ----------------------------------------------------------- */
 
-.badge-gold {
-  background: var(--color-gold-glow);
-  color: var(--color-gold);
-  border-color: rgba(184, 169, 224, 0.18);
-}
-
-/* ============================================================
-   COUNT BAR — Stars counted
-   ============================================================ */
 .count-bar {
   text-align: center;
-  padding: var(--spacing-xl) 0 var(--spacing-3xl);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-tertiary);
-  letter-spacing: 3rpx;
+  padding: var(--spacing-6) 0 var(--spacing-7);
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
+  letter-spacing: var(--letter-spacing-display);
 }
 
-/* ============================================================
-   ERROR STATE
-   ============================================================ */
+/* -----------------------------------------------------------
+   5. ERROR STATE
+   ----------------------------------------------------------- */
+
 .error-state {
   text-align: center;
-  padding: var(--spacing-4xl) var(--spacing-xl);
+  padding: var(--spacing-8) var(--spacing-6);
 }
 
 .error-icon {
-  font-size: 72rpx;
+  width: 72rpx;
+  height: 72rpx;
   display: block;
-  margin-bottom: var(--spacing-md);
-  opacity: 0.50;
+  margin: 0 auto var(--spacing-5);
+  opacity: 0.30;
 }
 
 .error-text {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-body);
   color: var(--color-text-secondary);
   display: block;
-  margin-bottom: var(--spacing-xs);
+  margin-bottom: var(--spacing-3);
 }
 
 .error-hint {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-tertiary);
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
   display: block;
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--spacing-6);
+  opacity: 0.70;
 }
 
-/* ============================================================
-   EMPTY STATE — No matching stars
-   ============================================================ */
+/* -----------------------------------------------------------
+   6. EMPTY STATE
+   ----------------------------------------------------------- */
+
 .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: var(--spacing-4xl) var(--spacing-lg);
+  padding: var(--spacing-8) var(--spacing-5);
   text-align: center;
 }
 
 .empty-icon {
-  font-size: 72rpx;
-  margin-bottom: var(--spacing-md);
-  opacity: 0.35;
+  width: 72rpx;
+  height: 72rpx;
+  margin-bottom: var(--spacing-5);
+  opacity: 0.25;
 }
 
 .empty-text {
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-body);
   color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-xs);
+  margin-bottom: var(--spacing-3);
 }
 
 .empty-hint {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-tertiary);
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
+  opacity: 0.70;
 }
 
-/* ============================================================
-   SKELETON LOADING
-   ============================================================ */
+/* -----------------------------------------------------------
+   7. SKELETON LOADING
+   ----------------------------------------------------------- */
+
 .skeleton-search {
-  height: 76rpx;
+  height: 80rpx;
   border-radius: var(--radius-pill);
-  background: linear-gradient(90deg, var(--color-surface) 25%, var(--color-surface-hover) 50%, var(--color-surface) 75%);
-  background-size: 400% 100%;
-  animation: skeleton-shimmer 1.8s ease-in-out infinite;
-  margin-bottom: var(--spacing-xl);
+  background: rgba(139, 126, 110, 0.08);
+  animation: pulse-soft 1500ms ease-in-out infinite;
+  margin-bottom: var(--spacing-6);
 }
 
 .skeleton-tabs {
   display: flex;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-xl);
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-6);
 }
 
 .skeleton-tab {
   width: 140rpx;
   height: 60rpx;
   border-radius: var(--radius-pill);
-  background: linear-gradient(90deg, var(--color-surface) 25%, var(--color-surface-hover) 50%, var(--color-surface) 75%);
-  background-size: 400% 100%;
-  animation: skeleton-shimmer 1.8s ease-in-out infinite;
+  background: rgba(139, 126, 110, 0.08);
+  animation: pulse-soft 1500ms ease-in-out infinite;
 }
 
 .skeleton-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-md);
+  gap: var(--spacing-4);
 }
 
 .skeleton-card {
-  width: calc((100% - 48rpx) / 3);
-  height: 340rpx;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(90deg, var(--color-surface) 25%, var(--color-surface-hover) 50%, var(--color-surface) 75%);
-  background-size: 400% 100%;
-  animation: skeleton-shimmer 1.8s ease-in-out infinite;
+  width: calc((100% - 32rpx) / 3);
+  height: 320rpx;
+  border-radius: var(--radius-medium);
+  background: rgba(139, 126, 110, 0.08);
+  animation: pulse-soft 1500ms ease-in-out infinite;
 }
 
-@keyframes skeleton-shimmer {
-  0% { background-position: 100% 50%; }
-  100% { background-position: 0 50%; }
-}
+/* -----------------------------------------------------------
+   8. ENTRANCE ANIMATIONS
+   ----------------------------------------------------------- */
 
-/* ============================================================
-   SMALL BUTTON (for error retry)
-   ============================================================ */
+.anim-fade-in-up-1 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0.05s forwards; }
+.anim-fade-in-up-2 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0.12s forwards; }
+.anim-fade-in-up-3 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0.20s forwards; }
+
+/* -----------------------------------------------------------
+   9. MISC HELPERS
+   ----------------------------------------------------------- */
+
 .btn-small {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-body);
   font-weight: var(--font-weight-medium);
   border-radius: var(--radius-pill);
-  padding: var(--spacing-xs) var(--spacing-lg);
-  margin-top: var(--spacing-sm);
-}
-
-/* ============================================================
-   UTILITY OVERRIDES for stagger animation delay
-   ============================================================ */
-.anim-fade-in-up-1 { animation: fade-up var(--duration-slow) var(--ease-soft) forwards; animation-delay: 0.05s; }
-.anim-fade-in-up-2 { animation: fade-up var(--duration-slow) var(--ease-soft) forwards; animation-delay: 0.12s; }
-.anim-fade-in-up-3 { animation: fade-up var(--duration-slow) var(--ease-soft) forwards; animation-delay: 0.20s; }
-
-@keyframes fade-up {
-  0% { opacity: 0; transform: translateY(24rpx); }
-  100% { opacity: 1; transform: translateY(0); }
+  padding: var(--spacing-3) var(--spacing-5);
+  margin-top: var(--spacing-3);
 }

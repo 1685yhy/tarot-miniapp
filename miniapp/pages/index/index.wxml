@@ -11,7 +11,7 @@
     <block wx:for="{{onboardingSteps}}" wx:key="index">
       <swiper-item class="onboarding-slide">
         <view class="onboarding-content">
-          <text class="onboarding-emoji">{{item.emoji}}</text>
+          <view class="onboarding-emoji" style="width:72rpx;height:72rpx;border-radius:50%;background:linear-gradient(135deg,var(--color-purple),var(--color-gold));margin:0 auto 24rpx"></view>
           <text class="onboarding-title">{{item.title}}</text>
           <text class="onboarding-desc">{{item.desc}}</text>
         </view>
@@ -70,7 +70,7 @@
 <!-- ===== 错误状态 ===== -->
 <view class="page" wx:elif="{{pageError}}">
   <view class="error-state">
-    <text class="error-icon">🔮</text>
+    <view class="error-icon" style="width:64rpx;height:64rpx;border-radius:50%;background:linear-gradient(135deg,var(--color-purple),var(--color-gold));margin:0 auto 24rpx"></view>
     <text class="error-text">连接中断</text>
     <text class="error-hint">{{pageError}}</text>
     <button class="btn btn-outline" bindtap="onRetry">重新连接</button>
@@ -101,7 +101,7 @@
         </view>
         <!-- Card content (shakes on tap via shaking state) -->
         <view class="card-body {{shaking?'card-shake':''}}">
-          <text style="font-size:52rpx;display:block;margin-bottom:24rpx">🌟</text>
+          <view style="width:52rpx;height:52rpx;border-radius:50%;background:linear-gradient(135deg,var(--color-purple),var(--color-gold));margin:0 auto 24rpx"></view>
           <text class="title-4" style="display:block;margin-bottom:8rpx">轻触卡片</text>
           <text class="body-sm">开启今日指引</text>
         </view>
@@ -136,22 +136,22 @@
     <text class="section-title">选择牌阵</text>
     <view style="display:grid;grid-template-columns:repeat(2,1fr);gap:16rpx">
       <view class="card card-press" style="padding:24rpx 16rpx;text-align:center" bindtap="navigateToReading" data-type="three_card">
-        <text style="font-size:36rpx;display:block;margin-bottom:8rpx">🔮</text>
+        <text class="badge badge-gold" style="display:inline-block;margin-bottom:8rpx;font-size:22rpx">三牌</text>
         <text class="body-sm" style="display:block;font-weight:600">三牌占卜</text>
         <text class="body-xs" style="display:block;margin-top:6rpx">过去·现在·未来</text>
       </view>
       <view class="card card-press" style="padding:24rpx 16rpx;text-align:center" bindtap="navigateToReading" data-type="triangle">
-        <text style="font-size:36rpx;display:block;margin-bottom:8rpx">💕</text>
+        <text class="badge badge-gold" style="display:inline-block;margin-bottom:8rpx;font-size:22rpx">恋人</text>
         <text class="body-sm" style="display:block;font-weight:600">恋人三角</text>
         <text class="body-xs" style="display:block;margin-top:6rpx">感情关系深度解读</text>
       </view>
       <view class="card card-press" style="padding:24rpx 16rpx;text-align:center" bindtap="navigateToReading" data-type="celtic_cross">
-        <text style="font-size:36rpx;display:block;margin-bottom:8rpx">⭐</text>
+        <text class="badge badge-gold" style="display:inline-block;margin-bottom:8rpx;font-size:22rpx">十字</text>
         <text class="body-sm" style="display:block;font-weight:600">凯尔特十字</text>
         <text class="body-xs" style="display:block;margin-top:6rpx">全方位综合解牌</text>
       </view>
       <view class="card card-press" style="padding:24rpx 16rpx;text-align:center" bindtap="navigateToReading" data-type="career">
-        <text style="font-size:36rpx;display:block;margin-bottom:8rpx">💼</text>
+        <text class="badge badge-gold" style="display:inline-block;margin-bottom:8rpx;font-size:22rpx">事业</text>
         <text class="body-sm" style="display:block;font-weight:600">事业牌阵</text>
         <text class="body-xs" style="display:block;margin-top:6rpx">职场方向与机遇</text>
       </view>

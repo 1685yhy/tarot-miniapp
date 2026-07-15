@@ -1,80 +1,53 @@
 /* ============================================================
-   Membership Page — Starlight Design System
-   Dark indigo surfaces · Gold highlights · Premium offering
+   Membership — Warm Paper Design System
+   Warm ivory base, deep rose accent, sage subtle
+   Benefits list, product cards, pricing display
    ============================================================ */
 
-/* ---- Design Tokens ---- */
-page {
-  --gold: #F4D48C;
-  --gold-light: #FADE9E;
-  --gold-glow: rgba(244, 212, 140, 0.35);
-  --gold-dim: rgba(244, 212, 140, 0.15);
-  --gold-subtle: rgba(244, 212, 140, 0.08);
-  --lavender: var(--color-lavender);
-  --lavender-dim: var(--color-text-tertiary);
-  --bg-deep: var(--color-bg);
-  --bg-card: #161329;
-  --bg-elevated: #1e1a38;
-  --text-primary: #e8e4f0;
-  --text-secondary: #c8c0d8;
-  --text-tertiary: #A098C0;
-  --radius-sm: 12rpx;
-  --radius-md: 18rpx;
-  --radius-lg: 24rpx;
-  --radius-round: 999rpx;
-  --space-xs: 6rpx;
-  --space-sm: 12rpx;
-  --space-md: 20rpx;
-  --space-lg: 28rpx;
-  --space-xl: 36rpx;
-  --space-2xl: 48rpx;
-  --space-3xl: 64rpx;
-  --space-4xl: 80rpx;
-  --space-5xl: 100rpx;
-  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  background: var(--bg-deep);
-  color: var(--text-primary);
-}
+/* -----------------------------------------------------------
+   1. PAGE WRAPPER
+   ----------------------------------------------------------- */
 
-/* ================================================================
-   Page wrapper
-   ================================================================ */
 .page {
-  padding: var(--space-xl);
-  padding-bottom: calc(var(--space-xl) + var(--safe-area-bottom, 0));
+  padding: var(--page-padding);
+  padding-bottom: calc(var(--page-padding) + var(--safe-area-bottom));
   min-height: 100vh;
 }
 
-/* ================================================================
-   Typography helpers
-   ================================================================ */
+/* -----------------------------------------------------------
+   2. TYPOGRAPHY HELPERS
+   ----------------------------------------------------------- */
+
 .heading-1 {
-  font-size: 48rpx;
-  font-weight: 700;
-  color: var(--text-primary);
+  font-size: var(--font-size-display);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
   text-align: center;
+  line-height: var(--line-height-heading);
 }
 
 .heading-3 {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-primary);
+  font-size: var(--font-size-body-large);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-heading);
 }
 
 .text-body {
-  font-size: 28rpx;
-  color: var(--text-primary);
-  line-height: 1.6;
+  font-size: var(--font-size-body);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-body);
 }
 
 .text-secondary {
-  font-size: 28rpx;
-  color: var(--text-secondary);
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
 }
 
 .text-dim {
-  font-size: 24rpx;
-  color: var(--text-tertiary);
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
+  opacity: 0.70;
   display: block;
 }
 
@@ -89,114 +62,102 @@ page {
 }
 
 .gap-xs {
-  gap: 6rpx;
+  gap: var(--spacing-2);
 }
 
-.mt-sm { margin-top: 12rpx; }
-.mt-xs { margin-top: 6rpx; }
+.mt-sm { margin-top: var(--spacing-4); }
+.mt-xs { margin-top: var(--spacing-3); }
 
-/* ================================================================
-   Hero section
-   ================================================================ */
-.anim-float {
-  animation: float 3s ease-in-out infinite;
-  display: block;
-}
+/* -----------------------------------------------------------
+   3. ERROR STATE
+   ----------------------------------------------------------- */
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12rpx); }
-}
-
-/* ================================================================
-   Error State
-   ================================================================ */
 .error-state {
   text-align: center;
-  padding: var(--space-5xl) var(--space-xl);
+  padding: var(--spacing-8) var(--spacing-6);
 }
 
 .error-icon {
-  font-size: 80rpx;
+  width: 80rpx;
+  height: 80rpx;
   display: block;
-  margin-bottom: var(--space-md);
-  opacity: 0.40;
+  margin: 0 auto var(--spacing-5);
+  opacity: 0.30;
 }
 
 .error-text {
-  font-size: 28rpx;
-  color: var(--text-secondary);
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
   display: block;
-  margin-bottom: var(--space-xs);
+  margin-bottom: var(--spacing-3);
 }
 
 .error-hint {
-  font-size: 24rpx;
-  color: var(--text-tertiary);
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
   display: block;
-  margin-bottom: var(--space-2xl);
+  margin-bottom: var(--spacing-6);
+  opacity: 0.70;
 }
 
 .btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-sm);
-  padding: 20rpx 48rpx;
+  gap: var(--spacing-3);
+  padding: var(--spacing-5) var(--spacing-7);
   border: none;
-  border-radius: var(--radius-round);
-  font-size: 28rpx;
-  font-weight: 600;
-  color: var(--color-text-inverse);
-  background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  box-shadow: 0 4rpx 24rpx var(--gold-glow);
-  transition: all 0.25s;
-}
-
-.btn-primary::after {
-  border: none;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-surface);
+  background: var(--color-accent);
+  box-shadow: var(--shadow-subtle);
+  transition: all var(--duration-feedback) ease;
 }
 
 .btn-primary:active {
-  transform: scale(0.96);
+  transform: scale(0.97);
+  opacity: 0.90;
 }
 
 .btn-small {
-  padding: 16rpx 36rpx;
-  font-size: 24rpx;
+  padding: var(--spacing-4) var(--spacing-6);
+  font-size: var(--font-size-body);
 }
 
-/* ================================================================
-   Benefits — golden checkmark list
-   ================================================================ */
+/* -----------------------------------------------------------
+   4. BENEFITS LIST
+   ----------------------------------------------------------- */
+
 .benefits {
   position: relative;
-  border-radius: var(--radius-lg);
-  padding: var(--space-xl);
-  margin-bottom: var(--space-2xl);
-  background: var(--bg-card);
-  border: 1rpx solid var(--gold-dim);
-  box-shadow: 0 2rpx 20rpx rgba(212, 175, 55, 0.05);
+  border-radius: var(--radius-medium);
+  padding: var(--spacing-6);
+  margin-bottom: var(--spacing-6);
+  background: var(--color-surface);
+  border: 1rpx solid rgba(139, 126, 110, 0.12);
+  box-shadow: var(--shadow-subtle);
   overflow: hidden;
 }
 
 .benefits::before {
   content: '';
   position: absolute;
-  top: var(--space-lg);
+  top: var(--spacing-5);
   left: 0;
-  width: 4rpx;
-  height: calc(100% - var(--space-2xl));
-  background: var(--gold);
+  width: 3rpx;
+  height: calc(100% - var(--spacing-7));
+  background: var(--color-accent);
   border-radius: 0 2rpx 2rpx 0;
-  box-shadow: 0 0 10rpx var(--gold-glow);
+  opacity: 0.40;
 }
 
 .benefit-item {
-  padding: var(--space-md) 0;
-  padding-left: var(--space-2xl);
-  padding-right: var(--space-md);
-  border-bottom: 1rpx solid var(--gold-subtle);
+  padding: var(--spacing-4) 0;
+  padding-left: var(--spacing-7);
+  padding-right: var(--spacing-4);
+  border-bottom: 1rpx solid rgba(139, 126, 110, 0.08);
   position: relative;
 }
 
@@ -205,51 +166,53 @@ page {
 }
 
 .benefit-item::before {
-  content: '✓';
+  content: '';
   position: absolute;
-  left: var(--space-md);
+  left: var(--spacing-4);
   top: 50%;
   transform: translateY(-50%);
-  color: var(--gold);
-  font-size: 28rpx;
-  font-weight: 700;
-  text-shadow: 0 0 8rpx var(--gold-glow);
+  width: 12rpx;
+  height: 12rpx;
+  background: var(--color-accent);
+  border-radius: var(--radius-pill);
+  opacity: 0.50;
 }
 
 .benefit-item .text-body {
-  font-size: 28rpx;
-  color: var(--text-primary);
-  line-height: 1.5;
+  font-size: var(--font-size-body);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-body);
 }
 
-/* ================================================================
-   Product cards — dark indigo, gold accents
-   ================================================================ */
+/* -----------------------------------------------------------
+   5. PRODUCT CARDS
+   ----------------------------------------------------------- */
+
 .products {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xl);
+  gap: var(--spacing-6);
 }
 
 .product-card {
   position: relative;
-  border-radius: var(--radius-lg);
-  padding: var(--space-2xl) var(--space-2xl) var(--space-3xl);
+  border-radius: var(--radius-medium);
+  padding: var(--spacing-6) var(--spacing-6) var(--spacing-7);
   text-align: center;
-  background: var(--bg-card);
-  border: 1rpx solid rgba(255, 255, 255, 0.04);
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
+  background: var(--color-surface);
+  border: 1rpx solid rgba(139, 126, 110, 0.12);
+  box-shadow: var(--shadow-subtle);
+  transition: all var(--duration-navigation) ease;
   overflow: hidden;
 }
 
 .product-card:active {
-  transform: scale(0.97);
-  border-color: var(--gold-dim);
-  box-shadow: 0 0 24rpx var(--gold-glow);
+  border-color: rgba(176, 102, 80, 0.20);
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-2rpx);
 }
 
-/* Golden top accent line */
+/* Top accent line */
 .product-card::before {
   content: '';
   position: absolute;
@@ -257,122 +220,103 @@ page {
   left: 0;
   right: 0;
   height: 3rpx;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    var(--gold-dim) 30%,
-    rgba(212, 175, 55, 0.3) 50%,
-    var(--gold-dim) 70%,
-    transparent 100%
-  );
+  background: rgba(139, 126, 110, 0.15);
   pointer-events: none;
 }
 
-/* ---- Recommended card — extra golden glow ---- */
+/* Recommended card */
 .product-card.recommended {
-  border-color: var(--gold-dim);
-  box-shadow: 0 4rpx 32rpx rgba(212, 175, 55, 0.08), 0 2rpx 12rpx rgba(0, 0, 0, 0.2);
+  border-color: rgba(176, 102, 80, 0.15);
+  box-shadow: var(--shadow-medium);
 }
 
 .product-card.recommended::before {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    var(--gold-light) 30%,
-    var(--gold) 50%,
-    var(--gold-light) 70%,
-    transparent 100%
-  );
-  height: 4rpx;
-  opacity: 0.6;
+  background: var(--color-accent);
+  height: 3rpx;
 }
 
-/* ---- Recommended badge ---- */
 .recommended-badge {
   position: absolute;
   top: -14rpx;
-  right: var(--space-xl);
-  background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  color: var(--color-text-inverse);
-  font-size: 22rpx;
-  font-weight: 600;
-  letter-spacing: 1rpx;
-  padding: 6rpx 20rpx;
-  border-radius: var(--radius-sm);
-  z-index: 2;
-  box-shadow: 0 2rpx 12rpx var(--gold-glow);
+  right: var(--spacing-6);
+  background: var(--color-accent);
+  color: var(--color-surface);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-none);
+  padding: 6rpx var(--spacing-5);
+  border-radius: var(--radius-small);
+  z-index: var(--z-card);
+  box-shadow: var(--shadow-subtle);
 }
 
-/* ================================================================
-   Price display — gold for price, lavender for original
-   ================================================================ */
+/* -----------------------------------------------------------
+   6. PRICE DISPLAY
+   ----------------------------------------------------------- */
+
 .product-price {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-xs);
-  margin: var(--space-md) 0 var(--space-xs);
+  gap: var(--spacing-3);
+  margin: var(--spacing-4) 0 var(--spacing-3);
 }
 
 .price-symbol {
-  font-size: 28rpx;
-  color: var(--gold);
+  font-size: var(--font-size-body-large);
+  color: var(--color-accent);
   vertical-align: super;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 .price-value {
   font-size: 64rpx;
-  font-weight: 700;
-  color: var(--gold);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
   line-height: 1;
-  text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.12);
 }
 
-/* Original/Strikethrough price — lavender */
 .price-original {
-  font-size: 24rpx;
-  color: var(--lavender-dim);
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
   text-decoration: line-through;
-  margin-left: var(--space-sm);
+  margin-left: var(--spacing-3);
   vertical-align: baseline;
-  opacity: 0.6;
+  opacity: 0.50;
 }
 
-/* ================================================================
-   Purchase button — golden pill with warm glow
-   ================================================================ */
+/* -----------------------------------------------------------
+   7. PURCHASE BUTTON
+   ----------------------------------------------------------- */
+
 .btn-purchase {
   display: block;
   width: 70%;
-  margin: var(--space-lg) auto 0;
-  padding: 22rpx 0;
+  margin: var(--spacing-5) auto 0;
+  padding: var(--spacing-5) 0;
   border: none;
-  border-radius: var(--radius-round);
-  font-size: 28rpx;
-  font-weight: 700;
-  color: var(--color-text-inverse);
-  background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  box-shadow: 0 4rpx 28rpx var(--gold-glow), inset 0 1rpx 0 rgba(255, 255, 255, 0.3);
-  transition: all 0.25s ease;
-  letter-spacing: 2rpx;
-}
-
-.btn-purchase::after {
-  border: none;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-surface);
+  background: var(--color-accent);
+  box-shadow: var(--shadow-subtle);
+  transition: all var(--duration-feedback) ease;
+  letter-spacing: var(--letter-spacing-none);
 }
 
 .btn-purchase:active {
-  transform: scale(0.96);
-  box-shadow: 0 2rpx 12rpx var(--gold-glow);
+  transform: scale(0.97);
+  opacity: 0.90;
 }
 
-/* ================================================================
-   Guarantee
-   ================================================================ */
+/* -----------------------------------------------------------
+   8. GUARANTEE
+   ----------------------------------------------------------- */
+
 .guarantee {
   text-align: center;
-  padding: var(--space-3xl) 0;
+  padding: var(--spacing-7) 0;
   position: relative;
 }
 
@@ -381,49 +325,45 @@ page {
   display: block;
   width: 80rpx;
   height: 1rpx;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    var(--gold-dim) 50%,
-    transparent 100%
-  );
-  margin: 0 auto var(--space-2xl);
+  background: rgba(139, 126, 110, 0.15);
+  margin: 0 auto var(--spacing-6);
 }
 
 .guarantee-text {
-  font-size: 24rpx;
-  color: var(--text-tertiary);
-  line-height: 1.6;
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-body);
 }
 
-/* ================================================================
-   Skeleton — dark shimmer
-   ================================================================ */
+/* -----------------------------------------------------------
+   9. SKELETON
+   ----------------------------------------------------------- */
+
 .skeleton {
-  padding: var(--space-2xl) 0;
+  padding: var(--spacing-6) 0;
 }
 
 .skeleton-hero-area {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-md);
-  margin-bottom: var(--space-3xl);
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-7);
 }
 
 .skeleton-icon {
   width: 72rpx;
   height: 72rpx;
-  border-radius: 100%;
-  background: var(--bg-card);
-  animation: pulse-scale 1.5s ease-in-out infinite;
+  border-radius: var(--radius-pill);
+  background: rgba(139, 126, 110, 0.08);
+  animation: pulse-soft 1500ms ease-in-out infinite;
 }
 
 .skeleton-line {
   height: 32rpx;
-  border-radius: var(--radius-sm);
-  background: var(--bg-card);
-  animation: pulse-scale 1.5s ease-in-out infinite;
+  border-radius: var(--radius-small);
+  background: rgba(139, 126, 110, 0.08);
+  animation: pulse-soft 1500ms ease-in-out infinite;
 }
 
 .skeleton-line.wide { width: 300rpx; }
@@ -432,29 +372,20 @@ page {
 .skeleton-benefits,
 .skeleton-product {
   width: 100%;
-  border-radius: var(--radius-lg);
-  background: var(--bg-card);
-  animation: pulse-scale 1.5s ease-in-out infinite;
+  border-radius: var(--radius-medium);
+  background: rgba(139, 126, 110, 0.08);
+  animation: pulse-soft 1500ms ease-in-out infinite;
 }
 
-.skeleton-benefits { height: 280rpx; margin-bottom: var(--space-2xl); }
-.skeleton-product { height: 380rpx; margin-bottom: var(--space-lg); }
+.skeleton-benefits { height: 280rpx; margin-bottom: var(--spacing-6); }
+.skeleton-product { height: 380rpx; margin-bottom: var(--spacing-5); }
 
-@keyframes pulse-scale {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.98); }
-}
+/* -----------------------------------------------------------
+   10. ENTRANCE ANIMATIONS
+   ----------------------------------------------------------- */
 
-/* ================================================================
-   Staggered entrance
-   ================================================================ */
-.anim-fade-in-up-1 { opacity: 0; animation: fade-up 0.6s ease 0.05s forwards; }
-.anim-fade-in-up-2 { opacity: 0; animation: fade-up 0.6s ease 0.10s forwards; }
-.anim-fade-in-up-3 { opacity: 0; animation: fade-up 0.6s ease 0.15s forwards; }
-.anim-fade-in-up-4 { opacity: 0; animation: fade-up 0.6s ease 0.20s forwards; }
-.anim-fade-in-up-5 { opacity: 0; animation: fade-up 0.6s ease 0.25s forwards; }
-
-@keyframes fade-up {
-  0% { opacity: 0; transform: translateY(24rpx); }
-  100% { opacity: 1; transform: translateY(0); }
-}
+.anim-fade-in-up-1 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0.05s forwards; }
+.anim-fade-in-up-2 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0.10s forwards; }
+.anim-fade-in-up-3 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0.15s forwards; }
+.anim-fade-in-up-4 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0.20s forwards; }
+.anim-fade-in-up-5 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0.25s forwards; }

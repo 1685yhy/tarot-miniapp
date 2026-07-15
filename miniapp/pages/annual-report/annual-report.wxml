@@ -14,38 +14,38 @@
 
   <!-- ===== 错误状态 ===== -->
   <view wx:elif="{{pageError && !report}}" class="error-state">
-    <text class="error-icon">📊</text>
+    <view class="error-icon" style="width:64rpx;height:64rpx;border-radius:50%;background:linear-gradient(135deg,var(--color-purple),var(--color-gold));margin:0 auto 24rpx"></view>
     <text class="error-text">年度报告暂时无法生成</text>
     <text class="error-hint">{{pageError}}</text>
-    <button class="btn-primary btn-small" bindtap="onRetry">✨ 重新尝试</button>
+    <button class="btn-primary btn-small" bindtap="onRetry"><image class="btn-icon" src="/images/icons/refresh.png" mode="aspectFit" /><text>重新尝试</text></button>
   </view>
 
   <!-- ===== 生成前（intro/empty） ===== -->
   <view wx:elif="{{!report && !generating}}" class="intro">
-    <text class="empty-icon">📊</text>
+    <view class="empty-icon" style="width:64rpx;height:64rpx;border-radius:50%;background:linear-gradient(135deg,var(--color-purple),var(--color-gold));margin:0 auto 24rpx"></view>
     <text class="heading-1 mt-md">年度运势报告</text>
     <text class="text-secondary" style="line-height:var(--lh-loose);display:block;margin:var(--space-xl) 0;padding:0 var(--space-xl)">
       基于13张星光牌，AI为你生成未来12个月的专属运势报告。涵盖爱情、事业、财运，逐月详解。
     </text>
-    <button class="btn-glow-pulse" style="width:80%;margin:0 auto" bindtap="onGenerate">🌟 生成我的年度报告</button>
-    <button class="btn-secondary mt-md" style="width:80%;margin:var(--space-md) auto 0" bindtap="onBuySingle">💳 单独购买 ¥29.90</button>
-    <text class="text-dim mt-xl" style="display:block;text-align:center">👑 会员专属 · 也可单独购买</text>
+    <button class="btn-glow-pulse" style="width:80%;margin:0 auto" bindtap="onGenerate">生成我的年度报告</button>
+    <button class="btn-secondary mt-md" style="width:80%;margin:var(--space-md) auto 0" bindtap="onBuySingle">单独购买 ¥29.90</button>
+    <text class="text-dim mt-xl" style="display:block;text-align:center">会员专属 · 也可单独购买</text>
   </view>
 
   <!-- ===== 生成中（mystic loading） ===== -->
   <view wx:elif="{{generating}}" class="mystic-loading">
-    <text class="mystic-loading-symbol">🌙</text>
+    <view class="mystic-loading-symbol" style="width:64rpx;height:64rpx;border-radius:50%;background:linear-gradient(135deg,var(--color-purple),var(--color-gold));margin:0 auto 24rpx"></view>
     <text class="mystic-loading-title">AI正在为你抽取年度运势牌...</text>
     <text class="mystic-loading-sub">13张牌 · 12个月 · 一份完整报告</text>
   </view>
 
   <!-- ===== 报告结果 ===== -->
   <view wx:elif="{{report}}" class="report">
-    <text class="heading-2 section-title-center anim-fade-in-up-1">🌟 {{report.generated_at}} 年度运势报告</text>
+    <text class="heading-2 section-title-center anim-fade-in-up-1">{{report.generated_at}} 年度运势报告</text>
 
     <!-- Monthly cards display -->
     <view class="report-cards-section anim-fade-in-up-1">
-      <text class="section-subtitle">📅 月度运势牌</text>
+      <text class="section-subtitle">月度运势牌</text>
       <scroll-view class="monthly-cards-scroll" scroll-x enhanced show-scrollbar="{{false}}">
         <view class="monthly-cards-row">
           <view
@@ -70,7 +70,7 @@
     <view class="report-body anim-fade-in-up-2">
       <text class="report-text">{{report.report}}</text>
     </view>
-    <button class="btn-primary anim-fade-in-up-3" open-type="share">📤 分享报告</button>
-    <button class="btn-secondary mt-md anim-fade-in-up-4" bindtap="onGenerate">🔄 重新生成</button>
+    <button class="btn-primary anim-fade-in-up-3" open-type="share"><image class="btn-icon" src="/images/icons/share.png" mode="aspectFit" /><text>分享报告</text></button>
+    <button class="btn-secondary mt-md anim-fade-in-up-4" bindtap="onGenerate"><image class="btn-icon" src="/images/icons/refresh.png" mode="aspectFit" /><text>重新生成</text></button>
   </view>
 </view>

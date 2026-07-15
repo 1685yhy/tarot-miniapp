@@ -13,15 +13,15 @@
   ],
   "window": {
     "backgroundTextStyle": "dark",
-    "navigationBarBackgroundColor": "#F8F6F2",
+    "navigationBarBackgroundColor": "#FBF8F4",
     "navigationBarTitleText": "星光映照",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#0f0f23"
+    "backgroundColor": "#FBF8F4"
   },
   "tabBar": {
-    "color": "#8A85A8",
-    "selectedColor": "#F4D48C",
-    "backgroundColor": "#1A1A3E",
+    "color": "#B0A595",
+    "selectedColor": "#B06650",
+    "backgroundColor": "#FBF8F4",
     "borderStyle": "black",
     "list": [
       {
