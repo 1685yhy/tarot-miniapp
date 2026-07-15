@@ -15,11 +15,8 @@ page {
   --color-bg: #1A1A3E;
   --color-bg-gradient: linear-gradient(180deg, #1A1A3E 0%, #1E1E45 40%, #22224D 100%);
   --color-surface: #252550;
-  --color-surface-hover: #2C2C5A;
   --color-card: #2A2A5A;
   --color-card-hover: #313165;
-  --color-card-border: rgba(244, 212, 140, 0.20);
-  --color-card-border-hover: rgba(244, 212, 140, 0.40);
 
   /* -- Accents -- */
   --color-gold: #F4D48C;
@@ -59,15 +56,11 @@ page {
   --shadow-gold-button: 0 4rpx 20rpx rgba(244, 212, 140, 0.25);
 
   /* -- Typography Scale -- */
-  --font-size-xs: 20rpx;
-  --font-size-sm: 24rpx;
-  --font-size-base: 28rpx;
-  --font-size-md: 30rpx;
-  --font-size-lg: 34rpx;
-  --font-size-xl: 40rpx;
-  --font-size-2xl: 48rpx;
-  --font-size-3xl: 56rpx;
-  --font-size-4xl: 64rpx;
+  --font-size-caption: 22rpx;
+  --font-size-body: 28rpx;
+  --font-size-subhead: 34rpx;
+  --font-size-title: 44rpx;
+  --font-size-display: 60rpx;
   --line-height-tight: 1.3;
   --line-height-base: 1.6;
   --line-height-loose: 1.7;
@@ -122,7 +115,7 @@ page {
   background: var(--color-bg);
   background-image: var(--color-bg-gradient);
   font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-body);
   line-height: var(--line-height-base);
   color: var(--color-text-primary);
   -webkit-font-smoothing: antialiased;
@@ -186,278 +179,6 @@ page {
   }
 }
 
-/* -----------------------------------------------------------
-   2.5. COSMIC ENHANCEMENTS — Parallax layers, shooting stars, nebula
-   ----------------------------------------------------------- */
-
-/* ---------- Shared layer base ---------- */
-.cosmic-layer-distant,
-.cosmic-layer-mid,
-.cosmic-layer-close {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 0;
-}
-
-/* ---------- Distant layer: 1rpx dim stars, 30s drift ---------- */
-.cosmic-layer-distant::after {
-  content: '';
-  position: absolute;
-  width: 1rpx;
-  height: 1rpx;
-  border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.20);
-  box-shadow:
-    23rpx 45rpx rgba(255,255,255,0.18),
-    67rpx 120rpx rgba(255,255,255,0.12),
-    112rpx 34rpx rgba(184,169,224,0.10),
-    145rpx 210rpx rgba(255,255,255,0.15),
-    189rpx 78rpx rgba(255,255,255,0.20),
-    203rpx 310rpx rgba(184,169,224,0.08),
-    247rpx 155rpx rgba(255,255,255,0.14),
-    280rpx 420rpx rgba(255,255,255,0.10),
-    315rpx 60rpx rgba(184,169,224,0.12),
-    352rpx 280rpx rgba(255,255,255,0.18),
-    388rpx 130rpx rgba(255,255,255,0.14),
-    420rpx 380rpx rgba(255,255,255,0.10),
-    455rpx 25rpx rgba(255,255,255,0.20),
-    490rpx 200rpx rgba(184,169,224,0.08),
-    525rpx 90rpx rgba(255,255,255,0.15),
-    560rpx 350rpx rgba(255,255,255,0.12),
-    598rpx 170rpx rgba(255,255,255,0.18),
-    632rpx 440rpx rgba(184,169,224,0.10),
-    670rpx 50rpx rgba(255,255,255,0.15),
-    710rpx 300rpx rgba(255,255,255,0.12),
-    35rpx 520rpx rgba(184,169,224,0.10),
-    78rpx 620rpx rgba(255,255,255,0.14),
-    130rpx 480rpx rgba(255,255,255,0.18),
-    175rpx 650rpx rgba(255,255,255,0.10),
-    220rpx 550rpx rgba(184,169,224,0.12),
-    268rpx 700rpx rgba(255,255,255,0.15),
-    310rpx 590rpx rgba(255,255,255,0.10),
-    356rpx 740rpx rgba(255,255,255,0.20),
-    400rpx 510rpx rgba(184,169,224,0.08),
-    445rpx 680rpx rgba(255,255,255,0.14),
-    490rpx 460rpx rgba(255,255,255,0.10),
-    535rpx 720rpx rgba(255,255,255,0.18),
-    575rpx 530rpx rgba(184,169,224,0.10),
-    618rpx 670rpx rgba(255,255,255,0.12),
-    660rpx 490rpx rgba(255,255,255,0.15),
-    700rpx 640rpx rgba(255,255,255,0.10),
-    42rpx 880rpx rgba(255,255,255,0.14),
-    95rpx 950rpx rgba(184,169,224,0.10),
-    150rpx 820rpx rgba(255,255,255,0.18),
-    200rpx 1020rpx rgba(255,255,255,0.10),
-    248rpx 900rpx rgba(255,255,255,0.15),
-    295rpx 1080rpx rgba(184,169,224,0.08),
-    340rpx 860rpx rgba(255,255,255,0.20),
-    385rpx 1120rpx rgba(255,255,255,0.12),
-    430rpx 980rpx rgba(255,255,255,0.14),
-    478rpx 1180rpx rgba(184,169,224,0.10),
-    520rpx 920rpx rgba(255,255,255,0.18),
-    565rpx 1100rpx rgba(255,255,255,0.10),
-    610rpx 850rpx rgba(255,255,255,0.15),
-    658rpx 1150rpx rgba(255,255,255,0.12),
-    700rpx 940rpx rgba(184,169,224,0.08),
-    730rpx 1050rpx rgba(255,255,255,0.14);
-  animation: cosmic-drift-distant 25s ease-in-out infinite;
-}
-
-/* ---------- Mid layer: 2rpx stars, 20s drift, some lavender ---------- */
-.cosmic-layer-mid::after {
-  content: '';
-  position: absolute;
-  width: 2rpx;
-  height: 2rpx;
-  border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.35);
-  box-shadow:
-    56rpx 88rpx rgba(255,255,255,0.35),
-    120rpx 240rpx rgba(184,169,224,0.30),
-    180rpx 65rpx rgba(255,255,255,0.40),
-    235rpx 400rpx rgba(255,255,255,0.30),
-    290rpx 150rpx rgba(184,169,224,0.25),
-    345rpx 500rpx rgba(255,255,255,0.35),
-    410rpx 110rpx rgba(255,255,255,0.40),
-    465rpx 350rpx rgba(184,169,224,0.30),
-    520rpx 200rpx rgba(255,255,255,0.35),
-    580rpx 450rpx rgba(255,255,255,0.30),
-    640rpx 80rpx rgba(255,255,255,0.40),
-    700rpx 320rpx rgba(184,169,224,0.25),
-    85rpx 600rpx rgba(255,255,255,0.35),
-    145rpx 720rpx rgba(255,255,255,0.30),
-    210rpx 580rpx rgba(184,169,224,0.30),
-    270rpx 780rpx rgba(255,255,255,0.40),
-    330rpx 650rpx rgba(255,255,255,0.30),
-    395rpx 820rpx rgba(184,169,224,0.25),
-    455rpx 700rpx rgba(255,255,255,0.35),
-    515rpx 850rpx rgba(255,255,255,0.30),
-    575rpx 630rpx rgba(255,255,255,0.40),
-    635rpx 790rpx rgba(184,169,224,0.30),
-    695rpx 560rpx rgba(255,255,255,0.35),
-    30rpx 1000rpx rgba(184,169,224,0.25),
-    100rpx 1100rpx rgba(255,255,255,0.35),
-    170rpx 960rpx rgba(255,255,255,0.30),
-    240rpx 1150rpx rgba(255,255,255,0.40),
-    310rpx 1020rpx rgba(184,169,224,0.30),
-    380rpx 1180rpx rgba(255,255,255,0.35),
-    450rpx 1050rpx rgba(255,255,255,0.30),
-    520rpx 1200rpx rgba(255,255,255,0.40),
-    590rpx 980rpx rgba(184,169,224,0.25),
-    660rpx 1120rpx rgba(255,255,255,0.35),
-    720rpx 950rpx rgba(255,255,255,0.30);
-  animation: cosmic-drift-mid 20s ease-in-out infinite;
-}
-
-/* ---------- Close layer: 3-4rpx bright golden stars, 12s drift ---------- */
-.cosmic-layer-close::after {
-  content: '';
-  position: absolute;
-  width: 3rpx;
-  height: 3rpx;
-  border-radius: var(--radius-pill);
-  background: rgba(244, 212, 140, 0.60);
-  box-shadow:
-    80rpx 180rpx rgba(244,212,140,0.50),
-    170rpx 60rpx rgba(244,212,140,0.65),
-    260rpx 420rpx rgba(244,212,140,0.45),
-    350rpx 130rpx rgba(244,212,140,0.70),
-    440rpx 380rpx rgba(244,212,140,0.55),
-    530rpx 90rpx rgba(244,212,140,0.60),
-    620rpx 340rpx rgba(244,212,140,0.50),
-    710rpx 220rpx rgba(244,212,140,0.65),
-    45rpx 550rpx rgba(244,212,140,0.55),
-    140rpx 700rpx rgba(244,212,140,0.45),
-    230rpx 620rpx rgba(244,212,140,0.65),
-    320rpx 780rpx rgba(244,212,140,0.50),
-    410rpx 670rpx rgba(244,212,140,0.60),
-    500rpx 820rpx rgba(244,212,140,0.45),
-    590rpx 580rpx rgba(244,212,140,0.65),
-    680rpx 730rpx rgba(244,212,140,0.55),
-    110rpx 1050rpx rgba(244,212,140,0.50),
-    260rpx 960rpx rgba(244,212,140,0.65),
-    400rpx 1150rpx rgba(244,212,140,0.55),
-    540rpx 1000rpx rgba(244,212,140,0.45);
-  animation: cosmic-drift-close 12s ease-in-out infinite;
-}
-
-/* Some extra-bright close stars — 4rpx with glow */
-.cosmic-layer-close::before {
-  content: '';
-  position: absolute;
-  width: 4rpx;
-  height: 4rpx;
-  border-radius: var(--radius-pill);
-  background: rgba(244, 212, 140, 0.80);
-  box-shadow:
-    155rpx 400rpx rgba(244,212,140,0.70),
-    490rpx 250rpx rgba(244,212,140,0.75),
-    660rpx 600rpx rgba(244,212,140,0.65),
-    320rpx 1080rpx rgba(244,212,140,0.70),
-    0 0 8rpx rgba(244,212,140,0.15),
-    155rpx 400rpx 8rpx rgba(244,212,140,0.15),
-    490rpx 250rpx 8rpx rgba(244,212,140,0.15),
-    660rpx 600rpx 8rpx rgba(244,212,140,0.12),
-    320rpx 1080rpx 8rpx rgba(244,212,140,0.15);
-  animation: cosmic-drift-close 12s ease-in-out infinite;
-}
-
-/* ---------- Drift keyframes for parallax effect ---------- */
-@keyframes cosmic-drift-distant {
-  0%   { transform: translate(0, 0); }
-  25%  { transform: translate(6rpx, -10rpx); }
-  50%  { transform: translate(-4rpx, 6rpx); }
-  75%  { transform: translate(8rpx, -4rpx); }
-  100% { transform: translate(0, 0); }
-}
-
-@keyframes cosmic-drift-mid {
-  0%   { transform: translate(0, 0); }
-  25%  { transform: translate(-12rpx, 8rpx); }
-  50%  { transform: translate(10rpx, -15rpx); }
-  75%  { transform: translate(-6rpx, 12rpx); }
-  100% { transform: translate(0, 0); }
-}
-
-@keyframes cosmic-drift-close {
-  0%   { transform: translate(0, 0); }
-  25%  { transform: translate(18rpx, -12rpx); }
-  50%  { transform: translate(-15rpx, 22rpx); }
-  75%  { transform: translate(12rpx, -18rpx); }
-  100% { transform: translate(0, 0); }
-}
-
-/* ---------- Shooting star ---------- */
-.shooting-star {
-  position: fixed;
-  width: 160rpx;
-  height: 2rpx;
-  background: linear-gradient(to left, transparent, rgba(244, 212, 140, 0.70));
-  border-radius: var(--radius-sm);
-  box-shadow: 0 0 8rpx rgba(244, 212, 140, 0.30), 0 0 24rpx rgba(244, 212, 140, 0.08);
-  pointer-events: none;
-  z-index: 1;
-  animation: shooting-star 18s ease-out infinite;
-}
-
-/* Staggered delays spread shooting stars across the cycle (~ every 3-6s) */
-.shooting-star--n2 { animation-delay: 4.5s; }
-.shooting-star--n3 { animation-delay: 9s; }
-.shooting-star--n4 { animation-delay: 13.5s; }
-.shooting-star--n5 { animation-delay: 2s; }
-.shooting-star--n6 { animation-delay: 7s; }
-.shooting-star--n7 { animation-delay: 11s; }
-.shooting-star--n8 { animation-delay: 16s; }
-
-@keyframes shooting-star {
-  0% {
-    transform: translate(800rpx, -30rpx) rotate(-35deg);
-    opacity: 0;
-  }
-  3% {
-    opacity: 1;
-  }
-  8% {
-    opacity: 0.90;
-  }
-  12% {
-    transform: translate(-60rpx, 600rpx) rotate(-35deg);
-    opacity: 0;
-  }
-  100% {
-    transform: translate(-60rpx, 600rpx) rotate(-35deg);
-    opacity: 0;
-  }
-}
-
-/* ---------- Nebula glow ---------- */
-.cosmic-nebula {
-  position: fixed;
-  top: -300rpx;
-  right: -300rpx;
-  width: 800rpx;
-  height: 800rpx;
-  background: radial-gradient(
-    circle at 35% 35%,
-    rgba(184, 169, 224, 0.06) 0%,
-    rgba(244, 212, 140, 0.03) 20%,
-    transparent 55%
-  );
-  pointer-events: none;
-  z-index: 0;
-  animation: rotate-nebula 45s ease-in-out infinite;
-}
-
-@keyframes rotate-nebula {
-  0%   { transform: rotate(0deg) scale(1); }
-  50%  { transform: rotate(180deg) scale(1.08); }
-  100% { transform: rotate(360deg) scale(1); }
-}
 
 /* -----------------------------------------------------------
    3. RADIAL GLOW — Hero backdrop
@@ -510,7 +231,7 @@ page {
    ----------------------------------------------------------- */
 
 .heading-1 {
-  font-size: var(--font-size-3xl);
+  font-size: var(--font-size-display);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   line-height: var(--line-height-tight);
@@ -518,7 +239,7 @@ page {
 }
 
 .heading-2 {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-title);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   line-height: var(--line-height-tight);
@@ -526,56 +247,56 @@ page {
 }
 
 .heading-3 {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-subhead);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   line-height: var(--line-height-base);
 }
 
 .heading-4 {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-subhead);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
   line-height: var(--line-height-base);
 }
 
 .title-lg {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-title);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   line-height: var(--line-height-tight);
 }
 
 .title-md {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-subhead);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
   line-height: var(--line-height-tight);
 }
 
 .body-text {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-body);
   font-weight: var(--font-weight-normal);
   color: var(--color-text-primary);
   line-height: var(--line-height-loose);
 }
 
 .body-text--secondary {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-body);
   font-weight: var(--font-weight-normal);
   color: var(--color-text-secondary);
   line-height: var(--line-height-loose);
 }
 
 .body-small {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-caption);
   font-weight: var(--font-weight-normal);
   color: var(--color-text-secondary);
   line-height: var(--line-height-base);
 }
 
 .caption {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-caption);
   font-weight: var(--font-weight-normal);
   color: var(--color-text-tertiary);
   line-height: var(--line-height-base);
@@ -583,7 +304,7 @@ page {
 }
 
 .label {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-caption);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
   line-height: var(--line-height-tight);
@@ -591,14 +312,14 @@ page {
 
 /* --- Number / Data Highlight --- */
 .number-gold {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-title);
   font-weight: var(--font-weight-bold);
   color: var(--color-gold);
   line-height: var(--line-height-tight);
 }
 
 .number-gold-lg {
-  font-size: var(--font-size-4xl);
+  font-size: var(--font-size-display);
   font-weight: var(--font-weight-bold);
   color: var(--color-gold);
   line-height: var(--line-height-tight);
@@ -606,7 +327,7 @@ page {
 }
 
 .number-lavender {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-title);
   font-weight: var(--font-weight-bold);
   color: var(--color-lavender);
   line-height: var(--line-height-tight);
@@ -662,7 +383,7 @@ page {
   align-items: center;
   justify-content: center;
   border: none;
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-body);
   font-weight: var(--font-weight-medium);
   line-height: var(--line-height-tight);
   border-radius: var(--radius-pill);
@@ -749,12 +470,12 @@ page {
 }
 
 .btn--sm {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-caption);
   padding: 16rpx 32rpx;
 }
 
 .btn--lg {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-subhead);
   padding: 32rpx 48rpx;
 }
 
@@ -771,7 +492,7 @@ page {
 
 .card {
   background: var(--color-card);
-  border: 1rpx solid var(--color-card-border);
+  border: 1rpx solid rgba(244, 212, 140, 0.20);
   border-radius: var(--radius-md);
   padding: var(--spacing-md);
   box-shadow: var(--shadow-card);
@@ -780,7 +501,7 @@ page {
 
 .card:active {
   background: var(--color-card-hover);
-  border-color: var(--color-card-border-hover);
+  border-color: rgba(244, 212, 140, 0.40);
   box-shadow: var(--shadow-elevated);
   transform: translateY(-2rpx);
 }
@@ -820,19 +541,19 @@ page {
 }
 
 .card__title {
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-subhead);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 
 .card__subtitle {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-caption);
   color: var(--color-text-secondary);
   margin-top: var(--spacing-xxs);
 }
 
 .card__body {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-body);
   color: var(--color-text-secondary);
   line-height: var(--line-height-loose);
 }
@@ -862,7 +583,7 @@ page {
   border: 1rpx solid rgba(244, 212, 140, 0.12);
   border-radius: var(--radius-md);
   padding: 0 var(--spacing-md);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-body);
   color: var(--color-text-primary);
   line-height: var(--line-height-tight);
   transition: all var(--duration-base) var(--ease-soft);
@@ -876,7 +597,7 @@ page {
 .input:focus {
   border-color: rgba(244, 212, 140, 0.40);
   box-shadow: 0 0 0 2rpx rgba(244, 212, 140, 0.08);
-  background: var(--color-surface-hover);
+  background: var(--color-surface);
 }
 
 .input--error {
@@ -903,14 +624,14 @@ page {
 
 .input-label {
   display: block;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-caption);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
   margin-bottom: var(--spacing-xs);
 }
 
 .input-hint {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
   margin-top: var(--spacing-xxs);
   line-height: var(--line-height-base);
@@ -928,7 +649,7 @@ page {
   border: 1rpx solid rgba(244, 212, 140, 0.12);
   border-radius: var(--radius-md);
   padding: 0 var(--spacing-md);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-body);
   color: var(--color-text-primary);
   line-height: 88rpx;
   transition: all var(--duration-base) var(--ease-soft);
@@ -937,7 +658,7 @@ page {
 }
 
 .picker:active {
-  background: var(--color-surface-hover);
+  background: var(--color-surface);
   border-color: rgba(244, 212, 140, 0.30);
 }
 
@@ -959,7 +680,7 @@ page {
   background: var(--color-surface);
   border: 1rpx solid rgba(244, 212, 140, 0.10);
   border-radius: var(--radius-pill);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-caption);
   color: var(--color-text-secondary);
   transition: all var(--duration-fast) var(--ease-soft);
 }
@@ -1014,13 +735,13 @@ page {
 }
 
 .section__title {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-subhead);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 
 .section__action {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-caption);
   color: var(--color-gold);
   font-weight: var(--font-weight-medium);
 }
@@ -1108,7 +829,7 @@ page {
 }
 
 .hero__title {
-  font-size: var(--font-size-4xl);
+  font-size: var(--font-size-display);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   line-height: var(--line-height-tight);
@@ -1118,7 +839,7 @@ page {
 }
 
 .hero__subtitle {
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-body);
   color: var(--color-text-secondary);
   line-height: var(--line-height-loose);
   max-width: 600rpx;
@@ -1175,7 +896,7 @@ page {
 }
 
 .tab-item__label {
-  font-size: 18rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
   line-height: 1.2;
   transition: all var(--duration-base) var(--ease-soft);
@@ -1215,7 +936,7 @@ page {
 }
 
 .nav-bar__title {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-subhead);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   position: absolute;
@@ -1227,7 +948,7 @@ page {
 .nav-bar__back {
   display: flex;
   align-items: center;
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-body);
   color: var(--color-text-secondary);
   padding: 8rpx;
 }
@@ -1257,12 +978,11 @@ page {
   background: var(--color-card);
   border: 1rpx solid rgba(244, 212, 140, 0.20);
   border-radius: var(--radius-pill);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-caption);
   color: var(--color-text-primary);
   text-align: center;
   box-shadow: var(--shadow-elevated);
   z-index: var(--z-toast);
-  animation: toast-in var(--duration-base) var(--ease-soft) forwards;
 }
 
 .toast--success {
@@ -1275,24 +995,13 @@ page {
   color: var(--color-error);
 }
 
-@keyframes toast-in {
-  0% {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-20rpx);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-}
-
 /* Badge / Tag */
 .badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 8rpx 16rpx;
-  font-size: 18rpx;
+  font-size: var(--font-size-caption);
   font-weight: var(--font-weight-medium);
   line-height: 1.2;
   border-radius: var(--radius-pill);
@@ -1352,14 +1061,14 @@ page {
   align-items: center;
   padding: var(--spacing-md);
   background: var(--color-card);
-  border: 1rpx solid var(--color-card-border);
+  border: 1rpx solid rgba(244, 212, 140, 0.20);
   border-radius: var(--radius-md);
   transition: all var(--duration-fast) var(--ease-soft);
 }
 
 .list-item:active {
   background: var(--color-card-hover);
-  border-color: var(--color-card-border-hover);
+  border-color: rgba(244, 212, 140, 0.40);
 }
 
 .list-item + .list-item {
@@ -1379,14 +1088,14 @@ page {
 }
 
 .list-item__title {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-body);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
   line-height: var(--line-height-tight);
 }
 
 .list-item__desc {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-caption);
   color: var(--color-text-secondary);
   line-height: var(--line-height-base);
   margin-top: 4rpx;
@@ -1431,7 +1140,7 @@ page {
 
 .loading__text {
   margin-top: var(--spacing-md);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
 }
 
@@ -1440,15 +1149,15 @@ page {
   background: linear-gradient(
     90deg,
     var(--color-surface) 25%,
-    var(--color-surface-hover) 37%,
+    var(--color-surface) 37%,
     var(--color-surface) 63%
   );
   background-size: 400% 100%;
-  animation: skeleton-shimmer 1.8s ease-in-out infinite;
+  animation: shimmer-sweep 1.8s ease-in-out infinite;
   border-radius: var(--radius-sm);
 }
 
-@keyframes skeleton-shimmer {
+@keyframes shimmer-sweep {
   0% { background-position: 100% 50%; }
   100% { background-position: 0 50%; }
 }
@@ -1494,14 +1203,14 @@ page {
 }
 
 .empty__title {
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-body);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-secondary);
   margin-bottom: var(--spacing-xs);
 }
 
 .empty__desc {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
   line-height: var(--line-height-base);
   max-width: 500rpx;
@@ -1519,12 +1228,6 @@ page {
   bottom: 0;
   background: var(--color-overlay);
   z-index: var(--z-overlay);
-  animation: overlay-in var(--duration-base) var(--ease-soft) forwards;
-}
-
-@keyframes overlay-in {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
 }
 
 .modal {
@@ -1537,19 +1240,7 @@ page {
   z-index: var(--z-modal);
   padding: var(--spacing-lg) var(--page-padding) calc(var(--spacing-xl) + var(--safe-area-bottom));
   padding-bottom: calc(var(--spacing-xl) + var(--safe-area-bottom));
-  animation: modal-in var(--duration-slow) var(--ease-soft) forwards;
   box-shadow: 0 -8rpx 40rpx rgba(0, 0, 0, 0.30);
-}
-
-@keyframes modal-in {
-  0% {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
 }
 
 .modal--center {
@@ -1560,21 +1251,7 @@ page {
   width: 600rpx;
   border-radius: var(--radius-md);
   padding: var(--spacing-xl);
-  transform: translate(-50%, -50%) scale(0.90);
-  opacity: 0;
-  animation: modal-center-in var(--duration-slow) var(--ease-soft) forwards;
   padding-bottom: var(--spacing-xl);
-}
-
-@keyframes modal-center-in {
-  0% {
-    transform: translate(-50%, -50%) scale(0.90);
-    opacity: 0;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 1;
-  }
 }
 
 .modal__handle {
@@ -1591,7 +1268,7 @@ page {
 }
 
 .modal__title {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-title);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
@@ -1685,28 +1362,12 @@ page {
   100% { opacity: 1; }
 }
 
-@keyframes pulse-glow {
-  0%,
-  100% {
-    opacity: 0.60;
-    box-shadow: 0 0 10rpx rgba(244, 212, 140, 0.08);
-  }
-  50% {
-    opacity: 1;
-    box-shadow: 0 0 25rpx rgba(244, 212, 140, 0.20);
-  }
-}
-
 .anim-fade-up {
   animation: fade-up var(--duration-slow) var(--ease-soft) forwards;
 }
 
 .anim-fade-in {
   animation: fade-in var(--duration-base) var(--ease-soft) forwards;
-}
-
-.anim-pulse-glow {
-  animation: pulse-glow 3s ease-in-out infinite;
 }
 
 /* Staggered children — manual classes for simplicity */
@@ -1782,11 +1443,11 @@ page {
 .text-medium { font-weight: var(--font-weight-medium); }
 .text-normal { font-weight: var(--font-weight-normal); }
 
-.text-sm { font-size: var(--font-size-sm); }
-.text-base { font-size: var(--font-size-base); }
-.text-md { font-size: var(--font-size-md); }
-.text-lg { font-size: var(--font-size-lg); }
-.text-xl { font-size: var(--font-size-xl); }
+.text-sm { font-size: var(--font-size-caption); }
+.text-base { font-size: var(--font-size-body); }
+.text-md { font-size: var(--font-size-body); }
+.text-lg { font-size: var(--font-size-subhead); }
+.text-xl { font-size: var(--font-size-title); }
 
 .text-truncate {
   overflow: hidden;
@@ -1943,7 +1604,7 @@ page {
   background: linear-gradient(
     135deg,
     var(--color-surface) 0%,
-    var(--color-surface-hover) 100%
+    var(--color-surface) 100%
   );
   display: flex;
   align-items: center;
@@ -1996,19 +1657,8 @@ page {
   }
 }
 
-/* Box-shadow pulse in lavender tones (2.5s cycle) */
-@keyframes glow-pulse-lavender {
-  0%,
-  100% {
-    box-shadow: 0 0 10rpx rgba(184, 169, 224, 0.08), 0 0 30rpx rgba(184, 169, 224, 0.04);
-  }
-  50% {
-    box-shadow: 0 0 20rpx rgba(184, 169, 224, 0.25), 0 0 50rpx rgba(184, 169, 224, 0.10);
-  }
-}
-
-/* Very gentle scale oscillation (1->1.02->1, 4s cycle) */
-@keyframes breathing-subtle {
+/* Very gentle scale oscillation (1->1.02->1, 4s cycle) — daily card breathing border */
+@keyframes card-breathe {
   0%,
   100% {
     transform: scale(1);
@@ -2024,7 +1674,7 @@ page {
 
 /* --- Breathing --- */
 .anim-breathe {
-  animation: breathing-subtle 4s ease-in-out infinite;
+  animation: card-breathe 4s ease-in-out infinite;
 }
 
 /* --- Entrance Classes (one-shot, use forwards) --- */
@@ -2035,10 +1685,6 @@ page {
 /* --- Glow Classes (infinite) --- */
 .anim-glow-gold {
   animation: glow-pulse-gold 2.5s ease-in-out infinite;
-}
-
-.anim-glow-lav {
-  animation: glow-pulse-lavender 2.5s ease-in-out infinite;
 }
 
 /* -----------------------------------------------------------
@@ -2070,200 +1716,3 @@ page {
   animation-delay: 0.42s;
 }
 
-/* ============================================================
-   24. PAGE-LEVEL ANIMATIONS
-       Skeleton→Content, Tab Shimmer, Error→Retry,
-       Empty State, List Entrance
-   ============================================================ */
-
-/* -----------------------------------------------------------
-   24-A. SKELETON → CONTENT TRANSITION
-   ----------------------------------------------------------- */
-
-/* When pageLoading becomes false, apply to skeleton wrapper */
-.page-skeleton-exit {
-  opacity: 0;
-  transition: opacity 0.3s ease-out;
-  pointer-events: none;
-}
-
-/* Content enters with fade + slight rise */
-.page-content-entering {
-  opacity: 0;
-  animation: content-rise-in 0.4s cubic-bezier(0, 0, 0.2, 1) forwards;
-}
-
-@keyframes content-rise-in {
-  0% {
-    opacity: 0;
-    transform: translateY(10rpx);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* -----------------------------------------------------------
-   24-B. TAB SWITCH SHIMMER
-   ----------------------------------------------------------- */
-
-/* Apply to the new tab page container on switch */
-.tab-shimmer {
-  position: relative;
-  overflow: hidden;
-}
-
-.tab-shimmer::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 200%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(244, 212, 140, 0.04) 40%,
-    rgba(244, 212, 140, 0.08) 50%,
-    rgba(244, 212, 140, 0.04) 60%,
-    transparent 100%
-  );
-  background-size: 50% 100%;
-  animation: tab-shimmer-sweep 0.8s ease-out forwards;
-  pointer-events: none;
-  z-index: 1;
-}
-
-@keyframes tab-shimmer-sweep {
-  0% {
-    background-position: 200% 50%;
-  }
-  100% {
-    background-position: -100% 50%;
-  }
-}
-
-/* -----------------------------------------------------------
-   24-C. ERROR → RETRY TRANSITION
-   ----------------------------------------------------------- */
-
-/* Shake the error container when retry is triggered */
-.error-shake {
-  animation: error-shake-key 0.4s ease-out;
-}
-
-@keyframes error-shake-key {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  15% {
-    transform: translateX(-12rpx);
-  }
-  30% {
-    transform: translateX(10rpx);
-  }
-  45% {
-    transform: translateX(-8rpx);
-  }
-  60% {
-    transform: translateX(6rpx);
-  }
-  75% {
-    transform: translateX(-4rpx);
-  }
-  90% {
-    transform: translateX(2rpx);
-  }
-}
-
-/* Error fades out after shake (triggered simultaneously or after delay) */
-.error-fade-out {
-  animation: error-fade-out-key 0.35s ease-in forwards;
-}
-
-@keyframes error-fade-out-key {
-  0% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-}
-
-/* Content slides in from below after error resolves */
-.content-slide-in {
-  animation: content-slide-in-key 0.45s cubic-bezier(0, 0, 0.2, 1) forwards;
-}
-
-@keyframes content-slide-in-key {
-  0% {
-    opacity: 0;
-    transform: translateY(30rpx);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* -----------------------------------------------------------
-   24-D. EMPTY STATE ANIMATION
-   ----------------------------------------------------------- */
-
-/* Gentle floating up and down for empty state icon */
-.empty-icon-animated {
-  animation: empty-float 3s ease-in-out infinite;
-}
-
-@keyframes empty-float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-12rpx);
-  }
-}
-
-/* -----------------------------------------------------------
-   24-E. LIST ITEM ENTRANCE (Staggered Rise)
-   ----------------------------------------------------------- */
-
-/* Container — children animate on mount */
-.list-entrance {
-  /* Children will be animated; no transform on container itself */
-}
-
-.list-entrance-item {
-  opacity: 0;
-  animation: list-item-rise 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-
-/* Stagger delays for up to 12 items */
-.list-entrance-item:nth-child(1)  { animation-delay: 0.04s; }
-.list-entrance-item:nth-child(2)  { animation-delay: 0.08s; }
-.list-entrance-item:nth-child(3)  { animation-delay: 0.12s; }
-.list-entrance-item:nth-child(4)  { animation-delay: 0.16s; }
-.list-entrance-item:nth-child(5)  { animation-delay: 0.20s; }
-.list-entrance-item:nth-child(6)  { animation-delay: 0.24s; }
-.list-entrance-item:nth-child(7)  { animation-delay: 0.28s; }
-.list-entrance-item:nth-child(8)  { animation-delay: 0.32s; }
-.list-entrance-item:nth-child(9)  { animation-delay: 0.36s; }
-.list-entrance-item:nth-child(10) { animation-delay: 0.40s; }
-.list-entrance-item:nth-child(11) { animation-delay: 0.44s; }
-.list-entrance-item:nth-child(12) { animation-delay: 0.48s; }
-
-@keyframes list-item-rise {
-  0% {
-    opacity: 0;
-    transform: translateY(20rpx);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
