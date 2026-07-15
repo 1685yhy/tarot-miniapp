@@ -145,7 +145,7 @@
               <text class="history-spread-name">{{item.spreadTypeName}}</text>
               <text class="history-theme" wx:if="{{item.theme}}">{{item.theme}}</text>
               <text class="history-meta" wx:if="{{item.first_card_name}}">
-                {{item.first_card_name}}{{item.first_card_is_reversed ? ' (逆位)' : ''}} · {{item.created_at ? item.created_at.split('T')[0] : ''}}
+                {{item.first_card_name}}{{item.first_card_is_reversed ? ' (逆位)' : ''}} · {{item.createdAtFormatted}}
               </text>
             </view>
 

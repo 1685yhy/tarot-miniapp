@@ -23,7 +23,7 @@ Page({
     theme: '',
     showQuestionInput: false,
     isDrawing: false,
-    pageLoading: false,
+    pageLoading: true,
     pageError: null,
   },
 
@@ -38,6 +38,7 @@ Page({
           selectedSpread: spread,
           theme: spread.theme || '',
           showQuestionInput: !spread.premium,
+          pageLoading: false,
         });
         // 会员牌阵需要登录检查
         if (spread.premium) {
@@ -61,6 +62,8 @@ Page({
         }
       }
     }
+    // 清除骨架屏（pageLoading 初始为 true，确保首次渲染骨架）
+    this.setData({ pageLoading: false });
   },
 
   async onSelectSpread(e) {
