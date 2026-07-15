@@ -16,23 +16,22 @@
 
   <!-- ===== 错误状态 ===== -->
   <view wx:elif="{{pageError}}" class="error-state">
-    <text class="error-icon">📖</text>
     <text class="error-text">日记暂时无法打开</text>
     <text class="error-hint">{{pageError}}</text>
-    <button class="btn-primary btn-small" bindtap="onRetry">✨ 重新加载</button>
+    <button class="btn-primary btn-small" bindtap="onRetry">重新加载</button>
   </view>
 
   <!-- ===== 主内容 ===== -->
   <view wx:else>
     <!-- Header -->
     <view class="flex-center flex-col" style="padding:var(--space-xl) 0">
-      <text class="heading-2">📝 星光日记</text>
+      <text class="heading-2">星光日记</text>
       <text class="text-dim mt-sm">每天一张牌，记录内心旅程</text>
     </view>
 
     <!-- Create button -->
     <button class="btn-primary anim-glow-pulse mb-xxl" style="width:100%;margin-bottom:var(--space-xxl)" bindtap="showCreateModal">
-      ✨ 记录今天
+      记录今天
     </button>
 
     <!-- Entries -->
@@ -44,7 +43,7 @@
             <text style="font-size:32rpx">{{item.mood === 'happy' ? '😊' : item.mood === 'sad' ? '😢' : item.mood === 'anxious' ? '😰' : item.mood === 'calm' ? '😌' : item.mood === 'excited' ? '🤩' : '💭'}}</text>
           </view>
           <view class="entry-card-section" wx:if="{{item.card}}">
-            <text class="card-name">🔮 {{item.card.name_zh}}</text>
+            <image class="card-name-icon" src="/images/icons/crystal_ball.png" mode="aspectFit" style="width:28rpx;height:28rpx;vertical-align:middle;margin-right:6rpx" /><text class="card-name">{{item.card.name_zh}}</text>
             <text class="card-meaning">{{item.card.meaning_upright}}</text>
           </view>
           <text class="entry-reflection" wx:if="{{item.reflection}}">{{item.reflection}}</text>
@@ -56,7 +55,6 @@
 
     <!-- Empty state -->
     <view wx:if="{{entries.length === 0}}" class="empty-state" style="padding:var(--space-massive) 0">
-      <text class="empty-icon">📖</text>
       <text class="empty-text">还没有日记记录</text>
       <text class="empty-hint">每天抽一张牌，记录你的感受</text>
     </view>
@@ -88,7 +86,7 @@
       <text class="text-dim mt-xs" style="text-align:right;display:block;font-size:var(--fs-caption)">{{reflection.length}}/500</text>
 
       <button class="btn-primary submit-btn mt-xxl" bindtap="onCreateEntry" disabled="{{creating}}">
-        {{creating ? '记录中...' : '💫 保存日记'}}
+        {{creating ? '记录中...' : '保存日记'}}
       </button>
     </view>
   </view>

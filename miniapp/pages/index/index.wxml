@@ -70,7 +70,6 @@
 <!-- ===== 错误状态 ===== -->
 <view class="page" wx:elif="{{pageError}}">
   <view class="error-state">
-    <text class="error-icon">🔮</text>
     <text class="error-text">连接中断</text>
     <text class="error-hint">{{pageError}}</text>
     <button class="btn btn-outline" bindtap="onRetry">重新连接</button>
@@ -135,23 +134,23 @@
   <view class="section anim-fade-in-up-3">
     <text class="section-title">选择牌阵</text>
     <view style="display:grid;grid-template-columns:repeat(2,1fr);gap:16rpx">
-      <view class="card card-press" style="padding:24rpx 16rpx;text-align:center" bindtap="navigateToReading" data-type="three_card">
-        <text style="font-size:36rpx;display:block;margin-bottom:8rpx">🔮</text>
+      <view class="card card-press spread-card" style="padding:24rpx 16rpx;text-align:center" bindtap="navigateToReading" data-type="three_card">
+        <image class="spread-icon" src="/images/icons/crystal_ball.png" mode="aspectFit" />
         <text class="body-sm" style="display:block;font-weight:600">三牌占卜</text>
         <text class="body-xs" style="display:block;margin-top:6rpx">过去·现在·未来</text>
       </view>
-      <view class="card card-press" style="padding:24rpx 16rpx;text-align:center" bindtap="navigateToReading" data-type="triangle">
-        <text style="font-size:36rpx;display:block;margin-bottom:8rpx">💕</text>
+      <view class="card card-press spread-card" style="padding:24rpx 16rpx;text-align:center" bindtap="navigateToReading" data-type="triangle">
+        <image class="spread-icon" src="/images/icons/two_hearts.png" mode="aspectFit" />
         <text class="body-sm" style="display:block;font-weight:600">恋人三角</text>
         <text class="body-xs" style="display:block;margin-top:6rpx">感情关系深度解读</text>
       </view>
-      <view class="card card-press" style="padding:24rpx 16rpx;text-align:center" bindtap="navigateToReading" data-type="celtic_cross">
-        <text style="font-size:36rpx;display:block;margin-bottom:8rpx">⭐</text>
+      <view class="card card-press spread-card" style="padding:24rpx 16rpx;text-align:center" bindtap="navigateToReading" data-type="celtic_cross">
+        <image class="spread-icon" src="/images/icons/star.png" mode="aspectFit" />
         <text class="body-sm" style="display:block;font-weight:600">凯尔特十字</text>
         <text class="body-xs" style="display:block;margin-top:6rpx">全方位综合解牌</text>
       </view>
-      <view class="card card-press" style="padding:24rpx 16rpx;text-align:center" bindtap="navigateToReading" data-type="career">
-        <text style="font-size:36rpx;display:block;margin-bottom:8rpx">💼</text>
+      <view class="card card-press spread-card" style="padding:24rpx 16rpx;text-align:center" bindtap="navigateToReading" data-type="career">
+        <image class="spread-icon" src="/images/icons/briefcase.png" mode="aspectFit" />
         <text class="body-sm" style="display:block;font-weight:600">事业牌阵</text>
         <text class="body-xs" style="display:block;margin-top:6rpx">职场方向与机遇</text>
       </view>

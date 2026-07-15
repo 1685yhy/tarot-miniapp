@@ -22,7 +22,7 @@
   position: relative;
   width: 380rpx;
   height: 600rpx;
-  border-radius: 18rpx;
+  border-radius: var(--radius-md);
   overflow: hidden;
 
   /* Dark indigo card surface */
@@ -37,11 +37,9 @@
   /* Golden border */
   border: 1.5rpx solid #c9a04a;
 
-  /* Soft warm golden glow shadow (resting state) */
+  /* Warm golden glow shadow (resting state) */
   box-shadow:
-    0 0 30rpx 6rpx rgba(212, 168, 83, 0.20),
-    0 0 70rpx 18rpx rgba(212, 168, 83, 0.08),
-    0 0 120rpx 36rpx rgba(212, 168, 83, 0.04),
+    0 0 30rpx 6rpx rgba(212, 168, 83, 0.22),
     inset 0 0 50rpx 8rpx rgba(212, 168, 83, 0.03);
 
   /* Mount animations: rise + border glow play concurrently.
@@ -86,28 +84,21 @@
   0% {
     box-shadow:
       0 0 10rpx 2rpx rgba(212, 168, 83, 0.08),
-      0 0 30rpx 8rpx rgba(212, 168, 83, 0.03),
       inset 0 0 20rpx 4rpx rgba(212, 168, 83, 0.01);
   }
   30% {
     box-shadow:
       0 0 60rpx 20rpx rgba(212, 168, 83, 0.35),
-      0 0 120rpx 36rpx rgba(212, 168, 83, 0.15),
-      0 0 180rpx 50rpx rgba(212, 168, 83, 0.06),
       inset 0 0 70rpx 14rpx rgba(212, 168, 83, 0.07);
   }
   60% {
     box-shadow:
       0 0 40rpx 10rpx rgba(212, 168, 83, 0.25),
-      0 0 90rpx 24rpx rgba(212, 168, 83, 0.10),
-      0 0 140rpx 40rpx rgba(212, 168, 83, 0.05),
       inset 0 0 60rpx 10rpx rgba(212, 168, 83, 0.05);
   }
   100% {
     box-shadow:
-      0 0 30rpx 6rpx rgba(212, 168, 83, 0.20),
-      0 0 70rpx 18rpx rgba(212, 168, 83, 0.08),
-      0 0 120rpx 36rpx rgba(212, 168, 83, 0.04),
+      0 0 30rpx 6rpx rgba(212, 168, 83, 0.22),
       inset 0 0 50rpx 8rpx rgba(212, 168, 83, 0.03);
   }
 }
@@ -191,20 +182,12 @@
   0% {
     box-shadow:
       0 0 30rpx 6rpx rgba(212, 168, 83, 0.20),
-      0 0 70rpx 18rpx rgba(212, 168, 83, 0.08),
-      0 0 120rpx 36rpx rgba(212, 168, 83, 0.04),
-      inset 0 -60rpx 90rpx -10rpx rgba(225, 150, 140, 0.30),
-      inset 0 0 50rpx 8rpx rgba(225, 150, 140, 0.10),
-      inset 0 0 100rpx 24rpx rgba(225, 150, 140, 0.03);
+      inset 0 -60rpx 90rpx -10rpx rgba(225, 150, 140, 0.30);
   }
   100% {
     box-shadow:
       0 0 30rpx 6rpx rgba(212, 168, 83, 0.20),
-      0 0 70rpx 18rpx rgba(212, 168, 83, 0.08),
-      0 0 120rpx 36rpx rgba(212, 168, 83, 0.04),
-      inset 0 -60rpx 90rpx -10rpx rgba(225, 150, 140, 0.40),
-      inset 0 0 60rpx 12rpx rgba(225, 150, 140, 0.15),
-      inset 0 0 120rpx 30rpx rgba(225, 150, 140, 0.05);
+      inset 0 -60rpx 90rpx -10rpx rgba(225, 150, 140, 0.40);
   }
 }
 
@@ -655,7 +638,7 @@
   .tarot-card {
     width: 300rpx;
     height: 490rpx;
-    border-radius: 16rpx;
+    border-radius: var(--radius-md);
   }
 
   .card-number {
