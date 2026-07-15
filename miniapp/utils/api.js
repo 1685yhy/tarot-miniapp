@@ -31,7 +31,7 @@ const ENV = (() => {
  * release  【★ 部署前必须修改 ★】替换为生产域名
  */
 const ENV_URLS = {
-  develop: 'http://localhost:8000',
+  develop: 'http://127.0.0.1:8000',
   trial: 'https://xingxiang.chat/api',
   release: 'https://xingxiang.chat/api',
 };
