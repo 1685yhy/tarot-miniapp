@@ -38,10 +38,9 @@
 
   <!-- ===== 错误状态 ===== -->
   <view wx:elif="{{pageError}}" class="error-state">
-    <text class="error-icon">🔮</text>
     <text class="error-text">占卜台暂时无法连接</text>
     <text class="error-hint">{{pageError}}</text>
-    <button class="btn-primary btn-small" bindtap="onRetry">✨ 重新连接</button>
+    <button class="btn-primary btn-small" bindtap="onRetry">重新连接</button>
   </view>
 
   <!-- ===== 主内容 ===== -->
@@ -99,24 +98,28 @@
         <text class="text-secondary" style="display:block;margin-bottom:var(--space-sm)">解读侧重</text>
         <view class="theme-options">
           <view class="theme-item {{theme === 'general' ? 'theme-active' : ''}}" bindtap="onThemeTap" data-theme="general">
-            <text>🔮 综合</text>
+            <image class="theme-icon" src="/images/icons/crystal_ball.png" mode="aspectFit" />
+            <text>综合</text>
           </view>
           <view class="theme-item {{theme === 'love' ? 'theme-active' : ''}}" bindtap="onThemeTap" data-theme="love">
-            <text>💕 爱情</text>
+            <image class="theme-icon" src="/images/icons/two_hearts.png" mode="aspectFit" />
+            <text>爱情</text>
           </view>
           <view class="theme-item {{theme === 'career' ? 'theme-active' : ''}}" bindtap="onThemeTap" data-theme="career">
-            <text>💼 事业</text>
+            <image class="theme-icon" src="/images/icons/briefcase.png" mode="aspectFit" />
+            <text>事业</text>
           </view>
           <view class="theme-item {{theme === 'finance' ? 'theme-active' : ''}}" bindtap="onThemeTap" data-theme="finance">
-            <text>💰 财运</text>
+            <image class="theme-icon" src="/images/icons/money.png" mode="aspectFit" />
+            <text>财运</text>
           </view>
         </view>
       </view>
 
       <!-- Draw button -->
       <button class="btn-glow-pulse {{isDrawing ? 'drawing' : ''}} anim-fade-in-up-4" bindtap="onStartReading" disabled="{{isDrawing}}">
-        <text wx:if="{{!isDrawing}}">✨ 开始抽牌</text>
-        <text wx:else>🌙 牌灵正在回应...</text>
+        <text wx:if="{{!isDrawing}}">开始抽牌</text>
+        <text wx:else>牌灵正在回应...</text>
       </button>
 
       <text class="btn-text" style="text-align:center;display:block;width:100%;margin-top:var(--space-md)" bindtap="onBackToSpreads">← 重新选择牌阵</text>

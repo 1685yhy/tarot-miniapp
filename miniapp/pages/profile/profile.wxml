@@ -16,10 +16,9 @@
 
   <!-- ===== 错误状态 ===== -->
   <view wx:elif="{{pageError}}" class="error-state">
-    <text class="error-icon">🔮</text>
     <text class="error-text">个人信息暂时无法获取</text>
     <text class="error-hint">{{pageError}}</text>
-    <button class="btn-primary btn-small" bindtap="onRetry">✨ 重新加载</button>
+    <button class="btn-primary btn-small" bindtap="onRetry">重新加载</button>
   </view>
 
   <!-- ===== 主内容 ===== -->
@@ -28,12 +27,12 @@
     <view class="user-card anim-fade-in-up-1">
       <!-- Avatar: 金色星星剪影 -->
       <view class="avatar-circle">
-        <text class="avatar-emoji">✨</text>
+        <image class="avatar-emoji" src="/images/icons/star.png" mode="aspectFit" />
       </view>
       <text class="user-name">{{user.nickname || '星光旅人'}}</text>
       <view class="user-badge-row">
         <text class="badge {{memberStatus.is_member ? 'badge-premium' : 'badge-free'}}">
-          {{memberStatus.is_member ? '👑 会员' : '✨ 免费用户'}}
+          {{memberStatus.is_member ? '会员' : '免费用户'}}
         </text>
         <text class="badge-date" wx:if="{{memberStatus.is_member && memberStatus.expires_at}}">
           有效期至 {{memberStatus.expiresAtFormatted}}
@@ -116,7 +115,6 @@
 
       <!-- 空状态 -->
       <view wx:if="{{readingHistory.length === 0}}" class="empty-state-inline">
-        <text class="empty-icon">🕯️</text>
         <text class="empty-text">暂无占卜记录</text>
         <text class="empty-hint">开始你的第一次占卜吧</text>
       </view>
@@ -139,7 +137,7 @@
               wx:if="{{item.firstCardImage}}"
             />
             <view class="history-thumb-placeholder" wx:else>
-              <text class="thumb-placeholder-text">🃏</text>
+              <image class="thumb-placeholder-img" src="/images/icons/star.png" mode="aspectFit" />
             </view>
 
             <!-- 中间文字 -->

@@ -184,7 +184,7 @@ page {
 
 .badge {
   display: inline-block;
-  padding: 4rpx 22rpx;
+  padding: 4rpx 24rpx;
   border-radius: var(--radius-pill);
   font-size: var(--font-size-xs);
   background: var(--color-surface);

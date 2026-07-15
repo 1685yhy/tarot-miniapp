@@ -84,17 +84,14 @@ page {
   --spacing-lg: 32rpx;
   --spacing-xl: 48rpx;
   --spacing-2xl: 64rpx;
-  --spacing-3xl: 80rpx;
-  --spacing-4xl: 96rpx;
-  --spacing-5xl: 120rpx;
+  --spacing-3xl: 64rpx;
+  --spacing-4xl: 64rpx;
+  --spacing-5xl: 64rpx;
 
   /* -- Border Radius -- */
   --radius-sm: 8rpx;
   --radius-md: 16rpx;
-  --radius-lg: 24rpx;
-  --radius-xl: 32rpx;
   --radius-pill: 999rpx;
-  --radius-full: 100%;
 
   /* -- Animation -- */
   --duration-instant: 0s;
@@ -152,7 +149,7 @@ page {
   width: 3rpx;
   height: 3rpx;
   background: rgba(244, 212, 140, 0.60);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-pill);
   animation: star-twinkle 4s ease-in-out infinite;
 }
 
@@ -213,7 +210,7 @@ page {
   position: absolute;
   width: 1rpx;
   height: 1rpx;
-  border-radius: 50%;
+  border-radius: var(--radius-pill);
   background: rgba(255, 255, 255, 0.20);
   box-shadow:
     23rpx 45rpx rgba(255,255,255,0.18),
@@ -277,7 +274,7 @@ page {
   position: absolute;
   width: 2rpx;
   height: 2rpx;
-  border-radius: 50%;
+  border-radius: var(--radius-pill);
   background: rgba(255, 255, 255, 0.35);
   box-shadow:
     56rpx 88rpx rgba(255,255,255,0.35),
@@ -323,7 +320,7 @@ page {
   position: absolute;
   width: 3rpx;
   height: 3rpx;
-  border-radius: 50%;
+  border-radius: var(--radius-pill);
   background: rgba(244, 212, 140, 0.60);
   box-shadow:
     80rpx 180rpx rgba(244,212,140,0.50),
@@ -355,7 +352,7 @@ page {
   position: absolute;
   width: 4rpx;
   height: 4rpx;
-  border-radius: 50%;
+  border-radius: var(--radius-pill);
   background: rgba(244, 212, 140, 0.80);
   box-shadow:
     155rpx 400rpx rgba(244,212,140,0.70),
@@ -401,7 +398,7 @@ page {
   width: 160rpx;
   height: 2rpx;
   background: linear-gradient(to left, transparent, rgba(244, 212, 140, 0.70));
-  border-radius: 1rpx;
+  border-radius: var(--radius-sm);
   box-shadow: 0 0 8rpx rgba(244, 212, 140, 0.30), 0 0 24rpx rgba(244, 212, 140, 0.08);
   pointer-events: none;
   z-index: 1;
@@ -758,14 +755,14 @@ page {
 
 .btn--lg {
   font-size: var(--font-size-lg);
-  padding: 28rpx 56rpx;
+  padding: 32rpx 48rpx;
 }
 
 .btn--icon {
-  padding: 20rpx;
+  padding: 24rpx;
   min-width: 80rpx;
   min-height: 80rpx;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-pill);
 }
 
 /* -----------------------------------------------------------
@@ -775,7 +772,7 @@ page {
 .card {
   background: var(--color-card);
   border: 1rpx solid var(--color-card-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   padding: var(--spacing-md);
   box-shadow: var(--shadow-card);
   transition: all var(--duration-base) var(--ease-soft);
@@ -958,7 +955,7 @@ page {
 .check-item {
   display: flex;
   align-items: center;
-  padding: 12rpx 20rpx;
+  padding: 12rpx 16rpx;
   background: var(--color-surface);
   border: 1rpx solid rgba(244, 212, 140, 0.10);
   border-radius: var(--radius-pill);
@@ -1172,7 +1169,7 @@ page {
 .tab-item__icon {
   width: 44rpx;
   height: 44rpx;
-  margin-bottom: 6rpx;
+  margin-bottom: 8rpx;
   opacity: 0.45;
   transition: all var(--duration-base) var(--ease-soft);
 }
@@ -1201,7 +1198,7 @@ page {
   width: 40rpx;
   height: 3rpx;
   background: var(--color-gold);
-  border-radius: 2rpx;
+  border-radius: var(--radius-sm);
   margin-left: -20rpx;
   box-shadow: 0 0 10rpx rgba(244, 212, 140, 0.30);
 }
@@ -1256,7 +1253,7 @@ page {
   transform: translateX(-50%);
   min-width: 200rpx;
   max-width: 600rpx;
-  padding: 20rpx 36rpx;
+  padding: 24rpx 32rpx;
   background: var(--color-card);
   border: 1rpx solid rgba(244, 212, 140, 0.20);
   border-radius: var(--radius-pill);
@@ -1294,7 +1291,7 @@ page {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 6rpx 16rpx;
+  padding: 8rpx 16rpx;
   font-size: 18rpx;
   font-weight: var(--font-weight-medium);
   line-height: 1.2;
@@ -1338,7 +1335,7 @@ page {
   width: 12rpx;
   height: 12rpx;
   padding: 0;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-pill);
   min-width: 0;
 }
 
@@ -1423,7 +1420,7 @@ page {
   height: 64rpx;
   border: 3rpx solid rgba(244, 212, 140, 0.10);
   border-top-color: var(--color-gold);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-pill);
   animation: spin 0.8s linear infinite;
 }
 
@@ -1471,12 +1468,12 @@ page {
 .skeleton--avatar {
   width: 80rpx;
   height: 80rpx;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-pill);
 }
 
 .skeleton--card {
   height: 200rpx;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
 }
 
 /* Empty State */
@@ -1536,7 +1533,7 @@ page {
   left: 0;
   right: 0;
   background: var(--color-surface);
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
   z-index: var(--z-modal);
   padding: var(--spacing-lg) var(--page-padding) calc(var(--spacing-xl) + var(--safe-area-bottom));
   padding-bottom: calc(var(--spacing-xl) + var(--safe-area-bottom));
@@ -1561,7 +1558,7 @@ page {
   left: 50%;
   right: auto;
   width: 600rpx;
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-md);
   padding: var(--spacing-xl);
   transform: translate(-50%, -50%) scale(0.90);
   opacity: 0;
@@ -1615,7 +1612,7 @@ page {
 .avatar {
   width: 80rpx;
   height: 80rpx;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-pill);
   border: 2rpx solid rgba(244, 212, 140, 0.15);
   overflow: hidden;
   flex-shrink: 0;
@@ -1862,7 +1859,7 @@ page {
 
 ::-webkit-scrollbar-thumb {
   background: rgba(106, 101, 136, 0.30);
-  border-radius: 4rpx;
+  border-radius: var(--radius-sm);
 }
 
 ::-webkit-scrollbar-thumb:active {
@@ -1892,7 +1889,7 @@ page {
   bottom: calc(120rpx + var(--safe-area-bottom));
   width: 100rpx;
   height: 100rpx;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-pill);
   background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 100%);
   box-shadow: 0 4rpx 24rpx rgba(244, 212, 140, 0.30);
   display: flex;
@@ -1919,7 +1916,7 @@ page {
   right: 60rpx;
   width: 16rpx;
   height: 16rpx;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-pill);
   background: var(--color-lavender);
   opacity: 0.20;
   box-shadow: 0 0 20rpx rgba(184, 169, 224, 0.10);
@@ -1930,14 +1927,14 @@ page {
   width: 100%;
   height: 3rpx;
   background: rgba(106, 101, 136, 0.15);
-  border-radius: 2rpx;
+  border-radius: var(--radius-sm);
   overflow: hidden;
 }
 
 .reading-progress__fill {
   height: 100%;
   background: var(--color-gold);
-  border-radius: 2rpx;
+  border-radius: var(--radius-sm);
   transition: width var(--duration-slow) var(--ease-out);
 }
 
@@ -1960,109 +1957,13 @@ page {
 }
 
 /* ============================================================
-   23. ANIMATION LIBRARY — Professional Keyframes & Utility Classes
+   23. ANIMATION LIBRARY
        WXSS-compatible: opacity, transform, box-shadow, background-position only
    ============================================================ */
 
 /* -----------------------------------------------------------
-   23-A. STAR & SPARKLE KEYFRAMES
+   23-A. CARD & SURFACE KEYFRAMES
    ----------------------------------------------------------- */
-
-/* Quick magical twinkle for sparkle effects (0.4s cycle) */
-@keyframes star-twinkle-fast {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
-  }
-  25% {
-    opacity: 0.30;
-    transform: scale(0.60) rotate(90deg);
-  }
-  50% {
-    opacity: 0.90;
-    transform: scale(1.15) rotate(180deg);
-  }
-  75% {
-    opacity: 0.40;
-    transform: scale(0.70) rotate(270deg);
-  }
-}
-
-/* Rapid scale+opacity burst for magical moments (0.5s) */
-@keyframes star-burst {
-  0% {
-    opacity: 0;
-    transform: scale(0.20);
-  }
-  30% {
-    opacity: 1;
-    transform: scale(1.40);
-  }
-  60% {
-    opacity: 0.85;
-    transform: scale(1.10);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(0.80);
-  }
-}
-
-/* -----------------------------------------------------------
-   23-B. FLOATING & DRIFT KEYFRAMES
-   ----------------------------------------------------------- */
-
-/* Slow vertical float with subtle rotation (4s cycle) */
-@keyframes float-gentle {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  25% {
-    transform: translateY(-12rpx) rotate(1deg);
-  }
-  50% {
-    transform: translateY(-20rpx) rotate(0deg);
-  }
-  75% {
-    transform: translateY(-8rpx) rotate(-1deg);
-  }
-}
-
-/* Horizontal+vertical drift like a constellation (6s cycle) */
-@keyframes float-drift {
-  0%,
-  100% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-  20% {
-    transform: translate(10rpx, -8rpx) rotate(0.50deg);
-  }
-  40% {
-    transform: translate(-6rpx, -16rpx) rotate(-0.50deg);
-  }
-  60% {
-    transform: translate(14rpx, -20rpx) rotate(0.30deg);
-  }
-  80% {
-    transform: translate(4rpx, -10rpx) rotate(-0.30deg);
-  }
-}
-
-/* -----------------------------------------------------------
-   23-C. CARD & SURFACE KEYFRAMES
-   ----------------------------------------------------------- */
-
-/* Background-position sweep for light glint effect (2s) */
-@keyframes card-shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
 
 /* Card appears to rise up from below with opacity (0.5s) */
 @keyframes card-rise {
@@ -2080,20 +1981,8 @@ page {
   }
 }
 
-/* Dramatic scale+opacity reveal (0.8->1 scale, 0->1 opacity, 0.45s) */
-@keyframes card-reveal {
-  0% {
-    opacity: 0;
-    transform: scale(0.80);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
 /* -----------------------------------------------------------
-   23-D. GLOW & BREATHING KEYFRAMES
+   23-B. GLOW & BREATHING KEYFRAMES
    ----------------------------------------------------------- */
 
 /* Box-shadow pulse in golden tones (2.5s cycle) */
@@ -2129,131 +2018,9 @@ page {
   }
 }
 
-/* Ultra-slow rotation (360deg over 30s, for background elements) */
-@keyframes rotate-cosmic {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
 /* -----------------------------------------------------------
-   23-E. SHIMMER SWEEP KEYFRAME
+   23-C. ANIMATION UTILITY CLASSES
    ----------------------------------------------------------- */
-
-/* Fast shimmer sweep using background-position (1.2s) */
-@keyframes shimmer-sweep {
-  0% {
-    background-position: -100% 50%;
-  }
-  100% {
-    background-position: 200% 50%;
-  }
-}
-
-/* -----------------------------------------------------------
-   23-F. INTERACTION KEYFRAMES
-   ----------------------------------------------------------- */
-
-/* Scale+opacity outward like a water ripple (0.4s) */
-@keyframes ripple-expand {
-  0% {
-    transform: scale(0.85);
-    opacity: 0.60;
-  }
-  50% {
-    opacity: 0.80;
-  }
-  100% {
-    transform: scale(1.15);
-    opacity: 0;
-  }
-}
-
-/* Playful overshoot entrance (scale 0->1.05->0.97->1, 0.5s) */
-@keyframes bounce-in {
-  0% {
-    opacity: 0;
-    transform: scale(0);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-  70% {
-    transform: scale(0.97);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* Elegant entrance from below (0.45s) */
-@keyframes slide-up-fade {
-  0% {
-    opacity: 0;
-    transform: translateY(30rpx);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* -----------------------------------------------------------
-   23-G. DATA / NUMBER KEYFRAMES
-   ----------------------------------------------------------- */
-
-/* Brief scale bump for number changes (0.35s) */
-@keyframes count-up-pulse {
-  0% {
-    transform: scale(1);
-  }
-  30% {
-    transform: scale(1.20);
-  }
-  60% {
-    transform: scale(0.95);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-/* -----------------------------------------------------------
-   23-H. ANIMATION UTILITY CLASSES
-   ----------------------------------------------------------- */
-
-/* --- Floating / Drifting --- */
-.anim-float {
-  animation: float-gentle 4s ease-in-out infinite;
-}
-
-.anim-drift {
-  animation: float-drift 6s ease-in-out infinite;
-}
-
-.anim-rotate-cosmic {
-  animation: rotate-cosmic 30s linear infinite;
-}
-
-/* --- Shimmer on card surfaces --- */
-.anim-shimmer {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(244, 212, 140, 0.06) 45%,
-    rgba(244, 212, 140, 0.10) 50%,
-    rgba(244, 212, 140, 0.06) 55%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer-sweep 1.2s ease-in-out infinite;
-  pointer-events: none;
-}
 
 /* --- Breathing --- */
 .anim-breathe {
@@ -2261,20 +2028,8 @@ page {
 }
 
 /* --- Entrance Classes (one-shot, use forwards) --- */
-.anim-bounce-in {
-  animation: bounce-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
 .anim-rise {
   animation: card-rise 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-
-.anim-reveal {
-  animation: card-reveal 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-
-.anim-slide-up {
-  animation: slide-up-fade 0.45s cubic-bezier(0, 0, 0.2, 1) forwards;
 }
 
 /* --- Glow Classes (infinite) --- */
@@ -2286,47 +2041,8 @@ page {
   animation: glow-pulse-lavender 2.5s ease-in-out infinite;
 }
 
-/* --- Interaction Classes --- */
-.anim-ripple {
-  position: relative;
-  overflow: hidden;
-}
-
-.anim-ripple:active::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100rpx;
-  height: 100rpx;
-  margin-left: -50rpx;
-  margin-top: -50rpx;
-  border-radius: 100%;
-  background: rgba(244, 212, 140, 0.20);
-  animation: ripple-expand 0.4s ease-out forwards;
-  pointer-events: none;
-}
-
-.anim-ripple--lav:active::after {
-  background: rgba(184, 169, 224, 0.20);
-}
-
-/* --- Star / Sparkle (one-shot or infinite via forwards/infinite) --- */
-.anim-twinkle-fast {
-  animation: star-twinkle-fast 0.4s ease-in-out infinite;
-}
-
-.anim-star-burst {
-  animation: star-burst 0.5s ease-out forwards;
-}
-
-/* --- Data / Count --- */
-.anim-count-pulse {
-  animation: count-up-pulse 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
 /* -----------------------------------------------------------
-   23-I. STAGGERED ENTRANCE (card-rise with increasing delays)
+   23-D. STAGGERED ENTRANCE (card-rise with increasing delays)
    ----------------------------------------------------------- */
 
 .anim-rise-1 {

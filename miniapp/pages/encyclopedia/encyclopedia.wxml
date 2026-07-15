@@ -21,17 +21,16 @@
 
   <!-- ===== 错误状态 ===== -->
   <view wx:elif="{{pageError}}" class="error-state">
-    <text class="error-icon">🃏</text>
     <text class="error-text">卡牌档案馆暂时打不开</text>
     <text class="error-hint">{{pageError}}</text>
-    <button class="btn-primary btn-small" bindtap="onRetry">✨ 重新加载</button>
+    <button class="btn-primary btn-small" bindtap="onRetry">重新加载</button>
   </view>
 
   <!-- ===== 主内容 ===== -->
   <view wx:else>
     <!-- Search bar -->
     <view class="search-bar anim-fade-in-up-1">
-      <text class="text-secondary" style="margin-right:var(--space-sm)">🔍</text>
+      <image class="search-icon" src="/images/icons/star.png" mode="aspectFit" style="width:32rpx;height:32rpx;margin-right:var(--space-sm)" />
       <input
         class="search-input"
         style="flex:1;font-size:var(--fs-body);color:var(--color-text-primary);background:transparent"
@@ -79,7 +78,6 @@
 
     <!-- Empty state -->
     <view wx:if="{{!pageLoading && filteredCards.length === 0}}" class="empty-state">
-      <text class="empty-icon">🃏</text>
       <text class="empty-text">没有找到匹配的牌</text>
       <text class="empty-hint">试试换个关键词吧</text>
     </view>
