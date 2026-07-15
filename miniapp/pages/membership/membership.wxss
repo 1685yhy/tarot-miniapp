@@ -453,8 +453,3 @@ page {
 .anim-fade-in-up-3 { opacity: 0; animation: fade-up 0.6s ease 0.15s forwards; }
 .anim-fade-in-up-4 { opacity: 0; animation: fade-up 0.6s ease 0.20s forwards; }
 .anim-fade-in-up-5 { opacity: 0; animation: fade-up 0.6s ease 0.25s forwards; }
-
-@keyframes fade-up {
-  0% { opacity: 0; transform: translateY(24rpx); }
-  100% { opacity: 1; transform: translateY(0); }
-}
