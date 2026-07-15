@@ -19,10 +19,10 @@
 
   <!-- ===== 错误状态 ===== -->
   <view wx:elif="{{pageError}}" class="error-state">
-    <view class="error-icon" style="width:64rpx;height:64rpx;border-radius:50%;background:linear-gradient(135deg,var(--color-purple),var(--color-gold));margin:0 auto 24rpx"></view>
+    <text class="error-icon">🌙</text>
     <text class="error-text">这张牌的信息暂时无法获取</text>
     <text class="error-hint">{{pageError}}</text>
-    <button class="btn-primary btn-small" bindtap="onRetry"><image class="btn-icon" src="/images/icons/refresh.png" mode="aspectFit" /><text>重新加载</text></button>
+    <button class="btn-primary btn-small" bindtap="onRetry">✨ 重新加载</button>
   </view>
 
   <!-- ===== 主内容 ===== -->
@@ -49,13 +49,13 @@
 
     <!-- Image description -->
     <view class="section-card anim-fade-in-up-2">
-      <text class="section-title">牌面描述</text>
+      <text class="section-title">🔮 牌面描述</text>
       <text class="section-text mt-sm">{{card.image_description}}</text>
     </view>
 
     <!-- Keywords -->
     <view class="section-card anim-fade-in-up-3">
-      <text class="section-title">关键词</text>
+      <text class="section-title">🔑 关键词</text>
       <view class="keyword-list mt-sm">
         <text class="badge badge-gold" wx:for="{{card.keywordsList}}" wx:key="*this" style="font-size:var(--font-size-sm);padding:8rpx 20rpx">{{item}}</text>
       </view>
@@ -68,60 +68,60 @@
         data-tab="upright"
         bindtap="onTabTap"
       >
-        <text>正位</text>
+        <text>☀️ 正位</text>
       </view>
       <view
         class="toggle-item {{activeTab === 'reversed' ? 'toggle-active' : ''}}"
         data-tab="reversed"
         bindtap="onTabTap"
       >
-        <text>逆位</text>
+        <text>🌙 逆位</text>
       </view>
     </view>
 
     <!-- Meanings -->
     <view wx:if="{{activeTab === 'upright'}}" class="anim-fade-in-up-5">
       <view class="section-card">
-        <text class="section-title">正位含义</text>
+        <text class="section-title">✨ 正位含义</text>
         <text class="section-text mt-sm">{{card.meaning_upright}}</text>
       </view>
       <view class="section-card">
-        <text class="section-title">爱情</text>
+        <text class="section-title">💕 爱情</text>
         <text class="section-text mt-sm">{{card.love_upright}}</text>
       </view>
       <view class="section-card">
-        <text class="section-title">事业</text>
+        <text class="section-title">💼 事业</text>
         <text class="section-text mt-sm">{{card.career_upright}}</text>
       </view>
       <view class="section-card">
-        <text class="section-title">财运</text>
+        <text class="section-title">💰 财运</text>
         <text class="section-text mt-sm">{{card.finance_upright}}</text>
       </view>
       <view class="section-card">
-        <text class="section-title">健康</text>
+        <text class="section-title">⭐ 健康</text>
         <text class="section-text mt-sm">{{card.health_upright}}</text>
       </view>
     </view>
 
     <view wx:else class="anim-fade-in-up-5">
       <view class="section-card">
-        <text class="section-title">逆位含义</text>
+        <text class="section-title">✨ 逆位含义</text>
         <text class="section-text mt-sm">{{card.meaning_reversed}}</text>
       </view>
       <view class="section-card">
-        <text class="section-title">爱情</text>
+        <text class="section-title">💕 爱情</text>
         <text class="section-text mt-sm">{{card.love_reversed}}</text>
       </view>
       <view class="section-card">
-        <text class="section-title">事业</text>
+        <text class="section-title">💼 事业</text>
         <text class="section-text mt-sm">{{card.career_reversed}}</text>
       </view>
       <view class="section-card">
-        <text class="section-title">财运</text>
+        <text class="section-title">💰 财运</text>
         <text class="section-text mt-sm">{{card.finance_reversed}}</text>
       </view>
       <view class="section-card">
-        <text class="section-title">健康</text>
+        <text class="section-title">⭐ 健康</text>
         <text class="section-text mt-sm">{{card.health_reversed}}</text>
       </view>
     </view>

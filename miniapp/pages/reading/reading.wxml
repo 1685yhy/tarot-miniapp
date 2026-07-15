@@ -38,10 +38,10 @@
 
   <!-- ===== 错误状态 ===== -->
   <view wx:elif="{{pageError}}" class="error-state">
-    <view class="error-icon" style="width:64rpx;height:64rpx;border-radius:50%;background:linear-gradient(135deg,var(--color-purple),var(--color-gold));margin:0 auto 24rpx"></view>
+    <text class="error-icon">🔮</text>
     <text class="error-text">占卜台暂时无法连接</text>
     <text class="error-hint">{{pageError}}</text>
-    <button class="btn-primary btn-small" bindtap="onRetry"><image class="btn-icon" src="/images/icons/refresh.png" mode="aspectFit" /><text>重新连接</text></button>
+    <button class="btn-primary btn-small" bindtap="onRetry">✨ 重新连接</button>
   </view>
 
   <!-- ===== 主内容 ===== -->
@@ -59,7 +59,7 @@
           data-spread="{{item}}"
           bindtap="onSelectSpread"
         >
-          <view style="width:44rpx;height:44rpx;border-radius:50%;background:linear-gradient(135deg,var(--color-purple),var(--color-gold));margin-right:var(--space-lg);flex-shrink:0"></view>
+          <text style="font-size:44rpx;margin-right:var(--space-lg)">{{item.icon}}</text>
           <view style="flex:1">
             <text class="heading-4">{{item.name}}</text>
             <text class="text-dim mt-xs">{{item.desc}}</text>
@@ -76,7 +76,7 @@
     <!-- Question input -->
     <view wx:if="{{showQuestionInput}}">
       <view class="selected-info anim-fade-in-up-1">
-        <view style="width:56rpx;height:56rpx;border-radius:50%;background:linear-gradient(135deg,var(--color-purple),var(--color-gold));margin:0 auto"></view>
+        <text style="font-size:56rpx;display:block">{{selectedSpread.icon}}</text>
         <text class="heading-2 mt-sm">{{selectedSpread.name}}</text>
         <text class="text-dim mt-xs">{{selectedSpread.desc}}</text>
       </view>
@@ -99,30 +99,27 @@
         <text class="text-secondary" style="display:block;margin-bottom:var(--space-sm)">解读侧重</text>
         <view class="theme-options">
           <view class="theme-item {{theme === 'general' ? 'theme-active' : ''}}" bindtap="onThemeTap" data-theme="general">
-            <text>综合</text>
+            <text>🔮 综合</text>
           </view>
           <view class="theme-item {{theme === 'love' ? 'theme-active' : ''}}" bindtap="onThemeTap" data-theme="love">
-            <text>爱情</text>
+            <text>💕 爱情</text>
           </view>
           <view class="theme-item {{theme === 'career' ? 'theme-active' : ''}}" bindtap="onThemeTap" data-theme="career">
-            <text>事业</text>
+            <text>💼 事业</text>
           </view>
           <view class="theme-item {{theme === 'finance' ? 'theme-active' : ''}}" bindtap="onThemeTap" data-theme="finance">
-            <text>财运</text>
+            <text>💰 财运</text>
           </view>
         </view>
       </view>
 
       <!-- Draw button -->
       <button class="btn-glow-pulse {{isDrawing ? 'drawing' : ''}} anim-fade-in-up-4" bindtap="onStartReading" disabled="{{isDrawing}}">
-        <text wx:if="{{!isDrawing}}">开始抽牌</text>
-        <text wx:else>牌灵正在回应...</text>
+        <text wx:if="{{!isDrawing}}">✨ 开始抽牌</text>
+        <text wx:else>🌙 牌灵正在回应...</text>
       </button>
 
-      <view class="btn-text" style="display:flex;align-items:center;justify-content:center;width:100%;margin-top:var(--space-md)" bindtap="onBackToSpreads">
-        <image src="/images/icons/arrow_left.png" mode="aspectFit" style="width:28rpx;height:28rpx;margin-right:8rpx" />
-        <text>重新选择牌阵</text>
-      </view>
+      <text class="btn-text" style="text-align:center;display:block;width:100%;margin-top:var(--space-md)" bindtap="onBackToSpreads">← 重新选择牌阵</text>
     </view>
   </view>
 </view>

@@ -72,7 +72,7 @@
 
 <!-- ===== 错误状态 ===== -->
 <view wx:elif="{{pageError}}" class="error-state">
-  <view class="error-icon" style="width:64rpx;height:64rpx;border-radius:50%;background:linear-gradient(135deg,var(--color-purple),var(--color-gold));margin:0 auto 24rpx"></view>
+  <text class="error-icon">🌙</text>
   <text class="error-text">解读过程出现了一些干扰</text>
   <text class="error-hint">{{pageError}}</text>
   <button class="btn-primary btn-small" bindtap="onRetry">
