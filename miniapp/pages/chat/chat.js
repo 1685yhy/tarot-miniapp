@@ -8,6 +8,7 @@ Page({
     inputText: '',
     canSend: false,
     sending: false,
+    aiThinking: false,
     remainingFree: 0,
     pageLoading: false,
     pageError: null,
@@ -68,7 +69,7 @@ Page({
     if (!text || this.data.sending) return;
 
     const messages = [...this.data.messages, { role: 'user', content: text }];
-    this.setData({ messages, inputText: '', canSend: false, sending: true });
+    this.setData({ messages, inputText: '', canSend: false, sending: true, aiThinking: true });
 
     try {
       const result = await request(`/readings/${this.data.readingId}/chat`, {
@@ -80,13 +81,14 @@ Page({
       this.setData({
         messages,
         sending: false,
+        aiThinking: false,
         remainingFree: result.remaining_free,
       });
       this.scrollToBottom();
     } catch (err) {
       if (this._destroyed) return;
       wx.showToast({ title: '发送失败', icon: 'none' });
-      this.setData({ sending: false });
+      this.setData({ sending: false, aiThinking: false });
     }
   },
 

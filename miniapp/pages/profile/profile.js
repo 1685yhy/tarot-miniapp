@@ -179,6 +179,7 @@ Page({
           ...item,
           spreadTypeName: SPREAD_TYPE_NAMES[item.spread_type] || item.spread_type,
           firstCardImage: computeCardImage(item.first_card_name),
+          createdAtFormatted: item.created_at ? item.created_at.split('T')[0] : '',
         })),
         historyTotal: history.total || (history.items ? history.items.length : 0),
         pageLoading: false,
@@ -202,6 +203,7 @@ Page({
             ...item,
             spreadTypeName: SPREAD_TYPE_NAMES[item.spread_type] || item.spread_type,
             firstCardImage: computeCardImage(item.first_card_name),
+            createdAtFormatted: item.created_at ? item.created_at.split('T')[0] : '',
           }))
         ),
         historyPage: nextPage,
