@@ -16,17 +16,17 @@
 
   <!-- ===== 错误状态 ===== -->
   <view wx:elif="{{pageError}}" class="error-state">
-    <view class="error-icon" style="width:64rpx;height:64rpx;border-radius:50%;background:linear-gradient(135deg,var(--color-purple),var(--color-gold));margin:0 auto 24rpx"></view>
+    <text class="error-icon">👑</text>
     <text class="error-text">会员信息暂时无法获取</text>
     <text class="error-hint">{{pageError}}</text>
-    <button class="btn-primary btn-small" bindtap="onRetry"><image class="btn-icon" src="/images/icons/refresh.png" mode="aspectFit" /><text>重新加载</text></button>
+    <button class="btn-primary btn-small" bindtap="onRetry">✨ 重新加载</button>
   </view>
 
   <!-- ===== 主内容 ===== -->
   <view wx:else>
     <!-- Hero -->
     <view class="flex-center flex-col" style="padding:var(--space-xxxl) 0 var(--space-lg)">
-      <view style="width:72rpx;height:72rpx;border-radius:50%;background:linear-gradient(135deg,var(--color-purple),var(--color-gold));margin:0 auto" class="anim-float"></view>
+      <text style="font-size:72rpx;display:block" class="anim-float">👑</text>
       <text class="heading-1 mt-sm">开通会员</text>
       <text class="text-secondary mt-xs">解锁无限卡牌解读</text>
     </view>
@@ -49,7 +49,7 @@
         bindtap="onPurchase"
       >
         <view class="recommended-badge" wx:if="{{item.id === 'membership_yearly'}}">
-          <text>最受欢迎</text>
+          <text>🔥 最受欢迎</text>
         </view>
         <text class="heading-3" style="color:var(--color-text-primary)">{{item.name}}</text>
         <view class="product-price flex-center gap-xs" style="margin:var(--space-md) 0 var(--space-xs)">
@@ -65,7 +65,7 @@
 
     <!-- Guarantee -->
     <view class="guarantee">
-      <text class="guarantee-text">支付安全 · 随时可查 · 会员期内无限使用</text>
+      <text class="guarantee-text">🛡️ 支付安全 · 随时可查 · 会员期内无限使用</text>
     </view>
   </view>
 </view>

@@ -3,16 +3,16 @@ const { request } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
 
 const SPREADS = [
-  { key: 'three_card', name: '三牌占卜', desc: '过去·现在·未来', cards: 3, popular: true },
-  { key: 'triangle', name: '恋人三角', desc: '感情关系深度分析', cards: 4, theme: 'love' },
-  { key: 'career', name: '事业牌阵', desc: '职业发展方向指引', cards: 5, theme: 'career' },
-  { key: 'finance', name: '财运牌阵', desc: '财务状况趋势分析', cards: 4, theme: 'finance' },
-  { key: 'decision', name: '二择一', desc: '两难选择的明灯', cards: 5 },
-  { key: 'celtic_cross', name: '凯尔特十字', desc: '最全面的深度占卜', cards: 10, premium: true },
-  { key: 'life_cross', name: '人生十字', desc: '人生方向的十字路口', cards: 5 },
-  { key: 'horseshoe', name: '马蹄牌阵', desc: '七步看清局势', cards: 7, premium: true },
-  { key: 'relationship', name: '关系牌阵', desc: '双人关系全面透视', cards: 7, premium: true },
-  { key: 'year_ahead', name: '年度运势', desc: '未来12个月逐月详解', cards: 13, premium: true },
+  { key: 'three_card', name: '三牌占卜', icon: '🕯️', desc: '过去·现在·未来', cards: 3, popular: true },
+  { key: 'triangle', name: '恋人三角', icon: '💕', desc: '感情关系深度分析', cards: 4, theme: 'love' },
+  { key: 'career', name: '事业牌阵', icon: '💼', desc: '职业发展方向指引', cards: 5, theme: 'career' },
+  { key: 'finance', name: '财运牌阵', icon: '💰', desc: '财务状况趋势分析', cards: 4, theme: 'finance' },
+  { key: 'decision', name: '二择一', icon: '🔀', desc: '两难选择的明灯', cards: 5 },
+  { key: 'celtic_cross', name: '凯尔特十字', icon: '✝️', desc: '最全面的深度占卜', cards: 10, premium: true },
+  { key: 'life_cross', name: '人生十字', icon: '⭐', desc: '人生方向的十字路口', cards: 5 },
+  { key: 'horseshoe', name: '马蹄牌阵', icon: '🧲', desc: '七步看清局势', cards: 7, premium: true },
+  { key: 'relationship', name: '关系牌阵', icon: '🤝', desc: '双人关系全面透视', cards: 7, premium: true },
+  { key: 'year_ahead', name: '年度运势', icon: '📅', desc: '未来12个月逐月详解', cards: 13, premium: true },
 ];
 
 Page({

@@ -1,6 +1,6 @@
 {
   "navigationBarTitleText": "卡牌详情",
-  "navigationBarBackgroundColor": "#FBF8F4",
-  "navigationBarTextStyle": "black",
+  "navigationBarBackgroundColor": "#1A1A3E",
+  "navigationBarTextStyle": "white",
   "usingComponents": {}
 }

@@ -1,231 +1,617 @@
 /* ============================================================
-   首页 — Warm Paper Design System
-   Warm ivory page base, deep rose accent, sage subtle
-   Serif typography for a tarot reading room feel
+   首页 — 柔光星辰 (Soft Starlight)
+   First impression — warm, magical, like a summer night sky
    ============================================================ */
 
 /* -----------------------------------------------------------
-   1. HERO — Centered, warm, minimal
+   1. HERO — Warm stargazing at twilight
+   Overrides common.wxss .hero
    ----------------------------------------------------------- */
 
 .hero {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: var(--spacing-8) var(--spacing-5) var(--spacing-7);
+  padding: 100rpx var(--spacing-md) 60rpx;
   min-height: 420rpx;
-  position: relative;
+  overflow: hidden;
   z-index: var(--z-base);
 }
 
-.hero__icon {
-  width: 120rpx;
-  height: 120rpx;
-  margin-bottom: var(--spacing-6);
-  opacity: 0.80;
+/* --- Main golden radial glow behind the title --- */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  width: 560rpx;
+  height: 560rpx;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle at center,
+    rgba(244, 212, 140, 0.12) 0%,
+    rgba(244, 212, 140, 0.06) 25%,
+    rgba(244, 212, 140, 0.02) 50%,
+    transparent 72%
+  );
+  pointer-events: none;
+  z-index: 0;
+  animation: hero-glow-pulse 5s ease-in-out infinite;
 }
 
-.hero__title {
-  font-size: var(--font-size-display);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  line-height: var(--line-height-heading);
-  letter-spacing: var(--letter-spacing-display);
-  margin-bottom: var(--spacing-4);
+@keyframes hero-glow-pulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  40% {
+    opacity: 0.95;
+    transform: translate(-50%, -50%) scale(1.06);
+  }
+  70% {
+    opacity: 0.75;
+    transform: translate(-50%, -50%) scale(1.02);
+  }
 }
 
-.hero__subtitle {
-  font-size: var(--font-size-body-large);
-  color: var(--color-text-secondary);
-  line-height: var(--line-height-body);
-  max-width: 600rpx;
+/* --- Scattered twinkling stars in the hero --- */
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 18%;
+  right: 22%;
+  width: 4rpx;
+  height: 4rpx;
+  background: var(--color-gold-light, #FADE9E);
+  border-radius: var(--radius-full);
+  box-shadow:
+    -220rpx 80rpx 0 0 var(--color-lavender, #B8A9E0),
+    140rpx 120rpx 0 1rpx var(--color-gold, #F4D48C),
+    -100rpx -40rpx 0 0 rgba(244, 212, 140, 0.7);
+  pointer-events: none;
+  z-index: 0;
+  animation: hero-star-drift 7s ease-in-out infinite;
 }
+
+@keyframes hero-star-drift {
+  0%, 100% {
+    opacity: 0.25;
+    transform: translateY(0) scale(1);
+  }
+  25% {
+    opacity: 0.55;
+    transform: translateY(-8rpx) scale(1.15);
+  }
+  50% {
+    opacity: 0.15;
+    transform: translateY(4rpx) scale(0.85);
+  }
+  75% {
+    opacity: 0.45;
+    transform: translateY(-4rpx) scale(1.05);
+  }
+}
+
+/* NOTE: ::before/::after removed from <text> — WXSS does not support on text elements */
 
 /* -----------------------------------------------------------
-   2. SECTION TITLE
+   2. HERO TITLE & SUBTITLE
    ----------------------------------------------------------- */
 
-.section-title {
-  font-size: var(--font-size-subhead);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  display: block;
-  margin-bottom: var(--spacing-5);
-  letter-spacing: var(--letter-spacing-none);
-  padding-left: 0;
-  border-left: none;
-}
-
-/* -----------------------------------------------------------
-   3. DAILY CARD — Primary card on home
-   ----------------------------------------------------------- */
-
-.daily-card {
-  background: var(--color-surface);
-  border: 1rpx solid rgba(139, 126, 110, 0.12);
-  border-radius: var(--radius-medium);
-  padding: var(--spacing-6);
-  box-shadow: var(--shadow-subtle);
-  text-align: center;
-  margin-bottom: var(--spacing-7);
+.title-1 {
+  font-size: 58rpx;
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-text-primary, #F0EDE8);
+  line-height: var(--line-height-tight, 1.3);
+  letter-spacing: 10rpx;
+  text-shadow:
+    0 0 40rpx rgba(244, 212, 140, 0.10),
+    0 0 80rpx rgba(244, 212, 140, 0.04);
   position: relative;
-  transition: all var(--duration-navigation) ease;
+  z-index: 1;
 }
 
-.daily-card:active {
-  border-color: rgba(176, 102, 80, 0.20);
-  box-shadow: var(--shadow-medium);
-  transform: translateY(-2rpx);
-}
-
-.daily-card__icon {
-  width: 80rpx;
-  height: 80rpx;
-  margin-bottom: var(--spacing-5);
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.daily-card__title {
-  font-size: var(--font-size-subhead);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  display: block;
-  margin-bottom: var(--spacing-3);
-}
-
-.daily-card__name {
-  font-size: var(--font-size-body-large);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-accent);
-  display: block;
-  margin-bottom: var(--spacing-4);
-}
-
-.daily-card__desc {
-  font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
-  line-height: var(--line-height-body);
+.hero .body-text {
+  color: var(--color-lavender, #B8A9E0);
+  font-size: var(--font-size-md, 30rpx);
+  letter-spacing: 4rpx;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 0 30rpx rgba(184, 169, 224, 0.08);
 }
 
 /* -----------------------------------------------------------
-   4. SPREAD GRID — 2-column layout
+   3. PAGE ANIMATIONS — Staggered entrance
    ----------------------------------------------------------- */
 
-.section {
-  margin-bottom: var(--spacing-7);
+.anim-fade-in-up-1 {
+  animation: page-fade-up 0.8s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94)) forwards;
 }
 
-.spread-grid {
-  display: flex;
-  flex-flow: row wrap;
-  margin: calc(-1 * var(--spacing-3));
+.anim-fade-in-up-2 {
+  opacity: 0;
+  animation: page-fade-up 0.8s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94)) 0.25s forwards;
 }
 
-.spread-card-wrap {
-  width: calc(50% - var(--spacing-3) * 2);
-  margin: var(--spacing-3);
+.anim-fade-in-up-3 {
+  opacity: 0;
+  animation: page-fade-up 0.8s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94)) 0.5s forwards;
 }
 
-.spread-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: var(--spacing-5);
-  background: var(--color-surface);
-  border: 1rpx solid rgba(139, 126, 110, 0.12);
-  border-radius: var(--radius-medium);
-  box-shadow: var(--shadow-subtle);
-  transition: all var(--duration-navigation) ease;
+@keyframes page-fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(30rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -----------------------------------------------------------
+   4. CARD VARIANTS
+   ----------------------------------------------------------- */
+
+/* --- Warm variant — dark indigo, golden promise --- */
+.card-warm {
+  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 40%, #303065 100%);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.30);
+  box-shadow:
+    0 4rpx 24rpx rgba(0, 0, 0, 0.28),
+    0 0 50rpx rgba(244, 212, 140, 0.04),
+    inset 0 0 50rpx rgba(244, 212, 140, 0.03);
   position: relative;
   overflow: hidden;
 }
 
-.spread-card:active {
-  border-color: rgba(176, 102, 80, 0.20);
-  box-shadow: var(--shadow-medium);
-  transform: translateY(-2rpx);
+/* Inner shimmer overlay */
+.card-warm::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    ellipse at 30% 20%,
+    rgba(244, 212, 140, 0.04) 0%,
+    transparent 60%
+  );
+  pointer-events: none;
 }
 
-.spread-card__icon {
-  width: 48rpx;
-  height: 48rpx;
-  margin-bottom: var(--spacing-3);
-  opacity: 0.70;
+/* --- FLOAT — gentle levitation, breathing pulse --- */
+.card-float {
+  animation:
+    card-breathe 4s ease-in-out infinite,
+    card-float-drift 6s ease-in-out infinite;
 }
 
-.spread-card__label {
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
-  display: block;
-  line-height: var(--line-height-heading);
+@keyframes card-breathe {
+  0%, 100% {
+    border-color: rgba(244, 212, 140, 0.28);
+    box-shadow:
+      0 4rpx 24rpx rgba(0, 0, 0, 0.28),
+      0 0 40rpx rgba(244, 212, 140, 0.03),
+      inset 0 0 40rpx rgba(244, 212, 140, 0.02);
+  }
+  50% {
+    border-color: rgba(244, 212, 140, 0.65);
+    box-shadow:
+      0 4rpx 24rpx rgba(0, 0, 0, 0.28),
+      0 0 80rpx rgba(244, 212, 140, 0.15),
+      inset 0 0 80rpx rgba(244, 212, 140, 0.07);
+  }
 }
 
-.spread-card__count {
-  font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
-  display: block;
-  margin-top: var(--spacing-2);
+@keyframes card-float-drift {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8rpx);
+  }
 }
 
-/* Premium badge */
-.spread-card--premium {
-  border-color: rgba(176, 102, 80, 0.15);
+/* --- SHIMMER SWEEP — light glint across card surface every 3s --- */
+.card-shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+  z-index: 1;
 }
 
-.spread-card--premium .spread-card__label {
-  color: var(--color-accent);
-}
-
-.spread-card--premium::after {
+.card-shimmer::after {
   content: '';
   position: absolute;
   top: 0;
-  right: 0;
+  left: -80%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(244, 212, 140, 0.03) 30%,
+    rgba(244, 212, 140, 0.10) 50%,
+    rgba(244, 212, 140, 0.03) 70%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  animation: shimmer-sweep 3s ease-in-out infinite;
+}
+
+@keyframes shimmer-sweep {
+  0%, 100% {
+    transform: skewX(-20deg) translateX(0);
+  }
+  50% {
+    transform: skewX(-20deg) translateX(350%);
+  }
+}
+
+/* --- SPARKLE DOTS — 3 tiny lights orbiting the card --- */
+.card-sparkles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+  z-index: 1;
+}
+
+.card-sparkles::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
   width: 0;
   height: 0;
-  border-style: solid;
-  border-width: 0 28rpx 28rpx 0;
-  border-color: transparent var(--color-accent) transparent transparent;
-  opacity: 0.40;
+  box-shadow:
+    56rpx 0 0 3rpx rgba(244, 212, 140, 0.7),
+    -28rpx 48rpx 0 3rpx rgba(244, 212, 140, 0.4),
+    -28rpx -48rpx 0 3rpx rgba(244, 212, 140, 0.55);
+  animation: sparkle-orbit 10s linear infinite;
+}
+
+@keyframes sparkle-orbit {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- RIPPLE EFFECT — expanding circle from center on tap --- */
+.ripple-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+  z-index: 2;
+}
+
+.ripple-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16rpx;
+  height: 16rpx;
+  margin: -8rpx 0 0 -8rpx;
+  background: rgba(244, 212, 140, 0.30);
+  border-radius: 50%;
+  transform: scale(0);
+  opacity: 0;
+}
+
+.ripple-run {
+  animation: ripple-expand 0.6s ease-out forwards;
+}
+
+@keyframes ripple-expand {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(24);
+    opacity: 0;
+  }
+}
+
+/* --- SHAKE — brief oscillation simulating shuffle --- */
+.card-body {
+  position: relative;
+  z-index: 1;
+}
+
+.card-shake {
+  animation: card-shake-fx 0.3s ease-out;
+}
+
+@keyframes card-shake-fx {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  15% {
+    transform: translateX(-3rpx);
+  }
+  30% {
+    transform: translateX(3rpx);
+  }
+  45% {
+    transform: translateX(-2rpx);
+  }
+  60% {
+    transform: translateX(2rpx);
+  }
+  75% {
+    transform: translateX(-1rpx);
+  }
+  90% {
+    transform: translateX(1rpx);
+  }
+}
+
+/* --- Pressable interaction --- */
+.card-press {
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.card-press:active {
+  transform: scale(0.96);
+  border-color: rgba(244, 212, 140, 0.55) !important;
+  box-shadow:
+    0 2rpx 12rpx rgba(0, 0, 0, 0.30),
+    0 0 40rpx rgba(244, 212, 140, 0.12),
+    inset 0 0 30rpx rgba(244, 212, 140, 0.04);
 }
 
 /* -----------------------------------------------------------
-   5. MORE SPREADS ENTRY
+   4b. AFTER-DRAW — Card Reveal & Particles
    ----------------------------------------------------------- */
 
-.more-spreads {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: var(--spacing-5);
-  padding: var(--spacing-5);
-  background: var(--color-surface);
-  border: 1rpx solid rgba(139, 126, 110, 0.12);
-  border-radius: var(--radius-medium);
-  box-shadow: var(--shadow-subtle);
-  transition: all var(--duration-feedback) ease;
+/* --- Revealed state base --- */
+.card.card--revealed {
+  position: relative;
+  overflow: hidden;
+  border-color: var(--color-gold-dark, #D4B06A) !important;
+  background: linear-gradient(145deg, #2A2A5E 0%, #2E2E62 100%);
+  box-shadow:
+    0 4rpx 24rpx rgba(0, 0, 0, 0.28),
+    0 0 40rpx rgba(244, 212, 140, 0.06);
 }
 
-.more-spreads:active {
-  border-color: rgba(176, 102, 80, 0.20);
-  box-shadow: var(--shadow-subtle);
-  opacity: 0.80;
+/* --- Card rise reveal (dramatic entrance) --- */
+.card-rise {
+  animation: card-rise-reveal 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s both;
 }
 
-.more-text {
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-accent);
+@keyframes card-rise-reveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* --- Golden particles burst --- */
+.particle-field {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.particle {
+  position: absolute;
+  width: 6rpx;
+  height: 6rpx;
+  background: var(--color-gold, #F4D48C);
+  border-radius: 50%;
+  opacity: 0;
+  box-shadow: 0 0 6rpx rgba(244, 212, 140, 0.3);
+}
+
+.p1 { animation: part-burst-1 0.7s ease-out 0.05s forwards; }
+.p2 { animation: part-burst-2 0.7s ease-out 0.1s forwards; }
+.p3 { animation: part-burst-3 0.7s ease-out 0.15s forwards; }
+.p4 { animation: part-burst-4 0.7s ease-out 0.2s forwards; }
+.p5 { animation: part-burst-5 0.7s ease-out 0.1s forwards; }
+.p6 { animation: part-burst-6 0.7s ease-out 0.15s forwards; }
+.p7 { animation: part-burst-7 0.7s ease-out 0.2s forwards; }
+.p8 { animation: part-burst-8 0.7s ease-out 0.25s forwards; }
+
+@keyframes part-burst-1 {
+  0%   { transform: translate(0,0) scale(0); opacity: 0; }
+  15%  { opacity: 1; transform: translate(20rpx,-15rpx) scale(1.2); }
+  100% { transform: translate(70rpx,-55rpx) scale(0.15); opacity: 0; }
+}
+@keyframes part-burst-2 {
+  0%   { transform: translate(0,0) scale(0); opacity: 0; }
+  15%  { opacity: 1; transform: translate(-18rpx,-20rpx) scale(1); }
+  100% { transform: translate(-65rpx,-60rpx) scale(0.1); opacity: 0; }
+}
+@keyframes part-burst-3 {
+  0%   { transform: translate(0,0) scale(0); opacity: 0; }
+  15%  { opacity: 1; transform: translate(25rpx,15rpx) scale(1.1); }
+  100% { transform: translate(80rpx,50rpx) scale(0.2); opacity: 0; }
+}
+@keyframes part-burst-4 {
+  0%   { transform: translate(0,0) scale(0); opacity: 0; }
+  15%  { opacity: 1; transform: translate(-22rpx,18rpx) scale(1); }
+  100% { transform: translate(-75rpx,55rpx) scale(0.12); opacity: 0; }
+}
+@keyframes part-burst-5 {
+  0%   { transform: translate(0,0) scale(0); opacity: 0; }
+  15%  { opacity: 1; transform: translate(15rpx,-5rpx) scale(1.3); }
+  100% { transform: translate(60rpx,10rpx) scale(0.15); opacity: 0; }
+}
+@keyframes part-burst-6 {
+  0%   { transform: translate(0,0) scale(0); opacity: 0; }
+  15%  { opacity: 1; transform: translate(-15rpx,-8rpx) scale(1.1); }
+  100% { transform: translate(-60rpx,15rpx) scale(0.1); opacity: 0; }
+}
+@keyframes part-burst-7 {
+  0%   { transform: translate(0,0) scale(0); opacity: 0; }
+  15%  { opacity: 1; transform: translate(10rpx,22rpx) scale(1); }
+  100% { transform: translate(40rpx,75rpx) scale(0.18); opacity: 0; }
+}
+@keyframes part-burst-8 {
+  0%   { transform: translate(0,0) scale(0); opacity: 0; }
+  15%  { opacity: 1; transform: translate(-10rpx,-25rpx) scale(1.2); }
+  100% { transform: translate(-40rpx,-75rpx) scale(0.15); opacity: 0; }
+}
+
+/* --- Text reveal — slide up with stagger --- */
+.reveal-text {
+  animation: slide-up-reveal 0.5s ease-out 0s both;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes slide-up-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* -----------------------------------------------------------
-   6. ERROR STATE
+   5. TYPOGRAPHY ALIASES (page-specific)
+   ----------------------------------------------------------- */
+
+/* Big hero title — handled by .title-1 above */
+
+/* Card title inside daily card */
+.title-2 {
+  font-size: var(--font-size-2xl, 48rpx);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-gold, #F4D48C);
+  line-height: var(--line-height-tight, 1.3);
+  text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.08);
+}
+
+/* Card subtitle / small label */
+.title-4 {
+  font-size: var(--font-size-lg, 34rpx);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-text-primary, #F0EDE8);
+  line-height: var(--line-height-tight, 1.3);
+  letter-spacing: 2rpx;
+}
+
+/* Small body text */
+.body-sm {
+  font-size: var(--font-size-sm, 24rpx);
+  font-weight: var(--font-weight-normal, 400);
+  color: var(--color-lavender, #B8A9E0);
+  line-height: var(--line-height-base, 1.6);
+  letter-spacing: 1rpx;
+}
+
+/* Extra small body text — spread card descriptions */
+.body-xs {
+  font-size: var(--font-size-xs, 20rpx);
+  font-weight: var(--font-weight-normal, 400);
+  color: var(--color-text-tertiary, #A098C0);
+  line-height: var(--line-height-base, 1.6);
+  letter-spacing: 0.5rpx;
+}
+
+/* Accent-colored caption */
+.accent-text {
+  color: var(--color-gold, #F4D48C);
+  font-weight: var(--font-weight-medium, 500);
+  letter-spacing: 2rpx;
+}
+
+/* -----------------------------------------------------------
+   6. SECTION TITLE (spread grid header)
+   ----------------------------------------------------------- */
+
+.section-title {
+  font-size: var(--font-size-lg, 34rpx);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text-primary, #F0EDE8);
+  display: block;
+  margin-bottom: var(--spacing-md, 24rpx);
+  letter-spacing: 2rpx;
+  position: relative;
+  padding-left: 24rpx;
+}
+
+.section-title {
+  padding-left: 24rpx;
+  border-left: 3rpx solid var(--color-gold, #F4D48C);
+}
+
+/* --- Spread grid cards: constellation map feel --- */
+.section .card-press {
+  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 100%);
+  border: 1rpx solid rgba(244, 212, 140, 0.15);
+  border-radius: var(--radius-lg, 24rpx);
+  padding: 24rpx 16rpx;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 2rpx 12rpx rgba(0, 0, 0, 0.20),
+    0 0 20rpx rgba(244, 212, 140, 0.02);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.section .card-press:active {
+  transform: scale(0.96);
+  border-color: rgba(244, 212, 140, 0.7) !important;
+  box-shadow:
+    0 4rpx 20rpx rgba(0, 0, 0, 0.25),
+    0 0 50rpx rgba(244, 212, 140, 0.18);
+}
+
+/* Spread card icons and text */
+.section .card-press text:first-child {
+  color: var(--color-gold, #F4D48C) !important;
+  text-shadow: 0 0 12rpx rgba(244, 212, 140, 0.10);
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.section .card-press .body-sm {
+  color: var(--color-text-primary, #F0EDE8);
+  font-size: var(--font-size-sm, 24rpx);
+  letter-spacing: 1rpx;
+}
+
+/* -----------------------------------------------------------
+   7. ERROR STATE
    ----------------------------------------------------------- */
 
 .error-state {
@@ -233,36 +619,274 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-8) var(--spacing-5);
+  padding: 120rpx var(--spacing-lg, 32rpx) 80rpx;
   text-align: center;
+  animation: page-fade-up 0.8s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94)) forwards;
 }
 
 .error-icon {
-  width: 72rpx;
-  height: 72rpx;
-  margin-bottom: var(--spacing-5);
-  opacity: 0.30;
+  font-size: 72rpx;
+  color: var(--color-gold, #F4D48C);
+  opacity: 0.50;
+  margin-bottom: var(--spacing-lg, 32rpx);
+  display: block;
+  text-shadow: 0 0 30rpx rgba(244, 212, 140, 0.10);
 }
 
 .error-text {
-  font-size: var(--font-size-body-large);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
+  font-size: var(--font-size-xl, 40rpx);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text-primary, #F0EDE8);
+  margin-bottom: var(--spacing-xs, 12rpx);
   display: block;
-  margin-bottom: var(--spacing-3);
 }
 
 .error-hint {
-  font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm, 24rpx);
+  color: var(--color-text-tertiary, #A098C0);
+  margin-bottom: var(--spacing-xl, 48rpx);
   display: block;
-  margin-bottom: var(--spacing-6);
-  line-height: var(--line-height-body);
+  line-height: var(--line-height-base, 1.6);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-gold, #F4D48C);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.30);
+  border-radius: var(--radius-pill, 999rpx);
+  padding: 20rpx 48rpx;
+  font-size: var(--font-size-base, 28rpx);
+  font-weight: var(--font-weight-medium, 500);
+  transition: all 0.3s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94));
+}
+
+.btn-outline:active {
+  background: rgba(244, 212, 140, 0.08);
+  border-color: rgba(244, 212, 140, 0.50);
+  transform: scale(0.96);
 }
 
 /* -----------------------------------------------------------
-   7. ONBOARDING — Full-screen overlay
+   8. SKELETON TWEAKS (page-level)
    ----------------------------------------------------------- */
+
+.page > .skeleton-circle {
+  border-radius: var(--radius-full, 100%);
+}
+
+.page > .skeleton-text-sm {
+  height: 24rpx;
+}
+
+/* -----------------------------------------------------------
+   9. DECORATIVE: Daily card icon (✦) special treatment
+   ----------------------------------------------------------- */
+
+.card-body > text:first-child {
+  display: block;
+  margin-bottom: 24rpx;
+  font-size: 52rpx;
+  color: var(--color-gold, #F4D48C);
+  text-shadow: 0 0 30rpx rgba(244, 212, 140, 0.15);
+  animation: icon-pulse 4s ease-in-out infinite;
+}
+
+@keyframes icon-pulse {
+  0%, 100% {
+    text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.10);
+    opacity: 0.85;
+  }
+  50% {
+    text-shadow: 0 0 40rpx rgba(244, 212, 140, 0.25);
+    opacity: 1;
+  }
+}
+
+/* ============================================================
+   10. SPREAD GRID — Staggered entrance
+   Each card rises with scale + opacity, 50ms apart
+   ============================================================ */
+
+@keyframes card-staggered {
+  0% {
+    opacity: 0;
+    transform: translateY(24rpx) scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.section > view > .card-press {
+  opacity: 0;
+  animation: card-staggered 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.section > view > .card-press:nth-child(1) { animation-delay: 0.70s; }
+.section > view > .card-press:nth-child(2) { animation-delay: 0.75s; }
+.section > view > .card-press:nth-child(3) { animation-delay: 0.80s; }
+.section > view > .card-press:nth-child(4) { animation-delay: 0.85s; }
+
+.more-spreads {
+  opacity: 0;
+  animation: card-staggered 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.90s forwards;
+}
+
+/* ============================================================
+   11. SPREAD GRID — Golden shimmer sweep on tap
+   ============================================================ */
+
+.section .card-press::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(244, 212, 140, 0.04) 30%,
+    rgba(244, 212, 140, 0.12) 50%,
+    rgba(244, 212, 140, 0.04) 70%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.section .card-press:active::before {
+  animation: tap-shimmer-sweep 0.45s ease-out forwards;
+}
+
+@keyframes tap-shimmer-sweep {
+  0%   { left: -100%; }
+  100% { left: 200%; }
+}
+
+/* ============================================================
+   12. SPREAD GRID — Icon pulse on tap
+   ============================================================ */
+
+.section .card-press:active text:first-child {
+  animation: icon-tap-pulse 0.35s ease-out forwards;
+}
+
+@keyframes icon-tap-pulse {
+  0%, 100% {
+    font-size: 36rpx;
+    text-shadow: 0 0 12rpx rgba(244, 212, 140, 0.10);
+  }
+  30% {
+    font-size: 52rpx;
+    text-shadow: 0 0 36rpx rgba(244, 212, 140, 0.35);
+  }
+  60% {
+    font-size: 44rpx;
+    text-shadow: 0 0 24rpx rgba(244, 212, 140, 0.20);
+  }
+}
+
+/* ============================================================
+   13. PREMIUM CARDS — Golden border glow + rotating diamond
+   Applied to celtic_cross (3rd grid card)
+   ============================================================ */
+
+.section > view > .card-press:nth-child(3) {
+  animation:
+    card-staggered 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.80s forwards,
+    premium-border-glow 3s ease-in-out infinite;
+}
+
+/* Rotating gold diamond in top-right corner */
+.section > view > .card-press:nth-child(3)::after {
+  content: '\25C6';
+  position: absolute;
+  top: 6rpx;
+  right: 8rpx;
+  font-size: 20rpx;
+  color: var(--color-gold, #F4D48C);
+  opacity: 0.6;
+  z-index: 2;
+  pointer-events: none;
+  animation: diamond-spin 5s linear infinite;
+}
+
+@keyframes premium-border-glow {
+  0%, 100% {
+    border-color: rgba(244, 212, 140, 0.25);
+    box-shadow:
+      0 2rpx 12rpx rgba(0, 0, 0, 0.20),
+      0 0 20rpx rgba(244, 212, 140, 0.06);
+  }
+  50% {
+    border-color: rgba(244, 212, 140, 0.55);
+    box-shadow:
+      0 2rpx 12rpx rgba(0, 0, 0, 0.20),
+      0 0 50rpx rgba(244, 212, 140, 0.18);
+  }
+}
+
+@keyframes diamond-spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* -----------------------------------------------------------
+   14. MORE SPREADS — "查看更多" entry card
+   ----------------------------------------------------------- */
+
+.more-spreads {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--spacing-md, 24rpx);
+  padding: 28rpx 24rpx;
+  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 100%);
+  border: 1rpx solid rgba(244, 212, 140, 0.15);
+  border-radius: var(--radius-lg, 24rpx);
+  box-shadow:
+    0 2rpx 12rpx rgba(0, 0, 0, 0.20),
+    0 0 20rpx rgba(244, 212, 140, 0.02);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.more-spreads:active {
+  transform: scale(0.98);
+  border-color: rgba(244, 212, 140, 0.55) !important;
+  box-shadow:
+    0 2rpx 12rpx rgba(0, 0, 0, 0.30),
+    0 0 40rpx rgba(244, 212, 140, 0.12);
+}
+
+.more-text {
+  font-size: var(--font-size-sm, 24rpx);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-gold, #F4D48C);
+  letter-spacing: 1rpx;
+}
+
+.more-arrow {
+  font-size: 28rpx;
+  color: var(--color-gold, #F4D48C);
+  opacity: 0.6;
+  margin-left: 12rpx;
+  transition: transform 0.3s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94));
+}
+
+.more-spreads:active .more-arrow {
+  transform: translateX(6rpx);
+  opacity: 1;
+}
+
+/* ============================================================
+   15. ONBOARDING — First-time guide overlay
+   Dark indigo full screen with gold accents
+   ============================================================ */
 
 .onboarding-overlay {
   position: fixed;
@@ -270,13 +894,13 @@
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: var(--z-modal);
-  background: var(--color-bg);
+  z-index: 1000;
+  background: #1A1A3E;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  animation: fade-in var(--duration-navigation) ease forwards;
+  animation: page-fade-up 0.6s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94)) forwards;
 }
 
 .onboarding-swiper {
@@ -295,84 +919,153 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0 var(--spacing-7);
+  padding: 0 60rpx;
   text-align: center;
-  animation: fade-up var(--duration-emphasis) ease forwards;
+  animation: onboarding-fade-in 0.4s ease-out forwards;
 }
 
-.onboarding-icon {
-  width: 100rpx;
-  height: 100rpx;
-  margin-bottom: var(--spacing-7);
+@keyframes onboarding-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(20rpx) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.onboarding-emoji {
+  font-size: 100rpx;
   display: block;
+  margin-bottom: 48rpx;
+  filter: drop-shadow(0 0 30rpx rgba(244, 212, 140, 0.20));
+  animation: onboarding-emoji-float 4s ease-in-out infinite;
+}
+
+@keyframes onboarding-emoji-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12rpx); }
 }
 
 .onboarding-title {
-  font-size: var(--font-size-display);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
+  font-size: 52rpx;
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-gold, #F4D48C);
   display: block;
-  margin-bottom: var(--spacing-5);
-  letter-spacing: var(--letter-spacing-display);
+  margin-bottom: 20rpx;
+  letter-spacing: 6rpx;
+  text-shadow: 0 0 40rpx rgba(244, 212, 140, 0.12);
 }
 
 .onboarding-desc {
-  font-size: var(--font-size-body-large);
-  font-weight: var(--font-weight-normal);
-  color: var(--color-text-secondary);
+  font-size: 30rpx;
+  font-weight: var(--font-weight-normal, 400);
+  color: var(--color-lavender, #B8A9E0);
   display: block;
-  line-height: var(--line-height-body);
+  line-height: 1.8;
+  letter-spacing: 2rpx;
   max-width: 520rpx;
 }
 
-/* Dots indicator */
+/* --- Dots indicator --- */
+
 .onboarding-dots {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-4);
-  padding: 0 0 var(--spacing-6);
+  gap: 16rpx;
+  padding: 0 0 40rpx;
 }
 
 .onboarding-dot {
-  width: 12rpx;
-  height: 12rpx;
-  border-radius: var(--radius-pill);
-  background: rgba(139, 126, 110, 0.20);
-  transition: all var(--duration-navigation) ease;
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: rgba(184, 169, 224, 0.25);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
 }
 
 .onboarding-dot.active {
-  width: 36rpx;
-  background: var(--color-accent);
+  width: 48rpx;
+  border-radius: 12rpx;
+  background: var(--color-gold, #F4D48C);
+  box-shadow: 0 0 20rpx rgba(244, 212, 140, 0.30);
 }
 
-/* Bottom buttons */
+/* --- Bottom buttons --- */
+
 .onboarding-bottom {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-5);
-  padding: 0 var(--spacing-7) var(--spacing-8);
+  gap: 24rpx;
+  padding: 0 60rpx 80rpx;
   width: 100%;
   box-sizing: border-box;
 }
 
+.onboarding-next {
+  background: rgba(244, 212, 140, 0.12);
+  color: var(--color-gold, #F4D48C);
+  font-size: 30rpx;
+  font-weight: var(--font-weight-medium, 500);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.30);
+  border-radius: 999rpx;
+  padding: 24rpx 60rpx;
+  text-align: center;
+  transition: all 0.3s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94));
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.onboarding-next:active {
+  background: rgba(244, 212, 140, 0.20);
+  border-color: rgba(244, 212, 140, 0.55);
+  transform: scale(0.96);
+}
+
 .onboarding-skip {
-  font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
-  padding: var(--spacing-5);
-  transition: color var(--duration-feedback) ease;
+  font-size: 26rpx;
+  color: rgba(184, 169, 224, 0.45);
+  padding: 24rpx 20rpx;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.3s ease;
 }
 
 .onboarding-skip:active {
-  color: var(--color-accent);
+  color: rgba(184, 169, 224, 0.75);
 }
 
-/* -----------------------------------------------------------
-   8. ENTRANCE ANIMATIONS — Fade in only
-   ----------------------------------------------------------- */
+.onboarding-start {
+  background: linear-gradient(135deg, #F4D48C 0%, #E6C070 100%);
+  color: #1A1A3E;
+  font-size: 32rpx;
+  font-weight: var(--font-weight-semibold, 600);
+  border: none;
+  border-radius: 999rpx;
+  padding: 26rpx 80rpx;
+  text-align: center;
+  letter-spacing: 4rpx;
+  box-shadow: 0 4rpx 30rpx rgba(244, 212, 140, 0.30);
+  transition: all 0.3s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94));
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  animation: onboarding-start-pulse 2.5s ease-in-out infinite;
+}
 
-.anim-fade-in-up-1 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0.05s forwards; }
-.anim-fade-in-up-2 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0.15s forwards; }
-.anim-fade-in-up-3 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0.25s forwards; }
+@keyframes onboarding-start-pulse {
+  0%, 100% {
+    box-shadow: 0 4rpx 30rpx rgba(244, 212, 140, 0.30);
+  }
+  50% {
+    box-shadow: 0 4rpx 50rpx rgba(244, 212, 140, 0.55);
+  }
+}
+
+.onboarding-start:active {
+  transform: scale(0.96);
+  box-shadow: 0 2rpx 20rpx rgba(244, 212, 140, 0.40);
+}

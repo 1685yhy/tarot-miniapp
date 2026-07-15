@@ -1,354 +1,504 @@
-/* ============================================================
-   Reading (Spread Selection) — Warm Paper Design System
-   Warm ivory base, deep rose accent, sage subtle
-   Spread cards, question input, theme selection
-   ============================================================ */
+/* ==============================
+   柔光星辰 — Spread Selection
+   Dark indigo + warm golden starlight
+   ============================== */
 
-/* -----------------------------------------------------------
-   1. PAGE LAYOUT
-   ----------------------------------------------------------- */
-
-.page {
-  padding: var(--page-padding);
-  padding-bottom: calc(var(--page-padding) + var(--safe-area-bottom));
+/* ----- CSS Variables ----- */
+page {
+  --bg-deep: var(--color-bg);
+  --bg-card: #161329;
+  --bg-card-hover: #1c1938;
+  --bg-elevated: #201d3e;
+  --gold: #F4D48C;
+  --gold-light: #FADE9E;
+  --gold-glow: rgba(244, 212, 140, 0.35);
+  --gold-dim: rgba(244, 212, 140, 0.15);
+  --text-primary: #e8e4f0;
+  --text-secondary: #b8b0d0;
+  --text-dim: #A098C0;
+  --text-gold: #e8c84a;
+  --danger: #ff6b6b;
+  --fs-caption: 22rpx;
+  --fs-body-small: 24rpx;
+  --fs-body: 28rpx;
+  --space-xs: 6rpx;
+  --space-sm: 12rpx;
+  --space-md: 20rpx;
+  --space-lg: 28rpx;
+  --space-xl: 36rpx;
+  --space-xxl: 48rpx;
+  --space-xxxl: 64rpx;
+  --radius-card: 24rpx;
+  --radius-sm: 12rpx;
+  --radius-round: 999rpx;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-size: var(--fs-body);
+  line-height: 1.6;
   min-height: 100vh;
-  position: relative;
-  z-index: var(--z-base);
+  overflow-x: hidden;
 }
 
-/* -----------------------------------------------------------
-   2. TYPOGRAPHY HELPERS
-   ----------------------------------------------------------- */
+/* ==============================
+   Star-field background
+   ============================== */
+.star-field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
 
+.star-particle {
+  position: absolute;
+  width: 4rpx;
+  height: 4rpx;
+  background: var(--gold-light);
+  border-radius: 50%;
+  box-shadow: 0 0 6rpx 2rpx var(--gold-glow);
+  animation: starTwinkle 3s ease-in-out infinite alternate;
+}
+
+/* Standard stars */
+.star-particle:nth-child(1) { top: 8%; left: 12%; animation-name: starTwinkle; }
+.star-particle:nth-child(2) { top: 20%; left: 78%; width: 2rpx; height: 2rpx; animation-name: starTwinkleSlow; animation-delay: 0.4s; opacity: 0.5; }
+.star-particle:nth-child(3) { top: 35%; left: 5%; width: 5rpx; height: 5rpx; animation-name: starTwinkleFast; animation-delay: 0.8s; }
+.star-particle:nth-child(4) { top: 50%; left: 88%; animation-name: starTwinkleSlow; animation-delay: 1.2s; opacity: 0.7; }
+.star-particle:nth-child(5) { top: 65%; left: 22%; width: 3rpx; height: 3rpx; animation-name: starTwinkle; animation-delay: 1.6s; }
+.star-particle:nth-child(6) { top: 78%; left: 60%; animation-name: starTwinkleSlow; animation-delay: 2s; opacity: 0.5; }
+.star-particle:nth-child(7) { top: 12%; left: 45%; width: 6rpx; height: 6rpx; animation-name: starTwinkleFast; animation-delay: 0.2s; }
+.star-particle:nth-child(8) { top: 45%; left: 55%; width: 2rpx; height: 2rpx; animation-name: starTwinkle; animation-delay: 1s; }
+.star-particle:nth-child(9) { top: 85%; left: 42%; animation-name: starTwinkleFast; animation-delay: 0.6s; }
+.star-particle:nth-child(10) { top: 55%; left: 95%; width: 3rpx; height: 3rpx; animation-name: starTwinkleSlow; animation-delay: 1.8s; opacity: 0.4; }
+.star-particle:nth-child(11) { top: 3%; left: 90%; width: 3rpx; height: 3rpx; animation-name: starTwinkle; animation-delay: 0.3s; }
+.star-particle:nth-child(12) { top: 72%; left: 80%; width: 2rpx; height: 2rpx; animation-name: starTwinkleFast; animation-delay: 1.4s; opacity: 0.4; }
+.star-particle:nth-child(13) { top: 30%; left: 70%; width: 4rpx; height: 4rpx; animation-name: starTwinkleSlow; animation-delay: 0.9s; }
+.star-particle:nth-child(14) { top: 92%; left: 15%; animation-name: starTwinkle; animation-delay: 2.2s; opacity: 0.5; }
+.star-particle:nth-child(15) { top: 15%; left: 55%; width: 3rpx; height: 3rpx; animation-name: starTwinkleFast; animation-delay: 0.1s; }
+
+/* Three twinkle variants for organic depth */
+@keyframes starTwinkle {
+  0% { opacity: 0.2; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes starTwinkleSlow {
+  0% { opacity: 0.12; transform: scale(0.6); }
+  100% { opacity: 0.7; transform: scale(1.1); }
+}
+
+@keyframes starTwinkleFast {
+  0% { opacity: 0.4; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.3); }
+  100% { opacity: 0.5; transform: scale(0.95); }
+}
+
+/* ==============================
+   Glowing orbs
+   ============================== */
+.orb-top {
+  position: fixed;
+  top: -200rpx;
+  right: -150rpx;
+  width: 500rpx;
+  height: 500rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(244,212,140,0.12) 0%, transparent 70%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.orb-bottom {
+  position: fixed;
+  bottom: -250rpx;
+  left: -180rpx;
+  width: 600rpx;
+  height: 600rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(100,80,180,0.10) 0%, transparent 70%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ==============================
+   Page wrapper
+   ============================== */
+.page {
+  position: relative;
+  z-index: 1;
+  padding: var(--space-xxl) var(--space-xl) 80rpx;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* ==============================
+   Typography helpers
+   ============================== */
 .heading-2 {
-  font-size: var(--font-size-subhead);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  line-height: var(--line-height-heading);
+  font-size: 40rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
 }
 
 .heading-4 {
-  font-size: var(--font-size-body-large);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  line-height: var(--line-height-heading);
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .text-center { text-align: center; }
-.text-secondary { color: var(--color-text-secondary); }
+.text-secondary { color: var(--text-secondary); }
+.text-dim { color: var(--text-dim); }
 
-.mt-xs { margin-top: var(--spacing-3); }
-.mt-sm { margin-top: var(--spacing-4); }
-.mb-xxl { margin-bottom: var(--spacing-7); }
-.mb-xxxl { margin-bottom: var(--spacing-8); }
+.mt-xs { margin-top: var(--space-xs); }
+.mt-sm { margin-top: var(--space-sm); }
+.mb-xxl { margin-bottom: var(--space-xxl); }
+.mb-xxxl { margin-bottom: var(--space-xxxl); }
 
-/* -----------------------------------------------------------
-   3. ENTRANCE ANIMATIONS
-   ----------------------------------------------------------- */
+/* ==============================
+   Animations
+   ============================== */
+.anim-fade-in-up-1 {
+  animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+.anim-fade-in-up-2 {
+  animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.12s both;
+}
+.anim-fade-in-up-3 {
+  animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.24s both;
+}
+.anim-fade-in-up-4 {
+  animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.36s both;
+}
 
-.anim-fade-in-up-1 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0s forwards; }
-.anim-fade-in-up-2 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0.12s forwards; }
-.anim-fade-in-up-3 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0.24s forwards; }
-.anim-fade-in-up-4 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0.36s forwards; }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-/* -----------------------------------------------------------
-   4. SPREAD GRID
-   ----------------------------------------------------------- */
+/* ==============================
+   Skeleton loading
+   ============================== */
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: var(--space-xl) 0;
+}
 
+.skeleton-title {
+  width: 50%;
+  height: 36rpx;
+  border-radius: var(--radius-round);
+  background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-elevated) 50%, var(--bg-card) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
+}
+
+.skeleton-subtitle {
+  width: 35%;
+  height: 28rpx;
+  border-radius: var(--radius-round);
+  background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-elevated) 50%, var(--bg-card) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
+  margin-bottom: var(--space-lg);
+}
+
+.skeleton-spread {
+  height: 100rpx;
+  border-radius: var(--radius-card);
+  background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-elevated) 50%, var(--bg-card) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ==============================
+   Error state
+   ============================== */
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 160rpx var(--space-xl);
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.error-icon {
+  font-size: 80rpx;
+  margin-bottom: var(--space-lg);
+  display: block;
+}
+
+.error-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.error-hint {
+  font-size: var(--fs-body-small);
+  color: var(--text-dim);
+  margin-bottom: var(--space-xxl);
+  word-break: break-all;
+}
+
+/* ==============================
+   Buttons
+   ============================== */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: 20rpx 48rpx;
+  border: none;
+  border-radius: var(--radius-round);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--color-text-inverse);
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  box-shadow: 0 4rpx 24rpx var(--gold-glow);
+  transition: all 0.25s;
+}
+
+.btn-primary::after {
+  border: none;
+}
+
+.btn-primary:active {
+  transform: scale(0.96);
+}
+
+.btn-small {
+  padding: 16rpx 36rpx;
+  font-size: var(--fs-body-small);
+}
+
+/* ==============================
+   Spread grid — constellation cards
+   ============================== */
 .section-title-center {
   text-align: center;
-  margin-bottom: var(--spacing-4);
-  font-size: var(--font-size-body-large);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
+  margin-bottom: var(--space-sm);
 }
 
 .spread-grid {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-4);
-  margin-top: var(--spacing-5);
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
 }
 
 .spread-card {
   display: flex;
   align-items: center;
-  padding: var(--spacing-5);
-  background: var(--color-surface);
-  border: 1rpx solid rgba(139, 126, 110, 0.12);
-  border-radius: var(--radius-medium);
-  box-shadow: var(--shadow-subtle);
-  transition: all var(--duration-navigation) ease;
+  padding: var(--space-lg);
+  background: var(--bg-card);
+  border: 1.5rpx solid var(--gold-dim);
+  border-radius: var(--radius-card);
+  transition: all 0.3s ease;
+  cursor: pointer;
   position: relative;
   overflow: hidden;
 }
 
+.spread-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-card);
+  background: linear-gradient(135deg, transparent 50%, rgba(244,212,140,0.04));
+  pointer-events: none;
+}
+
 .spread-card:active {
-  border-color: rgba(176, 102, 80, 0.20);
-  box-shadow: var(--shadow-medium);
-  transform: translateY(-2rpx);
+  transform: scale(0.97);
+  background: var(--bg-card-hover);
+  border-color: var(--gold);
+  box-shadow: 0 0 30rpx var(--gold-dim);
 }
 
-.spread-card--premium {
-  border-color: rgba(176, 102, 80, 0.15);
+.spread-card.premium {
+  border-color: var(--gold);
+  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(244,212,140,0.06) 100%);
 }
 
-.spread-card--premium .spread-card__label {
-  color: var(--color-accent);
-}
-
-.spread-card__content {
-  flex: 1;
-  min-width: 0;
-}
-
-.spread-card__label {
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
-  display: block;
-  line-height: var(--line-height-heading);
-  margin-bottom: 4rpx;
-}
-
-.spread-card__desc {
-  font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
-  display: block;
-  line-height: var(--line-height-body);
-}
-
-.spread-card__count {
-  font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
-  opacity: 0.70;
-  flex-shrink: 0;
-  margin-left: var(--spacing-4);
-}
-
-/* -----------------------------------------------------------
-   5. BADGES
-   ----------------------------------------------------------- */
-
+/* Badges */
 .badge {
   display: inline-block;
-  padding: 4rpx var(--spacing-4);
-  border-radius: var(--radius-pill);
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-medium);
+  padding: 4rpx 16rpx;
+  border-radius: var(--radius-round);
+  font-size: var(--fs-caption);
+  font-weight: 600;
 }
 
-.badge--accent {
-  background: rgba(176, 102, 80, 0.08);
-  color: var(--color-accent);
-  border: 1rpx solid rgba(176, 102, 80, 0.15);
+.badge-gold {
+  background: rgba(244,212,140,0.18);
+  color: var(--gold-light);
+  border: 1rpx solid rgba(244,212,140,0.3);
 }
 
-/* -----------------------------------------------------------
-   6. SELECTED SPREAD INFO
-   ----------------------------------------------------------- */
+.badge-danger {
+  background: rgba(255,107,107,0.15);
+  color: var(--danger);
+  border: 1rpx solid rgba(255,107,107,0.25);
+}
 
+/* ==============================
+   Selected spread info
+   ============================== */
 .selected-info {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: var(--spacing-6) 0;
+  padding: var(--space-xl) 0;
 }
 
-/* -----------------------------------------------------------
-   7. QUESTION BOX
-   ----------------------------------------------------------- */
-
+/* ==============================
+   Question box
+   ============================== */
 .question-box {
-  background: var(--color-surface);
-  border: 1rpx solid rgba(139, 126, 110, 0.12);
-  border-radius: var(--radius-medium);
-  padding: var(--spacing-5);
-  margin: var(--spacing-5) 0;
-  box-shadow: var(--shadow-subtle);
+  background: var(--bg-card);
+  border: 1.5rpx solid var(--gold-dim);
+  border-radius: var(--radius-card);
+  padding: var(--space-lg);
+  margin: var(--space-lg) 0;
 }
 
 .question-input {
   width: 100%;
   min-height: 140rpx;
-  padding: var(--spacing-4);
-  background: var(--color-bg);
-  border: 1rpx solid rgba(139, 126, 110, 0.15);
-  border-radius: var(--radius-small);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-body);
-  line-height: var(--line-height-body);
+  padding: var(--space-md);
+  background: var(--bg-deep);
+  border: 1rpx solid rgba(244,212,140,0.08);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: var(--fs-body);
+  line-height: 1.5;
   box-sizing: border-box;
   outline: none;
 }
 
 .question-input:focus {
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 2rpx rgba(176, 102, 80, 0.10);
+  border-color: var(--gold);
+  box-shadow: 0 0 16rpx var(--gold-dim);
 }
 
 .question-input::placeholder {
-  color: var(--color-text-secondary);
-  opacity: 0.50;
+  color: #8A85A8;
+  font-style: italic;
 }
 
-/* -----------------------------------------------------------
-   8. THEME SELECTION
-   ----------------------------------------------------------- */
-
+/* ==============================
+   Theme selection
+   ============================== */
 .theme-options {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-4);
+  gap: var(--space-md);
 }
 
 .theme-item {
   flex: 1;
   min-width: 120rpx;
   text-align: center;
-  padding: var(--spacing-4) var(--spacing-3);
-  background: var(--color-surface);
-  border: 1rpx solid rgba(139, 126, 110, 0.12);
-  border-radius: var(--radius-small);
-  font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
-  transition: all var(--duration-feedback) ease;
+  padding: 16rpx 12rpx;
+  background: var(--bg-card);
+  border: 1.5rpx solid rgba(255,255,255,0.05);
+  border-radius: var(--radius-sm);
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  transition: all 0.25s;
+  cursor: pointer;
 }
 
 .theme-item:active {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
+  transform: scale(0.94);
 }
 
 .theme-active {
-  background: rgba(176, 102, 80, 0.06);
-  border-color: var(--color-accent);
-  color: var(--color-accent);
+  background: linear-gradient(135deg, rgba(244,212,140,0.15), rgba(244,212,140,0.05));
+  border-color: var(--gold);
+  color: var(--text-gold);
+  box-shadow: 0 0 20rpx var(--gold-dim);
 }
 
-/* -----------------------------------------------------------
-   9. BUTTONS
-   ----------------------------------------------------------- */
-
-.btn-primary {
+/* ==============================
+   Draw button — glowing pulse
+   ============================== */
+.btn-glow-pulse {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: var(--spacing-5) 0;
+  padding: 28rpx 0;
   border: none;
-  border-radius: var(--radius-pill);
-  font-size: var(--font-size-body-large);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-surface);
-  background: var(--color-accent);
-  box-shadow: var(--shadow-subtle);
-  transition: all var(--duration-feedback) ease;
+  border-radius: var(--radius-round);
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--color-text-inverse);
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  box-shadow: 0 0 40rpx var(--gold-glow);
+  transition: all 0.3s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
-.btn-primary:active {
-  transform: scale(0.97);
-  opacity: 0.90;
+.btn-glow-pulse::after {
+  border: none;
 }
 
-.btn-primary[disabled] {
-  opacity: 0.30;
-  box-shadow: none;
-  pointer-events: none;
+.btn-glow-pulse:not(.drawing):active {
+  transform: scale(0.96);
 }
 
-.btn-small {
-  padding: var(--spacing-4) var(--spacing-6);
-  font-size: var(--font-size-body);
+.btn-glow-pulse.drawing {
+  opacity: 0.8;
+  background: linear-gradient(135deg, #D4B06A, #C8A050);
+  animation: pulseGlow 1.6s ease-in-out infinite;
 }
 
+.btn-glow-pulse[disabled] {
+  opacity: 0.5;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 30rpx var(--gold-glow); }
+  50% { box-shadow: 0 0 60rpx var(--gold-glow), 0 0 100rpx rgba(244,212,140,0.15); }
+}
+
+/* ==============================
+   Text link
+   ============================== */
 .btn-text {
-  font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
-  transition: color var(--duration-feedback) ease;
+  font-size: var(--fs-body);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: color 0.2s;
 }
 
 .btn-text:active {
-  color: var(--color-accent);
+  color: var(--gold);
 }
 
-/* -----------------------------------------------------------
-   10. ERROR STATE
-   ----------------------------------------------------------- */
-
-.error-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-8) var(--spacing-6);
-  text-align: center;
-  position: relative;
-  z-index: var(--z-base);
-}
-
-.error-icon {
-  width: 80rpx;
-  height: 80rpx;
-  margin-bottom: var(--spacing-5);
-  display: block;
-  opacity: 0.30;
-}
-
-.error-text {
-  font-size: var(--font-size-body-large);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin-bottom: var(--spacing-3);
-}
-
-.error-hint {
-  font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-6);
-  word-break: break-all;
-}
-
-/* -----------------------------------------------------------
-   11. SKELETON LOADING
-   ----------------------------------------------------------- */
-
-.skeleton {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-5);
-  padding: var(--spacing-6) 0;
-}
-
-.skeleton-title {
-  width: 50%;
-  height: 36rpx;
-  border-radius: var(--radius-pill);
-  background: rgba(139, 126, 110, 0.08);
-  animation: pulse-soft 1500ms ease-in-out infinite;
-}
-
-.skeleton-subtitle {
-  width: 35%;
-  height: 28rpx;
-  border-radius: var(--radius-pill);
-  background: rgba(139, 126, 110, 0.08);
-  animation: pulse-soft 1500ms ease-in-out infinite;
-  margin-bottom: var(--spacing-5);
-}
-
-.skeleton-spread {
-  height: 100rpx;
-  border-radius: var(--radius-medium);
-  background: rgba(139, 126, 110, 0.08);
-  animation: pulse-soft 1500ms ease-in-out infinite;
-}
-
-/* -----------------------------------------------------------
-   12. SCROLLBAR
-   ----------------------------------------------------------- */
-
+/* ==============================
+   Scrollbar hidden
+   ============================== */
 ::-webkit-scrollbar {
   width: 0;
   height: 0;

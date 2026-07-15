@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     JWT_EXPIRE_MINUTES: int = 60 * 24 * 30  # 30 days
 
     # Limits
-    FREE_DAILY_READINGS: int = 10
+    FREE_DAILY_READINGS: int = 1
     FREE_CHAT_MESSAGES: int = 3
 
     model_config = SettingsConfigDict(env_file=".env")

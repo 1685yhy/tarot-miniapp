@@ -1,229 +1,258 @@
 /* ============================================================
-   Profile — Warm Paper Design System
-   Warm ivory base, deep rose accent, sage subtle
-   User card, stats row, menu sections, history list
+   Profile Page — Starlight Design System
+   Uses design tokens from common.wxss (CSS custom properties)
+   #1A1A3E bg · #F4D48C gold · #B8A9E0 lavender · #F0EDE8 text
    ============================================================ */
 
-/* -----------------------------------------------------------
-   1. CONTAINER
-   ----------------------------------------------------------- */
+page {
+  --space-massive: var(--spacing-5xl);
+  --space-xxxl: var(--spacing-3xl);
+  --space-xxl: var(--spacing-2xl);
+  --space-xl: var(--spacing-xl);
+  --space-lg: var(--spacing-lg);
+  --space-md: var(--spacing-md);
+  --space-sm: var(--spacing-sm);
+  --space-xs: var(--spacing-xs);
+  --fs-h3: var(--font-size-xl);
+  --fs-h4: var(--font-size-lg);
+  --fs-body: var(--font-size-base);
+  --fs-body-small: var(--font-size-sm);
+  --fs-caption: var(--font-size-xs);
+  --lh-loose: var(--line-height-loose);
+  --lh-normal: var(--line-height-base);
+  --fw-semibold: var(--font-weight-semibold);
+  --fw-bold: var(--font-weight-bold);
+  --fw-medium: var(--font-weight-medium);
+  --duration-normal: var(--duration-base);
+  --duration-fast: var(--duration-fast);
+  --ease-out: var(--ease-out);
+  --ease-in-out: var(--ease-in-out);
+}
 
+/* ============================================================
+   Container
+   ============================================================ */
 .container {
-  padding: var(--page-padding);
-  padding-bottom: calc(var(--page-padding) + var(--safe-area-bottom));
+  padding: var(--spacing-xl);
+  padding-bottom: calc(var(--safe-area-bottom) + var(--spacing-5xl));
   min-height: 100vh;
   position: relative;
-  z-index: var(--z-base);
+  z-index: 1;
 }
 
-/* -----------------------------------------------------------
-   2. COLOR UTILITIES
-   ----------------------------------------------------------- */
-
-.accent {
-  color: var(--color-accent);
+/* ============================================================
+   Gold / lavender utilities
+   ============================================================ */
+.gold {
+  color: var(--color-gold);
+}
+.lavender {
+  color: #B8A9E0;
 }
 
-.subtle {
-  color: var(--color-subtle);
-}
-
-/* -----------------------------------------------------------
-   3. ERROR STATE
-   ----------------------------------------------------------- */
-
+/* ============================================================
+   Error State
+   ============================================================ */
 .error-state {
   text-align: center;
-  padding: var(--spacing-8) var(--spacing-6);
+  padding: var(--spacing-5xl) var(--spacing-xl);
 }
 
 .error-icon {
-  width: 80rpx;
-  height: 80rpx;
+  font-size: 80rpx;
   display: block;
-  margin: 0 auto var(--spacing-5);
-  opacity: 0.30;
+  margin-bottom: var(--spacing-md);
+  opacity: 0.50;
 }
 
 .error-text {
-  font-size: var(--font-size-body);
+  font-size: var(--font-size-base);
   color: var(--color-text-secondary);
   display: block;
-  margin-bottom: var(--spacing-3);
+  margin-bottom: var(--spacing-xs);
 }
 
 .error-hint {
-  font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
   display: block;
-  margin-bottom: var(--spacing-6);
-  opacity: 0.70;
+  margin-bottom: var(--spacing-2xl);
 }
 
 .btn-small {
-  font-size: var(--font-size-body);
-  padding: var(--spacing-4) var(--spacing-6);
+  font-size: var(--font-size-sm);
+  padding: 16rpx 36rpx;
 }
 
-/* -----------------------------------------------------------
-   4. EMPTY STATE
-   ----------------------------------------------------------- */
-
+/* ============================================================
+   Empty State (inline)
+   ============================================================ */
 .empty-state-inline {
   text-align: center;
-  padding: var(--spacing-7) 0;
+  padding: var(--spacing-4xl) 0;
 }
 
 .empty-state-inline .empty-icon {
-  width: 72rpx;
-  height: 72rpx;
+  font-size: 72rpx;
   display: block;
-  margin: 0 auto var(--spacing-5);
-  opacity: 0.25;
+  margin-bottom: var(--spacing-md);
+  opacity: 0.35;
 }
 
 .empty-state-inline .empty-text {
-  font-size: var(--font-size-body);
+  font-size: var(--font-size-base);
   color: var(--color-text-secondary);
   display: block;
-  margin-bottom: var(--spacing-3);
+  margin-bottom: var(--spacing-xs);
 }
 
 .empty-state-inline .empty-hint {
-  font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
   display: block;
-  opacity: 0.70;
 }
 
-/* -----------------------------------------------------------
-   5. USER CARD — Centered info with avatar
-   ----------------------------------------------------------- */
-
+/* ============================================================
+   USER CARD — Centered · Gold name · Warm glow
+   ============================================================ */
 .user-card {
   text-align: center;
-  padding: var(--spacing-7) var(--spacing-6) var(--spacing-6);
-  border-radius: var(--radius-medium);
-  margin-bottom: var(--spacing-6);
-  background: var(--color-surface);
-  border: 1rpx solid rgba(139, 126, 110, 0.12);
-  box-shadow: var(--shadow-subtle);
+  padding: var(--spacing-3xl) var(--spacing-xl) var(--spacing-2xl);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-xl);
+  background: var(--color-card);
+  border: 1rpx solid var(--color-card-border);
+  box-shadow: var(--shadow-card);
   position: relative;
   overflow: hidden;
 }
 
+/* Golden top glow */
+.user-card::before {
+  content: '';
+  position: absolute;
+  top: -120rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400rpx;
+  height: 240rpx;
+  background: radial-gradient(circle, rgba(244, 212, 140, 0.10) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Avatar — golden circle with sparkle emoji */
 .avatar-circle {
   width: 120rpx;
   height: 120rpx;
-  border-radius: var(--radius-pill);
-  background: rgba(139, 126, 110, 0.06);
-  border: 2rpx solid rgba(176, 102, 80, 0.20);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  border: 3rpx solid var(--color-gold);
+  box-shadow: 0 0 24rpx rgba(244, 212, 140, 0.20), inset 0 0 16rpx rgba(244, 212, 140, 0.06);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto var(--spacing-4);
+  margin: 0 auto var(--spacing-sm);
   position: relative;
 }
 
-.avatar-icon {
-  width: 56rpx;
-  height: 56rpx;
-  opacity: 0.50;
+.avatar-emoji {
+  font-size: 52rpx;
+  line-height: 1;
+  display: block;
+  filter: drop-shadow(0 0 6rpx rgba(244, 212, 140, 0.30));
 }
 
+/* Username — gold */
 .user-name {
   display: block;
-  font-size: var(--font-size-subhead);
+  font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  letter-spacing: var(--letter-spacing-none);
-  margin-bottom: var(--spacing-3);
+  color: var(--color-gold);
+  letter-spacing: 2rpx;
+  margin-bottom: var(--spacing-sm);
 }
 
+/* Badge row */
 .user-badge-row {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  gap: var(--spacing-3);
-  margin-bottom: var(--spacing-3);
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
 }
 
 .badge {
   display: inline-block;
-  padding: 4rpx var(--spacing-5);
+  padding: 4rpx 22rpx;
   border-radius: var(--radius-pill);
-  font-size: var(--font-size-body);
+  font-size: var(--font-size-xs);
   background: var(--color-surface);
   color: var(--color-text-secondary);
-  border: 1rpx solid rgba(139, 126, 110, 0.15);
-  letter-spacing: var(--letter-spacing-none);
+  border: 1rpx solid rgba(244, 212, 140, 0.15);
+  letter-spacing: 1rpx;
 }
 
-.badge--premium {
-  background: rgba(176, 102, 80, 0.08);
-  color: var(--color-accent);
-  border-color: rgba(176, 102, 80, 0.15);
+.badge-premium {
+  background: rgba(244, 212, 140, 0.12);
+  color: var(--color-gold);
+  border-color: rgba(244, 212, 140, 0.25);
 }
 
-.badge--free {
-  background: rgba(139, 126, 110, 0.06);
-  color: var(--color-text-secondary);
-  border-color: rgba(139, 126, 110, 0.10);
+.badge-free {
+  background: rgba(244, 212, 140, 0.06);
+  color: #C8B88A;
+  border-color: rgba(244, 212, 140, 0.10);
 }
 
 .badge-date {
-  font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
   display: block;
   width: 100%;
-  margin-top: var(--spacing-1);
-  opacity: 0.70;
+  margin-top: 4rpx;
 }
 
 /* Upgrade button */
 .upgrade-btn {
-  margin-top: var(--spacing-5);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--color-accent);
-  color: var(--color-surface);
+  margin-top: var(--spacing-lg);
+  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
+  color: var(--color-text-inverse);
   font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-body);
+  font-size: var(--font-size-base);
   border: none;
   border-radius: var(--radius-pill);
-  padding: var(--spacing-5) var(--spacing-7);
-  line-height: var(--line-height-heading);
-  box-shadow: var(--shadow-subtle);
-  transition: all var(--duration-feedback) ease;
+  padding: var(--spacing-md) var(--spacing-huge);
+  display: inline-block;
+  line-height: 1.4;
+  box-shadow: var(--shadow-gold-button);
+  transition: all var(--duration-fast) var(--ease-soft);
 }
 
 .upgrade-btn:active {
-  transform: scale(0.97);
-  opacity: 0.90;
-  box-shadow: var(--shadow-subtle);
+  transform: scale(0.96);
+  opacity: 0.85;
+  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.20);
 }
 
-/* -----------------------------------------------------------
-   6. STATS ROW
-   ----------------------------------------------------------- */
-
+/* ============================================================
+   STATS ROW — Golden numbers · Lavender labels
+   ============================================================ */
 .stats-row {
   display: flex;
-  background: var(--color-surface);
-  border: 1rpx solid rgba(139, 126, 110, 0.12);
-  border-radius: var(--radius-medium);
-  padding: var(--spacing-5) var(--spacing-6);
-  margin-bottom: var(--spacing-6);
-  box-shadow: var(--shadow-subtle);
+  background: var(--color-card);
+  border: 1rpx solid var(--color-card-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md) var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+  box-shadow: var(--shadow-card);
 }
 
 .stat-item {
   flex: 1;
   text-align: center;
   position: relative;
-  padding: var(--spacing-3) 0;
+  padding: var(--spacing-sm) 0;
 }
 
 .stat-item + .stat-item::before {
@@ -234,71 +263,87 @@
   transform: translateY(-50%);
   width: 1rpx;
   height: 44%;
-  background: rgba(139, 126, 110, 0.12);
+  background: linear-gradient(
+    180deg, transparent 0%,
+    rgba(244, 212, 140, 0.20) 50%,
+    transparent 100%
+  );
 }
 
 .stat-num {
-  font-size: var(--font-size-subhead);
+  font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
-  color: var(--color-accent);
+  color: var(--color-gold);
   display: block;
-  line-height: var(--line-height-heading);
+  line-height: 1.15;
+  text-shadow: 0 0 16rpx rgba(244, 212, 140, 0.15);
 }
 
 .stat-label {
-  font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  color: #B8A9E0;
   display: block;
-  margin-top: var(--spacing-3);
-  letter-spacing: var(--letter-spacing-none);
+  margin-top: var(--spacing-xs);
+  letter-spacing: 2rpx;
 }
 
-/* -----------------------------------------------------------
-   7. MENU SECTION
-   ----------------------------------------------------------- */
-
+/* ============================================================
+   MENU SECTION — Icon circles with gold background
+   ============================================================ */
 .menu-section {
-  margin-bottom: var(--spacing-6);
-  border-radius: var(--radius-medium);
+  margin-bottom: var(--spacing-2xl);
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  background: var(--color-surface);
-  border: 1rpx solid rgba(139, 126, 110, 0.12);
-  box-shadow: var(--shadow-subtle);
+  background: var(--color-card);
+  border: 1rpx solid var(--color-card-border);
+  box-shadow: var(--shadow-card);
 }
 
 .menu-item {
   display: flex;
   align-items: center;
-  padding: var(--spacing-5) var(--spacing-6);
-  transition: all var(--duration-feedback) ease;
+  padding: var(--space-md) var(--spacing-xl);
+  transition: all var(--duration-fast) var(--ease-soft);
   position: relative;
 }
 
 .menu-item + .menu-item {
-  border-top: 1rpx solid rgba(139, 126, 110, 0.08);
+  border-top: 1rpx solid rgba(244, 212, 140, 0.06);
 }
 
 .menu-item:active {
-  background: rgba(139, 126, 110, 0.04);
+  background: var(--color-card-hover);
 }
 
-/* Icon circle */
+/* Icon circle — round gold background */
 .menu-icon-wrap {
   width: 64rpx;
   height: 64rpx;
-  border-radius: var(--radius-pill);
-  background: rgba(176, 102, 80, 0.08);
+  border-radius: var(--radius-full);
+  background: rgba(244, 212, 140, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  margin-right: var(--spacing-4);
-  border: 1rpx solid rgba(176, 102, 80, 0.12);
+  margin-right: var(--spacing-md);
+  border: 1rpx solid rgba(244, 212, 140, 0.15);
+}
+
+.menu-icon-wrap.icon-wrap-gold {
+  background: rgba(244, 212, 140, 0.18);
+  border-color: rgba(244, 212, 140, 0.25);
 }
 
 .menu-icon {
-  width: 32rpx;
-  height: 32rpx;
+  font-size: 28rpx;
+  line-height: 1;
+  display: block;
+}
+
+/* Custom icon images — 48x48rpx inside gold-tinted circle */
+.menu-icon-img {
+  width: 48rpx;
+  height: 48rpx;
   display: block;
 }
 
@@ -310,94 +355,105 @@
 
 .menu-title {
   display: block;
-  font-size: var(--font-size-body);
+  font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
-  line-height: var(--line-height-heading);
+  color: #F0EDE8;
+  line-height: var(--line-height-tight);
   margin-bottom: 4rpx;
 }
 
 .menu-desc {
   display: block;
-  font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
-  line-height: var(--line-height-body);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+  line-height: var(--line-height-base);
 }
 
 /* Right arrow */
 .menu-arrow {
-  width: 24rpx;
-  height: 24rpx;
-  opacity: 0.20;
-  margin-left: var(--spacing-3);
+  font-size: 32rpx;
+  color: var(--color-text-tertiary);
+  opacity: 0.50;
+  margin-left: var(--spacing-sm);
   flex-shrink: 0;
+  line-height: 1;
+  font-weight: var(--font-weight-bold);
 }
 
-/* -----------------------------------------------------------
-   8. HISTORY SECTION
-   ----------------------------------------------------------- */
-
+/* ============================================================
+   HISTORY SECTION — Card thumbnails on the left
+   ============================================================ */
 .history-section {
-  border-radius: var(--radius-medium);
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  background: var(--color-surface);
-  border: 1rpx solid rgba(139, 126, 110, 0.12);
-  box-shadow: var(--shadow-subtle);
+  background: var(--color-card);
+  border: 1rpx solid var(--color-card-border);
+  box-shadow: var(--shadow-card);
 }
 
 .history-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-5) var(--spacing-6);
-  border-bottom: 1rpx solid rgba(139, 126, 110, 0.08);
+  padding: var(--space-md) var(--spacing-xl);
+  border-bottom: 1rpx solid rgba(244, 212, 140, 0.08);
 }
 
 .history-header-left {
   display: flex;
   align-items: center;
-  gap: var(--spacing-3);
+  gap: var(--spacing-xs);
 }
 
 .history-header-icon {
+  font-size: 28rpx;
+  line-height: 1;
+  opacity: 0.70;
+}
+
+/* History header icon image */
+.history-header-icon-img {
   width: 32rpx;
   height: 32rpx;
-  opacity: 0.60;
+  display: block;
+  opacity: 0.85;
 }
 
 .history-header-title {
-  font-size: var(--font-size-body-large);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  letter-spacing: var(--letter-spacing-none);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-gold);
+  letter-spacing: 2rpx;
 }
 
 .clear-btn {
-  font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
   background: none;
   border: none;
-  padding: var(--spacing-3) var(--spacing-4);
-  border-radius: var(--radius-small);
-  transition: all var(--duration-feedback);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  transition: all var(--duration-fast);
 }
 
 .clear-btn:active {
-  color: var(--color-accent);
-  background: rgba(176, 102, 80, 0.04);
+  color: var(--color-gold);
+  background: rgba(244, 212, 140, 0.06);
 }
 
+/* History list */
 .history-list {
   padding: 0;
 }
 
+/* Individual history item */
 .history-item {
   display: flex;
   align-items: center;
-  padding: var(--spacing-5) var(--spacing-6);
-  border-bottom: 1rpx solid rgba(139, 126, 110, 0.06);
-  transition: background var(--duration-feedback);
-  gap: var(--spacing-4);
+  padding: var(--space-md) var(--spacing-xl);
+  border-bottom: 1rpx solid rgba(244, 212, 140, 0.05);
+  transition: background var(--duration-fast);
+  gap: var(--spacing-md);
 }
 
 .history-item:last-child {
@@ -405,36 +461,38 @@
 }
 
 .history-item:active {
-  background: rgba(139, 126, 110, 0.04);
+  background: var(--color-card-hover);
 }
 
+/* Card thumbnail — 80x80rpx rounded image */
 .history-thumb {
   width: 80rpx;
   height: 80rpx;
-  border-radius: var(--radius-small);
+  border-radius: var(--radius-md);
   flex-shrink: 0;
-  background: rgba(139, 126, 110, 0.06);
-  border: 1rpx solid rgba(139, 126, 110, 0.12);
+  background: var(--color-surface);
+  border: 1rpx solid rgba(244, 212, 140, 0.15);
 }
 
 .history-thumb-placeholder {
   width: 80rpx;
   height: 80rpx;
-  border-radius: var(--radius-small);
+  border-radius: var(--radius-md);
   flex-shrink: 0;
-  background: rgba(139, 126, 110, 0.04);
-  border: 1rpx solid rgba(139, 126, 110, 0.08);
+  background: var(--color-surface);
+  border: 1rpx solid rgba(244, 212, 140, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.thumb-placeholder-icon {
-  width: 32rpx;
-  height: 32rpx;
-  opacity: 0.20;
+.thumb-placeholder-text {
+  font-size: 32rpx;
+  opacity: 0.30;
+  line-height: 1;
 }
 
+/* Info section (center) */
 .history-info {
   flex: 1;
   min-width: 0;
@@ -444,132 +502,148 @@
 }
 
 .history-spread-name {
-  font-size: var(--font-size-body);
+  font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
-  line-height: var(--line-height-heading);
+  color: #F4D48C;
+  line-height: var(--line-height-tight);
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
 .history-theme {
-  font-size: var(--font-size-body);
+  font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
-  line-height: var(--line-height-body);
+  line-height: var(--line-height-base);
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
 .history-meta {
-  font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
-  line-height: var(--line-height-body);
-  opacity: 0.70;
+  font-size: var(--font-size-xs);
+  color: #B8A9E0;
+  line-height: var(--line-height-base);
+  opacity: 0.80;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
+/* Right arrow */
 .history-arrow {
-  width: 24rpx;
-  height: 24rpx;
-  opacity: 0.18;
+  font-size: 32rpx;
+  color: var(--color-text-tertiary);
+  opacity: 0.35;
   margin-left: auto;
   flex-shrink: 0;
+  line-height: 1;
+  font-weight: var(--font-weight-bold);
 }
 
-/* -----------------------------------------------------------
-   9. LOADING
-   ----------------------------------------------------------- */
-
+/* ============================================================
+   Loading more — golden spinner
+   ============================================================ */
 .loading-more {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-5);
-  gap: var(--spacing-3);
+  padding: var(--space-md);
+  gap: var(--spacing-sm);
 }
 
 .loading-spinner {
   width: 28rpx;
   height: 28rpx;
-  border: 2rpx solid rgba(139, 126, 110, 0.15);
-  border-top-color: var(--color-accent);
-  border-radius: var(--radius-pill);
-  animation: spin var(--duration-emphasis) linear infinite;
+  border: 3rpx solid rgba(244, 212, 140, 0.10);
+  border-top-color: var(--color-gold);
+  border-radius: var(--radius-full);
+  animation: profile-spin 0.7s linear infinite;
+}
+
+@keyframes profile-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .loading-text {
-  font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
 }
 
+/* Loaded all indicator */
 .loaded-all {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-5);
-  gap: var(--spacing-3);
+  padding: var(--space-md);
+  gap: var(--spacing-sm);
 }
 
 .loaded-all-line {
   display: block;
   width: 60rpx;
   height: 1rpx;
-  background: rgba(139, 126, 110, 0.12);
+  background: rgba(244, 212, 140, 0.12);
 }
 
 .loaded-all-text {
-  font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
   opacity: 0.60;
-  letter-spacing: var(--letter-spacing-display);
+  letter-spacing: 2rpx;
 }
 
-/* -----------------------------------------------------------
-   10. SKELETON
-   ----------------------------------------------------------- */
-
+/* ============================================================
+   SKELETON — Dark indigo shimmer
+   ============================================================ */
 .skeleton-card {
   width: 100%;
   height: 320rpx;
-  border-radius: var(--radius-medium);
-  background: rgba(139, 126, 110, 0.08);
-  margin-bottom: var(--spacing-6);
-  animation: pulse-soft 1500ms ease-in-out infinite;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  margin-bottom: var(--spacing-xl);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
 }
 
 .skeleton-stats {
   width: 100%;
   height: 110rpx;
-  border-radius: var(--radius-medium);
-  background: rgba(139, 126, 110, 0.08);
-  margin-bottom: var(--spacing-6);
-  animation: pulse-soft 1500ms ease-in-out infinite;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  margin-bottom: var(--spacing-xl);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
 }
 
 .skeleton-actions {
   display: flex;
-  gap: var(--spacing-4);
-  margin-bottom: var(--spacing-6);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-2xl);
 }
 
 .skeleton-action {
   flex: 1;
   height: 96rpx;
-  border-radius: var(--radius-medium);
-  background: rgba(139, 126, 110, 0.08);
-  animation: pulse-soft 1500ms ease-in-out infinite;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
 }
 
-/* -----------------------------------------------------------
-   11. ENTRANCE ANIMATIONS
-   ----------------------------------------------------------- */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
 
-.anim-fade-in-up-1 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0.08s forwards; }
-.anim-fade-in-up-2 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0.20s forwards; }
-.anim-fade-in-up-3 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0.32s forwards; }
-.anim-fade-in-up-4 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0.44s forwards; }
-.anim-fade-in-up-5 { opacity: 0; animation: fade-up var(--duration-emphasis) ease 0.56s forwards; }
+/* ============================================================
+   Entrance animations
+   ============================================================ */
+.anim-fade-in-up-1 { opacity: 0; animation: profile-fade-up 0.5s var(--ease-soft) 0.08s forwards; }
+.anim-fade-in-up-2 { opacity: 0; animation: profile-fade-up 0.5s var(--ease-soft) 0.20s forwards; }
+.anim-fade-in-up-3 { opacity: 0; animation: profile-fade-up 0.5s var(--ease-soft) 0.32s forwards; }
+.anim-fade-in-up-4 { opacity: 0; animation: profile-fade-up 0.5s var(--ease-soft) 0.44s forwards; }
+.anim-fade-in-up-5 { opacity: 0; animation: profile-fade-up 0.5s var(--ease-soft) 0.56s forwards; }
+
+@keyframes profile-fade-up {
+  0% { opacity: 0; transform: translateY(24rpx); }
+  100% { opacity: 1; transform: translateY(0); }
+}
