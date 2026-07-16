@@ -27,20 +27,20 @@
       {
         "pagePath": "pages/index/index",
         "text": "映照",
-        "iconPath": "/images/icons/home_tab.png",
-        "selectedIconPath": "/images/icons/home_tab.png"
+        "iconPath": "/images/icons/home_tab_64.png",
+        "selectedIconPath": "/images/icons/home_tab_64.png"
       },
       {
         "pagePath": "pages/encyclopedia/encyclopedia",
         "text": "百科",
-        "iconPath": "/images/icons/encyclopedia_tab.png",
-        "selectedIconPath": "/images/icons/encyclopedia_tab.png"
+        "iconPath": "/images/icons/encyclopedia_tab_64.png",
+        "selectedIconPath": "/images/icons/encyclopedia_tab_64.png"
       },
       {
         "pagePath": "pages/profile/profile",
         "text": "我的",
-        "iconPath": "/images/icons/profile_tab.png",
-        "selectedIconPath": "/images/icons/profile_tab.png"
+        "iconPath": "/images/icons/profile_tab_64.png",
+        "selectedIconPath": "/images/icons/profile_tab_64.png"
       }
     ]
   },
