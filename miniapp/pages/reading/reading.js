@@ -87,7 +87,7 @@ Page({
           });
           return;
         }
-      } catch {
+      } catch(e) {
         wx.showToast({ title: '请先登录', icon: 'none' });
         return;
       }
