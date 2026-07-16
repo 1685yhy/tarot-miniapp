@@ -359,6 +359,20 @@
   border-left: 3rpx solid var(--color-gold, #F4D48C);
 }
 
+/* --- Spread grid cards --- */
+.spread-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.body-xs {
+  font-size: 22rpx;
+  color: var(--color-text-tertiary, #9A95B8);
+  display: block;
+}
+
 /* --- Spread grid cards: constellation map feel --- */
 .section .card-press {
   background: linear-gradient(145deg, #25255A 0%, #2A2A5E 100%);
@@ -381,14 +395,16 @@
     0 0 50rpx rgba(244, 212, 140, 0.18);
 }
 
-/* Spread card icons and text */
-.section .card-press text:first-child {
-  color: var(--color-gold, #F4D48C) !important;
-  text-shadow: 0 0 12rpx rgba(244, 212, 140, 0.10);
+/* Spread card icon — fixed size, centered */
+.spread-icon {
+  width: 48rpx;
+  height: 48rpx;
   display: block;
-  margin-bottom: 8rpx;
+  margin: 0 auto 12rpx;
+  opacity: 0.85;
 }
 
+/* Spread card text labels */
 .section .card-press .body-sm {
   color: var(--color-text-primary, #F0EDE8);
   font-size: var(--font-size-sm, 24rpx);
