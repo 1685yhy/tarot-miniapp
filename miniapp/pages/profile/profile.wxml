@@ -63,7 +63,7 @@
     <view class="menu-section anim-fade-in-up-3">
       <view class="menu-item" bindtap="onGoDiary">
         <view class="menu-icon-wrap">
-          <image src="/images/icons/diary.png" mode="aspectFit" class="menu-icon-img"></image>
+          <image src="/images/icons/diary_64.png" mode="aspectFit" class="menu-icon-img"></image>
         </view>
         <view class="menu-content">
           <text class="menu-title">我的日记</text>
@@ -73,7 +73,7 @@
       </view>
       <view class="menu-item" bindtap="onGoMembership">
         <view class="menu-icon-wrap icon-wrap-gold">
-          <image src="/images/icons/member.png" mode="aspectFit" class="menu-icon-img"></image>
+          <image src="/images/icons/member_64.png" mode="aspectFit" class="menu-icon-img"></image>
         </view>
         <view class="menu-content">
           <text class="menu-title">{{memberStatus.is_member ? '会员中心' : '开通会员'}}</text>
@@ -83,7 +83,7 @@
       </view>
       <view class="menu-item" bindtap="onGoAnnualReport">
         <view class="menu-icon-wrap">
-          <image src="/images/icons/report.png" mode="aspectFit" class="menu-icon-img"></image>
+          <image src="/images/icons/report_64.png" mode="aspectFit" class="menu-icon-img"></image>
         </view>
         <view class="menu-content">
           <text class="menu-title">年度报告</text>
@@ -93,7 +93,7 @@
       </view>
       <view class="menu-item" bindtap="onGoAbout">
         <view class="menu-icon-wrap">
-          <image src="/images/icons/about.png" mode="aspectFit" class="menu-icon-img"></image>
+          <image src="/images/icons/about_64.png" mode="aspectFit" class="menu-icon-img"></image>
         </view>
         <view class="menu-content">
           <text class="menu-title">关于我们</text>
@@ -107,7 +107,7 @@
     <view class="history-section anim-fade-in-up-4">
       <view class="history-header">
         <view class="history-header-left">
-          <image src="/images/icons/history.png" mode="aspectFit" class="history-header-icon-img"></image>
+          <image src="/images/icons/history_64.png" mode="aspectFit" class="history-header-icon-img"></image>
           <text class="history-header-title">占卜历史</text>
         </view>
         <button class="clear-btn" bindtap="onClearHistory" wx:if="{{readingHistory.length > 0}}">清除</button>
