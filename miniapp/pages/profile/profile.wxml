@@ -27,7 +27,7 @@
     <view class="user-card anim-fade-in-up-1">
       <!-- Avatar: 金色星星剪影 -->
       <view class="avatar-circle">
-        <image class="avatar-emoji" src="/images/icons/star.png" mode="aspectFit" />
+        <image class="avatar-emoji" src="/images/icons/theme_general_64.png" mode="aspectFit" />
       </view>
       <text class="user-name">{{user.nickname || '星光旅人'}}</text>
       <view class="user-badge-row">
@@ -72,7 +72,7 @@
         <text class="menu-arrow">›</text>
       </view>
       <view class="menu-item" bindtap="onGoMembership">
-        <view class="menu-icon-wrap icon-wrap-gold">
+        <view class="menu-icon-wrap">
           <image src="/images/icons/member_64.png" mode="aspectFit" class="menu-icon-img"></image>
         </view>
         <view class="menu-content">
