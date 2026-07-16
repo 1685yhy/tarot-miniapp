@@ -192,26 +192,18 @@ page {
   margin-bottom: var(--spacing-sm);
 }
 
-.badge {
-  display: block;
-  padding: 6rpx 28rpx;
-  border-radius: var(--radius-pill);
-  font-size: var(--font-size-xs);
-  color: var(--color-text-secondary);
+.user-status-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-lavender);
   letter-spacing: 1rpx;
-  line-height: 1.4;
 }
 
-.badge-premium {
-  background: rgba(244, 212, 140, 0.18);
+.user-status-text.member-status {
   color: #F4D48C;
-  border: 1rpx solid rgba(244, 212, 140, 0.30);
-}
-
-.badge-free {
   background: rgba(244, 212, 140, 0.14);
-  color: #F4D48C;
-  border: 1rpx solid rgba(244, 212, 140, 0.22);
+  padding: 4rpx 24rpx;
+  border-radius: var(--radius-pill);
+  border: 1rpx solid rgba(244, 212, 140, 0.25);
 }
 
 .badge-date {
@@ -224,17 +216,17 @@ page {
 
 /* Upgrade button */
 .upgrade-btn {
-  margin-top: var(--spacing-lg);
+  margin-top: var(--spacing-md);
   background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
-  color: var(--color-text-inverse);
+  color: #1A1A3E;
   font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-base);
+  font-size: 26rpx;
   border: none;
   border-radius: var(--radius-pill);
-  padding: var(--spacing-md) var(--spacing-huge);
+  padding: 16rpx 48rpx;
   display: inline-block;
   line-height: 1.4;
-  box-shadow: var(--shadow-gold-button);
+  box-shadow: 0 4rpx 20rpx rgba(244, 212, 140, 0.25);
   transition: all var(--duration-fast) var(--ease-soft);
 }
 
