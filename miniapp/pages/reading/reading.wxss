@@ -436,10 +436,14 @@ page {
 }
 
 .theme-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
   flex: 1;
   min-width: 120rpx;
   text-align: center;
-  padding: 16rpx 12rpx;
+  padding: 16rpx 10rpx;
   background: var(--bg-card);
   border: 1.5rpx solid rgba(255,255,255,0.05);
   border-radius: var(--radius-sm);
@@ -447,6 +451,17 @@ page {
   color: var(--text-secondary);
   transition: all 0.25s;
   cursor: pointer;
+}
+
+.theme-icon {
+  width: 36rpx;
+  height: 36rpx;
+  display: block;
+  opacity: 0.8;
+}
+
+.theme-active .theme-icon {
+  opacity: 1;
 }
 
 .theme-item:active {
