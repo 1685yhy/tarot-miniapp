@@ -30,7 +30,7 @@
   <view wx:else>
     <!-- Search bar -->
     <view class="search-bar anim-fade-in-up-1">
-      <image class="search-icon" src="/images/icons/star.png" mode="aspectFit" style="width:32rpx;height:32rpx;margin-right:var(--space-sm)" />
+      <image class="search-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" style="width:32rpx;height:32rpx;margin-right:var(--space-sm)" />
       <input
         class="search-input"
         style="flex:1;font-size:var(--fs-body);color:var(--color-text-primary);background:transparent"
