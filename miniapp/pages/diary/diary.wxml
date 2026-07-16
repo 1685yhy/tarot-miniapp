@@ -40,7 +40,7 @@
         <view class="entry-card anim-fade-in-up" wx:for="{{entries}}" wx:key="id">
           <view class="entry-header">
             <text class="text-dim" style="font-size:var(--fs-body-small)">{{item.date}}</text>
-            <image wx:if="{{item.mood === 'happy'}}" src="/images/icons/star.png" mode="aspectFit" style="width:32rpx;height:32rpx;vertical-align:middle" />
+            <image wx:if="{{item.mood === 'happy'}}" src="/images/icons/theme_general_64.png" mode="aspectFit" style="width:32rpx;height:32rpx;vertical-align:middle" />
             <image wx:elif="{{item.mood === 'sad'}}" src="/images/icons/diary_64.png" mode="aspectFit" style="width:32rpx;height:32rpx;vertical-align:middle" />
             <image wx:elif="{{item.mood === 'anxious'}}" src="/images/icons/chat_ask_64.png" mode="aspectFit" style="width:32rpx;height:32rpx;vertical-align:middle" />
             <image wx:elif="{{item.mood === 'calm'}}" src="/images/icons/crystal_ball.png" mode="aspectFit" style="width:32rpx;height:32rpx;vertical-align:middle" />
@@ -73,7 +73,7 @@
       <text class="text-secondary" style="display:block;margin-bottom:var(--space-sm)">今天的心情</text>
       <view class="mood-grid">
         <view class="mood-item {{mood === 'happy' ? 'selected' : ''}}" data-mood="happy" bindtap="onMoodSelect">
-          <image src="/images/icons/star.png" mode="aspectFit" style="width:32rpx;height:32rpx;vertical-align:middle;margin-right:8rpx" /><text> 开心</text></view>
+          <image src="/images/icons/theme_general_64.png" mode="aspectFit" style="width:32rpx;height:32rpx;vertical-align:middle;margin-right:8rpx" /><text> 开心</text></view>
         <view class="mood-item {{mood === 'calm' ? 'selected' : ''}}" data-mood="calm" bindtap="onMoodSelect">
           <image src="/images/icons/crystal_ball.png" mode="aspectFit" style="width:32rpx;height:32rpx;vertical-align:middle;margin-right:8rpx" /><text> 平静</text></view>
         <view class="mood-item {{mood === 'excited' ? 'selected' : ''}}" data-mood="excited" bindtap="onMoodSelect">

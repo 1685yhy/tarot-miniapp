@@ -114,7 +114,7 @@
 
       <!-- 空状态 -->
       <view wx:if="{{readingHistory.length === 0}}" class="empty-state-inline">
-        <image class="empty-icon-img" src="/images/icons/star.png" mode="aspectFit" />
+        <image class="empty-icon-img" src="/images/icons/theme_general_64.png" mode="aspectFit" />
         <text class="empty-text">暂无占卜记录</text>
         <text class="empty-hint">开始你的第一次占卜吧</text>
       </view>
@@ -137,7 +137,7 @@
               wx:if="{{item.firstCardImage}}"
             />
             <view class="history-thumb-placeholder" wx:else>
-              <image class="thumb-placeholder-img" src="/images/icons/star.png" mode="aspectFit" />
+              <image class="thumb-placeholder-img" src="/images/icons/theme_general_64.png" mode="aspectFit" />
             </view>
 
             <!-- 中间文字 -->

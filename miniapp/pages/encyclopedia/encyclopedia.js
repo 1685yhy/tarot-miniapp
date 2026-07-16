@@ -4,11 +4,14 @@ const { request } = require('../../utils/api');
 // ---- Image path computation (mirrors tarot-card component logic) ----
 const IMAGE_BASE = (() => {
   try {
-    const info = wx.getAccountInfoSync();
-    const env = info.miniProgram ? info.miniProgram.envVersion : 'release';
-    return env === 'develop' ? 'http://xingxiang.chat/images/cards_thumb' : 'https://xingxiang.chat/images/cards_thumb';
+    const env = wx.getAccountInfoSync().miniProgram.envVersion;
+    return env === 'develop' ? 'http://127.0.0.1:8000/images/cards' : 'https://xingxiang.chat/images/cards_thumb';
   } catch {
     return 'https://xingxiang.chat/images/cards_thumb';
+  }
+})();
+  } catch {
+    return (function(){try{var e=wx.getAccountInfoSync().miniProgram.envVersion;return e==='develop'?'http://127.0.0.1:8000/images/cards':'https://xingxiang.chat/images/cards_thumb'}catch(_){return'https://xingxiang.chat/images/cards_thumb'}})();
   }
 })();
 const RANK_MAP = {
