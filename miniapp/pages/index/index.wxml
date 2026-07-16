@@ -78,8 +78,22 @@
 
 <!-- ===== 主内容 ===== -->
 <view class="page" wx:else>
+  <!-- Parallax star layers -->
+  <view class="stars-layer stars-distant"></view>
+  <view class="stars-layer stars-mid"></view>
+  <view class="stars-layer stars-close"></view>
+
+  <!-- Nebula glows -->
+  <view class="nebula nebula-lavender"></view>
+  <view class="nebula nebula-gold"></view>
+
+  <!-- Shooting star (rare easter egg) -->
+  <view class="shooting-star"></view>
+
   <!-- Hero -->
   <view class="hero anim-fade-in-up-1">
+    <!-- Concentric glow rings -->
+    <view class="hero-glow-rings"></view>
     <text class="title-1" style="text-align:center;display:block">星光映照</text>
     <text class="body-text" style="text-align:center;display:block;margin-top:12rpx">每日一牌，遇见自己</text>
   </view>
@@ -110,6 +124,15 @@
     <!-- AFTER DRAW — card revealed with rise, particles, and staggered text -->
     <view class="daily-card-wrap" wx:else>
       <view class="card card--revealed card-rise">
+        <!-- Floating sparkle particles -->
+        <view class="sparkle-field">
+          <view class="sparkle s1"></view>
+          <view class="sparkle s2"></view>
+          <view class="sparkle s3"></view>
+          <view class="sparkle s4"></view>
+          <view class="sparkle s5"></view>
+          <view class="sparkle s6"></view>
+        </view>
         <!-- Golden particles burst (8 dots radiating outward) -->
         <view class="particle-field">
           <view class="particle p1"></view>

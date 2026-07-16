@@ -32,28 +32,36 @@
   transform: translate(-50%, -50%);
   background: radial-gradient(
     circle at center,
-    rgba(244, 212, 140, 0.12) 0%,
-    rgba(244, 212, 140, 0.06) 25%,
-    rgba(244, 212, 140, 0.02) 50%,
-    transparent 72%
+    rgba(244, 212, 140, 0.15) 0%,
+    rgba(244, 212, 140, 0.08) 20%,
+    rgba(244, 212, 140, 0.03) 40%,
+    transparent 65%
   );
   pointer-events: none;
   z-index: 0;
-  animation: hero-glow-pulse 5s ease-in-out infinite;
+  animation: hero-glow-pulse 4s ease-in-out infinite;
 }
 
 @keyframes hero-glow-pulse {
   0%, 100% {
-    opacity: 0.6;
+    opacity: 0.5;
     transform: translate(-50%, -50%) scale(1);
   }
-  40% {
-    opacity: 0.95;
-    transform: translate(-50%, -50%) scale(1.06);
+  15% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(1.08);
   }
-  70% {
-    opacity: 0.75;
+  30% {
+    opacity: 0.6;
     transform: translate(-50%, -50%) scale(1.02);
+  }
+  45% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.04);
+  }
+  60% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 
@@ -127,6 +135,7 @@
     0 0 50rpx rgba(244, 212, 140, 0.04);
   position: relative;
   overflow: hidden;
+  animation: card-warm-breathe 5s ease-in-out infinite;
 }
 
 /* Subtle warm gradient overlay */
@@ -251,12 +260,15 @@
   background: linear-gradient(145deg, #2A2A5E 0%, #2E2E62 100%);
   box-shadow:
     0 4rpx 24rpx rgba(0, 0, 0, 0.28),
-    0 0 40rpx rgba(244, 212, 140, 0.06);
+    0 0 40rpx rgba(244, 212, 140, 0.06),
+    0 0 80rpx rgba(244, 212, 140, 0.03);
 }
 
 /* --- Card rise reveal (dramatic entrance) --- */
 .card-rise {
-  animation: card-rise-reveal 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s both;
+  animation:
+    card-rise-reveal 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s both,
+    card-glow-breathe 4s ease-in-out 0.5s infinite;
 }
 
 @keyframes card-rise-reveal {
@@ -752,4 +764,402 @@
 .onboarding-start:active {
   transform: scale(0.96);
   box-shadow: 0 2rpx 20rpx rgba(244, 212, 140, 0.40);
+}
+
+/* ============================================================
+   13. PARALLAX STARS — Three layers for atmospheric depth
+   Using CSS box-shadow technique (WXSS-compatible)
+   ============================================================ */
+
+/* Base layer — full-screen fixed overlay */
+.stars-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* --- Layer 1 — Distant: 40+ tiny dots, very dim, slow drift --- */
+.stars-distant::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2rpx;
+  height: 2rpx;
+  background: transparent;
+  border-radius: 50%;
+  box-shadow:
+    25rpx 40rpx rgba(255,255,255,0.18),
+    68rpx 105rpx rgba(255,255,255,0.15),
+    120rpx 30rpx rgba(255,255,255,0.20),
+    175rpx 180rpx rgba(255,255,255,0.12),
+    230rpx 60rpx rgba(255,255,255,0.16),
+    290rpx 200rpx rgba(255,255,255,0.14),
+    340rpx 85rpx rgba(255,255,255,0.18),
+    400rpx 250rpx rgba(255,255,255,0.10),
+    455rpx 120rpx rgba(255,255,255,0.16),
+    510rpx 35rpx rgba(255,255,255,0.20),
+    580rpx 170rpx rgba(255,255,255,0.12),
+    630rpx 90rpx rgba(255,255,255,0.15),
+    690rpx 210rpx rgba(255,255,255,0.18),
+    50rpx 320rpx rgba(255,255,255,0.14),
+    130rpx 400rpx rgba(255,255,255,0.12),
+    200rpx 350rpx rgba(255,255,255,0.16),
+    270rpx 480rpx rgba(255,255,255,0.10),
+    350rpx 380rpx rgba(255,255,255,0.18),
+    420rpx 520rpx rgba(255,255,255,0.14),
+    495rpx 450rpx rgba(255,255,255,0.12),
+    560rpx 300rpx rgba(255,255,255,0.16),
+    640rpx 500rpx rgba(255,255,255,0.15),
+    710rpx 420rpx rgba(255,255,255,0.10),
+    30rpx 560rpx rgba(255,255,255,0.18),
+    100rpx 630rpx rgba(255,255,255,0.12),
+    180rpx 700rpx rgba(255,255,255,0.16),
+    260rpx 580rpx rgba(255,255,255,0.14),
+    340rpx 650rpx rgba(255,255,255,0.10),
+    430rpx 720rpx rgba(255,255,255,0.18),
+    510rpx 600rpx rgba(255,255,255,0.12),
+    600rpx 680rpx rgba(255,255,255,0.15),
+    680rpx 550rpx rgba(255,255,255,0.14),
+    45rpx 800rpx rgba(255,255,255,0.10),
+    140rpx 880rpx rgba(255,255,255,0.16),
+    230rpx 780rpx rgba(255,255,255,0.12),
+    320rpx 900rpx rgba(255,255,255,0.18),
+    400rpx 840rpx rgba(255,255,255,0.14),
+    480rpx 950rpx rgba(255,255,255,0.10),
+    570rpx 860rpx rgba(255,255,255,0.16),
+    660rpx 920rpx rgba(255,255,255,0.12),
+    730rpx 780rpx rgba(255,255,255,0.15);
+  animation: stars-drift-slow 30s ease-in-out infinite;
+}
+
+/* --- Layer 2 — Mid: 18 gold-tinted dots, medium drift --- */
+.stars-mid::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3rpx;
+  height: 3rpx;
+  background: transparent;
+  border-radius: 50%;
+  box-shadow:
+    55rpx 130rpx rgba(244,212,140,0.15),
+    160rpx 60rpx rgba(244,212,140,0.12),
+    250rpx 230rpx rgba(244,212,140,0.18),
+    380rpx 150rpx rgba(244,212,140,0.10),
+    470rpx 280rpx rgba(244,212,140,0.15),
+    590rpx 110rpx rgba(244,212,140,0.12),
+    700rpx 240rpx rgba(244,212,140,0.18),
+    85rpx 370rpx rgba(244,212,140,0.10),
+    200rpx 450rpx rgba(244,212,140,0.15),
+    330rpx 350rpx rgba(244,212,140,0.12),
+    460rpx 500rpx rgba(244,212,140,0.18),
+    560rpx 430rpx rgba(244,212,140,0.10),
+    670rpx 560rpx rgba(244,212,140,0.15),
+    110rpx 620rpx rgba(244,212,140,0.12),
+    250rpx 720rpx rgba(244,212,140,0.18),
+    390rpx 660rpx rgba(244,212,140,0.10),
+    530rpx 790rpx rgba(244,212,140,0.15),
+    650rpx 700rpx rgba(244,212,140,0.12);
+  animation: stars-drift-mid 20s ease-in-out infinite;
+}
+
+/* --- Layer 3 — Close: 7 bright gold dots, fast drift with glow --- */
+.stars-close::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5rpx;
+  height: 5rpx;
+  background: transparent;
+  border-radius: 50%;
+  box-shadow:
+    120rpx 160rpx #F4D48C,
+    120rpx 160rpx 8rpx 2rpx rgba(244,212,140,0.12),
+    310rpx 380rpx #E8C878,
+    310rpx 380rpx 8rpx 2rpx rgba(232,200,120,0.10),
+    520rpx 220rpx #F4D48C,
+    520rpx 220rpx 8rpx 2rpx rgba(244,212,140,0.12),
+    180rpx 530rpx #E8C878,
+    180rpx 530rpx 8rpx 2rpx rgba(232,200,120,0.10),
+    450rpx 600rpx #F4D48C,
+    450rpx 600rpx 8rpx 2rpx rgba(244,212,140,0.12),
+    680rpx 350rpx #E8C878,
+    680rpx 350rpx 8rpx 2rpx rgba(232,200,120,0.10),
+    300rpx 800rpx #F4D48C,
+    300rpx 800rpx 8rpx 2rpx rgba(244,212,140,0.12);
+  animation: stars-drift-close 12s ease-in-out infinite;
+}
+
+@keyframes stars-drift-slow {
+  0%   { transform: translate(0, 0); }
+  50%  { transform: translate(18rpx, -8rpx); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes stars-drift-mid {
+  0%   { transform: translate(0, 0); }
+  50%  { transform: translate(-24rpx, 12rpx); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes stars-drift-close {
+  0%   { transform: translate(0, 0); }
+  33%  { transform: translate(32rpx, -16rpx); }
+  66%  { transform: translate(-14rpx, 20rpx); }
+  100% { transform: translate(0, 0); }
+}
+
+/* ============================================================
+   14. NEBULA GLOW — Ultra-subtle colored gradients
+   ============================================================ */
+
+.nebula {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.nebula-lavender {
+  background: radial-gradient(
+    ellipse 65% 50% at 80% 20%,
+    rgba(184, 169, 224, 0.04) 0%,
+    transparent 70%
+  );
+  animation: nebula-rotate 60s ease-in-out infinite;
+}
+
+.nebula-gold {
+  background: radial-gradient(
+    ellipse 55% 60% at 20% 80%,
+    rgba(244, 212, 140, 0.03) 0%,
+    transparent 65%
+  );
+  animation: nebula-rotate-reverse 60s ease-in-out infinite;
+}
+
+@keyframes nebula-rotate {
+  0%   { transform: rotate(0deg) scale(1); }
+  50%  { transform: rotate(4deg) scale(1.06); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+@keyframes nebula-rotate-reverse {
+  0%   { transform: rotate(0deg) scale(1); }
+  50%  { transform: rotate(-4deg) scale(1.06); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+/* ============================================================
+   15. SHOOTING STAR — Rare easter egg (~every 30s)
+   ============================================================ */
+
+.shooting-star {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.shooting-star::after {
+  content: '';
+  position: absolute;
+  width: 4rpx;
+  height: 4rpx;
+  top: 12%;
+  left: 105%;
+  background: #F4D48C;
+  border-radius: 50%;
+  box-shadow:
+    0 0 8rpx 2rpx rgba(244,212,140,0.20),
+    -20rpx 7rpx 2rpx -1rpx rgba(244,212,140,0.22),
+    -40rpx 14rpx 3rpx -2rpx rgba(244,212,140,0.10),
+    -60rpx 20rpx 4rpx -3rpx rgba(244,212,140,0.05);
+  animation: shooting-star-fly 30s linear infinite;
+  animation-delay: 8s;
+}
+
+@keyframes shooting-star-fly {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  3.5% {
+    transform: translate(-800rpx, 210rpx);
+    opacity: 1;
+  }
+  4.5% {
+    opacity: 0;
+    transform: translate(-850rpx, 230rpx);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-850rpx, 230rpx);
+  }
+}
+
+/* ============================================================
+   16. HERO GLOW — Concentric rings emanating outward
+   ============================================================ */
+
+.hero-glow-rings {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 400rpx;
+  height: 400rpx;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-glow-rings::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 70%;
+  height: 70%;
+  transform: translate(-50%, -50%);
+  border: 1rpx solid rgba(244, 212, 140, 0.10);
+  border-radius: 50%;
+  animation: ring-expand 4s ease-out infinite;
+}
+
+.hero-glow-rings::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 70%;
+  height: 70%;
+  transform: translate(-50%, -50%);
+  border: 1rpx solid rgba(244, 212, 140, 0.06);
+  border-radius: 50%;
+  animation: ring-expand 4s ease-out infinite 2s;
+}
+
+@keyframes ring-expand {
+  0% {
+    width: 50%;
+    height: 50%;
+    opacity: 0.7;
+    border-color: rgba(244,212,140,0.12);
+  }
+  50% {
+    width: 120%;
+    height: 120%;
+    opacity: 0.25;
+    border-color: rgba(244,212,140,0.04);
+  }
+  100% {
+    width: 180%;
+    height: 180%;
+    opacity: 0;
+    border-color: rgba(244,212,140,0.01);
+  }
+}
+
+/* ============================================================
+   17. CARD GLOW — Breathing golden aura + warm breathe
+   ============================================================ */
+
+@keyframes card-warm-breathe {
+  0%, 100% {
+    box-shadow:
+      0 4rpx 24rpx rgba(0,0,0,0.28),
+      0 0 50rpx rgba(244,212,140,0.04);
+  }
+  50% {
+    box-shadow:
+      0 4rpx 24rpx rgba(0,0,0,0.28),
+      0 0 50rpx rgba(244,212,140,0.04),
+      0 0 100rpx rgba(244,212,140,0.03);
+  }
+}
+
+@keyframes card-glow-breathe {
+  0%, 100% {
+    box-shadow:
+      0 4rpx 24rpx rgba(0,0,0,0.28),
+      0 0 40rpx rgba(244,212,140,0.06),
+      0 0 80rpx rgba(244,212,140,0.03);
+  }
+  50% {
+    box-shadow:
+      0 4rpx 24rpx rgba(0,0,0,0.28),
+      0 0 50rpx rgba(244,212,140,0.12),
+      0 0 100rpx rgba(244,212,140,0.06),
+      0 0 160rpx rgba(244,212,140,0.02);
+  }
+}
+
+/* ============================================================
+   18. SPARKLE PARTICLES — Floating near revealed card surface
+   ============================================================ */
+
+.sparkle-field {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.sparkle {
+  position: absolute;
+  width: 4rpx;
+  height: 4rpx;
+  background: #F4D48C;
+  border-radius: 50%;
+  opacity: 0;
+  box-shadow: 0 0 6rpx 2rpx rgba(244,212,140,0.20);
+}
+
+.s1 { top: 15%; left: 8%;  animation: sparkle-float 3.2s ease-in-out 0.3s infinite; }
+.s2 { top: 22%; left: 88%; animation: sparkle-float 3.8s ease-in-out 0.9s infinite; }
+.s3 { top: 70%; left: 10%; animation: sparkle-float 2.8s ease-in-out 0.1s infinite; }
+.s4 { top: 65%; left: 85%; animation: sparkle-float 3.5s ease-in-out 1.6s infinite; }
+.s5 { top: 40%; left: 48%; animation: sparkle-float 4.2s ease-in-out 2.2s infinite; }
+.s6 { top: 82%; left: 42%; animation: sparkle-float 2.6s ease-in-out 0.7s infinite; }
+
+@keyframes sparkle-float {
+  0%, 100% {
+    opacity: 0;
+    transform: translateY(12rpx) scale(0.4);
+  }
+  25% {
+    opacity: 0.9;
+    transform: translateY(-6rpx) scale(1.1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateY(-12rpx) scale(0.7);
+  }
+  75% {
+    opacity: 0.7;
+    transform: translateY(-2rpx) scale(0.9);
+  }
 }
