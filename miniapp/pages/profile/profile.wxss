@@ -154,10 +154,10 @@ page {
 .avatar-circle {
   width: 120rpx;
   height: 120rpx;
-  border-radius: var(--radius-full);
+  border-radius: 50%;
   background: var(--color-surface);
   border: 3rpx solid var(--color-gold);
-  box-shadow: 0 0 24rpx rgba(244, 212, 140, 0.20), inset 0 0 16rpx rgba(244, 212, 140, 0.06);
+  box-shadow: 0 0 30rpx rgba(244, 212, 140, 0.30), inset 0 0 20rpx rgba(244, 212, 140, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -166,10 +166,10 @@ page {
 }
 
 .avatar-emoji {
-  font-size: 52rpx;
-  line-height: 1;
+  width: 64rpx;
+  height: 64rpx;
   display: block;
-  filter: drop-shadow(0 0 6rpx rgba(244, 212, 140, 0.30));
+  filter: drop-shadow(0 0 8rpx rgba(244, 212, 140, 0.35));
 }
 
 /* Username — gold */
@@ -193,26 +193,25 @@ page {
 }
 
 .badge {
-  display: inline-block;
-  padding: 4rpx 24rpx;
+  display: block;
+  padding: 6rpx 28rpx;
   border-radius: var(--radius-pill);
   font-size: var(--font-size-xs);
-  background: var(--color-surface);
   color: var(--color-text-secondary);
-  border: 1rpx solid rgba(244, 212, 140, 0.15);
   letter-spacing: 1rpx;
+  line-height: 1.4;
 }
 
 .badge-premium {
-  background: rgba(244, 212, 140, 0.12);
-  color: var(--color-gold);
-  border-color: rgba(244, 212, 140, 0.25);
+  background: rgba(244, 212, 140, 0.18);
+  color: #F4D48C;
+  border: 1rpx solid rgba(244, 212, 140, 0.30);
 }
 
 .badge-free {
-  background: rgba(244, 212, 140, 0.06);
-  color: #C8B88A;
-  border-color: rgba(244, 212, 140, 0.10);
+  background: rgba(244, 212, 140, 0.14);
+  color: #F4D48C;
+  border: 1rpx solid rgba(244, 212, 140, 0.22);
 }
 
 .badge-date {
@@ -326,23 +325,13 @@ page {
   background: var(--color-card-hover);
 }
 
-/* Icon circle — round gold background */
+/* Icon container — borderless, icon floats freely */
 .menu-icon-wrap {
-  width: 64rpx;
-  height: 64rpx;
-  border-radius: var(--radius-full);
-  background: rgba(244, 212, 140, 0.12);
+  flex-shrink: 0;
+  margin-right: var(--spacing-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  margin-right: var(--spacing-md);
-  border: 1rpx solid rgba(244, 212, 140, 0.15);
-}
-
-.menu-icon-wrap.icon-wrap-gold {
-  background: rgba(244, 212, 140, 0.18);
-  border-color: rgba(244, 212, 140, 0.25);
 }
 
 .menu-icon {
@@ -351,11 +340,12 @@ page {
   display: block;
 }
 
-/* Custom icon images — 48x48rpx inside gold-tinted circle */
+/* Menu icon images */
 .menu-icon-img {
   width: 48rpx;
   height: 48rpx;
   display: block;
+  filter: drop-shadow(0 0 4rpx rgba(244, 212, 140, 0.08));
 }
 
 /* Content area */
