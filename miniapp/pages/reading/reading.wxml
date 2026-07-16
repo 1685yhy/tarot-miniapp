@@ -58,16 +58,20 @@
           data-spread="{{item}}"
           bindtap="onSelectSpread"
         >
-          <text style="font-size:44rpx;margin-right:var(--space-lg)">{{item.icon}}</text>
-          <view style="flex:1">
-            <text class="heading-4">{{item.name}}</text>
-            <text class="text-dim mt-xs">{{item.desc}}</text>
+          <image class="spread-card-icon" src="/images/icons/crystal_ball.png" mode="aspectFit" />
+          <view class="spread-card-info">
+            <view class="spread-card-title-row">
+              <text class="heading-4">{{item.name}}</text>
+              <text class="badge badge-popular" wx:if="{{item.popular}}">热门</text>
+            </view>
+            <text class="spread-card-desc">{{item.desc}}</text>
           </view>
-          <view style="text-align:right">
-            <text class="text-dim" style="font-size:var(--fs-body-small);display:block">{{item.cards}}张牌</text>
-            <text class="badge badge-gold mt-xs" wx:if="{{item.premium}}">会员</text>
-            <text class="badge badge-danger mt-xs" wx:if="{{item.popular}}">热门</text>
+          <view class="spread-card-meta">
+            <text class="spread-card-count">{{item.cards}}张</text>
+            <text class="badge badge-gold" wx:if="{{item.premium}}">会员</text>
           </view>
+          <!-- Premium diamond corner -->
+          <view class="premium-diamond" wx:if="{{item.premium}}">◆</view>
         </view>
       </view>
     </view>
@@ -85,7 +89,7 @@
         <textarea
           class="question-input"
           placeholder="例如：我最近的感情运势怎么样？这份工作要不要换？..."
-          placeholder-style="color:#8A85A8"
+          placeholder-style="color:rgba(244,212,140,0.45)"
           maxlength="200"
           value="{{question}}"
           bindinput="onQuestionInput"

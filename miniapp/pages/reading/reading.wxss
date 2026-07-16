@@ -243,16 +243,18 @@ page {
 .spread-grid {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: 24rpx;
   margin-top: var(--space-lg);
 }
 
+/* ──────────── Base spread card ──────────── */
 .spread-card {
   display: flex;
   align-items: center;
   padding: var(--space-lg);
   background: var(--bg-card);
-  border: 1.5rpx solid var(--gold-dim);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.10);
+  border-left: 4rpx solid var(--gold-dim);
   border-radius: var(--radius-card);
   transition: all 0.3s ease;
   cursor: pointer;
@@ -273,12 +275,74 @@ page {
   transform: scale(0.97);
   background: var(--bg-card-hover);
   border-color: var(--gold);
+  border-left-color: var(--gold);
   box-shadow: 0 0 30rpx var(--gold-dim);
 }
 
+/* ──────────── Premium spread card ──────────── */
 .spread-card.premium {
-  border-color: var(--gold);
-  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(244,212,140,0.06) 100%);
+  border-color: rgba(244, 212, 140, 0.20);
+  border-left-color: var(--gold);
+  background: linear-gradient(135deg, rgba(42, 42, 90, 0.95) 0%, rgba(244, 212, 140, 0.08) 100%);
+}
+
+.spread-card.premium:active {
+  border-color: var(--gold-light);
+  border-left-color: var(--gold-light);
+}
+
+/* Gold diamond corner for premium */
+.premium-diamond {
+  position: absolute;
+  top: 12rpx;
+  right: 14rpx;
+  font-size: 18rpx;
+  color: var(--gold);
+  opacity: 0.50;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* ──────────── Spread card icon ──────────── */
+.spread-card-icon {
+  width: 48rpx;
+  height: 48rpx;
+  margin-right: var(--space-lg);
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+
+/* ──────────── Spread card info area ──────────── */
+.spread-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.spread-card-title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: 4rpx;
+}
+
+.spread-card-desc {
+  font-size: var(--fs-body-small);
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+/* ──────────── Spread card meta (right column) ──────────── */
+.spread-card-meta {
+  text-align: right;
+  flex-shrink: 0;
+  margin-left: var(--space-md);
+}
+
+.spread-card-count {
+  display: block;
+  font-size: var(--fs-body-small);
+  color: var(--text-dim);
+  margin-bottom: var(--space-xs);
 }
 
 /* Badges */
@@ -294,6 +358,19 @@ page {
   background: rgba(244,212,140,0.18);
   color: var(--gold-light);
   border: 1rpx solid rgba(244,212,140,0.3);
+}
+
+/* Popular badge — subtle gold pill */
+.badge-popular {
+  display: inline-block;
+  padding: 2rpx 14rpx;
+  border-radius: var(--radius-round);
+  font-size: 20rpx;
+  font-weight: 500;
+  background: rgba(244, 212, 140, 0.12);
+  color: var(--gold);
+  border: 1rpx solid rgba(244, 212, 140, 0.20);
+  line-height: 1.4;
 }
 
 .badge-danger {
@@ -344,8 +421,9 @@ page {
 }
 
 .question-input::placeholder {
-  color: #8A85A8;
+  color: rgba(244, 212, 140, 0.45);
   font-style: italic;
+  font-weight: 300;
 }
 
 /* ==============================
