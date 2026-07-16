@@ -25,7 +25,7 @@
   <view wx:else>
     <!-- Hero -->
     <view class="flex-center flex-col" style="padding:var(--space-xxxl) 0 var(--space-lg)">
-      <image class="hero-icon" src="/images/icons/star.png" mode="aspectFit" style="width:72rpx;height:72rpx;display:block" />
+      <image class="hero-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" style="width:72rpx;height:72rpx;display:block" />
       <text class="heading-1 mt-sm">开通会员</text>
       <text class="text-secondary mt-xs">解锁无限卡牌解读</text>
     </view>

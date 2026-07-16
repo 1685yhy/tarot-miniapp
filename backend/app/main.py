@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.db.database import create_all
 from app.config import settings
@@ -53,3 +54,16 @@ async def health():
             "jwt": jwt_status,
         },
     }
+
+
+# Develop mode: serve card images from local filesystem
+import os
+CARDS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "miniapp", "images", "cards_thumb")
+if os.path.isdir(CARDS_DIR):
+    app.mount("/images/cards", StaticFiles(directory=CARDS_DIR), name="cards")
+CARDS_FULL = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "miniapp", "images", "cards_v3")
+if os.path.isdir(CARDS_FULL):
+    app.mount("/images/cards_full", StaticFiles(directory=CARDS_FULL), name="cards_full")
+ICONS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "miniapp", "images", "icons")
+if os.path.isdir(ICONS_DIR):
+    app.mount("/images/icons", StaticFiles(directory=ICONS_DIR), name="icons")

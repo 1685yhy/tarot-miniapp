@@ -98,11 +98,10 @@ const CARD_REGISTRY = {
 
 const IMAGE_BASE = (() => {
   try {
-    const info = wx.getAccountInfoSync();
-    const env = info.miniProgram ? info.miniProgram.envVersion : 'release';
-    return env === 'develop' ? 'http://xingxiang.chat/images/cards' : 'https://xingxiang.chat/images/cards';
+    const env = wx.getAccountInfoSync().miniProgram.envVersion;
+    return env === 'develop' ? 'http://127.0.0.1:8000/images/cards' : 'https://xingxiang.chat/images/cards_thumb';
   } catch {
-    return 'https://xingxiang.chat/images/cards';
+    return 'https://xingxiang.chat/images/cards_thumb';
   }
 })();
 const ROMAN_MAP = {
