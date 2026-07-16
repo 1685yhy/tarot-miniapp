@@ -18,7 +18,7 @@ const ENV = (() => {
   try {
     const info = wx.getAccountInfoSync();
     return info.miniProgram ? info.miniProgram.envVersion : 'release';
-  } catch {
+  } catch(e) {
     return 'release';
   }
 })();
@@ -41,7 +41,7 @@ let extBaseUrl = null;
 try {
   const ext = wx.getExtConfigSync ? wx.getExtConfigSync() : {};
   if (ext.BASE_URL) extBaseUrl = ext.BASE_URL;
-} catch {
+} catch(e) {
   // extConfig not available
 }
 

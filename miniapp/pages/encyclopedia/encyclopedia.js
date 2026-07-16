@@ -6,12 +6,8 @@ const IMAGE_BASE = (() => {
   try {
     const env = wx.getAccountInfoSync().miniProgram.envVersion;
     return env === 'develop' ? 'http://127.0.0.1:8000/images/cards' : 'https://xingxiang.chat/images/cards_thumb';
-  } catch {
+  } catch(e) {
     return 'https://xingxiang.chat/images/cards_thumb';
-  }
-})();
-  } catch {
-    return (function(){try{var e=wx.getAccountInfoSync().miniProgram.envVersion;return e==='develop'?'http://127.0.0.1:8000/images/cards':'https://xingxiang.chat/images/cards_thumb'}catch(_){return'https://xingxiang.chat/images/cards_thumb'}})();
   }
 })();
 const RANK_MAP = {

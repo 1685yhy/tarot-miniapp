@@ -41,7 +41,7 @@ const checkLogin = async (options = {}) => {
         const freshUser = { ...cachedUser, ...freshData };
         wx.setStorageSync('user', freshUser);
         return freshUser;
-      } catch {
+      } catch(e) {
         // 刷新失败降级到缓存
         return wx.getStorageSync('user');
       }
