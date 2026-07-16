@@ -102,19 +102,19 @@
         <text class="text-secondary" style="display:block;margin-bottom:var(--space-sm)">解读侧重</text>
         <view class="theme-options">
           <view class="theme-item {{theme === 'general' ? 'theme-active' : ''}}" bindtap="onThemeTap" data-theme="general">
-            <image class="theme-icon" src="/images/icons/crystal_ball.png" mode="aspectFit" />
+            <image class="theme-icon" src="/images/icons/theme_general.png" mode="aspectFit" />
             <text>综合</text>
           </view>
           <view class="theme-item {{theme === 'love' ? 'theme-active' : ''}}" bindtap="onThemeTap" data-theme="love">
-            <image class="theme-icon" src="/images/icons/two_hearts.png" mode="aspectFit" />
+            <image class="theme-icon" src="/images/icons/theme_love.png" mode="aspectFit" />
             <text>爱情</text>
           </view>
           <view class="theme-item {{theme === 'career' ? 'theme-active' : ''}}" bindtap="onThemeTap" data-theme="career">
-            <image class="theme-icon" src="/images/icons/briefcase.png" mode="aspectFit" />
+            <image class="theme-icon" src="/images/icons/theme_career.png" mode="aspectFit" />
             <text>事业</text>
           </view>
           <view class="theme-item {{theme === 'finance' ? 'theme-active' : ''}}" bindtap="onThemeTap" data-theme="finance">
-            <image class="theme-icon" src="/images/icons/money.png" mode="aspectFit" />
+            <image class="theme-icon" src="/images/icons/theme_finance.png" mode="aspectFit" />
             <text>财运</text>
           </view>
         </view>
