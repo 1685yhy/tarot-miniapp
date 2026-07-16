@@ -31,15 +31,14 @@
       </view>
       <text class="user-name">{{user.nickname || '星光旅人'}}</text>
       <view class="user-badge-row">
-        <text class="badge {{memberStatus.is_member ? 'badge-premium' : 'badge-free'}}">
-          {{memberStatus.is_member ? '会员' : '免费用户'}}
-        </text>
+        <text class="user-status-text" wx:if="{{!memberStatus.is_member}}">今日剩余 {{memberStatus.free_readings_today || 0}} 次免费解读</text>
+        <text class="user-status-text member-status" wx:else>会员</text>
         <text class="badge-date" wx:if="{{memberStatus.is_member && memberStatus.expires_at}}">
           有效期至 {{memberStatus.expiresAtFormatted}}
         </text>
       </view>
       <button class="upgrade-btn" wx:if="{{!memberStatus.is_member}}" bindtap="onGoMembership">
-        开通会员
+        ✦ 开通会员 · 无限解读
       </button>
     </view>
 
