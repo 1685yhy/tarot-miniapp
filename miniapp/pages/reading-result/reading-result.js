@@ -45,11 +45,8 @@ Page({
       }
     }, 5000);
 
-    setTimeout(() => { if (!this.data._destroyed) this.setData({ loadingStage: 1 }); }, 800);
-    setTimeout(() => { if (!this.data._destroyed) this.setData({ loadingStage: 2 }); }, 2000);
-    setTimeout(() => { if (!this.data._destroyed) this.setData({ loadingStage: 3 }); }, 4000);
-
     try {
+      // 已完成的解读瞬间返回，不需要延迟动画
       const reading = await request('/readings/' + id);
       if (this.data._destroyed) return;
       this.setData({ reading: reading, pageLoading: false });
