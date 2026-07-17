@@ -1,128 +1,153 @@
-<!-- pages/card-detail/card-detail.wxml -->
+<!--
+  ================================================================
+  Card Detail — A Precious Illustrated Manuscript
+  Starlight Theme: deep indigo, gold illumination, warm cream text,
+  lavender accents. Each card opens like a treasured artifact.
+  ================================================================
+-->
 <view class="page">
-  <!-- ===== 加载骨架 ===== -->
-  <view wx:if="{{pageLoading}}">
-    <view class="skeleton">
-      <view class="skeleton-header">
-        <view class="skeleton-badge"></view>
-        <view class="skeleton-line wide"></view>
-        <view class="skeleton-line medium"></view>
-      </view>
-      <view class="skeleton-body">
-        <view class="skeleton-block"></view>
-        <view class="skeleton-block" style="height:80rpx"></view>
-        <view class="skeleton-block"></view>
-        <view class="skeleton-block"></view>
-      </view>
+
+  <!-- ============================================================
+       LOADING SKELETON — subtle shimmer on deep background
+       ============================================================ -->
+  <view wx:if="{{pageLoading}}" class="skeleton-root">
+    <view class="skeleton-hero">
+      <view class="skeleton-frame"></view>
+    </view>
+    <view class="skeleton-name"></view>
+    <view class="skeleton-tags">
+      <view class="skeleton-pill"></view>
+      <view class="skeleton-pill"></view>
+      <view class="skeleton-pill"></view>
+    </view>
+    <view class="skeleton-blocks">
+      <view class="skeleton-block"></view>
+      <view class="skeleton-block"></view>
+      <view class="skeleton-block"></view>
     </view>
   </view>
 
-  <!-- ===== 错误状态 ===== -->
-  <view wx:elif="{{pageError}}" class="error-state">
-    <text class="error-text">这张牌的信息暂时无法获取</text>
+  <!-- ============================================================
+       ERROR STATE — gentle, poetic
+       ============================================================ -->
+  <view wx:elif="{{pageError}}" class="error-root">
+    <view class="error-icon-wrap">
+      <text class="error-icon">✦</text>
+    </view>
+    <text class="error-text">星辰暂时隐匿</text>
     <text class="error-hint">{{pageError}}</text>
-    <button class="btn-primary btn-small" bindtap="onRetry">重新加载</button>
+    <button class="error-btn" bindtap="onRetry">重新凝望</button>
   </view>
 
-  <!-- ===== 主内容 ===== -->
-  <view wx:elif="{{card}}">
-    <!-- Card image — prominent with golden frame -->
-    <view class="card-image-section anim-fade-in-up-1">
-      <view class="card-image-frame">
-        <image class="card-image" src="{{card.imagePath}}" mode="aspectFill" wx:if="{{card.imagePath}}"></image>
-        <view class="card-image-placeholder" wx:else></view>
+  <!-- ============================================================
+       MAIN CONTENT
+       ============================================================ -->
+  <view wx:elif="{{card}}" class="content-root">
+
+    <!-- ==================== HERO: CARD IMAGE ==================== -->
+    <view class="hero-section">
+      <view class="hero-frame">
+        <image
+          class="hero-image"
+          src="{{card.imagePath}}"
+          mode="aspectFit"
+          wx:if="{{card.imagePath}}"
+        />
+        <view class="hero-placeholder" wx:else>
+          <text class="hero-placeholder-icon">🃏</text>
+        </view>
+        <!-- Decorative corner accents -->
+        <view class="corner corner-tl"></view>
+        <view class="corner corner-tr"></view>
+        <view class="corner corner-bl"></view>
+        <view class="corner corner-br"></view>
       </view>
+      <text class="hero-name-zh">{{card.name_zh}}</text>
+      <text class="hero-name-en">{{card.name_en}}</text>
     </view>
 
-    <!-- Card header -->
-    <view class="card-header anim-fade-in-up-1">
-      <view class="card-number-badge flex-center">{{card.card_number}}</view>
-      <text class="card-name-zh">{{card.name_zh}}</text>
-      <text class="card-name-en">{{card.name_en}}</text>
-      <view class="flex-center gap-sm mt-sm">
-        <text class="badge badge-purple">{{card.arcana === 'major' ? '大阿尔卡纳' : '小阿尔卡纳'}}</text>
-        <text class="badge badge-gold" wx:if="{{card.suit}}">{{card.suit === 'wands' ? '权杖' : card.suit === 'cups' ? '圣杯' : card.suit === 'swords' ? '宝剑' : '星币'}}</text>
-        <text class="badge" style="background:rgba(184,169,224,0.10);color:var(--color-lavender)" wx:if="{{card.element}}">{{card.element}}</text>
-      </view>
+    <!-- ==================== KEYWORD TAGS ==================== -->
+    <view class="keywords-row" wx:if="{{card.keywordsList && card.keywordsList.length}}">
+      <text
+        class="keyword-tag"
+        wx:for="{{card.keywordsList}}"
+        wx:key="*this"
+      >{{item}}</text>
     </view>
 
-    <!-- Image description -->
-    <view class="section-card anim-fade-in-up-2">
-      <text class="section-title">牌面描述</text>
-      <text class="section-text mt-sm">{{card.image_description}}</text>
-    </view>
-
-    <!-- Keywords -->
-    <view class="section-card anim-fade-in-up-3">
-      <text class="section-title">关键词</text>
-      <view class="keyword-list mt-sm">
-        <text class="badge badge-gold" wx:for="{{card.keywordsList}}" wx:key="*this" style="font-size:var(--font-size-sm);padding:8rpx 20rpx">{{item}}</text>
-      </view>
-    </view>
-
-    <!-- Upright/Reversed toggle -->
-    <view class="toggle-bar anim-fade-in-up-4">
+    <!-- ==================== UPRIGHT / REVERSED SWITCHER ==================== -->
+    <view class="tab-switcher">
       <view
-        class="toggle-item {{activeTab === 'upright' ? 'toggle-active' : ''}}"
+        class="tab-item {{activeTab === 'upright' ? 'tab-active' : ''}}"
         data-tab="upright"
         bindtap="onTabTap"
-      >
-        <text>正位</text>
-      </view>
+      >正位</view>
       <view
-        class="toggle-item {{activeTab === 'reversed' ? 'toggle-active' : ''}}"
+        class="tab-item {{activeTab === 'reversed' ? 'tab-active' : ''}}"
         data-tab="reversed"
         bindtap="onTabTap"
-      >
-        <text>逆位</text>
+      >逆位</view>
+    </view>
+
+    <!-- ==================== MEANINGS — UPRIGHT ==================== -->
+    <view wx:if="{{activeTab === 'upright'}}">
+      <view class="meaning-card">
+        <text class="meaning-title">✦ 总述</text>
+        <text class="meaning-text">{{card.meaning_upright}}</text>
+      </view>
+      <view class="meaning-card">
+        <text class="meaning-title">✦ 感情</text>
+        <text class="meaning-text">{{card.love_upright}}</text>
+      </view>
+      <view class="meaning-card">
+        <text class="meaning-title">✦ 事业</text>
+        <text class="meaning-text">{{card.career_upright}}</text>
+      </view>
+      <view class="meaning-card">
+        <text class="meaning-title">✦ 财运</text>
+        <text class="meaning-text">{{card.finance_upright}}</text>
+      </view>
+      <view class="meaning-card meaning-card-last">
+        <text class="meaning-title">✦ 健康</text>
+        <text class="meaning-text">{{card.health_upright}}</text>
       </view>
     </view>
 
-    <!-- Meanings -->
-    <view wx:if="{{activeTab === 'upright'}}" class="anim-fade-in-up-5">
-      <view class="section-card">
-        <text class="section-title">正位含义</text>
-        <text class="section-text mt-sm">{{card.meaning_upright}}</text>
+    <!-- ==================== MEANINGS — REVERSED ==================== -->
+    <view wx:else>
+      <view class="meaning-card">
+        <text class="meaning-title">✦ 总述</text>
+        <text class="meaning-text">{{card.meaning_reversed}}</text>
       </view>
-      <view class="section-card">
-        <text class="section-title">爱情</text>
-        <text class="section-text mt-sm">{{card.love_upright}}</text>
+      <view class="meaning-card">
+        <text class="meaning-title">✦ 感情</text>
+        <text class="meaning-text">{{card.love_reversed}}</text>
       </view>
-      <view class="section-card">
-        <text class="section-title">事业</text>
-        <text class="section-text mt-sm">{{card.career_upright}}</text>
+      <view class="meaning-card">
+        <text class="meaning-title">✦ 事业</text>
+        <text class="meaning-text">{{card.career_reversed}}</text>
       </view>
-      <view class="section-card">
-        <text class="section-title">财运</text>
-        <text class="section-text mt-sm">{{card.finance_upright}}</text>
+      <view class="meaning-card">
+        <text class="meaning-title">✦ 财运</text>
+        <text class="meaning-text">{{card.finance_reversed}}</text>
       </view>
-      <view class="section-card">
-        <text class="section-title">健康</text>
-        <text class="section-text mt-sm">{{card.health_upright}}</text>
+      <view class="meaning-card meaning-card-last">
+        <text class="meaning-title">✦ 健康</text>
+        <text class="meaning-text">{{card.health_reversed}}</text>
       </view>
     </view>
 
-    <view wx:else class="anim-fade-in-up-5">
-      <view class="section-card">
-        <text class="section-title">逆位含义</text>
-        <text class="section-text mt-sm">{{card.meaning_reversed}}</text>
-      </view>
-      <view class="section-card">
-        <text class="section-title">爱情</text>
-        <text class="section-text mt-sm">{{card.love_reversed}}</text>
-      </view>
-      <view class="section-card">
-        <text class="section-title">事业</text>
-        <text class="section-text mt-sm">{{card.career_reversed}}</text>
-      </view>
-      <view class="section-card">
-        <text class="section-title">财运</text>
-        <text class="section-text mt-sm">{{card.finance_reversed}}</text>
-      </view>
-      <view class="section-card">
-        <text class="section-title">健康</text>
-        <text class="section-text mt-sm">{{card.health_reversed}}</text>
-      </view>
+    <!-- ==================== ADDITIONAL INFO ==================== -->
+    <view
+      class="meta-row"
+      wx:if="{{card.element || card.planet || card.zodiac}}"
+    >
+      <text class="meta-label" wx:if="{{card.element}}">{{card.element}}</text>
+      <text class="meta-divider" wx:if="{{card.element && (card.planet || card.zodiac)}}">·</text>
+      <text class="meta-label" wx:if="{{card.planet}}">{{card.planet}}</text>
+      <text class="meta-divider" wx:if="{{card.planet && card.zodiac}}">·</text>
+      <text class="meta-label" wx:if="{{card.zodiac}}">{{card.zodiac}}</text>
     </view>
+
   </view>
 </view>
