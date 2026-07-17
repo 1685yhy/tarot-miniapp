@@ -288,6 +288,15 @@ page {
   letter-spacing: 2rpx;
 }
 
+.stat-subtitle {
+  font-size: 18rpx;
+  color: var(--color-text-tertiary, #A098C0);
+  display: block;
+  margin-top: 4rpx;
+  letter-spacing: 1rpx;
+  opacity: 0.75;
+}
+
 /* ============================================================
    MENU SECTION — Icon circles with gold background
    ============================================================ */

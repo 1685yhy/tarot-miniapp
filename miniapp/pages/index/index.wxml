@@ -214,22 +214,26 @@
   <view class="section anim-fade-in-up-3">
     <text class="section-title">选择牌阵</text>
     <view style="display:grid;grid-template-columns:repeat(2,1fr);gap:16rpx">
-      <view class="card card-press spread-card" style="padding:24rpx 16rpx;text-align:center" bindtap="navigateToReading" data-type="three_card">
+      <view class="card card-press spread-card" style="padding:24rpx 16rpx;text-align:center;position:relative" bindtap="navigateToReading" data-type="three_card">
+        <view class="spread-tag spread-tag-free">免费</view>
         <image class="spread-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" />
         <text class="body-sm" style="display:block;font-weight:600">三牌占卜</text>
         <text class="body-xs" style="display:block;margin-top:6rpx">过去·现在·未来</text>
       </view>
-      <view class="card card-press spread-card" style="padding:24rpx 16rpx;text-align:center" bindtap="navigateToReading" data-type="triangle">
+      <view class="card card-press spread-card" style="padding:24rpx 16rpx;text-align:center;position:relative" bindtap="navigateToReading" data-type="triangle">
+        <view class="spread-tag spread-tag-premium">会员</view>
         <image class="spread-icon" src="/images/icons/theme_love_64.png" mode="aspectFit" />
         <text class="body-sm" style="display:block;font-weight:600">恋人三角</text>
         <text class="body-xs" style="display:block;margin-top:6rpx">感情关系深度解读</text>
       </view>
-      <view class="card card-press spread-card" style="padding:24rpx 16rpx;text-align:center" bindtap="navigateToReading" data-type="celtic_cross">
+      <view class="card card-press spread-card" style="padding:24rpx 16rpx;text-align:center;position:relative" bindtap="navigateToReading" data-type="celtic_cross">
+        <view class="spread-tag spread-tag-premium">会员</view>
         <image class="spread-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" />
         <text class="body-sm" style="display:block;font-weight:600">凯尔特十字</text>
         <text class="body-xs" style="display:block;margin-top:6rpx">全方位综合解牌</text>
       </view>
-      <view class="card card-press spread-card" style="padding:24rpx 16rpx;text-align:center" bindtap="navigateToReading" data-type="career">
+      <view class="card card-press spread-card" style="padding:24rpx 16rpx;text-align:center;position:relative" bindtap="navigateToReading" data-type="career">
+        <view class="spread-tag spread-tag-premium">会员</view>
         <image class="spread-icon" src="/images/icons/theme_career_64.png" mode="aspectFit" />
         <text class="body-sm" style="display:block;font-weight:600">事业牌阵</text>
         <text class="body-xs" style="display:block;margin-top:6rpx">职场方向与机遇</text>
@@ -238,6 +242,11 @@
     <view class="card card-press more-spreads" bindtap="goToAllSpreads">
       <text class="more-text anim-gentle-pulse">查看更多 · 共10种牌阵</text>
       <text class="more-arrow">→</text>
+    </view>
+
+    <!-- 塔罗简介 -->
+    <view class="tarot-explainer-wrap">
+      <text class="tarot-explainer-link" bindtap="showTarotExplainer">什么是塔罗？</text>
     </view>
   </view>
 </view>
