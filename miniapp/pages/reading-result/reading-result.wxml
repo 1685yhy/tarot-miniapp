@@ -1,50 +1,31 @@
-<!-- pages/reading-result/reading-result.wxml -->
-<!-- 加载中 -->
 <view class="page" wx:if="{{pageLoading}}">
   <view class="loading-box">
     <view class="loading-spinner"></view>
     <text class="loading-title">星光解读中</text>
-    <text class="loading-sub">请稍候…</text>
-    <text class="loading-quote">{{loadingQuote}}</text>
-    <view class="loading-dots">
-      <text class="ldot {{loadingStage>=1?'active':''}}">●</text>
-      <text class="ldot {{loadingStage>=2?'active':''}}">●</text>
-      <text class="ldot {{loadingStage>=3?'active':''}}">●</text>
-    </view>
+    <text class="loading-sub">请稍候</text>
   </view>
 </view>
 
-<!-- 错误 -->
 <view class="page" wx:elif="{{pageError}}">
   <view class="error-state">
     <text class="error-text">加载失败</text>
-    <text class="error-hint">{{pageError}}</text>
     <button class="btn-retry" bindtap="onRetry">重新加载</button>
   </view>
 </view>
 
-<!-- 结果 -->
 <view class="page" wx:elif="{{reading}}">
-  <!-- 抽到的牌 — 纯文本显示，避免组件崩溃 -->
   <view class="cards-area">
     <view class="card-list">
       <view class="card-item" wx:for="{{reading.drawn_cards}}" wx:key="id">
         <text class="card-pos">{{item.position_name}}</text>
-        <text class="card-name">{{item.card_name}}{{item.is_reversed ? ' (逆)' : ''}}</text>
+        <text class="card-name">{{item.card_name}}</text>
       </view>
     </view>
   </view>
-
-  <!-- AI 解读 -->
   <view class="interp-area">
-    <text class="interp-title">✦ 解读</text>
-    <view class="interp-scroll {{showFullInterpretation ? 'expanded' : ''}}">
-      <text class="interp-text">{{reading.interpretation}}</text>
-    </view>
-    <text class="interp-toggle" wx:if="{{reading.interpretation && reading.interpretation.length > 300}}" bindtap="onToggleFull">展开全部</text>
+    <text class="interp-title">解读</text>
+    <text class="interp-text">{{reading.interpretation}}</text>
   </view>
-
-  <!-- 操作 -->
   <view class="actions">
     <button class="btn-ask" bindtap="onAskMore">追问更多</button>
     <button class="btn-redo" bindtap="onNewReading">重新解读</button>
@@ -52,7 +33,6 @@
   </view>
 </view>
 
-<!-- 解读失败 -->
 <view class="page" wx:else>
   <view class="error-state">
     <text class="error-text">解读生成失败</text>
