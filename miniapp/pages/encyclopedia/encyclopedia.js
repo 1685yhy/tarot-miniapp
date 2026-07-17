@@ -54,6 +54,13 @@ Page({
   },
 
   async onLoad() {
+    // 读取今日之牌（由首页抽牌后存入）
+    const app = getApp();
+    const dailyCard = app.globalData && app.globalData.dailyCard
+      ? { ...app.globalData.dailyCard, imagePath: computeImagePath(app.globalData.dailyCard) }
+      : null;
+    this.setData({ dailyCard });
+
     await this.loadCards();
   },
 
@@ -123,6 +130,19 @@ Page({
   onCardTap(e) {
     const id = e.currentTarget.dataset.id;
     wx.navigateTo({ url: `/pages/card-detail/card-detail?id=${id}` });
+  },
+
+  // 今日之牌 — 点击跳转卡牌详情
+  onDailyCardTap() {
+    const id = this.data.dailyCard && this.data.dailyCard.id;
+    if (id) {
+      wx.navigateTo({ url: `/pages/card-detail/card-detail?id=${id}` });
+    }
+  },
+
+  // 未抽牌 → 跳转首页抽牌
+  onDailyCardPromptTap() {
+    wx.switchTab({ url: '/pages/home/home' });
   },
 
   onRetry() {

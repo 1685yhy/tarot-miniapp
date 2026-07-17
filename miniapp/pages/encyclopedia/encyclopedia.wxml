@@ -28,6 +28,23 @@
 
   <!-- ===== 主内容 ===== -->
   <view wx:else>
+    <!-- ===== 今日之牌 — Personal entry point ===== -->
+    <view wx:if="{{dailyCard}}" class="daily-card anim-fade-in-up-1" bindtap="onDailyCardTap">
+      <view class="daily-card-label">今日之牌</view>
+      <view class="daily-card-body">
+        <image class="daily-card-thumb" src="{{dailyCard.imagePath}}" mode="aspectFill" wx:if="{{dailyCard.imagePath}}"></image>
+        <view class="daily-card-info">
+          <text class="daily-card-name">{{dailyCard.name_zh}}</text>
+          <text class="daily-card-name-en">{{dailyCard.name_en}}</text>
+          <text class="daily-card-cta">查看详情 →</text>
+        </view>
+      </view>
+    </view>
+    <view wx:else class="daily-card-prompt anim-fade-in-up-1" bindtap="onDailyCardPromptTap">
+      <text class="daily-card-prompt-icon">✨</text>
+      <text class="daily-card-prompt-text">抽取今日卡牌，解锁你的专属卡片</text>
+    </view>
+
     <!-- Search bar -->
     <view class="search-bar anim-fade-in-up-1">
       <image class="search-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" style="width:32rpx;height:32rpx;margin-right:var(--space-sm)" />

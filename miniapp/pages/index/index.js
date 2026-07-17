@@ -2,6 +2,8 @@
 const { request } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
 
+const FREE_READINGS_LIMIT = 3;
+
 function getTodayStr() {
   const d = new Date();
   const y = d.getFullYear();
@@ -46,6 +48,12 @@ Page({
     hasDrawnToday: false,
     showReflectionPrompt: false,
     showReminder: false,
+    // Free tier display
+    freeReadingsUsed: 0,
+    freeReadingsTotal: FREE_READINGS_LIMIT,
+    isMember: false,
+    // Pending reading recovery
+    pendingReading: null,
   },
 
   async onLoad() {
@@ -55,11 +63,41 @@ Page({
         await checkLogin();
         this.setData({ pageLoading: false });
         this._initDailyState();
+        this._loadFreeReadings();
       } catch (err) {
         this.setData({ pageLoading: false, pageError: err.message || '加载失败' });
       }
     } else {
       this.setData({ showOnboarding: true, pageLoading: false });
+    }
+
+    // Check for pending reading to show recovery card
+    this._checkPendingReading();
+  },
+
+  async onShow() {
+    // Refresh free-reading count every time the page is shown
+    this._loadFreeReadings();
+  },
+
+  /** Load free-reading usage from cached user (or refresh if stale) */
+  async _loadFreeReadings() {
+    try {
+      const user = await checkLogin({ refresh: true });
+      if (user) {
+        const used = user.free_readings_today || 0;
+        const isMember = !!user.is_member;
+        this.setData({
+          freeReadingsUsed: used,
+          freeReadingsTotal: FREE_READINGS_LIMIT,
+          isMember,
+        });
+        const app = getApp();
+        app.globalData.freeReadingsUsed = used;
+        app.globalData.isMember = isMember;
+      }
+    } catch (_err) {
+      // Silently degrade — counts stay at defaults
     }
   },
 
@@ -200,6 +238,27 @@ Page({
 
   goToAllSpreads() {
     wx.navigateTo({ url: '/pages/reading/reading' });
+  },
+
+  /** Check for a saved pending reading to offer recovery */
+  _checkPendingReading() {
+    const pending = wx.getStorageSync('pending_reading');
+    if (pending && pending.spread_type) {
+      // Expire after 24 hours
+      if (pending.timestamp && Date.now() - pending.timestamp > 24 * 60 * 60 * 1000) {
+        wx.removeStorageSync('pending_reading');
+        return;
+      }
+      this.setData({ pendingReading: pending });
+    }
+  },
+
+  onContinueReading() {
+    const pending = this.data.pendingReading;
+    if (!pending) return;
+    wx.navigateTo({
+      url: `/pages/reading/reading?type=${pending.spread_type}`,
+    });
   },
 
   onUnload() {

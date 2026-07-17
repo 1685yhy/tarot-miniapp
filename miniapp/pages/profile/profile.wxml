@@ -102,8 +102,52 @@
       </view>
     </view>
 
-    <!-- ============ History ============ -->
+    <!-- ============ Saved Readings ============ -->
     <view class="history-section anim-fade-in-up-4">
+      <view class="history-header">
+        <view class="history-header-left">
+          <image src="/images/icons/history_64.png" mode="aspectFit" class="history-header-icon-img"></image>
+          <text class="history-header-title">收藏的解读</text>
+        </view>
+        <button class="clear-btn" bindtap="onClearSavedReadings" wx:if="{{savedReadings.length > 0}}">清除</button>
+      </view>
+
+      <!-- 空状态 -->
+      <view wx:if="{{savedReadings.length === 0}}" class="empty-state-inline">
+        <image class="empty-icon-img" src="/images/icons/theme_general_64.png" mode="aspectFit" />
+        <text class="empty-text" wx:if="{{savedReadingsLoading}}">加载中...</text>
+        <text class="empty-text" wx:else>暂无收藏的解读</text>
+        <text class="empty-hint">在解读页面点击「收藏本次解读」即可收藏</text>
+      </view>
+
+      <!-- 收藏列表 -->
+      <view wx:else>
+        <view class="history-list">
+          <view
+            class="history-item anim-slide-up anim-stagger-{{index + 1}}"
+            wx:for="{{savedReadings}}"
+            wx:key="id"
+            data-id="{{item.id}}"
+            bindtap="onViewReading"
+          >
+            <view class="history-thumb-placeholder">
+              <image class="thumb-placeholder-img" src="/images/icons/theme_general_64.png" mode="aspectFit" />
+            </view>
+            <view class="history-info">
+              <text class="history-spread-name">{{item.spreadTypeName}}</text>
+              <text class="history-theme" wx:if="{{item.theme}}">{{item.theme}}</text>
+              <text class="history-meta" wx:if="{{item.createdAtFormatted}}">
+                {{item.createdAtFormatted}}
+              </text>
+            </view>
+            <text class="history-arrow">›</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- ============ History ============ -->
+    <view class="history-section anim-fade-in-up-5">
       <view class="history-header">
         <view class="history-header-left">
           <image src="/images/icons/history_64.png" mode="aspectFit" class="history-header-icon-img"></image>
@@ -117,6 +161,9 @@
         <image class="empty-icon-img" src="/images/icons/theme_general_64.png" mode="aspectFit" />
         <text class="empty-text">暂无占卜记录</text>
         <text class="empty-hint">开始你的第一次占卜吧</text>
+        <button class="btn-gold-empty" bindtap="onGoToReading" style="margin-top:24rpx;background:linear-gradient(135deg,#F4D48C,#D4AF37);color:#1A1A3E;border:none;border-radius:48rpx;padding:18rpx 48rpx;font-size:28rpx;font-weight:600;">
+          ✦ 开始占卜
+        </button>
       </view>
 
       <!-- 历史列表 -->

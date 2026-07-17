@@ -40,12 +40,12 @@
         <view class="entry-card anim-fade-in-up" wx:for="{{entries}}" wx:key="id">
           <view class="entry-header">
             <text class="text-dim" style="font-size:var(--fs-body-small)">{{item.date}}</text>
-            <image wx:if="{{item.mood === 'happy'}}" src="/images/icons/theme_general_64.png" mode="aspectFit" style="width:32rpx;height:32rpx;vertical-align:middle" />
-            <image wx:elif="{{item.mood === 'sad'}}" src="/images/icons/diary_64.png" mode="aspectFit" style="width:32rpx;height:32rpx;vertical-align:middle" />
-            <image wx:elif="{{item.mood === 'anxious'}}" src="/images/icons/chat_ask_64.png" mode="aspectFit" style="width:32rpx;height:32rpx;vertical-align:middle" />
-            <image wx:elif="{{item.mood === 'calm'}}" src="/images/icons/theme_general_64.png" mode="aspectFit" style="width:32rpx;height:32rpx;vertical-align:middle" />
-            <image wx:elif="{{item.mood === 'excited'}}" src="/images/icons/theme_love_64.png" mode="aspectFit" style="width:32rpx;height:32rpx;vertical-align:middle" />
-            <image wx:else src="/images/icons/about_64.png" mode="aspectFit" style="width:32rpx;height:32rpx;vertical-align:middle" />
+            <text wx:if="{{item.mood === 'happy'}}" style="font-size:32rpx">😊</text>
+            <text wx:elif="{{item.mood === 'sad'}}" style="font-size:32rpx">😢</text>
+            <text wx:elif="{{item.mood === 'anxious'}}" style="font-size:32rpx">😰</text>
+            <text wx:elif="{{item.mood === 'calm'}}" style="font-size:32rpx">😌</text>
+            <text wx:elif="{{item.mood === 'excited'}}" style="font-size:32rpx">🤩</text>
+            <text wx:else style="font-size:32rpx">🤔</text>
           </view>
           <view class="entry-card-section" wx:if="{{item.card}}">
             <image class="card-name-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" style="width:28rpx;height:28rpx;vertical-align:middle;margin-right:6rpx" /><text class="card-name">{{item.card.name_zh}}</text>
@@ -62,6 +62,9 @@
     <view wx:if="{{entries.length === 0}}" class="empty-state" style="padding:var(--space-massive) 0">
       <text class="empty-text">还没有日记记录</text>
       <text class="empty-hint">每天抽一张牌，记录你的感受</text>
+      <button class="btn-gold-empty" bindtap="showCreateModal" style="margin-top:32rpx;background:linear-gradient(135deg,#F4D48C,#D4AF37);color:#1A1A3E;border:none;border-radius:48rpx;padding:20rpx 56rpx;font-size:30rpx;font-weight:600;">
+        ✦ 记录今天
+      </button>
     </view>
   </view>
 
@@ -73,17 +76,17 @@
       <text class="text-secondary" style="display:block;margin-bottom:var(--space-sm)">今天的心情</text>
       <view class="mood-grid">
         <view class="mood-item {{mood === 'happy' ? 'selected' : ''}}" data-mood="happy" bindtap="onMoodSelect">
-          <image src="/images/icons/theme_general_64.png" mode="aspectFit" style="width:32rpx;height:32rpx;vertical-align:middle;margin-right:8rpx" /><text> 开心</text></view>
+          <text style="font-size:36rpx">😊</text><text> 开心</text></view>
         <view class="mood-item {{mood === 'calm' ? 'selected' : ''}}" data-mood="calm" bindtap="onMoodSelect">
-          <image src="/images/icons/theme_general_64.png" mode="aspectFit" style="width:32rpx;height:32rpx;vertical-align:middle;margin-right:8rpx" /><text> 平静</text></view>
+          <text style="font-size:36rpx">😌</text><text> 平静</text></view>
         <view class="mood-item {{mood === 'excited' ? 'selected' : ''}}" data-mood="excited" bindtap="onMoodSelect">
-          <image src="/images/icons/theme_love_64.png" mode="aspectFit" style="width:32rpx;height:32rpx;vertical-align:middle;margin-right:8rpx" /><text> 兴奋</text></view>
+          <text style="font-size:36rpx">🤩</text><text> 兴奋</text></view>
         <view class="mood-item {{mood === 'anxious' ? 'selected' : ''}}" data-mood="anxious" bindtap="onMoodSelect">
-          <image src="/images/icons/chat_ask_64.png" mode="aspectFit" style="width:32rpx;height:32rpx;vertical-align:middle;margin-right:8rpx" /><text> 焦虑</text></view>
+          <text style="font-size:36rpx">😰</text><text> 焦虑</text></view>
         <view class="mood-item {{mood === 'sad' ? 'selected' : ''}}" data-mood="sad" bindtap="onMoodSelect">
-          <image src="/images/icons/diary_64.png" mode="aspectFit" style="width:32rpx;height:32rpx;vertical-align:middle;margin-right:8rpx" /><text> 低落</text></view>
+          <text style="font-size:36rpx">😢</text><text> 低落</text></view>
         <view class="mood-item {{mood === 'thoughtful' ? 'selected' : ''}}" data-mood="thoughtful" bindtap="onMoodSelect">
-          <image src="/images/icons/about_64.png" mode="aspectFit" style="width:32rpx;height:32rpx;vertical-align:middle;margin-right:8rpx" /><text> 思考</text></view>
+          <text style="font-size:36rpx">🤔</text><text> 思考</text></view>
       </view>
 
       <text class="text-secondary mt-xl" style="display:block;margin-bottom:var(--space-sm)">今日感悟（可选）</text>

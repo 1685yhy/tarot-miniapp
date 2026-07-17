@@ -3,14 +3,57 @@
      Warm, intimate, magical. Three-card spread reveal.
      ============================================================ -->
 
-<!-- ===== LOADING STATE: Anticipation ===== -->
+<!-- ===== LOADING STATE: 3-Stage Anticipation ===== -->
 <view class="page" wx:if="{{pageLoading}}">
   <view class="loading-box">
-    <view class="loading-candle">
-      <view class="candle-flame"></view>
+
+    <!-- Stage 1: 洗牌中 ... -->
+    <view class="stage" wx:if="{{loadingStage === 1}}">
+      <view class="shuffle-icon">
+        <view class="card-shuffle card-left"></view>
+        <view class="card-shuffle card-right"></view>
+      </view>
+      <text class="stage-title">洗牌中...</text>
+      <text class="stage-sub">命运之轮缓缓转动</text>
     </view>
-    <text class="loading-title">星光照亮你的问题</text>
-    <text class="loading-sub">解读正在凝聚中</text>
+
+    <!-- Stage 2: 翻牌中 ... -->
+    <view class="stage" wx:elif="{{loadingStage === 2}}">
+      <view class="flip-icon">
+        <view class="card-flip-inner"></view>
+      </view>
+      <text class="stage-title">翻牌中...</text>
+      <text class="stage-sub">牌面渐渐浮现</text>
+    </view>
+
+    <!-- Stage 3: 星光解读中 ... with progress feedback -->
+    <view class="stage" wx:elif="{{loadingStage === 3}}">
+      <view class="loading-candle">
+        <view class="candle-flame"></view>
+      </view>
+      <text class="stage-title">星光解读中...</text>
+      <text class="stage-sub">答案正在凝聚</text>
+
+      <!-- Progress step indicator: 3 dots -->
+      <view class="dot-row">
+        <view class="dot {{loadingDotCount >= 1 ? 'lit' : ''}}"></view>
+        <view class="dot {{loadingDotCount >= 2 ? 'lit' : ''}}"></view>
+        <view class="dot {{loadingDotCount >= 3 ? 'lit' : ''}}"></view>
+      </view>
+
+      <!-- Dynamic time-status text -->
+      <text class="stage-time" wx:if="{{loadingTimeText}}">{{loadingTimeText}}</text>
+
+      <!-- Wait timeout: user decision -->
+      <view class="wait-options" wx:if="{{showWaitOptions}}">
+        <text class="wait-hint">可能网络不稳定，是否继续等待？</text>
+        <view class="wait-btns">
+          <button class="btn-wait-yes" bindtap="onContinueWaiting">继续等待</button>
+          <text class="btn-wait-no" bindtap="onCheckLater">稍后查看</text>
+        </view>
+      </view>
+    </view>
+
   </view>
 </view>
 
@@ -37,11 +80,12 @@
         <!-- Warm glow behind the center (present) card -->
         <view class="center-glow"></view>
 
-        <!-- Three overlapping cards -->
+        <!-- Three overlapping cards with images -->
         <view class="card-row">
           <view class="card-item" wx:for="{{reading.drawn_cards}}" wx:for-item="card" wx:key="id">
             <view class="card-inner">
               <text class="card-pos">{{card.position_name}}</text>
+              <image class="card-img" src="{{card.imagePath}}" mode="aspectFill" />
               <text class="card-name">{{card.card_name}}</text>
             </view>
           </view>
@@ -78,8 +122,15 @@
            ========================================================== -->
       <view class="actions-section">
         <button class="btn-ask" bindtap="onAskMore">追问更多</button>
+        <button class="btn-share" open-type="share">分享</button>
         <button class="btn-redo" bindtap="onNewReading">再来一次</button>
         <text class="btn-back" bindtap="onBackHome">回到首页</text>
+
+        <!-- Save reading — small lavender link -->
+        <view class="save-reading-wrap">
+          <text class="btn-save" wx:if="{{!isSaved}}" bindtap="onSaveReading">✦ 收藏本次解读</text>
+          <text class="btn-saved" wx:else bindtap="onUnsaveReading">✦ 已收藏</text>
+        </view>
       </view>
 
     </view>

@@ -384,6 +384,55 @@ page {
 }
 
 /* ==============================
+   Meditation Toggle Pill
+   ============================== */
+.ritual-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  margin: 0 auto var(--space-lg);
+  padding: 14rpx 36rpx;
+  background: linear-gradient(135deg, rgba(244,212,140,0.12), rgba(244,212,140,0.06));
+  border: 1.5rpx solid rgba(244,212,140,0.20);
+  border-radius: var(--radius-round);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: fit-content;
+}
+
+.ritual-toggle:active {
+  transform: scale(0.97);
+  background: linear-gradient(135deg, rgba(244,212,140,0.18), rgba(244,212,140,0.10));
+  border-color: rgba(244,212,140,0.35);
+}
+
+.ritual-toggle.active {
+  background: linear-gradient(135deg, rgba(244,212,140,0.20), rgba(244,212,140,0.10));
+  border-color: var(--gold);
+  box-shadow: 0 0 20rpx var(--gold-dim);
+}
+
+.ritual-toggle-text {
+  font-size: var(--fs-body-small);
+  color: var(--text-gold);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.ritual-toggle-icon {
+  font-size: 24rpx;
+  color: var(--gold);
+  opacity: 0.7;
+  transition: transform 0.3s ease;
+}
+
+.ritual-toggle.active .ritual-toggle-icon {
+  opacity: 1;
+  transform: rotate(180deg);
+}
+
+/* ==============================
    Selected spread info
    ============================== */
 .selected-info {
@@ -429,6 +478,11 @@ page {
   color: rgba(244, 212, 140, 0.45);
   font-style: italic;
   font-weight: 300;
+}
+
+/* Counter warning — subtle amber when nearing the limit */
+.counter-warning {
+  color: #f0a030 !important;
 }
 
 /* ==============================
@@ -765,6 +819,80 @@ page {
 
 .btn-text:active {
   color: var(--gold);
+}
+
+/* ==============================
+   Free tier banner (reading page)
+   ============================== */
+.reading-free-banner {
+  text-align: center;
+  margin: 24rpx 0 32rpx;
+  padding: 14rpx 20rpx;
+}
+
+.reading-free-text {
+  font-size: 26rpx;
+  color: var(--lavender);
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+}
+
+.reading-free-text--exhausted {
+  color: var(--gold);
+  font-weight: 500;
+}
+
+/* ==============================
+   Premium overlay (full-card lock)
+   ============================== */
+.premium-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.premium-overlay-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-card);
+  background: linear-gradient(135deg, rgba(80, 60, 140, 0.50) 0%, rgba(60, 40, 120, 0.35) 100%);
+  backdrop-filter: blur(2rpx);
+}
+
+.premium-overlay-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+  padding: 18rpx 30rpx;
+  background: rgba(244, 212, 140, 0.12);
+  border: 1rpx solid var(--gold-dim);
+  border-radius: var(--radius-sm);
+}
+
+.premium-overlay-icon {
+  font-size: 28rpx;
+  color: var(--gold);
+  line-height: 1.2;
+}
+
+.premium-overlay-text {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--gold-light);
+  letter-spacing: 0.04em;
+}
+
+.premium-overlay-sub {
+  font-size: 20rpx;
+  color: var(--lavender);
+  opacity: 0.80;
+  letter-spacing: 0.02em;
 }
 
 /* ==============================

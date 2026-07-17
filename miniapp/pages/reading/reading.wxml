@@ -50,6 +50,16 @@
       <text class="heading-2 section-title-center anim-fade-in-up-1">选择牌阵</text>
       <text class="text-secondary text-center mb-xxl anim-fade-in-up-1">不同问题，用不同牌阵</text>
 
+      <!-- 免费次数提示 -->
+      <view class="reading-free-banner anim-fade-in-up-1">
+        <text class="reading-free-text" wx:if="{{!isMember && freeReadingsUsed < freeReadingsTotal}}">
+          ✦ 今日剩余解读: {{freeReadingsTotal - freeReadingsUsed}} 次
+        </text>
+        <text class="reading-free-text reading-free-text--exhausted" wx:elif="{{!isMember && freeReadingsUsed >= freeReadingsTotal}}">
+          今日免费 {{freeReadingsTotal}}/{{freeReadingsTotal}} 次已用完 · 明天00:00恢复
+        </text>
+      </view>
+
       <view class="spread-grid anim-fade-in-up-2">
         <view
           class="spread-card {{item.premium ? 'premium' : ''}}"
@@ -68,10 +78,16 @@
           </view>
           <view class="spread-card-meta">
             <text class="spread-card-count">{{item.cards}}张</text>
-            <text class="badge badge-gold" wx:if="{{item.premium}}">会员</text>
           </view>
-          <!-- Premium diamond corner -->
-          <view class="premium-diamond" wx:if="{{item.premium}}">◆</view>
+          <!-- Premium overlay: more prominent than a badge -->
+          <view class="premium-overlay" wx:if="{{item.premium}}">
+            <view class="premium-overlay-bg"></view>
+            <view class="premium-overlay-content">
+              <text class="premium-overlay-icon">✦</text>
+              <text class="premium-overlay-text">会员专属</text>
+              <text class="premium-overlay-sub">开通即可使用</text>
+            </view>
+          </view>
         </view>
       </view>
     </view>
@@ -85,7 +101,6 @@
         <text class="breathing-text">闭上眼睛，深呼吸</text>
       </view>
       <text class="ritual-subtitle">默念你想问的问题</text>
-      <text class="ritual-skip-hint">点击跳过</text>
     </view>
 
     <!-- ========== RITUAL STAGE 1: 洗牌 ========== -->
@@ -98,11 +113,16 @@
         <view class="shuffle-card shuffle-card-4"></view>
         <view class="shuffle-card shuffle-card-5"></view>
       </view>
-      <text class="ritual-skip-hint">点击跳过</text>
     </view>
 
-    <!-- ========== RITUAL STAGE 2: 问题输入 ========== -->
-    <view wx:elif="{{ritualStage === 2}}">
+    <!-- ========== 问题输入（默认跳过仪式，可选加入冥想） ========== -->
+    <view wx:elif="{{showQuestionInput}}">
+      <!-- 冥想仪式开关 -->
+      <view class="ritual-toggle {{ritualEnabled ? 'active' : ''}}" bindtap="onToggleRitual">
+        <text class="ritual-toggle-text">静心冥想后再提问</text>
+        <text class="ritual-toggle-icon">✦</text>
+      </view>
+
       <view class="selected-info anim-fade-in-up-1">
         <text style="font-size:56rpx;display:block">{{selectedSpread.icon}}</text>
         <text class="heading-2 mt-sm">{{selectedSpread.name}}</text>
@@ -119,11 +139,12 @@
           class="question-input"
           placeholder="写下此刻心里最想知道的..."
           placeholder-style="color:rgba(244,212,140,0.45)"
-          maxlength="200"
+          maxlength="500"
           value="{{question}}"
           bindinput="onQuestionInput"
         />
-        <text class="text-dim mt-xs" style="text-align:right;display:block;font-size:var(--fs-caption)">{{question.length}}/200</text>
+        <text class="text-dim mt-xs {{question.length >= 450 ? 'counter-warning' : ''}}" style="text-align:right;display:block;font-size:var(--fs-caption)">{{question.length}}/500</text>
+        <text class="hint-text" style="text-align:right;display:block;font-size:var(--fs-caption);color:rgba(244,212,140,0.5);margin-top:4rpx">星光会倾听每一个字 ✦</text>
       </view>
 
       <!-- Theme selection -->

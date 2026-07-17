@@ -169,6 +169,47 @@
 
   </view>
 
+  <!-- 未完成解读恢复入口 -->
+  <view wx:if="{{pendingReading}}" class="anim-fade-in-up-2" style="margin-top:30rpx" bindtap="onContinueReading">
+    <view class="card card-press" style="padding:28rpx 24rpx;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,rgba(244,212,140,0.10) 0%,rgba(180,140,200,0.08) 100%);border-color:rgba(244,212,140,0.20)">
+      <view style="display:flex;align-items:center;gap:16rpx">
+        <view style="width:48rpx;height:48rpx;background:rgba(244,212,140,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center">
+          <text style="font-size:28rpx">✦</text>
+        </view>
+        <view>
+          <text class="body-sm" style="display:block;font-weight:500;color:var(--color-gold)">上次未完成的解读</text>
+          <text class="body-xs" style="display:block;margin-top:4rpx">继续 →</text>
+        </view>
+      </view>
+      <text style="font-size:24rpx;color:var(--color-text-tertiary)">→</text>
+    </view>
+  </view>
+
+  <!-- 今日日记入口 -->
+  <view class="anim-fade-in-up-2" style="margin-top:30rpx" bindtap="goToDiary">
+    <view class="card card-press" style="padding:28rpx 24rpx;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,rgba(244,212,140,0.08) 0%,rgba(180,140,200,0.06) 100%);border-color:rgba(244,212,140,0.15)">
+      <view style="display:flex;align-items:center;gap:16rpx">
+        <text style="font-size:44rpx">📖</text>
+        <view>
+          <text wx:if="{{hasTodayDiary}}" class="body-sm" style="display:block;font-weight:500;color:var(--color-gold)">今日已记录 ✦</text>
+          <text wx:else class="body-sm" style="display:block;font-weight:500;color:var(--color-gold)">记录今日感悟 ✦</text>
+          <text class="body-xs" style="display:block;margin-top:4rpx">开启日记 →</text>
+        </view>
+      </view>
+      <text style="font-size:24rpx;color:var(--color-text-tertiary)">→</text>
+    </view>
+  </view>
+
+  <!-- 免费次数提示 -->
+  <view class="free-banner anim-fade-in-up-3">
+    <view wx:if="{{!isMember && freeReadingsUsed < freeReadingsTotal}}" class="free-banner-content">
+      <text class="free-banner-text">今日剩余 <text class="free-banner-count">{{freeReadingsTotal - freeReadingsUsed}}/{{freeReadingsTotal}}</text> 次免费解读</text>
+    </view>
+    <view wx:elif="{{!isMember && freeReadingsUsed >= freeReadingsTotal}}" class="free-banner-content free-banner-exhausted">
+      <text class="free-banner-text">今日免费 {{freeReadingsTotal}}/{{freeReadingsTotal}} 次已用完 ✦ 开通会员无限解读</text>
+    </view>
+  </view>
+
   <!-- 牌阵 -->
   <view class="section anim-fade-in-up-3">
     <text class="section-title">选择牌阵</text>

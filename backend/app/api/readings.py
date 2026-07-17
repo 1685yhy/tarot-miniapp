@@ -62,10 +62,9 @@ async def _reset_daily_count_if_new_day(user: User) -> None:
         user.free_chats_today = 0
 
 
-async def _load_card_name(db: AsyncSession, card_id: int) -> str:
-    result = await db.execute(select(TarotCard.name_zh).where(TarotCard.id == card_id))
-    row = result.scalar_one_or_none()
-    return row if row else f"卡牌#{card_id}"
+async def _load_card_info(db: AsyncSession, card_id: int) -> TarotCard | None:
+    result = await db.execute(select(TarotCard).where(TarotCard.id == card_id))
+    return result.scalar_one_or_none()
 
 
 async def _load_drawn_cards_response(
@@ -74,12 +73,16 @@ async def _load_drawn_cards_response(
     """Build the ``DrawnCardResponse``-compatible dict list for a reading."""
     resp = []
     for dc in drawn_cards:
-        card_name = await _load_card_name(db, dc.card_id)
+        card = await _load_card_info(db, dc.card_id)
         resp.append(
             {
                 "id": dc.id,
                 "card_id": dc.card_id,
-                "card_name": card_name,
+                "card_name": card.name_zh if card else f"卡牌#{dc.card_id}",
+                "name_en": card.name_en if card else "",
+                "arcana": card.arcana if card else "",
+                "suit": card.suit if card else None,
+                "card_number": card.card_number if card else 0,
                 "position": dc.position,
                 "position_name": dc.position_name,
                 "is_reversed": dc.is_reversed,
@@ -205,6 +208,10 @@ async def create_reading(
                 "id": dc.id,
                 "card_id": dc.card_id,
                 "card_name": card.name_zh if card else f"卡牌#{dc.card_id}",
+                "name_en": card.name_en if card else "",
+                "arcana": card.arcana if card else "",
+                "suit": card.suit if card else None,
+                "card_number": card.card_number if card else 0,
                 "position": dc.position,
                 "position_name": dc.position_name,
                 "is_reversed": dc.is_reversed,

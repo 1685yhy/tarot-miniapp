@@ -8,6 +8,98 @@
    ============================================================ */
 
 /* ============================================================
+   今日之牌 — Personal daily card highlight
+   Gold-bordered hero card at the top of the encyclopedia
+   ============================================================ */
+.daily-card {
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, rgba(244, 212, 140, 0.10) 0%, rgba(244, 212, 140, 0.03) 100%);
+  border: 2rpx solid var(--color-gold);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+  box-shadow: 0 0 30rpx rgba(244, 212, 140, 0.10);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+.daily-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 0 40rpx rgba(244, 212, 140, 0.18);
+}
+.daily-card-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 4rpx;
+  color: var(--color-gold);
+  margin-bottom: var(--spacing-sm);
+  text-transform: uppercase;
+}
+.daily-card-body {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+.daily-card-thumb {
+  width: 100rpx;
+  height: 140rpx;
+  border-radius: var(--radius-sm);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.25);
+  flex-shrink: 0;
+  background: var(--color-surface);
+}
+.daily-card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxs);
+}
+.daily-card-name {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gold);
+  line-height: var(--line-height-tight);
+  letter-spacing: 1rpx;
+}
+.daily-card-name-en {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  line-height: 1.2;
+}
+.daily-card-cta {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-lavender);
+  margin-top: var(--spacing-xxs);
+}
+
+/* ---- Prompt when no daily card drawn ---- */
+.daily-card-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border: 1.5rpx dashed rgba(184, 169, 224, 0.20);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+.daily-card-prompt:active {
+  background: var(--color-surface-hover);
+  transform: scale(0.98);
+}
+.daily-card-prompt-icon {
+  font-size: 36rpx;
+  opacity: 0.60;
+}
+.daily-card-prompt-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+  letter-spacing: 1rpx;
+}
+
+/* ============================================================
    SEARCH BAR — Dark indigo field, golden border
    ============================================================ */
 .search-bar {
