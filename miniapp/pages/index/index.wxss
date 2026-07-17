@@ -1271,3 +1271,41 @@
   opacity: 0.70;
   border-bottom-color: rgba(244, 212, 140, 0.50);
 }
+
+/* -----------------------------------------------------------
+   11. FREE TIER BANNER
+   ----------------------------------------------------------- */
+.free-banner {
+  margin: 48rpx 0 32rpx;
+  text-align: center;
+}
+
+.free-banner-content {
+  display: inline-block;
+  padding: 16rpx 36rpx;
+  background: rgba(200, 184, 232, 0.08);
+  border: 1rpx solid rgba(200, 184, 232, 0.15);
+  border-radius: 999rpx;
+  backdrop-filter: blur(4rpx);
+}
+
+.free-banner-text {
+  font-size: 24rpx;
+  color: var(--color-lavender, #C8B8E8);
+  letter-spacing: 0.04em;
+}
+
+.free-banner-count {
+  font-weight: 700;
+  color: var(--color-gold, #F4D48C);
+}
+
+.free-banner-exhausted {
+  border-color: rgba(244, 212, 140, 0.25);
+  background: rgba(244, 212, 140, 0.10);
+}
+
+.free-banner-exhausted .free-banner-text {
+  color: var(--color-gold, #F4D48C);
+  font-weight: 500;
+}

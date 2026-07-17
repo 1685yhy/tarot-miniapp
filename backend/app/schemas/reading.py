@@ -27,6 +27,10 @@ class DrawnCardResponse(BaseModel):
     id: int
     card_id: int
     card_name: str
+    name_en: str
+    arcana: str
+    suit: str | None = None
+    card_number: int
     position: int
     position_name: str
     is_reversed: bool

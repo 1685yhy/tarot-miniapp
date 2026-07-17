@@ -154,6 +154,10 @@ Page({
     loadingMore: false,
     historyTotal: 0,
     spreadTypeNames: SPREAD_TYPE_NAMES,
+
+    // Saved readings
+    savedReadings: [],
+    savedReadingsLoading: false,
   },
 
   async onShow() {
@@ -187,6 +191,37 @@ Page({
       });
     } catch (err) {
       this.setData({ pageLoading: false, pageError: err.message || '加载失败' });
+    }
+
+    // Also load saved readings from local storage
+    this._loadSavedReadings();
+  },
+
+  async _loadSavedReadings() {
+    const savedIds = wx.getStorageSync('saved_readings') || [];
+    if (!savedIds.length) {
+      this.setData({ savedReadings: [], savedReadingsLoading: false });
+      return;
+    }
+    this.setData({ savedReadingsLoading: true });
+    try {
+      // Fetch each saved reading's detail from API (limit to 20 for perf)
+      const batch = savedIds.slice(0, 20);
+      const results = await Promise.allSettled(
+        batch.map(id => request(`/readings/${id}`))
+      );
+      const readings = results
+        .filter(r => r.status === 'fulfilled')
+        .map(r => r.value)
+        .filter(Boolean)
+        .map(item => ({
+          ...item,
+          spreadTypeName: SPREAD_TYPE_NAMES[item.spread_type] || item.spread_type || '占卜',
+          createdAtFormatted: item.created_at ? item.created_at.split('T')[0] : '',
+        }));
+      this.setData({ savedReadings: readings, savedReadingsLoading: false });
+    } catch (err) {
+      this.setData({ savedReadingsLoading: false });
     }
   },
 
@@ -222,6 +257,10 @@ Page({
 
   onGoMembership() {
     wx.navigateTo({ url: '/pages/membership/membership' });
+  },
+
+  onGoToReading() {
+    wx.switchTab({ url: '/pages/index/index' });
   },
 
   onViewReading(e) {
@@ -262,5 +301,18 @@ Page({
     } catch (err) {
       wx.showToast({ title: '清除失败', icon: 'none' });
     }
+  },
+
+  onClearSavedReadings() {
+    wx.showModal({
+      title: '清除收藏',
+      content: '确定清除所有收藏的解读吗？',
+      success: (res) => {
+        if (!res.confirm) return;
+        wx.setStorageSync('saved_readings', []);
+        this.setData({ savedReadings: [] });
+        wx.showToast({ title: '已清除', icon: 'success' });
+      },
+    });
   },
 });

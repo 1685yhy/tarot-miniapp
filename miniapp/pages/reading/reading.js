@@ -2,6 +2,8 @@
 const { request } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
 
+const FREE_READINGS_LIMIT = 3; // matches the backend FREE_DAILY_READINGS (should match after backend update)
+
 const SPREADS = [
   { key: 'three_card', name: '三牌占卜', icon: '🕯️', desc: '过去·现在·未来', cards: 3, popular: true },
   { key: 'triangle', name: '恋人三角', icon: '💕', desc: '感情关系深度分析', cards: 4, theme: 'love' },
@@ -22,10 +24,15 @@ Page({
     question: '',
     theme: '',
     showQuestionInput: false,
-    ritualStage: null,   // null = not in ritual, 0 = meditation, 1 = shuffle, 2 = question
+    ritualStage: null,   // null = not in ritual, 0 = meditation, 1 = shuffle
+    ritualEnabled: false,
     isDrawing: false,
     pageLoading: true,
     pageError: null,
+    // Free tier display
+    freeReadingsUsed: 0,
+    freeReadingsTotal: FREE_READINGS_LIMIT,
+    isMember: false,
   },
 
   _timers: [],
@@ -36,22 +43,36 @@ Page({
     if (type) {
       const spread = SPREADS.find(s => s.key === type);
       if (spread) {
+        // Check for pending reading context (from home page "继续" flow)
+        const pending = wx.getStorageSync('pending_reading');
+        let restoredQuestion = '';
+        let restoredTheme = spread.theme || '';
+        if (pending && pending.spread_type === type) {
+          if (!pending.timestamp || Date.now() - pending.timestamp < 24 * 60 * 60 * 1000) {
+            restoredQuestion = pending.question || '';
+            restoredTheme = pending.theme || spread.theme || '';
+          }
+          wx.removeStorageSync('pending_reading');
+        }
+
         // 先设置数据，再处理会员检查
         this.setData({
           selectedSpread: spread,
-          theme: spread.theme || '',
-          showQuestionInput: false,
+          theme: restoredTheme,
+          question: restoredQuestion,
+          showQuestionInput: !spread.premium,
           pageLoading: false,
         });
         // 会员牌阵需要登录检查
         if (spread.premium) {
           checkLogin({ refresh: true }).then(user => {
             if (user && user.is_member) {
-              this._startRitual();
+              this.setData({ showQuestionInput: true });
             } else {
+              this.setData({ showQuestionInput: false });
               wx.showModal({
-                title: '会员专属',
-                content: `「${spread.name}」为会员专属牌阵，开通会员即可使用`,
+                title: '会员专属牌阵',
+                content: `「${spread.name}」仅限会员使用 ✦ 开通会员即可解锁全部 10 种牌阵，享无限次解读`,
                 confirmText: '开通会员',
                 cancelText: '取消',
                 success: (res) => {
@@ -62,13 +83,39 @@ Page({
           }).catch(() => {
             wx.showToast({ title: '请先登录', icon: 'none' });
           });
-        } else {
-          this._startRitual();
         }
       }
     }
     // 清除骨架屏（pageLoading 初始为 true，确保首次渲染骨架）
     this.setData({ pageLoading: false });
+    // 加载免费次数信息
+    this._loadFreeReadings();
+  },
+
+  onShow() {
+    // Refresh free reading count when returning from other pages
+    if (!this.data.selectedSpread) {
+      this._loadFreeReadings();
+    }
+  },
+
+  /** Load free-reading usage from cached user */
+  async _loadFreeReadings() {
+    try {
+      const user = await checkLogin({ refresh: true });
+      if (user) {
+        this.setData({
+          freeReadingsUsed: user.free_readings_today || 0,
+          freeReadingsTotal: FREE_READINGS_LIMIT,
+          isMember: !!user.is_member,
+        });
+        const app = getApp();
+        app.globalData.freeReadingsUsed = user.free_readings_today || 0;
+        app.globalData.isMember = !!user.is_member;
+      }
+    } catch (_err) {
+      // Silently degrade — counts stay at defaults
+    }
   },
 
   onUnload() {
@@ -88,40 +135,31 @@ Page({
     return id;
   },
 
-  _startRitual() {
-    this._clearTimers();
-    this.setData({ ritualStage: 0 });
-
-    // Auto-advance from meditation after 6s
-    this._setTimer(() => {
-      if (this.data.ritualStage === 0) {
-        this._advanceRitual();
-      }
-    }, 6000);
-  },
-
   _advanceRitual() {
-    this._clearTimers();
     const stage = this.data.ritualStage;
 
     if (stage === 0) {
       // Move to shuffle
       this.setData({ ritualStage: 1 });
-      // Auto-advance from shuffle after 2s
-      this._setTimer(() => {
-        if (this.data.ritualStage === 1) {
-          this._advanceRitual();
-        }
-      }, 2000);
     } else if (stage === 1) {
-      // Move to question
-      this.setData({ ritualStage: 2 });
+      // Ritual complete — return to question input
+      this.setData({ ritualStage: null, showQuestionInput: true });
     }
   },
 
-  // User tap to skip current stage or advance
+  // User tap to advance ritual stage
   onRitualTap() {
     this._advanceRitual();
+  },
+
+  /** Toggle meditation ritual on/off */
+  onToggleRitual() {
+    this._clearTimers();
+    this.setData({
+      ritualEnabled: true,
+      showQuestionInput: false,
+      ritualStage: 0,
+    });
   },
 
   async onSelectSpread(e) {
@@ -133,8 +171,8 @@ Page({
         const user = await checkLogin({ refresh: true });
         if (user && !user.is_member) {
           wx.showModal({
-            title: '会员专属',
-            content: `「${spread.name}」为会员专属牌阵，开通会员即可使用`,
+            title: '会员专属牌阵',
+            content: `「${spread.name}」仅限会员使用 ✦ 开通会员即可解锁全部 10 种牌阵，享无限次解读`,
             confirmText: '开通会员',
             cancelText: '取消',
             success: (res) => {
@@ -151,13 +189,12 @@ Page({
       }
     }
 
+    // Skip ritual by default — show question input directly
     this.setData({
       selectedSpread: spread,
       theme: spread.theme || '',
-      showQuestionInput: false,
+      showQuestionInput: true,
     });
-
-    this._startRitual();
   },
 
   onQuestionInput(e) {
@@ -170,12 +207,25 @@ Page({
 
   onBackToSpreads() {
     this._clearTimers();
-    this.setData({ selectedSpread: null, showQuestionInput: false, ritualStage: null, question: '' });
+    this.setData({
+      selectedSpread: null,
+      showQuestionInput: false,
+      ritualStage: null,
+      ritualEnabled: false,
+      question: '',
+    });
   },
 
   onRetry() {
     this._clearTimers();
-    this.setData({ pageError: null, isDrawing: false, selectedSpread: null, showQuestionInput: false, ritualStage: null });
+    this.setData({
+      pageError: null,
+      isDrawing: false,
+      selectedSpread: null,
+      showQuestionInput: false,
+      ritualStage: null,
+      ritualEnabled: false,
+    });
   },
 
   async onStartReading() {
@@ -194,6 +244,14 @@ Page({
       return;
     }
 
+    // Save context before API call for error recovery
+    wx.setStorageSync('pending_reading', {
+      spread_type: selectedSpread.key,
+      question: this.data.question || null,
+      theme: this.data.theme || 'general',
+      timestamp: Date.now(),
+    });
+
     try {
       const result = await request(`/readings/spread/${selectedSpread.key}`, {
         method: 'POST',
@@ -204,6 +262,9 @@ Page({
         },
       });
 
+      // Success — clear pending
+      wx.removeStorageSync('pending_reading');
+
       // Navigate to result page with reading ID
       wx.redirectTo({
         url: `/pages/reading-result/reading-result?id=${result.id}`,
@@ -213,7 +274,7 @@ Page({
         this.setData({ isDrawing: false });
         wx.showModal({
           title: '次数不足',
-          content: '今日免费次数已用完，开通会员享无限解读',
+          content: `今日免费解读 ${this.data.freeReadingsUsed}/${this.data.freeReadingsTotal} 次已用完 ✦ 明天00:00自动恢复 ✦ 或开通会员，立即无限解读`,
           confirmText: '开通会员',
           success: (res) => {
             if (res.confirm) {
@@ -222,7 +283,23 @@ Page({
           },
         });
       } else {
-        this.setData({ isDrawing: false, pageError: err.message || '占卜失败' });
+        this.setData({ isDrawing: false });
+        wx.showModal({
+          title: '解读失败',
+          content: err.message || '网络异常，请稍后重试',
+          confirmText: '重试',
+          cancelText: '稍后再试',
+          success: (res) => {
+            if (res.confirm) {
+              // Re-send the same request
+              this.onStartReading();
+            } else {
+              // Context is already saved in pending_reading
+              wx.showToast({ title: '已保存，稍后可在首页重新开始', icon: 'none' });
+              wx.navigateBack();
+            }
+          },
+        });
       }
     }
   },
