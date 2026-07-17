@@ -138,6 +138,10 @@ Page({
     };
   },
 
+  onToggleFull() {
+    this.setData({ showFullInterpretation: !this.data.showFullInterpretation });
+  },
+
   onAskMore() {
     const { reading } = this.data;
     if (!reading) return;
