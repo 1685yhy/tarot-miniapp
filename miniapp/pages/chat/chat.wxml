@@ -1,77 +1,103 @@
 <!-- pages/chat/chat.wxml -->
+<!-- ============================================================
+     "A Quiet Conversation Under the Stars"
+     Intimate late-night follow-up after a tarot reading
+     ============================================================ -->
+
 <view class="container">
+
   <!-- ===== Loading skeleton ===== -->
-  <view wx:if="{{pageLoading}}" class="skeleton-messages">
-    <view class="skeleton-msg">
-      <view class="skeleton-bubble right"></view>
-    </view>
-    <view class="skeleton-msg">
+  <view wx:if="{{pageLoading}}" class="skeleton-wrap">
+    <view class="skeleton-block">
+      <view class="skeleton-line" style="width:32%"></view>
       <view class="skeleton-bubble left"></view>
     </view>
-    <view class="skeleton-msg">
-      <view class="skeleton-bubble right" style="width:40%"></view>
+    <view class="skeleton-block">
+      <view class="skeleton-bubble right" style="width:45%"></view>
     </view>
-    <view class="skeleton-msg">
+    <view class="skeleton-block">
+      <view class="skeleton-line" style="width:48%"></view>
       <view class="skeleton-bubble left" style="width:70%"></view>
     </view>
+    <view class="skeleton-block">
+      <view class="skeleton-bubble right" style="width:38%"></view>
+    </view>
   </view>
 
-  <!-- ===== Reading Context ===== -->
-  <view wx:if="{{readingContext && !pageLoading && !pageError}}" class="reading-context-bar">
-    <text class="context-label">当前解读</text>
-    <text class="context-question">问题：{{readingContext.question}}</text>
-    <text class="context-spread">牌阵：{{readingContext.spreadType}}</text>
+  <!-- ===== Context header — tiny lavender reminder ===== -->
+  <view wx:if="{{readingContext && !pageLoading && !pageError}}" class="ctx-header">
+    <text class="ctx-label">关于「{{readingContext.spreadType}}」的追问</text>
+    <text wx:if="{{readingContext.question}}" class="ctx-question">{{readingContext.question}}</text>
   </view>
 
-  <!-- ===== Empty state (intro) ===== -->
-  <view wx:elif="{{messages.length === 0 && !pageError && !pageLoading}}" class="chat-intro empty-state">
-    <text class="empty-text">有什么想继续问的？</text>
-    <text class="empty-hint">星光在这里倾听</text>
+  <!-- ===== Empty state — warm invitation ===== -->
+  <view wx:elif="{{messages.length === 0 && !pageLoading && !pageError}}" class="empty-wrap">
+    <view class="empty-inner">
+      <view class="empty-glow"></view>
+      <text class="empty-heading">关于这次解读，还有什么想了解的？</text>
+      <text class="empty-sub">星光在这里倾听你的每一个问题</text>
+    </view>
   </view>
 
   <!-- ===== Error state ===== -->
   <view wx:elif="{{pageError && !readingContext}}" class="error-state">
-    <text class="error-text">解读暂时无法回应</text>
+    <text class="error-icon">&#x2726;</text>
+    <text class="error-text">星光暂时无法回应</text>
     <text class="error-hint">{{pageError}}</text>
-    <button class="btn-primary btn-small" bindtap="onRetry">重试</button>
+    <button class="retry-btn" bindtap="onRetry">再试一次</button>
   </view>
 
   <!-- ===== Message list ===== -->
-  <view wx:elif="{{!pageLoading}}" class="message-list anim-fade-in">
-    <view class="msg-item msg-enter {{item.role === 'user' ? 'msg-user' : 'msg-ai'}}" wx:for="{{messages}}" wx:key="index">
-      <text class="text-caption" style="display:block;margin-bottom:6rpx;padding:0 8rpx;text-align:{{item.role === 'user' ? 'right' : 'left'}}">
-        {{item.role === 'user' ? '你' : '你的专属解读者'}}
-      </text>
-      <view class="msg-bubble {{item.role === 'user' ? 'bubble-user' : 'bubble-ai'}}">
-        <text class="msg-text">{{item.content}}</text>
-      </view>
-    </view>
-
-    <!-- ===== AI typing indicator ===== -->
-    <view wx:if="{{aiThinking}}" class="typing-indicator msg-enter msg-ai">
-      <view class="msg-bubble bubble-ai bubble-typing">
-        <view class="typing-dots">
-          <view class="typing-dot"></view>
-          <view class="typing-dot"></view>
-          <view class="typing-dot"></view>
+  <view wx:elif="{{!pageLoading}}" class="msg-list">
+    <block wx:for="{{messages}}" wx:key="index">
+      <!-- User message -->
+      <view wx:if="{{item.role === 'user'}}" class="msg-wrap msg-user msg-enter">
+        <text class="role-label role-user">你</text>
+        <view class="msg-bubble bubble-user">
+          <text class="msg-text msg-text-user">{{item.content}}</text>
         </view>
+      </view>
+      <!-- AI / reader message -->
+      <view wx:else class="msg-wrap msg-ai msg-enter">
+        <text class="role-label role-ai">解读者</text>
+        <view class="msg-bubble bubble-ai">
+          <text class="msg-text msg-text-ai">{{item.content}}</text>
+        </view>
+      </view>
+    </block>
+
+    <!-- ===== Typing indicator ===== -->
+    <view wx:if="{{aiThinking}}" class="msg-wrap msg-ai msg-enter">
+      <text class="role-label role-typing">星光正在回应...</text>
+      <view class="typing-box">
+        <view class="typing-dot"></view>
+        <view class="typing-dot"></view>
+        <view class="typing-dot"></view>
       </view>
     </view>
 
     <view id="chat-bottom"></view>
   </view>
 
-  <!-- Input bar -->
-  <view class="input-bar">
-    <input class="chat-input" placeholder="写下你想问的..." placeholder-style="color:#8A85A8"
-      value="{{inputText}}" bindinput="onInput" confirm-type="send" bindconfirm="onSend"
-    />
-    <button class="send-btn" bindtap="onSend" disabled="{{sending || !canSend}}">
-      <text>{{sending ? '...' : '发送'}}</text>
-    </button>
-  </view>
+</view>
 
-  <view class="free-hint" wx:if="{{remainingFree > 0}}">
-    <text>今日剩余追问 {{remainingFree}} 次</text>
-  </view>
+<!-- ===== Input area — fixed bottom ===== -->
+<view class="input-bar">
+  <label class="input-wrap">
+    <input class="chat-input" placeholder="写下你想问的..."
+      placeholder-class="input-placeholder"
+      value="{{inputText}}" bindinput="onInput"
+      confirm-type="send" bindconfirm="onSend"
+    />
+  </label>
+  <button class="send-btn" bindtap="onSend"
+    disabled="{{sending || !canSend}}"
+    aria-label="发送"
+  >
+    <view class="send-icon"></view>
+  </button>
+</view>
+
+<view class="free-hint" wx:if="{{remainingFree > 0}}">
+  <text>今日剩余追问 {{remainingFree}} 次</text>
 </view>

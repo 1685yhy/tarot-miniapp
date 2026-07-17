@@ -1,11 +1,20 @@
+<!-- ============================================================
+     Tarot Reading Result — "A Personal Letter from the Cosmos"
+     Warm, intimate, magical. Three-card spread reveal.
+     ============================================================ -->
+
+<!-- ===== LOADING STATE: Anticipation ===== -->
 <view class="page" wx:if="{{pageLoading}}">
   <view class="loading-box">
-    <view class="loading-spinner"></view>
-    <text class="loading-title">星光解读中</text>
-    <text class="loading-sub">请稍候</text>
+    <view class="loading-candle">
+      <view class="candle-flame"></view>
+    </view>
+    <text class="loading-title">星光照亮你的问题</text>
+    <text class="loading-sub">解读正在凝聚中</text>
   </view>
 </view>
 
+<!-- ===== ERROR STATE ===== -->
 <view class="page" wx:elif="{{pageError}}">
   <view class="error-state">
     <text class="error-text">星辰之力暂时中断</text>
@@ -14,44 +23,71 @@
   </view>
 </view>
 
+<!-- ===== MAIN CONTENT ===== -->
 <view class="page" wx:elif="{{reading}}">
   <scroll-view class="content-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+
     <view class="inner-wrap">
 
-      <!-- ===== Cards Timeline ===== -->
-      <view class="timeline-section">
-        <view class="card-item" wx:for="{{reading.drawn_cards}}" wx:for-item="card" wx:key="id">
-          <view class="card-body">
-            <view class="card-glow-edge"></view>
-            <view class="card-content">
+      <!-- ==========================================================
+           1. CARD REVEAL — Three-card spread on a table
+           ========================================================== -->
+      <view class="card-reveal">
+
+        <!-- Warm glow behind the center (present) card -->
+        <view class="center-glow"></view>
+
+        <!-- Three overlapping cards -->
+        <view class="card-row">
+          <view class="card-item" wx:for="{{reading.drawn_cards}}" wx:for-item="card" wx:key="id">
+            <view class="card-inner">
               <text class="card-pos">{{card.position_name}}</text>
               <text class="card-name">{{card.card_name}}</text>
             </view>
           </view>
         </view>
+
+        <!-- Spread type -->
+        <text class="spread-type">三牌占卜</text>
+
       </view>
 
-      <!-- ===== Interpretation ===== -->
-      <view class="interp-section">
-        <view class="interp-divider">
-          <view class="interp-line"></view>
-          <text class="interp-label">解读</text>
+      <!-- ==========================================================
+           2. DIVIDER — Quiet breathing room
+           ========================================================== -->
+      <view class="divider">
+        <view class="divider-line"></view>
+      </view>
+
+      <!-- ==========================================================
+           3. LETTER — The interpretation as personal prose
+           ========================================================== -->
+      <view class="letter-section">
+        <view class="letter-body {{textExpanded ? 'expanded' : 'collapsed'}}">
+          <text class="letter-text">{{reading.interpretation}}</text>
         </view>
-        <view class="interp-body">
-          <text class="interp-text">{{reading.interpretation}}</text>
+        <view class="letter-toggle" wx:if="{{textLong}}">
+          <text class="toggle-btn" bindtap="onToggleText">
+            {{textExpanded ? '收起' : '展开全部'}}
+          </text>
         </view>
       </view>
 
-      <!-- ===== Actions ===== -->
+      <!-- ==========================================================
+           4. ACTIONS — Warm, minimal, intentional
+           ========================================================== -->
       <view class="actions-section">
         <button class="btn-ask" bindtap="onAskMore">追问更多</button>
-        <text class="btn-redo" bindtap="onNewReading">再来一次</text>
+        <button class="btn-redo" bindtap="onNewReading">再来一次</button>
         <text class="btn-back" bindtap="onBackHome">回到首页</text>
       </view>
+
     </view>
+
   </scroll-view>
 </view>
 
+<!-- ===== EMPTY STATE ===== -->
 <view class="page" wx:else>
   <view class="error-state">
     <text class="error-text">解读尚未生成</text>
