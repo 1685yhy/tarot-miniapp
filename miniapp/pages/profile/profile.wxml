@@ -54,7 +54,8 @@
       </view>
       <view class="stat-item">
         <text class="stat-num anim-pulse-once">{{memberStatus.free_chats_today || 0}}</text>
-        <text class="stat-label">今日追问</text>
+        <text class="stat-label">追问次数</text>
+        <text class="stat-subtitle">解读后可追问AI</text>
       </view>
     </view>
 

@@ -1,8 +1,9 @@
 <!-- pages/diary/diary.wxml -->
 <view class="container">
+
   <!-- ===== 加载骨架 ===== -->
   <view wx:if="{{pageLoading}}">
-    <view class="skeleton">
+    <view class="skeleton-wrap">
       <view class="skeleton-header-area">
         <view class="skeleton-line wide"></view>
         <view class="skeleton-line medium"></view>
@@ -16,86 +17,179 @@
 
   <!-- ===== 错误状态 ===== -->
   <view wx:elif="{{pageError}}" class="error-state">
-    <text class="error-text">日记暂时无法打开</text>
-    <text class="error-hint">{{pageError}}</text>
-    <button class="btn-primary btn-small" bindtap="onRetry">重新加载</button>
+    <view class="error-card">
+      <text class="error-title">日记暂时无法打开</text>
+      <text class="error-desc">{{pageError}}</text>
+      <button class="btn-retry" bindtap="onRetry">重新加载</button>
+    </view>
   </view>
 
   <!-- ===== 主内容 ===== -->
   <view wx:else>
+
     <!-- Header -->
-    <view class="flex-center flex-col" style="padding:var(--space-xl) 0">
-      <text class="heading-2">星光日记</text>
-      <text class="text-dim mt-sm">每天一张牌，记录内心旅程</text>
+    <view class="page-header">
+      <text class="page-title">星光日记</text>
+      <text class="page-subtitle">每天一张牌，记录内心旅程</text>
     </view>
 
-    <!-- Create button -->
-    <button class="btn-primary anim-glow-pulse mb-xxl" style="width:100%;margin-bottom:var(--space-xxl)" bindtap="showCreateModal">
-      记录今天
+    <!-- Create entry button -->
+    <button class="btn-create" bindtap="showCreateModal">
+      <text class="btn-create-icon">✦</text>
+      <text>记录今天</text>
     </button>
 
-    <!-- Entries -->
-    <scroll-view scroll-y style="max-height:70vh" bindscrolltolower="loadMore" wx:if="{{entries.length > 0}}">
+    <!-- ===== 日记列表 ===== -->
+    <scroll-view
+      wx:if="{{entries.length > 0}}"
+      class="entries-scroll"
+      scroll-y
+      bindscrolltolower="loadMore"
+    >
       <view class="entries">
-        <view class="entry-card anim-fade-in-up" wx:for="{{entries}}" wx:key="id">
+        <view
+          class="entry-card"
+          wx:for="{{entries}}"
+          wx:for-item="entry"
+          wx:key="id"
+        >
+          <!-- Card header: date + mood -->
           <view class="entry-header">
-            <text class="text-dim" style="font-size:var(--fs-body-small)">{{item.date}}</text>
-            <text wx:if="{{item.mood === 'happy'}}" style="font-size:32rpx">😊</text>
-            <text wx:elif="{{item.mood === 'sad'}}" style="font-size:32rpx">😢</text>
-            <text wx:elif="{{item.mood === 'anxious'}}" style="font-size:32rpx">😰</text>
-            <text wx:elif="{{item.mood === 'calm'}}" style="font-size:32rpx">😌</text>
-            <text wx:elif="{{item.mood === 'excited'}}" style="font-size:32rpx">🤩</text>
-            <text wx:else style="font-size:32rpx">🤔</text>
+            <view class="entry-date-line">
+              <text class="entry-date-icon">✦</text>
+              <text class="entry-date">{{entry.date}}</text>
+            </view>
+            <text class="entry-mood">
+              <text wx:if="{{entry.mood === 'happy'}}">😊</text>
+              <text wx:elif="{{entry.mood === 'sad'}}">😢</text>
+              <text wx:elif="{{entry.mood === 'anxious'}}">😰</text>
+              <text wx:elif="{{entry.mood === 'calm'}}">😌</text>
+              <text wx:elif="{{entry.mood === 'excited'}}">🤩</text>
+              <text wx:elif="{{entry.mood === 'thoughtful'}}">🤔</text>
+              <text wx:else>🤔</text>
+            </text>
           </view>
-          <view class="entry-card-section" wx:if="{{item.card}}">
-            <image class="card-name-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" style="width:28rpx;height:28rpx;vertical-align:middle;margin-right:6rpx" /><text class="card-name">{{item.card.name_zh}}</text>
-            <text class="card-meaning">{{item.card.meaning_upright}}</text>
+
+          <!-- Card info -->
+          <view wx:if="{{entry.card}}" class="entry-card-section">
+            <view class="card-label-line">
+              <text class="card-label-icon">🃏</text>
+              <text class="card-label">今日之牌</text>
+            </view>
+            <text class="card-name">{{entry.card.name_zh}}</text>
+            <text class="card-meaning">{{entry.card.meaning_upright}}</text>
           </view>
-          <text class="entry-reflection" wx:if="{{item.reflection}}">{{item.reflection}}</text>
+
+          <!-- Reflection text -->
+          <text wx:if="{{entry.reflection}}" class="entry-reflection">{{entry.reflection}}</text>
         </view>
       </view>
-      <view wx:if="{{loadingMore}}" style="text-align:center;padding:var(--space-md)" class="text-dim">加载更多...</view>
-      <view wx:elif="{{!hasMore && entries.length > 0}}" style="text-align:center;padding:var(--space-md)" class="text-dim">— 已加载全部 —</view>
+
+      <!-- Load more indicator -->
+      <view wx:if="{{loadingMore}}" class="load-more-hint">
+        <text class="load-more-text">加载中...</text>
+      </view>
+      <view wx:elif="{{!hasMore && entries.length > 0}}" class="load-more-hint">
+        <text class="load-more-text">— 已加载全部 —</text>
+      </view>
     </scroll-view>
 
-    <!-- Empty state -->
-    <view wx:if="{{entries.length === 0}}" class="empty-state" style="padding:var(--space-massive) 0">
-      <text class="empty-text">还没有日记记录</text>
-      <text class="empty-hint">每天抽一张牌，记录你的感受</text>
-      <button class="btn-gold-empty" bindtap="showCreateModal" style="margin-top:32rpx;background:linear-gradient(135deg,#F4D48C,#D4AF37);color:#1A1A3E;border:none;border-radius:48rpx;padding:20rpx 56rpx;font-size:30rpx;font-weight:600;">
-        ✦ 记录今天
+    <!-- ===== 空状态 ===== -->
+    <view wx:if="{{entries.length === 0}}" class="empty-state">
+      <view class="empty-icon-wrap">
+        <text class="empty-star">✦</text>
+      </view>
+      <text class="empty-title">还没有日记记录</text>
+      <text class="empty-desc">每天抽一张牌，记录你的感受</text>
+      <button class="btn-empty-cta" bindtap="showCreateModal">
+        <text class="btn-empty-cta-icon">✦</text>
+        <text>抽取今日卡牌</text>
       </button>
     </view>
+
   </view>
 
-  <!-- Create modal -->
+  <!-- ============ 创建日记 Modal ============ -->
   <view class="modal-mask" wx:if="{{showCreate}}" bindtap="hideCreateModal">
-    <view class="modal-content" catchtap="">
+    <view class="modal-sheet" catchtap="">
+      <!-- Handle -->
+      <view class="modal-handle"></view>
+
       <text class="modal-title">今日星光日记</text>
 
-      <text class="text-secondary" style="display:block;margin-bottom:var(--space-sm)">今天的心情</text>
+      <!-- Mood selector -->
+      <text class="modal-label">今天的心情</text>
       <view class="mood-grid">
-        <view class="mood-item {{mood === 'happy' ? 'selected' : ''}}" data-mood="happy" bindtap="onMoodSelect">
-          <text style="font-size:36rpx">😊</text><text> 开心</text></view>
-        <view class="mood-item {{mood === 'calm' ? 'selected' : ''}}" data-mood="calm" bindtap="onMoodSelect">
-          <text style="font-size:36rpx">😌</text><text> 平静</text></view>
-        <view class="mood-item {{mood === 'excited' ? 'selected' : ''}}" data-mood="excited" bindtap="onMoodSelect">
-          <text style="font-size:36rpx">🤩</text><text> 兴奋</text></view>
-        <view class="mood-item {{mood === 'anxious' ? 'selected' : ''}}" data-mood="anxious" bindtap="onMoodSelect">
-          <text style="font-size:36rpx">😰</text><text> 焦虑</text></view>
-        <view class="mood-item {{mood === 'sad' ? 'selected' : ''}}" data-mood="sad" bindtap="onMoodSelect">
-          <text style="font-size:36rpx">😢</text><text> 低落</text></view>
-        <view class="mood-item {{mood === 'thoughtful' ? 'selected' : ''}}" data-mood="thoughtful" bindtap="onMoodSelect">
-          <text style="font-size:36rpx">🤔</text><text> 思考</text></view>
+        <view
+          class="mood-item {{mood === 'happy' ? 'mood-selected' : ''}}"
+          data-mood="happy"
+          bindtap="onMoodSelect"
+        >
+          <text class="mood-emoji">😊</text>
+          <text class="mood-label">开心</text>
+        </view>
+        <view
+          class="mood-item {{mood === 'calm' ? 'mood-selected' : ''}}"
+          data-mood="calm"
+          bindtap="onMoodSelect"
+        >
+          <text class="mood-emoji">😌</text>
+          <text class="mood-label">平静</text>
+        </view>
+        <view
+          class="mood-item {{mood === 'excited' ? 'mood-selected' : ''}}"
+          data-mood="excited"
+          bindtap="onMoodSelect"
+        >
+          <text class="mood-emoji">🤩</text>
+          <text class="mood-label">兴奋</text>
+        </view>
+        <view
+          class="mood-item {{mood === 'anxious' ? 'mood-selected' : ''}}"
+          data-mood="anxious"
+          bindtap="onMoodSelect"
+        >
+          <text class="mood-emoji">😰</text>
+          <text class="mood-label">焦虑</text>
+        </view>
+        <view
+          class="mood-item {{mood === 'sad' ? 'mood-selected' : ''}}"
+          data-mood="sad"
+          bindtap="onMoodSelect"
+        >
+          <text class="mood-emoji">😢</text>
+          <text class="mood-label">低落</text>
+        </view>
+        <view
+          class="mood-item {{mood === 'thoughtful' ? 'mood-selected' : ''}}"
+          data-mood="thoughtful"
+          bindtap="onMoodSelect"
+        >
+          <text class="mood-emoji">🤔</text>
+          <text class="mood-label">思考</text>
+        </view>
       </view>
 
-      <text class="text-secondary mt-xl" style="display:block;margin-bottom:var(--space-sm)">今日感悟（可选）</text>
-      <textarea class="reflection-input" placeholder="记录今天的想法..." value="{{reflection}}" bindinput="onReflectionInput" maxlength="500" />
-      <text class="text-dim mt-xs" style="text-align:right;display:block;font-size:var(--fs-caption)">{{reflection.length}}/500</text>
+      <!-- Reflection textarea -->
+      <text class="modal-label">今日感悟（可选）</text>
+      <textarea
+        class="reflection-input"
+        placeholder="记录今天的想法..."
+        value="{{reflection}}"
+        bindinput="onReflectionInput"
+        maxlength="500"
+      />
+      <text class="char-count">{{reflection.length}}/500</text>
 
-      <button class="btn-primary submit-btn mt-xxl" bindtap="onCreateEntry" disabled="{{creating}}">
+      <!-- Submit -->
+      <button
+        class="btn-submit"
+        disabled="{{creating}}"
+        bindtap="onCreateEntry"
+      >
         {{creating ? '记录中...' : '保存日记'}}
       </button>
     </view>
   </view>
+
 </view>

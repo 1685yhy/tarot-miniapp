@@ -240,6 +240,17 @@ Page({
     wx.navigateTo({ url: '/pages/reading/reading' });
   },
 
+  /** Show a brief explainer of what tarot is */
+  showTarotExplainer() {
+    wx.showModal({
+      title: '什么是塔罗？',
+      content: '塔罗是一面镜子，帮你看见自己内心已经知道、却未说出口的东西。每张牌是一种人生情境的映射，而非对未来的预言。解读的意义在于激发你的内在思考——答案不在牌里，而在你心里。',
+      showCancel: false,
+      confirmText: '明白了',
+      confirmColor: '#F4D48C',
+    });
+  },
+
   /** Check for a saved pending reading to offer recovery */
   _checkPendingReading() {
     const pending = wx.getStorageSync('pending_reading');

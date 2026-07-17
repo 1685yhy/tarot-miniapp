@@ -375,6 +375,32 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  position: relative;
+}
+
+/* --- Free/Premium tags on spread cards --- */
+.spread-tag {
+  position: absolute;
+  top: 8rpx;
+  right: 8rpx;
+  font-size: 18rpx;
+  font-weight: 500;
+  padding: 3rpx 12rpx;
+  border-radius: 12rpx;
+  line-height: 1.5;
+  letter-spacing: 0.5rpx;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.spread-tag-free {
+  color: #B8A9E0;
+  background: rgba(184, 169, 224, 0.18);
+}
+
+.spread-tag-premium {
+  color: #F4D48C;
+  background: rgba(244, 212, 140, 0.18);
 }
 
 .body-xs {
@@ -1308,4 +1334,27 @@
 .free-banner-exhausted .free-banner-text {
   color: var(--color-gold, #F4D48C);
   font-weight: 500;
+}
+
+/* ============================================================
+   20. TAROT EXPLAINER — Subtle link at bottom of home
+   ============================================================ */
+.tarot-explainer-wrap {
+  text-align: center;
+  margin-top: 32rpx;
+  padding-bottom: 40rpx;
+}
+
+.tarot-explainer-link {
+  font-size: 22rpx;
+  color: var(--color-text-tertiary, #A098C0);
+  opacity: 0.55;
+  letter-spacing: 2rpx;
+  padding: 12rpx 24rpx;
+  display: inline-block;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.tarot-explainer-link:active {
+  opacity: 0.9;
 }
