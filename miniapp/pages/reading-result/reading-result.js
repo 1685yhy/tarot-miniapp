@@ -49,6 +49,17 @@ Page({
       // 已完成的解读瞬间返回，不需要延迟动画
       const reading = await request('/readings/' + id);
       if (this.data._destroyed) return;
+      // 清洗 AI 返回的 Markdown 格式
+      if (reading && reading.interpretation) {
+        reading.interpretation = reading.interpretation
+          .replace(/^#{1,4}\s+(\*\*)?[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]*(\*\*)?\s*/gmu, '')
+          .replace(/\*\*(.+?)\*\*/g, '$1')
+          .replace(/^---+\s*$/gm, '')
+          .replace(/^\*\s+/gm, '· ')
+          .replace(/^-\s+/gm, '')
+          .replace(/\n{3,}/g, '\n\n')
+          .trim();
+      }
       this.setData({ reading: reading, pageLoading: false });
     } catch (err) {
       if (this.data._destroyed) return;
