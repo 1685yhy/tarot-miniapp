@@ -17,6 +17,7 @@ page {
   --color-surface: #252550;
   --color-card: #2A2A5A;
   --color-card-hover: #313165;
+  --color-surface-gradient: linear-gradient(145deg, #252550 0%, #2A2A5A 100%);
 
   /* -- Accents -- */
   --color-gold: #F4D48C;
@@ -50,10 +51,11 @@ page {
   /* -- Overlay & Shadows -- */
   --color-overlay: rgba(10, 10, 30, 0.60);
   --color-overlay-light: rgba(10, 10, 30, 0.35);
-  --shadow-card: 0 4rpx 20rpx rgba(0, 0, 0, 0.25), 0 0 40rpx rgba(244, 212, 140, 0.04);
-  --shadow-elevated: 0 8rpx 40rpx rgba(0, 0, 0, 0.30), 0 0 60rpx rgba(244, 212, 140, 0.06);
+  --shadow-card: 0 2rpx 8rpx rgba(0, 0, 0, 0.30), 0 0 30rpx rgba(244, 212, 140, 0.06);
+  --shadow-elevated: 0 8rpx 40rpx rgba(0, 0, 0, 0.35), 0 0 60rpx rgba(244, 212, 140, 0.10);
   --shadow-glow-gold: 0 0 30rpx rgba(244, 212, 140, 0.15);
   --shadow-gold-button: 0 4rpx 20rpx rgba(244, 212, 140, 0.25);
+  --shadow-card-press: 0 2rpx 12rpx rgba(0, 0, 0, 0.35), 0 0 40rpx rgba(244, 212, 140, 0.12);
 
   /* -- Typography Scale -- */
   --font-size-caption: 22rpx;
@@ -251,6 +253,7 @@ page {
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   line-height: var(--line-height-base);
+  letter-spacing: 1rpx;
 }
 
 .heading-4 {
@@ -258,6 +261,7 @@ page {
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
   line-height: var(--line-height-base);
+  letter-spacing: 1rpx;
 }
 
 .title-lg {
@@ -316,6 +320,7 @@ page {
   font-weight: var(--font-weight-bold);
   color: var(--color-gold);
   line-height: var(--line-height-tight);
+  text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.15);
 }
 
 .number-gold-lg {
@@ -388,7 +393,7 @@ page {
   line-height: var(--line-height-tight);
   border-radius: var(--radius-pill);
   padding: 24rpx 48rpx;
-  transition: all var(--duration-base) var(--ease-soft);
+  transition: all var(--duration-fast) var(--ease-out);
   position: relative;
   overflow: hidden;
 }
@@ -491,33 +496,49 @@ page {
    ----------------------------------------------------------- */
 
 .card {
-  background: var(--color-card);
-  border: 1rpx solid rgba(244, 212, 140, 0.20);
+  background: var(--color-surface-gradient);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
   border-radius: var(--radius-md);
   padding: var(--spacing-md);
   box-shadow: var(--shadow-card);
-  transition: all var(--duration-base) var(--ease-soft);
+  transition: all var(--duration-fast) var(--ease-out);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle inset highlight — premium surface depth */
+.card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1rpx;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.04), transparent);
+  pointer-events: none;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
 .card:active {
   background: var(--color-card-hover);
-  border-color: rgba(244, 212, 140, 0.40);
-  box-shadow: var(--shadow-elevated);
-  transform: translateY(-2rpx);
+  border-color: rgba(244, 212, 140, 0.20);
+  box-shadow: var(--shadow-card-press);
+  transform: scale(0.97);
 }
 
 .card--glass {
-  background: rgba(42, 42, 90, 0.70);
-  border: 1rpx solid rgba(244, 212, 140, 0.15);
+  background: linear-gradient(145deg, rgba(37, 37, 80, 0.70) 0%, rgba(42, 42, 90, 0.70) 100%);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.15);
 }
 
 .card--elevated {
+  background: var(--color-surface-gradient);
   box-shadow: var(--shadow-elevated);
 }
 
 .card--glow {
   border-color: rgba(244, 212, 140, 0.25);
-  box-shadow: 0 0 30rpx rgba(244, 212, 140, 0.06), 0 4rpx 20rpx rgba(0, 0, 0, 0.25);
+  box-shadow: var(--shadow-card), 0 0 30rpx rgba(244, 212, 140, 0.08);
 }
 
 .card--compact {
@@ -737,7 +758,8 @@ page {
 .section__title {
   font-size: var(--font-size-subhead);
   font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
+  color: var(--color-gold);
+  letter-spacing: 1rpx;
 }
 
 .section__action {
@@ -1060,15 +1082,16 @@ page {
   display: flex;
   align-items: center;
   padding: var(--spacing-md);
-  background: var(--color-card);
-  border: 1rpx solid rgba(244, 212, 140, 0.20);
+  background: var(--color-surface-gradient);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
   border-radius: var(--radius-md);
-  transition: all var(--duration-fast) var(--ease-soft);
+  transition: all var(--duration-fast) var(--ease-out);
 }
 
 .list-item:active {
   background: var(--color-card-hover);
-  border-color: rgba(244, 212, 140, 0.40);
+  border-color: rgba(244, 212, 140, 0.20);
+  transform: scale(0.97);
 }
 
 .list-item + .list-item {
@@ -1432,7 +1455,7 @@ page {
 .text-primary { color: var(--color-text-primary); }
 .text-secondary { color: var(--color-text-secondary); }
 .text-tertiary { color: var(--color-text-tertiary); }
-.text-gold { color: var(--color-gold); }
+.text-gold { color: var(--color-gold); text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.15); }
 .text-lavender { color: var(--color-lavender); }
 .text-success { color: var(--color-success); }
 .text-warning { color: var(--color-warning); }

@@ -235,17 +235,15 @@
 
 /* --- Pressable interaction --- */
 .card-press {
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: all var(--duration-fast) var(--ease-out);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
 
 .card-press:active {
-  transform: scale(0.96);
+  transform: scale(0.97);
   border-color: rgba(244, 212, 140, 0.55) !important;
-  box-shadow:
-    0 2rpx 12rpx rgba(0, 0, 0, 0.30),
-    0 0 40rpx rgba(244, 212, 140, 0.12);
+  box-shadow: var(--shadow-card-press);
 }
 
 /* -----------------------------------------------------------
@@ -388,23 +386,19 @@
 /* --- Spread grid cards: constellation map feel --- */
 .section .card-press {
   background: linear-gradient(145deg, #25255A 0%, #2A2A5E 100%);
-  border: 1rpx solid rgba(244, 212, 140, 0.15);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
   border-radius: var(--radius-lg, 24rpx);
   padding: 24rpx 16rpx;
   position: relative;
   overflow: hidden;
-  box-shadow:
-    0 2rpx 12rpx rgba(0, 0, 0, 0.20),
-    0 0 20rpx rgba(244, 212, 140, 0.02);
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: var(--shadow-card);
+  transition: all var(--duration-fast) var(--ease-out);
 }
 
 .section .card-press:active {
-  transform: scale(0.96);
-  border-color: rgba(244, 212, 140, 0.7) !important;
-  box-shadow:
-    0 4rpx 20rpx rgba(0, 0, 0, 0.25),
-    0 0 50rpx rgba(244, 212, 140, 0.18);
+  transform: scale(0.97);
+  border-color: rgba(244, 212, 140, 0.20) !important;
+  box-shadow: var(--shadow-card-press);
 }
 
 /* Spread card icon — fixed size, centered */
@@ -470,13 +464,13 @@
   padding: 20rpx 48rpx;
   font-size: var(--font-size-base, 28rpx);
   font-weight: var(--font-weight-medium, 500);
-  transition: all 0.3s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94));
+  transition: all var(--duration-fast) var(--ease-out);
 }
 
 .btn-outline:active {
   background: rgba(244, 212, 140, 0.08);
   border-color: rgba(244, 212, 140, 0.50);
-  transform: scale(0.96);
+  transform: scale(0.97);
 }
 
 /* -----------------------------------------------------------
@@ -547,22 +541,18 @@
   margin-top: var(--spacing-md, 24rpx);
   padding: 28rpx 24rpx;
   background: linear-gradient(145deg, #25255A 0%, #2A2A5E 100%);
-  border: 1rpx solid rgba(244, 212, 140, 0.15);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
   border-radius: var(--radius-lg, 24rpx);
-  box-shadow:
-    0 2rpx 12rpx rgba(0, 0, 0, 0.20),
-    0 0 20rpx rgba(244, 212, 140, 0.02);
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: var(--shadow-card);
+  transition: all var(--duration-fast) var(--ease-out);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
 
 .more-spreads:active {
-  transform: scale(0.98);
-  border-color: rgba(244, 212, 140, 0.55) !important;
-  box-shadow:
-    0 2rpx 12rpx rgba(0, 0, 0, 0.30),
-    0 0 40rpx rgba(244, 212, 140, 0.12);
+  transform: scale(0.97);
+  border-color: rgba(244, 212, 140, 0.20) !important;
+  box-shadow: var(--shadow-card-press);
 }
 
 .more-text {
@@ -679,7 +669,7 @@
   height: 16rpx;
   border-radius: 50%;
   background: rgba(184, 169, 224, 0.25);
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: all var(--duration-fast) var(--ease-out);
   cursor: pointer;
 }
 
@@ -711,7 +701,7 @@
   border-radius: 999rpx;
   padding: 24rpx 60rpx;
   text-align: center;
-  transition: all 0.3s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94));
+  transition: all var(--duration-fast) var(--ease-out);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
@@ -719,7 +709,7 @@
 .onboarding-next:active {
   background: rgba(244, 212, 140, 0.20);
   border-color: rgba(244, 212, 140, 0.55);
-  transform: scale(0.96);
+  transform: scale(0.97);
 }
 
 .onboarding-skip {
@@ -728,7 +718,7 @@
   padding: 24rpx 20rpx;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: color 0.3s ease;
+  transition: all var(--duration-fast) var(--ease-out);
 }
 
 .onboarding-skip:active {
@@ -746,7 +736,7 @@
   text-align: center;
   letter-spacing: 4rpx;
   box-shadow: 0 4rpx 30rpx rgba(244, 212, 140, 0.30);
-  transition: all 0.3s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94));
+  transition: all var(--duration-fast) var(--ease-out);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   animation: onboarding-start-pulse 2.5s ease-in-out infinite;
@@ -762,7 +752,7 @@
 }
 
 .onboarding-start:active {
-  transform: scale(0.96);
+  transform: scale(0.97);
   box-shadow: 0 2rpx 20rpx rgba(244, 212, 140, 0.40);
 }
 

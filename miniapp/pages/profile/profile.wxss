@@ -130,8 +130,8 @@ page {
   padding: var(--spacing-3xl) var(--spacing-xl) var(--spacing-2xl);
   border-radius: var(--radius-lg);
   margin-bottom: var(--spacing-xl);
-  background: var(--color-card);
-  border: 1rpx solid var(--color-card-border);
+  background: var(--color-surface-gradient);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
   box-shadow: var(--shadow-card);
   position: relative;
   overflow: hidden;
@@ -199,7 +199,7 @@ page {
 }
 
 .user-status-text.member-status {
-  color: #F4D48C;
+  color: var(--color-gold);
   background: rgba(244, 212, 140, 0.14);
   padding: 4rpx 24rpx;
   border-radius: var(--radius-pill);
@@ -241,8 +241,8 @@ page {
    ============================================================ */
 .stats-row {
   display: flex;
-  background: var(--color-card);
-  border: 1rpx solid var(--color-card-border);
+  background: var(--color-surface-gradient);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
   border-radius: var(--radius-lg);
   padding: var(--space-md) var(--spacing-xl);
   margin-bottom: var(--spacing-xl);
@@ -282,7 +282,7 @@ page {
 
 .stat-label {
   font-size: 22rpx;
-  color: #B8A9E0;
+  color: var(--color-lavender);
   display: block;
   margin-top: 6rpx;
   letter-spacing: 2rpx;
@@ -295,8 +295,8 @@ page {
   margin-bottom: var(--spacing-2xl);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  background: var(--color-card);
-  border: 1rpx solid var(--color-card-border);
+  background: var(--color-surface-gradient);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
   box-shadow: var(--shadow-card);
 }
 
@@ -315,6 +315,7 @@ page {
 
 .menu-item:active {
   background: var(--color-card-hover);
+  transform: scale(0.97);
 }
 
 /* Icon container — borderless, icon floats freely */
@@ -350,7 +351,7 @@ page {
   display: block;
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
-  color: #F0EDE8;
+  color: var(--color-text-primary);
   line-height: var(--line-height-tight);
   margin-bottom: 4rpx;
 }
@@ -379,8 +380,8 @@ page {
 .history-section {
   border-radius: var(--radius-lg);
   overflow: hidden;
-  background: var(--color-card);
-  border: 1rpx solid var(--color-card-border);
+  background: var(--color-surface-gradient);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
   box-shadow: var(--shadow-card);
 }
 
@@ -455,6 +456,7 @@ page {
 
 .history-item:active {
   background: var(--color-card-hover);
+  transform: scale(0.97);
 }
 
 /* Card thumbnail — 96x96rpx rounded image with clear card presence */
@@ -498,7 +500,7 @@ page {
 .history-spread-name {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
-  color: #F4D48C;
+  color: var(--color-gold);
   line-height: var(--line-height-tight);
   overflow: hidden;
   white-space: nowrap;
@@ -516,7 +518,7 @@ page {
 
 .history-meta {
   font-size: var(--font-size-xs);
-  color: #B8A9E0;
+  color: var(--color-lavender);
   line-height: var(--line-height-base);
   opacity: 0.80;
   overflow: hidden;

@@ -6,17 +6,17 @@
 /* ----- CSS Variables ----- */
 page {
   --bg-deep: var(--color-bg);
-  --bg-card: #161329;
-  --bg-card-hover: #1c1938;
-  --bg-elevated: #201d3e;
+  --bg-card: #252550;
+  --bg-card-hover: #2A2A5A;
+  --bg-elevated: #313165;
   --gold: #F4D48C;
   --gold-light: #FADE9E;
   --gold-glow: rgba(244, 212, 140, 0.35);
   --gold-dim: rgba(244, 212, 140, 0.15);
-  --text-primary: #e8e4f0;
-  --text-secondary: #b8b0d0;
+  --text-primary: #F0EDE8;
+  --text-secondary: #B8A9E0;
   --text-dim: #A098C0;
-  --text-gold: #e8c84a;
+  --text-gold: #F4D48C;
   --danger: #ff6b6b;
   --fs-caption: 22rpx;
   --fs-body-small: 24rpx;
@@ -216,7 +216,7 @@ page {
   color: var(--color-text-inverse);
   background: linear-gradient(135deg, var(--gold-light), var(--gold));
   box-shadow: 0 4rpx 24rpx var(--gold-glow);
-  transition: all 0.25s;
+  transition: all var(--duration-fast) var(--ease-out);
 }
 
 .btn-primary::after {
@@ -224,7 +224,7 @@ page {
 }
 
 .btn-primary:active {
-  transform: scale(0.96);
+  transform: scale(0.97);
 }
 
 .btn-small {
@@ -252,11 +252,12 @@ page {
   display: flex;
   align-items: center;
   padding: var(--space-lg);
-  background: var(--bg-card);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.10);
+  background: linear-gradient(145deg, #252550 0%, #2A2A5A 100%);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
   border-left: 4rpx solid var(--gold-dim);
   border-radius: var(--radius-card);
-  transition: all 0.3s ease;
+  box-shadow: var(--shadow-card);
+  transition: all var(--duration-fast) var(--ease-out);
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -276,19 +277,20 @@ page {
   background: var(--bg-card-hover);
   border-color: var(--gold);
   border-left-color: var(--gold);
-  box-shadow: 0 0 30rpx var(--gold-dim);
+  box-shadow: var(--shadow-card-press);
 }
 
 /* ──────────── Premium spread card ──────────── */
 .spread-card.premium {
   border-color: rgba(244, 212, 140, 0.20);
   border-left-color: var(--gold);
-  background: linear-gradient(135deg, rgba(42, 42, 90, 0.95) 0%, rgba(244, 212, 140, 0.08) 100%);
+  background: linear-gradient(135deg, #252550 0%, rgba(244, 212, 140, 0.06) 100%);
 }
 
 .spread-card.premium:active {
   border-color: var(--gold-light);
   border-left-color: var(--gold-light);
+  box-shadow: var(--shadow-card-press);
 }
 
 /* Gold diamond corner for premium */
@@ -394,9 +396,10 @@ page {
    Question box
    ============================== */
 .question-box {
-  background: var(--bg-card);
+  background: linear-gradient(145deg, #252550 0%, #2A2A5A 100%);
   border: 1.5rpx solid var(--gold-dim);
   border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
   padding: var(--space-lg);
   margin: var(--space-lg) 0;
 }
@@ -465,7 +468,9 @@ page {
 }
 
 .theme-item:active {
-  transform: scale(0.94);
+  transform: scale(0.97);
+  border-color: rgba(244, 212, 140, 0.30);
+  box-shadow: var(--shadow-card-press);
 }
 
 .theme-active {
@@ -491,7 +496,7 @@ page {
   color: var(--color-text-inverse);
   background: linear-gradient(135deg, var(--gold-light), var(--gold));
   box-shadow: 0 0 40rpx var(--gold-glow);
-  transition: all 0.3s;
+  transition: all var(--duration-fast) var(--ease-out);
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -502,7 +507,7 @@ page {
 }
 
 .btn-glow-pulse:not(.drawing):active {
-  transform: scale(0.96);
+  transform: scale(0.97);
 }
 
 .btn-glow-pulse.drawing {

@@ -8,34 +8,74 @@
 
 <view class="page" wx:elif="{{pageError}}">
   <view class="error-state">
-    <text class="error-text">加载失败</text>
+    <text class="error-icon">✧</text>
+    <text class="error-text">星辰之力暂时中断</text>
+    <text class="error-hint">请重新连接</text>
     <button class="btn-retry" bindtap="onRetry">重新加载</button>
   </view>
 </view>
 
 <view class="page" wx:elif="{{reading}}">
-  <view class="cards-area">
-    <view class="card-list">
-      <view class="card-item" wx:for="{{reading.drawn_cards}}" wx:key="id">
-        <text class="card-pos">{{item.position_name}}</text>
-        <text class="card-name">{{item.card_name}}</text>
+  <scroll-view class="content-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+    <view class="inner-wrap">
+      <!-- ===== Cards Timeline ===== -->
+      <view class="timeline-section">
+        <view class="timeline-top">
+          <view class="star-ornament">✦</view>
+          <view class="top-line"></view>
+        </view>
+
+        <view class="card-item" wx:for="{{reading.drawn_cards}}" wx:for-item="card" wx:key="id">
+          <view class="card-body">
+            <view class="card-glow-edge"></view>
+            <view class="card-content">
+              <text class="card-pos">{{card.position_name}}</text>
+              <text class="card-name">{{card.card_name}}</text>
+            </view>
+            <view class="card-corner card-corner--tl"></view>
+            <view class="card-corner card-corner--tr"></view>
+            <view class="card-corner card-corner--bl"></view>
+            <view class="card-corner card-corner--br"></view>
+          </view>
+        </view>
+
+        <view class="timeline-bottom">
+          <view class="bottom-line"></view>
+          <view class="star-ornament">✦</view>
+        </view>
+      </view>
+
+      <!-- ===== Interpretation ===== -->
+      <view class="interp-section">
+        <view class="interp-header">
+          <view class="header-line"></view>
+          <view class="header-group">
+            <text class="header-icon">✦</text>
+            <text class="header-title">星光解读</text>
+            <text class="header-icon">✦</text>
+          </view>
+          <view class="header-line"></view>
+        </view>
+
+        <view class="interp-body">
+          <text class="interp-text">{{reading.interpretation}}</text>
+        </view>
+      </view>
+
+      <!-- ===== Actions ===== -->
+      <view class="actions-section">
+        <button class="btn-ask" bindtap="onAskMore">追问更多</button>
+        <button class="btn-redo" bindtap="onNewReading">重新解读</button>
+        <text class="btn-back" bindtap="onBackHome">回到首页</text>
       </view>
     </view>
-  </view>
-  <view class="interp-area">
-    <text class="interp-title">解读</text>
-    <text class="interp-text">{{reading.interpretation}}</text>
-  </view>
-  <view class="actions">
-    <button class="btn-ask" bindtap="onAskMore">追问更多</button>
-    <button class="btn-redo" bindtap="onNewReading">重新解读</button>
-    <text class="btn-back" bindtap="onBackHome">回到首页</text>
-  </view>
+  </scroll-view>
 </view>
 
 <view class="page" wx:else>
   <view class="error-state">
-    <text class="error-text">解读生成失败</text>
+    <text class="error-icon">✧</text>
+    <text class="error-text">解读尚未生成</text>
     <button class="btn-retry" bindtap="onRetry">重新生成</button>
   </view>
 </view>
