@@ -55,9 +55,9 @@
     </scroll-view>
 
     <!-- Card grid -->
-    <view class="card-grid anim-fade-in-up-3">
+    <view class="card-grid">
       <view
-        class="card-item"
+        class="card-item anim-card-enter anim-stagger-{{index + 1}}"
         wx:for="{{filteredCards}}"
         wx:key="id"
         data-id="{{item.id}}"

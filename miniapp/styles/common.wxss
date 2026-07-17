@@ -1739,3 +1739,65 @@ page {
   animation-delay: 0.42s;
 }
 
+/* -----------------------------------------------------------
+   24. TASTE-INFORMED ENTRANCE & EMPHASIS ANIMATIONS
+   Feedback: 50-150ms | Orientation: 200-400ms | Emphasis: 300-600ms
+   Always ease-out arrival, ease-in departure. Never linear.
+   WXSS-compatible: opacity + transform only.
+   ----------------------------------------------------------- */
+
+/* Card enter: scale(0.92)->scale(1) + opacity(0->1), 0.4s ease-out (Orientation) */
+@keyframes cardEnter {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Slide up: translateY(30rpx->0) + opacity(0->1), 0.35s ease-out (Orientation) */
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Gentle pulse: scale(1->1.03->1), 2s ease-in-out infinite (Emphasis, use sparingly) */
+@keyframes gentlePulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+}
+
+/* Utility classes */
+.anim-card-enter {
+  opacity: 0;
+  animation: cardEnter 0.4s ease-out forwards;
+}
+
+.anim-slide-up {
+  opacity: 0;
+  animation: slideUp 0.35s ease-out forwards;
+}
+
+.anim-gentle-pulse {
+  animation: gentlePulse 2s ease-in-out infinite;
+}
+
+/* Pulse once on appearance for stats / data highlights */
+.anim-pulse-once {
+  animation: gentlePulse 2s ease-in-out 1;
+}
+

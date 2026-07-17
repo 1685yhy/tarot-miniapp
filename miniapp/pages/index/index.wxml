@@ -179,7 +179,7 @@
       </view>
     </view>
     <view class="card card-press more-spreads" bindtap="goToAllSpreads">
-      <text class="more-text">查看更多 · 共10种牌阵</text>
+      <text class="more-text anim-gentle-pulse">查看更多 · 共10种牌阵</text>
       <text class="more-arrow">→</text>
     </view>
   </view>

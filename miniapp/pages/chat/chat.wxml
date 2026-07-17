@@ -1,6 +1,6 @@
 <!-- pages/chat/chat.wxml -->
 <view class="container">
-  <!-- ===== 加载骨架 ===== -->
+  <!-- ===== Loading skeleton ===== -->
   <view wx:if="{{pageLoading}}" class="skeleton-messages">
     <view class="skeleton-msg">
       <view class="skeleton-bubble right"></view>
@@ -23,31 +23,31 @@
     <text class="context-spread">牌阵：{{readingContext.spreadType}}</text>
   </view>
 
-  <!-- ===== 空状态（intro） ===== -->
+  <!-- ===== Empty state (intro) ===== -->
   <view wx:elif="{{messages.length === 0 && !pageError && !pageLoading}}" class="chat-intro empty-state">
-    <text class="empty-text">对刚才的解读有什么想问的吗？</text>
-    <text class="empty-hint">星光解读会基于你的牌面继续为你解读</text>
+    <text class="empty-text">有什么想继续问的？</text>
+    <text class="empty-hint">星光在这里倾听</text>
   </view>
 
-  <!-- ===== 错误状态 ===== -->
+  <!-- ===== Error state ===== -->
   <view wx:elif="{{pageError && !readingContext}}" class="error-state">
-    <text class="error-text">星光解读暂时无法回应</text>
+    <text class="error-text">解读暂时无法回应</text>
     <text class="error-hint">{{pageError}}</text>
     <button class="btn-primary btn-small" bindtap="onRetry">重试</button>
   </view>
 
-  <!-- ===== 消息列表 ===== -->
+  <!-- ===== Message list ===== -->
   <view wx:elif="{{!pageLoading}}" class="message-list anim-fade-in">
     <view class="msg-item msg-enter {{item.role === 'user' ? 'msg-user' : 'msg-ai'}}" wx:for="{{messages}}" wx:key="index">
       <text class="text-caption" style="display:block;margin-bottom:6rpx;padding:0 8rpx;text-align:{{item.role === 'user' ? 'right' : 'left'}}">
-        {{item.role === 'user' ? '你' : '星光解读'}}
+        {{item.role === 'user' ? '你' : '你的专属解读者'}}
       </text>
       <view class="msg-bubble {{item.role === 'user' ? 'bubble-user' : 'bubble-ai'}}">
         <text class="msg-text">{{item.content}}</text>
       </view>
     </view>
 
-    <!-- ===== AI打字指示器 ===== -->
+    <!-- ===== AI typing indicator ===== -->
     <view wx:if="{{aiThinking}}" class="typing-indicator msg-enter msg-ai">
       <view class="msg-bubble bubble-ai bubble-typing">
         <view class="typing-dots">
@@ -63,7 +63,7 @@
 
   <!-- Input bar -->
   <view class="input-bar">
-    <input class="chat-input" placeholder="输入你的问题..." placeholder-style="color:#8A85A8"
+    <input class="chat-input" placeholder="写下你想问的..." placeholder-style="color:#8A85A8"
       value="{{inputText}}" bindinput="onInput" confirm-type="send" bindconfirm="onSend"
     />
     <button class="send-btn" bindtap="onSend" disabled="{{sending || !canSend}}">
