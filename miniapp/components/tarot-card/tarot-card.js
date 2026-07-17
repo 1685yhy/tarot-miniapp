@@ -106,7 +106,7 @@ const CARD_REGISTRY = {
 const IMAGE_BASE = (() => {
   try {
     const env = wx.getAccountInfoSync().miniProgram.envVersion;
-    return env === 'develop' ? 'http://127.0.0.1:8000/images/cards' : 'https://xingxiang.chat/images/cards_thumb';
+    return env === 'develop' ? 'http://localhost:8000/images/cards' : 'https://xingxiang.chat/images/cards_thumb';
   } catch(e) {
     return 'https://xingxiang.chat/images/cards_thumb';
   }
