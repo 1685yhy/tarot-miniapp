@@ -1,39 +1,38 @@
 /* ============================================================
-   Chat Page — Starlight Design System
-   Dark indigo chat · Cream bubbles · Gold accents
+   Chat Page — "A Quiet Conversation Under the Stars"
+   Intimate late-night follow-up about a tarot reading
    ============================================================ */
 
 /* ---- Design Tokens ---- */
 page {
-  --gold: #F4D48C;
-  --gold-light: #FADE9E;
-  --gold-glow: rgba(244, 212, 140, 0.35);
-  --gold-dim: rgba(244, 212, 140, 0.15);
-  --bg-deep: #1A1A3E;
-  --bg-card: #252550;
+  --gold:      #F4D48C;
+  --gold-light:#FADE9E;
+  --gold-glow: rgba(244, 212, 140, 0.30);
+  --gold-dim:  rgba(244, 212, 140, 0.15);
+  --gold-subtle: rgba(244, 212, 140, 0.08);
+
+  --bg-deep:     #1A1A3E;
+  --bg-card:     #252550;
   --bg-elevated: #1e1a38;
-  --bg-user: #252550;
-  --bg-ai: #2A2A5A;
-  --cream: #F0EDE8;
-  --cream-dim: #e0d8c4;
-  --text-primary: #e8e4f0;
-  --text-secondary: #b8b0d0;
-  --text-tertiary: #A098C0;
-  --radius-sm: 12rpx;
-  --radius-md: 18rpx;
-  --radius-lg: 24rpx;
-  --radius-round: 999rpx;
-  --radius-bubble: 18rpx;
-  --space-xs: 6rpx;
-  --space-sm: 12rpx;
-  --space-md: 20rpx;
-  --space-lg: 28rpx;
-  --space-xl: 36rpx;
-  --space-xxl: 48rpx;
-  --space-xxxl: 64rpx;
-  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --bg-user:     #252550;
+  --bg-ai:       #2A2A5A;
+  --bg-input:    #1e1a38;
+
+  --cream:       #F0EDE8;
+  --cream-soft:  #E8E0D4;
+  --lavender:    #B8B0D0;
+  --lavender-dim:#9088B0;
+  --text-muted:  #8A85A8;
+
+  --radius-sm:   8rpx;
+  --radius-md:   14rpx;
+  --radius-lg:   20rpx;
+  --radius-round:999rpx;
+
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue',
+               'PingFang SC', 'Microsoft YaHei', sans-serif;
   background: var(--bg-deep);
-  color: var(--text-primary);
+  color: var(--cream);
   font-size: 28rpx;
   line-height: 1.6;
   min-height: 100vh;
@@ -44,7 +43,7 @@ page {
    Container
    ================================================================ */
 .container {
-  padding: var(--space-xl) var(--space-xl) 320rpx;
+  padding: 32rpx 32rpx 260rpx;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -54,116 +53,151 @@ page {
 }
 
 /* ================================================================
-   Animations
+   Animations — message entrance
    ================================================================ */
-.anim-fade-in {
-  animation: fadeIn 0.4s ease both;
-}
-
 @keyframes fadeIn {
   from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.msg-enter {
-  animation: msgSlideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  to   { opacity: 1; }
 }
 
 @keyframes msgSlideUp {
-  0% { opacity: 0; transform: translateY(20rpx); }
+  0%   { opacity: 0; transform: translateY(20rpx); }
   100% { opacity: 1; transform: translateY(0); }
 }
 
-.msg-user .msg-bubble {
-  animation: slideInRight 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+@keyframes slideFadeRight {
+  0%   { opacity: 0; transform: translateX(24rpx); }
+  100% { opacity: 1; transform: translateX(0); }
 }
 
-@keyframes slideInRight {
-  0% { opacity: 0; transform: translateX(30rpx); }
+@keyframes slideFadeLeft {
+  0%   { opacity: 0; transform: translateX(-24rpx); }
   100% { opacity: 1; transform: translateX(0); }
+}
+
+.msg-enter {
+  animation: msgSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.msg-user .msg-bubble {
+  animation: slideFadeRight 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .msg-ai .msg-bubble {
-  animation: slideInLeft 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-@keyframes slideInLeft {
-  0% { opacity: 0; transform: translateX(-30rpx); }
-  100% { opacity: 1; transform: translateX(0); }
+  animation: slideFadeLeft 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* ================================================================
-   Typing indicator — golden bouncing dots
+   Skeleton loading
    ================================================================ */
-.typing-indicator {
-  margin-bottom: var(--space-xl);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+.skeleton-wrap {
+  flex: 1;
+  padding: 20rpx 0;
 }
 
-.bubble-typing {
-  padding: var(--space-lg) var(--space-xl);
-  min-height: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.skeleton-block {
+  margin-bottom: 40rpx;
 }
 
-.typing-dots {
-  display: flex;
-  align-items: center;
-  gap: 10rpx;
+.skeleton-line {
+  height: 20rpx;
+  border-radius: var(--radius-round);
+  background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-elevated) 50%, var(--bg-card) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
+  margin-bottom: 12rpx;
 }
 
-.typing-dot {
-  width: 14rpx;
-  height: 14rpx;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  animation: typingBounce 1.4s ease-in-out infinite;
+.skeleton-bubble {
+  height: 68rpx;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-elevated) 50%, var(--bg-card) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
 }
 
-.typing-dot:nth-child(2) { animation-delay: 0.2s; }
-.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+.skeleton-bubble.left  { width: 60%; }
+.skeleton-bubble.right { width: 50%; margin-left: auto; }
 
-@keyframes typingBounce {
-  0%, 80%, 100% {
-    transform: translateY(0) scale(0.7);
-    opacity: 0.35;
-  }
-  40% {
-    transform: translateY(-10rpx) scale(1);
-    opacity: 1;
-  }
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 /* ================================================================
-   Empty / Intro state
+   Context header — tiny lavender reminder
    ================================================================ */
-.chat-intro {
+.ctx-header {
+  padding: 0 4rpx 28rpx;
   text-align: center;
-  padding: var(--space-xxxl) 0;
+}
+
+.ctx-label {
+  font-size: 22rpx;
+  color: var(--lavender);
+  letter-spacing: 2rpx;
+  line-height: 1.5;
+  display: block;
+}
+
+.ctx-question {
+  font-size: 20rpx;
+  color: var(--lavender-dim);
+  display: block;
+  margin-top: 4rpx;
+  line-height: 1.4;
+  /* clamp to 1 line with ellipsis */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ================================================================
+   Empty state — warm invitation
+   ================================================================ */
+.empty-wrap {
   flex: 1;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 60rpx 40rpx 120rpx;
 }
 
-.empty-text {
+.empty-inner {
+  text-align: center;
+  position: relative;
+}
+
+.empty-glow {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--gold-dim) 0%, transparent 70%);
+  margin: 0 auto 36rpx;
+  animation: breath 3s ease-in-out infinite;
+}
+
+@keyframes breath {
+  0%, 100% { transform: scale(0.95); opacity: 0.6; }
+  50%      { transform: scale(1.05); opacity: 1; }
+}
+
+.empty-heading {
+  display: block;
   font-size: 30rpx;
-  color: var(--text-secondary);
-  display: block;
-  margin-bottom: var(--space-sm);
+  color: var(--cream-soft);
+  line-height: 1.7;
   letter-spacing: 2rpx;
-  line-height: 1.6;
+  margin-bottom: 16rpx;
 }
 
-.empty-hint {
-  font-size: 24rpx;
-  color: var(--text-tertiary);
+.empty-sub {
   display: block;
+  font-size: 24rpx;
+  color: var(--lavender);
   line-height: 1.6;
   letter-spacing: 1rpx;
 }
@@ -172,101 +206,63 @@ page {
    Error state
    ================================================================ */
 .error-state {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 160rpx var(--space-xl);
+  padding: 120rpx 40rpx;
   text-align: center;
 }
 
+.error-icon {
+  font-size: 48rpx;
+  color: var(--gold-dim);
+  margin-bottom: 24rpx;
+  display: block;
+}
+
 .error-text {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: var(--space-sm);
+  font-size: 30rpx;
+  color: var(--cream-soft);
+  margin-bottom: 12rpx;
   display: block;
 }
 
 .error-hint {
   font-size: 24rpx;
-  color: var(--text-tertiary);
-  margin-bottom: var(--space-xxl);
+  color: var(--lavender-dim);
+  margin-bottom: 40rpx;
   display: block;
-}
-
-/* ---- Shared button — golden pill ---- */
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-sm);
-  padding: 20rpx 48rpx;
-  border: none;
-  border-radius: var(--radius-round);
-  font-size: 28rpx;
-  font-weight: 600;
-  color: #1A1A3E;
-  background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  box-shadow: 0 4rpx 24rpx var(--gold-glow);
-  transition: all 0.25s;
-}
-
-.btn-primary::after { border: none; }
-.btn-primary:active { transform: scale(0.96); }
-
-.btn-small {
-  padding: 16rpx 36rpx;
-  font-size: 24rpx;
-}
-
-/* ================================================================
-   Reading context bar
-   ================================================================ */
-.reading-context-bar {
-  border-radius: var(--radius-lg);
-  padding: var(--space-md) var(--space-lg);
-  margin-bottom: var(--space-xl);
-  background: var(--bg-card);
-  border: 1.5rpx solid var(--gold-dim);
-  border-left: 4rpx solid var(--gold);
-  box-shadow: 0 2rpx 20rpx rgba(212, 175, 55, 0.05);
-}
-
-.context-label {
-  font-size: 22rpx;
-  color: var(--gold);
-  font-weight: 600;
-  display: block;
-  margin-bottom: var(--space-xs);
-  letter-spacing: 3rpx;
-  text-transform: uppercase;
-}
-
-.context-question {
-  font-size: 24rpx;
-  color: var(--text-primary);
-  display: block;
-  margin-bottom: 4rpx;
   line-height: 1.5;
 }
 
-.context-spread {
-  font-size: 22rpx;
-  color: var(--text-tertiary);
-  display: block;
+.retry-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18rpx 44rpx;
+  border: none;
+  border-radius: var(--radius-round);
+  font-size: 26rpx;
+  color: var(--bg-deep);
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  box-shadow: 0 4rpx 20rpx var(--gold-glow);
+  transition: all 0.25s;
 }
+
+.retry-btn::after { border: none; }
+.retry-btn:active { transform: scale(0.96); }
 
 /* ================================================================
    Message list
    ================================================================ */
-.message-list {
+.msg-list {
   flex: 1;
-  margin-bottom: 20rpx;
 }
 
-.msg-item {
-  margin-bottom: var(--space-xl);
+.msg-wrap {
+  margin-bottom: 36rpx;
   display: flex;
   flex-direction: column;
 }
@@ -279,49 +275,113 @@ page {
   align-items: flex-start;
 }
 
-/* ---- Role label ---- */
-.text-caption {
-  font-size: 22rpx;
-  color: var(--text-tertiary);
-  margin-bottom: var(--space-xs);
+/* ================================================================
+   Role labels
+   ================================================================ */
+.role-label {
+  font-size: 20rpx;
+  letter-spacing: 2rpx;
+  margin-bottom: 8rpx;
+  display: block;
+  padding: 0 6rpx;
+}
+
+.role-user {
+  color: var(--lavender);
+}
+
+.role-ai {
+  color: var(--gold);
+}
+
+.role-typing {
+  color: var(--lavender);
 }
 
 /* ================================================================
-   Chat bubbles
+   Message bubbles
    ================================================================ */
 .msg-bubble {
-  padding: var(--space-lg) var(--space-xl);
-  max-width: 85%;
+  padding: 22rpx 28rpx;
+  max-width: 82%;
   position: relative;
   line-height: 1.7;
 }
 
 .msg-text {
-  font-size: 28rpx;
   white-space: pre-wrap;
   word-break: break-word;
-  color: var(--cream);
 }
 
-/* ---- User bubble: #252550 card bg, right-aligned ---- */
+/* ---- User bubble: compact, warm dark card, gold left-accent ---- */
 .bubble-user {
   background: var(--bg-user);
-  border-radius: var(--radius-bubble) 4rpx var(--radius-bubble) var(--radius-bubble);
-  border: 1rpx solid rgba(255, 255, 255, 0.04);
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.15);
+  border-radius: 18rpx 4rpx 18rpx 18rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.03);
+  border-left: 2rpx solid var(--gold-dim);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.18);
 }
 
-/* ---- AI bubble: #2A2A5A lighter bg, left-aligned, gold left border ---- */
+.msg-text-user {
+  font-size: 26rpx;
+  color: var(--cream);
+  line-height: 1.6;
+}
+
+/* ---- AI bubble: lighter card, gold left-margin line ---- */
 .bubble-ai {
   background: var(--bg-ai);
-  border-radius: 4rpx var(--radius-bubble) var(--radius-bubble) var(--radius-bubble);
-  border: 1rpx solid var(--gold-dim);
+  border-radius: 4rpx 18rpx 18rpx 18rpx;
+  border: 1rpx solid var(--gold-subtle);
   border-left: 3rpx solid var(--gold);
-  box-shadow: 0 2rpx 16rpx rgba(212, 175, 55, 0.08);
+  box-shadow: 0 2rpx 20rpx rgba(212, 175, 55, 0.06);
+}
+
+.msg-text-ai {
+  font-size: 28rpx;
+  color: var(--cream);
+  line-height: 1.7;
 }
 
 /* ================================================================
-   Input bar — fixed bottom
+   Typing indicator — pulsing gold dots
+   ================================================================ */
+.typing-box {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  background: var(--bg-ai);
+  border-radius: 4rpx 18rpx 18rpx 18rpx;
+  border: 1rpx solid var(--gold-subtle);
+  border-left: 3rpx solid var(--gold);
+  padding: 26rpx 32rpx;
+  min-height: 28rpx;
+}
+
+.typing-dot {
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  animation: typingPulse 1.4s ease-in-out infinite;
+}
+
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingPulse {
+  0%, 80%, 100% {
+    transform: translateY(0) scale(0.7);
+    opacity: 0.35;
+  }
+  40% {
+    transform: translateY(-8rpx) scale(1);
+    opacity: 1;
+  }
+}
+
+/* ================================================================
+   Input area — fixed at bottom
    ================================================================ */
 .input-bar {
   position: fixed;
@@ -330,61 +390,78 @@ page {
   right: 0;
   display: flex;
   align-items: center;
-  padding: var(--space-md) var(--space-xl);
-  padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-md));
+  gap: 16rpx;
+  padding: 20rpx 32rpx;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 20rpx);
   background: rgba(26, 26, 62, 0.97);
-  border-top: 1.5rpx solid var(--gold-dim);
-  gap: var(--space-sm);
+  border-top: 1.5rpx solid var(--gold-subtle);
   z-index: 100;
+  backdrop-filter: blur(12rpx);
+  -webkit-backdrop-filter: blur(12rpx);
+}
+
+.input-wrap {
+  flex: 1;
+  display: flex;
 }
 
 .chat-input {
-  flex: 1;
+  width: 100%;
   height: 72rpx;
-  background: var(--bg-elevated);
+  background: var(--bg-input);
   border-radius: var(--radius-round);
-  padding: 0 var(--space-xl);
+  padding: 0 28rpx;
   font-size: 28rpx;
   color: var(--cream);
-  border: 1.5rpx solid rgba(212, 175, 55, 0.1);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.08);
   transition: border-color 0.25s, box-shadow 0.25s;
   caret-color: var(--gold);
 }
 
 .chat-input:focus {
   border-color: var(--gold);
-  box-shadow: 0 0 0 3rpx rgba(244, 212, 140, 0.12);
+  box-shadow: 0 0 0 4rpx rgba(244, 212, 140, 0.10);
 }
 
-.chat-input::placeholder {
-  color: #8A85A8;
+.input-placeholder {
+  color: var(--text-muted);
 }
 
-/* ---- Send button: golden pill ---- */
+/* ---- Send button: small gold circle with arrow ---- */
 .send-btn {
-  width: 120rpx;
+  width: 72rpx;
   height: 72rpx;
-  line-height: 72rpx;
-  text-align: center;
-  background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  color: #1A1A3E;
-  font-size: 24rpx;
-  font-weight: 700;
-  border-radius: var(--radius-round);
+  min-width: 72rpx;
+  min-height: 72rpx;
+  border-radius: 50%;
   border: none;
   padding: 0;
-  transition: all 0.25s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
   box-shadow: 0 4rpx 16rpx var(--gold-glow);
+  transition: all 0.25s;
+  position: relative;
 }
 
 .send-btn::after { border: none; }
 
 .send-btn:active:not([disabled]) {
-  transform: scale(0.94);
+  transform: scale(0.90);
 }
 
 .send-btn[disabled] {
-  opacity: 0.35;
+  opacity: 0.3;
+}
+
+.send-icon {
+  width: 0;
+  height: 0;
+  border-left: 12rpx solid var(--bg-deep);
+  border-top: 8rpx solid transparent;
+  border-bottom: 8rpx solid transparent;
+  margin-left: 4rpx;
 }
 
 /* ================================================================
@@ -392,41 +469,14 @@ page {
    ================================================================ */
 .free-hint {
   text-align: center;
-  padding: var(--space-sm) 0;
-  font-size: 22rpx;
-  color: var(--text-tertiary);
+  padding: 12rpx 0;
+  font-size: 20rpx;
+  color: var(--lavender-dim);
   position: fixed;
-  bottom: 112rpx;
+  bottom: 106rpx;
   left: 0;
   right: 0;
-}
-
-/* ================================================================
-   Skeleton loading — dark indigo shimmer
-   ================================================================ */
-.skeleton-messages {
-  flex: 1;
-  padding: var(--space-xl);
-}
-
-.skeleton-msg {
-  margin-bottom: var(--space-xl);
-}
-
-.skeleton-bubble {
-  height: 72rpx;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-elevated) 50%, var(--bg-card) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.6s infinite;
-}
-
-.skeleton-bubble.left { width: 60%; }
-.skeleton-bubble.right { width: 50%; margin-left: auto; }
-
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  letter-spacing: 1rpx;
 }
 
 /* ================================================================

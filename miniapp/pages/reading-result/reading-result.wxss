@@ -1,10 +1,17 @@
-/* ============================================
-   Tarot Reading Result — Starlight Theme
-   Colors: #1A1A3E bg | #F4D48C gold | #B8A9E0 lavender
-           #252550 cards  | #F0EDE8 text
-   ============================================ */
+/* ================================================================
+   Tarot Reading Result — "A Personal Letter from the Cosmos"
+   Theme: Starlight (deep indigo, warm gold, intimate prose)
+   Palette:
+     #1A1A3E — cosmic night / page background
+     #252550 — card surface (dark indigo)
+     #F4D48C — warm gold (accent, light, emphasis)
+     #D4B06A — deeper gold (gradient stop)
+     #B8A9E0 — lavender (secondary, link, soft)
+     #F0EDE8 — warm cream (body text)
+     #6B6599 — muted lavender (tertiary, subtle)
+   ================================================================ */
 
-/* ---- Page Base ---- */
+/* ===== 0. Page Base ===== */
 .page {
   min-height: 100vh;
   background: #1A1A3E;
@@ -17,13 +24,13 @@
 }
 
 .inner-wrap {
-  padding: 56rpx 36rpx 80rpx;
+  padding: 64rpx 40rpx 100rpx;
   box-sizing: border-box;
 }
 
-/* ============================================
-   Loading State
-   ============================================ */
+/* ================================================================
+   LOADING STATE — Anticipation, like a candle being lit
+   ================================================================ */
 .loading-box {
   display: flex;
   flex-direction: column;
@@ -32,46 +39,73 @@
   height: 100vh;
 }
 
-.loading-spinner {
-  width: 64rpx;
-  height: 64rpx;
-  border: 3rpx solid rgba(244, 212, 140, 0.12);
-  border-top-color: #F4D48C;
-  border-radius: 50%;
-  animation: spin 0.9s linear infinite;
-  margin-bottom: 40rpx;
+/* Flame-inspired spinner */
+.loading-candle {
+  width: 6rpx;
+  height: 80rpx;
+  background: linear-gradient(to top, rgba(244, 212, 140, 0.15), rgba(244, 212, 140, 0.4));
+  border-radius: 3rpx;
+  position: relative;
+  margin-bottom: 48rpx;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+.candle-flame {
+  position: absolute;
+  top: -20rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20rpx;
+  height: 40rpx;
+  background: radial-gradient(
+    ellipse at center top,
+    rgba(255, 235, 190, 1) 0%,
+    rgba(244, 212, 140, 0.6) 40%,
+    rgba(244, 212, 140, 0) 80%
+  );
+  border-radius: 50%;
+  animation: flame-dance 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes flame-dance {
+  0% {
+    transform: translateX(-50%) scaleY(1) scaleX(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateX(-50%) scaleY(1.2) scaleX(0.85);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) scaleY(0.9) scaleX(1.1);
+    opacity: 0.8;
   }
 }
 
 .loading-title {
-  font-size: 36rpx;
+  font-size: 34rpx;
   color: #F4D48C;
-  font-weight: 600;
-  margin-bottom: 16rpx;
-  letter-spacing: 4rpx;
+  font-weight: 500;
+  margin-bottom: 12rpx;
+  letter-spacing: 3rpx;
 }
 
 .loading-sub {
-  font-size: 26rpx;
+  font-size: 24rpx;
   color: #B8A9E0;
-  letter-spacing: 2rpx;
+  letter-spacing: 4rpx;
+  opacity: 0.7;
 }
 
-/* ============================================
-   Error / Empty State
-   ============================================ */
+/* ================================================================
+   ERROR / EMPTY STATE
+   ================================================================ */
 .error-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
-  padding: 0 40rpx;
+  padding: 0 48rpx;
 }
 
 .error-text {
@@ -84,14 +118,14 @@
 .error-hint {
   font-size: 24rpx;
   color: #B8A9E0;
-  margin-bottom: 40rpx;
+  margin-bottom: 44rpx;
   letter-spacing: 1rpx;
 }
 
 .btn-retry {
-  background: rgba(244, 212, 140, 0.15);
+  background: rgba(244, 212, 140, 0.12);
   color: #F4D48C;
-  border: 1rpx solid rgba(244, 212, 140, 0.3);
+  border: 1rpx solid rgba(244, 212, 140, 0.25);
   border-radius: 48rpx;
   padding: 20rpx 56rpx;
   font-size: 28rpx;
@@ -103,198 +137,251 @@
   border: none;
 }
 
-/* ============================================
-   Timeline — Cards Display
-   ============================================ */
-.timeline-section {
+/* ================================================================
+   1. CARD REVEAL — Three-card spread
+   ================================================================ */
+.card-reveal {
   position: relative;
-  padding-left: 56rpx;
-  margin-bottom: 64rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 16rpx;
+  padding-top: 24rpx;
 }
 
-/* Vertical gold line connecting all three cards */
-.timeline-section::before {
-  content: '';
+/* Warm gold glow behind the center card */
+.center-glow {
   position: absolute;
-  left: 24rpx;
-  top: 28rpx;
-  bottom: 28rpx;
-  width: 2rpx;
-  background: linear-gradient(
-    to bottom,
-    rgba(244, 212, 140, 0.6) 0%,
-    rgba(244, 212, 140, 0.35) 50%,
-    rgba(244, 212, 140, 0.1) 100%
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 320rpx;
+  height: 320rpx;
+  background: radial-gradient(
+    circle,
+    rgba(244, 212, 140, 0.10) 0%,
+    rgba(244, 212, 140, 0.04) 40%,
+    transparent 70%
   );
+  pointer-events: none;
 }
 
-/* ---- Individual Card ---- */
-.card-item {
-  position: relative;
-  margin-bottom: 32rpx;
-}
-
-.card-item:last-child {
-  margin-bottom: 0;
-}
-
-/* Gold dot on the timeline */
-.card-item::before {
-  content: '';
-  position: absolute;
-  left: -44rpx;
-  top: 36rpx;
-  width: 12rpx;
-  height: 12rpx;
-  background: #F4D48C;
-  border-radius: 50%;
-  box-shadow:
-    0 0 12rpx rgba(244, 212, 140, 0.5),
-    0 0 24rpx rgba(244, 212, 140, 0.15);
-  z-index: 2;
-}
-
-/* Card body — dark indigo with gold border */
-.card-body {
-  background: #252550;
-  border-radius: 18rpx;
-  padding: 32rpx 28rpx;
-  border: 1rpx solid rgba(244, 212, 140, 0.2);
-  position: relative;
-  overflow: hidden;
-}
-
-/* Warm inner glow on left edge */
-.card-glow-edge {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 6rpx;
-  background: linear-gradient(to bottom, #F4D48C, rgba(244, 212, 140, 0.2));
-  border-radius: 18rpx 0 0 18rpx;
-  opacity: 0.8;
-}
-
-/* Card content */
-.card-content {
+/* ---- Card Row (horizontal spread) ---- */
+.card-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: relative;
   z-index: 1;
 }
 
+/* ---- Individual Card ---- */
+.card-item {
+  flex-shrink: 0;
+  width: 200rpx;
+  height: 284rpx;
+  background: #252550;
+  border: 1.5rpx solid rgba(244, 212, 140, 0.45);
+  border-radius: 16rpx;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+/* Overlap: every card after the first slides left */
+.card-item + .card-item {
+  margin-left: -32rpx;
+}
+
+/* Card stacking order: past (1), present (2, elevated), future (3) */
+.card-item:nth-child(1) {
+  z-index: 1;
+}
+
+.card-item:nth-child(2) {
+  z-index: 3;
+  transform: translateY(-14rpx);
+  box-shadow:
+    0 4rpx 24rpx rgba(244, 212, 140, 0.08),
+    0 0 0 1.5rpx rgba(244, 212, 140, 0.6);
+}
+
+.card-item:nth-child(3) {
+  z-index: 1;
+}
+
+/* Subtle edge highlight on left side of each card */
+.card-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4rpx;
+  background: linear-gradient(
+    to bottom,
+    rgba(244, 212, 140, 0.3) 0%,
+    rgba(244, 212, 140, 0.05) 60%,
+    transparent 100%
+  );
+  border-radius: 16rpx 0 0 16rpx;
+}
+
+/* ---- Card Content ---- */
+.card-inner {
+  position: relative;
+  z-index: 1;
+  padding: 32rpx 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  height: 100%;
+  box-sizing: border-box;
+}
+
 .card-pos {
   display: block;
-  font-size: 22rpx;
-  color: #B8A9E0;
-  margin-bottom: 10rpx;
-  letter-spacing: 3rpx;
+  font-size: 20rpx;
+  color: #F4D48C;
+  letter-spacing: 4rpx;
   font-weight: 500;
+  opacity: 0.75;
+  margin-bottom: 14rpx;
 }
 
 .card-name {
   display: block;
-  font-size: 36rpx;
+  font-size: 30rpx;
   color: #F4D48C;
   font-weight: 600;
   letter-spacing: 2rpx;
+  line-height: 1.3;
+  word-break: break-word;
 }
 
-/* ============================================
-   Interpretation Section
-   ============================================ */
-.interp-section {
+/* ---- Spread Type Label ---- */
+.spread-type {
+  display: block;
+  margin-top: 32rpx;
+  font-size: 20rpx;
+  color: #B8A9E0;
+  letter-spacing: 5rpx;
+  font-weight: 400;
+  opacity: 0.5;
+}
+
+/* ================================================================
+   2. DIVIDER — Quiet, thin, centered gold line
+   ================================================================ */
+.divider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40rpx 0 36rpx;
+}
+
+.divider-line {
+  width: 160rpx;
+  height: 1rpx;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(244, 212, 140, 0.25),
+    transparent
+  );
+}
+
+/* ================================================================
+   3. LETTER — The interpretation
+   ================================================================ */
+.letter-section {
   margin-bottom: 48rpx;
 }
 
-/* ---- Clean Divider ---- */
-.interp-divider {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 36rpx;
-}
-
-.interp-line {
-  width: 120rpx;
-  height: 1rpx;
-  background: linear-gradient(
-    to right,
-    transparent,
-    rgba(244, 212, 140, 0.5),
-    transparent
-  );
-  margin-bottom: 14rpx;
-}
-
-.interp-label {
-  font-size: 22rpx;
-  color: #F4D48C;
-  letter-spacing: 4rpx;
-  font-weight: 500;
-}
-
-/* ---- Interpretation Body ---- */
-.interp-body {
-  background: rgba(37, 37, 80, 0.45);
-  border-radius: 18rpx;
-  padding: 36rpx 28rpx;
+/* ---- Letter Body Container ---- */
+.letter-body {
+  background: rgba(37, 37, 80, 0.30);
+  border-radius: 20rpx;
+  padding: 40rpx 32rpx;
   position: relative;
-  border: 1rpx solid rgba(244, 212, 140, 0.08);
+  border: 1rpx solid rgba(244, 212, 140, 0.06);
+  overflow: hidden;
+  transition: max-height 0.4s ease;
 }
 
-/* Subtle top border highlight */
-.interp-body::before {
+/* Subtle top light wash */
+.letter-body::before {
   content: '';
   position: absolute;
   top: 0;
-  left: 40rpx;
-  right: 40rpx;
+  left: 32rpx;
+  right: 32rpx;
   height: 1rpx;
   background: linear-gradient(
     to right,
     transparent,
-    rgba(244, 212, 140, 0.2),
+    rgba(244, 212, 140, 0.12),
     transparent
   );
 }
 
-/* ---- Interpretation Text ---- */
-.interp-text {
+/* Collapsed: show first ~12 lines then fade */
+.letter-body.collapsed {
+  max-height: 560rpx;
+  -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 95%);
+  mask-image: linear-gradient(to bottom, black 60%, transparent 95%);
+}
+
+/* Expanded: full height */
+.letter-body.expanded {
+  max-height: none;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+/* ---- Letter Text ---- */
+.letter-text {
   font-size: 28rpx;
   color: #F0EDE8;
-  line-height: 1.8;
+  line-height: 1.9;
   letter-spacing: 1rpx;
   white-space: pre-wrap;
   word-break: break-word;
   display: block;
 }
 
-/* Gold drop-cap on the first character */
-.interp-text::first-letter {
-  font-size: 56rpx;
-  color: #F4D48C;
-  font-weight: 700;
-  float: left;
-  margin-right: 10rpx;
-  margin-top: 8rpx;
-  line-height: 1;
-  font-family: "Georgia", "Noto Serif SC", serif;
-  text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.2);
+/* ---- Toggle ---- */
+.letter-toggle {
+  display: flex;
+  justify-content: center;
+  margin-top: 12rpx;
 }
 
-/* ============================================
-   Action Buttons
-   ============================================ */
+.toggle-btn {
+  font-size: 24rpx;
+  color: #B8A9E0;
+  letter-spacing: 2rpx;
+  opacity: 0.6;
+  padding: 16rpx 40rpx;
+}
+
+.toggle-btn:active {
+  opacity: 1;
+}
+
+/* ================================================================
+   4. ACTIONS
+   ================================================================ */
 .actions-section {
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
   align-items: center;
-  padding-top: 40rpx;
-  border-top: 1rpx solid rgba(244, 212, 140, 0.1);
+  gap: 20rpx;
+  padding-top: 24rpx;
 }
 
-/* Primary: gold pill "追问更多" */
+/* ---- Primary: "追问更多" gold pill ---- */
 .btn-ask {
   width: 100%;
   background: linear-gradient(135deg, #F4D48C 0%, #D4B06A 100%);
@@ -302,13 +389,15 @@
   font-weight: 700;
   font-size: 30rpx;
   border-radius: 50rpx;
-  padding: 26rpx 0;
+  padding: 28rpx 0;
   border: none;
-  letter-spacing: 4rpx;
+  letter-spacing: 5rpx;
   box-shadow:
-    0 8rpx 32rpx rgba(244, 212, 140, 0.3),
-    0 2rpx 8rpx rgba(244, 212, 140, 0.15);
+    0 6rpx 28rpx rgba(244, 212, 140, 0.25),
+    0 2rpx 8rpx rgba(244, 212, 140, 0.12);
   transition: opacity 0.2s;
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-ask::after {
@@ -319,18 +408,18 @@
   opacity: 0.85;
 }
 
-/* Text link: lavender "再来一次" */
+/* ---- Secondary: "再来一次" outlined pill ---- */
 .btn-redo {
-  color: #B8A9E0;
-  font-size: 28rpx;
-  letter-spacing: 3rpx;
+  width: 100%;
+  background: transparent;
+  color: #F4D48C;
   font-weight: 500;
-  text-align: center;
-  padding: 16rpx 0 8rpx;
-  display: block;
-  opacity: 0.8;
-  background: none;
-  border: none;
+  font-size: 28rpx;
+  border-radius: 50rpx;
+  padding: 24rpx 0;
+  border: 1.5rpx solid rgba(244, 212, 140, 0.3);
+  letter-spacing: 4rpx;
+  transition: border-color 0.2s, background 0.2s;
 }
 
 .btn-redo::after {
@@ -338,18 +427,20 @@
 }
 
 .btn-redo:active {
-  opacity: 1;
+  border-color: rgba(244, 212, 140, 0.6);
+  background: rgba(244, 212, 140, 0.06);
 }
 
-/* Subtle secondary "回到首页" */
+/* ---- Tertiary: "回到首页" lavender link ---- */
 .btn-back {
   color: #6B6599;
   font-size: 24rpx;
-  padding: 12rpx 0 8rpx;
+  letter-spacing: 2rpx;
+  opacity: 0.55;
+  padding: 20rpx 0 8rpx;
   display: block;
   text-align: center;
-  letter-spacing: 2rpx;
-  opacity: 0.6;
+  transition: opacity 0.2s;
 }
 
 .btn-back:active {
