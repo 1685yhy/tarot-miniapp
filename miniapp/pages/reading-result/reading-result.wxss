@@ -74,13 +74,6 @@
   padding: 0 40rpx;
 }
 
-.error-icon {
-  font-size: 72rpx;
-  color: #F4D48C;
-  margin-bottom: 24rpx;
-  opacity: 0.6;
-}
-
 .error-text {
   font-size: 30rpx;
   color: #F0EDE8;
@@ -106,6 +99,10 @@
   font-weight: 500;
 }
 
+.btn-retry::after {
+  border: none;
+}
+
 /* ============================================
    Timeline — Cards Display
    ============================================ */
@@ -129,52 +126,6 @@
     rgba(244, 212, 140, 0.35) 50%,
     rgba(244, 212, 140, 0.1) 100%
   );
-}
-
-/* Top ornament area */
-.timeline-top {
-  display: flex;
-  align-items: center;
-  margin-bottom: 8rpx;
-  position: relative;
-  left: -32rpx;
-}
-
-.timeline-top .star-ornament {
-  font-size: 20rpx;
-  color: #F4D48C;
-  opacity: 0.5;
-  margin-right: 12rpx;
-  flex-shrink: 0;
-}
-
-.top-line {
-  flex: 1;
-  height: 1rpx;
-  background: linear-gradient(to right, rgba(244, 212, 140, 0.35), transparent);
-}
-
-/* Bottom ornament area */
-.timeline-bottom {
-  display: flex;
-  align-items: center;
-  margin-top: 8rpx;
-  position: relative;
-  left: -32rpx;
-}
-
-.bottom-line {
-  flex: 1;
-  height: 1rpx;
-  background: linear-gradient(to left, rgba(244, 212, 140, 0.2), transparent);
-}
-
-.timeline-bottom .star-ornament {
-  font-size: 20rpx;
-  color: #F4D48C;
-  opacity: 0.3;
-  margin-left: 12rpx;
-  flex-shrink: 0;
 }
 
 /* ---- Individual Card ---- */
@@ -248,40 +199,6 @@
   letter-spacing: 2rpx;
 }
 
-/* Golden corner accents */
-.card-corner {
-  position: absolute;
-  width: 16rpx;
-  height: 16rpx;
-  border-color: rgba(244, 212, 140, 0.4);
-  border-style: solid;
-  opacity: 0.6;
-}
-.card-corner--tl {
-  top: 8rpx;
-  left: 8rpx;
-  border-width: 1rpx 0 0 1rpx;
-  border-radius: 4rpx 0 0 0;
-}
-.card-corner--tr {
-  top: 8rpx;
-  right: 8rpx;
-  border-width: 1rpx 1rpx 0 0;
-  border-radius: 0 4rpx 0 0;
-}
-.card-corner--bl {
-  bottom: 8rpx;
-  left: 8rpx;
-  border-width: 0 0 1rpx 1rpx;
-  border-radius: 0 0 0 4rpx;
-}
-.card-corner--br {
-  bottom: 8rpx;
-  right: 8rpx;
-  border-width: 0 1rpx 1rpx 0;
-  border-radius: 0 0 4rpx 0;
-}
-
 /* ============================================
    Interpretation Section
    ============================================ */
@@ -289,16 +206,16 @@
   margin-bottom: 48rpx;
 }
 
-/* ---- Decorative Header ---- */
-.interp-header {
+/* ---- Clean Divider ---- */
+.interp-divider {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
   margin-bottom: 36rpx;
 }
 
-.header-line {
-  width: 72rpx;
+.interp-line {
+  width: 120rpx;
   height: 1rpx;
   background: linear-gradient(
     to right,
@@ -306,26 +223,14 @@
     rgba(244, 212, 140, 0.5),
     transparent
   );
+  margin-bottom: 14rpx;
 }
 
-.header-group {
-  display: flex;
-  align-items: center;
-  gap: 12rpx;
-  margin: 0 20rpx;
-}
-
-.header-icon {
-  font-size: 20rpx;
+.interp-label {
+  font-size: 22rpx;
   color: #F4D48C;
-  opacity: 0.6;
-}
-
-.header-title {
-  font-size: 32rpx;
-  color: #F4D48C;
-  font-weight: 600;
-  letter-spacing: 6rpx;
+  letter-spacing: 4rpx;
+  font-weight: 500;
 }
 
 /* ---- Interpretation Body ---- */
@@ -353,26 +258,28 @@
   );
 }
 
+/* ---- Interpretation Text ---- */
 .interp-text {
   font-size: 28rpx;
   color: #F0EDE8;
-  line-height: 1.9;
+  line-height: 1.8;
+  letter-spacing: 1rpx;
   white-space: pre-wrap;
   word-break: break-word;
   display: block;
 }
 
-/* Gold drop-cap on first letter */
+/* Gold drop-cap on the first character */
 .interp-text::first-letter {
   font-size: 56rpx;
   color: #F4D48C;
   font-weight: 700;
   float: left;
   margin-right: 10rpx;
-  margin-top: 6rpx;
-  line-height: 1.1;
-  font-family: serif;
-  text-shadow: 0 0 16rpx rgba(244, 212, 140, 0.25);
+  margin-top: 8rpx;
+  line-height: 1;
+  font-family: "Georgia", "Noto Serif SC", serif;
+  text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.2);
 }
 
 /* ============================================
@@ -387,7 +294,7 @@
   border-top: 1rpx solid rgba(244, 212, 140, 0.1);
 }
 
-/* Primary: gold gradient "追问更多" */
+/* Primary: gold pill "追问更多" */
 .btn-ask {
   width: 100%;
   background: linear-gradient(135deg, #F4D48C 0%, #D4B06A 100%);
@@ -404,39 +311,47 @@
   transition: opacity 0.2s;
 }
 
+.btn-ask::after {
+  border: none;
+}
+
 .btn-ask:active {
   opacity: 0.85;
 }
 
-/* Secondary: outlined gold "重新解读" */
+/* Text link: lavender "再来一次" */
 .btn-redo {
-  width: 100%;
-  background: transparent;
-  color: #F4D48C;
-  border: 1.5rpx solid rgba(244, 212, 140, 0.3);
-  border-radius: 50rpx;
-  padding: 24rpx 0;
+  color: #B8A9E0;
   font-size: 28rpx;
   letter-spacing: 3rpx;
   font-weight: 500;
-  transition: border-color 0.2s;
+  text-align: center;
+  padding: 16rpx 0 8rpx;
+  display: block;
+  opacity: 0.8;
+  background: none;
+  border: none;
+}
+
+.btn-redo::after {
+  border: none;
 }
 
 .btn-redo:active {
-  border-color: rgba(244, 212, 140, 0.6);
+  opacity: 1;
 }
 
-/* Text link: lavender "回到首页" */
+/* Subtle secondary "回到首页" */
 .btn-back {
-  color: #B8A9E0;
-  font-size: 26rpx;
-  padding: 20rpx 0 8rpx;
+  color: #6B6599;
+  font-size: 24rpx;
+  padding: 12rpx 0 8rpx;
   display: block;
   text-align: center;
   letter-spacing: 2rpx;
-  opacity: 0.75;
+  opacity: 0.6;
 }
 
 .btn-back:active {
-  opacity: 1;
+  opacity: 0.85;
 }

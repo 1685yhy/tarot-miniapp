@@ -9,12 +9,12 @@ page {
   --gold-light: #FADE9E;
   --gold-glow: rgba(244, 212, 140, 0.35);
   --gold-dim: rgba(244, 212, 140, 0.15);
-  --bg-deep: var(--color-bg);
-  --bg-card: #161329;
+  --bg-deep: #1A1A3E;
+  --bg-card: #252550;
   --bg-elevated: #1e1a38;
-  --bg-user: #1e1a38;
-  --bg-ai: #232048;
-  --cream: #f5eedc;
+  --bg-user: #252550;
+  --bg-ai: #2A2A5A;
+  --cream: #F0EDE8;
   --cream-dim: #e0d8c4;
   --text-primary: #e8e4f0;
   --text-secondary: #b8b0d0;
@@ -151,18 +151,13 @@ page {
   justify-content: center;
 }
 
-.empty-icon {
-  font-size: 72rpx;
-  display: block;
-  margin-bottom: var(--space-xl);
-  opacity: 0.7;
-}
-
 .empty-text {
-  font-size: 28rpx;
+  font-size: 30rpx;
   color: var(--text-secondary);
   display: block;
   margin-bottom: var(--space-sm);
+  letter-spacing: 2rpx;
+  line-height: 1.6;
 }
 
 .empty-hint {
@@ -170,6 +165,7 @@ page {
   color: var(--text-tertiary);
   display: block;
   line-height: 1.6;
+  letter-spacing: 1rpx;
 }
 
 /* ================================================================
@@ -182,12 +178,6 @@ page {
   justify-content: center;
   padding: 160rpx var(--space-xl);
   text-align: center;
-}
-
-.error-icon {
-  font-size: 72rpx;
-  margin-bottom: var(--space-lg);
-  display: block;
 }
 
 .error-text {
@@ -216,7 +206,7 @@ page {
   border-radius: var(--radius-round);
   font-size: 28rpx;
   font-weight: 600;
-  color: var(--color-text-inverse);
+  color: #1A1A3E;
   background: linear-gradient(135deg, var(--gold-light), var(--gold));
   box-shadow: 0 4rpx 24rpx var(--gold-glow);
   transition: all 0.25s;
@@ -310,9 +300,10 @@ page {
   font-size: 28rpx;
   white-space: pre-wrap;
   word-break: break-word;
+  color: var(--cream);
 }
 
-/* ---- User bubble: cream text on dark indigo, right-aligned ---- */
+/* ---- User bubble: #252550 card bg, right-aligned ---- */
 .bubble-user {
   background: var(--bg-user);
   border-radius: var(--radius-bubble) 4rpx var(--radius-bubble) var(--radius-bubble);
@@ -320,47 +311,13 @@ page {
   box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.15);
 }
 
-.bubble-user .msg-text {
-  color: var(--cream);
-}
-
-.bubble-user::after {
-  content: '';
-  position: absolute;
-  top: 18rpx;
-  right: -6rpx;
-  width: 0;
-  height: 0;
-  border-left: 8rpx solid var(--bg-user);
-  border-top: 6rpx solid transparent;
-  border-bottom: 6rpx solid transparent;
-  transform: rotate(-20deg);
-}
-
-/* ---- AI bubble: cream text on lighter indigo, left-aligned ---- */
+/* ---- AI bubble: #2A2A5A lighter bg, left-aligned, gold left border ---- */
 .bubble-ai {
   background: var(--bg-ai);
   border-radius: 4rpx var(--radius-bubble) var(--radius-bubble) var(--radius-bubble);
   border: 1rpx solid var(--gold-dim);
-  box-shadow: 0 2rpx 16rpx rgba(212, 175, 55, 0.08);
   border-left: 3rpx solid var(--gold);
-}
-
-.bubble-ai .msg-text {
-  color: var(--cream-dim);
-}
-
-.bubble-ai::after {
-  content: '';
-  position: absolute;
-  top: 18rpx;
-  left: -6rpx;
-  width: 0;
-  height: 0;
-  border-right: 8rpx solid var(--bg-ai);
-  border-top: 6rpx solid transparent;
-  border-bottom: 6rpx solid transparent;
-  transform: rotate(20deg);
+  box-shadow: 0 2rpx 16rpx rgba(212, 175, 55, 0.08);
 }
 
 /* ================================================================
@@ -375,11 +332,10 @@ page {
   align-items: center;
   padding: var(--space-md) var(--space-xl);
   padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-md));
-  background: rgba(22, 19, 41, 0.96);
+  background: rgba(26, 26, 62, 0.97);
   border-top: 1.5rpx solid var(--gold-dim);
   gap: var(--space-sm);
   z-index: 100;
-  /* backdrop-filter not supported in WXSS */
 }
 
 .chat-input {
@@ -396,8 +352,8 @@ page {
 }
 
 .chat-input:focus {
-  border-color: var(--gold-dim);
-  box-shadow: 0 0 0 3rpx rgba(212, 175, 55, 0.06);
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3rpx rgba(244, 212, 140, 0.12);
 }
 
 .chat-input::placeholder {
@@ -411,7 +367,7 @@ page {
   line-height: 72rpx;
   text-align: center;
   background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  color: var(--color-text-inverse);
+  color: #1A1A3E;
   font-size: 24rpx;
   font-weight: 700;
   border-radius: var(--radius-round);

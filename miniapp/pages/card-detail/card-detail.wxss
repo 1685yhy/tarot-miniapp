@@ -184,7 +184,7 @@ page {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: var(--sl-space-sm);
+  gap: var(--sl-space-lg);
   margin-bottom: var(--sl-space-2xl);
   padding: 0 var(--sl-space-lg);
   animation: sl-fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -263,8 +263,8 @@ page {
   );
   border: 1rpx solid var(--sl-card-border);
   border-radius: var(--sl-radius-md);
-  padding: var(--sl-space-lg) var(--sl-space-xl);
-  margin-bottom: var(--sl-space-2xl);
+  padding: var(--sl-space-xl) var(--sl-space-2xl);
+  margin-bottom: var(--sl-space-3xl);
   box-shadow:
     0 2rpx 16rpx rgba(0, 0, 0, 0.20),
     0 0 1rpx rgba(212, 175, 55, 0.04);
@@ -292,7 +292,7 @@ page {
   font-weight: 600;
   color: var(--sl-gold-light);
   letter-spacing: 4rpx;
-  margin-bottom: var(--sl-space-md);
+  margin-bottom: var(--sl-space-lg);
   line-height: 1.4;
 }
 
