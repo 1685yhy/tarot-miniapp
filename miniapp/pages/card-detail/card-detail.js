@@ -2,7 +2,14 @@
 const { request } = require('../../utils/api');
 
 // ---- Image path computation (mirrors tarot-card component logic) ----
-const IMAGE_BASE = 'https://xingxiang.chat/images/cards';
+const IMAGE_BASE = (() => {
+  try {
+    const env = wx.getAccountInfoSync().miniProgram.envVersion;
+    return env === 'develop' ? 'http://127.0.0.1:8000/images/cards' : 'https://xingxiang.chat/images/cards_full';
+  } catch {
+    return 'https://xingxiang.chat/images/cards_full';
+  }
+})();
 const RANK_MAP = {
   ace: 0, two: 1, three: 2, four: 3, five: 4,
   six: 5, seven: 6, eight: 7, nine: 8, ten: 9,
