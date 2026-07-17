@@ -22,10 +22,13 @@ Page({
     question: '',
     theme: '',
     showQuestionInput: false,
+    ritualStage: null,   // null = not in ritual, 0 = meditation, 1 = shuffle, 2 = question
     isDrawing: false,
     pageLoading: true,
     pageError: null,
   },
+
+  _timers: [],
 
   onLoad(options) {
     // 首页点击牌阵直接进入问答，跳过选择页
@@ -37,14 +40,14 @@ Page({
         this.setData({
           selectedSpread: spread,
           theme: spread.theme || '',
-          showQuestionInput: !spread.premium,
+          showQuestionInput: false,
           pageLoading: false,
         });
         // 会员牌阵需要登录检查
         if (spread.premium) {
           checkLogin({ refresh: true }).then(user => {
             if (user && user.is_member) {
-              this.setData({ showQuestionInput: true });
+              this._startRitual();
             } else {
               wx.showModal({
                 title: '会员专属',
@@ -59,11 +62,66 @@ Page({
           }).catch(() => {
             wx.showToast({ title: '请先登录', icon: 'none' });
           });
+        } else {
+          this._startRitual();
         }
       }
     }
     // 清除骨架屏（pageLoading 初始为 true，确保首次渲染骨架）
     this.setData({ pageLoading: false });
+  },
+
+  onUnload() {
+    this._clearTimers();
+  },
+
+  /* ========== Ritual Flow ========== */
+
+  _clearTimers() {
+    this._timers.forEach(t => clearTimeout(t));
+    this._timers = [];
+  },
+
+  _setTimer(fn, ms) {
+    const id = setTimeout(fn, ms);
+    this._timers.push(id);
+    return id;
+  },
+
+  _startRitual() {
+    this._clearTimers();
+    this.setData({ ritualStage: 0 });
+
+    // Auto-advance from meditation after 6s
+    this._setTimer(() => {
+      if (this.data.ritualStage === 0) {
+        this._advanceRitual();
+      }
+    }, 6000);
+  },
+
+  _advanceRitual() {
+    this._clearTimers();
+    const stage = this.data.ritualStage;
+
+    if (stage === 0) {
+      // Move to shuffle
+      this.setData({ ritualStage: 1 });
+      // Auto-advance from shuffle after 2s
+      this._setTimer(() => {
+        if (this.data.ritualStage === 1) {
+          this._advanceRitual();
+        }
+      }, 2000);
+    } else if (stage === 1) {
+      // Move to question
+      this.setData({ ritualStage: 2 });
+    }
+  },
+
+  // User tap to skip current stage or advance
+  onRitualTap() {
+    this._advanceRitual();
   },
 
   async onSelectSpread(e) {
@@ -96,8 +154,10 @@ Page({
     this.setData({
       selectedSpread: spread,
       theme: spread.theme || '',
-      showQuestionInput: true,
+      showQuestionInput: false,
     });
+
+    this._startRitual();
   },
 
   onQuestionInput(e) {
@@ -109,11 +169,13 @@ Page({
   },
 
   onBackToSpreads() {
-    this.setData({ selectedSpread: null, showQuestionInput: false, question: '' });
+    this._clearTimers();
+    this.setData({ selectedSpread: null, showQuestionInput: false, ritualStage: null, question: '' });
   },
 
   onRetry() {
-    this.setData({ pageError: null, isDrawing: false, selectedSpread: null, showQuestionInput: false });
+    this._clearTimers();
+    this.setData({ pageError: null, isDrawing: false, selectedSpread: null, showQuestionInput: false, ritualStage: null });
   },
 
   async onStartReading() {

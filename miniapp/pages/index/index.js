@@ -2,6 +2,30 @@
 const { request } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
 
+function getTodayStr() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function getYesterdayStr() {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+const STREAK_MILESTONES = {
+  7: '连续7天！星光与你同行 ✨',
+  14: '两周守护！星辰之路持续闪耀 ✨',
+  30: '满月之约！30天星光陪伴 ✨',
+  100: '百日修行！你已是星光的一部分 ✨',
+};
+
 Page({
   data: {
     dailyCard: null,
@@ -17,6 +41,11 @@ Page({
       { emoji: '🔮', title: '牌阵解读', desc: '选择牌阵，AI为您深度解读' },
       { emoji: '💫', title: '星光陪伴', desc: '记录心灵旅程，发现内在力量' },
     ],
+    // Daily habit loop
+    streak: 0,
+    hasDrawnToday: false,
+    showReflectionPrompt: false,
+    showReminder: false,
   },
 
   async onLoad() {
@@ -25,11 +54,67 @@ Page({
       try {
         await checkLogin();
         this.setData({ pageLoading: false });
+        this._initDailyState();
       } catch (err) {
         this.setData({ pageLoading: false, pageError: err.message || '加载失败' });
       }
     } else {
       this.setData({ showOnboarding: true, pageLoading: false });
+    }
+  },
+
+  /** Initialize daily streak and reminder state from storage */
+  _initDailyState() {
+    const lastDate = wx.getStorageSync('last_draw_date');
+    const storedStreak = wx.getStorageSync('streak') || 0;
+    const today = getTodayStr();
+    const yesterday = getYesterdayStr();
+
+    let hasDrawnToday = false;
+    let streak = 0;
+    let showReminder = false;
+
+    if (lastDate === today) {
+      hasDrawnToday = true;
+      streak = storedStreak;
+    } else if (lastDate === yesterday) {
+      // User drew yesterday — streak is alive, new fortune is ready
+      streak = storedStreak;
+      showReminder = true;
+    } else {
+      // Streak broken or first time
+      streak = 0;
+      showReminder = true; // still show the card is ready
+    }
+
+    this.setData({ streak, hasDrawnToday, showReminder });
+  },
+
+  /** Update streak after a successful daily draw */
+  _updateStreak() {
+    const lastDate = wx.getStorageSync('last_draw_date');
+    const storedStreak = wx.getStorageSync('streak') || 0;
+    const today = getTodayStr();
+    const yesterday = getYesterdayStr();
+
+    let newStreak;
+    if (lastDate === yesterday) {
+      newStreak = storedStreak + 1;
+    } else if (lastDate === today) {
+      newStreak = storedStreak; // redraw same day
+    } else {
+      newStreak = 1; // fresh start after break
+    }
+
+    wx.setStorageSync('last_draw_date', today);
+    wx.setStorageSync('streak', newStreak);
+    this.setData({ streak: newStreak, hasDrawnToday: true, showReminder: false });
+
+    const message = STREAK_MILESTONES[newStreak];
+    if (message) {
+      setTimeout(() => {
+        wx.showToast({ title: message, icon: 'none', duration: 2500 });
+      }, 800);
     }
   },
 
@@ -91,6 +176,9 @@ Page({
       wx.hideLoading();
       // 保存到globalData供详情页使用
       getApp().globalData.dailyCard = card;
+      // Daily habit loop: update streak + show reflection prompt
+      this._updateStreak();
+      this.setData({ showReflectionPrompt: true });
     } catch (err) {
       this.setData({ drawingLoading: false });
       this._shakeTimer && clearTimeout(this._shakeTimer);
@@ -104,6 +192,10 @@ Page({
   navigateToReading(e) {
     const type = e.currentTarget.dataset.type;
     wx.navigateTo({ url: `/pages/reading/reading?type=${type}` });
+  },
+
+  goToDiary() {
+    wx.navigateTo({ url: '/pages/diary/diary' });
   },
 
   goToAllSpreads() {
