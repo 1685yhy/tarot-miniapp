@@ -5,6 +5,7 @@ Uses DeepSeek API (OpenAI-compatible) to generate thoughtful tarot
 readings based on the cards drawn and the user's question.
 """
 
+import datetime
 import logging
 
 from openai import AsyncOpenAI
@@ -52,6 +53,52 @@ _THEME_MEANING_KEY_MAP = {
     "career": ("career_upright", "career_reversed"),
     "finance": ("finance_upright", "finance_reversed"),
 }
+
+
+def _get_time_greeting() -> str:
+    """Return a time-of-day contextual greeting based on the current hour."""
+    hour = datetime.datetime.now().hour
+    if 6 <= hour < 12:
+        return "早安，新的一天，星光与你同在..."
+    elif 12 <= hour < 18:
+        return "午后的阳光里，让我们看看命运的指引..."
+    elif 18 <= hour < 22:
+        return "夜幕降临，星光渐亮..."
+    else:
+        return "夜深人静，是最适合与自己对话的时刻..."
+
+
+def _analyze_sentiment(question: str | None) -> str:
+    """Analyze the user's question for emotional keywords and return tone guidance."""
+    if not question:
+        return ""
+
+    anxious_words = ["担心", "焦虑", "害怕", "怎么办", "紧张", "不安", "惶恐", "忧虑", "纠结"]
+    exciting_words = ["机会", "希望", "新", "机遇", "开始", "突破", "挑战", "成长"]
+    sad_words = ["分手", "失去", "难过", "伤心", "痛苦", "离别", "结束", "失望", "孤独", "受伤"]
+
+    anxiety_count = sum(1 for w in anxious_words if w in question)
+    exciting_count = sum(1 for w in exciting_words if w in question)
+    sad_count = sum(1 for w in sad_words if w in question)
+
+    if anxiety_count > 0 and anxiety_count >= exciting_count and anxiety_count >= sad_count:
+        return "【语气指引】用户此刻可能带着焦虑或不安。请用温柔、安抚的语气回应，像老朋友一样给予安全感，先缓解紧张情绪再做解读。"
+    if sad_count > 0 and sad_count >= anxiety_count and sad_count >= exciting_count:
+        return "【语气指引】用户此刻情绪可能比较低落。请用富有同理心的语气回应，传递温暖和关怀，让对方感到被理解和支持。"
+    if exciting_count > 0:
+        return "【语气指引】用户似乎对未来充满期待和希望。请用积极、充满能量的语气回应，鼓励用户勇敢抓住机遇。"
+    return ""
+
+
+def _get_nudge_instruction(theme: str | None) -> str:
+    """Return an instruction for the AI to end the reading with a personalized nudge."""
+    if theme == "love":
+        return "\n\n【收尾指引】在解读的最后，请以一句温暖的话收尾，主题围绕「爱自己，是终身浪漫的开始」，让用户感受到爱的力量。"
+    elif theme == "career":
+        return "\n\n【收尾指引】在解读的最后，请以一句鼓励的话收尾，主题围绕「每一个选择都是新的开始」，给用户前进的勇气。"
+    elif theme == "finance":
+        return "\n\n【收尾指引】在解读的最后，请以一句有智慧的话收尾，主题围绕「财富是内心丰盈的倒影」，帮助用户建立健康的财富观。"
+    return "\n\n【收尾指引】在解读的最后，请以一句温暖的话收尾，告诉用户「今天也要好好照顾自己」，让用户感受到被关心。"
 
 
 def _card_direction_tag(card: dict) -> str:
@@ -116,9 +163,22 @@ async def generate_reading(
     if not settings.DEEPSEEK_API_KEY:
         return None
 
+    # --- Build dynamic system prompt with personalization ---
+    time_greeting = _get_time_greeting()
+    tone_guidance = _analyze_sentiment(question)
+    nudge_instruction = _get_nudge_instruction(theme)
+
+    dynamic_system_prompt = (
+        f"{time_greeting}\n\n"
+        f"{SYSTEM_PROMPT}"
+        f"{tone_guidance}"
+        f"{nudge_instruction}"
+    )
+
     cards_text = _build_cards_text(cards_info, theme=theme)
 
     user_prompt = (
+        f"现在是{datetime.datetime.now().strftime('%H:%M')}，{time_greeting}\n\n"
         f"请为用户进行塔罗解读。\n\n"
         f"牌阵类型: {spread_type}\n"
         f"用户问题: {question or '未指定具体问题'}\n"
@@ -142,7 +202,7 @@ async def generate_reading(
                 model=settings.DEEPSEEK_MODEL,
                 max_tokens=settings.AI_MAX_TOKENS,
                 messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "system", "content": dynamic_system_prompt},
                     {"role": "user", "content": user_prompt},
                 ],
                 timeout=120.0,

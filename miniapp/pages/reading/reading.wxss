@@ -18,6 +18,7 @@ page {
   --text-dim: #A098C0;
   --text-gold: #F4D48C;
   --danger: #ff6b6b;
+  --lavender: #C8B8E8;
   --fs-caption: 22rpx;
   --fs-body-small: 24rpx;
   --fs-body: 28rpx;
@@ -102,6 +103,7 @@ page {
 .mt-sm { margin-top: var(--space-sm); }
 .mb-xxl { margin-bottom: var(--space-xxl); }
 .mb-xxxl { margin-bottom: var(--space-xxxl); }
+.mr-sm { margin-right: var(--space-sm); }
 
 /* ==============================
    Animations
@@ -430,6 +432,32 @@ page {
 }
 
 /* ==============================
+   Enhanced question prompt
+   ============================== */
+.question-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.prompt-stars {
+  font-size: 20rpx;
+  color: var(--gold);
+  opacity: 0.6;
+  letter-spacing: 6rpx;
+}
+
+.prompt-text {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--gold);
+  text-shadow: 0 0 20rpx var(--gold-dim);
+  letter-spacing: 0.04em;
+}
+
+/* ==============================
    Theme selection
    ============================== */
 .theme-options {
@@ -523,6 +551,206 @@ page {
 @keyframes pulseGlow {
   0%, 100% { box-shadow: 0 0 30rpx var(--gold-glow); }
   50% { box-shadow: 0 0 60rpx var(--gold-glow); }
+}
+
+/* ==============================
+   RITUAL STAGE — Shared
+   ============================== */
+.ritual-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  text-align: center;
+  padding: var(--space-xxl) var(--space-xl);
+  position: relative;
+}
+
+.ritual-heading {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.06em;
+  text-shadow: 0 0 24rpx var(--gold-dim);
+  margin-bottom: var(--space-xxl);
+}
+
+.ritual-subtitle {
+  font-size: 28rpx;
+  color: var(--lavender);
+  letter-spacing: 0.08em;
+  margin-top: var(--space-xxl);
+  opacity: 0.85;
+}
+
+.ritual-skip-hint {
+  position: absolute;
+  bottom: 60rpx;
+  font-size: 22rpx;
+  color: var(--text-dim);
+  opacity: 0.5;
+  letter-spacing: 0.04em;
+}
+
+/* ==============================
+   RITUAL STAGE 0 — Breathing
+   ============================== */
+.breathing-container {
+  position: relative;
+  width: 360rpx;
+  height: 360rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.breathing-circle {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(244,212,140,0.30), rgba(244,212,140,0.08));
+  box-shadow: 0 0 60rpx rgba(244,212,140,0.25);
+  animation: breatheCircle 4s ease-in-out infinite;
+  position: absolute;
+  z-index: 2;
+}
+
+.breathing-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5rpx solid rgba(244,212,140,0.15);
+  pointer-events: none;
+}
+
+.breathing-ring-outer {
+  width: 360rpx;
+  height: 360rpx;
+  animation: breatheRingOuter 4s ease-in-out infinite;
+  z-index: 1;
+}
+
+.breathing-ring-inner {
+  width: 240rpx;
+  height: 240rpx;
+  animation: breatheRingInner 4s ease-in-out infinite;
+  z-index: 1;
+}
+
+.breathing-text {
+  position: absolute;
+  font-size: 26rpx;
+  font-weight: 500;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 20rpx var(--gold-glow);
+  z-index: 3;
+  animation: breatheText 4s ease-in-out infinite;
+}
+
+@keyframes breatheCircle {
+  0%, 100% { transform: scale(0.6); opacity: 0.5; }
+  50% { transform: scale(1.6); opacity: 1; }
+}
+
+@keyframes breatheRingOuter {
+  0%, 100% { transform: scale(0.3); opacity: 0.2; }
+  50% { transform: scale(1.0); opacity: 0.6; }
+}
+
+@keyframes breatheRingInner {
+  0%, 100% { transform: scale(0.5); opacity: 0.3; }
+  50% { transform: scale(1.3); opacity: 0.7; }
+}
+
+@keyframes breatheText {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* ==============================
+   RITUAL STAGE 1 — Shuffle cards
+   ============================== */
+.shuffle-area {
+  position: relative;
+  width: 500rpx;
+  height: 300rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shuffle-card {
+  position: absolute;
+  width: 80rpx;
+  height: 120rpx;
+  border-radius: 10rpx;
+  background: linear-gradient(145deg, #3A3070, #2A2050);
+  border: 1rpx solid rgba(244,212,140,0.20);
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.3);
+}
+
+/* Card 1 — far left, slow flip */
+.shuffle-card-1 {
+  animation: shuffleCard1 1.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+}
+
+/* Card 2 — left, fast flip */
+.shuffle-card-2 {
+  animation: shuffleCard2 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+}
+
+/* Card 3 — center, scale pulse */
+.shuffle-card-3 {
+  animation: shuffleCard3 0.6s ease-in-out infinite;
+}
+
+/* Card 4 — right, fast flip */
+.shuffle-card-4 {
+  animation: shuffleCard4 1.1s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+}
+
+/* Card 5 — far right, slow flip */
+.shuffle-card-5 {
+  animation: shuffleCard5 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+}
+
+/* Card 1: translate left/right + flip */
+@keyframes shuffleCard1 {
+  0%, 100% { transform: translateX(-180rpx) rotateY(0deg) scale(0.9); opacity: 0.6; }
+  25% { transform: translateX(-100rpx) rotateY(180deg) scale(1.05); opacity: 0.9; }
+  50% { transform: translateX(-160rpx) rotateY(360deg) scale(0.95); opacity: 0.8; }
+  75% { transform: translateX(-120rpx) rotateY(180deg) scale(1.0); opacity: 1; }
+}
+
+/* Card 2: slide to center and back */
+@keyframes shuffleCard2 {
+  0%, 100% { transform: translateX(-90rpx) rotateY(0deg) scale(0.95); opacity: 0.7; }
+  30% { transform: translateX(-20rpx) rotateY(180deg) scale(1.0); opacity: 1; }
+  60% { transform: translateX(-70rpx) rotateY(360deg) scale(0.95); opacity: 0.8; }
+}
+
+/* Card 3: center — scale pulse + subtle rise */
+@keyframes shuffleCard3 {
+  0%, 100% { transform: translateX(0) scale(0.95); opacity: 0.8; }
+  25% { transform: translateX(0) scale(1.15); opacity: 1; }
+  50% { transform: translateX(0) scale(0.9); opacity: 0.7; }
+  75% { transform: translateX(0) scale(1.1); opacity: 0.9; }
+}
+
+/* Card 4: slide left to center */
+@keyframes shuffleCard4 {
+  0%, 100% { transform: translateX(90rpx) rotateY(0deg) scale(0.95); opacity: 0.7; }
+  35% { transform: translateX(20rpx) rotateY(180deg) scale(1.0); opacity: 1; }
+  65% { transform: translateX(70rpx) rotateY(360deg) scale(0.95); opacity: 0.8; }
+}
+
+/* Card 5: far right */
+@keyframes shuffleCard5 {
+  0%, 100% { transform: translateX(180rpx) rotateY(0deg) scale(0.9); opacity: 0.6; }
+  30% { transform: translateX(100rpx) rotateY(180deg) scale(1.05); opacity: 0.9; }
+  55% { transform: translateX(140rpx) rotateY(360deg) scale(0.95); opacity: 0.8; }
+  80% { transform: translateX(120rpx) rotateY(180deg) scale(1.0); opacity: 1; }
 }
 
 /* ==============================

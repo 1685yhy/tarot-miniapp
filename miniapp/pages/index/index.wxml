@@ -96,13 +96,17 @@
     <view class="hero-glow-rings"></view>
     <text class="title-1" style="text-align:center;display:block">星光映照</text>
     <text class="body-text" style="text-align:center;display:block;margin-top:12rpx">每日一牌，遇见自己</text>
+
+    <!-- Daily reminder badge -->
+    <view wx:if="{{hasDrawnToday}}" class="daily-updated-badge anim-slide-up">✓ 今日运势已更新</view>
+    <view wx:elif="{{showReminder && !dailyCard}}" class="daily-reminder-badge anim-gentle-pulse">今日运势待开启</view>
   </view>
 
   <!-- 每日一牌 -->
   <view class="anim-fade-in-up-2" style="margin:60rpx 0">
 
     <!-- BEFORE DRAW — card awaiting tap with shimmer, sparkles, float -->
-    <view class="daily-card-wrap" wx:if="{{!dailyCard}}" bindtap="drawDailyCard">
+    <view class="daily-card-wrap {{!hasDrawnToday && !dailyCard ? 'card-ready' : ''}}" wx:if="{{!dailyCard}}" bindtap="drawDailyCard">
       <view class="card card-warm card-float">
         <!-- Shimmer sweep — light glint across surface -->
         <view class="card-shimmer"></view>
@@ -148,6 +152,18 @@
         <text class="caption accent-text reveal-text" style="display:block;margin-bottom:16rpx">今日指引</text>
         <text class="title-2 reveal-text" style="display:block;margin-bottom:12rpx;animation-delay:0.15s">{{dailyCard.name_zh}}</text>
         <text class="body-text reveal-text" style="animation-delay:0.3s">{{dailyCard.keywords_upright}}</text>
+
+        <!-- Streak badge (only if 2+ consecutive days) -->
+        <view wx:if="{{streak >= 2}}" class="streak-badge reveal-text" style="animation-delay:0.45s">
+          <text class="streak-icon">✦</text>
+          <text class="streak-count">连续 {{streak}} 天</text>
+        </view>
+
+        <!-- Daily reflection prompt -->
+        <view wx:if="{{showReflectionPrompt}}" class="reflection-prompt reveal-text" style="animation-delay:0.6s">
+          <text class="reflection-text">今天的这张牌，让你想到了什么？</text>
+          <text class="reflection-link" bindtap="goToDiary">记录此刻感悟 →</text>
+        </view>
       </view>
     </view>
 
