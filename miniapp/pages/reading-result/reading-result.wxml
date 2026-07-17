@@ -66,8 +66,8 @@
         <view class="letter-body {{showFullInterpretation ? 'expanded' : 'collapsed'}}">
           <text class="letter-text">{{reading.interpretation}}</text>
         </view>
-        <view class="letter-toggle" wx:if="{{textLong}}">
-          <text class="toggle-btn" bindtap="onToggleText">
+        <view class="letter-toggle" wx:if="{{reading.interpretation && reading.interpretation.length > 300}}">
+          <text class="toggle-btn" bindtap="onToggleFull">
             {{showFullInterpretation ? '收起' : '展开全部'}}
           </text>
         </view>
