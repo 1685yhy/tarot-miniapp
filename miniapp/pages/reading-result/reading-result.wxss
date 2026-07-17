@@ -23,3 +23,7 @@
 .btn-ask{width:100%;background:linear-gradient(135deg,#F4D48C,#D4B06A);color:#1A1A3E;font-weight:600;font-size:30rpx;border-radius:48rpx;padding:24rpx 0;border:none}
 .btn-redo{width:100%;background:transparent;color:#F4D48C;border:1.5rpx solid rgba(244,212,140,.3);border-radius:48rpx;padding:20rpx 0;font-size:28rpx}
 .btn-back{color:#9A95B8;font-size:26rpx;padding:12rpx 0;display:block;text-align:center}
+.card-list{display:flex;gap:16rpx;justify-content:center;flex-wrap:wrap}
+.card-item{background:#252550;border-radius:16rpx;padding:24rpx 32rpx;text-align:center;min-width:180rpx}
+.card-pos{font-size:22rpx;color:#9A95B8;display:block;margin-bottom:8rpx}
+.card-name{font-size:28rpx;color:#F4D48C;display:block}

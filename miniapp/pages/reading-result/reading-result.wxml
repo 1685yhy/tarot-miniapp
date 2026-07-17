@@ -25,19 +25,14 @@
 
 <!-- 结果 -->
 <view class="page" wx:elif="{{reading}}">
-  <!-- 抽到的牌 -->
+  <!-- 抽到的牌 — 纯文本显示，避免组件崩溃 -->
   <view class="cards-area">
-    <swiper class="card-swiper" current="{{activeCardIndex}}" bindchange="onCardSwiperChange" indicator-dots="{{true}}">
-      <swiper-item wx:for="{{reading.drawn_cards}}" wx:key="id">
-        <view class="card-wrapper">
-          <tarot-card
-            nameZh="{{item.card_name}}"
-            positionName="{{item.position_name}}"
-            isReversed="{{item.is_reversed}}"
-          />
-        </view>
-      </swiper-item>
-    </swiper>
+    <view class="card-list">
+      <view class="card-item" wx:for="{{reading.drawn_cards}}" wx:key="id">
+        <text class="card-pos">{{item.position_name}}</text>
+        <text class="card-name">{{item.card_name}}{{item.is_reversed ? ' (逆)' : ''}}</text>
+      </view>
+    </view>
   </view>
 
   <!-- AI 解读 -->
