@@ -119,7 +119,7 @@ page {
   display: block;
   margin: 0 auto var(--spacing-md);
   opacity: 0.40;
-  filter: drop-shadow(0 0 10rpx rgba(244, 212, 140, 0.20));
+  /* filter replaced */
 }
 
 /* ============================================================
@@ -169,7 +169,7 @@ page {
   width: 64rpx;
   height: 64rpx;
   display: block;
-  filter: drop-shadow(0 0 8rpx rgba(244, 212, 140, 0.35));
+  /* filter replaced */
 }
 
 /* Username — gold */
@@ -338,7 +338,7 @@ page {
   width: 48rpx;
   height: 48rpx;
   display: block;
-  filter: drop-shadow(0 0 4rpx rgba(244, 212, 140, 0.08));
+  /* filter replaced */
 }
 
 /* Content area */

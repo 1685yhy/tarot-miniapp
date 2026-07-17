@@ -631,7 +631,7 @@
   font-size: 100rpx;
   display: block;
   margin-bottom: 48rpx;
-  filter: drop-shadow(0 0 30rpx rgba(244, 212, 140, 0.20));
+  /* filter replaced */
 }
 
 .onboarding-title {
