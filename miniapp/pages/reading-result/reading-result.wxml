@@ -63,12 +63,12 @@
            3. LETTER — The interpretation as personal prose
            ========================================================== -->
       <view class="letter-section">
-        <view class="letter-body {{textExpanded ? 'expanded' : 'collapsed'}}">
+        <view class="letter-body {{showFullInterpretation ? 'expanded' : 'collapsed'}}">
           <text class="letter-text">{{reading.interpretation}}</text>
         </view>
         <view class="letter-toggle" wx:if="{{textLong}}">
           <text class="toggle-btn" bindtap="onToggleText">
-            {{textExpanded ? '收起' : '展开全部'}}
+            {{showFullInterpretation ? '收起' : '展开全部'}}
           </text>
         </view>
       </view>

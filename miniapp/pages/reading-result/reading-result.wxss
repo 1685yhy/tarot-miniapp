@@ -326,18 +326,16 @@
   );
 }
 
-/* Collapsed: show first ~12 lines then fade */
+/* Collapsed: show first portion */
 .letter-body.collapsed {
-  max-height: 560rpx;
-  -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 95%);
-  mask-image: linear-gradient(to bottom, black 60%, transparent 95%);
+  max-height: 800rpx;
+  overflow: hidden;
 }
 
 /* Expanded: full height */
 .letter-body.expanded {
   max-height: none;
-  -webkit-mask-image: none;
-  mask-image: none;
+  overflow: visible;
 }
 
 /* ---- Letter Text ---- */
