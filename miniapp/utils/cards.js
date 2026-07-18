@@ -165,7 +165,7 @@ function computeImagePath(cardData, imageBase) {
   }
 
   if (cardData.suit) {
-    const firstWord = enSnake.split(' ')[0];
+    const firstWord = enSnake.split('_')[0];
     const rankIdx = RANK_MAP[firstWord] !== undefined ? RANK_MAP[firstWord] : 0;
     return `${base}/${cardData.suit}_${String(rankIdx).padStart(2, '0')}_${enSnake}.png`;
   }
