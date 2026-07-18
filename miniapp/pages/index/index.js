@@ -1,6 +1,7 @@
 // pages/index/index.js
 const { request } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
+const { createAnim, staggeredEntrance } = require('../../utils/animate');
 
 const FREE_READINGS_LIMIT = 3;
 
@@ -54,6 +55,14 @@ Page({
     isMember: false,
     // Pending reading recovery
     pendingReading: null,
+
+    // ---- wx.createAnimation native animation system ----
+    // Toggle: set false to fall back to CSS animations only
+    useNativeAnim: true,
+    // Animation data for daily card draw (pre-draw press + shuffle)
+    cardAnimData: {},
+    // Animation data for spread grid staggered entrance
+    spreadAnimData: [],
   },
 
   async onLoad() {
@@ -73,6 +82,11 @@ Page({
 
     // Check for pending reading to show recovery card
     this._checkPendingReading();
+
+    // Trigger native staggered entrance for spread cards after render
+    if (this.data.useNativeAnim) {
+      setTimeout(() => { this._triggerSpreadEntrance(); }, 100);
+    }
   },
 
   async onShow() {
@@ -188,7 +202,19 @@ Page({
     if (this.data.drawingLoading) return;
     this.setData({ drawingLoading: true });
 
-    // --- Haptic & visual feedback ---
+    // --- wx.createAnimation 3-step sequence (when enabled) ---
+    // Replaces the CSS-only shake+ripple with native animation.
+    // Step 3 (card appear) uses the existing CSS .card-rise reveal
+    // on the post-draw card which runs alongside.
+    if (this.data.useNativeAnim) {
+      const preAnim = createAnim({});
+      preAnim.scale(0.97).step({ duration: 150 });                // Step 1: press feedback
+      preAnim.scale(1.02).rotate(2).step({ duration: 300 });      // Step 2: shuffle feel
+      preAnim.scale(1).rotate(0).step({ duration: 200 });         // settle before swap
+      this.setData({ cardAnimData: preAnim.export() });
+    }
+
+    // --- Haptic & visual feedback (existing CSS, kept intact) ---
     wx.vibrateShort({ type: 'light' }).catch(() => {});
 
     // 1. Ripple burst from center (animation: 0.6s via .ripple-run)
@@ -262,6 +288,14 @@ Page({
       }
       this.setData({ pendingReading: pending });
     }
+  },
+
+  /** Trigger staggered entrance for spread grid cards using wx.createAnimation */
+  _triggerSpreadEntrance() {
+    if (!this.data.useNativeAnim) return;
+    // 4 spread cards + 1 "查看更多" link = 5 animated elements
+    const anims = staggeredEntrance(5, 100);
+    this.setData({ spreadAnimData: anims });
   },
 
   onContinueReading() {
