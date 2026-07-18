@@ -444,44 +444,85 @@ page {
 }
 
 /* ==============================
-   Question box
+   Question box — premium stationery
    ============================== */
 .question-box {
   background: linear-gradient(145deg, #252550 0%, #2A2A5A 100%);
   border: 1.5rpx solid var(--gold-dim);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
-  padding: var(--space-xl);
-  margin: var(--space-xl) 0;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin: var(--space-xl) 0 32rpx;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative gold accent line at the top */
+.question-box-accent {
+  position: absolute;
+  top: 0;
+  left: 32rpx;
+  right: 32rpx;
+  height: 2rpx;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.35;
+  pointer-events: none;
 }
 
 .question-input {
   width: 100%;
-  min-height: 140rpx;
-  padding: var(--space-lg);
+  min-height: 200rpx;
+  padding: 24rpx;
   background: var(--bg-deep);
-  border: 1rpx solid rgba(244,212,140,0.08);
-  border-radius: var(--radius-sm);
-  color: var(--text-primary);
+  border: 1.5rpx solid rgba(244,212,140,0.10);
+  border-radius: 16rpx;
+  color: #F0EDE8;
   font-size: var(--fs-body);
-  line-height: 1.5;
+  line-height: 1.7;
   box-sizing: border-box;
   outline: none;
+  transition: border-color 0.2s ease-out, box-shadow 0.2s ease-out;
 }
 
 .question-input:focus {
   border-color: var(--gold);
-  box-shadow: 0 0 16rpx var(--gold-dim);
+  border-width: 2rpx;
+  box-shadow: 0 0 20rpx var(--gold-dim);
 }
 
 .question-input::placeholder {
-  color: rgba(244, 212, 140, 0.45);
+  color: #B8A9E0;
   font-style: italic;
   font-weight: 300;
 }
 
-/* Counter warning — subtle amber when nearing the limit */
+/* Footer — hint left, char counter pill right */
+.question-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12rpx;
+}
+
+.hint-text {
+  font-size: var(--fs-caption);
+  color: rgba(244,212,140,0.5);
+}
+
+.char-counter {
+  display: inline-block;
+  padding: 4rpx 16rpx;
+  background: rgba(244,212,140,0.12);
+  border: 1rpx solid rgba(244,212,140,0.15);
+  border-radius: 999rpx;
+  font-size: var(--fs-caption);
+  color: var(--gold);
+  line-height: 1.4;
+}
+
+/* Counter warning — amber pill when nearing the limit */
 .counter-warning {
+  background: rgba(240,160,48,0.15) !important;
+  border-color: rgba(240,160,48,0.25) !important;
   color: #f0a030 !important;
 }
 
@@ -514,52 +555,82 @@ page {
 /* ==============================
    Theme selection
    ============================== */
+/* Theme hint — subtle text below label */
+.theme-hint {
+  display: block;
+  text-align: center;
+  font-size: 22rpx;
+  color: var(--gold);
+  opacity: 0.7;
+  margin-bottom: var(--space-sm);
+  letter-spacing: 0.04em;
+  animation: fadeInUp 0.4s ease-out both;
+}
+
+/* Theme section label — gold, centered */
+.theme-section-label {
+  display: block;
+  text-align: center;
+  color: var(--gold);
+  font-size: 24rpx;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--space-lg);
+  opacity: 0.85;
+}
+
 .theme-options {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-lg);
+  gap: 16rpx;
 }
 
 .theme-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-sm);
+  justify-content: center;
+  gap: 10rpx;
   flex: 1;
-  min-width: 120rpx;
   text-align: center;
-  padding: 20rpx 16rpx;
-  background: var(--bg-card);
-  border: 1.5rpx solid rgba(255,255,255,0.05);
-  border-radius: var(--radius-sm);
-  font-size: 26rpx;
-  color: var(--text-secondary);
-  transition: all 0.25s;
+  padding: 16rpx 8rpx;
+  background: #252550;
+  border: 1.5rpx solid rgba(244,212,140,0.12);
+  border-radius: 16rpx;
+  transition: all 0.2s ease-out;
   cursor: pointer;
+  box-sizing: border-box;
+  min-height: 120rpx;
+}
+
+.theme-item:active {
+  transform: scale(0.96);
 }
 
 .theme-icon {
-  width: 36rpx;
-  height: 36rpx;
+  width: 40rpx;
+  height: 40rpx;
   display: block;
-  opacity: 0.8;
+  opacity: 0.75;
+}
+
+.theme-label {
+  font-size: 24rpx;
+  color: #F0EDE8;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.theme-active {
+  background: rgba(244,212,140,0.08);
+  border-color: rgba(244,212,140,0.30);
 }
 
 .theme-active .theme-icon {
   opacity: 1;
 }
 
-.theme-item:active {
-  transform: scale(0.97);
-  border-color: rgba(244, 212, 140, 0.30);
-  box-shadow: var(--shadow-card-press);
-}
-
-.theme-active {
-  background: linear-gradient(135deg, rgba(244,212,140,0.15), rgba(244,212,140,0.05));
-  border-color: var(--gold);
-  color: var(--text-gold);
-  box-shadow: 0 0 20rpx var(--gold-dim);
+.theme-active .theme-label {
+  color: var(--gold);
 }
 
 /* ==============================
