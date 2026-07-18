@@ -82,11 +82,13 @@
 
         <!-- Three overlapping cards with images -->
         <view class="card-row">
-          <view class="card-item" wx:for="{{reading.drawn_cards}}" wx:for-item="card" wx:key="id" animation="{{cardAnimData[index]}}">
+          <view class="card-item {{enlargedCardIndex >= 0 && enlargedCardIndex !== index ? 'dimmed' : ''}} {{enlargedCardIndex === index ? 'card-active' : ''}}" wx:for="{{reading.drawn_cards}}" wx:for-item="card" wx:key="id" animation="{{cardAnimData[index]}}" data-index="{{index}}" bindtap="onCardTap">
             <view class="card-inner">
-              <text class="card-pos">{{card.position_name}}</text>
-              <image class="card-img" src="{{card.imagePath}}" mode="aspectFill" />
-              <text class="card-name">{{card.card_name}}</text>
+              <image class="card-img" src="{{card.imagePath}}" mode="aspectFill" show-menu-by-longpress="{{true}}" />
+              <view class="card-label">
+                <text class="card-pos">{{card.position_name}}</text>
+                <text class="card-name">{{card.card_name}}</text>
+              </view>
             </view>
           </view>
         </view>
@@ -136,6 +138,39 @@
     </view>
 
   </scroll-view>
+
+  <!-- ===== ENLARGED CARD OVERLAY ===== -->
+  <view class="enlarged-overlay {{isAnimatingExit ? 'exiting' : 'active'}}" wx:if="{{enlargedCardIndex >= 0}}"
+    bindtouchstart="onOverlayTouchStart"
+    bindtouchmove="onOverlayTouchMove"
+    bindtouchend="onOverlayTouchEnd"
+    catchtap="onOverlayTap">
+
+    <!-- Enlarged card container -->
+    <view class="enlarged-card-wrap {{isAnimatingExit ? 'exit' : 'enter'}}">
+      <view class="enlarged-card {{flipState}}" catchtap="onEnlargedCardTap">
+
+        <!-- Front: card image -->
+        <view class="enlarged-front" wx:if="{{!isFlipped}}">
+          <image class="enlarged-img" src="{{reading.drawn_cards[enlargedCardIndex].imagePath}}" mode="aspectFill" />
+        </view>
+
+        <!-- Back: card details -->
+        <view class="enlarged-back" wx:else>
+          <text class="back-position">{{reading.drawn_cards[enlargedCardIndex].position_name}}</text>
+          <text class="back-card-name">{{reading.drawn_cards[enlargedCardIndex].card_name}}</text>
+          <view class="back-divider"></view>
+          <text class="back-label">关键词</text>
+          <text class="back-keywords">{{reading.drawn_cards[enlargedCardIndex].keywords || ''}}</text>
+          <view class="back-divider"></view>
+          <text class="back-label">逆位含义</text>
+          <text class="back-desc">{{reading.drawn_cards[enlargedCardIndex].reversed_meaning || ''}}</text>
+        </view>
+
+      </view>
+      <text class="enlarged-hint">轻点翻牌 · 点击背景关闭</text>
+    </view>
+  </view>
 </view>
 
 <!-- ===== EMPTY STATE ===== -->
