@@ -717,7 +717,7 @@
   right: 0;
   bottom: 0;
   z-index: 1000;
-  background: #1A1A3E;
+  background: var(--color-bg);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -857,7 +857,7 @@
 
 .onboarding-start {
   background: linear-gradient(135deg, #F4D48C 0%, #E6C070 100%);
-  color: #1A1A3E;
+  color: var(--color-text-inverse);
   font-size: var(--font-size-body);
   font-weight: var(--font-weight-semibold, 600);
   border: none;

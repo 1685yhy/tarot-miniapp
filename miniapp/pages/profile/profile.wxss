@@ -218,7 +218,7 @@ page {
 .upgrade-btn {
   margin-top: var(--spacing-md);
   background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
-  color: #1A1A3E;
+  color: var(--color-text-inverse);
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-caption);
   border: none;
@@ -228,6 +228,18 @@ page {
   line-height: 1.4;
   box-shadow: 0 4rpx 20rpx rgba(244, 212, 140, 0.25);
   transition: all var(--duration-fast) var(--ease-soft);
+}
+
+/* Begin reading CTA button (empty state) */
+.begin-reading-btn {
+  margin-top: 24rpx;
+  background: linear-gradient(135deg, var(--color-gold), #D4AF37);
+  color: var(--color-text-inverse);
+  border: none;
+  border-radius: 48rpx;
+  padding: 18rpx 48rpx;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
 }
 
 .upgrade-btn:active {

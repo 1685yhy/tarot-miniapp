@@ -24,7 +24,7 @@
   <!-- ===== 主内容 ===== -->
   <view wx:else>
     <!-- Hero -->
-    <view class="flex-center flex-col" style="padding:var(--space-xxxl) 0 var(--space-lg)">
+    <view class="flex-center flex-col" style="padding:var(--space-5xl) 0 var(--space-lg)">
       <image class="hero-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" style="width:72rpx;height:72rpx;display:block" />
       <text class="heading-1 mt-sm">开通会员</text>
       <text class="text-secondary mt-xs">解锁无限卡牌解读</text>
@@ -62,10 +62,10 @@
           <text class="price-symbol">¥</text>
           <text class="price-value">{{item.price}}</text>
         </view>
-        <text class="text-dim" style="font-size:var(--fs-body-small);display:block" wx:if="{{item.id === 'membership_monthly'}}">/月</text>
-        <text class="text-dim" style="font-size:var(--fs-body-small);display:block" wx:elif="{{item.id === 'membership_yearly'}}">/年 每天仅{{item.pricePerDay}}元</text>
-        <text class="text-dim" style="font-size:var(--fs-body-small);display:block" wx:elif="{{item.id === 'membership_lifetime'}}">永久有效</text>
-        <text class="text-dim" style="font-size:var(--fs-body-small);display:block" wx:elif="{{item.id === 'annual_report'}}">年度报告</text>
+        <text class="text-dim" style="font-size:var(--font-size-caption);display:block" wx:if="{{item.id === 'membership_monthly'}}">/月</text>
+        <text class="text-dim" style="font-size:var(--font-size-caption);display:block" wx:elif="{{item.id === 'membership_yearly'}}">/年 每天仅{{item.pricePerDay}}元</text>
+        <text class="text-dim" style="font-size:var(--font-size-caption);display:block" wx:elif="{{item.id === 'membership_lifetime'}}">永久有效</text>
+        <text class="text-dim" style="font-size:var(--font-size-caption);display:block" wx:elif="{{item.id === 'annual_report'}}">年度报告</text>
       </view>
     </view>
 

@@ -162,7 +162,7 @@
         <image class="empty-icon-img" src="/images/icons/theme_general_64.png" mode="aspectFit" />
         <text class="empty-text">暂无占卜记录</text>
         <text class="empty-hint">开始你的第一次占卜吧</text>
-        <button class="btn-gold-empty" bindtap="onGoToReading" style="margin-top:24rpx;background:linear-gradient(135deg,#F4D48C,#D4AF37);color:#1A1A3E;border:none;border-radius:48rpx;padding:18rpx 48rpx;font-size:28rpx;font-weight:600;">
+        <button class="btn-gold-empty begin-reading-btn" bindtap="onGoToReading">
           ✦ 开始占卜
         </button>
       </view>
