@@ -225,6 +225,7 @@
         <image class="spread-icon" src="/images/icons/theme_love_64.png" mode="aspectFit" />
         <text class="body-sm" style="display:block;font-weight:600">恋人三角</text>
         <text class="body-xs" style="display:block;margin-top:6rpx">感情关系深度解读</text>
+        <view class="spread-theme-chip spread-theme-chip--love">爱情</view>
       </view>
       <view class="card card-press spread-card" style="padding:24rpx 16rpx;text-align:center;position:relative" bindtap="navigateToReading" data-type="celtic_cross" animation="{{spreadAnimData[2]}}">
         <view class="spread-tag spread-tag-premium">会员</view>
@@ -237,6 +238,7 @@
         <image class="spread-icon" src="/images/icons/theme_career_64.png" mode="aspectFit" />
         <text class="body-sm" style="display:block;font-weight:600">事业牌阵</text>
         <text class="body-xs" style="display:block;margin-top:6rpx">职场方向与机遇</text>
+        <view class="spread-theme-chip spread-theme-chip--career">事业</view>
       </view>
     </view>
     <view class="card card-press more-spreads" bindtap="goToAllSpreads" animation="{{spreadAnimData[4]}}">

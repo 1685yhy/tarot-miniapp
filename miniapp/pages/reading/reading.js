@@ -1,28 +1,63 @@
 // pages/reading/reading.js
+/**
+ * ===== Acceptance Criteria: Theme-Spread Consistency =====
+ *
+ * 1. Each spread in SPREADS has a `defaultTheme` field:
+ *    - General spreads (three_card, decision, celtic_cross, life_cross, year_ahead): defaultTheme: null
+ *    - Love-themed spreads (triangle, horseshoe, relationship): defaultTheme: 'love'
+ *    - Career spread: defaultTheme: 'career'
+ *    - Finance spread: defaultTheme: 'finance'
+ *
+ * 2. When a themed spread is selected:
+ *    - Theme auto-sets to the spread's defaultTheme
+ *    - Theme selector shows the matching theme pre-selected
+ *    - A hint "此牌阵侧重{爱情/事业/财运}解读" is displayed below the label
+ *
+ * 3. When a general spread is selected:
+ *    - User can freely choose any theme
+ *    - Defaults to 'general'
+ *    - No theme hint displayed
+ *
+ * 4. For themed spreads, if user switches to a non-matching theme:
+ *    - It's allowed (user choice is respected)
+ *    - A subtle note "此牌阵更擅长{爱情/事业/财运}解读" replaces the default hint
+ *    - No blocking — just informative
+ *
+ * 5. Home page spread cards with a theme affinity show it as a small tag.
+ */
 const { request } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
 
 const FREE_READINGS_LIMIT = 3; // matches the backend FREE_DAILY_READINGS (should match after backend update)
 
 const SPREADS = [
-  { key: 'three_card', name: '三牌占卜', icon: '🕯️', desc: '过去·现在·未来', cards: 3, popular: true },
-  { key: 'triangle', name: '恋人三角', icon: '💕', desc: '感情关系深度分析', cards: 4, theme: 'love' },
-  { key: 'career', name: '事业牌阵', icon: '💼', desc: '职业发展方向指引', cards: 5, theme: 'career' },
-  { key: 'finance', name: '财运牌阵', icon: '💰', desc: '财务状况趋势分析', cards: 4, theme: 'finance' },
-  { key: 'decision', name: '二择一', icon: '🔀', desc: '两难选择的明灯', cards: 5 },
-  { key: 'celtic_cross', name: '凯尔特十字', icon: '✝️', desc: '最全面的深度占卜', cards: 10, premium: true },
-  { key: 'life_cross', name: '人生十字', icon: '⭐', desc: '人生方向的十字路口', cards: 5 },
-  { key: 'horseshoe', name: '马蹄牌阵', icon: '🧲', desc: '七步看清局势', cards: 7, premium: true },
-  { key: 'relationship', name: '关系牌阵', icon: '🤝', desc: '双人关系全面透视', cards: 7, premium: true },
-  { key: 'year_ahead', name: '年度运势', icon: '📅', desc: '未来12个月逐月详解', cards: 13, premium: true },
+  { key: 'three_card', name: '三牌占卜', icon: '🕯️', desc: '过去·现在·未来', cards: 3, popular: true, defaultTheme: null },
+  { key: 'triangle', name: '恋人三角', icon: '💕', desc: '感情关系深度分析', cards: 4, defaultTheme: 'love' },
+  { key: 'career', name: '事业牌阵', icon: '💼', desc: '职业发展方向指引', cards: 5, defaultTheme: 'career' },
+  { key: 'finance', name: '财运牌阵', icon: '💰', desc: '财务状况趋势分析', cards: 4, defaultTheme: 'finance' },
+  { key: 'decision', name: '二择一', icon: '🔀', desc: '两难选择的明灯', cards: 5, defaultTheme: null },
+  { key: 'celtic_cross', name: '凯尔特十字', icon: '✝️', desc: '最全面的深度占卜', cards: 10, premium: true, defaultTheme: null },
+  { key: 'life_cross', name: '人生十字', icon: '⭐', desc: '人生方向的十字路口', cards: 5, defaultTheme: null },
+  { key: 'horseshoe', name: '马蹄牌阵', icon: '🧲', desc: '七步看清局势', cards: 7, premium: true, defaultTheme: 'love' },
+  { key: 'relationship', name: '关系牌阵', icon: '🤝', desc: '双人关系全面透视', cards: 7, premium: true, defaultTheme: 'love' },
+  { key: 'year_ahead', name: '年度运势', icon: '📅', desc: '未来12个月逐月详解', cards: 13, premium: true, defaultTheme: null },
 ];
+
+const THEME_LABELS = {
+  love: '爱情',
+  career: '事业',
+  finance: '财运',
+  general: '综合',
+};
 
 Page({
   data: {
     spreads: SPREADS,
     selectedSpread: null,
+    spreadDefaultTheme: null,
     question: '',
     theme: '',
+    themeHint: '',
     showQuestionInput: false,
     ritualStage: null,   // null = not in ritual, 0 = meditation, 1 = shuffle
     ritualEnabled: false,
@@ -46,19 +81,28 @@ Page({
         // Check for pending reading context (from home page "继续" flow)
         const pending = wx.getStorageSync('pending_reading');
         let restoredQuestion = '';
-        let restoredTheme = spread.theme || '';
+        let restoredTheme = '';
         if (pending && pending.spread_type === type) {
           if (!pending.timestamp || Date.now() - pending.timestamp < 24 * 60 * 60 * 1000) {
             restoredQuestion = pending.question || '';
-            restoredTheme = pending.theme || spread.theme || '';
+            restoredTheme = pending.theme || '';
           }
           wx.removeStorageSync('pending_reading');
         }
 
+        // Apply default-theme logic
+        const defaultTheme = spread.defaultTheme || null;
+        const theme = restoredTheme || defaultTheme || 'general';
+        const themeHint = defaultTheme
+          ? `此牌阵侧重${THEME_LABELS[defaultTheme]}解读`
+          : '';
+
         // 先设置数据，再处理会员检查
         this.setData({
           selectedSpread: spread,
-          theme: restoredTheme,
+          spreadDefaultTheme: defaultTheme,
+          theme: theme,
+          themeHint: themeHint,
           question: restoredQuestion,
           showQuestionInput: !spread.premium,
           pageLoading: false,
@@ -189,10 +233,19 @@ Page({
       }
     }
 
+    // Apply default-theme logic
+    const defaultTheme = spread.defaultTheme || null;
+    const theme = defaultTheme || 'general';
+    const themeHint = defaultTheme
+      ? `此牌阵侧重${THEME_LABELS[defaultTheme]}解读`
+      : '';
+
     // Skip ritual by default — show question input directly
     this.setData({
       selectedSpread: spread,
-      theme: spread.theme || '',
+      spreadDefaultTheme: defaultTheme,
+      theme: theme,
+      themeHint: themeHint,
       showQuestionInput: true,
     });
   },
@@ -202,17 +255,34 @@ Page({
   },
 
   onThemeTap(e) {
-    this.setData({ theme: e.currentTarget.dataset.theme });
+    const newTheme = e.currentTarget.dataset.theme;
+    const defaultTheme = this.data.spreadDefaultTheme;
+    let themeHint = '';
+
+    if (defaultTheme) {
+      // Themed spread — show relevant hint
+      if (newTheme === defaultTheme) {
+        themeHint = `此牌阵侧重${THEME_LABELS[defaultTheme]}解读`;
+      } else {
+        themeHint = `此牌阵更擅长${THEME_LABELS[defaultTheme]}解读`;
+      }
+    }
+    // General spread: no hint needed
+
+    this.setData({ theme: newTheme, themeHint });
   },
 
   onBackToSpreads() {
     this._clearTimers();
     this.setData({
       selectedSpread: null,
+      spreadDefaultTheme: null,
       showQuestionInput: false,
       ritualStage: null,
       ritualEnabled: false,
       question: '',
+      theme: '',
+      themeHint: '',
     });
   },
 
@@ -222,9 +292,12 @@ Page({
       pageError: null,
       isDrawing: false,
       selectedSpread: null,
+      spreadDefaultTheme: null,
       showQuestionInput: false,
       ritualStage: null,
       ritualEnabled: false,
+      theme: '',
+      themeHint: '',
     });
   },
 

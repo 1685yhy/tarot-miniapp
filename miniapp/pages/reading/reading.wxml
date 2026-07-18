@@ -130,6 +130,7 @@
       </view>
 
       <view class="question-box anim-fade-in-up-2">
+        <view class="question-box-accent"></view>
         <view class="question-prompt">
           <view class="prompt-stars">✦ ✦ ✦</view>
           <text class="prompt-text">把你的问题告诉星光</text>
@@ -137,35 +138,38 @@
         </view>
         <textarea
           class="question-input"
-          placeholder="写下此刻心里最想知道的..."
-          placeholder-style="color:rgba(244,212,140,0.45)"
+          placeholder="把你想问的写在这里..."
+          placeholder-style="color:#B8A9E0;font-style:italic;font-weight:300"
           maxlength="500"
           value="{{question}}"
           bindinput="onQuestionInput"
         />
-        <text class="text-dim mt-xs {{question.length >= 450 ? 'counter-warning' : ''}}" style="text-align:right;display:block;font-size:var(--fs-caption)">{{question.length}}/500</text>
-        <text class="hint-text" style="text-align:right;display:block;font-size:var(--fs-caption);color:rgba(244,212,140,0.5);margin-top:4rpx">星光会倾听每一个字 ✦</text>
+        <view class="question-footer">
+          <text class="hint-text">星光会倾听每一个字 ✦</text>
+          <text class="char-counter {{question.length >= 450 ? 'counter-warning' : ''}}">{{question.length}}/500</text>
+        </view>
       </view>
 
       <!-- Theme selection -->
       <view class="mb-xxxl anim-fade-in-up-3">
-        <text class="text-secondary" style="display:block;margin-bottom:var(--space-sm)">解读侧重</text>
+        <text class="theme-section-label">解读侧重</text>
+        <text class="theme-hint" wx:if="{{themeHint}}">{{themeHint}}</text>
         <view class="theme-options">
           <view class="theme-item {{theme === 'general' ? 'theme-active' : ''}}" bindtap="onThemeTap" data-theme="general">
             <image class="theme-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" />
-            <text>综合</text>
+            <text class="theme-label">综合</text>
           </view>
           <view class="theme-item {{theme === 'love' ? 'theme-active' : ''}}" bindtap="onThemeTap" data-theme="love">
             <image class="theme-icon" src="/images/icons/theme_love_64.png" mode="aspectFit" />
-            <text>爱情</text>
+            <text class="theme-label">爱情</text>
           </view>
           <view class="theme-item {{theme === 'career' ? 'theme-active' : ''}}" bindtap="onThemeTap" data-theme="career">
             <image class="theme-icon" src="/images/icons/theme_career_64.png" mode="aspectFit" />
-            <text>事业</text>
+            <text class="theme-label">事业</text>
           </view>
           <view class="theme-item {{theme === 'finance' ? 'theme-active' : ''}}" bindtap="onThemeTap" data-theme="finance">
             <image class="theme-icon" src="/images/icons/theme_finance_64.png" mode="aspectFit" />
-            <text>财运</text>
+            <text class="theme-label">财运</text>
           </view>
         </view>
       </view>
