@@ -51,14 +51,14 @@ page {
    Typography helpers
    ============================== */
 .heading-2 {
-  font-size: 40rpx;
+  font-size: var(--font-size-subhead);
   font-weight: 700;
   color: var(--color-text-primary);
   letter-spacing: 0.02em;
 }
 
 .heading-4 {
-  font-size: 30rpx;
+  font-size: var(--font-size-body);
   font-weight: 600;
   color: var(--color-text-primary);
 }
@@ -77,16 +77,16 @@ page {
    Animations
    ============================== */
 .anim-fade-in-up-1 {
-  animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  animation: fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
 .anim-fade-in-up-2 {
-  animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.12s both;
+  animation: fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.12s both;
 }
 .anim-fade-in-up-3 {
-  animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.24s both;
+  animation: fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.24s both;
 }
 .anim-fade-in-up-4 {
-  animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.36s both;
+  animation: fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.36s both;
 }
 
 @keyframes fadeInUp {
@@ -151,20 +151,20 @@ page {
 }
 
 .error-icon {
-  font-size: 80rpx;
+  font-size: calc(var(--font-size-display) + 24rpx);
   margin-bottom: 28rpx;
   display: block;
 }
 
 .error-text {
-  font-size: 32rpx;
+  font-size: var(--font-size-body);
   font-weight: 600;
   color: var(--color-text-primary);
   margin-bottom: var(--spacing-xs);
 }
 
 .error-hint {
-  font-size: 24rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
   margin-bottom: var(--spacing-xl);
   word-break: break-all;
@@ -199,7 +199,7 @@ page {
 
 .btn-small {
   padding: 16rpx 36rpx;
-  font-size: 24rpx;
+  font-size: var(--font-size-caption);
 }
 
 /* ==============================
@@ -268,7 +268,7 @@ page {
   position: absolute;
   top: 12rpx;
   right: 14rpx;
-  font-size: 18rpx;
+  font-size: var(--font-size-xs);
   color: var(--color-gold);
   opacity: 0.50;
   line-height: 1;
@@ -298,7 +298,7 @@ page {
 }
 
 .spread-card-desc {
-  font-size: 24rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
   line-height: 1.4;
 }
@@ -312,7 +312,7 @@ page {
 
 .spread-card-count {
   display: block;
-  font-size: 24rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
   margin-bottom: var(--spacing-xxs);
 }
@@ -337,7 +337,7 @@ page {
   display: inline-block;
   padding: 2rpx 14rpx;
   border-radius: var(--radius-pill);
-  font-size: 20rpx;
+  font-size: var(--font-size-xs);
   font-weight: 500;
   background: rgba(244, 212, 140, 0.12);
   color: var(--color-gold);
@@ -365,7 +365,7 @@ page {
   border: 1.5rpx solid rgba(244,212,140,0.20);
   border-radius: var(--radius-pill);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--duration-fast) var(--ease-out);
   width: fit-content;
 }
 
@@ -382,17 +382,17 @@ page {
 }
 
 .ritual-toggle-text {
-  font-size: 24rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-gold);
   font-weight: 500;
   letter-spacing: 0.04em;
 }
 
 .ritual-toggle-icon {
-  font-size: 24rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-gold);
   opacity: 0.7;
-  transition: transform 0.3s ease;
+  transition: transform 0.15s ease-out;
 }
 
 .ritual-toggle.active .ritual-toggle-icon {
@@ -506,14 +506,14 @@ page {
 }
 
 .prompt-stars {
-  font-size: 20rpx;
+  font-size: var(--font-size-xs);
   color: var(--color-gold);
   opacity: 0.6;
   letter-spacing: 6rpx;
 }
 
 .prompt-text {
-  font-size: 30rpx;
+  font-size: var(--font-size-body);
   font-weight: 600;
   color: var(--color-gold);
   text-shadow: 0 0 20rpx var(--color-gold-glow);
@@ -527,7 +527,7 @@ page {
 .theme-hint {
   display: block;
   text-align: center;
-  font-size: 22rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-gold);
   opacity: 0.7;
   margin-bottom: var(--spacing-xs);
@@ -540,7 +540,7 @@ page {
   display: block;
   text-align: center;
   color: var(--color-gold);
-  font-size: 24rpx;
+  font-size: var(--font-size-caption);
   font-weight: 500;
   letter-spacing: 0.08em;
   margin-bottom: 28rpx;
@@ -582,7 +582,7 @@ page {
 }
 
 .theme-label {
-  font-size: 24rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-text-primary);
   font-weight: 500;
   letter-spacing: 0.04em;
@@ -612,7 +612,7 @@ page {
   padding: 28rpx 0;
   border: none;
   border-radius: var(--radius-pill);
-  font-size: 32rpx;
+  font-size: var(--font-size-body);
   font-weight: 700;
   color: var(--color-text-inverse);
   background: linear-gradient(135deg, var(--color-gold-light), var(--color-gold));
@@ -661,7 +661,7 @@ page {
 }
 
 .ritual-heading {
-  font-size: 34rpx;
+  font-size: var(--font-size-subhead);
   font-weight: 600;
   color: var(--color-gold);
   letter-spacing: 0.06em;
@@ -670,7 +670,7 @@ page {
 }
 
 .ritual-subtitle {
-  font-size: 28rpx;
+  font-size: var(--font-size-body);
   color: var(--color-lavender);
   letter-spacing: 0.08em;
   margin-top: var(--spacing-xl);
@@ -680,7 +680,7 @@ page {
 .ritual-skip-hint {
   position: absolute;
   bottom: 60rpx;
-  font-size: 22rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
   opacity: 0.5;
   letter-spacing: 0.04em;
@@ -732,7 +732,7 @@ page {
 
 .breathing-text {
   position: absolute;
-  font-size: 26rpx;
+  font-size: var(--font-size-caption);
   font-weight: 500;
   color: var(--color-gold);
   letter-spacing: 0.08em;
@@ -870,7 +870,7 @@ page {
 }
 
 .reading-free-text {
-  font-size: 26rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-lavender);
   letter-spacing: 0.04em;
   line-height: 1.5;
@@ -915,20 +915,20 @@ page {
 }
 
 .premium-overlay-icon {
-  font-size: 28rpx;
+  font-size: var(--font-size-body);
   color: var(--color-gold);
   line-height: 1.2;
 }
 
 .premium-overlay-text {
-  font-size: 26rpx;
+  font-size: var(--font-size-caption);
   font-weight: 700;
   color: var(--color-gold-light);
   letter-spacing: 0.04em;
 }
 
 .premium-overlay-sub {
-  font-size: 20rpx;
+  font-size: var(--font-size-xs);
   color: var(--color-lavender);
   opacity: 0.80;
   letter-spacing: 0.02em;
@@ -938,7 +938,7 @@ page {
    Selected spread info — icon + labels
    ============================== */
 .selected-spread-icon {
-  font-size: 56rpx;
+  font-size: var(--font-size-display);
   display: block;
 }
 

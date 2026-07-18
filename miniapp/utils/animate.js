@@ -23,8 +23,9 @@
 
 /**
  * Create a new wx.createAnimation instance with default options
+ * Defaults: 400ms (Orientation), ease-out (entry)
  * @param {Object} options
- * @param {number}  options.duration - animation duration in ms (default: 400)
+ * @param {number}  options.duration - animation duration in ms (default: 400 / Orientation)
  * @param {string}  options.timing  - timing function (default: 'ease-out')
  * @param {number}  options.delay   - delay in ms (default: 0)
  * @param {string}  options.origin  - transform origin (default: '50% 50% 0')
@@ -32,7 +33,7 @@
  */
 function createAnim(options = {}) {
   return wx.createAnimation({
-    duration: options.duration || 400,
+    duration: options.duration || 400, // Orientation default
     timingFunction: options.timing || 'ease-out',
     delay: options.delay || 0,
     transformOrigin: options.origin || '50% 50% 0',
@@ -45,7 +46,8 @@ module.exports = {
   /**
    * Card entrance: scale up + fade in
    * Two-step: sets initial invisible state (duration:0), then animates in
-   * @param {number} duration - animation duration in ms (default: 400)
+   * Orientation: 400ms default, ease-out
+   * @param {number} duration - animation duration in ms (default: 400 / Orientation)
    * @param {number} delay    - delay before animation in ms (default: 0)
    * @returns {Object} animation export data for setData
    */
@@ -59,7 +61,8 @@ module.exports = {
   /**
    * Card reveal: flip-like scaleX bounce
    * Simulates a card flipping over on its vertical axis
-   * @param {number} duration - total animation duration in ms (default: 500)
+   * Emphasis: 500ms default, ease-in for first half (reveal)
+   * @param {number} duration - total animation duration in ms (default: 500 / Emphasis)
    * @returns {Object} animation export data for setData
    */
   cardReveal(duration = 500) {
@@ -73,7 +76,8 @@ module.exports = {
   /**
    * Fade + slide up
    * Element rises 60px while fading in
-   * @param {number} duration - animation duration in ms (default: 400)
+   * Orientation: 400ms default, ease-out
+   * @param {number} duration - animation duration in ms (default: 400 / Orientation)
    * @param {number} delay    - delay before animation in ms (default: 0)
    * @returns {Object} animation export data for setData
    */
@@ -87,6 +91,7 @@ module.exports = {
   /**
    * Gentle pulse (for buttons, CTAs)
    * Looping scale oscillation: 1 -> 1.05 -> 1
+   * Emphasis: 600ms per step, ease-in-out
    * @returns {Object} animation export data for setData
    */
   gentlePulse() {
@@ -101,6 +106,7 @@ module.exports = {
    * Staggered list entrance (returns array of animations)
    * Each element scales up + fades in with incremental delay
    * Useful for grid items, card lists, step indicators
+   * Orientation: 400ms per element, 80ms stagger gap
    * @param {number} count     - number of elements to animate
    * @param {number} baseDelay - delay between each element in ms (default: 80)
    * @returns {Array<Object>} array of animation export data, one per element

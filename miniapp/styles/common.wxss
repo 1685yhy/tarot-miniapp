@@ -58,11 +58,12 @@ page {
   --shadow-card-press: 0 2rpx 12rpx rgba(0, 0, 0, 0.35), 0 0 40rpx rgba(244, 212, 140, 0.12);
 
   /* -- Typography Scale -- */
-  --font-size-caption: 22rpx;
-  --font-size-body: 28rpx;
-  --font-size-subhead: 34rpx;
-  --font-size-title: 44rpx;
-  --font-size-display: 60rpx;
+  --font-size-xs: 20rpx;            /* 极小文字 */
+  --font-size-caption: 24rpx;       /* 从22调整为24 */
+  --font-size-body: 30rpx;          /* 从28调整为30 */
+  --font-size-subhead: 36rpx;       /* 从34调整为36 */
+  --font-size-title: 44rpx;         /* 保持不变 */
+  --font-size-display: 56rpx;       /* 从60调整为56 */
   --line-height-tight: 1.3;
   --line-height-base: 1.6;
   --line-height-loose: 1.7;
@@ -79,9 +80,9 @@ page {
   --spacing-lg: 32rpx;
   --spacing-xl: 48rpx;
   --spacing-2xl: 64rpx;
-  --spacing-3xl: 64rpx;
-  --spacing-4xl: 64rpx;
-  --spacing-5xl: 64rpx;
+  --spacing-3xl: 80rpx;
+  --spacing-4xl: 96rpx;
+  --spacing-5xl: 128rpx;
 
   /* -- Border Radius -- */
   --radius-sm: 8rpx;
@@ -607,7 +608,7 @@ page {
   font-size: var(--font-size-body);
   color: var(--color-text-primary);
   line-height: var(--line-height-tight);
-  transition: all var(--duration-base) var(--ease-soft);
+  transition: all var(--duration-fast) var(--ease-soft);
   box-sizing: border-box;
 }
 
@@ -673,7 +674,7 @@ page {
   font-size: var(--font-size-body);
   color: var(--color-text-primary);
   line-height: 88rpx;
-  transition: all var(--duration-base) var(--ease-soft);
+  transition: all var(--duration-fast) var(--ease-soft);
   box-sizing: border-box;
   position: relative;
 }
@@ -914,14 +915,14 @@ page {
   height: 44rpx;
   margin-bottom: 8rpx;
   opacity: 0.45;
-  transition: all var(--duration-base) var(--ease-soft);
+  transition: all var(--duration-fast) var(--ease-soft);
 }
 
 .tab-item__label {
   font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
   line-height: 1.2;
-  transition: all var(--duration-base) var(--ease-soft);
+  transition: all var(--duration-fast) var(--ease-soft);
 }
 
 .tab-item--active .tab-item__icon {
@@ -1580,7 +1581,7 @@ page {
   align-items: center;
   justify-content: center;
   z-index: var(--z-card);
-  transition: all var(--duration-base) var(--ease-soft);
+  transition: all var(--duration-fast) var(--ease-soft);
 }
 
 .fab:active {
@@ -1702,7 +1703,7 @@ page {
 
 /* --- Entrance Classes (one-shot, use forwards) --- */
 .anim-rise {
-  animation: card-rise 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: card-rise var(--duration-base) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 /* --- Glow Classes (infinite) --- */
@@ -1715,27 +1716,27 @@ page {
    ----------------------------------------------------------- */
 
 .anim-rise-1 {
-  animation: card-rise 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: card-rise var(--duration-base) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   animation-delay: 0.05s;
 }
 
 .anim-rise-2 {
-  animation: card-rise 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: card-rise var(--duration-base) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   animation-delay: 0.12s;
 }
 
 .anim-rise-3 {
-  animation: card-rise 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: card-rise var(--duration-base) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   animation-delay: 0.20s;
 }
 
 .anim-rise-4 {
-  animation: card-rise 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: card-rise var(--duration-base) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   animation-delay: 0.30s;
 }
 
 .anim-rise-5 {
-  animation: card-rise 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: card-rise var(--duration-base) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   animation-delay: 0.42s;
 }
 
