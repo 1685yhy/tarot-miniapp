@@ -1,5 +1,7 @@
 const { request } = require('./api');
 
+let loginPromise = null;
+
 const login = async () => {
   return new Promise((resolve, reject) => {
     wx.login({
@@ -48,15 +50,29 @@ const checkLogin = async (options = {}) => {
     }
     return wx.getStorageSync('user');
   }
-  // 先试真登录，失败则fallback到dev登录
-  try {
-    return await login();
-  } catch (err) {
-    if (typeof __wxConfig !== 'undefined' && __wxConfig.envVersion !== 'release') {
-      console.warn('[auth] 微信登录失败，使用开发模式登录:', err.message);
-    }
-    return await devLogin();
+
+  // 进行中锁：防止并发调用重复发起登录请求
+  if (loginPromise) {
+    return loginPromise;
   }
+
+  loginPromise = (async () => {
+    try {
+      // 先试真登录，失败则fallback到dev登录
+      try {
+        return await login();
+      } catch (err) {
+        if (typeof __wxConfig !== 'undefined' && __wxConfig.envVersion !== 'release') {
+          console.warn('[auth] 微信登录失败，使用开发模式登录:', err.message);
+        }
+        return await devLogin();
+      }
+    } finally {
+      loginPromise = null; // 完成后清锁
+    }
+  })();
+
+  return loginPromise;
 };
 
 module.exports = { login, checkLogin };

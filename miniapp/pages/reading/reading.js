@@ -25,7 +25,7 @@
  *
  * 5. Home page spread cards with a theme affinity show it as a small tag.
  */
-const { request } = require('../../utils/api');
+const { request, getFriendlyError } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
 
 const FREE_READINGS_LIMIT = 3; // matches the backend FREE_DAILY_READINGS (should match after backend update)
@@ -288,17 +288,25 @@ Page({
 
   onRetry() {
     this._clearTimers();
-    this.setData({
-      pageError: null,
-      isDrawing: false,
-      selectedSpread: null,
-      spreadDefaultTheme: null,
-      showQuestionInput: false,
-      ritualStage: null,
-      ritualEnabled: false,
-      theme: '',
-      themeHint: '',
-    });
+    if (this.data.selectedSpread) {
+      // 保留已选的牌阵和问题，回到提问界面重新尝试
+      this.setData({
+        pageError: null,
+        isDrawing: false,
+      });
+    } else {
+      this.setData({
+        pageError: null,
+        isDrawing: false,
+        selectedSpread: null,
+        spreadDefaultTheme: null,
+        showQuestionInput: false,
+        ritualStage: null,
+        ritualEnabled: false,
+        theme: '',
+        themeHint: '',
+      });
+    }
   },
 
   async onStartReading() {
@@ -356,23 +364,7 @@ Page({
           },
         });
       } else {
-        this.setData({ isDrawing: false });
-        wx.showModal({
-          title: '解读失败',
-          content: err.message || '网络异常，请稍后重试',
-          confirmText: '重试',
-          cancelText: '稍后再试',
-          success: (res) => {
-            if (res.confirm) {
-              // Re-send the same request
-              this.onStartReading();
-            } else {
-              // Context is already saved in pending_reading
-              wx.showToast({ title: '已保存，稍后可在首页重新开始', icon: 'none' });
-              wx.navigateBack();
-            }
-          },
-        });
+        this.setData({ isDrawing: false, pageError: getFriendlyError(err) });
       }
     }
   },

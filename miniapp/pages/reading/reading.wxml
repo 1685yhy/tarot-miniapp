@@ -25,14 +25,14 @@
 <view class="page">
   <!-- ===== 加载骨架 ===== -->
   <view wx:if="{{pageLoading}}">
-    <view class="skeleton">
-      <view class="skeleton-title"></view>
-      <view class="skeleton-subtitle"></view>
-      <view class="skeleton-spread"></view>
-      <view class="skeleton-spread"></view>
-      <view class="skeleton-spread"></view>
-      <view class="skeleton-spread"></view>
-      <view class="skeleton-spread"></view>
+    <view class="reading-skeleton-wrap">
+      <view class="skeleton skeleton-reading-title"></view>
+      <view class="skeleton skeleton-reading-subtitle"></view>
+      <view class="skeleton skeleton-reading-spread"></view>
+      <view class="skeleton skeleton-reading-spread"></view>
+      <view class="skeleton skeleton-reading-spread"></view>
+      <view class="skeleton skeleton-reading-spread"></view>
+      <view class="skeleton skeleton-reading-spread"></view>
     </view>
   </view>
 

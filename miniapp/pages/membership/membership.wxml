@@ -2,15 +2,15 @@
 <view class="page">
   <!-- ===== 加载骨架 ===== -->
   <view wx:if="{{pageLoading}}">
-    <view class="skeleton">
+    <view class="skeleton-mem-wrap">
       <view class="skeleton-hero-area">
-        <view class="skeleton-icon"></view>
-        <view class="skeleton-line wide"></view>
-        <view class="skeleton-line medium"></view>
+        <view class="skeleton skeleton-icon"></view>
+        <view class="skeleton skeleton-line wide"></view>
+        <view class="skeleton skeleton-line medium"></view>
       </view>
-      <view class="skeleton-benefits"></view>
-      <view class="skeleton-product"></view>
-      <view class="skeleton-product"></view>
+      <view class="skeleton skeleton-benefits"></view>
+      <view class="skeleton skeleton-product"></view>
+      <view class="skeleton skeleton-product"></view>
     </view>
   </view>
 
@@ -35,6 +35,13 @@
       <view class="benefit-item" wx:for="{{['全部牌阵无限使用','AI追问不限次数','年度运势报告','每日多次抽牌','专属运势卡片']}}" wx:key="*this">
         <text class="text-body">{{item}}</text>
       </view>
+    </view>
+
+    <!-- ===== 空状态：无可选产品 ===== -->
+    <view wx:if="{{!pageLoading && !pageError && products.length === 0}}" class="empty-state" style="text-align:center;padding:var(--spacing-3xl) 0">
+      <text class="empty-text">暂无可选产品</text>
+      <text class="empty-hint">请稍后再试</text>
+      <button class="btn-primary btn-small" bindtap="onRetry" style="margin-top:var(--spacing-lg)">重新加载</button>
     </view>
 
     <!-- Product cards -->

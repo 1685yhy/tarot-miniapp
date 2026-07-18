@@ -12,18 +12,18 @@
        ============================================================ -->
   <view wx:if="{{pageLoading}}" class="skeleton-root">
     <view class="skeleton-hero">
-      <view class="skeleton-frame"></view>
+      <view class="skeleton skeleton-frame"></view>
     </view>
-    <view class="skeleton-name"></view>
+    <view class="skeleton skeleton-name"></view>
     <view class="skeleton-tags">
-      <view class="skeleton-pill"></view>
-      <view class="skeleton-pill"></view>
-      <view class="skeleton-pill"></view>
+      <view class="skeleton skeleton-pill"></view>
+      <view class="skeleton skeleton-pill"></view>
+      <view class="skeleton skeleton-pill"></view>
     </view>
     <view class="skeleton-blocks">
-      <view class="skeleton-block"></view>
-      <view class="skeleton-block"></view>
-      <view class="skeleton-block"></view>
+      <view class="skeleton skeleton-block"></view>
+      <view class="skeleton skeleton-block"></view>
+      <view class="skeleton skeleton-block"></view>
     </view>
   </view>
 

@@ -525,7 +525,7 @@ page {
 
 
 /* ============================================================
-   Skeleton — Shimmer loading
+   Skeleton — Shapes only (shimmer from common.wxss)
    ============================================================ */
 .skeleton-wrap {
   padding: var(--spacing-xl) 0;
@@ -542,8 +542,6 @@ page {
 .skeleton-line {
   height: 30rpx;
   border-radius: var(--radius-sm);
-  background: var(--color-surface);
-  animation: shimmer 1.5s ease-in-out infinite;
 }
 
 .skeleton-line.wide { width: 280rpx; }
@@ -553,25 +551,15 @@ page {
   width: 100%;
   height: 80rpx;
   border-radius: var(--radius-pill);
-  background: var(--color-surface);
   margin-bottom: var(--spacing-xl);
-  animation: shimmer 1.5s ease-in-out infinite;
 }
 
 .skeleton-entry {
   width: 100%;
   height: 160rpx;
   border-radius: var(--radius-lg);
-  background: var(--color-surface);
   margin-bottom: 24rpx;
-  animation: shimmer 1.5s ease-in-out infinite;
 }
-
-@keyframes shimmer {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.45; }
-}
-
 
 /* ============================================================
    Entrance Animation

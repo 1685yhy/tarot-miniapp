@@ -57,7 +57,7 @@ page {
 }
 
 /* ================================================================
-   Skeleton loading
+   Skeleton loading — Shapes only (shimmer from common.wxss)
    ================================================================ */
 .skeleton-wrap {
   flex: 1;
@@ -71,27 +71,18 @@ page {
 .skeleton-line {
   height: 20rpx;
   border-radius: var(--radius-pill);
-  background: linear-gradient(90deg, var(--color-surface) 25%, #1e1a38 50%, var(--color-surface) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.6s infinite;
+  background-image: linear-gradient(90deg, var(--color-surface) 25%, #1e1a38 50%, var(--color-surface) 75%);
   margin-bottom: 12rpx;
 }
 
 .skeleton-bubble {
   height: 68rpx;
   border-radius: var(--radius-lg);
-  background: linear-gradient(90deg, var(--color-surface) 25%, #1e1a38 50%, var(--color-surface) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.6s infinite;
+  background-image: linear-gradient(90deg, var(--color-surface) 25%, #1e1a38 50%, var(--color-surface) 75%);
 }
 
 .skeleton-bubble.left  { width: 60%; }
 .skeleton-bubble.right { width: 50%; margin-left: auto; }
-
-@keyframes shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
 
 /* ================================================================
    Context header — tiny lavender reminder
@@ -454,4 +445,34 @@ page {
 ::-webkit-scrollbar {
   width: 0;
   height: 0;
+}
+
+/* ================================================================
+   Retry bar for failed send
+   ================================================================ */
+.retry-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 20rpx;
+  margin: 12rpx 0;
+  background: rgba(232, 122, 138, 0.08);
+  border-radius: var(--radius-md);
+  border: 1rpx solid rgba(232, 122, 138, 0.20);
+  cursor: pointer;
+}
+
+.retry-bar:active {
+  background: rgba(232, 122, 138, 0.15);
+}
+
+.retry-icon {
+  font-size: var(--font-size-caption);
+  color: var(--color-error);
+}
+
+.retry-text {
+  font-size: var(--font-size-caption);
+  color: var(--color-error);
 }

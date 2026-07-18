@@ -1,5 +1,5 @@
 // pages/diary/diary.js
-const { request } = require('../../utils/api');
+const { request, getFriendlyError } = require('../../utils/api');
 
 Page({
   data: {
@@ -29,7 +29,7 @@ Page({
         pageLoading: false,
       });
     } catch (err) {
-      this.setData({ pageLoading: false, pageError: err.message || '加载失败' });
+      this.setData({ pageLoading: false, pageError: getFriendlyError(err) });
     }
   },
 

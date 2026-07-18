@@ -1,5 +1,5 @@
 // pages/annual-report/annual-report.js
-const { request } = require('../../utils/api');
+const { request, getFriendlyError } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
 
 Page({
@@ -53,7 +53,7 @@ Page({
         });
       } else {
         wx.showToast({ title: '生成失败', icon: 'none' });
-        this.setData({ pageError: err.message || '生成失败' });
+        this.setData({ pageError: getFriendlyError(err) });
       }
     }
   },

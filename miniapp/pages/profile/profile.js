@@ -1,5 +1,5 @@
 // pages/profile/profile.js
-const { request } = require('../../utils/api');
+const { request, getFriendlyError } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
 const { computeImagePath, findCard } = require('../../utils/cards');
 
@@ -69,7 +69,7 @@ Page({
         hasMore: history.items ? history.items.length >= 20 : false,
       });
     } catch (err) {
-      this.setData({ pageLoading: false, pageError: err.message || '加载失败' });
+      this.setData({ pageLoading: false, pageError: getFriendlyError(err) });
     }
 
     // Also load saved readings from local storage

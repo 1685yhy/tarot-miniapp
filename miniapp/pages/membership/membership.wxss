@@ -381,9 +381,9 @@ page {
 }
 
 /* ================================================================
-   Skeleton — dark shimmer
+   Skeleton — Shapes only (shimmer from common.wxss)
    ================================================================ */
-.skeleton {
+.skeleton-mem-wrap {
   padding: var(--space-2xl) 0;
 }
 
@@ -399,15 +399,11 @@ page {
   width: 72rpx;
   height: 72rpx;
   border-radius: 100%;
-  background: var(--color-card);
-  animation: pulse-scale 1.5s ease-in-out infinite;
 }
 
 .skeleton-line {
   height: 32rpx;
   border-radius: var(--radius-sm);
-  background: var(--color-card);
-  animation: pulse-scale 1.5s ease-in-out infinite;
 }
 
 .skeleton-line.wide { width: 300rpx; }
@@ -417,17 +413,10 @@ page {
 .skeleton-product {
   width: 100%;
   border-radius: var(--radius-lg);
-  background: var(--color-card);
-  animation: pulse-scale 1.5s ease-in-out infinite;
 }
 
 .skeleton-benefits { height: 280rpx; margin-bottom: var(--space-2xl); }
 .skeleton-product { height: 380rpx; margin-bottom: var(--space-lg); }
-
-@keyframes pulse-scale {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.98); }
-}
 
 /* ================================================================
    Staggered entrance

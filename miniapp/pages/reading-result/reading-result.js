@@ -1,5 +1,5 @@
 // pages/reading-result/reading-result.js
-const { request } = require('../../utils/api');
+const { request, getFriendlyError } = require('../../utils/api');
 const { cardEnter } = require('../../utils/animate');
 const { computeImagePath } = require('../../utils/cards');
 
@@ -42,8 +42,6 @@ Page({
     isFlipped: false,        // front (false) or back (true)
     flipState: '',           // '' | 'flip-out' | 'flip-in'
     isAnimatingExit: false,  // true during exit animation before reset
-
-    _destroyed: false,
   },
 
   onLoad(options) {
@@ -77,12 +75,12 @@ Page({
 
     // Stage 1: 洗牌中 — 2s (Emphasis: ritual pacing, not motion timing)
     this._stageTimer1 = setTimeout(() => {
-      if (this.data._destroyed) return;
+      if (this._destroyed) return;
 
       // Stage 2: 翻牌中 — 2s (Emphasis: ritual pacing)
       this.setData({ loadingStage: 2 });
       this._stageTimer2 = setTimeout(() => {
-        if (this.data._destroyed) return;
+        if (this._destroyed) return;
 
         // Stage 3: 星光解读中 — real waiting with progress feedback
         this.setData({
@@ -105,26 +103,26 @@ Page({
   _startStage3() {
     // Light up one dot every ~5s (3 dots total ≈ 15s) — UX pacing for anticipation
     this._dotTimer = setInterval(() => {
-      if (this.data._destroyed) return;
+      if (this._destroyed) return;
       const next = Math.min(this.data.loadingDotCount + 1, 3);
       this.setData({ loadingDotCount: next });
     }, 5000);
 
     // After 25 seconds: polite nudge
     this._timeout25 = setTimeout(() => {
-      if (this.data._destroyed) return;
+      if (this._destroyed) return;
       this.setData({ loadingTimeText: '仍在努力中，请稍等...' });
     }, 25000);
 
     // After 50 seconds: firmer nudge
     this._timeout50 = setTimeout(() => {
-      if (this.data._destroyed) return;
+      if (this._destroyed) return;
       this.setData({ loadingTimeText: '可能需要更长时间，请耐心等待...' });
     }, 50000);
 
     // After 55 seconds: offer a choice
     this._timeout55 = setTimeout(() => {
-      if (this.data._destroyed) return;
+      if (this._destroyed) return;
       this.setData({ loadingTimeText: '', showWaitOptions: true });
     }, 55000);
   },
@@ -136,7 +134,7 @@ Page({
   async _load() {
     try {
       const reading = await request('/readings/' + this._id);
-      if (this.data._destroyed) return;
+      if (this._destroyed) return;
 
       // Clean AI Markdown formatting
       if (reading && reading.interpretation) {
@@ -161,8 +159,8 @@ Page({
       this._cachedReading = reading;
       this._tryShowResult();
     } catch (err) {
-      if (this.data._destroyed) return;
-      this._cachedError = (err && err.message) || '加载失败';
+      if (this._destroyed) return;
+      this._cachedError = getFriendlyError(err);
       this._tryShowResult();
     }
   },
@@ -223,7 +221,7 @@ Page({
      --------------------------------------------------------------- */
 
   onUnload() {
-    this.data._destroyed = true;
+    this._destroyed = true;
     this._clearStageTimers();
   },
 
@@ -233,7 +231,7 @@ Page({
     // Restart the 55-second timer so the prompt can reappear later
     if (this._timeout55) { clearTimeout(this._timeout55); }
     this._timeout55 = setTimeout(() => {
-      if (this.data._destroyed) return;
+      if (this._destroyed) return;
       this.setData({ loadingTimeText: '', showWaitOptions: true });
     }, 55000);
   },
@@ -271,12 +269,12 @@ Page({
     this.setData({ flipState: 'flip-out' });
 
     setTimeout(() => {
-      if (this.data._destroyed) return;
+      if (this._destroyed) return;
       // Phase 2: swap content, expand scaleX(0→1)
       this.setData({ isFlipped: !this.data.isFlipped, flipState: 'flip-in' });
 
       setTimeout(() => {
-        if (this.data._destroyed) return;
+        if (this._destroyed) return;
         this.setData({ flipState: '' });
       }, 200);
     }, 200);
@@ -287,7 +285,7 @@ Page({
     // Start exit animation
     this.setData({ isAnimatingExit: true });
     setTimeout(() => {
-      if (this.data._destroyed) return;
+      if (this._destroyed) return;
       this.setData({
         enlargedCardIndex: -1,
         isFlipped: false,
@@ -322,7 +320,7 @@ Page({
 
   onRetry() {
     this._clearStageTimers();
-    this.data._destroyed = false;
+    this._destroyed = false;
     this._cachedReading = null;
     this._cachedError = null;
     this._startStages();

@@ -2,13 +2,13 @@
 <view class="container">
   <!-- ===== 加载骨架 ===== -->
   <view wx:if="{{pageLoading}}">
-    <view class="skeleton">
+    <view class="skeleton-ar-wrap">
       <view class="skeleton-hero-area">
-        <view class="skeleton-icon"></view>
-        <view class="skeleton-line wide"></view>
+        <view class="skeleton skeleton-icon"></view>
+        <view class="skeleton skeleton-line wide"></view>
       </view>
-      <view class="skeleton-desc" style="margin:0 auto var(--space-xxl)"></view>
-      <view class="skeleton-btn"></view>
+      <view class="skeleton skeleton-desc" style="margin:0 auto var(--space-xxl)"></view>
+      <view class="skeleton skeleton-btn"></view>
     </view>
   </view>
 

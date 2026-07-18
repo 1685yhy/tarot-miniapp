@@ -95,45 +95,31 @@ page {
 }
 
 /* ==============================
-   Skeleton loading
+   Skeleton loading (shapes only; shimmer from common.wxss)
    ============================== */
-.skeleton {
+.reading-skeleton-wrap {
   display: flex;
   flex-direction: column;
   gap: 28rpx;
   padding: 36rpx 0;
 }
 
-.skeleton-title {
+.skeleton-reading-title {
   width: 50%;
   height: 36rpx;
   border-radius: var(--radius-pill);
-  background: linear-gradient(90deg, var(--color-surface) 25%, var(--color-card-hover) 50%, var(--color-surface) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.6s infinite;
 }
 
-.skeleton-subtitle {
+.skeleton-reading-subtitle {
   width: 35%;
   height: 28rpx;
   border-radius: var(--radius-pill);
-  background: linear-gradient(90deg, var(--color-surface) 25%, var(--color-card-hover) 50%, var(--color-surface) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.6s infinite;
   margin-bottom: 28rpx;
 }
 
-.skeleton-spread {
+.skeleton-reading-spread {
   height: 100rpx;
   border-radius: 24rpx;
-  background: linear-gradient(90deg, var(--color-surface) 25%, var(--color-card-hover) 50%, var(--color-surface) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.6s infinite;
-}
-
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
 }
 
 /* ==============================

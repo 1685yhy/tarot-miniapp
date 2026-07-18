@@ -61,7 +61,7 @@
 <view class="page" wx:elif="{{pageError}}">
   <view class="error-state">
     <text class="error-text">星辰之力暂时中断</text>
-    <text class="error-hint">请重新连接</text>
+    <text class="error-hint">{{pageError}}</text>
     <button class="btn-retry" bindtap="onRetry">重新加载</button>
   </view>
 </view>
