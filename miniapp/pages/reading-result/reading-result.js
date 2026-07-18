@@ -1,5 +1,6 @@
 // pages/reading-result/reading-result.js
 const { request } = require('../../utils/api');
+const { cardEnter } = require('../../utils/animate');
 
 // ---- Spread type name mapping for share title ----
 const SPREAD_TYPE_NAMES = {
@@ -59,6 +60,11 @@ Page({
 
     // Save / share
     isSaved: false,         // whether this reading is in saved_readings storage
+
+    // ---- wx.createAnimation native animation system ----
+    useNativeAnim: true,
+    // Staggered card entrance animations (one per drawn card)
+    cardAnimData: [],
 
     _destroyed: false,
   },
@@ -197,6 +203,8 @@ Page({
 
     if (this._cachedReading) {
       this.setData({ reading: this._cachedReading, pageLoading: false });
+      // Trigger staggered card entrance animation after render
+      this._animateCardReveal();
     } else if (this._cachedError) {
       this.setData({ pageLoading: false, pageError: this._cachedError });
     }
@@ -217,6 +225,20 @@ Page({
     if (this._timeout25) { clearTimeout(this._timeout25); this._timeout25 = null; }
     if (this._timeout50) { clearTimeout(this._timeout50); this._timeout50 = null; }
     if (this._timeout55) { clearTimeout(this._timeout55); this._timeout55 = null; }
+  },
+
+  /** Animate drawn cards appearing one by one using wx.createAnimation stagger */
+  _animateCardReveal() {
+    if (!this.data.useNativeAnim) return;
+    const cards = this.data.reading && this.data.reading.drawn_cards;
+    if (!cards || cards.length === 0) return;
+
+    const anims = [];
+    for (let i = 0; i < cards.length; i++) {
+      // Each card enters with cardEnter + increasing delay for cascade effect
+      anims.push(cardEnter(450, i * 120));
+    }
+    this.setData({ cardAnimData: anims });
   },
 
   /* ---------------------------------------------------------------

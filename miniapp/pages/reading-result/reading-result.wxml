@@ -82,7 +82,7 @@
 
         <!-- Three overlapping cards with images -->
         <view class="card-row">
-          <view class="card-item" wx:for="{{reading.drawn_cards}}" wx:for-item="card" wx:key="id">
+          <view class="card-item" wx:for="{{reading.drawn_cards}}" wx:for-item="card" wx:key="id" animation="{{cardAnimData[index]}}">
             <view class="card-inner">
               <text class="card-pos">{{card.position_name}}</text>
               <image class="card-img" src="{{card.imagePath}}" mode="aspectFill" />
