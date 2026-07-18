@@ -111,7 +111,7 @@
 
   <!-- ============ 创建日记 Modal ============ -->
   <view class="modal-mask" wx:if="{{showCreate}}" bindtap="hideCreateModal">
-    <view class="modal-sheet" catchtap="">
+    <view class="modal-sheet" catchtap="preventClose">
       <!-- Handle -->
       <view class="modal-handle"></view>
 
