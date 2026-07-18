@@ -66,6 +66,12 @@ Page({
     // Staggered card entrance animations (one per drawn card)
     cardAnimData: [],
 
+    // Interactive card enlargement
+    enlargedCardIndex: -1,   // -1 = none; 0/1/2 = which card is enlarged
+    isFlipped: false,        // front (false) or back (true)
+    flipState: '',           // '' | 'flip-out' | 'flip-in'
+    isAnimatingExit: false,  // true during exit animation before reset
+
     _destroyed: false,
   },
 
@@ -269,6 +275,74 @@ Page({
 
   onCardSwiperChange(e) {
     this.setData({ activeCardIndex: e.detail.current });
+  },
+
+  /* ---------------------------------------------------------------
+     Interactive Card — Tap to Enlarge
+     --------------------------------------------------------------- */
+
+  onCardTap(e) {
+    const index = e.currentTarget.dataset.index;
+    if (index === undefined) return;
+    this.setData({
+      enlargedCardIndex: index,
+      isFlipped: false,
+      flipState: '',
+      isAnimatingExit: false,
+    });
+  },
+
+  onEnlargedCardTap() {
+    if (this.data.isAnimatingExit) return;
+    if (this.data.flipState === 'flip-out' || this.data.flipState === 'flip-in') return;
+
+    // Phase 1: collapse scaleX(1→0)
+    this.setData({ flipState: 'flip-out' });
+
+    setTimeout(() => {
+      if (this.data._destroyed) return;
+      // Phase 2: swap content, expand scaleX(0→1)
+      this.setData({ isFlipped: !this.data.isFlipped, flipState: 'flip-in' });
+
+      setTimeout(() => {
+        if (this.data._destroyed) return;
+        this.setData({ flipState: '' });
+      }, 200);
+    }, 200);
+  },
+
+  onOverlayTap() {
+    if (this.data.isAnimatingExit) return;
+    // Start exit animation
+    this.setData({ isAnimatingExit: true });
+    setTimeout(() => {
+      if (this.data._destroyed) return;
+      this.setData({
+        enlargedCardIndex: -1,
+        isFlipped: false,
+        flipState: '',
+        isAnimatingExit: false,
+      });
+    }, 300);
+  },
+
+  /* ---- Swipe down to dismiss ---- */
+  onOverlayTouchStart(e) {
+    this._touchStartY = e.touches[0].clientY;
+  },
+
+  onOverlayTouchMove(e) {
+    // prevent pull-to-refresh / page scroll
+  },
+
+  onOverlayTouchEnd(e) {
+    if (!this._touchStartY) return;
+    const deltaY = e.changedTouches[0].clientY - this._touchStartY;
+    if (deltaY > 80) {
+      this._touchStartY = 0;
+      if (!this.data.isAnimatingExit) this.onOverlayTap();
+    }
+    this._touchStartY = 0;
   },
 
   onToggleFull() {
