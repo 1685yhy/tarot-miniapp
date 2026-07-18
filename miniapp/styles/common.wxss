@@ -17,6 +17,9 @@ page {
   --color-surface: #252550;
   --color-card: #2A2A5A;
   --color-card-hover: #313165;
+  --color-card-border: rgba(244, 212, 140, 0.12);
+  --color-card-border-hover: rgba(244, 212, 140, 0.25);
+  --color-surface-hover: #2D2D60;
   --color-surface-gradient: linear-gradient(145deg, #252550 0%, #2A2A5A 100%);
 
   /* -- Accents -- */
@@ -87,6 +90,8 @@ page {
   /* -- Border Radius -- */
   --radius-sm: 8rpx;
   --radius-md: 16rpx;
+  --radius-lg: 24rpx;
+  --radius-full: 50%;
   --radius-pill: 999rpx;
 
   /* -- Animation -- */

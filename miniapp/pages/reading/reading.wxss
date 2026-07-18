@@ -932,7 +932,7 @@ page {
   text-align: center;
   display: block;
   width: 100%;
-  margin-top: var(--space-md);
+  margin-top: var(--spacing-md);
 }
 
 /* ==============================
