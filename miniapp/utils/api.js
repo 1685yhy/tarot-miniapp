@@ -31,7 +31,7 @@ const ENV = (() => {
  * release  【★ 部署前必须修改 ★】替换为生产域名
  */
 const ENV_URLS = {
-  develop: 'http://localhost:8000',
+  develop: 'https://xingxiang.chat/api',
   trial: 'https://xingxiang.chat/api',
   release: 'https://xingxiang.chat/api',
 };
@@ -82,7 +82,7 @@ const request = async (url, options = {}, retryCount = 0) => {
       url: `${BASE_URL}${url}`,
       method: options.method || 'GET',
       data: options.data,
-      timeout: 60000,  // WeChat max is 60s
+      timeout: 15000,  // 15s timeout (real device debugging needs faster feedback)
       header: {
         'Content-Type': 'application/json',
         'Authorization': token ? `Bearer ${token}` : '',
