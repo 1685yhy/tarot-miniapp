@@ -1,7 +1,28 @@
 {
   "description": "星光映照小程序",
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      {
+        "type": "folder",
+        "value": "images/cards_thumb"
+      },
+      {
+        "type": "folder",
+        "value": "images/cards_flux"
+      },
+      {
+        "type": "folder",
+        "value": "images/cards_v2"
+      },
+      {
+        "type": "folder",
+        "value": "images/cards_v3"
+      },
+      {
+        "type": "folder",
+        "value": "images/cards"
+      }
+    ],
     "include": []
   },
   "setting": {
