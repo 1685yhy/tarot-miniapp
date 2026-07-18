@@ -1,32 +1,9 @@
 /* ============================================================
    Diary Page — Starlight Design System
-   Self-contained. No reliance on global CSS variables.
-   #1A1A3E deep indigo · #F4D48C gold · #F0EDE8 cream text
-   #252550 card surface · #C8C3E0 lavender secondary
+   Uses global CSS variables from styles/common.wxss.
    ============================================================ */
 
-/* ---------- Design tokens ---------- */
 page {
-  --ds-bg: #1A1A3E;
-  --ds-card-bg: #252550;
-  --ds-card-border: rgba(244, 212, 140, 0.15);
-  --ds-gold: #F4D48C;
-  --ds-gold-dim: rgba(244, 212, 140, 0.08);
-  --ds-gold-glow: rgba(244, 212, 140, 0.20);
-  --ds-cream: #F0EDE8;
-  --ds-lavender: #C8C3E0;
-  --ds-muted: #9A95B8;
-  --ds-text-on-gold: #1A1A3E;
-  --ds-error: #FF6B7A;
-
-  --radius-sm: 8rpx;
-  --radius-md: 12rpx;
-  --radius-lg: 16rpx;
-  --radius-xl: 24rpx;
-  --radius-pill: 999rpx;
-
-  background: var(--ds-bg);
-  color: var(--ds-cream);
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", sans-serif;
 }
 
@@ -54,7 +31,7 @@ page {
 .page-title {
   font-size: 40rpx;
   font-weight: 700;
-  color: var(--ds-gold);
+  color: var(--color-gold);
   letter-spacing: 4rpx;
   display: block;
   margin-bottom: 12rpx;
@@ -63,7 +40,7 @@ page {
 
 .page-subtitle {
   font-size: 26rpx;
-  color: var(--ds-lavender);
+  color: var(--color-lavender);
   letter-spacing: 2rpx;
   display: block;
 }
@@ -79,7 +56,7 @@ page {
   justify-content: center;
   gap: 12rpx;
   background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
-  color: var(--ds-text-on-gold);
+  color: var(--color-text-inverse);
   font-size: 30rpx;
   font-weight: 600;
   border: none;
@@ -129,7 +106,7 @@ page {
 
 .load-more-text {
   font-size: 24rpx;
-  color: var(--ds-muted);
+  color: var(--color-text-tertiary);
   letter-spacing: 2rpx;
 }
 
@@ -138,8 +115,8 @@ page {
    Entry Card — Dark indigo surface, subtle gold border
    ============================================================ */
 .entry-card {
-  background: var(--ds-card-bg);
-  border: 1rpx solid var(--ds-card-border);
+  background: var(--color-surface);
+  border: 1rpx solid rgba(244, 212, 140, 0.15);
   border-radius: var(--radius-lg);
   padding: 32rpx;
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.20);
@@ -178,13 +155,13 @@ page {
 
 .entry-date-icon {
   font-size: 22rpx;
-  color: var(--ds-gold);
+  color: var(--color-gold);
 }
 
 .entry-date {
   font-size: 24rpx;
   font-weight: 600;
-  color: var(--ds-gold);
+  color: var(--color-gold);
   letter-spacing: 2rpx;
 }
 
@@ -216,7 +193,7 @@ page {
 .card-label {
   font-size: 22rpx;
   font-weight: 500;
-  color: var(--ds-gold);
+  color: var(--color-gold);
   letter-spacing: 2rpx;
   opacity: 0.75;
 }
@@ -224,7 +201,7 @@ page {
 .card-name {
   font-size: 28rpx;
   font-weight: 600;
-  color: var(--ds-gold);
+  color: var(--color-gold);
   display: block;
   margin-bottom: 10rpx;
   letter-spacing: 2rpx;
@@ -232,7 +209,7 @@ page {
 
 .card-meaning {
   font-size: 24rpx;
-  color: var(--ds-lavender);
+  color: var(--color-lavender);
   display: block;
   line-height: 1.7;
 }
@@ -240,7 +217,7 @@ page {
 /* Reflection Text */
 .entry-reflection {
   font-size: 26rpx;
-  color: var(--ds-cream);
+  color: var(--color-text-primary);
   line-height: 1.8;
   display: block;
   white-space: pre-wrap;
@@ -257,7 +234,7 @@ page {
 }
 
 .error-card {
-  background: var(--ds-card-bg);
+  background: var(--color-surface);
   border: 1rpx solid rgba(255, 107, 122, 0.20);
   border-radius: var(--radius-lg);
   padding: 48rpx 32rpx;
@@ -266,14 +243,14 @@ page {
 .error-title {
   font-size: 28rpx;
   font-weight: 600;
-  color: var(--ds-cream);
+  color: var(--color-text-primary);
   display: block;
   margin-bottom: 12rpx;
 }
 
 .error-desc {
   font-size: 24rpx;
-  color: var(--ds-muted);
+  color: var(--color-text-tertiary);
   display: block;
   margin-bottom: 36rpx;
   line-height: 1.6;
@@ -284,7 +261,7 @@ page {
   align-items: center;
   justify-content: center;
   background: rgba(244, 212, 140, 0.10);
-  color: var(--ds-gold);
+  color: var(--color-gold);
   font-size: 24rpx;
   font-weight: 500;
   border: 1rpx solid rgba(244, 212, 140, 0.20);
@@ -320,14 +297,14 @@ page {
 
 .empty-star {
   font-size: 52rpx;
-  color: var(--ds-gold);
+  color: var(--color-gold);
   opacity: 0.7;
 }
 
 .empty-title {
   font-size: 30rpx;
   font-weight: 600;
-  color: var(--ds-cream);
+  color: var(--color-text-primary);
   display: block;
   margin-bottom: 12rpx;
   letter-spacing: 2rpx;
@@ -335,7 +312,7 @@ page {
 
 .empty-desc {
   font-size: 26rpx;
-  color: var(--ds-muted);
+  color: var(--color-text-tertiary);
   display: block;
   margin-bottom: 48rpx;
   line-height: 1.6;
@@ -347,7 +324,7 @@ page {
   justify-content: center;
   gap: 12rpx;
   background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
-  color: var(--ds-text-on-gold);
+  color: var(--color-text-inverse);
   font-size: 28rpx;
   font-weight: 600;
   border: none;
@@ -419,7 +396,7 @@ page {
 .modal-title {
   font-size: 34rpx;
   font-weight: 700;
-  color: var(--ds-gold);
+  color: var(--color-gold);
   display: block;
   text-align: center;
   margin-bottom: 48rpx;
@@ -430,7 +407,7 @@ page {
 .modal-label {
   font-size: 26rpx;
   font-weight: 500;
-  color: var(--ds-cream);
+  color: var(--color-text-primary);
   display: block;
   margin-bottom: 16rpx;
   letter-spacing: 1rpx;
@@ -461,7 +438,7 @@ page {
 }
 
 .mood-item.mood-selected {
-  border-color: var(--ds-gold);
+  border-color: var(--color-gold);
   background: rgba(244, 212, 140, 0.14);
   box-shadow: 0 0 20rpx rgba(244, 212, 140, 0.10);
 }
@@ -473,12 +450,12 @@ page {
 
 .mood-label {
   font-size: 26rpx;
-  color: var(--ds-cream);
+  color: var(--color-text-primary);
   font-weight: 500;
 }
 
 .mood-selected .mood-label {
-  color: var(--ds-gold);
+  color: var(--color-gold);
 }
 
 
@@ -491,7 +468,7 @@ page {
   border-radius: var(--radius-lg);
   padding: 24rpx;
   font-size: 26rpx;
-  color: var(--ds-cream);
+  color: var(--color-text-primary);
   line-height: 1.7;
   box-sizing: border-box;
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -508,7 +485,7 @@ page {
 
 .char-count {
   font-size: 22rpx;
-  color: var(--ds-muted);
+  color: var(--color-text-tertiary);
   display: block;
   text-align: right;
   margin-top: 10rpx;
@@ -522,7 +499,7 @@ page {
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
-  color: var(--ds-text-on-gold);
+  color: var(--color-text-inverse);
   font-size: 30rpx;
   font-weight: 600;
   border: none;
@@ -565,7 +542,7 @@ page {
 .skeleton-line {
   height: 30rpx;
   border-radius: var(--radius-sm);
-  background: #252550;
+  background: var(--color-surface);
   animation: shimmer 1.5s ease-in-out infinite;
 }
 
@@ -576,7 +553,7 @@ page {
   width: 100%;
   height: 80rpx;
   border-radius: var(--radius-pill);
-  background: #252550;
+  background: var(--color-surface);
   margin-bottom: 48rpx;
   animation: shimmer 1.5s ease-in-out infinite;
 }
@@ -585,7 +562,7 @@ page {
   width: 100%;
   height: 160rpx;
   border-radius: var(--radius-lg);
-  background: #252550;
+  background: var(--color-surface);
   margin-bottom: 24rpx;
   animation: shimmer 1.5s ease-in-out infinite;
 }

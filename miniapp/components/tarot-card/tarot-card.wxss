@@ -28,14 +28,14 @@
   /* Dark indigo card surface */
   background: linear-gradient(
     150deg,
-    #19103a 0%,
+    var(--color-bg) 0%,
     #20174a 30%,
     #1b1340 65%,
     #140d30 100%
   );
 
   /* Golden border */
-  border: 1.5rpx solid #c9a04a;
+  border: 1.5rpx solid var(--color-gold-dark);
 
   /* Warm golden glow shadow (resting state) */
   box-shadow:
@@ -243,9 +243,9 @@
     90deg,
     transparent 0%,
     rgba(242, 214, 138, 0.15) 8%,
-    #d4a853 25%,
-    #f2d68a 50%,
-    #d4a853 75%,
+    var(--color-gold-dark) 25%,
+    var(--color-gold-light) 50%,
+    var(--color-gold-dark) 75%,
     rgba(242, 214, 138, 0.15) 92%,
     transparent 100%
   );
@@ -257,9 +257,9 @@
     90deg,
     transparent 0%,
     rgba(242, 214, 138, 0.15) 8%,
-    #d4a853 25%,
-    #f2d68a 50%,
-    #d4a853 75%,
+    var(--color-gold-dark) 25%,
+    var(--color-gold-light) 50%,
+    var(--color-gold-dark) 75%,
     rgba(242, 214, 138, 0.15) 92%,
     transparent 100%
   );
@@ -278,7 +278,7 @@
   font-family: 'Georgia', 'Times New Roman', serif;
   letter-spacing: 2rpx;
 
-  color: #f2e6c9;
+  color: var(--color-text-primary);
   text-shadow:
     0 0 6rpx rgba(212, 168, 83, 0.50),
     0 0 12rpx rgba(212, 168, 83, 0.20),
@@ -318,7 +318,7 @@
   width: 4rpx;
   height: 4rpx;
   border-radius: 50%;
-  background: #f2e6c9;
+  background: var(--color-text-primary);
   animation: twinkle var(--dur, 3s) ease-in-out infinite alternate;
   box-shadow: 0 0 6rpx 2rpx rgba(242, 230, 201, 0.30);
 }
@@ -416,7 +416,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 
-  color: #f2e6c9;
+  color: var(--color-text-primary);
   text-shadow:
     0 0 8rpx rgba(212, 168, 83, 0.50),
     0 0 16rpx rgba(212, 168, 83, 0.20),
@@ -554,8 +554,8 @@
   color: rgba(212, 168, 83, 0.55);
   background: radial-gradient(
     circle at 35% 30%,
-    #f2d68a,
-    #c9a04a 55%,
+    var(--color-gold-light),
+    var(--color-gold-dark) 55%,
     #8a6a30
   );
 }
@@ -565,9 +565,9 @@
   color: rgba(180, 155, 220, 0.50);
   background: radial-gradient(
     circle at 35% 30%,
-    #d8c4f0,
-    #b498d8 55%,
-    #8068b0
+    var(--color-lavender-light),
+    var(--color-lavender) 55%,
+    var(--color-lavender-dark)
   );
 }
 
@@ -587,8 +587,8 @@
   color: rgba(220, 175, 85, 0.50);
   background: radial-gradient(
     circle at 35% 30%,
-    #f2d898,
-    #d4a848 55%,
+    var(--color-gold-light),
+    var(--color-gold-dark) 55%,
     #a07830
   );
 }
@@ -608,8 +608,8 @@
   color: rgba(212, 168, 83, 0.50);
   background: radial-gradient(
     circle at 35% 30%,
-    #f2d68a,
-    #c9a04a 55%,
+    var(--color-gold-light),
+    var(--color-gold-dark) 55%,
     #8a6a30
   );
   box-shadow: 0 0 8rpx 4rpx currentColor;

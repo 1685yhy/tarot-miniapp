@@ -246,6 +246,92 @@
   box-shadow: var(--shadow-card-press);
 }
 
+/* ============================================================
+   4c. PENDING READING CARD — resume incomplete reading
+   ============================================================ */
+.pending-reading-card {
+  padding: 28rpx 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, rgba(244,212,140,0.10) 0%, rgba(180,140,200,0.08) 100%);
+  border-color: rgba(244,212,140,0.20);
+}
+
+.pending-reading-left {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.pending-reading-icon-wrap {
+  width: 48rpx;
+  height: 48rpx;
+  background: rgba(244,212,140,0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pending-reading-icon {
+  font-size: 28rpx;
+}
+
+.pending-reading-label {
+  display: block;
+  font-weight: 500;
+  color: var(--color-gold);
+}
+
+.pending-reading-hint {
+  display: block;
+  margin-top: 4rpx;
+}
+
+.pending-reading-arrow {
+  font-size: 24rpx;
+  color: var(--color-text-tertiary);
+}
+
+/* ============================================================
+   4d. DIARY ENTRY CARD — today's journal entry
+   ============================================================ */
+.diary-entry-card {
+  padding: 28rpx 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, rgba(244,212,140,0.08) 0%, rgba(180,140,200,0.06) 100%);
+  border-color: rgba(244,212,140,0.15);
+}
+
+.diary-entry-left {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.diary-entry-emoji {
+  font-size: 44rpx;
+}
+
+.diary-entry-label {
+  display: block;
+  font-weight: 500;
+  color: var(--color-gold);
+}
+
+.diary-entry-hint {
+  display: block;
+  margin-top: 4rpx;
+}
+
+.diary-entry-arrow {
+  font-size: 24rpx;
+  color: var(--color-text-tertiary);
+}
+
 /* -----------------------------------------------------------
    4b. AFTER-DRAW — Card Reveal & Particles
    ----------------------------------------------------------- */
@@ -376,6 +462,7 @@
   align-items: center;
   justify-content: center;
   position: relative;
+  padding: 24rpx 16rpx;
 }
 
 /* --- Free/Premium tags on spread cards --- */
@@ -460,9 +547,16 @@
 
 /* Spread card text labels */
 .section .card-press .body-sm {
+  display: block;
+  font-weight: 600;
   color: var(--color-text-primary, #F0EDE8);
   font-size: var(--font-size-sm, 24rpx);
   letter-spacing: 1rpx;
+}
+
+.section .card-press .body-xs {
+  display: block;
+  margin-top: 6rpx;
 }
 
 /* -----------------------------------------------------------

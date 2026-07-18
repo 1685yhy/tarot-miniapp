@@ -1,6 +1,7 @@
 // pages/reading-result/reading-result.js
 const { request } = require('../../utils/api');
 const { cardEnter } = require('../../utils/animate');
+const { computeImagePath } = require('../../utils/cards');
 
 // ---- Spread type name mapping for share title ----
 const SPREAD_TYPE_NAMES = {
@@ -13,36 +14,6 @@ const SPREAD_TYPE_NAMES = {
   love_reading: '爱情占卜',
   fortune_telling: '财运占卜',
 };
-
-// ---- Image path computation (mirrors encyclopedia.js logic) ----
-const IMAGE_BASE = (() => {
-  try {
-    const env = wx.getAccountInfoSync().miniProgram.envVersion;
-    return env === 'develop' ? 'http://localhost:8000/images/cards' : 'https://xingxiang.chat/images/cards_thumb';
-  } catch(e) {
-    return 'https://xingxiang.chat/images/cards_thumb';
-  }
-})();
-const RANK_MAP = {
-  ace: 0, two: 1, three: 2, four: 3, five: 4,
-  six: 5, seven: 6, eight: 7, nine: 8, ten: 9,
-  page: 10, knight: 11, queen: 12, king: 13,
-};
-
-function computeImagePath(card) {
-  if (!card || !card.name_en) return '';
-  const enSnake = card.name_en.toLowerCase().replace(/\s+/g, '_');
-  if (card.arcana === 'major') {
-    const idx = String(card.card_number).padStart(2, '0');
-    return `${IMAGE_BASE}/major_${idx}_${enSnake}.png`;
-  }
-  if (card.suit) {
-    const firstWord = card.name_en.toLowerCase().split(' ')[0];
-    const idx = RANK_MAP[firstWord] !== undefined ? RANK_MAP[firstWord] : 0;
-    return `${IMAGE_BASE}/${card.suit}_${String(idx).padStart(2, '0')}_${enSnake}.png`;
-  }
-  return '';
-}
 
 Page({
   data: {

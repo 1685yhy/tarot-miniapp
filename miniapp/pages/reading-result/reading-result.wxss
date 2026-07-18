@@ -2,19 +2,19 @@
    Tarot Reading Result — "A Personal Letter from the Cosmos"
    Theme: Starlight (deep indigo, warm gold, intimate prose)
    Palette:
-     #1A1A3E — cosmic night / page background
-     #252550 — card surface (dark indigo)
-     #F4D48C — warm gold (accent, light, emphasis)
-     #D4B06A — deeper gold (gradient stop)
-     #B8A9E0 — lavender (secondary, link, soft)
-     #F0EDE8 — warm cream (body text)
-     #6B6599 — muted lavender (tertiary, subtle)
+     var(--color-bg) — cosmic night / page background
+     var(--color-surface) — card surface (dark indigo)
+     var(--color-gold) — warm gold (accent, light, emphasis)
+     var(--color-gold-dark) — deeper gold (gradient stop)
+     var(--color-lavender) — lavender (secondary, link, soft)
+     var(--color-text-primary) — warm cream (body text)
+     var(--color-text-tertiary) — muted lavender (tertiary, subtle)
    ================================================================ */
 
 /* ===== 0. Page Base ===== */
 .page {
   min-height: 100vh;
-  background: #1A1A3E;
+  background: var(--color-bg);
   display: flex;
   flex-direction: column;
 }
@@ -61,7 +61,7 @@
 /* ---- Stage Icons Base ---- */
 .stage-title {
   font-size: 34rpx;
-  color: #F4D48C;
+  color: var(--color-gold);
   font-weight: 500;
   margin-bottom: 12rpx;
   letter-spacing: 3rpx;
@@ -69,7 +69,7 @@
 
 .stage-sub {
   font-size: 24rpx;
-  color: #B8A9E0;
+  color: var(--color-lavender);
   letter-spacing: 4rpx;
   opacity: 0.7;
 }
@@ -231,15 +231,15 @@
 }
 
 .dot.lit {
-  background: #F4D48C;
-  border-color: #F4D48C;
+  background: var(--color-gold);
+  border-color: var(--color-gold);
   box-shadow: 0 0 14rpx rgba(244, 212, 140, 0.5);
 }
 
 /* ---- Dynamic Status Text ---- */
 .stage-time {
   font-size: 22rpx;
-  color: #B8A9E0;
+  color: var(--color-lavender);
   letter-spacing: 2rpx;
   opacity: 0.6;
   margin-top: 8rpx;
@@ -258,7 +258,7 @@
 
 .wait-hint {
   font-size: 24rpx;
-  color: #B8A9E0;
+  color: var(--color-lavender);
   letter-spacing: 2rpx;
   opacity: 0.7;
   margin-bottom: 28rpx;
@@ -275,7 +275,7 @@
 
 .btn-wait-yes {
   background: rgba(244, 212, 140, 0.12);
-  color: #F4D48C;
+  color: var(--color-gold);
   border: 1rpx solid rgba(244, 212, 140, 0.25);
   border-radius: 48rpx;
   padding: 18rpx 56rpx;
@@ -295,7 +295,7 @@
 
 .btn-wait-no {
   font-size: 22rpx;
-  color: #6B6599;
+  color: var(--color-text-tertiary);
   letter-spacing: 2rpx;
   opacity: 0.55;
   padding: 12rpx 40rpx;
@@ -320,21 +320,21 @@
 
 .error-text {
   font-size: 30rpx;
-  color: #F0EDE8;
+  color: var(--color-text-primary);
   margin-bottom: 8rpx;
   letter-spacing: 2rpx;
 }
 
 .error-hint {
   font-size: 24rpx;
-  color: #B8A9E0;
+  color: var(--color-lavender);
   margin-bottom: 44rpx;
   letter-spacing: 1rpx;
 }
 
 .btn-retry {
   background: rgba(244, 212, 140, 0.12);
-  color: #F4D48C;
+  color: var(--color-gold);
   border: 1rpx solid rgba(244, 212, 140, 0.25);
   border-radius: 48rpx;
   padding: 20rpx 56rpx;
@@ -421,7 +421,7 @@
   box-shadow:
     0 0 20rpx rgba(244, 212, 140, 0.12),
     0 4rpx 12rpx rgba(0, 0, 0, 0.3);
-  background: #252550;
+  background: var(--color-surface);
   display: block;
 }
 
@@ -460,7 +460,7 @@
 .card-pos {
   display: block;
   font-size: 18rpx;
-  color: #F4D48C;
+  color: var(--color-gold);
   letter-spacing: 3rpx;
   font-weight: 500;
   opacity: 0.88;
@@ -471,7 +471,7 @@
 .card-name {
   display: block;
   font-size: 20rpx;
-  color: #F0EDE8;
+  color: var(--color-text-primary);
   font-weight: 500;
   letter-spacing: 1rpx;
   line-height: 1.3;
@@ -487,7 +487,7 @@
   display: block;
   margin-top: 32rpx;
   font-size: 20rpx;
-  color: #B8A9E0;
+  color: var(--color-lavender);
   letter-spacing: 5rpx;
   font-weight: 400;
   opacity: 0.5;
@@ -563,7 +563,7 @@
 /* ---- Letter Text ---- */
 .letter-text {
   font-size: 28rpx;
-  color: #F0EDE8;
+  color: var(--color-text-primary);
   line-height: 1.9;
   letter-spacing: 1rpx;
   white-space: pre-wrap;
@@ -580,7 +580,7 @@
 
 .toggle-btn {
   font-size: 24rpx;
-  color: #B8A9E0;
+  color: var(--color-lavender);
   letter-spacing: 2rpx;
   opacity: 0.6;
   padding: 16rpx 40rpx;
@@ -604,8 +604,8 @@
 /* ---- Primary: "追问更多" gold pill ---- */
 .btn-ask {
   width: 100%;
-  background: linear-gradient(135deg, #F4D48C 0%, #D4B06A 100%);
-  color: #1A1A3E;
+  background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-dark) 100%);
+  color: var(--color-bg);
   font-weight: 700;
   font-size: 30rpx;
   border-radius: 50rpx;
@@ -632,7 +632,7 @@
 .btn-share {
   width: 100%;
   background: transparent;
-  color: #F4D48C;
+  color: var(--color-gold);
   font-weight: 500;
   font-size: 28rpx;
   border-radius: 50rpx;
@@ -655,7 +655,7 @@
 .btn-redo {
   width: 100%;
   background: transparent;
-  color: #F4D48C;
+  color: var(--color-gold);
   font-weight: 500;
   font-size: 28rpx;
   border-radius: 50rpx;
@@ -676,7 +676,7 @@
 
 /* ---- Tertiary: "回到首页" lavender link ---- */
 .btn-back {
-  color: #6B6599;
+  color: var(--color-text-tertiary);
   font-size: 24rpx;
   letter-spacing: 2rpx;
   opacity: 0.55;
@@ -699,7 +699,7 @@
 
 .btn-save {
   font-size: 24rpx;
-  color: #B8A9E0;
+  color: var(--color-lavender);
   letter-spacing: 2rpx;
   opacity: 0.55;
   padding: 16rpx 32rpx;
@@ -708,12 +708,12 @@
 
 .btn-save:active {
   opacity: 0.9;
-  color: #F4D48C;
+  color: var(--color-gold);
 }
 
 .btn-saved {
   font-size: 24rpx;
-  color: #F4D48C;
+  color: var(--color-gold);
   letter-spacing: 2rpx;
   opacity: 0.6;
   padding: 16rpx 32rpx;
@@ -818,7 +818,7 @@
   width: 100%;
   border-radius: 20rpx;
   overflow: hidden;
-  background: #252550;
+  background: var(--color-surface);
   border: 2rpx solid rgba(244, 212, 140, 0.6);
   box-shadow:
     0 0 60rpx rgba(244, 212, 140, 0.20),
@@ -865,7 +865,7 @@
 
 .back-position {
   font-size: 22rpx;
-  color: #F4D48C;
+  color: var(--color-gold);
   letter-spacing: 4rpx;
   opacity: 0.7;
   margin-bottom: 12rpx;
@@ -873,7 +873,7 @@
 
 .back-card-name {
   font-size: 36rpx;
-  color: #F0EDE8;
+  color: var(--color-text-primary);
   font-weight: 600;
   letter-spacing: 2rpx;
   text-align: center;
@@ -889,7 +889,7 @@
 
 .back-label {
   font-size: 20rpx;
-  color: #B8A9E0;
+  color: var(--color-lavender);
   letter-spacing: 3rpx;
   opacity: 0.6;
   margin-bottom: 8rpx;
@@ -897,7 +897,7 @@
 
 .back-keywords {
   font-size: 26rpx;
-  color: #F0EDE8;
+  color: var(--color-text-primary);
   text-align: center;
   line-height: 1.6;
   letter-spacing: 1rpx;
@@ -906,7 +906,7 @@
 
 .back-desc {
   font-size: 26rpx;
-  color: #F0EDE8;
+  color: var(--color-text-primary);
   text-align: center;
   line-height: 1.7;
   letter-spacing: 1rpx;
@@ -916,7 +916,7 @@
 /* ---- Hint text below the enlarged card ---- */
 .enlarged-hint {
   font-size: 22rpx;
-  color: #B8A9E0;
+  color: var(--color-lavender);
   letter-spacing: 2rpx;
   opacity: 0.4;
   margin-top: 32rpx;
