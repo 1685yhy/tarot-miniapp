@@ -208,32 +208,30 @@ Page({
     // on the post-draw card which runs alongside.
     if (this.data.useNativeAnim) {
       const preAnim = createAnim({});
-      preAnim.scale(0.97).step({ duration: 150 });                // Step 1: press feedback
-      preAnim.scale(1.02).rotate(2).step({ duration: 300 });      // Step 2: shuffle feel
-      preAnim.scale(1).rotate(0).step({ duration: 200 });         // settle before swap
+      preAnim.scale(0.97).step({ duration: 150 });                // Feedback: press feedback (150ms)
+      preAnim.scale(1.02).rotate(2).step({ duration: 300 });      // Emphasis: shuffle feel (300ms)
+      preAnim.scale(1).rotate(0).step({ duration: 200 });         // Orientation: settle before swap (200ms)
       this.setData({ cardAnimData: preAnim.export() });
     }
 
     // --- Haptic & visual feedback (existing CSS, kept intact) ---
     wx.vibrateShort({ type: 'light' }).catch(() => {});
 
-    // 1. Ripple burst from center (animation: 0.6s via .ripple-run)
+    // 1. Ripple burst from center (animation: 0.15s via .ripple-run)
     this.setData({ rippleActive: true });
-    // 2. Shake — brief shuffle feel (animation: 0.3s via .card-shake-fx)
+    // 2. Shake — brief shuffle feel (animation: 0.15s via .card-shake-fx)
     this.setData({ shaking: true });
 
-    // Let the shake animation play for its full 0.3s duration,
-    // then clean up. The ripple (0.6s) cleans up on its own timeout.
-    this._shakeTimer = setTimeout(() => { this.setData({ shaking: false }); }, 300);
-    this._rippleTimer = setTimeout(() => { this.setData({ rippleActive: false }); }, 650);
+    // Cleanup timers matching reduced CSS durations
+    this._shakeTimer = setTimeout(() => { this.setData({ shaking: false }); }, 150); // Feedback: shake duration
+    this._rippleTimer = setTimeout(() => { this.setData({ rippleActive: false }); }, 200); // Feedback: ripple duration + buffer
 
-    // Brief pause before API call so the user sees the initial animation frames
+    // Orientation: brief pause so user sees initial animation frames before API call (200ms)
     await new Promise(r => setTimeout(r, 200));
 
     wx.showLoading({ title: '抽取中...' });
     try {
-      // Small extra delay (300ms) so the pre-draw state lingers,
-      // making the wx:if→wx:else switch feel like a reveal transition
+      // Emphasis: extra delay so pre-draw state lingers before reveal transition (300ms)
       await new Promise(r => setTimeout(r, 300));
       const card = await request('/cards/daily');
       this.setData({ dailyCard: card, drawingLoading: false });

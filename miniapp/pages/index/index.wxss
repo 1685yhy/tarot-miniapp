@@ -72,7 +72,7 @@
    ----------------------------------------------------------- */
 
 .title-1 {
-  font-size: 58rpx;
+  font-size: var(--font-size-display);
   font-weight: var(--font-weight-bold, 700);
   color: var(--color-text-primary, #F0EDE8);
   line-height: var(--line-height-tight, 1.3);
@@ -86,7 +86,7 @@
 
 .hero .body-text {
   color: var(--color-lavender, #B8A9E0);
-  font-size: var(--font-size-md, 30rpx);
+  font-size: var(--font-size-body, 30rpx);
   letter-spacing: 4rpx;
   position: relative;
   z-index: 1;
@@ -98,17 +98,17 @@
    ----------------------------------------------------------- */
 
 .anim-fade-in-up-1 {
-  animation: page-fade-up 0.8s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94)) forwards;
+  animation: page-fade-up 0.6s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94)) forwards;
 }
 
 .anim-fade-in-up-2 {
   opacity: 0;
-  animation: page-fade-up 0.8s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94)) 0.25s forwards;
+  animation: page-fade-up 0.6s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94)) 0.25s forwards;
 }
 
 .anim-fade-in-up-3 {
   opacity: 0;
-  animation: page-fade-up 0.8s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94)) 0.5s forwards;
+  animation: page-fade-up 0.6s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94)) 0.5s forwards;
 }
 
 @keyframes page-fade-up {
@@ -185,7 +185,7 @@
 }
 
 .ripple-run {
-  animation: ripple-expand 0.6s ease-out forwards;
+  animation: ripple-expand 0.15s ease-out forwards;
 }
 
 @keyframes ripple-expand {
@@ -206,7 +206,7 @@
 }
 
 .card-shake {
-  animation: card-shake-fx 0.3s ease-out;
+  animation: card-shake-fx 0.15s ease-out;
 }
 
 @keyframes card-shake-fx {
@@ -275,7 +275,7 @@
 }
 
 .pending-reading-icon {
-  font-size: 28rpx;
+  font-size: var(--font-size-body);
 }
 
 .pending-reading-label {
@@ -290,7 +290,7 @@
 }
 
 .pending-reading-arrow {
-  font-size: 24rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
 }
 
@@ -313,7 +313,7 @@
 }
 
 .diary-entry-emoji {
-  font-size: 44rpx;
+  font-size: var(--font-size-title);
 }
 
 .diary-entry-label {
@@ -328,7 +328,7 @@
 }
 
 .diary-entry-arrow {
-  font-size: 24rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
 }
 
@@ -370,7 +370,7 @@
 
 /* --- Text reveal — slide up with stagger --- */
 .reveal-text {
-  animation: slide-up-reveal 0.5s ease-out 0s both;
+  animation: slide-up-reveal 0.4s ease-out 0s both;
   position: relative;
   z-index: 1;
 }
@@ -394,7 +394,7 @@
 
 /* Card title inside daily card */
 .title-2 {
-  font-size: var(--font-size-2xl, 48rpx);
+  font-size: var(--font-size-title, 48rpx);
   font-weight: var(--font-weight-semibold, 600);
   color: var(--color-gold, #F4D48C);
   line-height: var(--line-height-tight, 1.3);
@@ -403,7 +403,7 @@
 
 /* Card subtitle / small label */
 .title-4 {
-  font-size: var(--font-size-lg, 34rpx);
+  font-size: var(--font-size-subhead, 36rpx);
   font-weight: var(--font-weight-medium, 500);
   color: var(--color-text-primary, #F0EDE8);
   line-height: var(--line-height-tight, 1.3);
@@ -412,7 +412,7 @@
 
 /* Small body text */
 .body-sm {
-  font-size: var(--font-size-sm, 24rpx);
+  font-size: var(--font-size-caption, 24rpx);
   font-weight: var(--font-weight-normal, 400);
   color: var(--color-lavender, #B8A9E0);
   line-height: var(--line-height-base, 1.6);
@@ -440,7 +440,7 @@
    ----------------------------------------------------------- */
 
 .section-title {
-  font-size: var(--font-size-lg, 34rpx);
+  font-size: var(--font-size-subhead, 36rpx);
   font-weight: var(--font-weight-semibold, 600);
   color: var(--color-text-primary, #F0EDE8);
   display: block;
@@ -470,7 +470,7 @@
   position: absolute;
   top: 8rpx;
   right: 8rpx;
-  font-size: 18rpx;
+  font-size: var(--font-size-xs);
   font-weight: 500;
   padding: 3rpx 12rpx;
   border-radius: 12rpx;
@@ -495,7 +495,7 @@
   display: inline-block;
   margin-top: 6rpx;
   padding: 2rpx 12rpx;
-  font-size: 18rpx;
+  font-size: var(--font-size-xs);
   font-weight: 500;
   border-radius: 10rpx;
   line-height: 1.6;
@@ -513,7 +513,7 @@
 }
 
 .body-xs {
-  font-size: 22rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-text-tertiary, #9A95B8);
   display: block;
 }
@@ -550,7 +550,7 @@
   display: block;
   font-weight: 600;
   color: var(--color-text-primary, #F0EDE8);
-  font-size: var(--font-size-sm, 24rpx);
+  font-size: var(--font-size-caption, 24rpx);
   letter-spacing: 1rpx;
 }
 
@@ -570,11 +570,11 @@
   justify-content: center;
   padding: 120rpx var(--spacing-lg, 32rpx) 80rpx;
   text-align: center;
-  animation: page-fade-up 0.8s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94)) forwards;
+  animation: page-fade-up 0.6s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94)) forwards;
 }
 
 .error-icon {
-  font-size: 72rpx;
+  font-size: calc(var(--font-size-display) + 16rpx);
   color: var(--color-gold, #F4D48C);
   opacity: 0.50;
   margin-bottom: var(--spacing-lg, 32rpx);
@@ -583,7 +583,7 @@
 }
 
 .error-text {
-  font-size: var(--font-size-xl, 40rpx);
+  font-size: var(--font-size-title, 40rpx);
   font-weight: var(--font-weight-semibold, 600);
   color: var(--color-text-primary, #F0EDE8);
   margin-bottom: var(--spacing-xs, 12rpx);
@@ -591,7 +591,7 @@
 }
 
 .error-hint {
-  font-size: var(--font-size-sm, 24rpx);
+  font-size: var(--font-size-caption, 24rpx);
   color: var(--color-text-tertiary, #A098C0);
   margin-bottom: var(--spacing-xl, 48rpx);
   display: block;
@@ -604,7 +604,7 @@
   border: 1.5rpx solid rgba(244, 212, 140, 0.30);
   border-radius: var(--radius-pill, 999rpx);
   padding: 20rpx 48rpx;
-  font-size: var(--font-size-base, 28rpx);
+  font-size: var(--font-size-body, 30rpx);
   font-weight: var(--font-weight-medium, 500);
   transition: all var(--duration-fast) var(--ease-out);
 }
@@ -634,7 +634,7 @@
 .card-body > text:first-child {
   display: block;
   margin-bottom: 24rpx;
-  font-size: 52rpx;
+  font-size: var(--font-size-title);
   color: var(--color-gold, #F4D48C);
   text-shadow: 0 0 30rpx rgba(244, 212, 140, 0.15);
 }
@@ -657,7 +657,7 @@
 
 .section > view > .card-press {
   opacity: 0;
-  animation: card-staggered 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: card-staggered 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 .section > view > .card-press:nth-child(1) { animation-delay: 0.70s; }
@@ -698,18 +698,18 @@
 }
 
 .more-text {
-  font-size: var(--font-size-sm, 24rpx);
+  font-size: var(--font-size-caption, 24rpx);
   font-weight: var(--font-weight-medium, 500);
   color: var(--color-gold, #F4D48C);
   letter-spacing: 1rpx;
 }
 
 .more-arrow {
-  font-size: 28rpx;
+  font-size: var(--font-size-body);
   color: var(--color-gold, #F4D48C);
   opacity: 0.6;
   margin-left: 12rpx;
-  transition: transform 0.3s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94));
+  transition: transform 0.15s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94));
 }
 
 .more-spreads:active .more-arrow {
@@ -770,14 +770,14 @@
 }
 
 .onboarding-emoji {
-  font-size: 100rpx;
+  font-size: calc(var(--font-size-display) + 44rpx);
   display: block;
-  margin-bottom: 48rpx;
+  margin-bottom: var(--spacing-xl);
   /* filter replaced */
 }
 
 .onboarding-title {
-  font-size: 52rpx;
+  font-size: var(--font-size-title);
   font-weight: var(--font-weight-bold, 700);
   color: var(--color-gold, #F4D48C);
   display: block;
@@ -787,7 +787,7 @@
 }
 
 .onboarding-desc {
-  font-size: 30rpx;
+  font-size: var(--font-size-body);
   font-weight: var(--font-weight-normal, 400);
   color: var(--color-lavender, #B8A9E0);
   display: block;
@@ -829,7 +829,7 @@
   align-items: center;
   justify-content: center;
   gap: 24rpx;
-  padding: 0 60rpx 80rpx;
+  padding: 0 60rpx var(--spacing-3xl);
   width: 100%;
   box-sizing: border-box;
 }
@@ -837,7 +837,7 @@
 .onboarding-next {
   background: rgba(244, 212, 140, 0.12);
   color: var(--color-gold, #F4D48C);
-  font-size: 30rpx;
+  font-size: var(--font-size-body);
   font-weight: var(--font-weight-medium, 500);
   border: 1.5rpx solid rgba(244, 212, 140, 0.30);
   border-radius: 999rpx;
@@ -855,7 +855,7 @@
 }
 
 .onboarding-skip {
-  font-size: 26rpx;
+  font-size: var(--font-size-caption);
   color: rgba(184, 169, 224, 0.45);
   padding: 24rpx 20rpx;
   cursor: pointer;
@@ -870,7 +870,7 @@
 .onboarding-start {
   background: linear-gradient(135deg, #F4D48C 0%, #E6C070 100%);
   color: #1A1A3E;
-  font-size: 32rpx;
+  font-size: var(--font-size-body);
   font-weight: var(--font-weight-semibold, 600);
   border: none;
   border-radius: 999rpx;
@@ -1122,7 +1122,7 @@
     -20rpx 7rpx 2rpx -1rpx rgba(244,212,140,0.22),
     -40rpx 14rpx 3rpx -2rpx rgba(244,212,140,0.10),
     -60rpx 20rpx 4rpx -3rpx rgba(244,212,140,0.05);
-  animation: shooting-star-fly 30s linear infinite;
+  animation: shooting-star-fly 30s ease-in-out infinite;
   animation-delay: 8s;
 }
 
@@ -1367,7 +1367,7 @@
 }
 
 .streak-icon {
-  font-size: 24rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-gold);
   text-shadow: 0 0 12rpx rgba(244, 212, 140, 0.30);
 }
@@ -1418,7 +1418,7 @@
    11. FREE TIER BANNER
    ----------------------------------------------------------- */
 .free-banner {
-  margin: 48rpx 0 32rpx;
+  margin: var(--spacing-xl) 0 var(--spacing-lg);
   text-align: center;
 }
 
@@ -1432,7 +1432,7 @@
 }
 
 .free-banner-text {
-  font-size: 24rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-lavender, #C8B8E8);
   letter-spacing: 0.04em;
 }
@@ -1462,7 +1462,7 @@
 }
 
 .tarot-explainer-link {
-  font-size: 22rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-text-tertiary, #A098C0);
   opacity: 0.55;
   letter-spacing: 2rpx;

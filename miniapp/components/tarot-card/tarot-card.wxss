@@ -46,13 +46,13 @@
      Opacity and transform are separate keyframes so the
      reversed selector can override one without losing the other. */
   animation:
-    card-rise-opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards,
-    card-rise-transform 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards,
-    card-border-glow 1.4s ease-out forwards;
+    card-rise-opacity var(--duration-slow) cubic-bezier(0.23, 1, 0.32, 1) forwards,
+    card-rise-transform var(--duration-slow) cubic-bezier(0.23, 1, 0.32, 1) forwards,
+    card-border-glow 1s ease-out forwards;
 
   transition:
-    transform 0.6s cubic-bezier(0.23, 1, 0.32, 1),
-    box-shadow 0.6s ease;
+    transform var(--duration-fast) cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow var(--duration-fast) ease-out;
 }
 
 /* ============================================================
@@ -126,7 +126,7 @@
     transparent 100%
   );
   transform: translateX(-100%);
-  animation: card-shimmer 1s ease-out 0.5s forwards;
+  animation: card-shimmer 0.6s ease-out 0.5s forwards;
 }
 
 @keyframes card-shimmer {
@@ -144,11 +144,11 @@
 .tarot-card.card-cups::before,
 .tarot-card.card-swords::before,
 .tarot-card.card-pentacles::before {
-  animation: suit-sparkle 1.6s ease-out 0.3s;
+  animation: suit-sparkle 1s ease-out 0.3s;
 }
 
 .tarot-card.card-major::before {
-  animation: suit-sparkle-major 1.6s ease-out 0.3s;
+  animation: suit-sparkle-major 1s ease-out 0.3s;
 }
 
 @keyframes suit-sparkle {
@@ -173,8 +173,8 @@
   /* Combine mount animations (fade-in + border glow only — no rise transform)
      with the continuous blood-rose glow pulse that starts after mount. */
   animation:
-    card-rise-opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards,
-    card-border-glow 1.4s ease-out forwards,
+    card-rise-opacity var(--duration-slow) cubic-bezier(0.23, 1, 0.32, 1) forwards,
+    card-border-glow 1s ease-out forwards,
     reversed-glow 4s ease-in-out 1.5s infinite alternate;
 }
 
@@ -200,7 +200,7 @@
    ============================================================ */
 
 .tarot-card-wrapper.flipping .tarot-card {
-  animation: card-flip 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  animation: card-flip var(--duration-slow) cubic-bezier(0.23, 1, 0.32, 1) forwards;
 }
 
 .tarot-card-wrapper.flipping {
@@ -273,7 +273,7 @@
   left: 24rpx;
   z-index: 10;
 
-  font-size: 20rpx;
+  font-size: var(--font-size-xs);
   font-weight: 500;
   font-family: 'Georgia', 'Times New Roman', serif;
   letter-spacing: 2rpx;
@@ -406,7 +406,7 @@
   transform: translateX(-50%);
   z-index: 10;
 
-  font-size: 26rpx;
+  font-size: var(--font-size-caption);
   font-weight: 600;
   font-family: 'Georgia', 'Times New Roman', serif;
   letter-spacing: 3rpx;
@@ -433,7 +433,7 @@
   transform: translateX(-50%);
   z-index: 10;
 
-  font-size: 20rpx;
+  font-size: var(--font-size-xs);
   font-weight: 400;
   letter-spacing: 4rpx;
   white-space: nowrap;
@@ -464,7 +464,7 @@
   padding: 4rpx 16rpx;
   border-radius: 20rpx;
 
-  font-size: 18rpx;
+  font-size: var(--font-size-xs);
   line-height: 1.4;
   white-space: nowrap;
   pointer-events: none;
@@ -483,11 +483,11 @@
 }
 
 .position-icon {
-  font-size: 16rpx;
+  font-size: var(--font-size-xs);
 }
 
 .position-text {
-  font-size: 16rpx;
+  font-size: var(--font-size-xs);
   letter-spacing: 1rpx;
 }
 
@@ -499,7 +499,7 @@
   right: 16rpx;
   z-index: 10;
 
-  font-size: 16rpx;
+  font-size: var(--font-size-xs);
   font-weight: 300;
   letter-spacing: 4rpx;
   writing-mode: vertical-rl;
@@ -642,34 +642,34 @@
   }
 
   .card-number {
-    font-size: 16rpx;
+    font-size: var(--font-size-xs);
     top: 16rpx;
     left: 18rpx;
   }
 
   .card-name-en {
-    font-size: 20rpx;
+    font-size: var(--font-size-xs);
     bottom: 52rpx;
     letter-spacing: 2rpx;
   }
 
   .card-name-zh {
-    font-size: 16rpx;
+    font-size: var(--font-size-xs);
     bottom: 26rpx;
     letter-spacing: 3rpx;
   }
 
   .position-badge {
-    font-size: 14rpx;
+    font-size: var(--font-size-xs);
     padding: 3rpx 12rpx;
     bottom: 8rpx;
   }
 
-  .position-icon { font-size: 13rpx; }
-  .position-text { font-size: 14rpx; }
+  .position-icon { font-size: var(--font-size-xs); }
+  .position-text { font-size: var(--font-size-xs); }
 
   .reversed-label {
-    font-size: 14rpx;
+    font-size: var(--font-size-xs);
     bottom: 86rpx;
     right: 12rpx;
   }
@@ -700,7 +700,7 @@
   }
 
   .card-name-en {
-    font-size: 30rpx;
+    font-size: var(--font-size-body);
     letter-spacing: 4rpx;
   }
 }

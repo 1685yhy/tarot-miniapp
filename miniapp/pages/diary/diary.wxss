@@ -12,7 +12,7 @@ page {
    Container
    ============================================================ */
 .container {
-  padding: 48rpx 32rpx;
+  padding: var(--spacing-xl) var(--spacing-lg);
   padding-bottom: calc(120rpx + env(safe-area-inset-bottom));
   min-height: 100vh;
   position: relative;
@@ -29,7 +29,7 @@ page {
 }
 
 .page-title {
-  font-size: 40rpx;
+  font-size: var(--font-size-subhead);
   font-weight: 700;
   color: var(--color-gold);
   letter-spacing: 4rpx;
@@ -39,7 +39,7 @@ page {
 }
 
 .page-subtitle {
-  font-size: 26rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-lavender);
   letter-spacing: 2rpx;
   display: block;
@@ -57,12 +57,12 @@ page {
   gap: 12rpx;
   background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
   color: var(--color-text-inverse);
-  font-size: 30rpx;
+  font-size: var(--font-size-body);
   font-weight: 600;
   border: none;
   border-radius: var(--radius-pill);
   padding: 26rpx 0;
-  margin-bottom: 48rpx;
+  margin-bottom: var(--spacing-xl);
   box-shadow:
     0 4rpx 20rpx rgba(244, 212, 140, 0.25),
     0 0 60rpx rgba(244, 212, 140, 0.08);
@@ -77,7 +77,7 @@ page {
 }
 
 .btn-create-icon {
-  font-size: 32rpx;
+  font-size: var(--font-size-body);
 }
 
 @keyframes create-glow {
@@ -105,7 +105,7 @@ page {
 }
 
 .load-more-text {
-  font-size: 24rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
   letter-spacing: 2rpx;
 }
@@ -122,7 +122,7 @@ page {
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.20);
   position: relative;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.15s ease-out;
 }
 
 /* Gold corner glow */
@@ -154,19 +154,19 @@ page {
 }
 
 .entry-date-icon {
-  font-size: 22rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-gold);
 }
 
 .entry-date {
-  font-size: 24rpx;
+  font-size: var(--font-size-caption);
   font-weight: 600;
   color: var(--color-gold);
   letter-spacing: 2rpx;
 }
 
 .entry-mood {
-  font-size: 36rpx;
+  font-size: var(--font-size-subhead);
   line-height: 1;
 }
 
@@ -187,11 +187,11 @@ page {
 }
 
 .card-label-icon {
-  font-size: 24rpx;
+  font-size: var(--font-size-caption);
 }
 
 .card-label {
-  font-size: 22rpx;
+  font-size: var(--font-size-caption);
   font-weight: 500;
   color: var(--color-gold);
   letter-spacing: 2rpx;
@@ -199,7 +199,7 @@ page {
 }
 
 .card-name {
-  font-size: 28rpx;
+  font-size: var(--font-size-body);
   font-weight: 600;
   color: var(--color-gold);
   display: block;
@@ -208,7 +208,7 @@ page {
 }
 
 .card-meaning {
-  font-size: 24rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-lavender);
   display: block;
   line-height: 1.7;
@@ -216,7 +216,7 @@ page {
 
 /* Reflection Text */
 .entry-reflection {
-  font-size: 26rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-text-primary);
   line-height: 1.8;
   display: block;
@@ -237,11 +237,11 @@ page {
   background: var(--color-surface);
   border: 1rpx solid rgba(255, 107, 122, 0.20);
   border-radius: var(--radius-lg);
-  padding: 48rpx 32rpx;
+  padding: var(--spacing-xl) var(--spacing-lg);
 }
 
 .error-title {
-  font-size: 28rpx;
+  font-size: var(--font-size-body);
   font-weight: 600;
   color: var(--color-text-primary);
   display: block;
@@ -249,7 +249,7 @@ page {
 }
 
 .error-desc {
-  font-size: 24rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
   display: block;
   margin-bottom: 36rpx;
@@ -262,7 +262,7 @@ page {
   justify-content: center;
   background: rgba(244, 212, 140, 0.10);
   color: var(--color-gold);
-  font-size: 24rpx;
+  font-size: var(--font-size-caption);
   font-weight: 500;
   border: 1rpx solid rgba(244, 212, 140, 0.20);
   border-radius: var(--radius-pill);
@@ -296,13 +296,13 @@ page {
 }
 
 .empty-star {
-  font-size: 52rpx;
+  font-size: var(--font-size-title);
   color: var(--color-gold);
   opacity: 0.7;
 }
 
 .empty-title {
-  font-size: 30rpx;
+  font-size: var(--font-size-body);
   font-weight: 600;
   color: var(--color-text-primary);
   display: block;
@@ -311,10 +311,10 @@ page {
 }
 
 .empty-desc {
-  font-size: 26rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
   display: block;
-  margin-bottom: 48rpx;
+  margin-bottom: var(--spacing-xl);
   line-height: 1.6;
 }
 
@@ -325,7 +325,7 @@ page {
   gap: 12rpx;
   background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
   color: var(--color-text-inverse);
-  font-size: 28rpx;
+  font-size: var(--font-size-body);
   font-weight: 600;
   border: none;
   border-radius: var(--radius-pill);
@@ -340,7 +340,7 @@ page {
 }
 
 .btn-empty-cta-icon {
-  font-size: 30rpx;
+  font-size: var(--font-size-body);
 }
 
 
@@ -355,7 +355,7 @@ page {
   bottom: 0;
   background: rgba(10, 10, 30, 0.70);
   z-index: 1000;
-  animation: fade-in 0.3s ease forwards;
+  animation: fade-in var(--duration-fast) var(--ease-out) forwards;
 }
 
 @keyframes fade-in {
@@ -394,18 +394,18 @@ page {
 }
 
 .modal-title {
-  font-size: 34rpx;
+  font-size: var(--font-size-subhead);
   font-weight: 700;
   color: var(--color-gold);
   display: block;
   text-align: center;
-  margin-bottom: 48rpx;
+  margin-bottom: var(--spacing-xl);
   letter-spacing: 3rpx;
   text-shadow: 0 0 30rpx rgba(244, 212, 140, 0.12);
 }
 
 .modal-label {
-  font-size: 26rpx;
+  font-size: var(--font-size-caption);
   font-weight: 500;
   color: var(--color-text-primary);
   display: block;
@@ -430,7 +430,7 @@ page {
   border-radius: var(--radius-pill);
   background: rgba(244, 212, 140, 0.06);
   border: 1rpx solid rgba(244, 212, 140, 0.10);
-  transition: all 0.25s ease;
+  transition: all 0.15s ease-out;
 }
 
 .mood-item:active {
@@ -444,12 +444,12 @@ page {
 }
 
 .mood-emoji {
-  font-size: 34rpx;
+  font-size: var(--font-size-subhead);
   line-height: 1;
 }
 
 .mood-label {
-  font-size: 26rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-text-primary);
   font-weight: 500;
 }
@@ -467,7 +467,7 @@ page {
   border: 1rpx solid rgba(244, 212, 140, 0.12);
   border-radius: var(--radius-lg);
   padding: 24rpx;
-  font-size: 26rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-text-primary);
   line-height: 1.7;
   box-sizing: border-box;
@@ -484,7 +484,7 @@ page {
 }
 
 .char-count {
-  font-size: 22rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
   display: block;
   text-align: right;
@@ -500,15 +500,15 @@ page {
   justify-content: center;
   background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
   color: var(--color-text-inverse);
-  font-size: 30rpx;
+  font-size: var(--font-size-body);
   font-weight: 600;
   border: none;
   border-radius: var(--radius-pill);
   padding: 26rpx 0;
-  margin-top: 48rpx;
+  margin-top: var(--spacing-xl);
   box-shadow: 0 4rpx 20rpx rgba(244, 212, 140, 0.25);
   letter-spacing: 2rpx;
-  transition: all 0.25s ease;
+  transition: all 0.15s ease-out;
 }
 
 .btn-submit:active {
@@ -528,7 +528,7 @@ page {
    Skeleton — Shimmer loading
    ============================================================ */
 .skeleton-wrap {
-  padding: 48rpx 0;
+  padding: var(--spacing-xl) 0;
 }
 
 .skeleton-header-area {
@@ -536,7 +536,7 @@ page {
   flex-direction: column;
   align-items: center;
   gap: 16rpx;
-  margin-bottom: 48rpx;
+  margin-bottom: var(--spacing-xl);
 }
 
 .skeleton-line {
@@ -554,7 +554,7 @@ page {
   height: 80rpx;
   border-radius: var(--radius-pill);
   background: var(--color-surface);
-  margin-bottom: 48rpx;
+  margin-bottom: var(--spacing-xl);
   animation: shimmer 1.5s ease-in-out infinite;
 }
 

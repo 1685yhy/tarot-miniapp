@@ -75,11 +75,11 @@ Page({
   _startStages() {
     this.setData({ loadingStage: 1, loadingDotCount: 0, loadingTimeText: '', showWaitOptions: false });
 
-    // Stage 1: 洗牌中 — 2 seconds
+    // Stage 1: 洗牌中 — 2s (Emphasis: ritual pacing, not motion timing)
     this._stageTimer1 = setTimeout(() => {
       if (this.data._destroyed) return;
 
-      // Stage 2: 翻牌中 — 2 seconds
+      // Stage 2: 翻牌中 — 2s (Emphasis: ritual pacing)
       this.setData({ loadingStage: 2 });
       this._stageTimer2 = setTimeout(() => {
         if (this.data._destroyed) return;
@@ -103,7 +103,7 @@ Page({
      --------------------------------------------------------------- */
 
   _startStage3() {
-    // Light up one dot every ~5 seconds (3 dots total ≈ 15s)
+    // Light up one dot every ~5s (3 dots total ≈ 15s) — UX pacing for anticipation
     this._dotTimer = setInterval(() => {
       if (this.data._destroyed) return;
       const next = Math.min(this.data.loadingDotCount + 1, 3);

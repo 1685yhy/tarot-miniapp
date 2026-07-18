@@ -33,31 +33,31 @@ page {
    Typography helpers
    ================================================================ */
 .heading-1 {
-  font-size: 48rpx;
+  font-size: var(--font-size-title);
   font-weight: 700;
   color: var(--color-text-primary);
   text-align: center;
 }
 
 .heading-3 {
-  font-size: 32rpx;
+  font-size: var(--font-size-body);
   font-weight: 600;
   color: var(--color-text-primary);
 }
 
 .text-body {
-  font-size: 28rpx;
+  font-size: var(--font-size-body);
   color: var(--color-text-primary);
   line-height: 1.6;
 }
 
 .text-secondary {
-  font-size: 28rpx;
+  font-size: var(--font-size-body);
   color: var(--color-text-secondary);
 }
 
 .text-dim {
-  font-size: 24rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
   display: block;
 }
@@ -101,21 +101,21 @@ page {
 }
 
 .error-icon {
-  font-size: 80rpx;
+  font-size: calc(var(--font-size-display) + 24rpx);
   display: block;
   margin-bottom: var(--space-md);
   opacity: 0.40;
 }
 
 .error-text {
-  font-size: 28rpx;
+  font-size: var(--font-size-body);
   color: var(--color-text-secondary);
   display: block;
   margin-bottom: var(--space-xs);
 }
 
 .error-hint {
-  font-size: 24rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
   display: block;
   margin-bottom: var(--space-2xl);
@@ -129,12 +129,12 @@ page {
   padding: 20rpx 48rpx;
   border: none;
   border-radius: var(--radius-pill);
-  font-size: 28rpx;
+  font-size: var(--font-size-body);
   font-weight: 600;
   color: var(--color-text-inverse);
   background: linear-gradient(135deg, var(--color-gold-light), var(--color-gold));
   box-shadow: 0 4rpx 24rpx rgba(244, 212, 140, 0.35);
-  transition: all 0.25s;
+  transition: all 0.15s ease-out;
 }
 
 .btn-primary::after {
@@ -147,7 +147,7 @@ page {
 
 .btn-small {
   padding: 16rpx 36rpx;
-  font-size: 24rpx;
+  font-size: var(--font-size-caption);
 }
 
 /* ================================================================
@@ -195,13 +195,13 @@ page {
   top: 50%;
   transform: translateY(-50%);
   color: var(--color-gold);
-  font-size: 28rpx;
+  font-size: var(--font-size-body);
   font-weight: 700;
   text-shadow: 0 0 8rpx rgba(244, 212, 140, 0.35);
 }
 
 .benefit-item .text-body {
-  font-size: 28rpx;
+  font-size: var(--font-size-body);
   color: var(--color-text-primary);
   line-height: 1.5;
 }
@@ -223,7 +223,7 @@ page {
   background: var(--color-card);
   border: 1rpx solid rgba(255, 255, 255, 0.04);
   box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
+  transition: all 0.15s ease-out;
   overflow: hidden;
 }
 
@@ -278,7 +278,7 @@ page {
   right: var(--space-xl);
   background: linear-gradient(135deg, var(--color-gold-light), var(--color-gold));
   color: var(--color-text-inverse);
-  font-size: 22rpx;
+  font-size: var(--font-size-caption);
   font-weight: 600;
   letter-spacing: 1rpx;
   padding: 6rpx 20rpx;
@@ -299,14 +299,14 @@ page {
 }
 
 .price-symbol {
-  font-size: 28rpx;
+  font-size: var(--font-size-body);
   color: var(--color-gold);
   vertical-align: super;
   font-weight: 500;
 }
 
 .price-value {
-  font-size: 64rpx;
+  font-size: var(--font-size-display);
   font-weight: 700;
   color: var(--color-gold);
   line-height: 1;
@@ -315,7 +315,7 @@ page {
 
 /* Original/Strikethrough price — lavender */
 .price-original {
-  font-size: 24rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
   text-decoration: line-through;
   margin-left: var(--space-sm);
@@ -333,12 +333,12 @@ page {
   padding: 22rpx 0;
   border: none;
   border-radius: var(--radius-pill);
-  font-size: 28rpx;
+  font-size: var(--font-size-body);
   font-weight: 700;
   color: var(--color-text-inverse);
   background: linear-gradient(135deg, var(--color-gold-light), var(--color-gold));
   box-shadow: 0 4rpx 28rpx rgba(244, 212, 140, 0.35), inset 0 1rpx 0 rgba(255, 255, 255, 0.3);
-  transition: all 0.25s ease;
+  transition: all 0.15s ease-out;
   letter-spacing: 2rpx;
 }
 
@@ -375,7 +375,7 @@ page {
 }
 
 .guarantee-text {
-  font-size: 24rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
   line-height: 1.6;
 }
@@ -432,8 +432,8 @@ page {
 /* ================================================================
    Staggered entrance
    ================================================================ */
-.anim-fade-in-up-1 { opacity: 0; animation: fade-up 0.6s ease 0.05s forwards; }
-.anim-fade-in-up-2 { opacity: 0; animation: fade-up 0.6s ease 0.10s forwards; }
-.anim-fade-in-up-3 { opacity: 0; animation: fade-up 0.6s ease 0.15s forwards; }
-.anim-fade-in-up-4 { opacity: 0; animation: fade-up 0.6s ease 0.20s forwards; }
-.anim-fade-in-up-5 { opacity: 0; animation: fade-up 0.6s ease 0.25s forwards; }
+.anim-fade-in-up-1 { opacity: 0; animation: fade-up 0.4s ease-out 0.05s forwards; }
+.anim-fade-in-up-2 { opacity: 0; animation: fade-up 0.4s ease-out 0.10s forwards; }
+.anim-fade-in-up-3 { opacity: 0; animation: fade-up 0.4s ease-out 0.15s forwards; }
+.anim-fade-in-up-4 { opacity: 0; animation: fade-up 0.4s ease-out 0.20s forwards; }
+.anim-fade-in-up-5 { opacity: 0; animation: fade-up 0.4s ease-out 0.25s forwards; }
