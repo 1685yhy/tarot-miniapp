@@ -48,6 +48,10 @@ Page({
     this.setData({ showCreate: false, mood: '', reflection: '' });
   },
 
+  preventClose() {
+    // 阻止事件冒泡——防止点击 modal 内部元素时关闭弹窗
+  },
+
   onMoodSelect(e) {
     this.setData({ mood: e.currentTarget.dataset.mood });
   },
