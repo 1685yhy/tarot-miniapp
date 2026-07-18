@@ -124,7 +124,7 @@
       </view>
 
       <view class="selected-info anim-fade-in-up-1">
-        <text style="font-size:56rpx;display:block">{{selectedSpread.icon}}</text>
+        <text class="selected-spread-icon">{{selectedSpread.icon}}</text>
         <text class="heading-2 mt-sm">{{selectedSpread.name}}</text>
         <text class="text-dim mt-xs">{{selectedSpread.desc}}</text>
       </view>
@@ -139,7 +139,6 @@
         <textarea
           class="question-input"
           placeholder="把你想问的写在这里..."
-          placeholder-style="color:#B8A9E0;font-style:italic;font-weight:300"
           maxlength="500"
           value="{{question}}"
           bindinput="onQuestionInput"
@@ -180,7 +179,7 @@
         <text wx:else>牌灵正在回应...</text>
       </button>
 
-      <text class="btn-text" style="text-align:center;display:block;width:100%;margin-top:var(--space-md)" bindtap="onBackToSpreads">← 重新选择牌阵</text>
+      <text class="btn-text btn-back-spreads" bindtap="onBackToSpreads">← 重新选择牌阵</text>
     </view>
   </view>
 </view>

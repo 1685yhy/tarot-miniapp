@@ -171,32 +171,32 @@
 
   <!-- 未完成解读恢复入口 -->
   <view wx:if="{{pendingReading}}" class="anim-fade-in-up-2" style="margin-top:30rpx" bindtap="onContinueReading">
-    <view class="card card-press" style="padding:28rpx 24rpx;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,rgba(244,212,140,0.10) 0%,rgba(180,140,200,0.08) 100%);border-color:rgba(244,212,140,0.20)">
-      <view style="display:flex;align-items:center;gap:16rpx">
-        <view style="width:48rpx;height:48rpx;background:rgba(244,212,140,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center">
-          <text style="font-size:28rpx">✦</text>
+    <view class="card card-press pending-reading-card">
+      <view class="pending-reading-left">
+        <view class="pending-reading-icon-wrap">
+          <text class="pending-reading-icon">✦</text>
         </view>
         <view>
-          <text class="body-sm" style="display:block;font-weight:500;color:var(--color-gold)">上次未完成的解读</text>
-          <text class="body-xs" style="display:block;margin-top:4rpx">继续 →</text>
+          <text class="body-sm pending-reading-label">上次未完成的解读</text>
+          <text class="body-xs pending-reading-hint">继续 →</text>
         </view>
       </view>
-      <text style="font-size:24rpx;color:var(--color-text-tertiary)">→</text>
+      <text class="pending-reading-arrow">→</text>
     </view>
   </view>
 
   <!-- 今日日记入口 -->
   <view class="anim-fade-in-up-2" style="margin-top:30rpx" bindtap="goToDiary">
-    <view class="card card-press" style="padding:28rpx 24rpx;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,rgba(244,212,140,0.08) 0%,rgba(180,140,200,0.06) 100%);border-color:rgba(244,212,140,0.15)">
-      <view style="display:flex;align-items:center;gap:16rpx">
-        <text style="font-size:44rpx">📖</text>
+    <view class="card card-press diary-entry-card">
+      <view class="diary-entry-left">
+        <text class="diary-entry-emoji">📖</text>
         <view>
-          <text wx:if="{{hasTodayDiary}}" class="body-sm" style="display:block;font-weight:500;color:var(--color-gold)">今日已记录 ✦</text>
-          <text wx:else class="body-sm" style="display:block;font-weight:500;color:var(--color-gold)">记录今日感悟 ✦</text>
-          <text class="body-xs" style="display:block;margin-top:4rpx">开启日记 →</text>
+          <text wx:if="{{hasTodayDiary}}" class="body-sm diary-entry-label">今日已记录 ✦</text>
+          <text wx:else class="body-sm diary-entry-label">记录今日感悟 ✦</text>
+          <text class="body-xs diary-entry-hint">开启日记 →</text>
         </view>
       </view>
-      <text style="font-size:24rpx;color:var(--color-text-tertiary)">→</text>
+      <text class="diary-entry-arrow">→</text>
     </view>
   </view>
 
@@ -214,30 +214,30 @@
   <view class="section anim-fade-in-up-3">
     <text class="section-title">选择牌阵</text>
     <view style="display:grid;grid-template-columns:repeat(2,1fr);gap:16rpx">
-      <view class="card card-press spread-card" style="padding:24rpx 16rpx;text-align:center;position:relative" bindtap="navigateToReading" data-type="three_card" animation="{{spreadAnimData[0]}}">
+      <view class="card card-press spread-card" bindtap="navigateToReading" data-type="three_card" animation="{{spreadAnimData[0]}}">
         <view class="spread-tag spread-tag-free">免费</view>
         <image class="spread-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" />
-        <text class="body-sm" style="display:block;font-weight:600">三牌占卜</text>
-        <text class="body-xs" style="display:block;margin-top:6rpx">过去·现在·未来</text>
+        <text class="body-sm">三牌占卜</text>
+        <text class="body-xs">过去·现在·未来</text>
       </view>
-      <view class="card card-press spread-card" style="padding:24rpx 16rpx;text-align:center;position:relative" bindtap="navigateToReading" data-type="triangle" animation="{{spreadAnimData[1]}}">
+      <view class="card card-press spread-card" bindtap="navigateToReading" data-type="triangle" animation="{{spreadAnimData[1]}}">
         <view class="spread-tag spread-tag-premium">会员</view>
         <image class="spread-icon" src="/images/icons/theme_love_64.png" mode="aspectFit" />
-        <text class="body-sm" style="display:block;font-weight:600">恋人三角</text>
-        <text class="body-xs" style="display:block;margin-top:6rpx">感情关系深度解读</text>
+        <text class="body-sm">恋人三角</text>
+        <text class="body-xs">感情关系深度解读</text>
         <view class="spread-theme-chip spread-theme-chip--love">爱情</view>
       </view>
-      <view class="card card-press spread-card" style="padding:24rpx 16rpx;text-align:center;position:relative" bindtap="navigateToReading" data-type="celtic_cross" animation="{{spreadAnimData[2]}}">
+      <view class="card card-press spread-card" bindtap="navigateToReading" data-type="celtic_cross" animation="{{spreadAnimData[2]}}">
         <view class="spread-tag spread-tag-premium">会员</view>
         <image class="spread-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" />
-        <text class="body-sm" style="display:block;font-weight:600">凯尔特十字</text>
-        <text class="body-xs" style="display:block;margin-top:6rpx">全方位综合解牌</text>
+        <text class="body-sm">凯尔特十字</text>
+        <text class="body-xs">全方位综合解牌</text>
       </view>
-      <view class="card card-press spread-card" style="padding:24rpx 16rpx;text-align:center;position:relative" bindtap="navigateToReading" data-type="career" animation="{{spreadAnimData[3]}}">
+      <view class="card card-press spread-card" bindtap="navigateToReading" data-type="career" animation="{{spreadAnimData[3]}}">
         <view class="spread-tag spread-tag-premium">会员</view>
         <image class="spread-icon" src="/images/icons/theme_career_64.png" mode="aspectFit" />
-        <text class="body-sm" style="display:block;font-weight:600">事业牌阵</text>
-        <text class="body-xs" style="display:block;margin-top:6rpx">职场方向与机遇</text>
+        <text class="body-sm">事业牌阵</text>
+        <text class="body-xs">职场方向与机遇</text>
         <view class="spread-theme-chip spread-theme-chip--career">事业</view>
       </view>
     </view>
