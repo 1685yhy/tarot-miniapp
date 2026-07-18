@@ -1,5 +1,5 @@
 // pages/encyclopedia/encyclopedia.js
-const { request } = require('../../utils/api');
+const { request, getFriendlyError } = require('../../utils/api');
 const { computeImagePath } = require('../../utils/cards');
 const { SUIT_ZH } = require('../../utils/constants');
 
@@ -45,7 +45,7 @@ Page({
       }));
       this.setData({ cards, filteredCards: cards, pageLoading: false });
     } catch (err) {
-      this.setData({ pageLoading: false, pageError: err.message || '加载失败' });
+      this.setData({ pageLoading: false, pageError: getFriendlyError(err) });
     }
   },
 

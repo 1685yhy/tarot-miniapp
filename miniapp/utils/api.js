@@ -72,7 +72,9 @@ if (BASE_URL.includes('your-domain') && ENV !== 'develop') {
   );
 }
 
-const request = async (url, options = {}) => {
+const MAX_RETRIES = 2;
+
+const request = async (url, options = {}, retryCount = 0) => {
   const token = wx.getStorageSync('token');
 
   return new Promise((resolve, reject) => {
@@ -99,9 +101,45 @@ const request = async (url, options = {}) => {
           reject(err);
         }
       },
-      fail: reject,
+      fail: (err) => {
+        // 网络错误时自动重试，不重试 HTTP 错误（4xx/5xx 已在 success 中处理）
+        if (retryCount < MAX_RETRIES) {
+          const delay = Math.pow(2, retryCount) * 1000; // 指数退避: 1s, 2s
+          setTimeout(() => {
+            resolve(request(url, options, retryCount + 1));
+          }, delay);
+          return;
+        }
+        reject(err);
+      },
     });
   });
 };
 
-module.exports = { request, BASE_URL };
+/**
+ * 将原始错误转为用户可理解的中文文案
+ * @param {Error|{message?:string,statusCode?:number}} err
+ * @returns {string} 友好的中文错误消息
+ */
+function getFriendlyError(err) {
+  if (!err) return '连接异常，请稍后重试';
+  const msg = (err.message || '').toLowerCase();
+  const status = err.statusCode;
+
+  if (status === 402) return '剩余次数不足';
+  if (status === 429 || msg.includes('too many')) return '请求过于频繁，请稍后重试';
+  if (status === 500 || msg.includes('500') || msg.includes('internal server')) return '服务器繁忙，请稍后重试';
+  if (status === 502 || status === 503 || status === 504) return '服务暂不可用，请稍后重试';
+  if (status === 404 || msg.includes('not found')) return '请求的资源不存在';
+  if (status === 401 || msg.includes('unauthorized') || msg.includes('登录过期')) return '登录已过期，请重新登录';
+  if (status === 403 || msg.includes('forbidden')) return '暂无访问权限';
+  if (msg.includes('network') || msg.includes('timeout') || msg.includes('abort') || msg.includes('fail')) return '网络连接异常，请检查网络后重试';
+
+  // 保留后端返回的友好中文消息，屏蔽英文/技术消息
+  if (err.message && !/^[a-zA-Z]/.test(err.message)) {
+    return err.message; // 中文消息直接展示
+  }
+  return '连接异常，请稍后重试';
+}
+
+module.exports = { request, BASE_URL, getFriendlyError };

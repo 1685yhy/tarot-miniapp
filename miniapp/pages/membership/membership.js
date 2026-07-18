@@ -1,5 +1,5 @@
 // pages/membership/membership.js
-const { request } = require('../../utils/api');
+const { request, getFriendlyError } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
 
 Page({
@@ -33,7 +33,7 @@ Page({
       });
       this.setData({ products, pageLoading: false });
     } catch (err) {
-      this.setData({ pageLoading: false, pageError: err.message || '加载失败' });
+      this.setData({ pageLoading: false, pageError: getFriendlyError(err) });
     }
   },
 
@@ -66,7 +66,8 @@ Page({
         timeStamp: params.timeStamp,
         nonceStr: params.nonceStr,
         package: params.package,
-        signType: params.signType || 'MD5',
+        // NOTE: 如果后端签名仍使用 MD5，需要同步升级到 HMAC-SHA256
+        signType: params.signType || 'HMAC-SHA256',
         paySign: params.paySign,
         success: () => {
           this.setData({ purchasing: false });

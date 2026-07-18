@@ -1,5 +1,5 @@
 // pages/card-detail/card-detail.js
-const { request } = require('../../utils/api');
+const { request, getFriendlyError } = require('../../utils/api');
 const { computeImagePath } = require('../../utils/cards');
 
 // ---- Full-size image base (overrides default cards_thumb) ----
@@ -18,7 +18,6 @@ Page({
     activeTab: 'upright', // upright / reversed
     pageLoading: true,
     pageError: null,
-    _destroyed: false,
   },
 
   async onLoad(options) {
@@ -33,11 +32,11 @@ Page({
   },
 
   onUnload() {
-    this.data._destroyed = true;
+    this._destroyed = true;
   },
 
   async loadCard(id) {
-    if (this.data._destroyed) return;
+    if (this._destroyed) return;
     this.setData({ pageLoading: true, pageError: null });
     try {
       const card = await request(`/cards/${id}`);
@@ -48,11 +47,11 @@ Page({
       } else {
         card.keywordsList = [];
       }
-      if (this.data._destroyed) return;
+      if (this._destroyed) return;
       this.setData({ card, pageLoading: false });
     } catch (err) {
-      if (this.data._destroyed) return;
-      this.setData({ pageLoading: false, pageError: err.message || '加载失败' });
+      if (this._destroyed) return;
+      this.setData({ pageLoading: false, pageError: getFriendlyError(err) });
     }
   },
 

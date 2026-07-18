@@ -616,19 +616,7 @@
 }
 
 /* -----------------------------------------------------------
-   8. SKELETON TWEAKS (page-level)
-   ----------------------------------------------------------- */
-
-.page > .skeleton-circle {
-  border-radius: var(--radius-full, 100%);
-}
-
-.page > .skeleton-text-sm {
-  height: 24rpx;
-}
-
-/* -----------------------------------------------------------
-   9. DECORATIVE: Daily card icon (✦) special treatment
+   8. DECORATIVE: Daily card icon (✦) special treatment
    ----------------------------------------------------------- */
 
 .card-body > text:first-child {

@@ -5,12 +5,12 @@
 
   <!-- ===== 加载骨架 ===== -->
   <view wx:if="{{pageLoading}}">
-    <view class="skeleton-card"></view>
-    <view class="skeleton-stats"></view>
+    <view class="skeleton skeleton-card"></view>
+    <view class="skeleton skeleton-stats"></view>
     <view class="skeleton-actions">
-      <view class="skeleton-action"></view>
-      <view class="skeleton-action"></view>
-      <view class="skeleton-action"></view>
+      <view class="skeleton skeleton-action"></view>
+      <view class="skeleton skeleton-action"></view>
+      <view class="skeleton skeleton-action"></view>
     </view>
   </view>
 

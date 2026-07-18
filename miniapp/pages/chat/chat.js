@@ -1,5 +1,5 @@
 // pages/chat/chat.js
-const { request } = require('../../utils/api');
+const { request, getFriendlyError } = require('../../utils/api');
 
 Page({
   data: {
@@ -13,6 +13,8 @@ Page({
     pageLoading: false,
     pageError: null,
     readingContext: null, // { question, spread_type }
+    sendFailed: false,     // true when last send failed, shows retry bar
+    _pendingRetryText: '', // failed message text to retry
   },
 
   async onLoad(options) {
@@ -40,7 +42,7 @@ Page({
       }
     } catch (err) {
       if (this._destroyed) return;
-      this.setData({ pageLoading: false, pageError: err.message || '加载失败' });
+      this.setData({ pageLoading: false, pageError: getFriendlyError(err) });
     }
   },
 
@@ -87,9 +89,30 @@ Page({
       this.scrollToBottom();
     } catch (err) {
       if (this._destroyed) return;
-      wx.showToast({ title: '发送失败', icon: 'none' });
-      this.setData({ sending: false, aiThinking: false });
+      // 移除失败的消息，保留输入内容供重试
+      const messagesWithoutFailed = this.data.messages.slice(0, -1);
+      this.setData({
+        messages: messagesWithoutFailed,
+        sending: false,
+        aiThinking: false,
+        sendFailed: true,
+        _pendingRetryText: text,
+        inputText: text,
+        canSend: true,
+      });
+      wx.showToast({ title: '发送失败，请重试', icon: 'none' });
     }
+  },
+
+  /** 重试上次发送失败的消息 */
+  onRetrySend() {
+    const text = this.data._pendingRetryText;
+    if (!text) {
+      this.setData({ sendFailed: false, _pendingRetryText: '' });
+      return;
+    }
+    this.setData({ sendFailed: false, _pendingRetryText: '', inputText: text, canSend: true });
+    this.onSend();
   },
 
   scrollToBottom() {

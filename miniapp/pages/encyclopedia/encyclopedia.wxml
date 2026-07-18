@@ -2,20 +2,20 @@
 <view class="page">
   <!-- ===== 加载骨架 ===== -->
   <view wx:if="{{pageLoading}}">
-    <view class="skeleton-search"></view>
+    <view class="skeleton skeleton-search"></view>
     <view class="skeleton-tabs">
-      <view class="skeleton-tab"></view>
-      <view class="skeleton-tab"></view>
-      <view class="skeleton-tab"></view>
-      <view class="skeleton-tab"></view>
+      <view class="skeleton skeleton-tab"></view>
+      <view class="skeleton skeleton-tab"></view>
+      <view class="skeleton skeleton-tab"></view>
+      <view class="skeleton skeleton-tab"></view>
     </view>
     <view class="skeleton-grid">
-      <view class="skeleton-card"></view>
-      <view class="skeleton-card"></view>
-      <view class="skeleton-card"></view>
-      <view class="skeleton-card"></view>
-      <view class="skeleton-card"></view>
-      <view class="skeleton-card"></view>
+      <view class="skeleton skeleton-card"></view>
+      <view class="skeleton skeleton-card"></view>
+      <view class="skeleton skeleton-card"></view>
+      <view class="skeleton skeleton-card"></view>
+      <view class="skeleton skeleton-card"></view>
+      <view class="skeleton skeleton-card"></view>
     </view>
   </view>
 

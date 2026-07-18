@@ -52,11 +52,11 @@
 
 <!-- ===== 加载骨架 ===== -->
 <view class="page" wx:if="{{pageLoading && !showOnboarding}}">
-  <view class="skeleton skeleton-circle" style="margin:100rpx auto 40rpx"></view>
-  <view class="skeleton skeleton-text" style="width:60%;margin:0 auto"></view>
-  <view class="skeleton skeleton-text-sm" style="width:40%;margin:12rpx auto 60rpx"></view>
-  <view class="skeleton skeleton-block" style="margin-bottom:40rpx"></view>
-  <view class="skeleton skeleton-text" style="width:30%;margin-bottom:20rpx"></view>
+  <view class="skeleton skeleton--circle" style="margin:100rpx auto 40rpx"></view>
+  <view class="skeleton skeleton--text" style="width:60%;margin:0 auto"></view>
+  <view class="skeleton skeleton--text-sm" style="width:40%;margin:12rpx auto 60rpx"></view>
+  <view class="skeleton skeleton--block" style="margin-bottom:40rpx"></view>
+  <view class="skeleton skeleton--text" style="width:30%;margin-bottom:20rpx"></view>
   <view style="display:grid;grid-template-columns:repeat(3,1fr);gap:16rpx">
     <view class="skeleton" style="height:140rpx;border-radius:12rpx"></view>
     <view class="skeleton" style="height:140rpx;border-radius:12rpx"></view>

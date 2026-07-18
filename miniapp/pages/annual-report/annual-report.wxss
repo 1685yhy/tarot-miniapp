@@ -379,9 +379,9 @@ page {
 }
 
 /* ============================================================
-   SKELETON — Dark cosmic shimmer
+   SKELETON — Shapes only (shimmer from common.wxss)
    ============================================================ */
-.skeleton {
+.skeleton-ar-wrap {
   padding: var(--spacing-2xl) 0;
 }
 
@@ -397,15 +397,11 @@ page {
   width: 80rpx;
   height: 80rpx;
   border-radius: var(--radius-full);
-  background: var(--color-surface);
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
 
 .skeleton-line {
   height: 32rpx;
   border-radius: var(--radius-sm);
-  background: var(--color-surface);
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
 
 .skeleton-line.wide { width: 300rpx; }
@@ -415,23 +411,14 @@ page {
   width: 80%;
   height: 80rpx;
   border-radius: var(--radius-sm);
-  background: var(--color-surface);
   margin-bottom: var(--spacing-2xl);
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
 }
 
 .skeleton-btn {
   width: 80%;
   height: 88rpx;
   border-radius: var(--radius-pill);
-  background: var(--color-surface);
   margin: 0 auto;
-  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
-}
-
-@keyframes pulse-scale {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.45; }
 }
 
 /* ============================================================

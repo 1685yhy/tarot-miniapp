@@ -1,5 +1,5 @@
 // pages/index/index.js
-const { request } = require('../../utils/api');
+const { request, getFriendlyError } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
 const { createAnim, staggeredEntrance } = require('../../utils/animate');
 
@@ -74,7 +74,7 @@ Page({
         this._initDailyState();
         this._loadFreeReadings();
       } catch (err) {
-        this.setData({ pageLoading: false, pageError: err.message || '加载失败' });
+        this.setData({ pageLoading: false, pageError: getFriendlyError(err) });
       }
     } else {
       this.setData({ showOnboarding: true, pageLoading: false });
@@ -223,8 +223,8 @@ Page({
     this.setData({ shaking: true });
 
     // Cleanup timers matching reduced CSS durations
-    this._shakeTimer = setTimeout(() => { this.setData({ shaking: false }); }, 150); // Feedback: shake duration
-    this._rippleTimer = setTimeout(() => { this.setData({ rippleActive: false }); }, 200); // Feedback: ripple duration + buffer
+    this._pushTimer(setTimeout(() => { this.setData({ shaking: false }); }, 150)); // Feedback: shake duration
+    this._pushTimer(setTimeout(() => { this.setData({ rippleActive: false }); }, 200)); // Feedback: ripple duration + buffer
 
     // Orientation: brief pause so user sees initial animation frames before API call (200ms)
     await new Promise(r => setTimeout(r, 200));
@@ -243,8 +243,7 @@ Page({
       this.setData({ showReflectionPrompt: true });
     } catch (err) {
       this.setData({ drawingLoading: false });
-      this._shakeTimer && clearTimeout(this._shakeTimer);
-      this._rippleTimer && clearTimeout(this._rippleTimer);
+      this._clearTimers();
       this.setData({ rippleActive: false, shaking: false });
       wx.hideLoading();
       wx.showToast({ title: '抽取失败，请重试', icon: 'none' });
@@ -271,7 +270,6 @@ Page({
       content: '塔罗是一面镜子，帮你看见自己内心已经知道、却未说出口的东西。每张牌是一种人生情境的映射，而非对未来的预言。解读的意义在于激发你的内在思考——答案不在牌里，而在你心里。',
       showCancel: false,
       confirmText: '明白了',
-      confirmColor: '#F4D48C',
     });
   },
 
@@ -305,7 +303,19 @@ Page({
   },
 
   onUnload() {
-    this._shakeTimer && clearTimeout(this._shakeTimer);
-    this._rippleTimer && clearTimeout(this._rippleTimer);
+    this._clearTimers();
+  },
+
+  _pushTimer(timer) {
+    if (!this._timers) this._timers = [];
+    this._timers.push(timer);
+    return timer;
+  },
+
+  _clearTimers() {
+    if (this._timers) {
+      this._timers.forEach(t => clearTimeout(t));
+      this._timers = [];
+    }
   },
 });

@@ -5,13 +5,13 @@
   <view wx:if="{{pageLoading}}">
     <view class="skeleton-wrap">
       <view class="skeleton-header-area">
-        <view class="skeleton-line wide"></view>
-        <view class="skeleton-line medium"></view>
+        <view class="skeleton skeleton-line wide"></view>
+        <view class="skeleton skeleton-line medium"></view>
       </view>
-      <view class="skeleton-btn"></view>
-      <view class="skeleton-entry"></view>
-      <view class="skeleton-entry"></view>
-      <view class="skeleton-entry"></view>
+      <view class="skeleton skeleton-btn"></view>
+      <view class="skeleton skeleton-entry"></view>
+      <view class="skeleton skeleton-entry"></view>
+      <view class="skeleton skeleton-entry"></view>
     </view>
   </view>
 

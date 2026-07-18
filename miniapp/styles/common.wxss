@@ -1209,6 +1209,35 @@ page {
   border-radius: var(--radius-md);
 }
 
+/* 新增变体 */
+.skeleton--circle {
+  width: 100rpx; height: 100rpx;
+  border-radius: 50%;
+}
+.skeleton--block {
+  height: 200rpx;
+  border-radius: var(--radius-md);
+}
+.skeleton--text-sm {
+  height: 24rpx;
+  width: 100%;
+  margin-bottom: var(--spacing-xs);
+}
+.skeleton--text-lg {
+  height: 36rpx;
+  width: 100%;
+  margin-bottom: var(--spacing-sm);
+}
+.skeleton--btn {
+  height: 80rpx;
+  width: 200rpx;
+  border-radius: var(--radius-pill);
+}
+.skeleton--card-sm {
+  height: 140rpx;
+  border-radius: var(--radius-md);
+}
+
 /* Empty State */
 .empty {
   display: flex;

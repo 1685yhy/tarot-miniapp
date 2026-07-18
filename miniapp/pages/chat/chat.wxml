@@ -9,18 +9,18 @@
   <!-- ===== Loading skeleton ===== -->
   <view wx:if="{{pageLoading}}" class="skeleton-wrap">
     <view class="skeleton-block">
-      <view class="skeleton-line" style="width:32%"></view>
-      <view class="skeleton-bubble left"></view>
+      <view class="skeleton skeleton-line" style="width:32%"></view>
+      <view class="skeleton skeleton-bubble left"></view>
     </view>
     <view class="skeleton-block">
-      <view class="skeleton-bubble right" style="width:45%"></view>
+      <view class="skeleton skeleton-bubble right" style="width:45%"></view>
     </view>
     <view class="skeleton-block">
-      <view class="skeleton-line" style="width:48%"></view>
-      <view class="skeleton-bubble left" style="width:70%"></view>
+      <view class="skeleton skeleton-line" style="width:48%"></view>
+      <view class="skeleton skeleton-bubble left" style="width:70%"></view>
     </view>
     <view class="skeleton-block">
-      <view class="skeleton-bubble right" style="width:38%"></view>
+      <view class="skeleton skeleton-bubble right" style="width:38%"></view>
     </view>
   </view>
 
@@ -77,6 +77,12 @@
     </view>
 
     <view id="chat-bottom"></view>
+
+    <!-- ===== 发送失败重试 ===== -->
+    <view wx:if="{{sendFailed}}" class="retry-bar" bindtap="onRetrySend">
+      <text class="retry-icon">⚠</text>
+      <text class="retry-text">发送失败，点击重试</text>
+    </view>
   </view>
 
 </view>
