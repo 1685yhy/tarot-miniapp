@@ -220,6 +220,25 @@ Page({
      Handlers
      --------------------------------------------------------------- */
 
+  // —— Card image loading ——
+  onCardImgLoad(e) {
+    const idx = e.currentTarget.dataset.index;
+    if (idx !== undefined && idx !== '') {
+      this.setData({ [`reading.drawn_cards[${idx}]._imgLoaded`]: true });
+    }
+  },
+
+  onCardImgError(e) {
+    const idx = e.currentTarget.dataset.index;
+    if (idx !== undefined && idx !== '') {
+      this.setData({ [`reading.drawn_cards[${idx}]._imgError`]: true });
+    }
+  },
+
+  onEnlargedImgLoad() {
+    this.setData({ enlargedImgLoaded: true });
+  },
+
   onUnload() {
     this._destroyed = true;
     this._clearStageTimers();

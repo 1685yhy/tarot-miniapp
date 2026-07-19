@@ -297,13 +297,16 @@
   font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
   letter-spacing: 2rpx;
-  opacity: 0.55;
-  padding: 12rpx 40rpx;
-  transition: opacity 0.2s;
+  padding: 20rpx 48rpx;
+  border: 1rpx solid rgba(160, 152, 192, 0.2);
+  border-radius: 50rpx;
+  display: inline-block;
+  transition: opacity 0.2s, border-color 0.2s;
 }
 
 .btn-wait-no:active {
   opacity: 0.85;
+  border-color: rgba(160, 152, 192, 0.4);
 }
 
 /* ================================================================
@@ -582,12 +585,17 @@
   font-size: var(--font-size-caption);
   color: var(--color-lavender);
   letter-spacing: 2rpx;
-  opacity: 0.6;
-  padding: 16rpx 40rpx;
+  padding: 18rpx 48rpx;
+  border: 1rpx solid rgba(180, 169, 224, 0.18);
+  border-radius: 50rpx;
+  display: inline-block;
+  transition: opacity 0.2s, border-color 0.2s, background 0.2s;
 }
 
 .toggle-btn:active {
   opacity: 1;
+  border-color: rgba(180, 169, 224, 0.4);
+  background: rgba(180, 169, 224, 0.05);
 }
 
 /* ================================================================
@@ -598,7 +606,7 @@
   flex-direction: column;
   align-items: center;
   gap: 20rpx;
-  padding-top: 24rpx;
+  padding: 24rpx 0 calc(env(safe-area-inset-bottom) + 32rpx);
 }
 
 /* ---- Primary: "追问更多" gold pill ---- */
@@ -674,51 +682,72 @@
   background: rgba(244, 212, 140, 0.06);
 }
 
-/* ---- Tertiary: "回到首页" lavender link ---- */
+/* ---- Tertiary: "回到首页" outlined pill ---- */
 .btn-back {
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-caption);
-  letter-spacing: 2rpx;
-  opacity: 0.55;
-  padding: 20rpx 0 8rpx;
   display: block;
+  width: 100%;
   text-align: center;
-  transition: opacity 0.2s;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body);
+  font-weight: 500;
+  letter-spacing: 2rpx;
+  border-radius: 50rpx;
+  padding: 24rpx 0;
+  border: 1.5rpx solid rgba(160, 152, 192, 0.25);
+  margin-top: 8rpx;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
 }
+
+.btn-back::after { border: none; }
 
 .btn-back:active {
-  opacity: 0.85;
+  border-color: rgba(160, 152, 192, 0.55);
+  background: rgba(160, 152, 192, 0.08);
+  color: var(--color-text-primary);
 }
 
-/* ---- Save reading link ---- */
+/* ---- Save reading link with button styling ---- */
 .save-reading-wrap {
   display: flex;
   justify-content: center;
-  padding-top: 8rpx;
+  padding-top: 12rpx;
 }
 
 .btn-save {
+  display: inline-block;
   font-size: var(--font-size-caption);
   color: var(--color-lavender);
   letter-spacing: 2rpx;
-  opacity: 0.55;
-  padding: 16rpx 32rpx;
-  transition: opacity 0.2s;
+  opacity: 0.65;
+  padding: 20rpx 40rpx;
+  border-radius: 50rpx;
+  border: 1rpx solid rgba(180, 169, 224, 0.2);
+  transition: opacity 0.2s, border-color 0.2s, background 0.2s;
 }
 
+.btn-save::after { border: none; }
+
 .btn-save:active {
-  opacity: 0.9;
+  opacity: 1;
   color: var(--color-gold);
+  border-color: rgba(244, 212, 140, 0.35);
+  background: rgba(244, 212, 140, 0.06);
 }
 
 .btn-saved {
+  display: inline-block;
   font-size: var(--font-size-caption);
   color: var(--color-gold);
   letter-spacing: 2rpx;
-  opacity: 0.6;
-  padding: 16rpx 32rpx;
+  opacity: 0.75;
+  padding: 20rpx 40rpx;
+  border-radius: 50rpx;
+  border: 1rpx solid rgba(244, 212, 140, 0.3);
   transition: opacity 0.2s;
 }
+
+.btn-saved::after { border: none; }
 
 .btn-saved:active {
   opacity: 1;

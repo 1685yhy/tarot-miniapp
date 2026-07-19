@@ -3,14 +3,9 @@ const { request, getFriendlyError } = require('../../utils/api');
 const { computeImagePath } = require('../../utils/cards');
 
 // ---- Full-size image base (overrides default cards_thumb) ----
-const IMAGE_BASE = (() => {
-  try {
-    const env = wx.getAccountInfoSync().miniProgram.envVersion;
-    return env === 'develop' ? 'http://localhost:8000/images/cards' : 'https://xingxiang.chat/images/cards_full';
-  } catch {
-    return 'https://xingxiang.chat/images/cards_full';
-  }
-})();
+// Full-size card images — served via CDN (xingxiang.chat/images/cards_full/)
+// Development: uses same CDN path; IDE urlCheck=false allows domain bypass
+const IMAGE_BASE = 'https://xingxiang.chat/images/cards_full';
 
 Page({
   data: {
@@ -29,6 +24,14 @@ Page({
       return;
     }
     await this.loadCard(id);
+  },
+
+  onHeroImgLoad() {
+    this.setData({ heroImgLoaded: true });
+  },
+
+  onHeroImgError() {
+    this.setData({ heroImgError: true });
   },
 
   onUnload() {

@@ -426,3 +426,167 @@ page {
 .anim-fade-in-up-3 { opacity: 0; animation: fade-up 0.4s ease-out 0.15s forwards; }
 .anim-fade-in-up-4 { opacity: 0; animation: fade-up 0.4s ease-out 0.20s forwards; }
 .anim-fade-in-up-5 { opacity: 0; animation: fade-up 0.4s ease-out 0.25s forwards; }
+
+/* ================================================================
+   New Tier Card Design
+   ================================================================ */
+.mem-hero {
+  text-align: center;
+  padding: 80rpx 0 48rpx;
+}
+.mem-hero-icon {
+  font-size: 64rpx;
+  color: var(--color-gold);
+  display: block;
+  margin-bottom: 16rpx;
+}
+.mem-hero-title {
+  font-size: var(--font-size-display);
+  font-weight: 700;
+  color: var(--color-gold);
+  display: block;
+  letter-spacing: 4rpx;
+}
+.mem-hero-sub {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-tertiary);
+  margin-top: 12rpx;
+  display: block;
+}
+
+.mem-tiers {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+  padding: 0 32rpx;
+}
+
+.mem-tier {
+  background: var(--color-surface-gradient);
+  border: 1.5rpx solid rgba(244,212,140,0.12);
+  border-radius: 24rpx;
+  padding: 40rpx 32rpx;
+  position: relative;
+  transition: all 0.2s;
+}
+.mem-tier--rec {
+  border-color: rgba(244,212,140,0.35);
+  background: linear-gradient(145deg, #2A2A5A 0%, #313165 100%);
+  box-shadow: 0 4rpx 30rpx rgba(244,212,140,0.1);
+}
+
+.mem-tier-badge {
+  position: absolute;
+  top: -16rpx;
+  right: 32rpx;
+  background: linear-gradient(135deg, #F4D48C, #E8C67A);
+  color: #1A1A3E;
+  font-size: 20rpx;
+  font-weight: 700;
+  padding: 6rpx 20rpx;
+  border-radius: 20rpx;
+  letter-spacing: 1rpx;
+}
+
+.mem-tier-name {
+  font-size: var(--font-size-subhead);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  display: block;
+}
+
+.mem-tier-price {
+  margin: 16rpx 0 4rpx;
+  display: flex;
+  align-items: baseline;
+}
+.mem-tier-currency {
+  font-size: var(--font-size-body);
+  color: var(--color-gold);
+  font-weight: 600;
+}
+.mem-tier-amount {
+  font-size: 56rpx;
+  font-weight: 800;
+  color: var(--color-gold);
+  line-height: 1;
+}
+.mem-tier-period {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-tertiary);
+  margin-left: 4rpx;
+}
+.mem-tier-daily {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  display: block;
+  margin-bottom: 20rpx;
+}
+
+.mem-tier-features {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  margin: 24rpx 0;
+  padding-top: 20rpx;
+  border-top: 1rpx solid rgba(244,212,140,0.08);
+}
+.mem-feat {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+.mem-feat-icon {
+  font-size: 28rpx;
+  width: 40rpx;
+  text-align: center;
+}
+.mem-feat-text {
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
+}
+
+.mem-tier-cta {
+  text-align: center;
+  background: linear-gradient(135deg, #F4D48C, #E8C67A);
+  color: #1A1A3E;
+  font-size: var(--font-size-body);
+  font-weight: 700;
+  padding: 20rpx 0;
+  border-radius: 50rpx;
+  letter-spacing: 2rpx;
+  margin-top: 8rpx;
+}
+
+.mem-single {
+  padding: 0 32rpx;
+  margin-top: 24rpx;
+}
+.mem-single-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32rpx;
+  background: var(--color-surface);
+  border: 1rpx solid rgba(244,212,140,0.08);
+  border-radius: 16rpx;
+}
+.mem-single-name {
+  font-size: var(--font-size-body);
+  color: var(--color-text-primary);
+}
+.mem-single-price {
+  font-size: var(--font-size-subhead);
+  font-weight: 700;
+  color: var(--color-gold);
+}
+
+.mem-footer {
+  text-align: center;
+  padding: 48rpx 32rpx;
+}
+.mem-footer-text {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  opacity: 0.5;
+}

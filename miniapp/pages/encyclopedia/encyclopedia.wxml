@@ -32,7 +32,12 @@
     <view wx:if="{{dailyCard}}" class="daily-card anim-fade-in-up-1" bindtap="onDailyCardTap">
       <view class="daily-card-label">今日之牌</view>
       <view class="daily-card-body">
-        <image class="daily-card-thumb" src="{{dailyCard.imagePath}}" mode="aspectFill" wx:if="{{dailyCard.imagePath}}"></image>
+        <view class="card-img-wrap daily-card-thumb {{dailyCardImgLoaded ? 'card-img-wrap--loaded' : ''}} {{dailyCardImgError ? 'card-img-wrap--error' : ''}}">
+          <image class="card-img-inner" src="{{dailyCard.imagePath}}" mode="aspectFill" lazy-load bindload="onDailyCardImgLoad" binderror="onDailyCardImgError" wx:if="{{dailyCard.imagePath}}" />
+          <view class="card-img-fallback">
+            <text class="card-img-fallback-icon">🃏</text>
+          </view>
+        </view>
         <view class="daily-card-info">
           <text class="daily-card-name">{{dailyCard.name_zh}}</text>
           <text class="daily-card-name-en">{{dailyCard.name_en}}</text>
@@ -62,7 +67,7 @@
     <scroll-view class="filter-bar anim-fade-in-up-2" scroll-x>
       <view
         class="filter-item {{activeTab === item.key ? 'filter-active' : ''}}"
-        wx:for="{{tabs}}"
+        wx:for="{{tabs}}" wx:key="key"
         wx:key="key"
         data-key="{{item.key}}"
         bindtap="onTabTap"
@@ -80,8 +85,15 @@
         data-id="{{item.id}}"
         bindtap="onCardTap"
       >
-        <image class="card-thumb" src="{{item.imagePath}}" mode="aspectFill" wx:if="{{item.imagePath}}"></image>
-        <view class="card-thumb-placeholder" wx:else></view>
+        <!-- 图片区：已激活 → 加载真实图；未激活 → 纯骨架 -->
+        <view class="card-img-wrap card-thumb {{item._imgLoaded ? 'card-img-wrap--loaded' : ''}} {{item._imgError ? 'card-img-wrap--error' : ''}}" data-index="{{index}}">
+          <image wx:if="{{item._active && item.imagePath}}"
+            class="card-img-inner" src="{{item.imagePath}}" mode="aspectFill" lazy-load
+            bindload="onCardImgLoad" binderror="onCardImgError" data-index="{{index}}" />
+          <view class="card-img-fallback" wx:if="{{!item.imagePath || item._imgError}}">
+            <text class="card-img-fallback-icon">🃏</text>
+          </view>
+        </view>
         <text class="card-number">{{item.card_number}}</text>
         <text class="card-name">{{item.name_zh}}</text>
         <text class="card-name-en">{{item.name_en}}</text>

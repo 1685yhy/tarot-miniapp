@@ -1,20 +1,16 @@
 <!-- pages/membership/membership.wxml -->
 <view class="page">
-  <!-- ===== 加载骨架 ===== -->
-  <view wx:if="{{pageLoading}}">
-    <view class="skeleton-mem-wrap">
-      <view class="skeleton-hero-area">
-        <view class="skeleton skeleton-icon"></view>
-        <view class="skeleton skeleton-line wide"></view>
-        <view class="skeleton skeleton-line medium"></view>
-      </view>
-      <view class="skeleton skeleton-benefits"></view>
-      <view class="skeleton skeleton-product"></view>
-      <view class="skeleton skeleton-product"></view>
+  <!-- ===== 加载 ===== -->
+  <view wx:if="{{pageLoading}}" class="skeleton-mem-wrap">
+    <view class="skeleton-hero-area">
+      <view class="skeleton skeleton-icon"></view>
+      <view class="skeleton skeleton-line wide"></view>
     </view>
+    <view class="skeleton skeleton-product"></view>
+    <view class="skeleton skeleton-product"></view>
   </view>
 
-  <!-- ===== 错误状态 ===== -->
+  <!-- ===== 错误 ===== -->
   <view wx:elif="{{pageError}}" class="error-state">
     <text class="error-text">会员信息暂时无法获取</text>
     <text class="error-hint">{{pageError}}</text>
@@ -24,54 +20,70 @@
   <!-- ===== 主内容 ===== -->
   <view wx:else>
     <!-- Hero -->
-    <view class="flex-center flex-col" style="padding:var(--space-5xl) 0 var(--space-lg)">
-      <image class="hero-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" style="width:72rpx;height:72rpx;display:block" />
-      <text class="heading-1 mt-sm">开通会员</text>
-      <text class="text-secondary mt-xs">解锁无限卡牌解读</text>
+    <view class="mem-hero">
+      <text class="mem-hero-icon">✦</text>
+      <text class="mem-hero-title">星光会员</text>
+      <text class="mem-hero-sub">解锁全部牌阵 · AI 无限解读</text>
     </view>
 
-    <!-- Benefits -->
-    <view class="benefits anim-fade-in-up-1">
-      <view class="benefit-item" wx:for="{{['全部牌阵无限使用','AI追问不限次数','年度运势报告','每日多次抽牌','专属运势卡片']}}" wx:key="*this">
-        <text class="text-body">{{item}}</text>
-      </view>
-    </view>
-
-    <!-- ===== 空状态：无可选产品 ===== -->
-    <view wx:if="{{!pageLoading && !pageError && products.length === 0}}" class="empty-state" style="text-align:center;padding:var(--spacing-3xl) 0">
-      <text class="empty-text">暂无可选产品</text>
-      <text class="empty-hint">请稍后再试</text>
-      <button class="btn-primary btn-small" bindtap="onRetry" style="margin-top:var(--spacing-lg)">重新加载</button>
-    </view>
-
-    <!-- Product cards -->
-    <view class="products" wx:if="{{products.length > 0}}">
+    <!-- 三级会员卡片 -->
+    <view class="mem-tiers">
       <view
-        class="product-card {{item.id === 'membership_yearly' ? 'recommended' : ''}} anim-fade-in-up-{{index + 2}}"
-        wx:for="{{products}}"
-        wx:key="id"
-        wx:for-index="index"
+        class="mem-tier {{item.recommended ? 'mem-tier--rec' : ''}}"
+        wx:for="{{products}}" wx:key="id"
+        wx:if="{{item.type === 'membership'}}"
         data-product="{{item}}"
         bindtap="onPurchase"
       >
-        <view class="recommended-badge" wx:if="{{item.id === 'membership_yearly'}}">
-          <text>最受欢迎</text>
+        <view class="mem-tier-badge" wx:if="{{item.recommended}}">最受欢迎</view>
+
+        <text class="mem-tier-name">{{item.name}}</text>
+
+        <view class="mem-tier-price">
+          <text class="mem-tier-currency">¥</text>
+          <text class="mem-tier-amount">{{item.price}}</text>
+          <text class="mem-tier-period" wx:if="{{item.id === 'membership_monthly'}}">/月</text>
+          <text class="mem-tier-period" wx:elif="{{item.id === 'membership_yearly'}}">/年</text>
+          <text class="mem-tier-period" wx:elif="{{item.id === 'membership_lifetime'}}">永久</text>
         </view>
-        <text class="heading-3" style="color:var(--color-text-primary)">{{item.name}}</text>
-        <view class="product-price flex-center gap-xs" style="margin:var(--space-md) 0 var(--space-xs)">
-          <text class="price-symbol">¥</text>
-          <text class="price-value">{{item.price}}</text>
+
+        <text class="mem-tier-daily" wx:if="{{item.id === 'membership_yearly'}}">日均 ¥{{item.pricePerDay}}</text>
+
+        <!-- 权益 -->
+        <view class="mem-tier-features">
+          <view class="mem-feat">
+            <text class="mem-feat-icon">🔮</text>
+            <text class="mem-feat-text">{{item.daily_readings === -1 ? '无限' : item.daily_readings + '次/天'}} 解读</text>
+          </view>
+          <view class="mem-feat">
+            <text class="mem-feat-icon">💬</text>
+            <text class="mem-feat-text">AI追问 {{item.unlimited_chat ? '无限' : '3次/天'}}</text>
+          </view>
+          <view class="mem-feat">
+            <text class="mem-feat-icon">🃏</text>
+            <text class="mem-feat-text">全部牌阵</text>
+          </view>
+          <view class="mem-feat" wx:if="{{item.annual_report}}">
+            <text class="mem-feat-icon">📊</text>
+            <text class="mem-feat-text">年度报告</text>
+          </view>
         </view>
-        <text class="text-dim" style="font-size:var(--font-size-caption);display:block" wx:if="{{item.id === 'membership_monthly'}}">/月</text>
-        <text class="text-dim" style="font-size:var(--font-size-caption);display:block" wx:elif="{{item.id === 'membership_yearly'}}">/年 每天仅{{item.pricePerDay}}元</text>
-        <text class="text-dim" style="font-size:var(--font-size-caption);display:block" wx:elif="{{item.id === 'membership_lifetime'}}">永久有效</text>
-        <text class="text-dim" style="font-size:var(--font-size-caption);display:block" wx:elif="{{item.id === 'annual_report'}}">年度报告</text>
+
+        <view class="mem-tier-cta">立即开通</view>
       </view>
     </view>
 
-    <!-- Guarantee -->
-    <view class="guarantee">
-      <text class="guarantee-text">支付安全 · 随时可查 · 会员期内无限使用</text>
+    <!-- 单次购买 -->
+    <view class="mem-single" wx:for="{{products}}" wx:key="id" wx:if="{{item.type === 'single_purchase'}}">
+      <view class="mem-single-card" data-product="{{item}}" bindtap="onPurchase">
+        <text class="mem-single-name">{{item.name}}</text>
+        <text class="mem-single-price">¥{{item.price}}</text>
+      </view>
+    </view>
+
+    <!-- 底部保证 -->
+    <view class="mem-footer">
+      <text class="mem-footer-text">🔒 支付安全 · 随时可查 · 自动续费可关</text>
     </view>
   </view>
 </view>

@@ -1,73 +1,99 @@
 <!-- pages/annual-report/annual-report.wxml -->
 <view class="container">
-  <!-- ===== 加载骨架 ===== -->
-  <view wx:if="{{pageLoading}}">
-    <view class="skeleton-ar-wrap">
-      <view class="skeleton-hero-area">
-        <view class="skeleton skeleton-icon"></view>
-        <view class="skeleton skeleton-line wide"></view>
-      </view>
-      <view class="skeleton skeleton-desc" style="margin:0 auto var(--space-xxl)"></view>
-      <view class="skeleton skeleton-btn"></view>
-    </view>
+  <!-- ===== 加载 ===== -->
+  <view wx:if="{{pageLoading}}" class="ar-loading">
+    <view class="ar-skeleton-icon"></view>
+    <view class="ar-skeleton-line"></view>
   </view>
 
-  <!-- ===== 错误状态 ===== -->
+  <!-- ===== 错误 ===== -->
   <view wx:elif="{{pageError && !report}}" class="error-state">
     <text class="error-text">年度报告暂时无法生成</text>
     <text class="error-hint">{{pageError}}</text>
     <button class="btn-primary btn-small" bindtap="onRetry">重新尝试</button>
   </view>
 
-  <!-- ===== 生成前（intro/empty） ===== -->
-  <view wx:elif="{{!report && !generating}}" class="intro">
-    <text class="heading-1 mt-md">年度运势报告</text>
-    <text class="text-secondary" style="line-height:var(--lh-loose);display:block;margin:var(--space-xl) 0;padding:0 var(--space-xl)">
-      基于13张星光牌，AI为你生成未来12个月的专属运势报告。涵盖爱情、事业、财运，逐月详解。
-    </text>
-    <button class="btn-glow-pulse" style="width:80%;margin:0 auto" bindtap="onGenerate">生成我的年度报告</button>
-    <button class="btn-secondary mt-md" style="width:80%;margin:var(--space-md) auto 0" bindtap="onBuySingle">单独购买 ¥29.90</button>
-    <text class="text-dim mt-xl" style="display:block;text-align:center">会员专属 · 也可单独购买</text>
+  <!-- ===== 生成前 ===== -->
+  <view wx:elif="{{!report && !generating}}" class="ar-intro">
+    <view class="ar-intro-icon">📊</view>
+    <text class="ar-intro-title">年度运势报告</text>
+    <text class="ar-intro-desc">基于 13 张星光牌，AI 生成未来 12 个月专属运势。涵盖爱情、事业、财运，逐月详解。</text>
+
+    <view class="ar-preview-cards">
+      <view class="ar-preview-card" wx:for="{{[1,2,3,4,5,6]}}" wx:key="*this">
+        <view class="ar-preview-card-inner">🃏</view>
+        <text class="ar-preview-month">{{item}}月</text>
+      </view>
+    </view>
+
+    <button class="ar-gen-btn" bindtap="onGenerate">✦ 生成我的年度报告</button>
+    <button class="ar-buy-btn" bindtap="onBuySingle">单独购买 ¥29.90</button>
+    <text class="ar-intro-note">会员专属 · 也可单独购买</text>
   </view>
 
-  <!-- ===== 生成中（mystic loading） ===== -->
-  <view wx:elif="{{generating}}" class="mystic-loading">
-    <text class="mystic-loading-title">AI正在为你抽取年度运势牌...</text>
-    <text class="mystic-loading-sub">13张牌 · 12个月 · 一份完整报告</text>
+  <!-- ===== 生成中 ===== -->
+  <view wx:elif="{{generating}}" class="ar-generating">
+    <view class="ar-gen-orb">
+      <view class="ar-gen-ring"></view>
+      <text class="ar-gen-icon">🔮</text>
+    </view>
+    <text class="ar-gen-title">AI 正在抽取年度运势牌...</text>
+    <text class="ar-gen-sub">13 张牌 · 12 个月 · 一份完整报告</text>
   </view>
 
   <!-- ===== 报告结果 ===== -->
-  <view wx:elif="{{report}}" class="report">
-    <text class="heading-2 section-title-center anim-fade-in-up-1">{{report.generated_at}} 年度运势报告</text>
+  <view wx:elif="{{report}}" class="ar-report">
+    <!-- 报告头部 -->
+    <view class="ar-header">
+      <text class="ar-year">{{report.year || '2026'}}</text>
+      <text class="ar-title">年度运势报告</text>
+      <text class="ar-date">{{report.generated_at}}</text>
+    </view>
 
-    <!-- Monthly cards display -->
-    <view class="report-cards-section anim-fade-in-up-1">
-      <text class="section-subtitle">月度运势牌</text>
-      <scroll-view class="monthly-cards-scroll" scroll-x enhanced show-scrollbar="{{false}}">
-        <view class="monthly-cards-row">
-          <view
-            class="monthly-card-item"
-            wx:for="{{report.cards}}"
-            wx:key="month"
-            wx:for-index="cardIdx"
-            data-cardidx="{{cardIdx}}"
-            bindtap="onCardPreview"
-          >
+    <!-- 统计卡片 -->
+    <view class="ar-stats">
+      <view class="ar-stat">
+        <text class="ar-stat-num">{{report.total_readings || 0}}</text>
+        <text class="ar-stat-label">年度解读</text>
+      </view>
+      <view class="ar-stat">
+        <text class="ar-stat-num">{{report.top_spread || '三牌'}}</text>
+        <text class="ar-stat-label">常用牌阵</text>
+      </view>
+      <view class="ar-stat">
+        <text class="ar-stat-num">{{report.top_card || '--'}}</text>
+        <text class="ar-stat-label">本命牌</text>
+      </view>
+    </view>
+
+    <!-- 月度卡牌横滑 -->
+    <view class="ar-monthly">
+      <text class="ar-section-title">🃏 月度运势牌</text>
+      <scroll-view class="ar-monthly-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+        <view class="ar-monthly-row">
+          <view class="ar-month-card" wx:for="{{report.cards}}" wx:key="month" wx:for-index="idx" data-cardidx="{{idx}}" bindtap="onCardPreview">
             <tarot-card
               nameZh="{{item.card_name}}"
-              positionName="{{item.month}}"
+              positionName="{{item.month}}月"
               isReversed="{{item.direction === '逆位'}}"
             />
-            <text class="month-label">{{item.month}}</text>
           </view>
         </view>
       </scroll-view>
     </view>
 
-    <view class="report-body anim-fade-in-up-2">
-      <text class="report-text">{{report.report}}</text>
+    <!-- 报告正文 -->
+    <view class="ar-body">
+      <text class="ar-section-title">📝 详细解读</text>
+      <view class="ar-text-card">
+        <text class="ar-text">{{report.report}}</text>
+      </view>
     </view>
-    <button class="btn-primary anim-fade-in-up-3" open-type="share">分享报告</button>
-    <button class="btn-secondary mt-md anim-fade-in-up-4" bindtap="onGenerate">重新生成</button>
+
+    <!-- 操作 -->
+    <view class="ar-actions">
+      <button class="ar-share-btn" open-type="share">📤 分享报告</button>
+      <button class="ar-redo-btn" bindtap="onGenerate">🔄 重新生成</button>
+    </view>
   </view>
 </view>

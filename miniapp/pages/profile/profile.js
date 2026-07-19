@@ -39,6 +39,21 @@ Page({
     savedReadingsLoading: false,
   },
 
+  // —— History card image loading ——
+  onHistoryImgLoad(e) {
+    const idx = e.currentTarget.dataset.index;
+    if (idx !== undefined && idx !== '') {
+      this.setData({ [`readingHistory[${idx}]._imgLoaded`]: true });
+    }
+  },
+
+  onHistoryImgError(e) {
+    const idx = e.currentTarget.dataset.index;
+    if (idx !== undefined && idx !== '') {
+      this.setData({ [`readingHistory[${idx}]._imgError`]: true });
+    }
+  },
+
   async onShow() {
     await this.loadData();
   },

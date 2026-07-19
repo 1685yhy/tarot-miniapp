@@ -1488,4 +1488,5 @@
 
 .spread-grid-2 > .card-press {
   width: calc((100% - 16rpx) / 2);
+  box-sizing: border-box;
 }

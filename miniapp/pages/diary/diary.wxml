@@ -49,7 +49,7 @@
       <view class="entries">
         <view
           class="entry-card"
-          wx:for="{{entries}}"
+          wx:for="{{entries}}" wx:key="id"
           wx:for-item="entry"
           wx:key="id"
         >

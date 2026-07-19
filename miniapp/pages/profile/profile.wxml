@@ -126,13 +126,15 @@
         <view class="history-list">
           <view
             class="history-item anim-slide-up anim-stagger-{{index + 1}}"
-            wx:for="{{savedReadings}}"
+            wx:for="{{savedReadings}}" wx:key="id"
             wx:key="id"
             data-id="{{item.id}}"
             bindtap="onViewReading"
           >
-            <view class="history-thumb-placeholder">
-              <image class="thumb-placeholder-img" src="/images/icons/theme_general_64.png" mode="aspectFit" />
+            <view class="card-img-wrap history-thumb card-img-wrap--error">
+              <view class="card-img-fallback">
+                <text class="card-img-fallback-icon">🃏</text>
+              </view>
             </view>
             <view class="history-info">
               <text class="history-spread-name">{{item.spreadTypeName}}</text>
@@ -178,14 +180,11 @@
             bindtap="onViewReading"
           >
             <!-- 左侧卡牌缩略图 -->
-            <image
-              class="history-thumb"
-              src="{{item.firstCardImage || ''}}"
-              mode="aspectFill"
-              wx:if="{{item.firstCardImage}}"
-            />
-            <view class="history-thumb-placeholder" wx:else>
-              <image class="thumb-placeholder-img" src="/images/icons/theme_general_64.png" mode="aspectFit" />
+            <view class="card-img-wrap history-thumb {{item._imgLoaded ? 'card-img-wrap--loaded' : ''}} {{item._imgError || !item.firstCardImage ? 'card-img-wrap--error' : ''}}">
+              <image class="card-img-inner" src="{{item.firstCardImage || ''}}" mode="aspectFill" lazy-load wx:if="{{item.firstCardImage}}" bindload="onHistoryImgLoad" binderror="onHistoryImgError" data-index="{{index}}" />
+              <view class="card-img-fallback">
+                <text class="card-img-fallback-icon">🃏</text>
+              </view>
             </view>
 
             <!-- 中间文字 -->
