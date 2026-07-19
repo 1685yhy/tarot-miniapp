@@ -58,14 +58,17 @@ const checkLogin = async (options = {}) => {
 
   loginPromise = (async () => {
     try {
-      // 先试真登录，失败则fallback到dev登录
+      // 先试真登录，失败则视环境决定是否降级到dev登录
       try {
         return await login();
       } catch (err) {
         if (typeof __wxConfig !== 'undefined' && __wxConfig.envVersion !== 'release') {
           console.warn('[auth] 微信登录失败，使用开发模式登录:', err.message);
+          return await devLogin();
         }
-        return await devLogin();
+        // 正式版（release）不降级，让调用方的错误处理提示用户重试
+        console.warn('[auth] 微信登录失败:', err.message);
+        throw err;
       }
     } finally {
       loginPromise = null; // 完成后清锁

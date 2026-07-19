@@ -20,7 +20,18 @@ Page({
   async onLoad(options) {
     this._destroyed = false;
     const readingId = options.readingId || '';
-    this.setData({ readingId, pageLoading: true });
+    this.setData({ readingId });
+
+    // No readingId provided — show friendly empty state
+    if (!readingId) {
+      this.setData({
+        pageLoading: false,
+        readingContext: { question: '请在解读结果页点击「AI解读」进入', spreadType: '' },
+      });
+      return;
+    }
+
+    this.setData({ pageLoading: true });
 
     // Load reading context and chat history
     try {

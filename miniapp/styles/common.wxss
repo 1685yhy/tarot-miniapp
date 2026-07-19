@@ -1836,3 +1836,79 @@ page {
   animation: gentlePulse 2s ease-in-out 1;
 }
 
+
+/* ================================================================
+   Card Image Loading — skeleton → fade-in → error fallback
+   ================================================================ */
+.card-img-wrap {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-surface);
+  /* shimmer skeleton while image loads */
+}
+
+.card-img-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(244, 212, 140, 0.04) 40%,
+    rgba(244, 212, 140, 0.06) 50%,
+    rgba(244, 212, 140, 0.04) 60%,
+    transparent 100%
+  );
+  animation: shimmer-sweep 1.8s ease-in-out infinite;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.3s ease-out;
+}
+
+/* When image is loaded, hide skeleton */
+.card-img-wrap--loaded::before {
+  opacity: 0;
+  animation: none;
+}
+
+/* When image failed, show fallback icon but hide shimmer */
+.card-img-wrap--error::before {
+  opacity: 0;
+  animation: none;
+}
+
+.card-img-wrap .card-img-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.4s ease-out;
+}
+
+.card-img-wrap--loaded .card-img-inner {
+  opacity: 1;
+}
+
+/* Error fallback: centered icon */
+.card-img-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.card-img-wrap--error .card-img-fallback {
+  opacity: 1;
+}
+
+.card-img-fallback-icon {
+  font-size: 48rpx;
+  opacity: 0.4;
+  color: var(--color-text-tertiary);
+}

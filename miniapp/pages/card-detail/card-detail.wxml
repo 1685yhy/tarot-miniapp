@@ -47,14 +47,19 @@
     <!-- ==================== HERO: CARD IMAGE ==================== -->
     <view class="hero-section">
       <view class="hero-frame">
-        <image
-          class="hero-image"
-          src="{{card.imagePath}}"
-          mode="aspectFit"
-          wx:if="{{card.imagePath}}"
-        />
-        <view class="hero-placeholder" wx:else>
-          <text class="hero-placeholder-icon">🃏</text>
+        <view class="card-img-wrap hero-frame-img {{heroImgLoaded ? 'card-img-wrap--loaded' : ''}} {{heroImgError ? 'card-img-wrap--error' : ''}}">
+          <image
+            class="card-img-inner hero-image"
+            src="{{card.imagePath}}"
+            mode="aspectFit"
+            mode="aspectFit"
+            wx:if="{{card.imagePath}}"
+            bindload="onHeroImgLoad"
+            binderror="onHeroImgError"
+          />
+          <view class="card-img-fallback" wx:if="{{!card.imagePath || heroImgError}}">
+            <text class="card-img-fallback-icon" style="font-size:80rpx">🃏</text>
+          </view>
         </view>
         <!-- Decorative corner accents -->
         <view class="corner corner-tl"></view>
@@ -70,7 +75,7 @@
     <view class="keywords-row" wx:if="{{card.keywordsList && card.keywordsList.length}}">
       <text
         class="keyword-tag"
-        wx:for="{{card.keywordsList}}"
+        wx:for="{{card.keywordsList}}" wx:key="*this"
         wx:key="*this"
       >{{item}}</text>
     </view>

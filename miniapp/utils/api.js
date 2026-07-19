@@ -9,7 +9,7 @@
  * 或通过 第三方平台 (extConfig) 的 BASE_URL 参数注入（优先级更高）。
  *
  * 环境检测逻辑：
- *   - develop  → 自动使用 http://localhost:8000 （即使 release URL 是占位符也不受影响）
+ *   - develop  → 开发环境使用 IP 直连后端 （即使 release URL 是占位符也不受影响）
  *   - trial    → 使用 extConfig 中 BASE_URL 或 ENV_URLS.trial
  *   - release  → 使用 extConfig 中 BASE_URL 或 ENV_URLS.release（发布前必须替换占位符！）
  */
@@ -26,12 +26,12 @@ const ENV = (() => {
 /**
  * 环境 URL 映射表
  * ------------------------------------------------------------
- * deploy   开发用 http://localhost:8000
+ * deploy   开发用直接 IP (nginx:80 → backend:8000)
  * trial    体验版域名（替换为你的测试域名）
  * release  【★ 部署前必须修改 ★】替换为生产域名
  */
 const ENV_URLS = {
-  develop: 'https://xingxiang.chat/api',
+  develop: 'http://124.221.233.214/api',
   trial: 'https://xingxiang.chat/api',
   release: 'https://xingxiang.chat/api',
 };
@@ -68,7 +68,7 @@ if (BASE_URL.includes('your-domain') && ENV !== 'develop') {
 } else if (BASE_URL.includes('your-domain') && ENV === 'develop') {
   console.warn(
     '[tarot] 提醒：release URL 仍为占位符 "your-domain"。\n' +
-    '  开发环境不受影响（已使用 localhost），但部署到正式环境前务必修改。'
+    '  开发环境不受影响（已使用开发环境直连），但部署到正式环境前务必修改。'
   );
 }
 

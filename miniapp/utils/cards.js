@@ -98,7 +98,8 @@ const CARD_REGISTRY = {
 const IMAGE_BASE = (() => {
   try {
     const env = wx.getAccountInfoSync().miniProgram.envVersion;
-    return env === 'develop' ? 'http://localhost:8000/images/cards' : 'https://xingxiang.chat/images/cards_thumb';
+    // CDN image base — cards_thumb for list views, cards_full for detail views
+    return 'https://xingxiang.chat/images/cards_thumb';
   } catch(e) {
     return 'https://xingxiang.chat/images/cards_thumb';
   }

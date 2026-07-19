@@ -28,6 +28,22 @@ Page({
         const display = { ...p };
         if (p.id === 'membership_yearly') {
           display.pricePerDay = (p.price / 365).toFixed(2);
+          display.recommended = true;
+          display.daily_readings = p.daily_readings || 30;
+          display.unlimited_chat = p.unlimited_chat !== false;
+          display.annual_report = p.annual_report || false;
+        }
+        if (p.id === 'membership_monthly') {
+          display.recommended = false;
+          display.daily_readings = p.daily_readings || 10;
+          display.unlimited_chat = p.unlimited_chat !== false;
+          display.annual_report = false;
+        }
+        if (p.id === 'membership_lifetime') {
+          display.recommended = false;
+          display.daily_readings = -1;
+          display.unlimited_chat = true;
+          display.annual_report = true;
         }
         return display;
       });
@@ -53,6 +69,17 @@ Page({
         data: { product_type: product.id },
       });
       wx.hideLoading();
+
+      // Check if payment is configured
+      if (!order.payment_params) {
+        this.setData({ purchasing: false });
+        wx.showModal({
+          title: '支付未配置',
+          content: '微信支付商户尚未配置完成。请先在服务器 .env 中配置 WECHAT_MCH_ID 和 WECHAT_API_KEY_V3。',
+          showCancel: false,
+        });
+        return;
+      }
 
       // Call WeChat Pay JSAPI
       const params = order.payment_params;

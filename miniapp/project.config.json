@@ -21,6 +21,14 @@
       {
         "type": "folder",
         "value": "images/cards"
+      },
+      {
+        "type": "file",
+        "value": "images/app_icon.png"
+      },
+      {
+        "type": "file",
+        "value": "images/app_icon_144.png"
       }
     ],
     "include": []

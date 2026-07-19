@@ -96,12 +96,13 @@
       confirm-type="send" bindconfirm="onSend"
     />
   </label>
-  <button class="send-btn" bindtap="onSend"
-    disabled="{{sending || !canSend}}"
+  <view class="send-btn {{sending || !canSend ? 'send-btn--disabled' : ''}}"
+    bindtap="{{(!sending && canSend) ? 'onSend' : ''}}"
     aria-label="发送"
+    role="button"
   >
-    <view class="send-icon"></view>
-  </button>
+    <text class="send-text">发送</text>
+  </view>
 </view>
 
 <view class="free-hint" wx:if="{{remainingFree > 0}}">
