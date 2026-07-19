@@ -82,7 +82,9 @@ Page({
     if (!text || this.data.sending) return;
 
     const messages = [...this.data.messages, { role: 'user', content: text }];
-    this.setData({ messages, inputText: '', canSend: false, sending: true, aiThinking: true });
+    this.setData({ messages, inputText: '', canSend: false, sending: true, aiThinking: true,
+      sendFailed: false, _pendingRetryText: '' });
+    this.scrollToBottom();
 
     try {
       const result = await request(`/readings/${this.data.readingId}/chat`, {
@@ -100,10 +102,11 @@ Page({
       this.scrollToBottom();
     } catch (err) {
       if (this._destroyed) return;
-      // 移除失败的消息，保留输入内容供重试
-      const messagesWithoutFailed = this.data.messages.slice(0, -1);
+      // 保留用户消息，标记发送失败，允许点击重试
+      const lastMsg = messages[messages.length - 1];
+      lastMsg.failed = true;
       this.setData({
-        messages: messagesWithoutFailed,
+        messages,
         sending: false,
         aiThinking: false,
         sendFailed: true,
@@ -111,19 +114,37 @@ Page({
         inputText: text,
         canSend: true,
       });
-      wx.showToast({ title: '发送失败，请重试', icon: 'none' });
+      wx.showToast({ title: '发送失败，点击消息重试', icon: 'none' });
     }
   },
 
-  /** 重试上次发送失败的消息 */
-  onRetrySend() {
+  /** 重试发送失败的消息 */
+  async onRetrySend() {
+    if (this.data.sending) return;
     const text = this.data._pendingRetryText;
     if (!text) {
       this.setData({ sendFailed: false, _pendingRetryText: '' });
       return;
     }
-    this.setData({ sendFailed: false, _pendingRetryText: '', inputText: text, canSend: true });
-    this.onSend();
+    // 清除失败消息，重新发送
+    const messages = this.data.messages.filter(m => !m.failed);
+    this.setData({ messages, sendFailed: false, _pendingRetryText: '', aiThinking: true, sending: true });
+
+    try {
+      const result = await request(`/readings/${this.data.readingId}/chat`, {
+        method: 'POST',
+        data: { message: text },
+      });
+      if (this._destroyed) return;
+      messages.push({ role: 'assistant', content: result.reply });
+      this.setData({ messages, sending: false, aiThinking: false, remainingFree: result.remaining_free, inputText: '', canSend: false });
+      this.scrollToBottom();
+    } catch (err) {
+      if (this._destroyed) return;
+      messages[messages.length - 1] = { role: 'user', content: text, failed: true };
+      this.setData({ messages, sending: false, aiThinking: false, inputText: text, canSend: true,
+        sendFailed: true, _pendingRetryText: text });
+    }
   },
 
   scrollToBottom() {

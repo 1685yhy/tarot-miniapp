@@ -473,3 +473,36 @@ page {
   font-size: var(--font-size-caption);
   color: var(--color-error);
 }
+
+/* ================================================================
+   Failed message bubble
+   ================================================================ */
+.bubble-failed {
+  border: 1rpx solid rgba(232, 122, 138, 0.40) !important;
+  opacity: 0.75;
+}
+
+.msg-failed-hint {
+  font-size: 20rpx;
+  color: var(--color-error);
+  display: block;
+  margin-top: 8rpx;
+  text-align: right;
+}
+
+/* ================================================================
+   Textarea styles (replaces input)
+   ================================================================ */
+.chat-input {
+  width: 100%;
+  min-height: 72rpx;
+  max-height: 240rpx;
+  padding: 16rpx 28rpx;
+  border-radius: 50rpx;
+  background: var(--color-surface);
+  border: 2rpx solid transparent;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-body);
+  line-height: 1.5;
+  box-sizing: border-box;
+}
