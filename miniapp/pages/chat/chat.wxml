@@ -53,8 +53,9 @@
       <!-- User message -->
       <view wx:if="{{item.role === 'user'}}" class="msg-wrap msg-user msg-enter">
         <text class="role-label role-user">你</text>
-        <view class="msg-bubble bubble-user">
+        <view class="msg-bubble bubble-user {{item.failed ? 'bubble-failed' : ''}}" bindtap="{{item.failed ? 'onRetrySend' : ''}}">
           <text class="msg-text msg-text-user">{{item.content}}</text>
+          <text wx:if="{{item.failed}}" class="msg-failed-hint">发送失败 · 点击重试</text>
         </view>
       </view>
       <!-- AI / reader message -->
@@ -90,10 +91,13 @@
 <!-- ===== Input area — fixed bottom ===== -->
 <view class="input-bar">
   <label class="input-wrap">
-    <input class="chat-input" placeholder="写下你想问的..."
+    <textarea class="chat-input" placeholder="写下你想问的..."
       placeholder-class="input-placeholder"
       value="{{inputText}}" bindinput="onInput"
-      confirm-type="send" bindconfirm="onSend"
+      auto-height="{{true}}" maxlength="-1"
+      show-confirm-bar="{{false}}"
+      cursor-spacing="12"
+      adjust-position="{{true}}"
     />
   </label>
   <view class="send-btn {{sending || !canSend ? 'send-btn--disabled' : ''}}"
