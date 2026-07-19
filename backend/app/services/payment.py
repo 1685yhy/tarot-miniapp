@@ -4,7 +4,7 @@ Payment service — product configuration and WeChat Pay parameter generation.
 PRODUCTS is the single source of truth for what can be purchased.
 """
 
-import hashlib
+import base64
 import json
 import logging
 import secrets
@@ -20,11 +20,11 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 PRODUCTS = {
-    "single_reading": {"name": "单次深度占卜", "price": 9.90, "type": "single_purchase"},
-    "membership_monthly": {"name": "月度会员", "price": 29.90, "type": "membership"},
-    "membership_yearly": {"name": "年度会员", "price": 198.00, "type": "membership"},
-    "membership_lifetime": {"name": "永久会员", "price": 298.00, "type": "membership"},
-    "annual_report": {"name": "年度运势报告", "price": 29.90, "type": "single_purchase"},
+    "single_reading": {"name": "单次深度占卜", "price": 9.90, "type": "single_purchase", "cost": 0.002},
+    "membership_monthly": {"name": "月度会员", "price": 29.90, "type": "membership", "cost": 0.06, "daily_readings": 10, "unlimited_chat": True},
+    "membership_yearly": {"name": "年度会员", "price": 198.00, "type": "membership", "cost": 0.72, "daily_readings": 30, "unlimited_chat": True, "annual_report": True},
+    "membership_lifetime": {"name": "永久会员", "price": 298.00, "type": "membership", "cost": 2.00, "daily_readings": -1, "unlimited_chat": True, "annual_report": True},
+    "annual_report": {"name": "年度运势报告", "price": 29.90, "type": "single_purchase", "cost": 0.03},
 }
 
 
@@ -45,119 +45,167 @@ def _generate_nonce_str() -> str:
     return secrets.token_hex(16)
 
 
-def _generate_sign(data: dict, key: str) -> str:
+def _load_private_key():
+    """Load the merchant RSA private key from the configured PEM file."""
+    path = settings.WECHAT_PRIVATE_KEY_PATH.strip()
+    if not path:
+        raise ValueError("WECHAT_PRIVATE_KEY_PATH not configured")
+    with open(path, "r") as f:
+        pem_data = f.read()
+    from cryptography.hazmat.primitives import serialization
+    return serialization.load_pem_private_key(
+        pem_data.encode("utf-8"),
+        password=None,
+    )
+
+
+def _rsa_sign(private_key, message: str) -> str:
+    """Sign message with private_key using RSA-SHA256, return base64 string."""
+    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.primitives.asymmetric import padding
+
+    signature = private_key.sign(
+        message.encode("utf-8"),
+        padding.PKCS1v15(),
+        hashes.SHA256(),
+    )
+    return base64.b64encode(signature).decode("utf-8")
+
+
+def _build_v3_auth_header(method: str, url_path: str, body_json: str) -> tuple:
+    """Build the Authorization header for a WeChat Pay V3 API call.
+
+    Returns:
+        (auth_header, timestamp, nonce)
     """
-    Generate a WeChat Pay-compatible MD5 sign string.
-    Used as a fallback when the wechatpayv3 SDK is not configured.
-    """
-    sorted_keys = sorted(data.keys())
-    raw = "&".join(f"{k}={data[k]}" for k in sorted_keys) + f"&key={key}"
-    return hashlib.md5(raw.encode("utf-8")).hexdigest().upper()
+    mch_id = settings.WECHAT_MCH_ID.strip()
+    cert_serial = settings.WECHAT_MCH_CERT_SERIAL.strip()
+    timestamp = str(int(time.time()))
+    nonce = _generate_nonce_str()
+
+    sign_str = f"{method}\n{url_path}\n{timestamp}\n{nonce}\n{body_json}\n"
+    private_key = _load_private_key()
+    signature = _rsa_sign(private_key, sign_str)
+
+    auth = (
+        f'WECHATPAY2-SHA256-RSA2048 '
+        f'mchid="{mch_id}",'
+        f'nonce_str="{nonce}",'
+        f'signature="{signature}",'
+        f'timestamp="{timestamp}",'
+        f'serial_no="{cert_serial}"'
+    )
+    return auth, timestamp, nonce
 
 
-def create_order_params(openid: str, product_type: str, order_no: str) -> dict:
-    """Generate JSAPI-order parameters for WeChat Pay.
+def create_order_params(openid: str, product_type: str, order_no: str) -> dict | None:
+    """Generate JSAPI-order parameters for WeChat Pay V3.
 
-    Returns the full ``wx.requestPayment`` payload:
-    (appId, timeStamp, nonceStr, package, signType, paySign).
+    Calls WeChat Pay APIv3 POST /v3/pay/transactions/jsapi directly,
+    signing the request with the merchant private key (RSA-SHA256).
 
-    Uses the wechatpayv3 SDK when backend credentials are configured;
-    falls back to a local stub for development / testing.
+    Returns a wx.requestPayment-compatible dict on success, or None
+    on failure (caller should return an appropriate error to the client).
     """
     product = PRODUCTS.get(product_type)
     if not product:
         raise ValueError(f"未知商品类型: {product_type}")
 
-    # Attempt real WeChat Pay V3 integration
     app_id = settings.WECHAT_APP_ID.strip()
     mch_id = settings.WECHAT_MCH_ID.strip()
-    api_key_v3 = settings.WECHAT_API_KEY_V3.strip()
+    api_v3_key = settings.WECHAT_API_KEY_V3.strip()
+    private_key_path = settings.WECHAT_PRIVATE_KEY_PATH.strip()
+    cert_serial = settings.WECHAT_MCH_CERT_SERIAL.strip()
 
-    if app_id and app_id != "your-wechat-app-id" and mch_id and api_key_v3:
-        try:
-            from wechatpayv3 import WeChatPay
+    if not all([app_id, mch_id, api_v3_key, private_key_path, cert_serial]):
+        logger.error(
+            "WeChat Pay V3 not fully configured -- missing one or more of: "
+            "WECHAT_APP_ID, WECHAT_MCH_ID, WECHAT_API_KEY_V3, "
+            "WECHAT_PRIVATE_KEY_PATH, WECHAT_MCH_CERT_SERIAL"
+        )
+        return None
 
-            # Read private key from file (configured via env)
-            private_key_path = getattr(settings, "WECHAT_PRIVATE_KEY_PATH", None)
-            private_key = None
-            if private_key_path:
-                with open(private_key_path, "r") as f:
-                    private_key = f.read()
+    # Build request body
+    total_fen = int(product["price"] * 100)
+    notify_url = "https://xingxiang.chat/api/orders/callback"
 
-            wxpay = WeChatPay(
-                appid=app_id,
-                mchid=mch_id,
-                apiv3_key=api_key_v3,
-                cert_serial_no=getattr(settings, "WECHAT_CERT_SERIAL_NO", ""),
-                private_key=private_key,
-            )
-
-            # Create a JSAPI prepay order
-            prepay_id = None
-            try:
-                # wechatpayv3 SDK returns the full prepay response
-                result = wxpay.payments.jsapi.create(
-                    description=product["name"],
-                    out_trade_no=order_no,
-                    amount={
-                        "total": int(product["price"] * 100),  # cents
-                        "currency": "CNY",
-                    },
-                    payer={"openid": openid},
-                )
-                prepay_id = result.get("prepay_id")
-            except Exception:
-                prepay_id = None
-
-            if prepay_id:
-                # Build JSAPI payment params
-                nonce_str = _generate_nonce_str()
-                timestamp = str(int(time.time()))
-                package = f"prepay_id={prepay_id}"
-
-                sign_str = f"{app_id}\n{timestamp}\n{nonce_str}\n{package}\n"
-                pay_sign = hashlib.sha256(sign_str.encode("utf-8")).hexdigest().upper()
-
-                return {
-                    "appId": app_id,
-                    "timeStamp": timestamp,
-                    "nonceStr": nonce_str,
-                    "package": package,
-                    "signType": "RSA",
-                    "paySign": pay_sign,
-                }
-        except ImportError:
-            pass
-
-    # ── Fallback: development stub ──
-    # Returns parameters in the shape wx.requestPayment expects,
-    # signed with MD5 using the configured API key (or a dev default).
-    nonce_str = _generate_nonce_str()
-    timestamp = str(int(time.time()))
-    package = f"prepay_id={order_no}"
-
-    sign_key = api_key_v3 or "dev-default-key"
-    params_for_sign = {
-        "appId": app_id or "wxdev",
-        "timeStamp": timestamp,
-        "nonceStr": nonce_str,
-        "package": package,
-        "signType": "MD5",
+    body = {
+        "appid": app_id,
+        "mchid": mch_id,
+        "description": product["name"],
+        "out_trade_no": order_no,
+        "notify_url": notify_url,
+        "amount": {
+            "total": total_fen,
+            "currency": "CNY",
+        },
+        "payer": {
+            "openid": openid,
+        },
     }
-    pay_sign = _generate_sign(params_for_sign, sign_key)
+    body_json = json.dumps(body, separators=(",", ":"))
+
+    # Build Authorization header
+    auth_header, _timestamp, _nonce = _build_v3_auth_header(
+        "POST", "/v3/pay/transactions/jsapi", body_json,
+    )
+
+    # Make API call
+    import urllib.request as _urllib
+
+    req = _urllib.Request(
+        "https://api.mch.weixin.qq.com/v3/pay/transactions/jsapi",
+        data=body_json.encode("utf-8"),
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": auth_header,
+            "Accept": "application/json",
+            "User-Agent": "tarot-api/1.0",
+        },
+    )
+
+    try:
+        resp = _urllib.urlopen(req, timeout=10)
+        resp_body = resp.read().decode("utf-8")
+        resp_data = json.loads(resp_body)
+        prepay_id = resp_data.get("prepay_id")
+        logger.info("WeChat Pay V3 prepay response: %s", resp_body)
+    except _urllib.HTTPError as e:
+        error_body = e.read().decode("utf-8")
+        logger.error(
+            "WeChat Pay V3 API error [%d %s]: %s",
+            e.code, e.reason, error_body,
+        )
+        return None
+    except Exception as e:
+        logger.exception("WeChat Pay V3 request failed: %s", e)
+        return None
+
+    if not prepay_id:
+        logger.error("WeChat Pay V3 response missing prepay_id: %s", resp_body)
+        return None
+
+    # Build JSAPI payment params (RSA signed)
+    private_key = _load_private_key()
+    pay_nonce = _generate_nonce_str()
+    pay_timestamp = str(int(time.time()))
+    pay_package = f"prepay_id={prepay_id}"
+
+    pay_sign_str = f"{app_id}\n{pay_timestamp}\n{pay_nonce}\n{pay_package}\n"
+    pay_sign = _rsa_sign(private_key, pay_sign_str)
 
     return {
-        "appId": app_id or "wxdev",
-        "timeStamp": timestamp,
-        "nonceStr": nonce_str,
-        "package": package,
-        "signType": "MD5",
+        "appId": app_id,
+        "timeStamp": pay_timestamp,
+        "nonceStr": pay_nonce,
+        "package": pay_package,
+        "signType": "RSA",
         "paySign": pay_sign,
     }
 
 
 # ---------------------------------------------------------------------------
-# WeChat Pay V3 callback — signature verification & resource decryption
+# WeChat Pay V3 callback - signature verification & resource decryption
 # ---------------------------------------------------------------------------
 
 
@@ -166,26 +214,9 @@ def verify_wechat_v3_signature(
     signature: str,
     serial: str,
 ) -> bool:
-    """
-    Verify a WeChat Pay V3 signature using the configured platform certificate.
-
-    Args:
-        sign_str:   The string that was signed
-                    (``f"{timestamp}\\n{nonce}\\n{body}\\n"``).
-        signature:  The base64-encoded ``Wechatpay-Signature`` header value.
-        serial:     The ``Wechatpay-Serial`` header value identifying which
-                    certificate was used.
-
-    Returns:
-        ``True`` if the signature is valid, ``False`` otherwise.
-
-    In production: configure ``WECHAT_PLATFORM_CERT`` and
-    ``WECHAT_PLATFORM_CERT_SERIAL`` in the environment.  The cert *must* be
-    periodically refreshed from ``GET /v3/certificates``.
-    """
+    """Verify a WeChat Pay V3 signature using the configured platform cert."""
     expected_serial = getattr(settings, "WECHAT_PLATFORM_CERT_SERIAL", "").strip()
     if not expected_serial or expected_serial == "your-platform-cert-serial":
-        # Dev mode – skip verification
         logger.warning("WECHAT_PLATFORM_CERT_SERIAL not configured; skipping V3 verification")
         return True
 
@@ -226,24 +257,10 @@ def decrypt_wechat_v3_resource(
     associated_data: str,
     nonce: str,
 ) -> str:
-    """
-    Decrypt a WeChat Pay V3 resource (AEAD_AES_256_GCM).
-
-    Args:
-        ciphertext:     Base64-encoded ciphertext from ``resource.ciphertext``.
-        associated_data:Associated data from ``resource.associated_data``.
-        nonce:          Nonce from ``resource.nonce``.
-
-    Returns:
-        Decrypted plaintext (JSON string).
-
-    Raises:
-        ValueError: If decryption fails.
-    """
+    """Decrypt a WeChat Pay V3 resource (AEAD_AES_256_GCM)."""
     api_v3_key = settings.WECHAT_API_KEY_V3.strip()
     if not api_v3_key:
         logger.warning("WECHAT_API_KEY_V3 not configured; returning raw ciphertext placeholder")
-        # Dev fallback – assume ciphertext is plain JSON
         return _b64decode(ciphertext).decode("utf-8")
 
     try:
@@ -264,10 +281,9 @@ def decrypt_wechat_v3_resource(
 
 def _b64decode(s: str) -> bytes:
     """Decode a base64 string (with or without padding)."""
-    import base64
+    import base64 as _b64
     s = s.strip()
-    # Add padding if needed
     padding = 4 - len(s) % 4
     if padding != 4:
         s += "=" * padding
-    return base64.b64decode(s)
+    return _b64.b64decode(s)
