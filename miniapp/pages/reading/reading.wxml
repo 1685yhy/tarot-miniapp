@@ -149,26 +149,21 @@
         </view>
       </view>
 
-      <!-- Theme selection -->
+      <!-- Theme selection — reordered: spread-default theme first, others dimmed -->
       <view class="mb-xxxl anim-fade-in-up-3">
         <text class="theme-section-label">解读侧重</text>
         <text class="theme-hint" wx:if="{{themeHint}}">{{themeHint}}</text>
         <view class="theme-options">
-          <view class="theme-item {{theme === 'general' ? 'theme-active' : ''}}" bindtap="onThemeTap" data-theme="general">
-            <image class="theme-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" />
-            <text class="theme-label">综合</text>
-          </view>
-          <view class="theme-item {{theme === 'love' ? 'theme-active' : ''}}" bindtap="onThemeTap" data-theme="love">
-            <image class="theme-icon" src="/images/icons/theme_love_64.png" mode="aspectFit" />
-            <text class="theme-label">爱情</text>
-          </view>
-          <view class="theme-item {{theme === 'career' ? 'theme-active' : ''}}" bindtap="onThemeTap" data-theme="career">
-            <image class="theme-icon" src="/images/icons/theme_career_64.png" mode="aspectFit" />
-            <text class="theme-label">事业</text>
-          </view>
-          <view class="theme-item {{theme === 'finance' ? 'theme-active' : ''}}" bindtap="onThemeTap" data-theme="finance">
-            <image class="theme-icon" src="/images/icons/theme_finance_64.png" mode="aspectFit" />
-            <text class="theme-label">财运</text>
+          <view
+            wx:for="{{displayThemes}}"
+            wx:key="key"
+            class="theme-item {{theme === item.key ? 'theme-active' : ''}} {{item.recommended ? 'theme-recommended' : ''}}"
+            bindtap="onThemeTap"
+            data-theme="{{item.key}}"
+          >
+            <image class="theme-icon" src="{{item.icon}}" mode="aspectFit" />
+            <text class="theme-label">{{item.label}}</text>
+            <text class="theme-badge" wx:if="{{item.recommended}}">推荐</text>
           </view>
         </view>
       </view>
@@ -183,3 +178,4 @@
     </view>
   </view>
 </view>
+

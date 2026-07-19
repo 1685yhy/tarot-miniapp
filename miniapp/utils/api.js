@@ -77,12 +77,16 @@ const MAX_RETRIES = 2;
 const request = async (url, options = {}, retryCount = 0) => {
   const token = wx.getStorageSync('token');
 
+  // AI endpoints take ~20-40s; use long timeout. Other endpoints use 15s.
+  const isAiEndpoint = url.includes('/spread/') || url.includes('/chat') || url.includes('/reinterpret');
+  const timeout = options.timeout || (isAiEndpoint ? 120000 : 15000);
+
   return new Promise((resolve, reject) => {
     wx.request({
       url: `${BASE_URL}${url}`,
       method: options.method || 'GET',
       data: options.data,
-      timeout: 15000,  // 15s timeout (real device debugging needs faster feedback)
+      timeout,
       header: {
         'Content-Type': 'application/json',
         'Authorization': token ? `Bearer ${token}` : '',

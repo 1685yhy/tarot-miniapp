@@ -46,11 +46,25 @@ Page({
 
   onLoad(options) {
     const id = options && options.id;
-    if (!id) {
+    const isPending = options && options.pending === '1';
+    const spread = options && options.spread;
+
+    if (!id && !isPending) {
       wx.showToast({ title: '参数错误', icon: 'none' });
       wx.navigateBack();
       return;
     }
+
+    if (isPending) {
+      // New reading — create via API with full loading animation
+      this._pendingSpread = spread || 'three_card';
+      this._cachedReading = null;
+      this._cachedError = null;
+      this._startStages();
+      this._createReading();
+      return;
+    }
+
     this._id = id;
     this._cachedReading = null;
 
@@ -64,6 +78,33 @@ Page({
 
     // Fire the API call in parallel — result is cached until stage 3 begins
     this._load();
+  },
+
+  /* ---------------------------------------------------------------
+     New reading creation (pending mode) — makes AI API call
+     --------------------------------------------------------------- */
+  async _createReading() {
+    const pending = wx.getStorageSync('pending_reading');
+    const data = {
+      spread_type: this._pendingSpread,
+      question: (pending && pending.question) || null,
+      theme: (pending && pending.theme) || 'general',
+    };
+    try {
+      const result = await request(`/readings/spread/${this._pendingSpread}`, {
+        method: 'POST',
+        data: data,
+      });
+      if (this._destroyed) return;
+      wx.removeStorageSync('pending_reading');
+      this._cachedReading = result;
+      this._tryShowResult();
+    } catch (err) {
+      if (this._destroyed) return;
+      this._cachedError = getFriendlyError(err);
+      // Show error after stages complete, or immediately if timeout
+      this._tryShowResult();
+    }
   },
 
   /* ---------------------------------------------------------------
