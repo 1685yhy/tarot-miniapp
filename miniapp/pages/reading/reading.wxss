@@ -966,3 +966,30 @@ view:has(> .btn-back-spreads) {
   width: 0;
   height: 0;
 }
+
+/* ================================================================
+   Drawing overlay — full screen loading while AI works
+   ================================================================ */
+.drawing-overlay {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(10, 10, 30, 0.95);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.drawing-overlay--active { opacity: 1; pointer-events: auto; }
+.drawing-stage { display: flex; flex-direction: column; align-items: center; }
+.shuffle-area-large { position: relative; width: 200rpx; height: 200rpx; margin-bottom: 48rpx; }
+.shuffle-card-large { position: absolute; width: 120rpx; height: 160rpx; border-radius: 12rpx; background: var(--color-surface-gradient); border: 2rpx solid rgba(244,212,140,0.2); }
+.shuffle-card-large.s1 { top: 0; left: 40rpx; transform: rotate(-8deg); animation: sm1 1.5s ease-in-out infinite; }
+.shuffle-card-large.s2 { top: 20rpx; left: 60rpx; transform: rotate(2deg); animation: sm2 1.8s ease-in-out infinite; }
+.shuffle-card-large.s3 { top: 10rpx; left: 20rpx; transform: rotate(-3deg); animation: sm3 2s ease-in-out infinite; }
+@keyframes sm1 { 0%,100% { transform: rotate(-8deg) translateX(0); } 50% { transform: rotate(5deg) translateX(30rpx); } }
+@keyframes sm2 { 0%,100% { transform: rotate(2deg) translateX(0); } 50% { transform: rotate(-6deg) translateX(-25rpx); } }
+@keyframes sm3 { 0%,100% { transform: rotate(-3deg) translateY(0); } 50% { transform: rotate(8deg) translateY(-20rpx); } }
+.drawing-orb { position: relative; width: 160rpx; height: 160rpx; margin-bottom: 48rpx; }
+.drawing-ring { position: absolute; inset: 0; border-radius: 50%; border: 4rpx solid rgba(244,212,140,0.1); border-top-color: var(--color-gold); animation: dspin 1.2s linear infinite; }
+@keyframes dspin { to { transform: rotate(360deg); } }
+.drawing-orb-icon { font-size: 64rpx; line-height: 160rpx; text-align: center; display: block; }
+.drawing-title { font-size: var(--font-size-title); font-weight: 700; color: var(--color-gold); letter-spacing: 3rpx; }
+.drawing-sub { font-size: var(--font-size-caption); color: var(--color-text-tertiary); margin-top: 16rpx; letter-spacing: 2rpx; }

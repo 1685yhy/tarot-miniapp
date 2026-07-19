@@ -50,6 +50,23 @@ const THEME_LABELS = {
   general: '综合',
 };
 
+const THEME_ICONS = {
+  love: '/images/icons/theme_love_64.png',
+  career: '/images/icons/theme_career_64.png',
+  finance: '/images/icons/theme_finance_64.png',
+  general: '/images/icons/theme_general_64.png',
+};
+
+// Build ordered theme list: themed spreads show ONLY their theme; general shows all
+function buildDisplayThemes(defaultTheme) {
+  const all = ['general', 'love', 'career', 'finance'];
+  if (!defaultTheme) {
+    return all.map(k => ({ key: k, label: THEME_LABELS[k], icon: THEME_ICONS[k] }));
+  }
+  // Themed spreads: ONLY the matching theme — others don't apply
+  return [{ key: defaultTheme, label: THEME_LABELS[defaultTheme], icon: THEME_ICONS[defaultTheme] }];
+}
+
 Page({
   data: {
     spreads: SPREADS,
@@ -96,6 +113,7 @@ Page({
         const themeHint = defaultTheme
           ? `此牌阵侧重${THEME_LABELS[defaultTheme]}解读`
           : '';
+        const displayThemes = buildDisplayThemes(defaultTheme);
 
         // 先设置数据，再处理会员检查
         this.setData({
@@ -103,6 +121,7 @@ Page({
           spreadDefaultTheme: defaultTheme,
           theme: theme,
           themeHint: themeHint,
+          displayThemes: displayThemes,
           question: restoredQuestion,
           showQuestionInput: !spread.premium,
           pageLoading: false,
@@ -239,6 +258,7 @@ Page({
     const themeHint = defaultTheme
       ? `此牌阵侧重${THEME_LABELS[defaultTheme]}解读`
       : '';
+    const displayThemes = buildDisplayThemes(defaultTheme);
 
     // Skip ritual by default — show question input directly
     this.setData({
@@ -246,6 +266,7 @@ Page({
       spreadDefaultTheme: defaultTheme,
       theme: theme,
       themeHint: themeHint,
+      displayThemes: displayThemes,
       showQuestionInput: true,
     });
   },
@@ -314,58 +335,26 @@ Page({
     if (!selectedSpread) return;
     if (isDrawing) return;
 
-    this.setData({ isDrawing: true });
-
     // Check login first
     try {
       await checkLogin();
     } catch (err) {
-      this.setData({ isDrawing: false });
       wx.showToast({ title: '请先登录', icon: 'none' });
       return;
     }
 
-    // Save context before API call for error recovery
-    wx.setStorageSync('pending_reading', {
+    // Save pending context for result page
+    const pending = {
       spread_type: selectedSpread.key,
       question: this.data.question || null,
       theme: this.data.theme || 'general',
       timestamp: Date.now(),
+    };
+    wx.setStorageSync('pending_reading', pending);
+
+    // Navigate immediately — result page handles API + loading animation
+    wx.redirectTo({
+      url: `/pages/reading-result/reading-result?pending=1&spread=${selectedSpread.key}`,
     });
-
-    try {
-      const result = await request(`/readings/spread/${selectedSpread.key}`, {
-        method: 'POST',
-        data: {
-          spread_type: selectedSpread.key,
-          question: this.data.question || null,
-          theme: this.data.theme || 'general',
-        },
-      });
-
-      // Success — clear pending
-      wx.removeStorageSync('pending_reading');
-
-      // Navigate to result page with reading ID
-      wx.redirectTo({
-        url: `/pages/reading-result/reading-result?id=${result.id}`,
-      });
-    } catch (err) {
-      if (err.statusCode === 402) {
-        this.setData({ isDrawing: false });
-        wx.showModal({
-          title: '次数不足',
-          content: `今日免费解读 ${this.data.freeReadingsUsed}/${this.data.freeReadingsTotal} 次已用完 ✦ 明天00:00自动恢复 ✦ 或开通会员，立即无限解读`,
-          confirmText: '开通会员',
-          success: (res) => {
-            if (res.confirm) {
-              wx.navigateTo({ url: '/pages/membership/membership' });
-            }
-          },
-        });
-      } else {
-        this.setData({ isDrawing: false, pageError: getFriendlyError(err) });
-      }
-    }
   },
 });

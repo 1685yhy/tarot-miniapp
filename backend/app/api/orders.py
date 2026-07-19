@@ -53,6 +53,12 @@ async def create_order(
         order_no=order.order_no,
     )
 
+    if payment_params is None:
+        raise HTTPException(
+            status_code=503,
+            detail="微信支付接口调用失败，请确认商户号已开通JSAPI支付产品权限",
+        )
+
     return CreateOrderResponse(
         order_id=order.id,
         order_no=order.order_no,
