@@ -18,6 +18,9 @@ async def dev_login(
     db: AsyncSession = Depends(get_db),
 ):
     """开发环境：创建或获取测试用户，绕过微信登录。默认非会员，传 ?member=true 切换为会员。"""
+    # Safety guard: returns 404 when disabled, so the endpoint looks like it doesn't exist
+    if not settings.ENABLE_DEV_LOGIN:
+        raise HTTPException(status_code=404, detail="Not Found")
     test_openid = "dev_test_user_001"
     result = await db.execute(select(User).where(User.openid == test_openid))
     user = result.scalar_one_or_none()

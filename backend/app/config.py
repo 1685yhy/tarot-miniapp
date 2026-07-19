@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     WECHAT_APP_SECRET: str = ""
     WECHAT_MCH_ID: str = ""
     WECHAT_API_KEY_V3: str = ""
+    WECHAT_PRIVATE_KEY_PATH: str = ""
+    WECHAT_MCH_CERT_SERIAL: str = ""
     WECHAT_PLATFORM_CERT_SERIAL: str = ""
     WECHAT_PLATFORM_CERT: str = ""
 
@@ -25,8 +27,14 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRE_MINUTES: int = 60 * 24 * 30  # 30 days
 
+    # Super admin — these user IDs bypass all free-tier limits
+    SUPER_ADMIN_IDS: list[str] = ["15eda012-5ad2-4211-ad06-072d194f617d"]
+
+    # Dev login toggle — production must be false; backend guarded by 404
+    ENABLE_DEV_LOGIN: bool = False
+
     # Limits
-    FREE_DAILY_READINGS: int = 1
+    FREE_DAILY_READINGS: int = 3
     FREE_CHAT_MESSAGES: int = 3
 
     model_config = SettingsConfigDict(env_file=".env")
