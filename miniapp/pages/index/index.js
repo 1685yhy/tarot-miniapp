@@ -1,6 +1,7 @@
 // pages/index/index.js
 const { request, getFriendlyError } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
+const { computeImagePath } = require('../../utils/cards');
 const { createAnim, staggeredEntrance } = require('../../utils/animate');
 
 const FREE_READINGS_LIMIT = 3;
@@ -63,6 +64,10 @@ Page({
     cardAnimData: {},
     // Animation data for spread grid staggered entrance
     spreadAnimData: [],
+
+    // v2.0: Daily card teaching entry state
+    dailyCardFlipped: false,
+    dailyCardRestoring: false,
   },
 
   async onLoad() {
@@ -73,6 +78,7 @@ Page({
         this.setData({ pageLoading: false });
         this._initDailyState();
         this._loadFreeReadings();
+        this._restoreDailyCard();
       } catch (err) {
         this.setData({ pageLoading: false, pageError: getFriendlyError(err) });
       }
@@ -92,6 +98,8 @@ Page({
   async onShow() {
     // Refresh free-reading count every time the page is shown
     this._loadFreeReadings();
+    // Check if daily card has been flipped today
+    this._checkDailyCardFlipped();
   },
 
   /** Load free-reading usage from cached user (or refresh if stale) */
@@ -234,6 +242,7 @@ Page({
       // Emphasis: extra delay so pre-draw state lingers before reveal transition (300ms)
       await new Promise(r => setTimeout(r, 300));
       const card = await request('/cards/daily');
+      card.imagePath = computeImagePath(card, 'https://xingxiang.chat/images/cards_full');
       this.setData({ dailyCard: card, drawingLoading: false });
       wx.hideLoading();
       // 保存到globalData供详情页使用
@@ -300,6 +309,38 @@ Page({
     wx.navigateTo({
       url: `/pages/reading/reading?type=${pending.spread_type}`,
     });
+  },
+
+  /** Navigate to daily-card teaching page */
+  onDailyCardTap() {
+    wx.navigateTo({ url: '/pages/daily-card/daily-card' });
+  },
+
+  /** Check if today's daily card has been flipped on the daily-card page */
+  _checkDailyCardFlipped() {
+    const today = getTodayStr();
+    const flippedDate = wx.getStorageSync('daily_card_flipped_date');
+    this.setData({ dailyCardFlipped: flippedDate === today });
+  },
+
+  /** Restore daily card from globalData or re-fetch if already drawn today */
+  async _restoreDailyCard() {
+    const app = getApp();
+    if (app.globalData.dailyCard) {
+      this.setData({ dailyCard: app.globalData.dailyCard });
+      return;
+    }
+    if (this.data.hasDrawnToday) {
+      this.setData({ dailyCardRestoring: true });
+      try {
+        const card = await request('/cards/daily');
+        card.imagePath = computeImagePath(card, 'https://xingxiang.chat/images/cards_full');
+        app.globalData.dailyCard = card;
+        this.setData({ dailyCard, dailyCardRestoring: false });
+      } catch (_err) {
+        this.setData({ dailyCardRestoring: false });
+      }
+    }
   },
 
   onUnload() {
