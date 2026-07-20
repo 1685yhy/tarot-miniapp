@@ -481,9 +481,9 @@ page {
 
 /* Counter warning — amber pill when nearing the limit */
 .counter-warning {
-  background: rgba(240,160,48,0.15) !important;
-  border-color: rgba(240,160,48,0.25) !important;
-  color: #f0a030 !important;
+  background: rgba(232, 200, 122, 0.15) !important;
+  border-color: rgba(232, 200, 122, 0.25) !important;
+  color: var(--color-warning) !important;
 }
 
 /* ==============================
@@ -625,7 +625,7 @@ page {
 
 .btn-glow-pulse.drawing {
   opacity: 0.8;
-  background: linear-gradient(135deg, var(--color-gold-dark), #C8A050);
+  background: linear-gradient(135deg, var(--color-gold-dark), var(--color-gold-dark));
   animation: pulseGlow 1.6s ease-in-out infinite;
 }
 

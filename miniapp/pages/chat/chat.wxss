@@ -71,14 +71,14 @@ page {
 .skeleton-line {
   height: 20rpx;
   border-radius: var(--radius-pill);
-  background-image: linear-gradient(90deg, var(--color-surface) 25%, #1e1a38 50%, var(--color-surface) 75%);
+  background-image: linear-gradient(90deg, var(--color-surface) 25%, var(--color-surface) 50%, var(--color-surface) 75%);
   margin-bottom: 12rpx;
 }
 
 .skeleton-bubble {
   height: 68rpx;
   border-radius: var(--radius-lg);
-  background-image: linear-gradient(90deg, var(--color-surface) 25%, #1e1a38 50%, var(--color-surface) 75%);
+  background-image: linear-gradient(90deg, var(--color-surface) 25%, var(--color-surface) 50%, var(--color-surface) 75%);
 }
 
 .skeleton-bubble.left  { width: 60%; }
@@ -102,7 +102,7 @@ page {
 
 .ctx-question {
   font-size: var(--font-size-xs);
-  color: #9088B0;
+  color: var(--color-text-tertiary);
   display: block;
   margin-top: 4rpx;
   line-height: 1.4;
@@ -148,7 +148,7 @@ page {
 .empty-heading {
   display: block;
   font-size: var(--font-size-body);
-  color: #E8E0D4;
+  color: var(--color-text-primary);
   line-height: 1.7;
   letter-spacing: 2rpx;
   margin-bottom: 16rpx;
@@ -184,14 +184,14 @@ page {
 
 .error-text {
   font-size: var(--font-size-body);
-  color: #E8E0D4;
+  color: var(--color-text-primary);
   margin-bottom: 12rpx;
   display: block;
 }
 
 .error-hint {
   font-size: var(--font-size-caption);
-  color: #9088B0;
+  color: var(--color-text-tertiary);
   margin-bottom: 40rpx;
   display: block;
   line-height: 1.5;
@@ -386,7 +386,7 @@ page {
 }
 
 .input-placeholder {
-  color: #8A85A8;
+  color: var(--color-text-tertiary);
 }
 
 /* ---- Send button: compact gold pill — "casting the spell" ---- */
@@ -428,7 +428,7 @@ page {
   text-align: center;
   padding: 12rpx 0;
   font-size: var(--font-size-xs);
-  color: #9088B0;
+  color: var(--color-text-tertiary);
   position: fixed;
   bottom: 106rpx;
   left: 0;
