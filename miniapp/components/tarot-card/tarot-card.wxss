@@ -441,7 +441,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 
-  color: #d4c4a0;
+  color: var(--color-gold-light);
   text-shadow:
     0 0 6rpx rgba(212, 168, 83, 0.30),
     0 1rpx 3rpx rgba(0, 0, 0, 0.40);
@@ -473,13 +473,13 @@
 .badge-upright {
   background: rgba(212, 168, 83, 0.12);
   border: 0.5rpx solid rgba(212, 168, 83, 0.25);
-  color: #d4c4a0;
+  color: var(--color-gold-light);
 }
 
 .badge-reversed {
   background: rgba(225, 150, 140, 0.12);
   border: 0.5rpx solid rgba(225, 150, 140, 0.25);
-  color: #dbb5b0;
+  color: var(--color-error);
 }
 
 .position-icon {
