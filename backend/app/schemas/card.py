@@ -34,3 +34,14 @@ class CardDetail(CardBrief):
 class CardListResponse(BaseModel):
     total: int
     cards: list[CardBrief]
+
+
+class CardTeachingResponse(BaseModel):
+    card_id: int
+    symbols: list[dict]
+    story: str
+    keywords_learning: list[str]
+    life_connection: str
+    element_association: str
+
+    model_config = ConfigDict(from_attributes=True)
