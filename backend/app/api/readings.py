@@ -70,6 +70,11 @@ async def _load_card_info(db: AsyncSession, card_id: int) -> TarotCard | None:
     return result.scalar_one_or_none()
 
 
+async def _load_card_name(db: AsyncSession, card_id: int) -> str | None:
+    card = await _load_card_info(db, card_id)
+    return card.name_zh if card else None
+
+
 # ── Action item parsing ──────────────────────────────────────────────
 
 
