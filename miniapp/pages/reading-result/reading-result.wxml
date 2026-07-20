@@ -125,7 +125,17 @@
       </view>
 
       <!-- ==========================================================
-           4. ACTIONS — Warm, minimal, intentional
+           4. ACTION SUGGESTIONS — Actionable checklist cards
+           ========================================================== -->
+      <action-cards
+        wx:if="{{reading.action_items && reading.action_items.length > 0}}"
+        items="{{reading.action_items}}"
+        readingId="{{reading.id}}"
+        bind:allchecked="onAllActionsChecked"
+      />
+
+      <!-- ==========================================================
+           5. ACTIONS — Warm, minimal, intentional
            ========================================================== -->
       <view class="actions-section">
         <button class="btn-ask" bindtap="onAskMore">追问更多</button>

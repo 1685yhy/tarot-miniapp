@@ -1,0 +1,74 @@
+<!-- ================================================================
+     Action Cards — Actionable suggestions after a tarot reading
+     Checklist with celebration animation on all items completed
+     ================================================================ -->
+
+<!-- ===== LOADING STATE: Skeleton ===== -->
+<view class="ac-container" wx:if="{{loading}}">
+  <view class="ac-header">
+    <view class="skeleton skeleton--title ac-skeleton-title"></view>
+  </view>
+  <view class="ac-item ac-item--skeleton" wx:for="{{3}}" wx:for-index="i" wx:key="i">
+    <view class="skeleton ac-check-skeleton"></view>
+    <view class="skeleton skeleton--text ac-text-skeleton"></view>
+  </view>
+  <view class="skeleton skeleton--text-sm ac-progress-skeleton"></view>
+</view>
+
+<!-- ===== MAIN CONTENT ===== -->
+<view class="ac-container" wx:elif="{{items && items.length > 0}}">
+
+  <!-- Header -->
+  <view class="ac-header">
+    <text class="ac-header-icon">✦</text>
+    <text class="ac-header-title">今日行动建议</text>
+  </view>
+
+  <!-- Action Items -->
+  <view class="ac-list">
+    <view
+      class="ac-item {{checkedItems[item.id] ? 'ac-item--checked' : ''}}"
+      wx:for="{{items}}"
+      wx:for-item="item"
+      wx:key="id"
+      data-id="{{item.id}}"
+      bindtap="onToggle"
+    >
+      <!-- Checkbox -->
+      <view class="ac-checkbox {{checkedItems[item.id] ? 'ac-checkbox--checked' : ''}}">
+        <view class="ac-checkbox-inner" wx:if="{{checkedItems[item.id]}}">
+          <text class="ac-checkmark">✓</text>
+        </view>
+      </view>
+
+      <!-- Category icon -->
+      <text class="ac-category-icon">
+        <text wx:if="{{item.category === 'love'}}">♥</text>
+        <text wx:elif="{{item.category === 'career'}}">◆</text>
+        <text wx:else>✦</text>
+      </text>
+
+      <!-- Content text -->
+      <text class="ac-item-text">{{item.content}}</text>
+    </view>
+  </view>
+
+  <!-- Progress Bar -->
+  <view class="ac-progress-wrap">
+    <view class="ac-progress-bar">
+      <view class="ac-progress-fill" style="width: {{checkedCount / items.length * 100}}%"></view>
+    </view>
+    <text class="ac-progress-text">已完成 {{checkedCount}}/{{items.length}}</text>
+  </view>
+
+  <!-- ===== CELEBRATION ===== -->
+  <view class="ac-celebration {{allDone ? 'ac-celebration--visible' : ''}}" wx:if="{{allDone}}">
+    <view class="ac-stars-row">
+      <view class="ac-star ac-star--1">✦</view>
+      <view class="ac-star ac-star--2">✦</view>
+      <view class="ac-star ac-star--3">✦</view>
+    </view>
+    <text class="ac-celebration-text">全部完成 ✦ 星光为你骄傲</text>
+  </view>
+
+</view>

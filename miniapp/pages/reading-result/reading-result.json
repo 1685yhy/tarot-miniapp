@@ -3,6 +3,7 @@
   "navigationBarBackgroundColor": "#1A1A3E",
   "navigationBarTextStyle": "white",
   "usingComponents": {
-    "tarot-card": "../../components/tarot-card/tarot-card"
+    "tarot-card": "../../components/tarot-card/tarot-card",
+    "action-cards": "../../components/action-cards/action-cards"
   }
 }
