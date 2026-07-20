@@ -1,0 +1,743 @@
+/* ============================================================
+   每日一牌 — 卡牌翻转 + 牌意教学 + 收集进度
+   Daily Card — Card Flip, Teaching, Collection Tracker
+   ============================================================ */
+
+/* -----------------------------------------------------------
+   1. COLLECTION PROGRESS HEADER
+   ----------------------------------------------------------- */
+
+.collect-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) 0;
+}
+
+.collect-header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.collect-label {
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  letter-spacing: 1rpx;
+}
+
+.collect-count {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-tertiary);
+}
+
+.collect-count-num {
+  font-size: var(--font-size-subhead);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-gold);
+  text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.15);
+}
+
+.collect-count-total {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+}
+
+.collect-progress-wrap {
+  margin-bottom: var(--spacing-lg);
+}
+
+.collect-progress-bar {
+  width: 100%;
+  height: 8rpx;
+  background: rgba(106, 101, 136, 0.20);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.collect-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-gold-dark) 0%, var(--color-gold) 50%, var(--color-gold-light) 100%);
+  border-radius: var(--radius-pill);
+  transition: width var(--duration-slow) var(--ease-out);
+  box-shadow: 0 0 10rpx rgba(244, 212, 140, 0.15);
+}
+
+.collect-progress-fill--animated {
+  animation: progress-glow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes progress-glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 10rpx rgba(244, 212, 140, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 20rpx rgba(244, 212, 140, 0.35), 0 0 40rpx rgba(244, 212, 140, 0.10);
+  }
+}
+
+/* -----------------------------------------------------------
+   2. CARD FLIP — 3D-like animation using scaleX
+   (WXSS does not support backface-visibility or
+    transform-style: preserve-3d, so we use the
+    "squish & swap" technique: scaleX shrinks to 0,
+    faces swap at midpoint, then scaleX expands back)
+   ----------------------------------------------------------- */
+
+.card-flip-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-sm) 0;
+  position: relative;
+}
+
+.card-flip-scene {
+  position: relative;
+  width: 440rpx;
+  height: 620rpx;
+  margin: 0 auto;
+  border-radius: var(--radius-md);
+  /* Initial subtle border glow for card-back */
+  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.30), 0 0 30rpx rgba(244, 212, 140, 0.04);
+}
+
+/* --- Flip animation (scaleX squish) --- */
+.card-flip-animating {
+  animation: card-flip-squish 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes card-flip-squish {
+  0% {
+    transform: scaleX(1) scaleY(1);
+  }
+  35% {
+    transform: scaleX(0.05) scaleY(0.96);
+  }
+  50% {
+    transform: scaleX(0.05) scaleY(0.93);
+  }
+  65% {
+    transform: scaleX(0.05) scaleY(0.96);
+  }
+  100% {
+    transform: scaleX(1) scaleY(1);
+  }
+}
+
+/* --- Golden glow after flip complete --- */
+.card-glow-revealed {
+  border-color: rgba(244, 212, 140, 0.50) !important;
+  box-shadow:
+    0 4rpx 24rpx rgba(0, 0, 0, 0.30),
+    0 0 40rpx rgba(244, 212, 140, 0.30),
+    0 0 80rpx rgba(244, 212, 140, 0.10) !important;
+  animation: golden-reveal-glow 0.3s ease-out;
+}
+
+@keyframes golden-reveal-glow {
+  0% {
+    box-shadow:
+      0 4rpx 24rpx rgba(0, 0, 0, 0.30),
+      0 0 10rpx rgba(244, 212, 140, 0.05);
+    border-color: rgba(244, 212, 140, 0.12);
+  }
+  100% {
+    box-shadow:
+      0 4rpx 24rpx rgba(0, 0, 0, 0.30),
+      0 0 40rpx rgba(244, 212, 140, 0.30),
+      0 0 80rpx rgba(244, 212, 140, 0.10);
+    border-color: rgba(244, 212, 140, 0.50);
+  }
+}
+
+/* --- Card faces (front & back) --- */
+
+.card-face {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: opacity 0.3s ease-out, z-index 0s 0.3s;
+}
+
+.card-face--hidden {
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.card-face--visible {
+  opacity: 1;
+  z-index: 3;
+}
+
+/* --- Card back (golden decorative pattern) --- */
+
+.card-back {
+  background: linear-gradient(145deg, #2A2A5E 0%, #252550 40%, #2E2E62 100%);
+  border: 2rpx solid var(--color-gold-dark);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-back-ornament {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-back-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2rpx solid rgba(244, 212, 140, 0.20);
+  pointer-events: none;
+}
+
+.card-back-ring--outer {
+  width: 280rpx;
+  height: 280rpx;
+  box-shadow: 0 0 30rpx rgba(244, 212, 140, 0.06);
+}
+
+.card-back-ring--inner {
+  width: 180rpx;
+  height: 180rpx;
+  background: radial-gradient(circle, rgba(244, 212, 140, 0.08) 0%, transparent 70%);
+  border-color: rgba(244, 212, 140, 0.15);
+}
+
+.card-back-star {
+  position: relative;
+  font-size: 64rpx;
+  color: var(--color-gold);
+  opacity: 0.35;
+  text-shadow: 0 0 30rpx rgba(244, 212, 140, 0.20);
+  z-index: 1;
+}
+
+/* --- Card front (actual card image) --- */
+
+.card-front {
+  z-index: 1;
+  opacity: 0;
+  background: var(--color-surface);
+  border: 2rpx solid var(--color-card-border);
+}
+
+.card-img-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--color-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-img-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(244, 212, 140, 0.04) 40%,
+    rgba(244, 212, 140, 0.06) 50%,
+    rgba(244, 212, 140, 0.04) 60%,
+    transparent 100%
+  );
+  animation: shimmer-sweep 1.8s ease-in-out infinite;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.3s ease-out;
+}
+
+.card-img-wrap--loaded::before {
+  opacity: 0;
+  animation: none;
+}
+
+.card-img-wrap--error::before {
+  opacity: 0;
+  animation: none;
+}
+
+.card-img-wrap .card-img-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.4s ease-out;
+}
+
+.card-img-wrap--loaded .card-img-inner {
+  opacity: 1;
+}
+
+.card-img-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.card-img-wrap--error .card-img-fallback {
+  opacity: 1;
+}
+
+.card-img-fallback-icon {
+  width: 64rpx;
+  height: 64rpx;
+  opacity: 0.30;
+}
+
+/* --- Tap hint overlay --- */
+
+.card-tap-hint {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--spacing-md);
+  text-align: center;
+  z-index: 4;
+  transition: opacity 0.3s ease-out;
+}
+
+.card-tap-hint--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.card-tap-hint-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+}
+
+.card-tap-hint-text {
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gold);
+  text-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.50);
+  letter-spacing: 2rpx;
+}
+
+.card-tap-hint-sub {
+  font-size: var(--font-size-xs);
+  color: var(--color-lavender);
+  opacity: 0.70;
+  text-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.50);
+  letter-spacing: 1rpx;
+}
+
+/* --- Card name below the card --- */
+
+.card-name-section {
+  text-align: center;
+  padding: var(--spacing-md) 0 var(--spacing-xs);
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+}
+
+.card-name-section--visible {
+  opacity: 1;
+}
+
+.card-name-zh {
+  display: block;
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-gold);
+  text-shadow: 0 0 30rpx rgba(244, 212, 140, 0.10);
+  letter-spacing: 4rpx;
+  line-height: var(--line-height-tight);
+}
+
+.card-name-en {
+  display: block;
+  font-size: var(--font-size-caption);
+  color: var(--color-lavender);
+  margin-top: var(--spacing-xxs);
+  letter-spacing: 2rpx;
+  opacity: 0.75;
+}
+
+.card-meta-tags {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-xs);
+}
+
+/* -----------------------------------------------------------
+   3. TEACHING AREA — Staggered fade-in sections
+   ----------------------------------------------------------- */
+
+.teaching-area {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.6s ease-out, max-height 0.6s ease-out;
+}
+
+.teaching-area--visible {
+  opacity: 1;
+  max-height: 3000rpx;
+}
+
+/* --- Teaching loading skeleton --- */
+
+.teaching-loading {
+  padding: var(--spacing-lg) 0;
+}
+
+/* --- Teaching error --- */
+
+.teaching-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-lg) 0;
+}
+
+.teaching-error-text {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-tertiary);
+}
+
+/* --- Teaching section cards --- */
+
+.teaching-content {
+  padding: var(--spacing-sm) 0;
+}
+
+.teaching-section {
+  background: var(--color-surface-gradient);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle lavender accent border-left */
+.teaching-section::before {
+  content: '';
+  position: absolute;
+  top: 24rpx;
+  left: 0;
+  width: 4rpx;
+  height: 40rpx;
+  background: var(--color-gold);
+  border-radius: 0 4rpx 4rpx 0;
+  opacity: 0.50;
+}
+
+.teaching-section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+}
+
+.teaching-section-icon {
+  width: 40rpx;
+  height: 40rpx;
+  opacity: 0.70;
+}
+
+.teaching-section-title {
+  font-size: var(--font-size-subhead);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gold);
+  letter-spacing: 1rpx;
+}
+
+.teaching-section-body {
+  padding-left: calc(40rpx + var(--spacing-xs));
+}
+
+/* --- Symbol items --- */
+
+.symbol-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-xs);
+}
+
+.symbol-dot {
+  width: 8rpx;
+  height: 8rpx;
+  margin-top: 10rpx;
+  background: var(--color-gold);
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 8rpx rgba(244, 212, 140, 0.25);
+}
+
+.symbol-content {
+  flex: 1;
+  margin-left: var(--spacing-xs);
+}
+
+.symbol-name {
+  display: block;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-lavender);
+  line-height: var(--line-height-tight);
+}
+
+.symbol-desc {
+  display: block;
+  font-size: var(--font-size-caption);
+  color: var(--color-text-tertiary);
+  line-height: var(--line-height-base);
+  margin-top: 2rpx;
+}
+
+/* --- Keywords tags --- */
+
+.keywords-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  border-top: 1rpx solid rgba(244, 212, 140, 0.08);
+}
+
+.keyword-tag {
+  padding: 6rpx 16rpx;
+  background: rgba(184, 169, 224, 0.10);
+  border: 1rpx solid rgba(184, 169, 224, 0.18);
+  border-radius: var(--radius-pill);
+}
+
+.keyword-tag-text {
+  font-size: var(--font-size-caption);
+  color: var(--color-lavender-light);
+  letter-spacing: 1rpx;
+}
+
+/* --- Story text --- */
+
+.story-text {
+  display: block;
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-loose);
+}
+
+/* --- Life connection --- */
+
+.life-connection-text {
+  display: block;
+  font-size: var(--font-size-body);
+  color: var(--color-gold);
+  line-height: var(--line-height-loose);
+  font-weight: var(--font-weight-medium);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: rgba(244, 212, 140, 0.06);
+  border-left: 3rpx solid rgba(244, 212, 140, 0.25);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.element-badge-wrap {
+  margin-top: var(--spacing-sm);
+}
+
+/* --- Staggered fade-up overrides --- */
+
+.anim-fade-up {
+  opacity: 0;
+  animation: teaching-fade-up 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes teaching-fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(24rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.anim-stagger-1 { animation-delay: 0.10s; }
+.anim-stagger-2 { animation-delay: 0.25s; }
+.anim-stagger-3 { animation-delay: 0.40s; }
+
+/* -----------------------------------------------------------
+   4. DIARY SECTION
+   ----------------------------------------------------------- */
+
+.diary-section {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.5s ease-out 0.3s, max-height 0.5s ease-out 0.3s;
+  padding-bottom: var(--spacing-xl);
+}
+
+.diary-section--visible {
+  opacity: 1;
+  max-height: 800rpx;
+}
+
+.diary-entry-area {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.diary-entry-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
+}
+
+.diary-entry-icon {
+  width: 36rpx;
+  height: 36rpx;
+  opacity: 0.60;
+}
+
+.diary-entry-title {
+  font-size: var(--font-size-subhead);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  letter-spacing: 1rpx;
+}
+
+.diary-input {
+  width: 100%;
+  height: 180rpx;
+  background: var(--color-surface);
+  border: 1rpx solid rgba(244, 212, 140, 0.12);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  font-size: var(--font-size-body);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-loose);
+  box-sizing: border-box;
+  transition: border-color var(--duration-fast) var(--ease-soft);
+}
+
+.diary-input::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.diary-input:focus {
+  border-color: rgba(244, 212, 140, 0.35);
+}
+
+.diary-char-count {
+  align-self: flex-end;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  padding-right: var(--spacing-xs);
+}
+
+.diary-saved-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg) 0;
+}
+
+.diary-saved-text {
+  font-size: var(--font-size-body);
+  color: var(--color-success);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 1rpx;
+}
+
+/* -----------------------------------------------------------
+   5. ERROR STATE
+   ----------------------------------------------------------- */
+
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 160rpx var(--spacing-lg) 80rpx;
+  text-align: center;
+}
+
+.error-icon-area {
+  width: 120rpx;
+  height: 120rpx;
+  margin-bottom: var(--spacing-lg);
+  opacity: 0.35;
+}
+
+.error-icon-img {
+  width: 100%;
+  height: 100%;
+}
+
+.error-title {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+  display: block;
+  letter-spacing: 2rpx;
+}
+
+.error-desc {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-tertiary);
+  margin-bottom: var(--spacing-lg);
+  display: block;
+  line-height: var(--line-height-base);
+}
+
+/* -----------------------------------------------------------
+   6. SKELETON LOADING (page-level)
+   ----------------------------------------------------------- */
+
+.skeleton-card-area {
+  display: flex;
+  justify-content: center;
+}
+
+.skeleton-teaching-area {
+  padding: var(--spacing-sm) 0;
+}
+
+/* -----------------------------------------------------------
+   7. SAFE AREA
+   ----------------------------------------------------------- */
+
+.safe-bottom {
+  padding-bottom: var(--safe-area-bottom);
+  height: var(--spacing-xl);
+}

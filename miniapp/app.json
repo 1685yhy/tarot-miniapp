@@ -9,6 +9,7 @@
     "pages/membership/membership",
     "pages/profile/profile",
     "pages/diary/diary",
+    "pages/daily-card/daily-card",
     "pages/annual-report/annual-report"
   ],
   "window": {
