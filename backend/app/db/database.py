@@ -4,6 +4,9 @@ from sqlalchemy import event
 
 from app.config import settings
 
+# Import all models so they are registered with SQLAlchemy Base metadata
+import app.models  # noqa: F401 — ensures create_all creates all tables
+
 # SQLite doesn't support pool_size; MySQL/PostgreSQL do
 _engine_kwargs = {"echo": False}
 if "sqlite" not in settings.DATABASE_URL:

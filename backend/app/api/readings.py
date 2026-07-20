@@ -7,6 +7,8 @@ Tarot reading API endpoints.
 - DELETE /readings/history                – delete the current user's reading history
 """
 
+import re
+import uuid as uuid_lib
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -20,6 +22,7 @@ from app.models.card import TarotCard
 from app.models.reading import ChatMessage, DrawnCard, Reading
 from app.models.user import User
 from app.schemas.reading import (
+    ActionItem,
     ChatMessageResponse,
     CreateReadingRequest,
     DrawnCardResponse,
@@ -65,6 +68,61 @@ async def _reset_daily_count_if_new_day(user: User) -> None:
 async def _load_card_info(db: AsyncSession, card_id: int) -> TarotCard | None:
     result = await db.execute(select(TarotCard).where(TarotCard.id == card_id))
     return result.scalar_one_or_none()
+
+
+# ── Action item parsing ──────────────────────────────────────────────
+
+
+_LOVE_KEYWORDS = [
+    "爱", "恋爱", "伴侣", "约会", "感情", "浪漫", "爱情",
+    "关系", "结婚", "表白", "心动", "亲密", "对象",
+    "牵手", "拥抱", "相处", "沟通", "信任", "婚姻",
+    "恋人", "告白", "交往",
+]
+
+_CAREER_KEYWORDS = [
+    "工作", "事业", "职业", "晋升", "同事", "团队", "项目",
+    "创业", "投资", "简历", "面试", "学习", "成长", "技能",
+    "职场", "办公", "会议", "客户", "业务", "计划", "目标",
+    "专业", "进修", "课程", "读书", "绩效", "求职", "跳槽",
+    "副业", "创业",
+]
+
+
+def _categorize_action(content: str) -> str:
+    """Determine action category (love / career / general) by keyword matching."""
+    for kw in _LOVE_KEYWORDS:
+        if kw in content:
+            return "love"
+    for kw in _CAREER_KEYWORDS:
+        if kw in content:
+            return "career"
+    return "general"
+
+
+def parse_action_items(text: str | None) -> list[dict]:
+    """Extract [ACTION]...[/ACTION] tags from AI response into structured items.
+
+    Returns a list of dicts with keys: id, content, category.
+    Returns an empty list if no action items are found.
+    """
+    if not text:
+        return []
+
+    pattern = r'\[ACTION\](.*?)\[/ACTION\]'
+    matches = re.findall(pattern, text, re.DOTALL)
+
+    items: list[dict] = []
+    for match in matches:
+        content = match.strip()
+        if not content:
+            continue
+        items.append({
+            "id": str(uuid_lib.uuid4()),
+            "content": content,
+            "category": _categorize_action(content),
+        })
+    return items
 
 
 async def _load_drawn_cards_response(
@@ -180,8 +238,10 @@ async def create_reading(
     interpretation = await generate_reading(
         spread_type, req.question, req.theme, cards_info
     )
+    action_items: list[dict] = []
     if interpretation is not None:
         reading.interpretation = interpretation
+        action_items = parse_action_items(interpretation)
 
     # ── Deduct paid balance only after successful AI generation ──
     if uses_paid_credit:
@@ -227,6 +287,7 @@ async def create_reading(
         is_paid=reading.is_paid,
         created_at=reading.created_at,
         drawn_cards=[DrawnCardResponse(**d) for d in drawn_resp],
+        action_items=[ActionItem(**a) for a in action_items],
     )
 
 
@@ -302,6 +363,7 @@ async def get_reading(
         raise HTTPException(status_code=403, detail="无权查看他人的解读")
 
     drawn_resp = await _load_drawn_cards_response(db, reading.drawn_cards)
+    action_items = parse_action_items(reading.interpretation)
 
     return ReadingResponse(
         id=reading.id,
@@ -312,6 +374,7 @@ async def get_reading(
         is_paid=reading.is_paid,
         created_at=reading.created_at,
         drawn_cards=[DrawnCardResponse(**d) for d in drawn_resp],
+        action_items=[ActionItem(**a) for a in action_items],
         chat_messages=[ChatMessageResponse.model_validate(m) for m in reading.chat_messages],
     )
 
@@ -366,8 +429,10 @@ async def reinterpret_reading(
     interpretation = await generate_reading(
         reading.spread_type, reading.question, reading.theme, cards_info
     )
+    action_items: list[dict] = []
     if interpretation is not None:
         reading.interpretation = interpretation
+        action_items = parse_action_items(interpretation)
 
     await db.flush()
     await db.refresh(reading, ["drawn_cards"])
@@ -382,6 +447,7 @@ async def reinterpret_reading(
         is_paid=reading.is_paid,
         created_at=reading.created_at,
         drawn_cards=[DrawnCardResponse(**d) for d in drawn_resp],
+        action_items=[ActionItem(**a) for a in action_items],
     )
 
 

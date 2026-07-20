@@ -4,6 +4,7 @@
   "navigationBarTextStyle": "white",
   "usingComponents": {
     "tarot-card": "../../components/tarot-card/tarot-card",
-    "action-cards": "../../components/action-cards/action-cards"
+    "action-cards": "../../components/action-cards/action-cards",
+    "share-poster": "/components/share-poster/share-poster"
   }
 }

@@ -1,0 +1,50 @@
+<!-- ================================================================
+     Share Poster — Canvas-based card + quote sharing image
+     Full-screen modal, dark backdrop, preview image, save/share buttons
+     ================================================================ -->
+
+<view class="sp-overlay {{visible ? 'sp-overlay--visible' : ''}}" wx:if="{{visible}}">
+
+  <!-- Close button (top-right corner) -->
+  <view class="sp-close" bindtap="onClose">
+    <text class="sp-close-icon">✕</text>
+  </view>
+
+  <!-- Canvas (hidden from view, used for drawing) -->
+  <canvas
+    type="2d"
+    id="shareCanvas"
+    class="sp-canvas"
+    style="width: {{canvasW}}px; height: {{canvasH}}px;"
+  ></canvas>
+
+  <!-- Loading indicator while drawing -->
+  <view class="sp-loading" wx:if="{{!previewPath && !drawError}}">
+    <view class="sp-loading-spinner"></view>
+    <text class="sp-loading-text">正在生成海报...</text>
+  </view>
+
+  <!-- Error state -->
+  <view class="sp-error" wx:elif="{{drawError}}">
+    <text class="sp-error-text">生成失败，请重试</text>
+    <button class="sp-btn-retry" bindtap="onRetry">重新生成</button>
+  </view>
+
+  <!-- Preview image (once drawn) -->
+  <view class="sp-preview-wrap" wx:elif="{{previewPath}}">
+    <image class="sp-preview" src="{{previewPath}}" mode="widthFix"></image>
+  </view>
+
+  <!-- Bottom action buttons -->
+  <view class="sp-actions" wx:if="{{previewPath}}">
+    <button class="sp-btn sp-btn-primary" bindtap="onSave">
+      <text class="sp-btn-icon">↓</text>
+      <text>保存到相册</text>
+    </button>
+    <button class="sp-btn sp-btn-secondary" bindtap="onShare">
+      <text class="sp-btn-icon">↗</text>
+      <text>分享给朋友</text>
+    </button>
+  </view>
+
+</view>

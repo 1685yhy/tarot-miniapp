@@ -1,0 +1,202 @@
+/* ================================================================
+   Share Poster — Full-screen modal overlay
+   ================================================================ */
+
+/* ---- Overlay ---- */
+.sp-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+  pointer-events: none;
+}
+
+.sp-overlay--visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ---- Close button ---- */
+.sp-close {
+  position: absolute;
+  top: 48rpx;
+  right: 32rpx;
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: background 0.2s;
+}
+
+.sp-close:active {
+  background: rgba(255, 255, 255, 0.20);
+}
+
+.sp-close-icon {
+  font-size: 28rpx;
+  color: rgba(240, 237, 232, 0.70);
+  line-height: 1;
+}
+
+/* ---- Canvas (hidden — used only for drawing buffer) ---- */
+.sp-canvas {
+  position: absolute;
+  left: -99999rpx;
+  top: -99999rpx;
+  pointer-events: none;
+}
+
+/* ---- Loading ---- */
+.sp-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.sp-loading-spinner {
+  width: 64rpx;
+  height: 64rpx;
+  border: 3rpx solid rgba(244, 212, 140, 0.12);
+  border-top-color: #F4D48C;
+  border-radius: 50%;
+  animation: sp-spin 0.8s linear infinite;
+}
+
+@keyframes sp-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.sp-loading-text {
+  font-size: 26rpx;
+  color: rgba(240, 237, 232, 0.60);
+  letter-spacing: 2rpx;
+}
+
+/* ---- Error state ---- */
+.sp-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.sp-error-text {
+  font-size: 28rpx;
+  color: rgba(232, 122, 138, 0.80);
+  letter-spacing: 2rpx;
+}
+
+.sp-btn-retry {
+  background: rgba(244, 212, 140, 0.12);
+  color: #F4D48C;
+  border: 1rpx solid rgba(244, 212, 140, 0.25);
+  border-radius: 48rpx;
+  padding: 18rpx 48rpx;
+  font-size: 26rpx;
+  letter-spacing: 2rpx;
+  font-weight: 500;
+}
+
+.sp-btn-retry::after {
+  border: none;
+}
+
+.sp-btn-retry:active {
+  background: rgba(244, 212, 140, 0.22);
+}
+
+/* ---- Preview image ---- */
+.sp-preview-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 80%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.sp-preview {
+  max-width: 80%;
+  max-height: 80vh;
+  border-radius: 16rpx;
+  box-shadow:
+    0 8rpx 40rpx rgba(0, 0, 0, 0.40),
+    0 0 60rpx rgba(244, 212, 140, 0.08);
+}
+
+/* ---- Bottom action buttons ---- */
+.sp-actions {
+  position: absolute;
+  bottom: calc(64rpx + env(safe-area-inset-bottom, 0px));
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 24rpx;
+  padding: 0 40rpx;
+}
+
+.sp-btn {
+  flex: 1;
+  max-width: 280rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  border-radius: 50rpx;
+  padding: 24rpx 0;
+  font-size: 28rpx;
+  font-weight: 500;
+  letter-spacing: 2rpx;
+  transition: opacity 0.2s, background 0.2s;
+}
+
+.sp-btn::after {
+  border: none;
+}
+
+/* Primary: gold */
+.sp-btn-primary {
+  background: linear-gradient(135deg, #F4D48C 0%, #D4B06A 100%);
+  color: #1A1A3E;
+  box-shadow: 0 4rpx 20rpx rgba(244, 212, 140, 0.25);
+}
+
+.sp-btn-primary:active {
+  opacity: 0.85;
+  transform: scale(0.97);
+}
+
+/* Secondary: lavender outline */
+.sp-btn-secondary {
+  background: transparent;
+  color: #B8A9E0;
+  border: 1.5rpx solid rgba(184, 169, 224, 0.35);
+}
+
+.sp-btn-secondary:active {
+  background: rgba(184, 169, 224, 0.08);
+  border-color: rgba(184, 169, 224, 0.55);
+  transform: scale(0.97);
+}
+
+.sp-btn-icon {
+  font-size: 32rpx;
+  line-height: 1;
+}

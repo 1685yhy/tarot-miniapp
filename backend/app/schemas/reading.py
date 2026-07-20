@@ -23,6 +23,14 @@ class CreateReadingRequest(BaseModel):
 # ── Response ─────────────────────────────────────────────────────────
 
 
+class ActionItem(BaseModel):
+    """A single actionable suggestion extracted from the AI reading."""
+
+    id: str
+    content: str
+    category: str  # love / career / general
+
+
 class DrawnCardResponse(BaseModel):
     id: int
     card_id: int
@@ -45,6 +53,7 @@ class ReadingResponse(BaseModel):
     is_paid: bool
     created_at: datetime
     drawn_cards: list[DrawnCardResponse]
+    action_items: list[ActionItem] = []
     chat_messages: list[ChatMessageResponse] = []
 
     model_config = ConfigDict(from_attributes=True)
