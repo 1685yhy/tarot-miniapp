@@ -4,19 +4,6 @@
    ============================================================ */
 
 page {
-  --radius-sm: 12rpx;
-  --radius-md: 18rpx;
-  --radius-lg: 24rpx;
-  --radius-round: 999rpx;
-  --space-xs: 6rpx;
-  --space-sm: 12rpx;
-  --space-md: 20rpx;
-  --space-lg: 28rpx;
-  --space-xl: 36rpx;
-  --space-2xl: 48rpx;
-  --space-3xl: 64rpx;
-  --space-4xl: 80rpx;
-  --space-5xl: 100rpx;
   font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
 
@@ -24,8 +11,8 @@ page {
    Page wrapper
    ================================================================ */
 .page {
-  padding: var(--space-xl);
-  padding-bottom: calc(var(--space-xl) + var(--safe-area-bottom, 0));
+  padding: var(--spacing-lg);
+  padding-bottom: calc(var(--spacing-lg) + var(--safe-area-bottom, 0));
   min-height: 100vh;
 }
 
@@ -97,13 +84,13 @@ page {
    ================================================================ */
 .error-state {
   text-align: center;
-  padding: var(--space-5xl) var(--space-xl);
+  padding: var(--spacing-4xl) var(--spacing-lg);
 }
 
 .error-icon {
   font-size: calc(var(--font-size-display) + 24rpx);
   display: block;
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--spacing-sm);
   opacity: 0.40;
 }
 
@@ -111,44 +98,17 @@ page {
   font-size: var(--font-size-body);
   color: var(--color-text-secondary);
   display: block;
-  margin-bottom: var(--space-xs);
+  margin-bottom: var(--spacing-xxs);
 }
 
 .error-hint {
   font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
   display: block;
-  margin-bottom: var(--space-2xl);
+  margin-bottom: var(--spacing-xl);
 }
 
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-sm);
-  padding: 20rpx 48rpx;
-  border: none;
-  border-radius: var(--radius-pill);
-  font-size: var(--font-size-body);
-  font-weight: 600;
-  color: var(--color-text-inverse);
-  background: linear-gradient(135deg, var(--color-gold-light), var(--color-gold));
-  box-shadow: 0 4rpx 24rpx rgba(244, 212, 140, 0.35);
-  transition: all 0.15s ease-out;
-}
-
-.btn-primary::after {
-  border: none;
-}
-
-.btn-primary:active {
-  transform: scale(0.96);
-}
-
-.btn-small {
-  padding: 16rpx 36rpx;
-  font-size: var(--font-size-caption);
-}
+/* Buttons via common.wxss: .btn-primary, .btn--sm */
 
 /* ================================================================
    Benefits — golden checkmark list
@@ -156,8 +116,8 @@ page {
 .benefits {
   position: relative;
   border-radius: var(--radius-lg);
-  padding: var(--space-xl);
-  margin-bottom: var(--space-2xl);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
   background: var(--color-card);
   border: 1rpx solid var(--color-gold-glow);
   box-shadow: 0 2rpx 20rpx rgba(212, 175, 55, 0.05);
@@ -167,19 +127,19 @@ page {
 .benefits::before {
   content: '';
   position: absolute;
-  top: var(--space-lg);
+  top: var(--spacing-md);
   left: 0;
   width: 4rpx;
-  height: calc(100% - var(--space-2xl));
+  height: calc(100% - var(--spacing-xl));
   background: var(--color-gold);
   border-radius: 0 2rpx 2rpx 0;
   box-shadow: 0 0 10rpx rgba(244, 212, 140, 0.35);
 }
 
 .benefit-item {
-  padding: var(--space-md) 0;
-  padding-left: var(--space-2xl);
-  padding-right: var(--space-md);
+  padding: var(--spacing-sm) 0;
+  padding-left: var(--spacing-xl);
+  padding-right: var(--spacing-sm);
   border-bottom: 1rpx solid rgba(244, 212, 140, 0.08);
   position: relative;
 }
@@ -191,7 +151,7 @@ page {
 .benefit-item::before {
   content: '✓';
   position: absolute;
-  left: var(--space-md);
+  left: var(--spacing-sm);
   top: 50%;
   transform: translateY(-50%);
   color: var(--color-gold);
@@ -212,13 +172,13 @@ page {
 .products {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xl);
+  gap: var(--spacing-lg);
 }
 
 .product-card {
   position: relative;
   border-radius: var(--radius-lg);
-  padding: var(--space-2xl) var(--space-2xl) var(--space-3xl);
+  padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-2xl);
   text-align: center;
   background: var(--color-card);
   border: 1rpx solid rgba(255, 255, 255, 0.04);
@@ -275,7 +235,7 @@ page {
 .recommended-badge {
   position: absolute;
   top: -14rpx;
-  right: var(--space-xl);
+  right: var(--spacing-lg);
   background: linear-gradient(135deg, var(--color-gold-light), var(--color-gold));
   color: var(--color-text-inverse);
   font-size: var(--font-size-caption);
@@ -294,8 +254,8 @@ page {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-xs);
-  margin: var(--space-md) 0 var(--space-xs);
+  gap: var(--spacing-xxs);
+  margin: var(--spacing-sm) 0 var(--spacing-xxs);
 }
 
 .price-symbol {
@@ -318,7 +278,7 @@ page {
   font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
   text-decoration: line-through;
-  margin-left: var(--space-sm);
+  margin-left: var(--spacing-xs);
   vertical-align: baseline;
   opacity: 0.6;
 }
@@ -329,7 +289,7 @@ page {
 .btn-purchase {
   display: block;
   width: 70%;
-  margin: var(--space-lg) auto 0;
+  margin: var(--spacing-md) auto 0;
   padding: 22rpx 0;
   border: none;
   border-radius: var(--radius-pill);
@@ -356,7 +316,7 @@ page {
    ================================================================ */
 .guarantee {
   text-align: center;
-  padding: var(--space-3xl) 0;
+  padding: var(--spacing-2xl) 0;
   position: relative;
 }
 
@@ -371,7 +331,7 @@ page {
     var(--color-gold-glow) 50%,
     transparent 100%
   );
-  margin: 0 auto var(--space-2xl);
+  margin: 0 auto var(--spacing-xl);
 }
 
 .guarantee-text {
@@ -384,15 +344,15 @@ page {
    Skeleton — Shapes only (shimmer from common.wxss)
    ================================================================ */
 .skeleton-mem-wrap {
-  padding: var(--space-2xl) 0;
+  padding: var(--spacing-xl) 0;
 }
 
 .skeleton-hero-area {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-md);
-  margin-bottom: var(--space-3xl);
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-2xl);
 }
 
 .skeleton-icon {
@@ -415,8 +375,8 @@ page {
   border-radius: var(--radius-lg);
 }
 
-.skeleton-benefits { height: 280rpx; margin-bottom: var(--space-2xl); }
-.skeleton-product { height: 380rpx; margin-bottom: var(--space-lg); }
+.skeleton-benefits { height: 280rpx; margin-bottom: var(--spacing-xl); }
+.skeleton-product { height: 380rpx; margin-bottom: var(--spacing-md); }
 
 /* ================================================================
    Staggered entrance

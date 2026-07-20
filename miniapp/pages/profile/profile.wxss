@@ -4,30 +4,6 @@
    #1A1A3E bg · #F4D48C gold · #B8A9E0 lavender · #F0EDE8 text
    ============================================================ */
 
-page {
-  --space-massive: var(--spacing-5xl);
-  --space-xxxl: var(--spacing-3xl);
-  --space-xxl: var(--spacing-2xl);
-  --space-xl: var(--spacing-xl);
-  --space-lg: var(--spacing-lg);
-  --space-md: var(--spacing-md);
-  --space-sm: var(--spacing-sm);
-  --space-xs: var(--spacing-xs);
-  --fs-h3: var(--font-size-title);
-  --fs-h4: var(--font-size-subhead);
-  --fs-body: var(--font-size-body);
-  --fs-body-small: var(--font-size-caption);
-  --fs-caption: var(--font-size-xs);
-  --lh-loose: var(--line-height-loose);
-  --lh-normal: var(--line-height-base);
-  --fw-semibold: var(--font-weight-semibold);
-  --fw-bold: var(--font-weight-bold);
-  --fw-medium: var(--font-weight-medium);
-  --duration-normal: var(--duration-base);
-  --duration-fast: var(--duration-fast);
-  --ease-out: var(--ease-out);
-  --ease-in-out: var(--ease-in-out);
-}
 
 /* ============================================================
    Container
@@ -256,7 +232,7 @@ page {
   background: var(--color-surface-gradient);
   border: 1.5rpx solid rgba(244, 212, 140, 0.12);
   border-radius: var(--radius-lg);
-  padding: var(--space-lg) var(--spacing-xl);
+  padding: var(--spacing-lg) var(--spacing-xl);
   margin-bottom: var(--spacing-xl);
   box-shadow: var(--shadow-card);
 }
@@ -410,7 +386,7 @@ page {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-md) var(--spacing-xl);
+  padding: var(--spacing-md) var(--spacing-xl);
   border-bottom: 1rpx solid rgba(244, 212, 140, 0.08);
 }
 
@@ -465,7 +441,7 @@ page {
 .history-item {
   display: flex;
   align-items: center;
-  padding: var(--space-lg) var(--spacing-xl);
+  padding: var(--spacing-lg) var(--spacing-xl);
   border-bottom: 1rpx solid rgba(244, 212, 140, 0.05);
   transition: background var(--duration-fast) var(--ease-out);
   gap: var(--spacing-md);
@@ -565,7 +541,7 @@ page {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-md);
+  padding: var(--spacing-md);
   gap: var(--spacing-sm);
 }
 
@@ -593,7 +569,7 @@ page {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-md);
+  padding: var(--spacing-md);
   gap: var(--spacing-sm);
 }
 

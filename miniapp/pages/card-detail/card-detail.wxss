@@ -11,8 +11,8 @@
    Card detail uses deeper bg (#0B0B16) and cooler gold (#D4AF37)
    ================================================================ */
 page {
-  --color-bg: #0B0B16;
-  --color-gold: #D4AF37;
+  --cd-bg: #0B0B16;
+  --cd-gold: #D4AF37;
 }
 
 /* ================================================================
@@ -22,9 +22,9 @@ page {
   min-height: 100vh;
   background: linear-gradient(
     180deg,
-    var(--color-bg) 0%,
+    var(--cd-bg) 0%,
     #0F0E1A 50%,
-    var(--color-bg) 100%
+    var(--cd-bg) 100%
   );
   padding: var(--spacing-lg) var(--spacing-md) var(--spacing-2xl);
   box-sizing: border-box;
@@ -210,8 +210,8 @@ page {
 }
 
 .tab-active {
-  background: linear-gradient(135deg, var(--color-gold) 0%, #E8C04A 100%);
-  border-color: var(--color-gold);
+  background: linear-gradient(135deg, var(--cd-gold) 0%, #E8C04A 100%);
+  border-color: var(--cd-gold);
   color: var(--color-text-inverse);
   font-weight: 600;
   box-shadow: 0 4rpx 20rpx rgba(212, 175, 55, 0.25);
