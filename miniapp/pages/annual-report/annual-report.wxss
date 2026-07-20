@@ -319,30 +319,7 @@ page {
   letter-spacing: 1rpx;
 }
 
-/* ============================================================
-   Primary Button (share / actions)
-   ============================================================ */
-.btn-primary {
-  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
-  color: var(--color-text-inverse);
-  border: none;
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-semibold);
-  border-radius: var(--radius-pill);
-  padding: 24rpx 48rpx;
-  box-shadow: var(--shadow-gold-button);
-  transition: all var(--duration-base) var(--ease-soft);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-}
-
-.btn-primary:active {
-  transform: scale(0.97);
-  opacity: 0.90;
-  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.20);
-}
+/* Buttons via common.wxss: .btn-primary, .btn--sm, .btn--full */
 
 /* ============================================================
    Error State

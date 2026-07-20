@@ -72,7 +72,7 @@
   <view class="error-state">
     <text class="error-text">连接中断</text>
     <text class="error-hint">{{pageError}}</text>
-    <button class="btn btn-outline" bindtap="onRetry">重新连接</button>
+    <button class="btn-ghost" bindtap="onRetry">重新连接</button>
   </view>
 </view>
 
