@@ -47,11 +47,11 @@
   <view wx:else>
     <!-- ========== Spread selection ========== -->
     <view wx:if="{{ritualStage === null && !showQuestionInput}}">
-      <text class="heading-2 section-title-center anim-fade-in-up-1">选择牌阵</text>
-      <text class="text-secondary text-center mb-xxl anim-fade-in-up-1">不同问题，用不同牌阵</text>
+      <text class="heading-2 section-title-center anim-fade-up anim-stagger-1">选择牌阵</text>
+      <text class="text-secondary text-center mb-xxl anim-fade-up anim-stagger-1">不同问题，用不同牌阵</text>
 
       <!-- 免费次数提示 -->
-      <view class="reading-free-banner anim-fade-in-up-1">
+      <view class="reading-free-banner anim-fade-up anim-stagger-1">
         <text class="reading-free-text" wx:if="{{!isMember && freeReadingsUsed < freeReadingsTotal}}">
           ✦ 今日剩余解读: {{freeReadingsTotal - freeReadingsUsed}} 次
         </text>
@@ -60,7 +60,7 @@
         </text>
       </view>
 
-      <view class="spread-grid anim-fade-in-up-2">
+      <view class="spread-grid anim-fade-up anim-stagger-2">
         <view
           class="spread-card {{item.premium ? 'premium' : ''}}"
           wx:for="{{spreads}}"
@@ -93,7 +93,7 @@
     </view>
 
     <!-- ========== RITUAL STAGE 0: 冥想呼吸 ========== -->
-    <view wx:elif="{{ritualStage === 0}}" class="ritual-stage anim-fade-in-up-1" bindtap="onRitualTap">
+    <view wx:elif="{{ritualStage === 0}}" class="ritual-stage anim-fade-up anim-stagger-1" bindtap="onRitualTap">
       <view class="breathing-container">
         <view class="breathing-ring breathing-ring-outer"></view>
         <view class="breathing-ring breathing-ring-inner"></view>
@@ -104,7 +104,7 @@
     </view>
 
     <!-- ========== RITUAL STAGE 1: 洗牌 ========== -->
-    <view wx:elif="{{ritualStage === 1}}" class="ritual-stage anim-fade-in-up-1" bindtap="onRitualTap">
+    <view wx:elif="{{ritualStage === 1}}" class="ritual-stage anim-fade-up anim-stagger-1" bindtap="onRitualTap">
       <text class="ritual-heading">牌灵正在聆听...</text>
       <view class="shuffle-area">
         <view class="shuffle-card shuffle-card-1"></view>
@@ -123,13 +123,13 @@
         <text class="ritual-toggle-icon">✦</text>
       </view>
 
-      <view class="selected-info anim-fade-in-up-1">
+      <view class="selected-info anim-fade-up anim-stagger-1">
         <text class="selected-spread-icon">{{selectedSpread.icon}}</text>
         <text class="heading-2 mt-sm">{{selectedSpread.name}}</text>
         <text class="text-dim mt-xs">{{selectedSpread.desc}}</text>
       </view>
 
-      <view class="question-box anim-fade-in-up-2">
+      <view class="question-box anim-fade-up anim-stagger-2">
         <view class="question-box-accent"></view>
         <view class="question-prompt">
           <view class="prompt-stars">✦ ✦ ✦</view>
@@ -150,7 +150,7 @@
       </view>
 
       <!-- 主题选择：仅通用牌阵显示；专属牌阵已隐含主题，不展示选择器 -->
-      <view class="mb-xxxl anim-fade-in-up-3" wx:if="{{!spreadDefaultTheme}}">
+      <view class="mb-xxxl anim-fade-up anim-stagger-3" wx:if="{{!spreadDefaultTheme}}">
         <text class="theme-section-label">解读侧重</text>
         <view class="theme-options">
           <view wx:for="{{displayThemes}}" wx:key="key"
@@ -169,7 +169,7 @@
       </view>
 
       <!-- Draw button -->
-      <button class="btn-glow-pulse {{isDrawing ? 'drawing' : ''}} anim-fade-in-up-4" bindtap="onStartReading" disabled="{{isDrawing}}">
+      <button class="btn-primary btn--full {{isDrawing ? 'btn-drawing' : ''}}" bindtap="onStartReading" disabled="{{isDrawing}}">
         <text wx:if="{{!isDrawing}}">翻开牌阵</text>
         <text wx:else>牌灵正在回应...</text>
       </button>

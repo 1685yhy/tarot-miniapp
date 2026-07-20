@@ -598,22 +598,7 @@
   line-height: var(--line-height-base, 1.6);
 }
 
-.btn-outline {
-  background: transparent;
-  color: var(--color-gold, #F4D48C);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.30);
-  border-radius: var(--radius-pill, 999rpx);
-  padding: 20rpx 48rpx;
-  font-size: var(--font-size-body, 30rpx);
-  font-weight: var(--font-weight-medium, 500);
-  transition: all var(--duration-fast) var(--ease-out);
-}
-
-.btn-outline:active {
-  background: rgba(244, 212, 140, 0.08);
-  border-color: rgba(244, 212, 140, 0.50);
-  transform: scale(0.97);
-}
+/* Buttons via common.wxss: .btn-ghost, .btn-primary */
 
 /* -----------------------------------------------------------
    8. DECORATIVE: Daily card icon (✦) special treatment

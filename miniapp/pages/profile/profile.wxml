@@ -24,7 +24,7 @@
   <!-- ===== 主内容 ===== -->
   <view wx:else>
     <!-- ============ User info + membership ============ -->
-    <view class="user-card anim-fade-in-up-1">
+    <view class="user-card anim-fade-up anim-stagger-1">
       <!-- Avatar: 金色星星剪影 -->
       <view class="avatar-circle">
         <image class="avatar-emoji" src="/images/icons/theme_general_64.png" mode="aspectFit" />
@@ -37,13 +37,13 @@
           有效期至 {{memberStatus.expiresAtFormatted}}
         </text>
       </view>
-      <button class="upgrade-btn" wx:if="{{!memberStatus.is_member}}" bindtap="onGoMembership">
+      <button class="btn-primary btn--sm upgrade-btn" wx:if="{{!memberStatus.is_member}}" bindtap="onGoMembership">
         ✦ 开通会员 · 无限解读
       </button>
     </view>
 
     <!-- ============ Stats ============ -->
-    <view class="stats-row anim-fade-in-up-2">
+    <view class="stats-row anim-fade-up anim-stagger-2">
       <view class="stat-item">
         <text class="stat-num anim-pulse-once">{{memberStatus.total_readings || historyTotal || 0}}</text>
         <text class="stat-label">解读次数</text>
@@ -60,7 +60,7 @@
     </view>
 
     <!-- ============ Menu items ============ -->
-    <view class="menu-section anim-fade-in-up-3">
+    <view class="menu-section anim-fade-up anim-stagger-3">
       <view class="menu-item anim-slide-up anim-stagger-1" bindtap="onGoDiary">
         <view class="menu-icon-wrap">
           <image src="/images/icons/diary_64.png" mode="aspectFit" class="menu-icon-img"></image>
@@ -104,7 +104,7 @@
     </view>
 
     <!-- ============ Saved Readings ============ -->
-    <view class="history-section anim-fade-in-up-4">
+    <view class="history-section anim-fade-up anim-stagger-4">
       <view class="history-header">
         <view class="history-header-left">
           <image src="/images/icons/history_64.png" mode="aspectFit" class="history-header-icon-img"></image>
@@ -150,7 +150,7 @@
     </view>
 
     <!-- ============ History ============ -->
-    <view class="history-section anim-fade-in-up-5">
+    <view class="history-section anim-fade-up anim-stagger-5">
       <view class="history-header">
         <view class="history-header-left">
           <image src="/images/icons/history_64.png" mode="aspectFit" class="history-header-icon-img"></image>

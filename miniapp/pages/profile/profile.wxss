@@ -190,20 +190,9 @@
   margin-top: 4rpx;
 }
 
-/* Upgrade button */
+/* Upgrade button — spacing only; .btn-primary.btn--sm for base style */
 .upgrade-btn {
   margin-top: var(--spacing-md);
-  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
-  color: var(--color-text-inverse);
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-caption);
-  border: none;
-  border-radius: var(--radius-pill);
-  padding: 16rpx 48rpx;
-  display: inline-block;
-  line-height: 1.4;
-  box-shadow: 0 4rpx 20rpx rgba(244, 212, 140, 0.25);
-  transition: all var(--duration-fast) var(--ease-soft);
 }
 
 /* Begin reading CTA button (empty state) */
@@ -218,11 +207,7 @@
   font-weight: var(--font-weight-semibold);
 }
 
-.upgrade-btn:active {
-  transform: scale(0.96);
-  opacity: 0.85;
-  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.20);
-}
+/* active/disabled states via common .btn-primary */
 
 /* ============================================================
    STATS ROW — Golden numbers · Lavender labels
@@ -616,16 +601,4 @@
   border-radius: var(--radius-lg);
 }
 
-/* ============================================================
-   Entrance animations
-   ============================================================ */
-.anim-fade-in-up-1 { opacity: 0; animation: profile-fade-up 0.5s var(--ease-soft) 0.08s forwards; }
-.anim-fade-in-up-2 { opacity: 0; animation: profile-fade-up 0.5s var(--ease-soft) 0.20s forwards; }
-.anim-fade-in-up-3 { opacity: 0; animation: profile-fade-up 0.5s var(--ease-soft) 0.32s forwards; }
-.anim-fade-in-up-4 { opacity: 0; animation: profile-fade-up 0.5s var(--ease-soft) 0.44s forwards; }
-.anim-fade-in-up-5 { opacity: 0; animation: profile-fade-up 0.5s var(--ease-soft) 0.56s forwards; }
-
-@keyframes profile-fade-up {
-  0% { opacity: 0; transform: translateY(24rpx); }
-  100% { opacity: 1; transform: translateY(0); }
-}
+/* Entrance animations via common.wxss: .anim-fade-up + .anim-stagger-* */

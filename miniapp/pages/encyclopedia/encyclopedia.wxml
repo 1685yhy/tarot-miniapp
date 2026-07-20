@@ -29,7 +29,7 @@
   <!-- ===== 主内容 ===== -->
   <view wx:else>
     <!-- ===== 今日之牌 — Personal entry point ===== -->
-    <view wx:if="{{dailyCard}}" class="daily-card anim-fade-in-up-1" bindtap="onDailyCardTap">
+    <view wx:if="{{dailyCard}}" class="daily-card anim-fade-up anim-stagger-1" bindtap="onDailyCardTap">
       <view class="daily-card-label">今日之牌</view>
       <view class="daily-card-body">
         <view class="card-img-wrap daily-card-thumb {{dailyCardImgLoaded ? 'card-img-wrap--loaded' : ''}} {{dailyCardImgError ? 'card-img-wrap--error' : ''}}">
@@ -45,13 +45,13 @@
         </view>
       </view>
     </view>
-    <view wx:else class="daily-card-prompt anim-fade-in-up-1" bindtap="onDailyCardPromptTap">
+    <view wx:else class="daily-card-prompt anim-fade-up anim-stagger-1" bindtap="onDailyCardPromptTap">
       <text class="daily-card-prompt-icon">✨</text>
       <text class="daily-card-prompt-text">抽取今日卡牌，解锁你的专属卡片</text>
     </view>
 
     <!-- Search bar -->
-    <view class="search-bar anim-fade-in-up-1">
+    <view class="search-bar anim-fade-up anim-stagger-1">
       <image class="search-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" style="width:32rpx;height:32rpx;margin-right:var(--space-sm)" />
       <input
         class="search-input"
@@ -64,7 +64,7 @@
     </view>
 
     <!-- Tab bar -->
-    <scroll-view class="filter-bar anim-fade-in-up-2" scroll-x>
+    <scroll-view class="filter-bar anim-fade-up anim-stagger-2" scroll-x>
       <view
         class="filter-item {{activeTab === item.key ? 'filter-active' : ''}}"
         wx:for="{{tabs}}" wx:key="key"

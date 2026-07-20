@@ -408,9 +408,4 @@
   margin-top: var(--spacing-sm);
 }
 
-/* ============================================================
-   UTILITY OVERRIDES for stagger animation delay
-   ============================================================ */
-.anim-fade-in-up-1 { animation: fade-up var(--duration-slow) var(--ease-soft) forwards; animation-delay: 0.05s; }
-.anim-fade-in-up-2 { animation: fade-up var(--duration-slow) var(--ease-soft) forwards; animation-delay: 0.12s; }
-.anim-fade-in-up-3 { animation: fade-up var(--duration-slow) var(--ease-soft) forwards; animation-delay: 0.20s; }
+/* Stagger animations via common.wxss: .anim-fade-up + .anim-stagger-* */

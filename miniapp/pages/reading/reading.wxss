@@ -73,26 +73,7 @@ page {
 .mb-xxxl { margin-bottom: var(--spacing-2xl); }
 .mr-sm { margin-right: var(--spacing-xs); }
 
-/* ==============================
-   Animations
-   ============================== */
-.anim-fade-in-up-1 {
-  animation: fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-}
-.anim-fade-in-up-2 {
-  animation: fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.12s both;
-}
-.anim-fade-in-up-3 {
-  animation: fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.24s both;
-}
-.anim-fade-in-up-4 {
-  animation: fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.36s both;
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(24rpx); }
-  to { opacity: 1; transform: translateY(0); }
-}
+/* Animations via common.wxss: .anim-fade-up + .anim-stagger-* */
 
 /* ==============================
    Skeleton loading (shapes only; shimmer from common.wxss)
@@ -156,37 +137,7 @@ page {
   word-break: break-all;
 }
 
-/* ==============================
-   Buttons
-   ============================== */
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-xs);
-  padding: 20rpx 48rpx;
-  border: none;
-  border-radius: var(--radius-pill);
-  font-size: var(--font-size-body);
-  font-weight: 600;
-  color: var(--color-text-inverse);
-  background: linear-gradient(135deg, var(--color-gold-light), var(--color-gold));
-  box-shadow: 0 4rpx 24rpx var(--color-gold-glow);
-  transition: all var(--duration-fast) var(--ease-out);
-}
-
-.btn-primary::after {
-  border: none;
-}
-
-.btn-primary:active {
-  transform: scale(0.97);
-}
-
-.btn-small {
-  padding: 16rpx 36rpx;
-  font-size: var(--font-size-caption);
-}
+/* Buttons via common.wxss: .btn-primary, .btn--full, .btn--sm */
 
 /* ==============================
    Spread grid — constellation cards
@@ -594,43 +545,12 @@ page {
 }
 
 /* ==============================
-   Draw button — glowing pulse
+   Draw button — drawing state only (base via common .btn-primary.btn--full)
    ============================== */
-.btn-glow-pulse {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: 28rpx 0;
-  border: none;
-  border-radius: var(--radius-pill);
-  font-size: var(--font-size-body);
-  font-weight: 700;
-  color: var(--color-text-inverse);
-  background: linear-gradient(135deg, var(--color-gold-light), var(--color-gold));
-  box-shadow: 0 0 40rpx var(--color-gold-glow);
-  transition: all var(--duration-fast) var(--ease-out);
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-glow-pulse::after {
-  border: none;
-}
-
-.btn-glow-pulse:not(.drawing):active {
-  transform: scale(0.97);
-}
-
-.btn-glow-pulse.drawing {
+.btn-drawing {
   opacity: 0.8;
   background: linear-gradient(135deg, var(--color-gold-dark), var(--color-gold-dark));
   animation: pulseGlow 1.6s ease-in-out infinite;
-}
-
-.btn-glow-pulse[disabled] {
-  opacity: 0.5;
 }
 
 @keyframes pulseGlow {
