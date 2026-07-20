@@ -102,11 +102,11 @@
     <view wx:elif="{{showReminder && !dailyCard}}" class="daily-reminder-badge anim-gentle-pulse">今日运势待开启</view>
   </view>
 
-  <!-- 每日一牌 -->
+  <!-- 每日一牌 — 教学入口 (v2.0) -->
   <view class="anim-fade-in-up-2" style="margin:60rpx 0">
 
     <!-- BEFORE DRAW — card awaiting tap with shimmer, sparkles, float -->
-    <view class="daily-card-wrap {{!hasDrawnToday && !dailyCard ? 'card-ready' : ''}}" wx:if="{{!dailyCard}}" bindtap="drawDailyCard" animation="{{cardAnimData}}">
+    <view class="daily-card-wrap {{!hasDrawnToday && !dailyCard ? 'card-ready' : ''}}" wx:if="{{!dailyCard && !dailyCardRestoring}}" bindtap="drawDailyCard" animation="{{cardAnimData}}">
       <view class="card card-warm card-float">
         <!-- Shimmer sweep — light glint across surface -->
         <view class="card-shimmer"></view>
@@ -125,11 +125,23 @@
       </view>
     </view>
 
-    <!-- AFTER DRAW — card revealed with rise, particles, and staggered text -->
-    <view class="daily-card-wrap" wx:else>
-      <view class="card card--revealed card-rise">
-        <!-- Floating sparkle particles -->
-        <view class="sparkle-field">
+    <!-- RESTORING — skeleton while re-fetching today's card -->
+    <view class="daily-card-wrap" wx:elif="{{dailyCardRestoring}}">
+      <view class="card card--teaching">
+        <view class="skeleton skeleton--block" style="width:200rpx;height:280rpx;margin:0 auto 20rpx;border-radius:16rpx;"></view>
+        <view class="skeleton skeleton--title" style="width:40%;margin:0 auto 12rpx;"></view>
+        <view class="skeleton skeleton--text-sm" style="width:55%;margin:0 auto;"></view>
+      </view>
+    </view>
+
+    <!-- AFTER DRAW — teaching entry card -->
+    <view class="daily-card-wrap daily-card-teaching {{dailyCardFlipped ? 'daily-card--flipped' : ''}}" wx:else bindtap="onDailyCardTap" data-today-flipped="{{dailyCardFlipped}}">
+      <view class="card card--teaching card-rise">
+        <!-- Breathing glow overlay (only when not flipped) -->
+        <view wx:if="{{!dailyCardFlipped}}" class="daily-card-glow-overlay"></view>
+
+        <!-- Sparkle particles (only when not flipped) -->
+        <view wx:if="{{!dailyCardFlipped}}" class="sparkle-field">
           <view class="sparkle s1"></view>
           <view class="sparkle s2"></view>
           <view class="sparkle s3"></view>
@@ -137,32 +149,26 @@
           <view class="sparkle s5"></view>
           <view class="sparkle s6"></view>
         </view>
-        <!-- Golden particles burst (8 dots radiating outward) -->
-        <view class="particle-field">
-          <view class="particle p1"></view>
-          <view class="particle p2"></view>
-          <view class="particle p3"></view>
-          <view class="particle p4"></view>
-          <view class="particle p5"></view>
-          <view class="particle p6"></view>
-          <view class="particle p7"></view>
-          <view class="particle p8"></view>
+
+        <!-- Card thumbnail -->
+        <view class="daily-card-thumb-wrap">
+          <image wx:if="{{dailyCard.imagePath}}" class="daily-card-thumb" src="{{dailyCard.imagePath}}" mode="aspectFit" />
         </view>
-        <!-- Reveal text with staggered animation-delay via inline style -->
-        <text class="caption accent-text reveal-text" style="display:block;margin-bottom:16rpx">今日指引</text>
-        <text class="title-2 reveal-text" style="display:block;margin-bottom:12rpx;animation-delay:0.15s">{{dailyCard.name_zh}}</text>
-        <text class="body-text reveal-text" style="animation-delay:0.3s">{{dailyCard.keywords_upright}}</text>
+
+        <!-- Flipped badge -->
+        <view wx:if="{{dailyCardFlipped}}" class="daily-card-badge">已学习 ✓</view>
+
+        <!-- Card name -->
+        <text class="title-4 daily-card-name">{{dailyCard.name_zh}}</text>
+
+        <!-- CTA text -->
+        <text wx:if="{{!dailyCardFlipped}}" class="body-sm daily-card-cta">点击学习这张牌 ✦</text>
+        <text wx:else class="body-xs daily-card-revisit">点击回顾今日学习</text>
 
         <!-- Streak badge (only if 2+ consecutive days) -->
-        <view wx:if="{{streak >= 2}}" class="streak-badge reveal-text" style="animation-delay:0.45s">
+        <view wx:if="{{streak >= 2}}" class="streak-badge">
           <text class="streak-icon">✦</text>
           <text class="streak-count">连续 {{streak}} 天</text>
-        </view>
-
-        <!-- Daily reflection prompt -->
-        <view wx:if="{{showReflectionPrompt}}" class="reflection-prompt reveal-text" style="animation-delay:0.6s">
-          <text class="reflection-text">今天的这张牌，让你想到了什么？</text>
-          <text class="reflection-link" bindtap="goToDiary">记录此刻感悟 →</text>
         </view>
       </view>
     </view>

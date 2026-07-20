@@ -1490,3 +1490,104 @@
   width: calc((100% - 16rpx) / 2);
   box-sizing: border-box;
 }
+
+/* ============================================================
+   22. DAILY CARD TEACHING ENTRY — v2.0
+   ============================================================ */
+
+.daily-card-teaching {
+  position: relative;
+}
+
+/* Teaching card variant — compact thumbnail + CTA */
+.card--teaching {
+  position: relative;
+  overflow: hidden;
+  border-color: var(--color-gold-dark, #D4B06A) !important;
+  background: linear-gradient(145deg, #2A2A5E 0%, #2E2E62 100%);
+  box-shadow:
+    0 4rpx 24rpx rgba(0, 0, 0, 0.28),
+    0 0 40rpx rgba(244, 212, 140, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx 32rpx 32rpx;
+  text-align: center;
+}
+
+/* Card thumbnail */
+.daily-card-thumb-wrap {
+  width: 200rpx;
+  height: 280rpx;
+  margin-bottom: 20rpx;
+  border-radius: var(--radius-md, 16rpx);
+  overflow: hidden;
+  box-shadow: 0 2rpx 16rpx rgba(0, 0, 0, 0.30);
+}
+
+.daily-card-thumb {
+  width: 100%;
+  height: 100%;
+}
+
+/* Card name */
+.daily-card-name {
+  display: block;
+  margin-bottom: 8rpx;
+  color: var(--color-gold, #F4D48C);
+}
+
+/* CTA text (unflipped) */
+.daily-card-cta {
+  display: block;
+  color: var(--color-lavender, #B8A9E0);
+  letter-spacing: 2rpx;
+  opacity: 0.85;
+}
+
+/* Revisit text (flipped) */
+.daily-card-revisit {
+  display: block;
+  color: var(--color-text-tertiary, #A098C0);
+  opacity: 0.65;
+}
+
+/* "已学习 ✓" badge — green, pill-shaped */
+.daily-card-badge {
+  display: inline-block;
+  padding: 6rpx 20rpx;
+  font-size: var(--font-size-caption, 24rpx);
+  font-weight: var(--font-weight-medium, 500);
+  color: #5EE0A0;
+  background: rgba(94, 224, 160, 0.12);
+  border: 1rpx solid rgba(94, 224, 160, 0.25);
+  border-radius: var(--radius-pill, 999rpx);
+  letter-spacing: 2rpx;
+  margin-bottom: 12rpx;
+}
+
+/* Breathing glow border animation (unflipped state) */
+.daily-card-glow-overlay {
+  position: absolute;
+  top: -4rpx;
+  left: -4rpx;
+  right: -4rpx;
+  bottom: -4rpx;
+  border-radius: inherit;
+  pointer-events: none;
+  border: 2rpx solid rgba(244, 212, 140, 0.30);
+  animation: daily-glow-breathe 2s ease-in-out infinite;
+}
+
+@keyframes daily-glow-breathe {
+  0%, 100% {
+    opacity: 0.3;
+    border-color: rgba(244, 212, 140, 0.30);
+    box-shadow: 0 0 20rpx rgba(244, 212, 140, 0.06);
+  }
+  50% {
+    opacity: 1.0;
+    border-color: rgba(244, 212, 140, 0.70);
+    box-shadow: 0 0 40rpx rgba(244, 212, 140, 0.15), 0 0 80rpx rgba(244, 212, 140, 0.08);
+  }
+}
