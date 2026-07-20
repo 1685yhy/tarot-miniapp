@@ -1,0 +1,216 @@
+<!-- pages/daily-card/daily-card.wxml -->
+<!-- ===== Loading skeleton ===== -->
+<view class="page" wx:if="{{pageLoading}}">
+  <view class="skeleton-card-area">
+    <view class="skeleton skeleton--block" style="width:420rpx;height:590rpx;margin:40rpx auto 0;border-radius:24rpx;"></view>
+  </view>
+  <view class="skeleton-teaching-area">
+    <view class="skeleton skeleton--title" style="width:50%;margin:60rpx auto 24rpx;"></view>
+    <view class="skeleton skeleton--text-lg"></view>
+    <view class="skeleton skeleton--text"></view>
+    <view class="skeleton skeleton--text-sm" style="width:80%;"></view>
+    <view class="skeleton skeleton--text" style="margin-top:32rpx;"></view>
+    <view class="skeleton skeleton--text"></view>
+  </view>
+</view>
+
+<!-- ===== Error state ===== -->
+<view class="page" wx:elif="{{pageError}}">
+  <view class="error-state">
+    <view class="error-icon-area">
+      <image class="error-icon-img" src="/images/icons/start_reading_64.png" mode="aspectFit" />
+    </view>
+    <text class="error-title">星光暂时无法连接</text>
+    <text class="error-desc">{{pageError}}</text>
+    <button class="btn btn-glow btn--sm" bindtap="onRetry">重新连接</button>
+  </view>
+</view>
+
+<!-- ===== Main content ===== -->
+<view class="page" wx:else>
+
+  <!-- Progress header: collection count -->
+  <view class="collect-header">
+    <view class="collect-header-left">
+      <text class="collect-label">大阿尔卡纳收集</text>
+    </view>
+    <text class="collect-count">
+      <text class="collect-count-num">{{collectedCount}}</text>
+      <text class="collect-count-total"> / {{MAJOR_ARCANA_TOTAL}}</text>
+    </text>
+  </view>
+  <view class="collect-progress-wrap">
+    <view class="collect-progress-bar">
+      <view
+        class="collect-progress-fill {{showGlow ? 'collect-progress-fill--animated' : ''}}"
+        style="width:{{collectedCount > 0 ? (collectedCount / MAJOR_ARCANA_TOTAL * 100) : 0}}%"
+      ></view>
+    </view>
+  </view>
+
+  <!-- ===== Card flip area ===== -->
+  <view class="card-flip-section">
+    <view class="card-flip-scene
+      {{isAnimating ? 'card-flip-animating' : ''}}
+      {{showGlow ? 'card-glow-revealed' : ''}}
+    ">
+      <!-- Card back (face-down) -->
+      <view class="card-face card-back {{backHidden ? 'card-face--hidden' : ''}}">
+        <view class="card-back-ornament">
+          <view class="card-back-ring card-back-ring--outer"></view>
+          <view class="card-back-ring card-back-ring--inner"></view>
+          <view class="card-back-star">✦</view>
+        </view>
+      </view>
+
+      <!-- Card front (face-up: actual card image) -->
+      <view class="card-face card-front {{frontVisible ? 'card-face--visible' : ''}}" bindtap="onCardTap">
+        <view class="card-img-wrap {{cardImgLoaded ? 'card-img-wrap--loaded' : ''}} {{cardImgError ? 'card-img-wrap--error' : ''}}">
+          <image
+            class="card-img-inner"
+            src="{{dailyCard.imagePath}}"
+            mode="widthFix"
+            bindload="onCardImgLoad"
+            binderror="onCardImgError"
+          />
+          <view class="card-img-fallback">
+            <image class="card-img-fallback-icon" src="/images/icons/start_reading_64.png" mode="aspectFit" />
+          </view>
+        </view>
+
+        <!-- Tap hint (before flip) -->
+        <view class="card-tap-hint {{isAnimating || isFlipped ? 'card-tap-hint--hidden' : ''}}" catchtap="onCardTap">
+          <view class="card-tap-hint-inner">
+            <text class="card-tap-hint-text">轻触翻牌</text>
+            <text class="card-tap-hint-sub">今日的启示等待着你</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Card name below -->
+    <view class="card-name-section {{showTeaching ? 'card-name-section--visible' : ''}}">
+      <text class="card-name-zh">{{dailyCard.name_zh}}</text>
+      <text class="card-name-en">{{dailyCard.name_en}}</text>
+      <view class="card-meta-tags">
+        <text class="badge badge--gold" wx:if="{{dailyCard.arcana === 'major'}}">大阿尔卡纳</text>
+        <text class="badge badge--gold" wx:elif="{{dailyCard.suit}}">{{dailyCard.suit}}</text>
+        <text class="badge badge--lavender">{{dailyCard.card_number}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== Teaching area (revealed after flip) ===== -->
+  <view class="teaching-area {{showTeaching ? 'teaching-area--visible' : ''}}">
+
+    <!-- Teaching loading -->
+    <view wx:if="{{teachingLoading}}" class="teaching-loading">
+      <view class="skeleton skeleton--title" style="width:40%;margin:0 auto 24rpx;"></view>
+      <view class="skeleton skeleton--text"></view>
+      <view class="skeleton skeleton--text"></view>
+      <view class="skeleton skeleton--text-sm" style="width:70%;"></view>
+    </view>
+
+    <!-- Teaching error -->
+    <view wx:elif="{{teachingError}}" class="teaching-error">
+      <text class="teaching-error-text">教学加载失败</text>
+      <button class="btn btn-ghost btn--sm" bindtap="onRetryTeaching">重试</button>
+    </view>
+
+    <!-- Teaching content -->
+    <view wx:elif="{{teaching}}" class="teaching-content">
+
+      <!-- Section 1: 符号解读 -->
+      <view class="teaching-section anim-fade-up anim-stagger-1">
+        <view class="teaching-section-header">
+          <image class="teaching-section-icon" src="/images/icons/about_64.png" mode="aspectFit" />
+          <text class="teaching-section-title">符号解读</text>
+        </view>
+        <view class="teaching-section-body">
+          <view
+            class="symbol-item"
+            wx:for="{{teaching.symbols}}"
+            wx:key="index"
+            wx:for-item="symbol"
+          >
+            <view class="symbol-dot"></view>
+            <view class="symbol-content">
+              <text class="symbol-name">{{symbol.name}}</text>
+              <text class="symbol-desc">{{symbol.description}}</text>
+            </view>
+          </view>
+          <!-- Keywords tags -->
+          <view wx:if="{{teaching.keywords_learning && teaching.keywords_learning.length > 0}}" class="keywords-wrap">
+            <view
+              class="keyword-tag"
+              wx:for="{{teaching.keywords_learning}}"
+              wx:key="index"
+              wx:for-item="kw"
+            >
+              <text class="keyword-tag-text">{{kw}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- Section 2: 典故故事 -->
+      <view class="teaching-section anim-fade-up anim-stagger-2">
+        <view class="teaching-section-header">
+          <image class="teaching-section-icon" src="/images/icons/diary_64.png" mode="aspectFit" />
+          <text class="teaching-section-title">典故故事</text>
+        </view>
+        <view class="teaching-section-body">
+          <text class="story-text">{{teaching.story}}</text>
+        </view>
+      </view>
+
+      <!-- Section 3: 生活关联 -->
+      <view class="teaching-section anim-fade-up anim-stagger-3">
+        <view class="teaching-section-header">
+          <image class="teaching-section-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" />
+          <text class="teaching-section-title">生活关联</text>
+        </view>
+        <view class="teaching-section-body">
+          <text class="life-connection-text">{{teaching.life_connection}}</text>
+          <view wx:if="{{teaching.element_association}}" class="element-badge-wrap">
+            <text class="badge badge--lavender">关联元素：{{teaching.element_association}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== Diary entry ===== -->
+  <view class="diary-section {{showTeaching ? 'diary-section--visible' : ''}}">
+    <view class="divider"></view>
+
+    <view wx:if="{{diarySaved}}" class="diary-saved-state">
+      <text class="diary-saved-text">今日心情已记录</text>
+    </view>
+
+    <view wx:else class="diary-entry-area">
+      <view class="diary-entry-header">
+        <image class="diary-entry-icon" src="/images/icons/diary_64.png" mode="aspectFit" />
+        <text class="diary-entry-title">今日心情</text>
+      </view>
+      <textarea
+        class="diary-input"
+        placeholder="这张牌让你想到了什么？记录此刻的感受..."
+        value="{{diaryText}}"
+        bindinput="onDiaryInput"
+        maxlength="500"
+      />
+      <text class="diary-char-count">{{diaryText.length}}/500</text>
+      <button
+        class="btn btn-primary btn--full btn--sm"
+        disabled="{{diarySaving || !diaryText.trim()}}"
+        bindtap="onDiarySave"
+      >
+        {{diarySaving ? '保存中...' : '保存心情'}}
+      </button>
+    </view>
+  </view>
+
+  <!-- Bottom spacer for safe area -->
+  <view class="safe-bottom"></view>
+</view>
