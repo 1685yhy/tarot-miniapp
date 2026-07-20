@@ -1,0 +1,189 @@
+/**
+ * Share Poster Component
+ * Canvas-based poster generator combining card image, quote, and QR code.
+ *
+ * Usage:
+ *   <share-poster
+ *     visible="{{showSharePoster}}"
+ *     cardImagePath="{{shareCardImage}}"
+ *     cardName="{{shareCardName}}"
+ *     quote="{{shareQuote}}"
+ *     spreadType="{{reading.spread_type}}"
+ *     bind:close="onCloseSharePoster"
+ *   />
+ */
+const { drawSharePoster } = require('../../utils/canvas-poster');
+
+Component({
+  properties: {
+    visible: {
+      type: Boolean,
+      value: false,
+      observer: '_onVisibleChange',
+    },
+    cardImagePath: {
+      type: String,
+      value: '',
+    },
+    cardName: {
+      type: String,
+      value: '',
+    },
+    quote: {
+      type: String,
+      value: '',
+      observer: '_onQuoteChange',
+    },
+    spreadType: {
+      type: String,
+      value: '',
+    },
+  },
+
+  data: {
+    previewPath: '',
+    drawError: false,
+    isDrawing: false,
+    canvasW: 0,
+    canvasH: 0,
+  },
+
+  methods: {
+    /* ---------------------------------------------------------------
+       Lifecycle: when visible changes to true, trigger drawing
+       --------------------------------------------------------------- */
+    _onVisibleChange(visible) {
+      if (visible) {
+        this._initCanvasSize();
+        this._drawPoster();
+      } else {
+        // Reset state when hiding
+        this.setData({
+          previewPath: '',
+          drawError: false,
+          isDrawing: false,
+        });
+      }
+    },
+
+    /* ---------------------------------------------------------------
+       Truncate quote to max 150 chars
+       --------------------------------------------------------------- */
+    _onQuoteChange(quote) {
+      if (quote && quote.length > 150) {
+        this.setData({ quote: quote.substring(0, 147) + '...' });
+      }
+    },
+
+    /* ---------------------------------------------------------------
+       Determine canvas logical size based on screen width
+       --------------------------------------------------------------- */
+    _initCanvasSize() {
+      const sysInfo = wx.getSystemInfoSync();
+      const screenWidth = sysInfo.screenWidth || 375;
+      const posterW = screenWidth;
+      const posterH = Math.round(screenWidth * (1334 / 750));
+      this.setData({
+        canvasW: posterW,
+        canvasH: posterH,
+      });
+    },
+
+    /* ---------------------------------------------------------------
+       Draw the poster on canvas using the utility
+       --------------------------------------------------------------- */
+    _drawPoster() {
+      const { cardImagePath, cardName, quote, spreadType } = this.properties;
+
+      // Use the first card image; if cardImagePath is empty, skip
+      if (!cardImagePath && !cardName) {
+        this.setData({ drawError: true });
+        return;
+      }
+
+      this.setData({ isDrawing: true, drawError: false });
+
+      drawSharePoster('shareCanvas', {
+        context: this,
+        cardImagePath: cardImagePath || '',
+        cardName: cardName || '',
+        quote: (quote || '').substring(0, 120), // limit to 120 chars
+        spreadType: spreadType || '三牌占卜',
+        onSuccess: (tempFilePath) => {
+          this.setData({
+            previewPath: tempFilePath,
+            isDrawing: false,
+            drawError: false,
+          });
+        },
+        onError: (err) => {
+          console.error('[share-poster] Draw error:', err);
+          this.setData({
+            drawError: true,
+            isDrawing: false,
+          });
+        },
+      });
+    },
+
+    /* ---------------------------------------------------------------
+       Save poster to photo album
+       --------------------------------------------------------------- */
+    onSave() {
+      const { previewPath } = this.data;
+      if (!previewPath) return;
+
+      wx.saveImageToPhotosAlbum({
+        filePath: previewPath,
+        success: () => {
+          wx.showToast({ title: '已保存到相册', icon: 'success' });
+        },
+        fail: (err) => {
+          if (err.errMsg && err.errMsg.indexOf('auth deny') !== -1) {
+            // User denied permission — guide them to settings
+            wx.showModal({
+              title: '需要相册权限',
+              content: '请在设置中开启相册权限，以便保存海报到相册',
+              confirmText: '去设置',
+              success: (res) => {
+                if (res.confirm) {
+                  wx.openSetting();
+                }
+              },
+            });
+          } else {
+            wx.showToast({ title: '保存失败，请重试', icon: 'none' });
+          }
+        },
+      });
+    },
+
+    /* ---------------------------------------------------------------
+       Share poster to friends (trigger page-level share)
+       --------------------------------------------------------------- */
+    onShare() {
+      const { previewPath } = this.data;
+      if (!previewPath) return;
+
+      // Trigger the page-level onShareAppMessage with the poster image
+      // Note: We set a global/hack so the page's share method picks up this path.
+      // The alternative is to use wx.shareAppMessage which is not available in all versions.
+      // We use a custom event to let the parent page handle sharing.
+      this.triggerEvent('share', { imagePath: previewPath });
+    },
+
+    /* ---------------------------------------------------------------
+       Close / dismiss
+       --------------------------------------------------------------- */
+    onClose() {
+      this.triggerEvent('close');
+    },
+
+    /* ---------------------------------------------------------------
+       Retry drawing after error
+       --------------------------------------------------------------- */
+    onRetry() {
+      this._drawPoster();
+    },
+  },
+});

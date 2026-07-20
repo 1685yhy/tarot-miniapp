@@ -139,7 +139,7 @@
            ========================================================== -->
       <view class="actions-section">
         <button class="btn-ask" bindtap="onAskMore">追问更多</button>
-        <button class="btn-share" open-type="share">分享</button>
+        <button class="btn-share" bindtap="onOpenSharePoster">分享海报</button>
         <button class="btn-redo" bindtap="onNewReading">再来一次</button>
         <text class="btn-back" bindtap="onBackHome">回到首页</text>
 
@@ -192,6 +192,18 @@
     </view>
   </view>
 </view>
+
+<!-- ===== SHARE POSTER ===== -->
+<share-poster
+  wx:if="{{reading}}"
+  visible="{{showSharePoster}}"
+  cardImagePath="{{shareCardImage}}"
+  cardName="{{shareCardName}}"
+  quote="{{shareQuote}}"
+  spreadType="{{reading.spread_type}}"
+  bind:close="onCloseSharePoster"
+  bind:share="onSharePosterToFriend"
+/>
 
 <!-- ===== EMPTY STATE ===== -->
 <view class="page" wx:else>

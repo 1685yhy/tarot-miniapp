@@ -37,6 +37,12 @@ Page({
     // Staggered card entrance animations (one per drawn card)
     cardAnimData: [],
 
+    // Share poster
+    showSharePoster: false,
+    shareCardImage: '',
+    shareCardName: '',
+    shareQuote: '',
+
     // Interactive card enlargement
     enlargedCardIndex: -1,   // -1 = none; 0/1/2 = which card is enlarged
     isFlipped: false,        // front (false) or back (true)
@@ -427,6 +433,70 @@ Page({
       title: `我的星光解读 ✦ ${spreadName}`,
       path: `/pages/reading-result/reading-result?id=${reading.id}`,
     };
+  },
+
+  /* ---------------------------------------------------------------
+     Share Poster — Open / Close
+     --------------------------------------------------------------- */
+
+  onOpenSharePoster() {
+    const reading = this.data.reading;
+    if (!reading || !reading.drawn_cards || reading.drawn_cards.length === 0) {
+      wx.showToast({ title: '暂无牌面可生成海报', icon: 'none' });
+      return;
+    }
+
+    // Use the first drawn card for the poster
+    const firstCard = reading.drawn_cards[0];
+    const cardImage = firstCard.imagePath || '';
+    const cardName = (firstCard.card_name_zh || firstCard.card_name || '') +
+      ' · ' + (firstCard.card_name_en || firstCard.name_en || '');
+
+    // Extract a quote snippet from the interpretation (first 120 chars)
+    let quote = '';
+    if (reading.interpretation) {
+      quote = reading.interpretation
+        .replace(/#{1,4}\s+/g, '')
+        .replace(/\*\*(.+?)\*\*/g, '$1')
+        .replace(/\n{3,}/g, '\n')
+        .trim();
+    }
+
+    this.setData({
+      showSharePoster: true,
+      shareCardImage: cardImage,
+      shareCardName: cardName,
+      shareQuote: quote,
+    });
+  },
+
+  onCloseSharePoster() {
+    this.setData({ showSharePoster: false });
+  },
+
+  onSharePosterToFriend(e) {
+    // Forward the poster image path to the native share API
+    // WeChat doesn't support custom image via onShareAppMessage directly,
+    // so we use wx.shareAppMessage (available in newer base libs)
+    // or fall back to letting the user save + share manually
+    const imagePath = e.detail && e.detail.imagePath;
+    if (imagePath) {
+      // Attempt to use WeChat's share with image
+      // Note: wx.shareAppMessage is only available in some WeChat versions
+      try {
+        wx.shareAppMessage({
+          imageUrl: imagePath,
+          title: '星光映照 · 塔罗解读',
+        });
+      } catch (err) {
+        // Fallback: inform user to save first
+        wx.showToast({
+          title: '请先保存海报，再从相册分享',
+          icon: 'none',
+          duration: 2000,
+        });
+      }
+    }
   },
 
   /* ---------------------------------------------------------------

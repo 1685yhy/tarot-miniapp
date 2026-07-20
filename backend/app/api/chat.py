@@ -16,9 +16,9 @@ from app.config import settings
 from app.db.database import get_db
 from app.models.reading import ChatMessage, Reading
 from app.models.user import User
-from app.schemas.chat import ChatRequest, ChatResponse
+from app.schemas.chat import ActionItem, ChatRequest, ChatResponse
 from app.utils.auth import get_current_user
-from .readings import _reset_daily_count_if_new_day
+from .readings import _reset_daily_count_if_new_day, parse_action_items
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +67,12 @@ async def chat_followup(
             "content": (
                 f"你是一个温柔睿智的塔罗导师。用户刚才的解读结果是：\n"
                 f"{(reading.interpretation or '')[:500]}\n\n"
-                f"请基于这个解读，继续和用户深入探讨他们的问题。保持连续性和一致性。"
+                f"请基于这个解读，继续和用户深入探讨他们的问题。保持连续性和一致性。\n\n"
+                f"【行动建议】\n"
+                f"在回答的最后，如果合适的话，请给出 1-3 条具体的行动建议，"
+                f"使用 [ACTION]建议内容[/ACTION] 格式。\n"
+                f"例如：[ACTION]每天晚上写一篇日记，记录今天的感受[/ACTION]\n"
+                f"每条建议请使用第二人称「你」，语气鼓励、温暖。"
             ),
         }
     ]
@@ -85,7 +90,7 @@ async def chat_followup(
     try:
         response = await client.chat.completions.create(
             model=settings.DEEPSEEK_MODEL,
-            max_tokens=1024,
+            max_tokens=settings.AI_MAX_TOKENS,
             messages=messages,
             timeout=60.0,
         )
@@ -98,6 +103,9 @@ async def chat_followup(
     ai_msg = ChatMessage(reading_id=reading_id, role="assistant", content=ai_reply)
     db.add(ai_msg)
 
+    # ── Parse action items from chat response ──
+    action_items = parse_action_items(ai_reply)
+
     # ── Update daily counter (free users only) ──
     if not user.is_member:
         user.free_chats_today += 1
@@ -106,4 +114,5 @@ async def chat_followup(
     return ChatResponse(
         reply=ai_reply,
         remaining_free=max(0, settings.FREE_CHAT_MESSAGES - user.free_chats_today),
+        action_items=[ActionItem(**a) for a in action_items],
     )

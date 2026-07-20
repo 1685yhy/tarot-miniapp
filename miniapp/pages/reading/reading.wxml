@@ -149,23 +149,23 @@
         </view>
       </view>
 
-      <!-- Theme selection — reordered: spread-default theme first, others dimmed -->
-      <view class="mb-xxxl anim-fade-in-up-3">
+      <!-- 主题选择：仅通用牌阵显示；专属牌阵已隐含主题，不展示选择器 -->
+      <view class="mb-xxxl anim-fade-in-up-3" wx:if="{{!spreadDefaultTheme}}">
         <text class="theme-section-label">解读侧重</text>
-        <text class="theme-hint" wx:if="{{themeHint}}">{{themeHint}}</text>
         <view class="theme-options">
-          <view
-            wx:for="{{displayThemes}}"
-            wx:key="key"
-            class="theme-item {{theme === item.key ? 'theme-active' : ''}} {{item.recommended ? 'theme-recommended' : ''}}"
-            bindtap="onThemeTap"
-            data-theme="{{item.key}}"
-          >
+          <view wx:for="{{displayThemes}}" wx:key="key"
+            class="theme-item {{theme === item.key ? 'theme-active' : ''}}"
+            bindtap="onThemeTap" data-theme="{{item.key}}">
             <image class="theme-icon" src="{{item.icon}}" mode="aspectFit" />
             <text class="theme-label">{{item.label}}</text>
-            <text class="theme-badge" wx:if="{{item.recommended}}">推荐</text>
           </view>
         </view>
+      </view>
+
+      <!-- 专属牌阵提示：不展示主题选择，仅告知用户此牌阵的解读方向 -->
+      <view class="theme-lock-banner" wx:if="{{spreadDefaultTheme}}">
+        <text class="theme-lock-icon">✦</text>
+        <text class="theme-lock-text">此牌阵侧重<text class="theme-lock-keyword">{{THEME_LABELS[spreadDefaultTheme]}}</text>解读</text>
       </view>
 
       <!-- Draw button -->

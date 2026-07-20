@@ -130,14 +130,12 @@ def _build_cards_text(cards_info: list[dict], theme: str | None = None) -> str:
             meaning_key = theme_upright if theme_upright and theme_upright in c else "meaning_upright"
 
         lines.append(
-            f"位置{c['position']} - {c['position_name']}: "
-            f"{c['name_zh']}({c['name_en']}) [{direction}]"
+            f"- {c['position_name']}：{c['name_zh']}（{direction}）"
         )
-        lines.append(f"  牌面: {c['image_description'][:120]}...")
+        lines.append(f"  画面描述：{c['image_description']}")
         lines.append(
-            f"  含义: {c[meaning_key][:200]}..."
+            f"  含义：{c[meaning_key]}\n"
         )
-        lines.append("")  # blank line between cards for readability
     return "\n".join(lines)
 
 
@@ -184,11 +182,25 @@ async def generate_reading(
         f"用户问题: {question or '未指定具体问题'}\n"
         f"解读主题: {theme or '综合运势'}\n\n"
         f"抽取的牌:\n{cards_text}\n\n"
+        f"【画面解读指引】\n"
+        f"请根据每张牌面的真实画面元素进行解读。例如如果你看到牌面上的年轻人手捧星币，"
+        f"请引用这个细节来解读——这会让用户感受到你的解读是建立在真实观察之上的，"
+        f"而非凭空想象。请确保在逐牌解读部分，每张牌至少引用1-2个具体的视觉元素"
+        f"（如人物姿态、道具、颜色、背景景物等），并将画面细节与牌意自然地结合起来。\n\n"
         f"请提供完整的解读，包括：\n"
         f"1. 牌阵总览（整体能量和主题）\n"
-        f"2. 逐牌解读（每张牌在对应位置的含义）\n"
+        f"2. 逐牌解读（每张牌在对应位置的含义，请引用画面细节）\n"
         f"3. 综合解读（将所有牌串联成完整故事）\n"
-        f"4. 建议与指引（用户可以在现实层面采取的行动）"
+        f"4. 建议与指引（用户可以在现实层面采取的行动）\n\n"
+        f"【行动建议要求】\n"
+        f"在解读的最后，请根据本次解读的内容给出 3 条具体行动建议。\n"
+        f"要求：\n"
+        f"- 每条建议必须是用户今天或本周可以执行的具体行动\n"
+        f"- 每条建议写成一个完整的句子，语气鼓励，使用第二人称「你」\n"
+        f"- 根据建议的内容主题，将每条建议归类为 love、career 或 general 中的一个\n"
+        f"- 格式：每行一条，使用 [ACTION]建议内容[/ACTION]\n"
+        f"  例如：[ACTION]本周主动约一位朋友喝咖啡，聊聊最近的感受[/ACTION]\n"
+        f"- 必须输出 3 条，不要多也不要少"
     )
 
     client = _get_client()
