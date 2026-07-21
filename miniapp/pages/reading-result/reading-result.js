@@ -437,12 +437,6 @@ Page({
       content: '确定要放弃本次解读，重新抽牌吗？',
       success: (res) => {
         if (res.confirm) {
-          // Try to delete reading from backend
-          if (reading && reading.id) {
-            request(`/readings/${reading.id}`, { method: 'DELETE' }).catch(() => {
-              // Silently ignore backend errors — proceed with local cleanup
-            });
-          }
           wx.removeStorageSync('pending_reading');
           wx.redirectTo({
             url: '/pages/reading/reading?type=' + (reading?.spread_type || 'three_card'),
