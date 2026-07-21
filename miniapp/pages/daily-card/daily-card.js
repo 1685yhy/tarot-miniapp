@@ -223,4 +223,12 @@ Page({
     if (this._flipTimer) clearTimeout(this._flipTimer);
     if (this._glowTimer) clearTimeout(this._glowTimer);
   },
+
+  onReady() {
+    // Analytics & accessibility hook — reserved for future use
+  },
+
+  onHide() {
+    // Cleanup hook — reserved for future use
+  },
 });

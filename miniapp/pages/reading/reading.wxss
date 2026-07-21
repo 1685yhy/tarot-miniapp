@@ -81,8 +81,8 @@ page {
 .reading-skeleton-wrap {
   display: flex;
   flex-direction: column;
-  gap: 28rpx;
-  padding: 36rpx 0;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg) 0;
 }
 
 .skeleton-reading-title {
@@ -151,7 +151,7 @@ page {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 24rpx;
+  gap: var(--spacing-md);
   margin-top: 28rpx;
 }
 
@@ -160,7 +160,7 @@ page {
   display: flex;
   align-items: center;
   width: calc((100% - 24rpx) / 2);
-  padding: 28rpx;
+  padding: var(--spacing-md);
   box-sizing: border-box;
   background: linear-gradient(145deg, var(--color-surface) 0%, var(--color-card) 100%);
   border: 1.5rpx solid rgba(244, 212, 140, 0.12);
@@ -303,7 +303,7 @@ page {
   justify-content: center;
   gap: var(--spacing-xs);
   margin: 0 auto 28rpx;
-  padding: 14rpx 36rpx;
+  padding: var(--spacing-sm) var(--spacing-lg);
   background: linear-gradient(135deg, rgba(244,212,140,0.12), rgba(244,212,140,0.06));
   border: 1.5rpx solid rgba(244,212,140,0.20);
   border-radius: var(--radius-pill);
@@ -351,7 +351,7 @@ page {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 36rpx 0;
+  padding: var(--spacing-lg) 0;
 }
 
 /* ==============================
@@ -361,8 +361,8 @@ page {
   background: linear-gradient(145deg, var(--color-surface) 0%, var(--color-card) 100%);
   border: 1.5rpx solid var(--color-gold-glow);
   border-radius: 16rpx;
-  padding: 24rpx;
-  margin: 36rpx 0 32rpx;
+  padding: var(--spacing-md);
+  margin: var(--spacing-lg) 0 var(--spacing-lg);
   position: relative;
   overflow: hidden;
 }
@@ -382,7 +382,7 @@ page {
 .question-input {
   width: 100%;
   min-height: 200rpx;
-  padding: 24rpx;
+  padding: var(--spacing-md);
   background: var(--color-bg);
   border: 1.5rpx solid rgba(244,212,140,0.10);
   border-radius: 16rpx;
@@ -444,7 +444,7 @@ page {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20rpx;
+  gap: var(--spacing-sm);
   margin-bottom: 28rpx;
 }
 
@@ -492,7 +492,7 @@ page {
 
 .theme-options {
   display: flex;
-  gap: 16rpx;
+  gap: var(--spacing-sm);
 }
 
 .theme-item {
@@ -500,10 +500,10 @@ page {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10rpx;
+  gap: var(--spacing-xxs);
   flex: 1;
   text-align: center;
-  padding: 16rpx 8rpx;
+  padding: var(--spacing-sm) var(--spacing-xxs);
   background: var(--color-surface);
   border: 1.5rpx solid rgba(244,212,140,0.12);
   border-radius: 16rpx;
@@ -777,8 +777,8 @@ page {
    ============================== */
 .reading-free-banner {
   text-align: center;
-  margin: 24rpx 0 32rpx;
-  padding: 14rpx 20rpx;
+  margin: var(--spacing-md) 0 var(--spacing-lg);
+  padding: var(--spacing-sm) var(--spacing-sm);
 }
 
 .reading-free-text {
@@ -820,7 +820,7 @@ page {
   flex-direction: column;
   align-items: center;
   gap: 4rpx;
-  padding: 12rpx 18rpx;
+  padding: var(--spacing-xs) var(--spacing-sm);
   background: rgba(244, 212, 140, 0.12);
   border: 1rpx solid var(--color-gold-glow);
   border-radius: 12rpx;

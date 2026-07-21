@@ -241,7 +241,7 @@ page {
   font-size: var(--font-size-caption);
   font-weight: 600;
   letter-spacing: 1rpx;
-  padding: 6rpx 20rpx;
+  padding: 6rpx var(--spacing-sm);
   border-radius: var(--radius-sm);
   z-index: 2;
   box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.35);
@@ -290,7 +290,7 @@ page {
   display: block;
   width: 70%;
   margin: var(--spacing-md) auto 0;
-  padding: 22rpx 0;
+  padding: var(--spacing-md) 0;
   border: none;
   border-radius: var(--radius-pill);
   font-size: var(--font-size-body);
@@ -392,7 +392,7 @@ page {
    ================================================================ */
 .mem-hero {
   text-align: center;
-  padding: 80rpx 0 48rpx;
+  padding: var(--spacing-3xl) 0 var(--spacing-xl);
 }
 .mem-hero-icon {
   font-size: 64rpx;
@@ -417,7 +417,7 @@ page {
 .mem-tiers {
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
+  gap: var(--spacing-md);
   padding: 0 32rpx;
 }
 
@@ -425,7 +425,7 @@ page {
   background: var(--color-surface-gradient);
   border: 1.5rpx solid rgba(244,212,140,0.12);
   border-radius: 24rpx;
-  padding: 40rpx 32rpx;
+  padding: var(--spacing-xl) var(--spacing-lg);
   position: relative;
   transition: all 0.2s;
 }
@@ -443,7 +443,7 @@ page {
   color: #1A1A3E;
   font-size: 20rpx;
   font-weight: 700;
-  padding: 6rpx 20rpx;
+  padding: 6rpx var(--spacing-sm);
   border-radius: 20rpx;
   letter-spacing: 1rpx;
 }
@@ -456,7 +456,7 @@ page {
 }
 
 .mem-tier-price {
-  margin: 16rpx 0 4rpx;
+  margin: var(--spacing-sm) 0 4rpx;
   display: flex;
   align-items: baseline;
 }
@@ -486,15 +486,15 @@ page {
 .mem-tier-features {
   display: flex;
   flex-direction: column;
-  gap: 12rpx;
-  margin: 24rpx 0;
+  gap: var(--spacing-xs);
+  margin: var(--spacing-md) 0;
   padding-top: 20rpx;
   border-top: 1rpx solid rgba(244,212,140,0.08);
 }
 .mem-feat {
   display: flex;
   align-items: center;
-  gap: 12rpx;
+  gap: var(--spacing-xs);
 }
 .mem-feat-icon {
   font-size: 28rpx;
@@ -512,7 +512,7 @@ page {
   color: #1A1A3E;
   font-size: var(--font-size-body);
   font-weight: 700;
-  padding: 20rpx 0;
+  padding: var(--spacing-sm) 0;
   border-radius: var(--radius-pill);
   letter-spacing: 2rpx;
   margin-top: 8rpx;
@@ -526,7 +526,7 @@ page {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 32rpx;
+  padding: var(--spacing-lg);
   background: var(--color-surface);
   border: 1rpx solid rgba(244,212,140,0.08);
   border-radius: 16rpx;
@@ -543,7 +543,7 @@ page {
 
 .mem-footer {
   text-align: center;
-  padding: 48rpx 32rpx;
+  padding: var(--spacing-xl) var(--spacing-lg);
 }
 .mem-footer-text {
   font-size: var(--font-size-xs);

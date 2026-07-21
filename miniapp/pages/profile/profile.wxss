@@ -57,7 +57,7 @@
 
 .btn-small {
   font-size: var(--font-size-caption);
-  padding: 16rpx 36rpx;
+  padding: var(--spacing-sm) var(--spacing-lg);
 }
 
 /* ============================================================
@@ -177,7 +177,7 @@
 .user-status-text.member-status {
   color: var(--color-gold);
   background: rgba(244, 212, 140, 0.14);
-  padding: 4rpx 24rpx;
+  padding: 4rpx var(--spacing-md);
   border-radius: var(--radius-pill);
   border: 1rpx solid rgba(244, 212, 140, 0.25);
 }
@@ -202,7 +202,7 @@
   color: var(--color-text-inverse);
   border: none;
   border-radius: 48rpx;
-  padding: 18rpx 48rpx;
+  padding: var(--spacing-md) var(--spacing-xl);
   font-size: var(--font-size-body);
   font-weight: var(--font-weight-semibold);
 }

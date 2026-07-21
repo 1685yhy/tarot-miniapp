@@ -35,7 +35,7 @@
   display: flex;
   align-items: center;
   margin-bottom: var(--spacing-md);
-  gap: 8rpx;
+  gap: var(--spacing-xxs);
 }
 
 .ac-header-icon {
@@ -67,7 +67,7 @@
   transition: opacity var(--duration-fast) var(--ease-out),
               background var(--duration-fast) var(--ease-out);
   cursor: pointer;
-  gap: 12rpx;
+  gap: var(--spacing-xs);
 }
 
 .ac-item:active {
@@ -223,7 +223,7 @@
 /* ---- Stars Row ---- */
 .ac-stars-row {
   display: flex;
-  gap: 16rpx;
+  gap: var(--spacing-sm);
   margin-bottom: var(--spacing-sm);
 }
 

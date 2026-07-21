@@ -30,6 +30,14 @@ Page({
     this.setData({ pageLoading: false });
   },
 
+  onReady() {
+    // Analytics & accessibility hook — reserved for future use
+  },
+
+  onHide() {
+    // Cleanup hook — reserved for future use
+  },
+
   async onGenerate() {
     if (this.data.generating) return;
     this.setData({ generating: true });
