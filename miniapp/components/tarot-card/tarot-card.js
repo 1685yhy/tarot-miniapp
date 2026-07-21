@@ -20,6 +20,7 @@ Component({
     isReversed: { type: Boolean, value: false },
     cardNumber: { type: String, value: '' },
     cardType: { type: String, value: '' },
+    imagePath: { type: String, value: '' },
     flipping: { type: Boolean, value: false },
   },
 
@@ -31,8 +32,8 @@ Component({
   },
 
   observers: {
-    'nameZh, cardType, nameEn, cardNumber': function (nzh, ct, ne, cn) {
-      this.resolveCard(nzh, ct, ne, cn);
+    'nameZh, cardType, nameEn, cardNumber, imagePath': function (nzh, ct, ne, cn, ip) {
+      this.resolveCard(nzh, ct, ne, cn, ip);
     },
   },
 
@@ -42,13 +43,16 @@ Component({
         this.properties.nameZh,
         this.properties.cardType,
         this.properties.nameEn,
-        this.properties.cardNumber
+        this.properties.cardNumber,
+        this.properties.imagePath
       );
     },
   },
 
   methods: {
-    resolveCard(nameZh, cardType, nameEn, cardNumber) {
+    resolveCard(nameZh, cardType, nameEn, cardNumber, imagePath) {
+      const hasExternalImage = !!imagePath;
+
       // 如果显式传了cardType，优先使用
       if (cardType) {
         const cardEntry = Object.values(CARD_REGISTRY).find(c => c.type === cardType);
@@ -57,7 +61,7 @@ Component({
           cardNumberDisplay: cardNumber || '',
           displayNameEn: nameEn || '',
           isMajor: MAJOR_TYPES.includes(cardType),
-          imagePath: cardEntry ? cardEntry.image : '',
+          imagePath: hasExternalImage ? imagePath : (cardEntry ? cardEntry.image : ''),
         });
         return;
       }
@@ -70,7 +74,7 @@ Component({
           cardNumberDisplay: cardNumber || found.number || '',
           displayNameEn: nameEn || found.en || '',
           isMajor: found.arcana === 'major',
-          imagePath: found.image || '',
+          imagePath: hasExternalImage ? imagePath : (found.image || ''),
         });
       } else {
         // 兜底：根据花色生成
@@ -80,7 +84,7 @@ Component({
           cardNumberDisplay: cardNumber || '',
           displayNameEn: nameEn || '',
           isMajor: false,
-          imagePath: '',
+          imagePath: hasExternalImage ? imagePath : '',
         });
       }
     },

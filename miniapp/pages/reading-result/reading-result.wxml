@@ -83,18 +83,13 @@
         <!-- Three overlapping cards with images -->
         <view class="card-row">
           <view class="card-item {{enlargedCardIndex >= 0 && enlargedCardIndex !== index ? 'dimmed' : ''}} {{enlargedCardIndex === index ? 'card-active' : ''}}" wx:for="{{reading.drawn_cards}}" wx:for-item="card" wx:key="id" animation="{{cardAnimData[index]}}" data-index="{{index}}" bindtap="onCardTap">
-            <view class="card-inner">
-              <view class="card-img-wrap card-img {{card._imgLoaded ? 'card-img-wrap--loaded' : ''}} {{card._imgError ? 'card-img-wrap--error' : ''}}">
-                <image class="card-img-inner" src="{{card.imagePath}}" mode="aspectFill" lazy-load show-menu-by-longpress="{{true}}" wx:if="{{card.imagePath}}" bindload="onCardImgLoad" binderror="onCardImgError" data-index="{{index}}" />
-                <view class="card-img-fallback" wx:if="{{!card.imagePath || card._imgError}}">
-                  <text class="card-img-fallback-icon">🃏</text>
-                </view>
-              </view>
-              <view class="card-label">
-                <text class="card-pos">{{card.position_name}}</text>
-                <text class="card-name">{{card.card_name}}</text>
-              </view>
-            </view>
+            <tarot-card
+              nameZh="{{card.card_name}}"
+              positionName="{{card.position_name}}"
+              isReversed="{{card.is_reversed}}"
+              cardNumber="{{card.card_number}}"
+              imagePath="{{card.imagePath}}"
+            />
           </view>
         </view>
 

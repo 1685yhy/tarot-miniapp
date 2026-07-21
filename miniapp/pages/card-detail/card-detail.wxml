@@ -52,7 +52,6 @@
             class="card-img-inner hero-image"
             src="{{card.imagePath}}"
             mode="aspectFit"
-            mode="aspectFit"
             wx:if="{{card.imagePath}}"
             bindload="onHeroImgLoad"
             binderror="onHeroImgError"
@@ -76,7 +75,6 @@
       <text
         class="keyword-tag"
         wx:for="{{card.keywordsList}}" wx:key="*this"
-        wx:key="*this"
       >{{item}}</text>
     </view>
 
