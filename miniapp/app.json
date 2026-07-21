@@ -2,15 +2,41 @@
   "pages": [
     "pages/index/index",
     "pages/encyclopedia/encyclopedia",
-    "pages/card-detail/card-detail",
-    "pages/reading/reading",
-    "pages/reading-result/reading-result",
-    "pages/chat/chat",
-    "pages/membership/membership",
-    "pages/profile/profile",
-    "pages/diary/diary",
-    "pages/daily-card/daily-card",
-    "pages/annual-report/annual-report"
+    "pages/profile/profile"
+  ],
+  "subPackages": [
+    {
+      "root": "pages/reading/",
+      "pages": ["reading"]
+    },
+    {
+      "root": "pages/reading-result/",
+      "pages": ["reading-result"]
+    },
+    {
+      "root": "pages/chat/",
+      "pages": ["chat"]
+    },
+    {
+      "root": "pages/card-detail/",
+      "pages": ["card-detail"]
+    },
+    {
+      "root": "pages/daily-card/",
+      "pages": ["daily-card"]
+    },
+    {
+      "root": "pages/annual-report/",
+      "pages": ["annual-report"]
+    },
+    {
+      "root": "pages/membership/",
+      "pages": ["membership"]
+    },
+    {
+      "root": "pages/diary/",
+      "pages": ["diary"]
+    }
   ],
   "window": {
     "backgroundTextStyle": "dark",
@@ -44,6 +70,16 @@
         "selectedIconPath": "/images/tabbar/profile-active.png"
       }
     ]
+  },
+  "preloadRule": {
+    "pages/index/index": {
+      "network": "all",
+      "packages": ["pages/daily-card/", "pages/reading/", "pages/reading-result/"]
+    },
+    "pages/encyclopedia/encyclopedia": {
+      "network": "all",
+      "packages": ["pages/card-detail/"]
+    }
   },
   "style": "v2",
   "lazyCodeLoading": "requiredComponents",
