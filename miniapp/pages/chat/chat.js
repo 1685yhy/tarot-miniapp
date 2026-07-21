@@ -1,6 +1,25 @@
 // pages/chat/chat.js
 const { request, getFriendlyError } = require('../../utils/api');
 
+// Spread type key → Chinese display name
+const SPREAD_TYPE_NAMES = {
+  three_card: '三牌占卜',
+  triangle: '恋人三角',
+  celtic_cross: '凯尔特十字',
+  career: '事业牌阵',
+  finance: '财运牌阵',
+  decision: '二择一',
+  life_cross: '人生十字',
+  horseshoe: '马蹄牌阵',
+  relationship: '关系牌阵',
+  year_ahead: '年度运势',
+  daily: '每日之牌',
+  career_path: '事业路线',
+  weekly_outlook: '周运势',
+  love_reading: '爱情占卜',
+  fortune_telling: '财运占卜',
+};
+
 Page({
   data: {
     readingId: '',
@@ -36,10 +55,12 @@ Page({
     // Load reading context and chat history
     try {
       const reading = await request(`/readings/${readingId}`);
+      const spreadTypeName = SPREAD_TYPE_NAMES[reading.spread_type] || reading.spread_type || '';
       this.setData({
         readingContext: {
           question: reading.question || '未指定问题',
           spreadType: reading.spread_type,
+          spreadTypeName,
         },
         messages: (reading.chat_messages || []).map(m => ({
           role: m.role,
@@ -59,6 +80,13 @@ Page({
 
   onUnload() {
     this._destroyed = true;
+    if (this._scrollTimer) {
+      clearTimeout(this._scrollTimer);
+      this._scrollTimer = null;
+    }
+  },
+
+  onHide() {
     if (this._scrollTimer) {
       clearTimeout(this._scrollTimer);
       this._scrollTimer = null;
@@ -99,6 +127,7 @@ Page({
         aiThinking: false,
         remainingFree: result.remaining_free,
       });
+      try { wx.vibrateShort({ type: 'light' }); } catch(e) {}
       this.scrollToBottom();
     } catch (err) {
       if (this._destroyed) return;
@@ -138,6 +167,7 @@ Page({
       if (this._destroyed) return;
       messages.push({ role: 'assistant', content: result.reply });
       this.setData({ messages, sending: false, aiThinking: false, remainingFree: result.remaining_free, inputText: '', canSend: false });
+      try { wx.vibrateShort({ type: 'light' }); } catch(e) {}
       this.scrollToBottom();
     } catch (err) {
       if (this._destroyed) return;

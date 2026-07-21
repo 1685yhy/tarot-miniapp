@@ -182,6 +182,7 @@ Page({
         },
       });
       this.setData({ diarySaved: true, diarySaving: false });
+      try { wx.vibrateShort({ type: 'light' }); } catch(e) {}
       wx.showToast({ title: '记录成功', icon: 'success' });
     } catch (err) {
       wx.showToast({ title: '保存失败，请重试', icon: 'none' });

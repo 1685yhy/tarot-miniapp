@@ -2,8 +2,8 @@
 <view class="container">
   <!-- ===== 加载 ===== -->
   <view wx:if="{{pageLoading}}" class="ar-loading">
-    <view class="ar-skeleton-icon"></view>
-    <view class="ar-skeleton-line"></view>
+    <view class="skeleton skeleton-icon"></view>
+    <view class="skeleton skeleton-line"></view>
   </view>
 
   <!-- ===== 错误 ===== -->

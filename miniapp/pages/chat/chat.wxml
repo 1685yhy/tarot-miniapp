@@ -26,7 +26,7 @@
 
   <!-- ===== Context header — tiny lavender reminder ===== -->
   <view wx:if="{{readingContext && !pageLoading && !pageError}}" class="ctx-header">
-    <text class="ctx-label">关于「{{readingContext.spreadType}}」的追问</text>
+    <text class="ctx-label">关于「{{readingContext.spreadTypeName}}」的追问</text>
     <text wx:if="{{readingContext.question}}" class="ctx-question">{{readingContext.question}}</text>
   </view>
 

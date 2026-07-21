@@ -165,7 +165,7 @@
       <!-- 专属牌阵提示：不展示主题选择，仅告知用户此牌阵的解读方向 -->
       <view class="theme-lock-banner" wx:if="{{spreadDefaultTheme}}">
         <text class="theme-lock-icon">✦</text>
-        <text class="theme-lock-text">此牌阵侧重<text class="theme-lock-keyword">{{THEME_LABELS[spreadDefaultTheme]}}</text>解读</text>
+        <text class="theme-lock-text">此牌阵侧重<text class="theme-lock-keyword">{{themeDefaultLabel}}</text>解读</text>
       </view>
 
       <!-- Draw button -->

@@ -3,12 +3,19 @@ const { request, getFriendlyError } = require('../../utils/api');
 const { cardEnter } = require('../../utils/animate');
 const { computeImagePath } = require('../../utils/cards');
 
-// ---- Spread type name mapping for share title ----
+// ---- Spread type key → Chinese name (must match reading.js SPREADS) ----
 const SPREAD_TYPE_NAMES = {
   three_card: '三牌占卜',
+  triangle: '恋人三角',
   celtic_cross: '凯尔特十字',
+  career: '事业牌阵',
+  finance: '财运牌阵',
+  decision: '二择一',
+  life_cross: '人生十字',
+  horseshoe: '马蹄牌阵',
+  relationship: '关系牌阵',
+  year_ahead: '年度运势',
   daily: '每日占卜',
-  relationship: '关系分析',
   career_path: '事业路线',
   weekly_outlook: '周运势',
   love_reading: '爱情占卜',
@@ -224,7 +231,10 @@ Page({
     this._clearStage3Timers();
 
     if (this._cachedReading) {
-      this.setData({ reading: this._cachedReading, pageLoading: false });
+      const spreadTypeName = SPREAD_TYPE_NAMES[this._cachedReading.spread_type]
+        || this._cachedReading.spread_type
+        || '三牌占卜';
+      this.setData({ reading: this._cachedReading, spreadTypeName, pageLoading: false });
       // Trigger staggered card entrance animation after render
       this._animateCardReveal();
     } else if (this._cachedError) {
@@ -412,6 +422,7 @@ Page({
      --------------------------------------------------------------- */
 
   onAllActionsChecked(e) {
+    try { wx.vibrateShort({ type: 'medium' }); } catch(e) {}
     const { readingId } = e.detail;
     wx.showToast({
       title: '全部完成 ✦',
