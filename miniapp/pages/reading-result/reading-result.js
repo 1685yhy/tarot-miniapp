@@ -40,6 +40,9 @@ Page({
     // Save / share
     isSaved: false,         // whether this reading is in saved_readings storage
 
+    // Undo reading
+    showUndo: false,
+
     // ---- wx.createAnimation native animation system ----
     useNativeAnim: true,
     // Staggered card entrance animations (one per drawn card)
@@ -62,6 +65,7 @@ Page({
     const id = options && options.id;
     const isPending = options && options.pending === '1';
     const spread = options && options.spread;
+    const isQuick = options && options.quick === '1';
 
     if (!id && !isPending) {
       wx.showToast({ title: '参数错误', icon: 'none' });
@@ -74,8 +78,17 @@ Page({
       this._pendingSpread = spread || 'three_card';
       this._cachedReading = null;
       this._cachedError = null;
-      this._startStages();
-      this._createReading();
+
+      if (isQuick) {
+        // Quick mode: skip stages 1-2, go directly to stage 3
+        this.setData({ loadingStage: 3, loadingDotCount: 1 });
+        this._startStage3();
+        this._createReading();
+      } else {
+        // Immersive mode: full 3-stage animation
+        this._startStages();
+        this._createReading();
+      }
       return;
     }
 
@@ -235,7 +248,7 @@ Page({
       const spreadTypeName = SPREAD_TYPE_NAMES[this._cachedReading.spread_type]
         || this._cachedReading.spread_type
         || '三牌占卜';
-      this.setData({ reading: this._cachedReading, spreadTypeName, pageLoading: false });
+      this.setData({ reading: this._cachedReading, spreadTypeName, pageLoading: false, showUndo: true });
       // Trigger staggered card entrance animation after render
       this._animateCardReveal();
       // Play reveal sound when reading result appears
@@ -414,6 +427,29 @@ Page({
 
   onNewReading() {
     wx.navigateBack();
+  },
+
+  /** Undo the current reading — allows user to re-draw cards */
+  onUndoReading() {
+    const reading = this.data.reading;
+    wx.showModal({
+      title: '重新抽牌',
+      content: '确定要放弃本次解读，重新抽牌吗？',
+      success: (res) => {
+        if (res.confirm) {
+          // Try to delete reading from backend
+          if (reading && reading.id) {
+            request(`/readings/${reading.id}`, { method: 'DELETE' }).catch(() => {
+              // Silently ignore backend errors — proceed with local cleanup
+            });
+          }
+          wx.removeStorageSync('pending_reading');
+          wx.redirectTo({
+            url: '/pages/reading/reading?type=' + (reading?.spread_type || 'three_card'),
+          });
+        }
+      },
+    });
   },
 
   onBackHome() {

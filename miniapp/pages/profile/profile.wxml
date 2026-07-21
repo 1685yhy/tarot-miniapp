@@ -101,6 +101,16 @@
         </view>
         <text class="menu-arrow">{{soundEnabled ? '✦' : '○'}}</text>
       </view>
+      <view class="menu-item anim-slide-up anim-stagger-4" bindtap="onToggleDrawMode">
+        <view class="menu-icon-wrap">
+          <image src="/images/icons/theme_general_64.png" mode="aspectFit" class="menu-icon-img"></image>
+        </view>
+        <view class="menu-content">
+          <text class="menu-title">默认抽牌模式</text>
+          <text class="menu-desc">{{defaultDrawMode === 'immersive' ? '沉浸解读' : '快速抽牌'}}</text>
+        </view>
+        <text class="menu-arrow">{{defaultDrawMode === 'immersive' ? '✨' : '⚡'}}</text>
+      </view>
       <view class="menu-item anim-slide-up anim-stagger-4" bindtap="onGoAbout">
         <view class="menu-icon-wrap">
           <image src="/images/icons/about_64.png" mode="aspectFit" class="menu-icon-img"></image>

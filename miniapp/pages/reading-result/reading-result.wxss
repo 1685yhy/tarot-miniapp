@@ -23,6 +23,37 @@
   height: 100vh;
 }
 
+/* ================================================================
+   UNDO BAR — Subtle, non-intrusive retract link at the bottom
+   ================================================================ */
+.undo-bar {
+  display: flex;
+  justify-content: center;
+  padding: var(--spacing-md) 0 calc(env(safe-area-inset-bottom) + var(--spacing-lg));
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.undo-bar:active {
+  opacity: 0.6;
+}
+
+.undo-text {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-tertiary);
+  letter-spacing: 2rpx;
+  padding: var(--spacing-sm) var(--spacing-xl);
+  border: 1rpx solid rgba(160, 152, 192, 0.2);
+  border-radius: var(--radius-pill);
+  transition: all var(--duration-fast) var(--ease-out);
+  display: inline-block;
+}
+
+.undo-text:active {
+  border-color: rgba(160, 152, 192, 0.4);
+  background: rgba(160, 152, 192, 0.05);
+}
+
 .inner-wrap {
   padding: var(--spacing-2xl) 40rpx 100rpx;
   box-sizing: border-box;
