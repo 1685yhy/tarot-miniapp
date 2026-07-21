@@ -53,6 +53,14 @@ Page({
     }
   },
 
+  onReady() {
+    // Analytics & accessibility hook — reserved for future use
+  },
+
+  onHide() {
+    // Cleanup hook — reserved for future use
+  },
+
   onRetry() {
     this.setData({ pageError: null, pageLoading: true });
     this.onLoad();

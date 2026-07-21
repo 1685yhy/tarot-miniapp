@@ -531,7 +531,7 @@
 }
 
 .keyword-tag {
-  padding: 6rpx 16rpx;
+  padding: 6rpx var(--spacing-sm);
   background: rgba(184, 169, 224, 0.10);
   border: 1rpx solid rgba(184, 169, 224, 0.18);
   border-radius: var(--radius-pill);
@@ -687,7 +687,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 160rpx var(--spacing-lg) 80rpx;
+  padding: 160rpx var(--spacing-lg) var(--spacing-3xl);
   text-align: center;
 }
 

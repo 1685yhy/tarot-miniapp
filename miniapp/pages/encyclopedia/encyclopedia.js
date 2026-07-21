@@ -206,4 +206,12 @@ Page({
   onUnload() {
     if (this._searchTimer) clearTimeout(this._searchTimer);
   },
+
+  onReady() {
+    // Analytics & accessibility hook — reserved for future use
+  },
+
+  onHide() {
+    // Cleanup hook — reserved for future use
+  },
 });

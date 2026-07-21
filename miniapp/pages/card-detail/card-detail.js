@@ -38,6 +38,14 @@ Page({
     this._destroyed = true;
   },
 
+  onReady() {
+    // Analytics & accessibility hook — reserved for future use
+  },
+
+  onHide() {
+    // Cleanup hook — reserved for future use
+  },
+
   async loadCard(id) {
     if (this._destroyed) return;
     this.setData({ pageLoading: true, pageError: null });

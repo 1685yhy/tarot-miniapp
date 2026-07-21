@@ -15,6 +15,14 @@ Page({
     loadingMore: false,
   },
 
+  onReady() {
+    // Analytics & accessibility hook — reserved for future use
+  },
+
+  onHide() {
+    // Cleanup hook — reserved for future use
+  },
+
   async onShow() {
     this.setData({ page: 1, entries: [], pageLoading: true });
     await this.loadEntries();

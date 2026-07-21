@@ -15,7 +15,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 100rpx var(--spacing-md) 80rpx;
+  padding: var(--spacing-4xl) var(--spacing-md) var(--spacing-3xl);
   min-height: 420rpx;
   overflow: hidden;
   z-index: var(--z-base);
@@ -250,7 +250,7 @@
    4c. PENDING READING CARD — resume incomplete reading
    ============================================================ */
 .pending-reading-card {
-  padding: 28rpx 24rpx;
+  padding: var(--spacing-md) var(--spacing-md);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -261,7 +261,7 @@
 .pending-reading-left {
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  gap: var(--spacing-sm);
 }
 
 .pending-reading-icon-wrap {
@@ -298,7 +298,7 @@
    4d. DIARY ENTRY CARD — today's journal entry
    ============================================================ */
 .diary-entry-card {
-  padding: 28rpx 24rpx;
+  padding: var(--spacing-md) var(--spacing-md);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -309,7 +309,7 @@
 .diary-entry-left {
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  gap: var(--spacing-sm);
 }
 
 .diary-entry-emoji {
@@ -447,11 +447,11 @@
   margin-bottom: var(--spacing-md, 24rpx);
   letter-spacing: 2rpx;
   position: relative;
-  padding-left: 24rpx;
+  padding-left: var(--spacing-md);
 }
 
 .section-title {
-  padding-left: 24rpx;
+  padding-left: var(--spacing-md);
   border-left: 3rpx solid var(--color-gold, #F4D48C);
 }
 
@@ -462,7 +462,7 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  padding: 24rpx 16rpx;
+  padding: var(--spacing-md) var(--spacing-sm);
 }
 
 /* --- Free/Premium tags on spread cards --- */
@@ -523,7 +523,7 @@
   background: linear-gradient(145deg, #25255A 0%, #2A2A5E 100%);
   border: 1.5rpx solid rgba(244, 212, 140, 0.12);
   border-radius: var(--radius-lg, 24rpx);
-  padding: 32rpx 24rpx;
+  padding: var(--spacing-lg) var(--spacing-md);
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow-card);
@@ -654,7 +654,7 @@
   align-items: center;
   justify-content: center;
   margin-top: var(--spacing-lg);
-  padding: 28rpx 24rpx;
+  padding: var(--spacing-md) var(--spacing-md);
   background: linear-gradient(145deg, #25255A 0%, #2A2A5E 100%);
   border: 1.5rpx solid rgba(244, 212, 140, 0.12);
   border-radius: var(--radius-lg, 24rpx);
@@ -775,7 +775,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16rpx;
+  gap: var(--spacing-sm);
   padding: 0 0 40rpx;
 }
 
@@ -801,7 +801,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 24rpx;
+  gap: var(--spacing-md);
   padding: 0 60rpx var(--spacing-3xl);
   width: 100%;
   box-sizing: border-box;
@@ -814,7 +814,7 @@
   font-weight: var(--font-weight-medium, 500);
   border: 1.5rpx solid rgba(244, 212, 140, 0.30);
   border-radius: 999rpx;
-  padding: 24rpx 60rpx;
+  padding: var(--spacing-md) var(--spacing-2xl);
   text-align: center;
   transition: all var(--duration-fast) var(--ease-out);
   cursor: pointer;
@@ -830,7 +830,7 @@
 .onboarding-skip {
   font-size: var(--font-size-caption);
   color: rgba(184, 169, 224, 0.45);
-  padding: 24rpx 20rpx;
+  padding: var(--spacing-md) var(--spacing-sm);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: all var(--duration-fast) var(--ease-out);
@@ -847,7 +847,7 @@
   font-weight: var(--font-weight-semibold, 600);
   border: none;
   border-radius: 999rpx;
-  padding: 26rpx 80rpx;
+  padding: var(--spacing-md) var(--spacing-3xl);
   text-align: center;
   letter-spacing: 4rpx;
   box-shadow: 0 4rpx 30rpx rgba(244, 212, 140, 0.30);
@@ -1278,7 +1278,7 @@
 .daily-updated-badge {
   display: inline-block;
   margin-top: 16rpx;
-  padding: 8rpx 20rpx;
+  padding: var(--spacing-xxs) var(--spacing-sm);
   font-size: var(--font-size-caption);
   font-weight: var(--font-weight-medium);
   color: var(--color-gold);
@@ -1291,7 +1291,7 @@
 .daily-reminder-badge {
   display: inline-block;
   margin-top: 16rpx;
-  padding: 8rpx 20rpx;
+  padding: var(--spacing-xxs) var(--spacing-sm);
   font-size: var(--font-size-caption);
   font-weight: var(--font-weight-medium);
   color: rgba(244, 212, 140, 0.55);
@@ -1329,9 +1329,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8rpx;
-  margin-top: 20rpx;
-  padding: 10rpx 24rpx;
+  gap: var(--spacing-xxs);
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-xxs) var(--spacing-md);
   background: rgba(244, 212, 140, 0.08);
   border: 1rpx solid rgba(244, 212, 140, 0.18);
   border-radius: var(--radius-pill);
@@ -1357,9 +1357,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8rpx;
-  margin-top: 20rpx;
-  padding: 16rpx;
+  gap: var(--spacing-xxs);
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-sm);
   position: relative;
   z-index: 1;
 }
@@ -1377,7 +1377,7 @@
   font-weight: var(--font-weight-medium);
   color: var(--color-gold);
   letter-spacing: 1rpx;
-  padding: 6rpx 16rpx;
+  padding: 6rpx var(--spacing-sm);
   border-bottom: 1rpx dashed rgba(244, 212, 140, 0.25);
   transition: all var(--duration-fast) var(--ease-out);
 }
@@ -1397,7 +1397,7 @@
 
 .free-banner-content {
   display: inline-block;
-  padding: 16rpx 36rpx;
+  padding: var(--spacing-sm) var(--spacing-lg);
   background: rgba(200, 184, 232, 0.08);
   border: 1rpx solid rgba(200, 184, 232, 0.15);
   border-radius: 999rpx;
@@ -1439,7 +1439,7 @@
   color: var(--color-text-tertiary, #A098C0);
   opacity: 0.55;
   letter-spacing: 2rpx;
-  padding: 12rpx 24rpx;
+  padding: var(--spacing-xs) var(--spacing-md);
   display: inline-block;
   transition: opacity var(--duration-fast) var(--ease-out);
 }
@@ -1457,7 +1457,7 @@
 .skeleton-grid-3 {
   display: flex;
   flex-wrap: wrap;
-  gap: 16rpx;
+  gap: var(--spacing-sm);
 }
 
 .skeleton-grid-3 > .skeleton--card-sm {
@@ -1468,7 +1468,7 @@
 .spread-grid-2 {
   display: flex;
   flex-wrap: wrap;
-  gap: 16rpx;
+  gap: var(--spacing-sm);
 }
 
 .spread-grid-2 > .card-press {
@@ -1496,7 +1496,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40rpx 32rpx 32rpx;
+  padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-lg);
   text-align: center;
 }
 
@@ -1540,7 +1540,7 @@
 /* "已学习 ✓" badge — green, pill-shaped */
 .daily-card-badge {
   display: inline-block;
-  padding: 6rpx 20rpx;
+  padding: 6rpx var(--spacing-sm);
   font-size: var(--font-size-caption, 24rpx);
   font-weight: var(--font-weight-medium, 500);
   color: #5EE0A0;

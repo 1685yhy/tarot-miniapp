@@ -347,6 +347,10 @@ Page({
     this._clearTimers();
   },
 
+  onHide() {
+    this._clearTimers();
+  },
+
   _pushTimer(timer) {
     if (!this._timers) this._timers = [];
     this._timers.push(timer);
