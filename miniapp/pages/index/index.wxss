@@ -39,7 +39,7 @@
   );
   pointer-events: none;
   z-index: 0;
-  animation: hero-glow-pulse 4s ease-in-out infinite;
+  animation: hero-glow-pulse 6s ease-in-out infinite;
 }
 
 @keyframes hero-glow-pulse {
@@ -633,14 +633,14 @@
   animation: card-staggered 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
-.section > view > .card-press:nth-child(1) { animation-delay: 0.70s; }
-.section > view > .card-press:nth-child(2) { animation-delay: 0.75s; }
-.section > view > .card-press:nth-child(3) { animation-delay: 0.80s; }
-.section > view > .card-press:nth-child(4) { animation-delay: 0.85s; }
+.section > view > .card-press:nth-child(1) { animation-delay: 0.30s; }
+.section > view > .card-press:nth-child(2) { animation-delay: 0.35s; }
+.section > view > .card-press:nth-child(3) { animation-delay: 0.40s; }
+.section > view > .card-press:nth-child(4) { animation-delay: 0.45s; }
 
 .more-spreads {
   opacity: 0;
-  animation: card-staggered 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.90s forwards;
+  animation: card-staggered 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.50s forwards;
 }
 
 /* NOTE: spread-grid shimmer sweep and icon tap pulse removed — restraint */
@@ -691,184 +691,90 @@
 }
 
 /* ============================================================
-   12. ONBOARDING — First-time guide overlay
-   Dark indigo full screen with gold accents
+   12. ONBOARDING BUBBLE — Step 1 lightweight hint
+   Dark semi-transparent background + gold border + arrow
    ============================================================ */
 
-.onboarding-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1000;
-  background: var(--color-bg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  animation: page-fade-up 0.6s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94)) forwards;
-}
-
-.onboarding-swiper {
-  flex: 1;
-  width: 100%;
-}
-
-.onboarding-slide {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.onboarding-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 0 60rpx;
-  text-align: center;
-  animation: onboarding-fade-in 0.4s ease-out forwards;
-}
-
-@keyframes onboarding-fade-in {
-  0% {
-    opacity: 0;
-    transform: translateY(20rpx) scale(0.96);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.onboarding-emoji {
-  font-size: calc(var(--font-size-display) + 44rpx);
-  display: block;
-  margin-bottom: var(--spacing-xl);
-  /* filter replaced */
-}
-
-.onboarding-title {
-  font-size: var(--font-size-title);
-  font-weight: var(--font-weight-bold, 700);
-  color: var(--color-gold, #F4D48C);
-  display: block;
-  margin-bottom: 20rpx;
-  letter-spacing: 6rpx;
-  text-shadow: 0 0 40rpx rgba(244, 212, 140, 0.12);
-}
-
-.onboarding-desc {
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-normal, 400);
-  color: var(--color-lavender, #B8A9E0);
-  display: block;
-  line-height: 1.8;
-  letter-spacing: 2rpx;
+/* Wrapper: positioned relative to daily card area with margin */
+.onboarding-bubble-wrap {
+  position: relative;
+  margin: 0 auto 20rpx;
   max-width: 520rpx;
+  z-index: 100;
+  opacity: 0;
+  transform: translateY(-10rpx);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
 }
 
-/* --- Dots indicator --- */
-
-.onboarding-dots {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-sm);
-  padding: 0 0 40rpx;
+.onboarding-bubble-wrap.bubble-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
-.onboarding-dot {
-  width: 16rpx;
-  height: 16rpx;
-  border-radius: 50%;
-  background: rgba(184, 169, 224, 0.25);
-  transition: all var(--duration-fast) var(--ease-out);
+/* Bubble card */
+.onboarding-bubble {
+  position: relative;
+  padding: 24rpx 32rpx 28rpx;
+  background: rgba(26, 26, 62, 0.95);
+  border: 1.5rpx solid var(--color-gold, #F4D48C);
+  border-radius: 16rpx;
+  text-align: center;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.onboarding-dot.active {
-  width: 48rpx;
-  border-radius: 12rpx;
-  background: var(--color-gold, #F4D48C);
-  box-shadow: 0 0 20rpx rgba(244, 212, 140, 0.30);
+.onboarding-bubble:active {
+  opacity: 0.85;
 }
 
-/* --- Bottom buttons --- */
-
-.onboarding-bottom {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-md);
-  padding: 0 60rpx var(--spacing-3xl);
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.onboarding-next {
-  background: rgba(244, 212, 140, 0.12);
-  color: var(--color-gold, #F4D48C);
-  font-size: var(--font-size-body);
+/* Bubble text — gold title */
+.bubble-text {
+  display: block;
+  font-size: var(--font-size-caption, 24rpx);
   font-weight: var(--font-weight-medium, 500);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.30);
-  border-radius: 999rpx;
-  padding: var(--spacing-md) var(--spacing-2xl);
-  text-align: center;
-  transition: all var(--duration-fast) var(--ease-out);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+  color: var(--color-gold, #F4D48C);
+  line-height: 1.6;
+  letter-spacing: 2rpx;
 }
 
-.onboarding-next:active {
-  background: rgba(244, 212, 140, 0.20);
-  border-color: rgba(244, 212, 140, 0.55);
-  transform: scale(0.97);
+/* Bubble action — white secondary text */
+.bubble-action {
+  display: block;
+  font-size: var(--font-size-xs, 20rpx);
+  color: #ffffff;
+  margin-top: 8rpx;
+  opacity: 0.75;
+  letter-spacing: 1rpx;
 }
 
-.onboarding-skip {
-  font-size: var(--font-size-caption);
-  color: rgba(184, 169, 224, 0.45);
-  padding: var(--spacing-md) var(--spacing-sm);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: all var(--duration-fast) var(--ease-out);
+/* Downward-pointing arrow */
+.bubble-arrow {
+  position: absolute;
+  bottom: -14rpx;
+  left: 50%;
+  margin-left: -12rpx;
+  width: 0;
+  height: 0;
+  border-left: 12rpx solid transparent;
+  border-right: 12rpx solid transparent;
+  border-top: 14rpx solid rgba(26, 26, 62, 0.95);
+  z-index: 2;
 }
 
-.onboarding-skip:active {
-  color: rgba(184, 169, 224, 0.75);
-}
-
-.onboarding-start {
-  background: linear-gradient(135deg, #F4D48C 0%, #E6C070 100%);
-  color: var(--color-text-inverse);
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-semibold, 600);
-  border: none;
-  border-radius: 999rpx;
-  padding: var(--spacing-md) var(--spacing-3xl);
-  text-align: center;
-  letter-spacing: 4rpx;
-  box-shadow: 0 4rpx 30rpx rgba(244, 212, 140, 0.30);
-  transition: all var(--duration-fast) var(--ease-out);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  animation: onboarding-start-pulse 2.5s ease-in-out infinite;
-}
-
-@keyframes onboarding-start-pulse {
-  0%, 100% {
-    box-shadow: 0 4rpx 30rpx rgba(244, 212, 140, 0.30);
-  }
-  50% {
-    box-shadow: 0 4rpx 50rpx rgba(244, 212, 140, 0.55);
-  }
-}
-
-.onboarding-start:active {
-  transform: scale(0.97);
-  box-shadow: 0 2rpx 20rpx rgba(244, 212, 140, 0.40);
+/* Gold border triangle behind the arrow */
+.bubble-arrow::before {
+  content: '';
+  position: absolute;
+  top: -16rpx;
+  left: -14rpx;
+  width: 0;
+  height: 0;
+  border-left: 14rpx solid transparent;
+  border-right: 14rpx solid transparent;
+  border-top: 16rpx solid var(--color-gold, #F4D48C);
+  z-index: -1;
 }
 
 /* ============================================================
@@ -899,48 +805,48 @@
   background: transparent;
   border-radius: 50%;
   box-shadow:
-    25rpx 40rpx rgba(255,255,255,0.18),
-    68rpx 105rpx rgba(255,255,255,0.15),
-    120rpx 30rpx rgba(255,255,255,0.20),
-    175rpx 180rpx rgba(255,255,255,0.12),
-    230rpx 60rpx rgba(255,255,255,0.16),
-    290rpx 200rpx rgba(255,255,255,0.14),
-    340rpx 85rpx rgba(255,255,255,0.18),
-    400rpx 250rpx rgba(255,255,255,0.10),
-    455rpx 120rpx rgba(255,255,255,0.16),
-    510rpx 35rpx rgba(255,255,255,0.20),
-    580rpx 170rpx rgba(255,255,255,0.12),
-    630rpx 90rpx rgba(255,255,255,0.15),
-    690rpx 210rpx rgba(255,255,255,0.18),
-    50rpx 320rpx rgba(255,255,255,0.14),
-    130rpx 400rpx rgba(255,255,255,0.12),
-    200rpx 350rpx rgba(255,255,255,0.16),
-    270rpx 480rpx rgba(255,255,255,0.10),
-    350rpx 380rpx rgba(255,255,255,0.18),
-    420rpx 520rpx rgba(255,255,255,0.14),
-    495rpx 450rpx rgba(255,255,255,0.12),
-    560rpx 300rpx rgba(255,255,255,0.16),
-    640rpx 500rpx rgba(255,255,255,0.15),
-    710rpx 420rpx rgba(255,255,255,0.10),
-    30rpx 560rpx rgba(255,255,255,0.18),
-    100rpx 630rpx rgba(255,255,255,0.12),
-    180rpx 700rpx rgba(255,255,255,0.16),
-    260rpx 580rpx rgba(255,255,255,0.14),
-    340rpx 650rpx rgba(255,255,255,0.10),
-    430rpx 720rpx rgba(255,255,255,0.18),
-    510rpx 600rpx rgba(255,255,255,0.12),
-    600rpx 680rpx rgba(255,255,255,0.15),
-    680rpx 550rpx rgba(255,255,255,0.14),
-    45rpx 800rpx rgba(255,255,255,0.10),
-    140rpx 880rpx rgba(255,255,255,0.16),
-    230rpx 780rpx rgba(255,255,255,0.12),
-    320rpx 900rpx rgba(255,255,255,0.18),
-    400rpx 840rpx rgba(255,255,255,0.14),
-    480rpx 950rpx rgba(255,255,255,0.10),
-    570rpx 860rpx rgba(255,255,255,0.16),
-    660rpx 920rpx rgba(255,255,255,0.12),
-    730rpx 780rpx rgba(255,255,255,0.15);
-  animation: stars-drift-slow 30s ease-in-out infinite;
+    25rpx 40rpx rgba(255,255,255,0.09),
+    68rpx 105rpx rgba(255,255,255,0.08),
+    120rpx 30rpx rgba(255,255,255,0.10),
+    175rpx 180rpx rgba(255,255,255,0.06),
+    230rpx 60rpx rgba(255,255,255,0.08),
+    290rpx 200rpx rgba(255,255,255,0.07),
+    340rpx 85rpx rgba(255,255,255,0.09),
+    400rpx 250rpx rgba(255,255,255,0.05),
+    455rpx 120rpx rgba(255,255,255,0.08),
+    510rpx 35rpx rgba(255,255,255,0.10),
+    580rpx 170rpx rgba(255,255,255,0.06),
+    630rpx 90rpx rgba(255,255,255,0.08),
+    690rpx 210rpx rgba(255,255,255,0.09),
+    50rpx 320rpx rgba(255,255,255,0.07),
+    130rpx 400rpx rgba(255,255,255,0.06),
+    200rpx 350rpx rgba(255,255,255,0.08),
+    270rpx 480rpx rgba(255,255,255,0.05),
+    350rpx 380rpx rgba(255,255,255,0.09),
+    420rpx 520rpx rgba(255,255,255,0.07),
+    495rpx 450rpx rgba(255,255,255,0.06),
+    560rpx 300rpx rgba(255,255,255,0.08),
+    640rpx 500rpx rgba(255,255,255,0.08),
+    710rpx 420rpx rgba(255,255,255,0.05),
+    30rpx 560rpx rgba(255,255,255,0.09),
+    100rpx 630rpx rgba(255,255,255,0.06),
+    180rpx 700rpx rgba(255,255,255,0.08),
+    260rpx 580rpx rgba(255,255,255,0.07),
+    340rpx 650rpx rgba(255,255,255,0.05),
+    430rpx 720rpx rgba(255,255,255,0.09),
+    510rpx 600rpx rgba(255,255,255,0.06),
+    600rpx 680rpx rgba(255,255,255,0.08),
+    680rpx 550rpx rgba(255,255,255,0.07),
+    45rpx 800rpx rgba(255,255,255,0.05),
+    140rpx 880rpx rgba(255,255,255,0.08),
+    230rpx 780rpx rgba(255,255,255,0.06),
+    320rpx 900rpx rgba(255,255,255,0.09),
+    400rpx 840rpx rgba(255,255,255,0.07),
+    480rpx 950rpx rgba(255,255,255,0.05),
+    570rpx 860rpx rgba(255,255,255,0.08),
+    660rpx 920rpx rgba(255,255,255,0.06),
+    730rpx 780rpx rgba(255,255,255,0.08);
+  animation: stars-drift-slow 60s ease-in-out infinite;
 }
 
 /* --- Layer 2 — Mid: 18 gold-tinted dots, medium drift --- */
@@ -954,25 +860,25 @@
   background: transparent;
   border-radius: 50%;
   box-shadow:
-    55rpx 130rpx rgba(244,212,140,0.15),
-    160rpx 60rpx rgba(244,212,140,0.12),
-    250rpx 230rpx rgba(244,212,140,0.18),
-    380rpx 150rpx rgba(244,212,140,0.10),
-    470rpx 280rpx rgba(244,212,140,0.15),
-    590rpx 110rpx rgba(244,212,140,0.12),
-    700rpx 240rpx rgba(244,212,140,0.18),
-    85rpx 370rpx rgba(244,212,140,0.10),
-    200rpx 450rpx rgba(244,212,140,0.15),
-    330rpx 350rpx rgba(244,212,140,0.12),
-    460rpx 500rpx rgba(244,212,140,0.18),
-    560rpx 430rpx rgba(244,212,140,0.10),
-    670rpx 560rpx rgba(244,212,140,0.15),
-    110rpx 620rpx rgba(244,212,140,0.12),
-    250rpx 720rpx rgba(244,212,140,0.18),
-    390rpx 660rpx rgba(244,212,140,0.10),
-    530rpx 790rpx rgba(244,212,140,0.15),
-    650rpx 700rpx rgba(244,212,140,0.12);
-  animation: stars-drift-mid 20s ease-in-out infinite;
+    55rpx 130rpx rgba(244,212,140,0.08),
+    160rpx 60rpx rgba(244,212,140,0.06),
+    250rpx 230rpx rgba(244,212,140,0.09),
+    380rpx 150rpx rgba(244,212,140,0.05),
+    470rpx 280rpx rgba(244,212,140,0.08),
+    590rpx 110rpx rgba(244,212,140,0.06),
+    700rpx 240rpx rgba(244,212,140,0.09),
+    85rpx 370rpx rgba(244,212,140,0.05),
+    200rpx 450rpx rgba(244,212,140,0.08),
+    330rpx 350rpx rgba(244,212,140,0.06),
+    460rpx 500rpx rgba(244,212,140,0.09),
+    560rpx 430rpx rgba(244,212,140,0.05),
+    670rpx 560rpx rgba(244,212,140,0.08),
+    110rpx 620rpx rgba(244,212,140,0.06),
+    250rpx 720rpx rgba(244,212,140,0.09),
+    390rpx 660rpx rgba(244,212,140,0.05),
+    530rpx 790rpx rgba(244,212,140,0.08),
+    650rpx 700rpx rgba(244,212,140,0.06);
+  animation: stars-drift-mid 40s ease-in-out infinite;
 }
 
 /* --- Layer 3 — Close: 7 bright gold dots, fast drift with glow --- */
@@ -986,21 +892,21 @@
   background: transparent;
   border-radius: 50%;
   box-shadow:
-    120rpx 160rpx #F4D48C,
-    120rpx 160rpx 8rpx 2rpx rgba(244,212,140,0.12),
-    310rpx 380rpx #E8C878,
-    310rpx 380rpx 8rpx 2rpx rgba(232,200,120,0.10),
-    520rpx 220rpx #F4D48C,
-    520rpx 220rpx 8rpx 2rpx rgba(244,212,140,0.12),
-    180rpx 530rpx #E8C878,
-    180rpx 530rpx 8rpx 2rpx rgba(232,200,120,0.10),
-    450rpx 600rpx #F4D48C,
-    450rpx 600rpx 8rpx 2rpx rgba(244,212,140,0.12),
-    680rpx 350rpx #E8C878,
-    680rpx 350rpx 8rpx 2rpx rgba(232,200,120,0.10),
-    300rpx 800rpx #F4D48C,
-    300rpx 800rpx 8rpx 2rpx rgba(244,212,140,0.12);
-  animation: stars-drift-close 12s ease-in-out infinite;
+    120rpx 160rpx rgba(244,212,140,0.30),
+    120rpx 160rpx 8rpx 2rpx rgba(244,212,140,0.06),
+    310rpx 380rpx rgba(232,200,120,0.25),
+    310rpx 380rpx 8rpx 2rpx rgba(232,200,120,0.05),
+    520rpx 220rpx rgba(244,212,140,0.30),
+    520rpx 220rpx 8rpx 2rpx rgba(244,212,140,0.06),
+    180rpx 530rpx rgba(232,200,120,0.25),
+    180rpx 530rpx 8rpx 2rpx rgba(232,200,120,0.05),
+    450rpx 600rpx rgba(244,212,140,0.30),
+    450rpx 600rpx 8rpx 2rpx rgba(244,212,140,0.06),
+    680rpx 350rpx rgba(232,200,120,0.25),
+    680rpx 350rpx 8rpx 2rpx rgba(232,200,120,0.05),
+    300rpx 800rpx rgba(244,212,140,0.30),
+    300rpx 800rpx 8rpx 2rpx rgba(244,212,140,0.06);
+  animation: stars-drift-close 24s ease-in-out infinite;
 }
 
 @keyframes stars-drift-slow {
@@ -1042,7 +948,7 @@
     rgba(184, 169, 224, 0.04) 0%,
     transparent 70%
   );
-  animation: nebula-rotate 60s ease-in-out infinite;
+  animation: none;
 }
 
 .nebula-gold {
@@ -1051,7 +957,7 @@
     rgba(244, 212, 140, 0.03) 0%,
     transparent 65%
   );
-  animation: nebula-rotate-reverse 60s ease-in-out infinite;
+  animation: none;
 }
 
 @keyframes nebula-rotate {
@@ -1095,8 +1001,7 @@
     -20rpx 7rpx 2rpx -1rpx rgba(244,212,140,0.22),
     -40rpx 14rpx 3rpx -2rpx rgba(244,212,140,0.10),
     -60rpx 20rpx 4rpx -3rpx rgba(244,212,140,0.05);
-  animation: shooting-star-fly 30s ease-in-out infinite;
-  animation-delay: 8s;
+  animation: none;
 }
 
 @keyframes shooting-star-fly {
@@ -1146,7 +1051,7 @@
   transform: translate(-50%, -50%);
   border: 1rpx solid rgba(244, 212, 140, 0.10);
   border-radius: 50%;
-  animation: ring-expand 4s ease-out infinite;
+  animation: ring-expand 6s ease-out infinite;
 }
 
 .hero-glow-rings::after {
@@ -1159,7 +1064,7 @@
   transform: translate(-50%, -50%);
   border: 1rpx solid rgba(244, 212, 140, 0.06);
   border-radius: 50%;
-  animation: ring-expand 4s ease-out infinite 2s;
+  animation: ring-expand 6s ease-out infinite 3s;
 }
 
 @keyframes ring-expand {
@@ -1257,15 +1162,15 @@
     transform: translateY(12rpx) scale(0.4);
   }
   25% {
-    opacity: 0.9;
+    opacity: 0.2;
     transform: translateY(-6rpx) scale(1.1);
   }
   50% {
-    opacity: 0.5;
+    opacity: 0.12;
     transform: translateY(-12rpx) scale(0.7);
   }
   75% {
-    opacity: 0.7;
+    opacity: 0.15;
     transform: translateY(-2rpx) scale(0.9);
   }
 }
@@ -1310,17 +1215,17 @@
 
 @keyframes card-ready-pulse {
   0%, 100% {
-    border-color: rgba(244, 212, 140, 0.30);
+    border-color: rgba(244, 212, 140, 0.40);
     box-shadow:
       0 4rpx 24rpx rgba(0, 0, 0, 0.28),
-      0 0 50rpx rgba(244, 212, 140, 0.06);
+      0 0 50rpx rgba(244, 212, 140, 0.12);
   }
   50% {
-    border-color: rgba(244, 212, 140, 0.55);
+    border-color: rgba(244, 212, 140, 0.70);
     box-shadow:
       0 4rpx 24rpx rgba(0, 0, 0, 0.28),
-      0 0 60rpx rgba(244, 212, 140, 0.18),
-      0 0 120rpx rgba(244, 212, 140, 0.08);
+      0 0 80rpx rgba(244, 212, 140, 0.25),
+      0 0 150rpx rgba(244, 212, 140, 0.10);
   }
 }
 
@@ -1492,7 +1397,8 @@
   background: linear-gradient(145deg, #2A2A5E 0%, #2E2E62 100%);
   box-shadow:
     0 4rpx 24rpx rgba(0, 0, 0, 0.28),
-    0 0 40rpx rgba(244, 212, 140, 0.06);
+    0 0 50rpx rgba(244, 212, 140, 0.15),
+    0 0 100rpx rgba(244, 212, 140, 0.06);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1507,7 +1413,7 @@
   margin-bottom: 20rpx;
   border-radius: var(--radius-md, 16rpx);
   overflow: hidden;
-  box-shadow: 0 2rpx 16rpx rgba(0, 0, 0, 0.30);
+  box-shadow: 0 0 30rpx rgba(244, 212, 140, 0.20), 0 0 60rpx rgba(244, 212, 140, 0.08);
 }
 
 .daily-card-thumb {
@@ -1560,20 +1466,20 @@
   bottom: -4rpx;
   border-radius: inherit;
   pointer-events: none;
-  border: 2rpx solid rgba(244, 212, 140, 0.30);
+  border: 2rpx solid rgba(244, 212, 140, 0.40);
   animation: daily-glow-breathe 2s ease-in-out infinite;
 }
 
 @keyframes daily-glow-breathe {
   0%, 100% {
-    opacity: 0.3;
-    border-color: rgba(244, 212, 140, 0.30);
-    box-shadow: 0 0 20rpx rgba(244, 212, 140, 0.06);
+    opacity: 0.6;
+    border-color: rgba(244, 212, 140, 0.40);
+    box-shadow: 0 0 30rpx rgba(244, 212, 140, 0.12);
   }
   50% {
     opacity: 1.0;
-    border-color: rgba(244, 212, 140, 0.70);
-    box-shadow: 0 0 40rpx rgba(244, 212, 140, 0.15), 0 0 80rpx rgba(244, 212, 140, 0.08);
+    border-color: rgba(244, 212, 140, 0.80);
+    box-shadow: 0 0 60rpx rgba(244, 212, 140, 0.25), 0 0 120rpx rgba(244, 212, 140, 0.12), 0 0 180rpx rgba(244, 212, 140, 0.05);
   }
 }
 
@@ -1581,10 +1487,18 @@
    ACCESSIBILITY: Reduced Motion
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
-  .hero-glow-ring { animation: none; }
-  .daily-card { animation: none; }
-  .stars-distant, .stars-mid, .stars-close { animation: none; }
-  .nebula-lavender, .nebula-gold { animation: none; }
-  .hero-title, .hero-subtitle { animation: none; opacity: 1; }
-  .card--teaching .daily-card-glow-overlay { animation: none; }
+  .hero::before,
+  .hero-glow-rings::before,
+  .hero-glow-rings::after,
+  .stars-layer::after,
+  .nebula,
+  .shooting-star::after,
+  .card-warm,
+  .card--teaching,
+  .daily-card-glow-overlay,
+  .sparkle-field .sparkle {
+    animation: none !important;
+  }
+  .sparkle-field .sparkle { opacity: 0; }
+  .daily-card-glow-overlay { opacity: 0.6; border-color: rgba(244,212,140,0.30); }
 }
