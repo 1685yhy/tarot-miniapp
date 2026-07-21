@@ -102,7 +102,7 @@ page {
   font-size: var(--font-size-subhead);
   font-weight: var(--font-weight-semibold);
   border-radius: var(--radius-pill);
-  padding: 28rpx 0;
+  padding: var(--spacing-md) 0;
   border: none;
   box-shadow: var(--shadow-gold-button);
   letter-spacing: 2rpx;
@@ -132,7 +132,7 @@ page {
   color: var(--color-text-secondary);
   font-size: var(--font-size-body);
   border-radius: var(--radius-pill);
-  padding: 24rpx 0;
+  padding: var(--spacing-md) 0;
   letter-spacing: 1rpx;
   transition: all var(--duration-base);
   display: flex;
@@ -352,7 +352,7 @@ page {
 
 .btn-small {
   font-size: var(--font-size-caption);
-  padding: 16rpx 36rpx;
+  padding: var(--spacing-sm) var(--spacing-lg);
 }
 
 /* ============================================================
@@ -360,6 +360,10 @@ page {
    ============================================================ */
 .skeleton-ar-wrap {
   padding: var(--spacing-2xl) 0;
+}
+
+.ar-loading {
+  padding: var(--spacing-3xl) var(--spacing-xl);
 }
 
 .skeleton-hero-area {
@@ -412,16 +416,16 @@ page {
    ================================================================ */
 .ar-intro {
   text-align: center;
-  padding: 80rpx 48rpx;
+  padding: var(--spacing-3xl) var(--spacing-xl);
 }
 .ar-intro-icon { font-size: 80rpx; display: block; margin-bottom: 24rpx; }
 .ar-intro-title { font-size: var(--font-size-display); font-weight: 700; color: var(--color-gold); display: block; letter-spacing: 3rpx; }
-.ar-intro-desc { font-size: var(--font-size-caption); color: var(--color-text-tertiary); display: block; margin: 24rpx 0 40rpx; line-height: 1.8; padding: 0 16rpx; }
+.ar-intro-desc { font-size: var(--font-size-caption); color: var(--color-text-tertiary); display: block; margin: var(--spacing-md) 0 var(--spacing-xl); line-height: 1.8; padding: 0 var(--spacing-sm); }
 
 .ar-preview-cards {
   display: flex;
   flex-wrap: wrap;
-  gap: 16rpx;
+  gap: var(--spacing-sm);
   justify-content: center;
   margin-bottom: 48rpx;
 }
@@ -443,18 +447,18 @@ page {
   width: 80%; margin: 0 auto;
   background: linear-gradient(135deg, #F4D48C, #E8C67A);
   color: #1A1A3E; font-weight: 700; font-size: var(--font-size-body);
-  border-radius: 50rpx; padding: 28rpx 0; border: none; letter-spacing: 2rpx;
+  border-radius: 50rpx; padding: var(--spacing-md) 0; border: none; letter-spacing: 2rpx;
 }
 .ar-buy-btn {
-  width: 80%; margin: 20rpx auto 0;
+  width: 80%; margin: var(--spacing-sm) auto 0;
   background: transparent; color: var(--color-text-tertiary);
   font-size: var(--font-size-caption); border-radius: 50rpx;
-  padding: 20rpx 0; border: 1rpx solid rgba(244,212,140,0.15);
+  padding: var(--spacing-sm) 0; border: 1rpx solid rgba(244,212,140,0.15);
 }
 .ar-intro-note { font-size: 20rpx; color: var(--color-text-tertiary); opacity: 0.5; display: block; margin-top: 24rpx; }
 
 /* Generating */
-.ar-generating { text-align: center; padding: 160rpx 48rpx; }
+.ar-generating { text-align: center; padding: 160rpx var(--spacing-xl); }
 .ar-gen-orb { position: relative; width: 160rpx; height: 160rpx; margin: 0 auto 40rpx; }
 .ar-gen-ring {
   position: absolute; inset: 0; border-radius: 50%;
@@ -468,17 +472,17 @@ page {
 .ar-gen-sub { font-size: var(--font-size-caption); color: var(--color-text-tertiary); margin-top: 12rpx; display: block; }
 
 /* Report */
-.ar-report { padding: 40rpx 32rpx 120rpx; }
+.ar-report { padding: var(--spacing-xl) var(--spacing-lg) 120rpx; }
 .ar-header { text-align: center; margin-bottom: 40rpx; }
 .ar-year { font-size: 100rpx; font-weight: 900; color: rgba(244,212,140,0.08); display: block; line-height: 1; }
 .ar-title { font-size: var(--font-size-title); font-weight: 700; color: var(--color-gold); display: block; margin: -20rpx 0 8rpx; }
 .ar-date { font-size: var(--font-size-xs); color: var(--color-text-tertiary); }
 
 /* Stats */
-.ar-stats { display: flex; gap: 16rpx; margin-bottom: 40rpx; }
+.ar-stats { display: flex; gap: var(--spacing-sm); margin-bottom: var(--spacing-xl); }
 .ar-stat {
   flex: 1; text-align: center; background: var(--color-surface-gradient);
-  border: 1rpx solid rgba(244,212,140,0.08); border-radius: 16rpx; padding: 28rpx 8rpx;
+  border: 1rpx solid rgba(244,212,140,0.08); border-radius: 16rpx; padding: var(--spacing-md) var(--spacing-xxs);
 }
 .ar-stat-num { font-size: var(--font-size-title); font-weight: 800; color: var(--color-gold); display: block; }
 .ar-stat-label { font-size: 20rpx; color: var(--color-text-tertiary); margin-top: 6rpx; display: block; }
@@ -489,14 +493,14 @@ page {
 /* Monthly scroll */
 .ar-monthly { margin-bottom: 40rpx; }
 .ar-monthly-scroll { width: 100%; white-space: nowrap; }
-.ar-monthly-row { display: inline-flex; gap: 20rpx; padding: 8rpx 0; }
+.ar-monthly-row { display: inline-flex; gap: var(--spacing-sm); padding: var(--spacing-xxs) 0; }
 .ar-month-card { width: 200rpx; flex-shrink: 0; }
 
 /* Report text */
-.ar-text-card { background: var(--color-surface-gradient); border: 1rpx solid rgba(244,212,140,0.08); border-radius: 16rpx; padding: 32rpx; }
+.ar-text-card { background: var(--color-surface-gradient); border: 1rpx solid rgba(244,212,140,0.08); border-radius: 16rpx; padding: var(--spacing-lg); }
 .ar-text { font-size: var(--font-size-body); color: var(--color-text-secondary); line-height: 2; white-space: pre-wrap; }
 
 /* Actions */
-.ar-actions { display: flex; flex-direction: column; gap: 16rpx; margin-top: 40rpx; }
-.ar-share-btn { background: linear-gradient(135deg, #F4D48C, #E8C67A); color: #1A1A3E; font-weight: 700; border-radius: 50rpx; padding: 24rpx 0; border: none; }
-.ar-redo-btn { background: transparent; color: var(--color-text-tertiary); border-radius: 50rpx; padding: 20rpx 0; border: 1rpx solid rgba(244,212,140,0.12); }
+.ar-actions { display: flex; flex-direction: column; gap: var(--spacing-sm); margin-top: var(--spacing-xl); }
+.ar-share-btn { background: linear-gradient(135deg, #F4D48C, #E8C67A); color: #1A1A3E; font-weight: 700; border-radius: 50rpx; padding: var(--spacing-md) 0; border: none; }
+.ar-redo-btn { background: transparent; color: var(--color-text-tertiary); border-radius: 50rpx; padding: var(--spacing-sm) 0; border: 1rpx solid rgba(244,212,140,0.12); }

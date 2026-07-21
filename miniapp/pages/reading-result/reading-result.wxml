@@ -94,7 +94,7 @@
         </view>
 
         <!-- Spread type -->
-        <text class="spread-type">三牌占卜</text>
+        <text class="spread-type">{{spreadTypeName}}</text>
 
       </view>
 

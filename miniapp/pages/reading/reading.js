@@ -119,6 +119,7 @@ Page({
         this.setData({
           selectedSpread: spread,
           spreadDefaultTheme: defaultTheme,
+          themeDefaultLabel: defaultTheme ? THEME_LABELS[defaultTheme] : '',
           theme: theme,
           themeHint: themeHint,
           displayThemes: displayThemes,
@@ -185,6 +186,10 @@ Page({
     this._clearTimers();
   },
 
+  onHide() {
+    this._clearTimers();
+  },
+
   /* ========== Ritual Flow ========== */
 
   _clearTimers() {
@@ -226,6 +231,7 @@ Page({
   },
 
   async onSelectSpread(e) {
+    try { wx.vibrateShort({ type: 'light' }); } catch(e) {}
     const spread = e.currentTarget.dataset.spread;
 
     // Premium spreads require membership
@@ -264,6 +270,7 @@ Page({
     this.setData({
       selectedSpread: spread,
       spreadDefaultTheme: defaultTheme,
+      themeDefaultLabel: defaultTheme ? THEME_LABELS[defaultTheme] : '',
       theme: theme,
       themeHint: themeHint,
       displayThemes: displayThemes,
@@ -353,6 +360,7 @@ Page({
     wx.setStorageSync('pending_reading', pending);
 
     // Navigate immediately — result page handles API + loading animation
+    try { wx.vibrateShort({ type: 'medium' }); } catch(e) {}
     wx.redirectTo({
       url: `/pages/reading-result/reading-result?pending=1&spread=${selectedSpread.key}`,
     });

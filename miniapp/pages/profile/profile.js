@@ -5,10 +5,17 @@ const { computeImagePath, findCard } = require('../../utils/cards');
 
 // 牌阵英文键名到中文显示名的映射
 const SPREAD_TYPE_NAMES = {
-  three_card: '三张牌',
+  three_card: '三牌占卜',
+  triangle: '恋人三角',
   celtic_cross: '凯尔特十字',
+  career: '事业牌阵',
+  finance: '财运牌阵',
+  decision: '二择一',
+  life_cross: '人生十字',
+  horseshoe: '马蹄牌阵',
+  relationship: '关系牌阵',
+  year_ahead: '年度运势',
   daily: '每日占卜',
-  relationship: '关系分析',
   career_path: '事业路线',
   weekly_outlook: '周运势',
   love_reading: '爱情占卜',
