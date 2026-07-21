@@ -782,6 +782,37 @@ page {
 }
 
 /* ==============================
+   Quick mode toggle — subtle text link below the draw button
+   ============================== */
+.quick-mode-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  margin: 24rpx auto 0;
+  padding: 14rpx 28rpx;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  width: fit-content;
+}
+
+.quick-mode-toggle:active {
+  opacity: 0.6;
+}
+
+.quick-mode-icon {
+  font-size: var(--font-size-caption);
+  line-height: 1;
+}
+
+.quick-mode-text {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-tertiary);
+  letter-spacing: 2rpx;
+  font-weight: 400;
+}
+
+/* ==============================
    Text link
    ============================== */
 .btn-text {

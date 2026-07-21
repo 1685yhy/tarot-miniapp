@@ -174,6 +174,12 @@
         <text wx:else>牌灵正在回应...</text>
       </button>
 
+      <!-- Quick mode toggle -- subtle link text -->
+      <view class="quick-mode-toggle" bindtap="onToggleQuickMode">
+        <text class="quick-mode-icon">{{quickMode ? '⚡' : '✨'}}</text>
+        <text class="quick-mode-text">{{quickMode ? '快速抽牌' : '沉浸解读'}}</text>
+      </view>
+
       <text class="btn-text btn-back-spreads" bindtap="onBackToSpreads">← 重新选择牌阵</text>
     </view>
   </view>

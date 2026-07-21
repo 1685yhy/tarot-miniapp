@@ -86,11 +86,21 @@ Page({
     freeReadingsUsed: 0,
     freeReadingsTotal: FREE_READINGS_LIMIT,
     isMember: false,
+    // Draw mode: 'immersive' (default) or 'quick'
+    drawMode: 'immersive',
+    quickMode: false,
   },
 
   _timers: [],
 
   onLoad(options) {
+    // Load draw mode preference from profile settings
+    const savedDrawMode = wx.getStorageSync('default_draw_mode') || 'immersive';
+    this.setData({
+      drawMode: savedDrawMode,
+      quickMode: savedDrawMode === 'quick',
+    });
+
     // 首页点击牌阵直接进入问答，跳过选择页
     const type = (options && options.type) || '';
     if (type) {
@@ -339,8 +349,23 @@ Page({
     }
   },
 
+  /** Toggle between quick mode and immersive mode */
+  onToggleQuickMode() {
+    const newQuickMode = !this.data.quickMode;
+    this.setData({
+      quickMode: newQuickMode,
+      drawMode: newQuickMode ? 'quick' : 'immersive',
+    });
+    wx.setStorageSync('default_draw_mode', newQuickMode ? 'quick' : 'immersive');
+    wx.showToast({
+      title: newQuickMode ? '已切换为快速抽牌' : '已切换为沉浸解读',
+      icon: 'none',
+      duration: 1500,
+    });
+  },
+
   async onStartReading() {
-    const { selectedSpread, isDrawing } = this.data;
+    const { selectedSpread, isDrawing, quickMode } = this.data;
     if (!selectedSpread) return;
     if (isDrawing) return;
 
@@ -363,10 +388,18 @@ Page({
 
     // Play shuffle sound before navigating
     try { playCardDrawSound(); } catch(e) {}
-    // Navigate immediately — result page handles API + loading animation
     try { wx.vibrateShort({ type: 'medium' }); } catch(e) {}
-    wx.redirectTo({
-      url: `/pages/reading-result/reading-result?pending=1&spread=${selectedSpread.key}`,
-    });
+
+    if (quickMode) {
+      // Quick mode: skip ritual & loading stages, go directly to result
+      wx.redirectTo({
+        url: `/pages/reading-result/reading-result?pending=1&spread=${selectedSpread.key}&quick=1`,
+      });
+    } else {
+      // Immersive mode: existing flow with full animation
+      wx.redirectTo({
+        url: `/pages/reading-result/reading-result?pending=1&spread=${selectedSpread.key}`,
+      });
+    }
   },
 });
