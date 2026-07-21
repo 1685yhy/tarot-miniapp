@@ -544,6 +544,29 @@ page {
   color: var(--color-gold);
 }
 
+/* ============================================================
+   RIPPLE EFFECT — Premium button interaction
+   ============================================================ */
+.btn-primary.btn--full {
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary.btn--full::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 0; height: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s, opacity 0.6s;
+}
+.btn-primary.btn--full:active::after {
+  width: 600rpx;
+  height: 600rpx;
+  opacity: 0;
+}
+
 /* ==============================
    Draw button — drawing state only (base via common .btn-primary.btn--full)
    ============================== */

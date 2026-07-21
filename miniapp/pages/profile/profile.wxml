@@ -91,6 +91,16 @@
         </view>
         <text class="menu-arrow">›</text>
       </view>
+      <view class="menu-item anim-slide-up anim-stagger-4" bindtap="onToggleSound">
+        <view class="menu-icon-wrap">
+          <image src="/images/icons/theme_general_64.png" mode="aspectFit" class="menu-icon-img"></image>
+        </view>
+        <view class="menu-content">
+          <text class="menu-title">音效</text>
+          <text class="menu-desc">{{soundEnabled ? '已开启' : '已关闭'}}</text>
+        </view>
+        <text class="menu-arrow">{{soundEnabled ? '✦' : '○'}}</text>
+      </view>
       <view class="menu-item anim-slide-up anim-stagger-4" bindtap="onGoAbout">
         <view class="menu-icon-wrap">
           <image src="/images/icons/about_64.png" mode="aspectFit" class="menu-icon-img"></image>

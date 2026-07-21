@@ -2,6 +2,7 @@
 const { request, getFriendlyError } = require('../../utils/api');
 const { cardEnter } = require('../../utils/animate');
 const { computeImagePath } = require('../../utils/cards');
+const { playCardRevealSound } = require('../../utils/sound');
 
 // ---- Spread type key → Chinese name (must match reading.js SPREADS) ----
 const SPREAD_TYPE_NAMES = {
@@ -237,6 +238,8 @@ Page({
       this.setData({ reading: this._cachedReading, spreadTypeName, pageLoading: false });
       // Trigger staggered card entrance animation after render
       this._animateCardReveal();
+      // Play reveal sound when reading result appears
+      try { playCardRevealSound(); } catch(e) {}
     } else if (this._cachedError) {
       this.setData({ pageLoading: false, pageError: this._cachedError });
     }

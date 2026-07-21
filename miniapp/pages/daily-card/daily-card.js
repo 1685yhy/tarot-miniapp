@@ -2,6 +2,7 @@
 // 每日一牌 — 卡牌翻转动画 + 牌意教学 + 收集进度 + 日记入口
 const { request, getFriendlyError } = require('../../utils/api');
 const { computeImagePath } = require('../../utils/cards');
+const { playCardRevealSound } = require('../../utils/sound');
 
 const IMAGE_BASE = 'https://xingxiang.chat/images/cards_full';
 const MAJOR_ARCANA_TOTAL = 22;
@@ -147,6 +148,9 @@ Page({
         isFlipped: true,
         isAnimating: false,
       });
+
+      // Play reveal sound when flip completes
+      try { playCardRevealSound(); } catch(e) {}
 
       // Golden glow (0.3s), then show teaching content
       this.setData({ showGlow: true });
