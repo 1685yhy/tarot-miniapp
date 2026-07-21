@@ -59,6 +59,10 @@ Page({
     isFlipped: false,        // front (false) or back (true)
     flipState: '',           // '' | 'flip-out' | 'flip-in'
     isAnimatingExit: false,  // true during exit animation before reset
+
+    // Onboarding Step 3
+    showOnboarding: false,
+    onboardingStep: 0,
   },
 
   onLoad(options) {
@@ -253,6 +257,18 @@ Page({
       this._animateCardReveal();
       // Play reveal sound when reading result appears
       try { playCardRevealSound(); } catch(e) {}
+
+      // ── Onboarding Step 3: hint next to action items ──
+      const onboardingCompleted = wx.getStorageSync('onboarding_completed');
+      const onboardingStep = wx.getStorageSync('onboarding_step') || 1;
+      if (!onboardingCompleted && onboardingStep === 3) {
+        this.setData({ showOnboarding: true, onboardingStep: 3 });
+        this._onboardingTimer = setTimeout(() => {
+          this.setData({ showOnboarding: false });
+          wx.setStorageSync('onboarding_completed', true);
+          wx.removeStorageSync('onboarding_step');
+        }, 5000);
+      }
     } else if (this._cachedError) {
       this.setData({ pageLoading: false, pageError: this._cachedError });
     }
@@ -315,6 +331,10 @@ Page({
   onUnload() {
     this._destroyed = true;
     this._clearStageTimers();
+    if (this._onboardingTimer) {
+      clearTimeout(this._onboardingTimer);
+      this._onboardingTimer = null;
+    }
   },
 
   onContinueWaiting() {

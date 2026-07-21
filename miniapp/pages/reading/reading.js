@@ -89,6 +89,9 @@ Page({
     // Draw mode: 'immersive' (default) or 'quick'
     drawMode: 'immersive',
     quickMode: false,
+    // Onboarding Step 2
+    showOnboarding: false,
+    onboardingStep: 0,
   },
 
   _timers: [],
@@ -163,6 +166,18 @@ Page({
     }
     // 清除骨架屏（pageLoading 初始为 true，确保首次渲染骨架）
     this.setData({ pageLoading: false });
+
+    // ── Onboarding Step 2: show bubble when entering with a spread type ──
+    const onboardingCompleted = wx.getStorageSync('onboarding_completed');
+    const onboardingStep = wx.getStorageSync('onboarding_step') || 1;
+    if (!onboardingCompleted && onboardingStep === 2 && type) {
+      this.setData({ showOnboarding: true, onboardingStep: 2 });
+      this._setTimer(() => {
+        this.setData({ showOnboarding: false });
+        wx.setStorageSync('onboarding_step', 3);
+      }, 3000);
+    }
+
     // 加载免费次数信息
     this._loadFreeReadings();
   },
@@ -290,7 +305,18 @@ Page({
     });
   },
 
+  /** Step 2: dismiss bubble on tap and advance progress */
+  onNextOnboarding() {
+    this.setData({ showOnboarding: false });
+    wx.setStorageSync('onboarding_step', 3);
+  },
+
   onQuestionInput(e) {
+    // Dismiss Step 2 bubble if user starts typing
+    if (this.data.showOnboarding && this.data.onboardingStep === 2) {
+      this.setData({ showOnboarding: false });
+      wx.setStorageSync('onboarding_step', 3);
+    }
     this.setData({ question: e.detail.value });
   },
 

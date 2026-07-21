@@ -976,3 +976,46 @@ view:has(> .btn-back-spreads) {
   .breathing-ring { animation: none; }
   .breathing-circle { animation: none; }
 }
+
+/* ============================================================
+   ONBOARDING BUBBLE — Step 2 lightweight hint
+   ============================================================ */
+.onboarding-bubble-wrap {
+  margin: 0 auto 24rpx;
+  max-width: 560rpx;
+  z-index: 100;
+  opacity: 0;
+  transform: translateY(-10rpx);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+.onboarding-bubble-wrap.bubble-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.onboarding-bubble {
+  position: relative;
+  padding: 24rpx 32rpx;
+  background: rgba(26, 26, 62, 0.95);
+  border: 1.5rpx solid var(--color-gold, #F4D48C);
+  border-radius: 16rpx;
+  text-align: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.onboarding-bubble:active {
+  opacity: 0.85;
+}
+
+.bubble-text {
+  display: block;
+  font-size: var(--font-size-caption, 24rpx);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-gold, #F4D48C);
+  line-height: 1.6;
+  letter-spacing: 2rpx;
+}

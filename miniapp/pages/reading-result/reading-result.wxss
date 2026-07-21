@@ -1000,3 +1000,34 @@
   opacity: 0.4;
   margin-top: 32rpx;
 }
+
+/* ============================================================
+   ONBOARDING HINT — Step 3 lightweight guidance
+   ============================================================ */
+.onboarding-hint {
+  padding: 20rpx 28rpx;
+  margin: 24rpx 0 8rpx;
+  background: rgba(26, 26, 62, 0.95);
+  border: 1.5rpx solid var(--color-gold, #F4D48C);
+  border-radius: 16rpx;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(-8rpx);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+.onboarding-hint.hint-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.onboarding-hint .hint-text {
+  display: block;
+  font-size: var(--font-size-caption, 24rpx);
+  color: #ffffff;
+  line-height: 1.6;
+  letter-spacing: 1rpx;
+  opacity: 0.85;
+}
