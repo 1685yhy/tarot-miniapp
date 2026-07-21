@@ -1,57 +1,7 @@
 <!-- pages/index/index.wxml -->
-<!-- ===== 新人引导 (首次打开) ===== -->
-<view class="onboarding-overlay" wx:if="{{showOnboarding}}">
-  <swiper
-    class="onboarding-swiper"
-    current="{{onboardingStep}}"
-    bindchange="onOnboardingSwipe"
-    duration="300"
-    easing-function="easeInOutCubic"
-  >
-    <block wx:for="{{onboardingSteps}}" wx:key="index">
-      <swiper-item class="onboarding-slide">
-        <view class="onboarding-content">
-          <text class="onboarding-emoji">{{item.emoji}}</text>
-          <text class="onboarding-title">{{item.title}}</text>
-          <text class="onboarding-desc">{{item.desc}}</text>
-        </view>
-      </swiper-item>
-    </block>
-  </swiper>
-
-  <!-- Dots indicator -->
-  <view class="onboarding-dots">
-    <view
-      wx:for="{{onboardingSteps}}"
-      wx:key="index"
-      class="onboarding-dot {{index === onboardingStep ? 'active' : ''}}"
-      bindtap="onTapDot"
-      data-index="{{index}}"
-    ></view>
-  </view>
-
-  <!-- Bottom area: button + skip -->
-  <view class="onboarding-bottom">
-    <view
-      wx:if="{{onboardingStep < onboardingSteps.length - 1}}"
-      class="onboarding-skip"
-      bindtap="onOnboardingDone"
-    >跳过</view>
-    <view
-      wx:if="{{onboardingStep < onboardingSteps.length - 1}}"
-      class="onboarding-next"
-      bindtap="onOnboardingNext"
-    >下一步</view>
-    <view
-      wx:if="{{onboardingStep === onboardingSteps.length - 1}}"
-      class="onboarding-start"
-      bindtap="onOnboardingDone"
-    >开始使用</view>
-  </view>
-</view>
 
 <!-- ===== 加载骨架 ===== -->
-<view class="page" wx:if="{{pageLoading && !showOnboarding}}">
+<view class="page" wx:if="{{pageLoading}}">
   <view class="skeleton skeleton--circle" style="margin:100rpx auto 40rpx"></view>
   <view class="skeleton skeleton--text" style="width:60%;margin:0 auto"></view>
   <view class="skeleton skeleton--text-sm" style="width:40%;margin:12rpx auto 60rpx"></view>
@@ -100,6 +50,15 @@
     <!-- Daily reminder badge -->
     <view wx:if="{{hasDrawnToday}}" class="daily-updated-badge anim-slide-up">✓ 今日运势已更新</view>
     <view wx:elif="{{showReminder && !dailyCard}}" class="daily-reminder-badge anim-gentle-pulse">今日运势待开启</view>
+  </view>
+
+  <!-- ===== Step 1 引导气泡（每日卡牌上方） ===== -->
+  <view class="onboarding-bubble-wrap {{showOnboarding && onboardingStep === 1 ? 'bubble-visible' : ''}}">
+    <view class="onboarding-bubble" bindtap="onNextOnboarding">
+      <text class="bubble-text">每天一张牌，学会认识自己的内心 ✦</text>
+      <text class="bubble-action">轻触卡牌开始</text>
+      <view class="bubble-arrow"></view>
+    </view>
   </view>
 
   <!-- 每日一牌 — 教学入口 (v2.0) -->

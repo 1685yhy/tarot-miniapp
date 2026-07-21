@@ -129,6 +129,11 @@
         bind:allchecked="onAllActionsChecked"
       />
 
+      <!-- ===== Step 3 引导提示 ===== -->
+      <view class="onboarding-hint {{showOnboarding && onboardingStep === 3 ? 'hint-visible' : ''}}">
+        <text class="hint-text">✓ 勾选完成行动建议，星光会记住你的进步</text>
+      </view>
+
       <!-- ==========================================================
            5. ACTIONS — Warm, minimal, intentional
            ========================================================== -->

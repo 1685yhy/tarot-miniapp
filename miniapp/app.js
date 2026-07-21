@@ -20,5 +20,6 @@ App({
   globalData: {
     user: null,
     dailyCard: null,
+    onboardingCompleted: false,
   },
 });

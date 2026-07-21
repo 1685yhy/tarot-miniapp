@@ -129,6 +129,13 @@
         <text class="text-dim mt-xs">{{selectedSpread.desc}}</text>
       </view>
 
+      <!-- ===== Step 2 引导气泡 ===== -->
+      <view class="onboarding-bubble-wrap {{showOnboarding && onboardingStep === 2 ? 'bubble-visible' : ''}}">
+        <view class="onboarding-bubble" bindtap="onNextOnboarding">
+          <text class="bubble-text">把困扰你的事写在这里，星光会为你解读 ✦</text>
+        </view>
+      </view>
+
       <view class="question-box anim-fade-up anim-stagger-2">
         <view class="question-box-accent"></view>
         <view class="question-prompt">

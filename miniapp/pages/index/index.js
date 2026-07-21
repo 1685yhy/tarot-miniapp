@@ -71,19 +71,29 @@ Page({
   },
 
   async onLoad() {
-    const onboardingDone = wx.getStorageSync('onboarding_done');
-    if (onboardingDone) {
-      try {
-        await checkLogin();
-        this.setData({ pageLoading: false });
-        this._initDailyState();
-        this._loadFreeReadings();
-        this._restoreDailyCard();
-      } catch (err) {
-        this.setData({ pageLoading: false, pageError: getFriendlyError(err) });
-      }
-    } else {
-      this.setData({ showOnboarding: true, pageLoading: false });
+    // ── Onboarding: migrate old key and determine current step ──
+    const onboardingCompleted = wx.getStorageSync('onboarding_completed');
+    const oldDone = wx.getStorageSync('onboarding_done');
+    if (oldDone) {
+      wx.setStorageSync('onboarding_completed', true);
+      wx.removeStorageSync('onboarding_done');
+    }
+    const onboardingStep = wx.getStorageSync('onboarding_step') || 1;
+
+    // Always load page content (bubble floats on top, not a full-screen block)
+    try {
+      await checkLogin();
+      this.setData({ pageLoading: false });
+      this._initDailyState();
+      this._loadFreeReadings();
+      this._restoreDailyCard();
+    } catch (err) {
+      this.setData({ pageLoading: false, pageError: getFriendlyError(err) });
+    }
+
+    // Show Step 1 bubble if first-time user
+    if (!(onboardingCompleted || oldDone) && onboardingStep === 1) {
+      this.setData({ showOnboarding: true, onboardingStep: 1 });
     }
 
     // Check for pending reading to show recovery card
@@ -178,27 +188,10 @@ Page({
     }
   },
 
-  onOnboardingSwipe(e) {
-    const { current } = e.detail;
-    this.setData({ onboardingStep: current });
-  },
-
-  onOnboardingNext() {
-    const next = this.data.onboardingStep + 1;
-    if (next < this.data.onboardingSteps.length) {
-      this.setData({ onboardingStep: next });
-    }
-  },
-
-  onOnboardingDone() {
-    wx.setStorageSync('onboarding_done', true);
-    this.setData({ showOnboarding: false });
-    this.onLoad();
-  },
-
-  onTapDot(e) {
-    const idx = e.currentTarget.dataset.index;
-    this.setData({ onboardingStep: idx });
+  /** Step 1 → Step 2: dismiss bubble, persist progress */
+  onNextOnboarding() {
+    wx.setStorageSync('onboarding_step', 2);
+    this.setData({ showOnboarding: false, onboardingStep: 0 });
   },
 
   onRetry() {
