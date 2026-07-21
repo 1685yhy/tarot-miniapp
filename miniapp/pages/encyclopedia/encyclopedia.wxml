@@ -68,7 +68,6 @@
       <view
         class="filter-item {{activeTab === item.key ? 'filter-active' : ''}}"
         wx:for="{{tabs}}" wx:key="key"
-        wx:key="key"
         data-key="{{item.key}}"
         bindtap="onTabTap"
       >

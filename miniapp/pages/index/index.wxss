@@ -473,7 +473,7 @@
   font-size: var(--font-size-xs);
   font-weight: 500;
   padding: 3rpx 12rpx;
-  border-radius: 12rpx;
+  border-radius: var(--radius-sm);
   line-height: 1.5;
   letter-spacing: 0.5rpx;
   z-index: 2;
@@ -497,7 +497,7 @@
   padding: 2rpx 12rpx;
   font-size: var(--font-size-xs);
   font-weight: 500;
-  border-radius: 10rpx;
+  border-radius: var(--radius-sm);
   line-height: 1.6;
   letter-spacing: 0.5rpx;
 }
@@ -1575,4 +1575,16 @@
     border-color: rgba(244, 212, 140, 0.70);
     box-shadow: 0 0 40rpx rgba(244, 212, 140, 0.15), 0 0 80rpx rgba(244, 212, 140, 0.08);
   }
+}
+
+/* ============================================================
+   ACCESSIBILITY: Reduced Motion
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .hero-glow-ring { animation: none; }
+  .daily-card { animation: none; }
+  .stars-distant, .stars-mid, .stars-close { animation: none; }
+  .nebula-lavender, .nebula-gold { animation: none; }
+  .hero-title, .hero-subtitle { animation: none; opacity: 1; }
+  .card--teaching .daily-card-glow-overlay { animation: none; }
 }

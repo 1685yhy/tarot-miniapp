@@ -283,7 +283,7 @@ page {
 }
 
 .msg-text-user {
-  font-size: var(--font-size-caption);
+  font-size: var(--font-size-body);
   color: var(--color-text-primary);
   line-height: 1.6;
 }
@@ -370,7 +370,7 @@ page {
   width: 100%;
   height: 72rpx;
   background: rgba(30, 26, 56, 0.85);
-  border-radius: 50rpx;
+  border-radius: var(--radius-pill);
   padding: 0 32rpx;
   font-size: var(--font-size-body);
   color: var(--color-text-primary);
@@ -393,7 +393,7 @@ page {
 .send-btn {
   height: 72rpx;
   padding: 0 36rpx;
-  border-radius: 50rpx;
+  border-radius: var(--radius-pill);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -498,11 +498,20 @@ page {
   min-height: 72rpx;
   max-height: 240rpx;
   padding: 16rpx 28rpx;
-  border-radius: 50rpx;
+  border-radius: var(--radius-pill);
   background: var(--color-surface);
   border: 2rpx solid transparent;
   color: var(--color-text-primary);
   font-size: var(--font-size-body);
   line-height: 1.5;
   box-sizing: border-box;
+}
+
+/* ================================================================
+   ACCESSIBILITY: Reduced Motion
+   ================================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .msg-enter { animation: none; }
+  .msg-user .msg-bubble, .msg-ai .msg-bubble { animation: none; }
+  .empty-glow { animation: none; }
 }
