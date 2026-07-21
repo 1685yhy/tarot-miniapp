@@ -3,6 +3,25 @@
    "A window into another world — mysterious, beautiful, inviting"
    ============================================================ */
 
+/* ============================================================
+   CARD HOVER LIFT — Premium micro-interaction
+   Slight scale up + deeper shadow on touch
+   ============================================================ */
+
+.tarot-card-wrapper:active .tarot-card {
+  transform: scale(1.03);
+  box-shadow:
+    0 0 50rpx 12rpx rgba(212, 168, 83, 0.35),
+    inset 0 0 50rpx 8rpx rgba(212, 168, 83, 0.05);
+  transition:
+    transform 0.15s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 0.15s ease-out;
+}
+
+.tarot-card-wrapper:active {
+  transition: transform 0.15s ease-out;
+}
+
 /* ---- Card Wrapper ---- */
 
 .tarot-card-wrapper {

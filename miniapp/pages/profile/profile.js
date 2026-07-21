@@ -2,6 +2,7 @@
 const { request, getFriendlyError } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
 const { computeImagePath, findCard } = require('../../utils/cards');
+const sound = require('../../utils/sound');
 
 // 牌阵英文键名到中文显示名的映射
 const SPREAD_TYPE_NAMES = {
@@ -44,6 +45,10 @@ Page({
     // Saved readings
     savedReadings: [],
     savedReadingsLoading: false,
+
+    // Sound settings
+    soundEnabled: true,
+    bgmEnabled: true,
   },
 
   // —— History card image loading ——
@@ -63,6 +68,11 @@ Page({
 
   async onShow() {
     await this.loadData();
+    // Sync sound state from sound module
+    this.setData({
+      soundEnabled: sound.sfxEnabled,
+      bgmEnabled: sound.bgmEnabled,
+    });
   },
 
   async loadData() {
@@ -182,6 +192,26 @@ Page({
       title: '关于我们',
       content: '星光塔罗 — 用星辰的智慧指引你的前行之路。\n\n版本 1.0.0',
       showCancel: false,
+    });
+  },
+
+  onToggleSound() {
+    const newVal = sound.toggleSfx();
+    this.setData({ soundEnabled: newVal });
+    wx.showToast({
+      title: newVal ? '音效已开启' : '音效已关闭',
+      icon: 'none',
+      duration: 1500,
+    });
+  },
+
+  onToggleBgm() {
+    const newVal = sound.toggleBgm();
+    this.setData({ bgmEnabled: newVal });
+    wx.showToast({
+      title: newVal ? '背景音乐已开启' : '背景音乐已关闭',
+      icon: 'none',
+      duration: 1500,
     });
   },
 

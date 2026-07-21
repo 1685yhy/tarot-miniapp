@@ -27,6 +27,7 @@
  */
 const { request, getFriendlyError } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
+const { playCardDrawSound } = require('../../utils/sound');
 
 const FREE_READINGS_LIMIT = 3; // matches the backend FREE_DAILY_READINGS (should match after backend update)
 
@@ -232,6 +233,7 @@ Page({
 
   async onSelectSpread(e) {
     try { wx.vibrateShort({ type: 'light' }); } catch(e) {}
+    try { playCardDrawSound(); } catch(e) {}
     const spread = e.currentTarget.dataset.spread;
 
     // Premium spreads require membership
@@ -359,6 +361,8 @@ Page({
     };
     wx.setStorageSync('pending_reading', pending);
 
+    // Play shuffle sound before navigating
+    try { playCardDrawSound(); } catch(e) {}
     // Navigate immediately — result page handles API + loading animation
     try { wx.vibrateShort({ type: 'medium' }); } catch(e) {}
     wx.redirectTo({
