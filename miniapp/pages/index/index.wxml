@@ -165,14 +165,20 @@
     </view>
   </view>
 
-  <!-- 免费次数提示 -->
-  <view class="free-banner anim-fade-in-up-3">
-    <view wx:if="{{!isMember && freeReadingsUsed < freeReadingsTotal}}" class="free-banner-content">
-      <text class="free-banner-text">今日剩余 <text class="free-banner-count">{{freeReadingsTotal - freeReadingsUsed}}/{{freeReadingsTotal}}</text> 次免费解读</text>
+  <!-- 免费次数提示（进度条） -->
+  <view class="free-quota-bar anim-fade-in-up-3">
+    <view class="quota-progress-wrap" wx:if="{{!isMember}}">
+      <view class="quota-progress" style="width: {{(freeReadingsTotal - freeReadingsUsed) / freeReadingsTotal * 100}}%"></view>
     </view>
-    <view wx:elif="{{!isMember && freeReadingsUsed >= freeReadingsTotal}}" class="free-banner-content free-banner-exhausted">
-      <text class="free-banner-text">今日免费 {{freeReadingsTotal}}/{{freeReadingsTotal}} 次已用完 ✦ 开通会员无限解读</text>
-    </view>
+    <text class="quota-text" wx:if="{{!isMember && freeReadingsUsed < freeReadingsTotal}}">今日免费解读 {{freeReadingsUsed}}/{{freeReadingsTotal}} · 明日0点重置</text>
+    <text class="quota-text quota-text--exhausted" wx:elif="{{!isMember && freeReadingsUsed >= freeReadingsTotal}}">今日免费 {{freeReadingsTotal}}/{{freeReadingsTotal}} 次已用完 · 明日0点重置</text>
+  </view>
+
+  <!-- 9.9新人专享CTA -->
+  <view class="hero-cta anim-fade-in-up-3" bindtap="onStartFirstReading" wx:if="{{!isMember && freeReadingsUsed === 0}}">
+    <view class="hero-cta-glow"></view>
+    <text class="hero-cta-title">9.9元 · 首次AI深度解读</text>
+    <text class="hero-cta-sub">新人专享 · 三牌占卜 · 行动建议</text>
   </view>
 
   <!-- 牌阵 -->

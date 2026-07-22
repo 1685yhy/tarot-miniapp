@@ -1,6 +1,8 @@
 // pages/chat/chat.js
 const { request, getFriendlyError } = require('../../utils/api');
 
+const FREE_CHATS_LIMIT = 5; // free follow-up questions per day
+
 // Spread type key → Chinese display name
 const SPREAD_TYPE_NAMES = {
   three_card: '三牌占卜',
@@ -29,6 +31,7 @@ Page({
     sending: false,
     aiThinking: false,
     remainingFree: 0,
+    chatFreeTotal: FREE_CHATS_LIMIT,
     pageLoading: false,
     pageError: null,
     readingContext: null, // { question, spread_type }

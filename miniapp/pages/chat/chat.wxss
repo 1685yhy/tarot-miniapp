@@ -422,18 +422,43 @@ page {
 }
 
 /* ================================================================
-   Free query hint
+   Free query hint — progress bar
    ================================================================ */
-.free-hint {
+.free-quota-bar {
   text-align: center;
-  padding: var(--spacing-xs) 0;
-  font-size: var(--font-size-xs);
-  color: var(--color-text-tertiary);
+  padding: var(--spacing-xs) 0 var(--spacing-md);
   position: fixed;
   bottom: 106rpx;
   left: 0;
   right: 0;
   letter-spacing: 1rpx;
+}
+
+.quota-progress-wrap {
+  width: 200rpx;
+  height: 6rpx;
+  background: rgba(184, 169, 224, 0.12);
+  border-radius: 999rpx;
+  margin: 0 auto var(--spacing-xxs);
+  overflow: hidden;
+}
+
+.quota-progress {
+  height: 100%;
+  background: linear-gradient(90deg, #F4D48C, #D4B06A);
+  border-radius: 999rpx;
+  transition: width 0.4s ease-out;
+}
+
+.quota-text {
+  font-size: var(--font-size-xs);
+  color: var(--color-lavender, #C8B8E8);
+  line-height: 1.6;
+}
+
+.quota-text--exhausted {
+  color: var(--color-gold, #F4D48C);
+  font-weight: 500;
 }
 
 /* ================================================================

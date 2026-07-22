@@ -246,6 +246,17 @@ page {
   white-space: nowrap;
 }
 
+.spread-card-plainDesc {
+  font-size: var(--font-size-xs);
+  color: var(--color-lavender);
+  line-height: 1.4;
+  margin-top: 4rpx;
+  opacity: 0.80;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* ──────────── Spread card meta (right column) ──────────── */
 .spread-card-meta {
   text-align: right;
@@ -811,11 +822,25 @@ page {
   line-height: 1;
 }
 
+.quick-mode-text-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .quick-mode-text {
   font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
   letter-spacing: 2rpx;
   font-weight: 400;
+}
+
+.quick-mode-sub {
+  font-size: 20rpx;
+  color: var(--color-text-tertiary);
+  opacity: 0.60;
+  letter-spacing: 1rpx;
+  margin-top: 2rpx;
 }
 
 /* ==============================
@@ -833,22 +858,38 @@ page {
 }
 
 /* ==============================
-   Free tier banner (reading page)
+   Free tier — Progress bar
    ============================== */
-.reading-free-banner {
+.free-quota-bar {
   text-align: center;
   margin: var(--spacing-md) 0 var(--spacing-lg);
   padding: var(--spacing-sm) var(--spacing-sm);
 }
 
-.reading-free-text {
+.quota-progress-wrap {
+  width: 240rpx;
+  height: 8rpx;
+  background: rgba(184, 169, 224, 0.12);
+  border-radius: 999rpx;
+  margin: 0 auto var(--spacing-xs);
+  overflow: hidden;
+}
+
+.quota-progress {
+  height: 100%;
+  background: linear-gradient(90deg, #F4D48C, #D4B06A);
+  border-radius: 999rpx;
+  transition: width 0.4s ease-out;
+}
+
+.quota-text {
   font-size: var(--font-size-caption);
   color: var(--color-lavender);
   letter-spacing: 0.04em;
   line-height: 1.5;
 }
 
-.reading-free-text--exhausted {
+.quota-text--exhausted {
   color: var(--color-gold);
   font-weight: 500;
 }

@@ -106,7 +106,26 @@
       </view>
 
       <!-- ==========================================================
-           3. LETTER — The interpretation as personal prose
+           3. TL;DR — 三行结论卡片（默认展开，折叠详细解读）
+           ========================================================== -->
+      <view wx:if="{{tldr && tldr.length >= 1 && !showFullInterpretation}}">
+        <view class="tldr-card">
+          <view class="tldr-item" wx:for="{{tldr}}" wx:key="index">
+            <view class="tldr-dot"></view>
+            <text class="tldr-text">{{item}}</text>
+          </view>
+          <view class="tldr-expand" bindtap="onToggleFull">
+            <text>展开详细解读 ↓</text>
+          </view>
+        </view>
+        <!-- Divider between TL;DR and letter -->
+        <view class="divider">
+          <view class="divider-line"></view>
+        </view>
+      </view>
+
+      <!-- ==========================================================
+           5. LETTER — The interpretation as personal prose
            ========================================================== -->
       <view class="letter-section">
         <view class="letter-body {{showFullInterpretation ? 'expanded' : 'collapsed'}}">
