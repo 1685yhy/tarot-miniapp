@@ -51,10 +51,16 @@ Page({
     this.setData({ pageLoading: true, pageError: null });
     try {
       const card = await request(`/cards/${id}`);
+      // Guard: API may return null/array in unexpected formats
+      if (!card || Array.isArray(card)) {
+        throw new Error('卡牌数据异常');
+      }
       card.imagePath = computeImagePath(card, IMAGE_BASE);
       // Preprocess keywords into array (WXML does not support .split()/.trim())
-      if (card.keywords_upright) {
-        card.keywordsList = card.keywords_upright.split(',').map(s => s.trim());
+      // Guard against null/undefined keywords
+      const keywordsRaw = card.keywords_upright;
+      if (typeof keywordsRaw === 'string' && keywordsRaw.trim()) {
+        card.keywordsList = keywordsRaw.split(',').map(s => s.trim()).filter(Boolean);
       } else {
         card.keywordsList = [];
       }

@@ -109,6 +109,9 @@
   </view>
 </view>
 
-<view class="free-hint" wx:if="{{remainingFree > 0}}">
-  <text>今日剩余追问 {{remainingFree}} 次</text>
+<view class="free-quota-bar" wx:if="{{remainingFree > 0}}">
+  <view class="quota-progress-wrap">
+    <view class="quota-progress" style="width: {{remainingFree / chatFreeTotal * 100}}%"></view>
+  </view>
+  <text class="quota-text">今日免费追问 {{chatFreeTotal - remainingFree}}/{{chatFreeTotal}} · 明日0点重置</text>
 </view>

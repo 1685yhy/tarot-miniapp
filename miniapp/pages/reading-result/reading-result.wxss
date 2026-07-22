@@ -529,6 +529,71 @@
 }
 
 /* ================================================================
+   2.5 TL;DR CARD — 三行结论卡片
+   ================================================================ */
+.tldr-card {
+  background: rgba(37, 37, 80, 0.35);
+  border-left: 4rpx solid var(--color-gold, #F4D48C);
+  border-radius: var(--radius-md, 16rpx);
+  padding: var(--spacing-lg, 28rpx) var(--spacing-lg, 28rpx) var(--spacing-md, 24rpx);
+  margin-bottom: 0;
+}
+
+.tldr-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20rpx;
+  line-height: 1.6;
+}
+
+.tldr-item:last-child {
+  margin-bottom: 0;
+}
+
+.tldr-dot {
+  flex-shrink: 0;
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: var(--color-gold, #F4D48C);
+  margin-top: 10rpx;
+  margin-right: 16rpx;
+  box-shadow: 0 0 8rpx rgba(244, 212, 140, 0.4);
+}
+
+.tldr-text {
+  font-size: var(--font-size-caption, 26rpx);
+  color: var(--color-text-primary, #F0EDE8);
+  letter-spacing: 1rpx;
+  line-height: 1.6;
+  flex: 1;
+}
+
+.tldr-expand {
+  display: flex;
+  justify-content: center;
+  margin-top: 20rpx;
+  padding-top: 16rpx;
+  cursor: pointer;
+}
+
+.tldr-expand text {
+  font-size: var(--font-size-caption, 26rpx);
+  color: var(--color-lavender, #B8A9E0);
+  letter-spacing: 2rpx;
+  padding: 8rpx 24rpx;
+  border-radius: var(--radius-pill, 999rpx);
+  border: 1rpx solid rgba(180, 169, 224, 0.18);
+  transition: opacity 0.2s, border-color 0.2s;
+}
+
+.tldr-expand:active text {
+  opacity: 0.7;
+  border-color: rgba(180, 169, 224, 0.4);
+  background: rgba(180, 169, 224, 0.05);
+}
+
+/* ================================================================
    2. DIVIDER — Quiet, thin, centered gold line
    ================================================================ */
 .divider {

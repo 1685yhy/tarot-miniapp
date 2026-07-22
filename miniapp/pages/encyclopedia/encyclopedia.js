@@ -16,11 +16,11 @@ Page({
     pageError: null,
     tabs: [
       { key: 'all', label: '全部' },
-      { key: 'major', label: '大牌' },
-      { key: 'wands', label: '权杖' },
-      { key: 'cups', label: '圣杯' },
-      { key: 'swords', label: '宝剑' },
-      { key: 'pentacles', label: '星币' },
+      { key: 'major', label: '主牌 (22张)' },
+      { key: 'wands', label: '权杖·行动' },
+      { key: 'cups', label: '圣杯·情感' },
+      { key: 'swords', label: '宝剑·思维' },
+      { key: 'pentacles', label: '星币·物质' },
     ],
     suitZh: SUIT_ZH,
     loadedCount: 0,        // 当前已激活的卡牌数

@@ -60,6 +60,9 @@ Page({
     flipState: '',           // '' | 'flip-out' | 'flip-in'
     isAnimatingExit: false,  // true during exit animation before reset
 
+    // TL;DR summary
+    tldr: [],
+
     // Onboarding Step 3
     showOnboarding: false,
     onboardingStep: 0,
@@ -180,6 +183,12 @@ Page({
       this.setData({ loadingDotCount: next });
     }, 5000);
 
+    // After 3 seconds: show "AI正在仔细分析你的牌面..." for perceived speed
+    this._timeout3 = setTimeout(() => {
+      if (this._destroyed) return;
+      this.setData({ loadingTimeText: 'AI正在仔细分析你的牌面...' });
+    }, 3000);
+
     // After 25 seconds: polite nudge
     this._timeout25 = setTimeout(() => {
       if (this._destroyed) return;
@@ -238,6 +247,59 @@ Page({
   },
 
   /* ---------------------------------------------------------------
+     TL;DR Extraction — pull 3 concise summary lines from interpretation
+     --------------------------------------------------------------- */
+
+  _extractTLDR(text) {
+    if (!text || typeof text !== 'string') return [];
+
+    // Strategy 1: Look for structured markers — "**过去**", "**现在**", "**未来**"
+    const sectionRegex = /\*{2}(过去|现在|未来|past|present|future)\*{2}[:：]?\s*([^\n]+)/gi;
+    const sectionMatches = [];
+    let match;
+    while ((match = sectionRegex.exec(text)) !== null && sectionMatches.length < 3) {
+      const sentence = match[2].trim();
+      if (sentence) sectionMatches.push(sentence);
+    }
+    if (sectionMatches.length === 3) {
+      return sectionMatches.map(s => s.length > 30 ? s.slice(0, 27) + '...' : s);
+    }
+
+    // Strategy 2: Look for numbered sections — "1. 过去" or "①" patterns
+    const numberedRegex = /(?:^|\n)\s*(?:\d+[\.\、]|[①②③④])\s*[：:]?\s*([^\n]{4,80})/gm;
+    const numberedMatches = [];
+    while ((match = numberedRegex.exec(text)) !== null && numberedMatches.length < 3) {
+      const sentence = match[1].trim();
+      if (sentence) numberedMatches.push(sentence);
+    }
+    if (numberedMatches.length === 3) {
+      return numberedMatches.map(s => s.length > 30 ? s.slice(0, 27) + '...' : s);
+    }
+
+    // Strategy 3: Split by double newlines → take first sentence of first 3 paragraphs
+    const paragraphs = text.split(/\n{2,}/).filter(p => p.trim().length > 10);
+    const paraLines = [];
+    for (const para of paragraphs) {
+      if (paraLines.length >= 3) break;
+      // First sentence of paragraph (split by 。！？ and take first segment)
+      const firstSentence = para.split(/[。！？]/)[0].trim();
+      // Remove leading markers like "- ", "· ", or "**"
+      const cleaned = firstSentence.replace(/^[-·\*\s　]+/, '').trim();
+      if (cleaned && cleaned.length > 4) paraLines.push(cleaned);
+    }
+    if (paraLines.length >= 1) {
+      return paraLines.slice(0, 3).map(s => s.length > 30 ? s.slice(0, 27) + '...' : s);
+    }
+
+    // Strategy 4: Ultimate fallback — first 3 sentences split by 。！？
+    const sentences = text.split(/[。！？]/).filter(s => s.trim().length > 4);
+    return sentences.slice(0, 3).map(s => {
+      const cleaned = s.replace(/^[-·\*\s　]+/, '').trim();
+      return cleaned.length > 30 ? cleaned.slice(0, 27) + '...' : cleaned;
+    });
+  },
+
+  /* ---------------------------------------------------------------
      Transition to Result
      Only fires when both stage 3 has begun AND the API has returned,
      so stages 1-2 always play through in full.
@@ -249,10 +311,12 @@ Page({
     this._clearStage3Timers();
 
     if (this._cachedReading) {
-      const spreadTypeName = SPREAD_TYPE_NAMES[this._cachedReading.spread_type]
-        || this._cachedReading.spread_type
+      const reading = this._cachedReading;
+      const spreadTypeName = SPREAD_TYPE_NAMES[reading.spread_type]
+        || reading.spread_type
         || '三牌占卜';
-      this.setData({ reading: this._cachedReading, spreadTypeName, pageLoading: false, showUndo: true });
+      const tldr = this._extractTLDR(reading.interpretation);
+      this.setData({ reading, tldr, spreadTypeName, pageLoading: false, showUndo: true, showFullInterpretation: false });
       // Trigger staggered card entrance animation after render
       this._animateCardReveal();
       // Play reveal sound when reading result appears
@@ -286,6 +350,7 @@ Page({
 
   _clearStage3Timers() {
     if (this._dotTimer) { clearInterval(this._dotTimer); this._dotTimer = null; }
+    if (this._timeout3) { clearTimeout(this._timeout3); this._timeout3 = null; }
     if (this._timeout25) { clearTimeout(this._timeout25); this._timeout25 = null; }
     if (this._timeout50) { clearTimeout(this._timeout50); this._timeout50 = null; }
     if (this._timeout55) { clearTimeout(this._timeout55); this._timeout55 = null; }
@@ -337,6 +402,20 @@ Page({
     }
   },
 
+  onShow() {
+    // Check if a background reading was completed while we were away
+    const completed = wx.getStorageSync('reading_completed');
+    if (completed) {
+      wx.removeStorageSync('reading_completed');
+      wx.removeStorageSync('background_reading');
+      wx.showToast({
+        title: '解读已生成！',
+        icon: 'success',
+        duration: 2000,
+      });
+    }
+  },
+
   onContinueWaiting() {
     this.setData({ showWaitOptions: false, loadingTimeText: '好的，继续为你解读...' });
 
@@ -350,6 +429,16 @@ Page({
 
   onCheckLater() {
     this._clearStageTimers();
+    // Save as pending background reading so user can pick up later
+    const pending = wx.getStorageSync('pending_reading');
+    if (pending) {
+      wx.setStorageSync('background_reading', {
+        spread: pending.spread_type,
+        question: pending.question,
+        theme: pending.theme,
+        timestamp: Date.now(),
+      });
+    }
     wx.showToast({ title: '解读生成后可在记录中查看', icon: 'none', duration: 2000 });
     setTimeout(() => { wx.navigateBack(); }, 2200);
   },

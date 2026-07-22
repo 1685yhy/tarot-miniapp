@@ -32,16 +32,16 @@ const { playCardDrawSound } = require('../../utils/sound');
 const FREE_READINGS_LIMIT = 3; // matches the backend FREE_DAILY_READINGS (should match after backend update)
 
 const SPREADS = [
-  { key: 'three_card', name: '三牌占卜', icon: '🕯️', desc: '过去·现在·未来', cards: 3, popular: true, defaultTheme: null },
-  { key: 'triangle', name: '恋人三角', icon: '💕', desc: '感情关系深度分析', cards: 4, defaultTheme: 'love' },
-  { key: 'career', name: '事业牌阵', icon: '💼', desc: '职业发展方向指引', cards: 5, defaultTheme: 'career' },
-  { key: 'finance', name: '财运牌阵', icon: '💰', desc: '财务状况趋势分析', cards: 4, defaultTheme: 'finance' },
-  { key: 'decision', name: '二择一', icon: '🔀', desc: '两难选择的明灯', cards: 5, defaultTheme: null },
-  { key: 'celtic_cross', name: '凯尔特十字', icon: '✝️', desc: '最全面的深度占卜', cards: 10, premium: true, defaultTheme: null },
-  { key: 'life_cross', name: '人生十字', icon: '⭐', desc: '人生方向的十字路口', cards: 5, defaultTheme: null },
-  { key: 'horseshoe', name: '马蹄牌阵', icon: '🧲', desc: '七步看清局势', cards: 7, premium: true, defaultTheme: 'love' },
-  { key: 'relationship', name: '关系牌阵', icon: '🤝', desc: '双人关系全面透视', cards: 7, premium: true, defaultTheme: 'love' },
-  { key: 'year_ahead', name: '年度运势', icon: '📅', desc: '未来12个月逐月详解', cards: 13, premium: true, defaultTheme: null },
+  { key: 'three_card', name: '三牌占卜', icon: '🕯️', desc: '过去·现在·未来', cards: 3, popular: true, defaultTheme: null, plainDesc: '最通用的牌阵，适合任何问题' },
+  { key: 'triangle', name: '恋人三角', icon: '💕', desc: '感情关系深度分析', cards: 4, defaultTheme: 'love', plainDesc: '专看感情，4张牌深度分析双方状态' },
+  { key: 'career', name: '事业牌阵', icon: '💼', desc: '职业发展方向指引', cards: 5, defaultTheme: 'career', plainDesc: '工作选择和职业规划专用' },
+  { key: 'finance', name: '财运牌阵', icon: '💰', desc: '财务状况趋势分析', cards: 4, defaultTheme: 'finance', plainDesc: '看收入和投资方向' },
+  { key: 'decision', name: '二择一', icon: '🔀', desc: '两难选择的明灯', cards: 5, defaultTheme: null, plainDesc: '两个选项纠结时，帮你理清利弊' },
+  { key: 'celtic_cross', name: '凯尔特十字', icon: '✝️', desc: '最全面的深度占卜', cards: 10, premium: true, defaultTheme: null, plainDesc: '全方位剖析，适合复杂问题时用' },
+  { key: 'life_cross', name: '人生十字', icon: '⭐', desc: '人生方向的十字路口', cards: 5, defaultTheme: null, plainDesc: '迷茫期专用，看清人生方向' },
+  { key: 'horseshoe', name: '马蹄牌阵', icon: '🧲', desc: '七步看清局势', cards: 7, premium: true, defaultTheme: 'love', plainDesc: '7张牌一步步推演事情发展' },
+  { key: 'relationship', name: '关系牌阵', icon: '🤝', desc: '双人关系全面透视', cards: 7, premium: true, defaultTheme: 'love', plainDesc: '你和TA之间，7张牌全盘解析' },
+  { key: 'year_ahead', name: '年度运势', icon: '📅', desc: '未来12个月逐月详解', cards: 13, premium: true, defaultTheme: null, plainDesc: '一整年的每月运势预览' },
 ];
 
 const THEME_LABELS = {

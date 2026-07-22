@@ -50,14 +50,13 @@
       <text class="heading-2 section-title-center anim-fade-up anim-stagger-1">选择牌阵</text>
       <text class="text-secondary text-center mb-xxl anim-fade-up anim-stagger-1">不同问题，用不同牌阵</text>
 
-      <!-- 免费次数提示 -->
-      <view class="reading-free-banner anim-fade-up anim-stagger-1">
-        <text class="reading-free-text" wx:if="{{!isMember && freeReadingsUsed < freeReadingsTotal}}">
-          ✦ 今日剩余解读: {{freeReadingsTotal - freeReadingsUsed}} 次
-        </text>
-        <text class="reading-free-text reading-free-text--exhausted" wx:elif="{{!isMember && freeReadingsUsed >= freeReadingsTotal}}">
-          今日免费 {{freeReadingsTotal}}/{{freeReadingsTotal}} 次已用完 · 明天00:00恢复
-        </text>
+      <!-- 免费次数提示（进度条） -->
+      <view class="free-quota-bar anim-fade-up anim-stagger-1" wx:if="{{!isMember}}">
+        <view class="quota-progress-wrap">
+          <view class="quota-progress" style="width: {{(freeReadingsTotal - freeReadingsUsed) / freeReadingsTotal * 100}}%"></view>
+        </view>
+        <text class="quota-text" wx:if="{{freeReadingsUsed < freeReadingsTotal}}">今日免费解读 {{freeReadingsUsed}}/{{freeReadingsTotal}} · 明日0点重置</text>
+        <text class="quota-text quota-text--exhausted" wx:else>今日免费 {{freeReadingsTotal}}/{{freeReadingsTotal}} 次已用完 · 明天00:00恢复</text>
       </view>
 
       <view class="spread-grid anim-fade-up anim-stagger-2">
@@ -75,6 +74,7 @@
               <text class="badge badge-popular" wx:if="{{item.popular}}">热门</text>
             </view>
             <text class="spread-card-desc">{{item.desc}}</text>
+            <text class="spread-card-plainDesc">{{item.plainDesc}}</text>
           </view>
           <view class="spread-card-meta">
             <text class="spread-card-count">{{item.cards}}张</text>
@@ -181,11 +181,17 @@
         <text wx:else>牌灵正在回应...</text>
       </button>
 
+      <!-- AI 解读时间提示 -->
+      <text class="reading-time-note" wx:if="{{!isDrawing}}">AI解读大约需要 10-20 秒</text>
+
       <!-- Quick mode toggle -- subtle link text -->
       <view class="quick-mode-toggle" bindtap="onToggleQuickMode">
         <image wx:if="{{quickMode}}" class="quick-mode-icon" src="/images/icons/lightning_64.png" mode="aspectFit" />
         <image wx:else class="quick-mode-icon" src="/images/icons/sparkle_64.png" mode="aspectFit" />
-        <text class="quick-mode-text">{{quickMode ? '快速抽牌' : '沉浸解读'}}</text>
+        <view class="quick-mode-text-wrap">
+          <text class="quick-mode-text">{{quickMode ? '⚡ 快速抽牌' : '✨ 沉浸解读'}}</text>
+          <text class="quick-mode-sub">{{quickMode ? '跳过动画，直接看解读' : '完整体验洗牌翻牌仪式'}}</text>
+        </view>
       </view>
 
       <text class="btn-text btn-back-spreads" bindtap="onBackToSpreads">← 重新选择牌阵</text>
