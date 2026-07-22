@@ -30,8 +30,8 @@
   position: absolute;
   top: 48rpx;
   right: 32rpx;
-  width: 64rpx;
-  height: 64rpx;
+  width: 88rpx;
+  height: 88rpx;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.10);
   display: flex;
