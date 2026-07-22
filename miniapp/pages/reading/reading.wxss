@@ -812,48 +812,71 @@ page {
 }
 
 /* ==============================
-   Quick mode toggle — subtle text link below the draw button
+   Mode selector cards — quick / immersive
    ============================== */
-.quick-mode-toggle {
+.mode-selector {
+  display: flex;
+  gap: 24rpx;
+  margin: 28rpx auto 0;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.mode-card {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8rpx;
-  margin: 24rpx auto 0;
-  padding: 14rpx 28rpx;
+  gap: 16rpx;
+  flex: 1;
+  max-width: 320rpx;
+  padding: 24rpx 20rpx;
+  background: var(--color-surface);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
+  border-radius: 20rpx;
   cursor: pointer;
-  transition: opacity 0.2s;
-  width: fit-content;
+  transition: all 0.2s ease-out;
+  box-sizing: border-box;
 }
 
-.quick-mode-toggle:active {
-  opacity: 0.6;
+.mode-card:active {
+  transform: scale(0.96);
 }
 
-.quick-mode-icon {
-  font-size: var(--font-size-caption);
+.mode-card.mode-active {
+  background: rgba(244, 212, 140, 0.08);
+  border-color: rgba(244, 212, 140, 0.30);
+}
+
+.mode-card-icon {
+  font-size: 40rpx;
   line-height: 1;
+  flex-shrink: 0;
 }
 
-.quick-mode-text-wrap {
+.mode-card-text-wrap {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 4rpx;
+  min-width: 0;
 }
 
-.quick-mode-text {
+.mode-card-name {
   font-size: var(--font-size-caption);
-  color: var(--color-text-tertiary);
-  letter-spacing: 2rpx;
-  font-weight: 400;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  letter-spacing: 0.04em;
 }
 
-.quick-mode-sub {
+.mode-card.mode-active .mode-card-name {
+  color: var(--color-gold);
+}
+
+.mode-card-desc {
   font-size: 20rpx;
   color: var(--color-text-tertiary);
-  opacity: 0.60;
   letter-spacing: 1rpx;
-  margin-top: 2rpx;
+  opacity: 0.75;
+  white-space: nowrap;
 }
 
 /* ==============================

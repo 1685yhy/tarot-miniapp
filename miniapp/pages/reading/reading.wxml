@@ -184,13 +184,21 @@
       <!-- AI 解读时间提示 -->
       <text class="reading-time-note" wx:if="{{!isDrawing}}">AI解读大约需要 10-20 秒</text>
 
-      <!-- Quick mode toggle -- subtle link text -->
-      <view class="quick-mode-toggle" bindtap="onToggleQuickMode">
-        <image wx:if="{{quickMode}}" class="quick-mode-icon" src="/images/icons/lightning_64.png" mode="aspectFit" />
-        <image wx:else class="quick-mode-icon" src="/images/icons/sparkle_64.png" mode="aspectFit" />
-        <view class="quick-mode-text-wrap">
-          <text class="quick-mode-text">{{quickMode ? '⚡ 快速抽牌' : '✨ 沉浸解读'}}</text>
-          <text class="quick-mode-sub">{{quickMode ? '跳过动画，直接看解读' : '完整体验洗牌翻牌仪式'}}</text>
+      <!-- Mode selector cards -->
+      <view class="mode-selector">
+        <view class="mode-card {{quickMode ? 'mode-active' : ''}}" bindtap="onSelectMode" data-mode="quick">
+          <text class="mode-card-icon">⚡</text>
+          <view class="mode-card-text-wrap">
+            <text class="mode-card-name">快速</text>
+            <text class="mode-card-desc">跳过仪式 · 10秒出结果</text>
+          </view>
+        </view>
+        <view class="mode-card {{!quickMode ? 'mode-active' : ''}}" bindtap="onSelectMode" data-mode="immersive">
+          <text class="mode-card-icon">✨</text>
+          <view class="mode-card-text-wrap">
+            <text class="mode-card-name">沉浸</text>
+            <text class="mode-card-desc">洗牌翻牌 · 完整仪式感</text>
+          </view>
         </view>
       </view>
 
