@@ -20,7 +20,7 @@
 
   <!-- Header -->
   <view class="ac-header">
-    <text class="ac-header-icon">✦</text>
+    <image class="ac-header-icon" src="/images/icons/star_64.png" mode="aspectFit" />
     <text class="ac-header-title">今日行动建议</text>
   </view>
 
@@ -42,11 +42,11 @@
       </view>
 
       <!-- Category icon -->
-      <text class="ac-category-icon">
-        <text wx:if="{{item.category === 'love'}}">♥</text>
-        <text wx:elif="{{item.category === 'career'}}">◆</text>
-        <text wx:else>✦</text>
-      </text>
+      <view class="ac-category-icon">
+        <image wx:if="{{item.category === 'love'}}" class="ac-category-icon-img" src="/images/icons/heart_64.png" mode="aspectFit" />
+        <image wx:elif="{{item.category === 'career'}}" class="ac-category-icon-img" src="/images/icons/diamond_64.png" mode="aspectFit" />
+        <image wx:else class="ac-category-icon-img" src="/images/icons/star_64.png" mode="aspectFit" />
+      </view>
 
       <!-- Content text -->
       <text class="ac-item-text">{{item.content}}</text>

@@ -26,7 +26,10 @@
       </view>
     </view>
 
-    <button class="ar-gen-btn" bindtap="onGenerate">✦ 生成我的年度报告</button>
+    <button class="ar-gen-btn" bindtap="onGenerate">
+      <image class="btn-inline-icon" src="/images/icons/star_64.png" mode="aspectFit" />
+      <text>生成我的年度报告</text>
+    </button>
     <button class="ar-buy-btn" bindtap="onBuySingle">单独购买 ¥29.90</button>
     <text class="ar-intro-note">会员专属 · 也可单独购买</text>
   </view>
@@ -92,8 +95,14 @@
 
     <!-- 操作 -->
     <view class="ar-actions">
-      <button class="ar-share-btn" open-type="share">📤 分享报告</button>
-      <button class="ar-redo-btn" bindtap="onGenerate">🔄 重新生成</button>
+      <button class="ar-share-btn" open-type="share">
+        <image class="btn-inline-icon" src="/images/icons/share_64.png" mode="aspectFit" />
+        <text>分享报告</text>
+      </button>
+      <button class="ar-redo-btn" bindtap="onGenerate">
+        <image class="btn-inline-icon" src="/images/icons/refresh_64.png" mode="aspectFit" />
+        <text>重新生成</text>
+      </button>
     </view>
   </view>
 </view>

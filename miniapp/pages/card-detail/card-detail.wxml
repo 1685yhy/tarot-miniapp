@@ -32,7 +32,7 @@
        ============================================================ -->
   <view wx:elif="{{pageError}}" class="error-root">
     <view class="error-icon-wrap">
-      <text class="error-icon">✦</text>
+      <image class="error-icon" src="/images/icons/warning_64.png" mode="aspectFit" />
     </view>
     <text class="error-text">星辰暂时隐匿</text>
     <text class="error-hint">{{pageError}}</text>
@@ -57,7 +57,7 @@
             binderror="onHeroImgError"
           />
           <view class="card-img-fallback" wx:if="{{!card.imagePath || heroImgError}}">
-            <text class="card-img-fallback-icon" style="font-size:80rpx">🃏</text>
+            <image class="card-img-fallback-icon" src="/images/icons/card_back_64.png" mode="aspectFit" />
           </view>
         </view>
         <!-- Decorative corner accents -->

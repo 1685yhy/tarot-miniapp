@@ -83,7 +83,7 @@
           <view class="premium-overlay" wx:if="{{item.premium}}">
             <view class="premium-overlay-bg"></view>
             <view class="premium-overlay-content">
-              <text class="premium-overlay-icon">✦</text>
+              <image class="premium-overlay-icon" src="/images/icons/lock_64.png" mode="aspectFit" />
               <text class="premium-overlay-text">会员专属</text>
               <text class="premium-overlay-sub">开通即可使用</text>
             </view>
@@ -183,7 +183,8 @@
 
       <!-- Quick mode toggle -- subtle link text -->
       <view class="quick-mode-toggle" bindtap="onToggleQuickMode">
-        <text class="quick-mode-icon">{{quickMode ? '⚡' : '✨'}}</text>
+        <image wx:if="{{quickMode}}" class="quick-mode-icon" src="/images/icons/lightning_64.png" mode="aspectFit" />
+        <image wx:else class="quick-mode-icon" src="/images/icons/sparkle_64.png" mode="aspectFit" />
         <text class="quick-mode-text">{{quickMode ? '快速抽牌' : '沉浸解读'}}</text>
       </view>
 

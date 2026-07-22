@@ -7,7 +7,7 @@
 
   <!-- Close button (top-right corner) -->
   <view class="sp-close" bindtap="onClose">
-    <text class="sp-close-icon">✕</text>
+    <image class="sp-close-icon" src="/images/icons/close_64.png" mode="aspectFit" />
   </view>
 
   <!-- Canvas (hidden from view, used for drawing) -->

@@ -35,7 +35,7 @@
 
     <!-- Create entry button -->
     <button class="btn-create" bindtap="showCreateModal">
-      <text class="btn-create-icon">✦</text>
+      <image class="btn-create-icon" src="/images/icons/star_64.png" mode="aspectFit" />
       <text>记录今天</text>
     </button>
 
@@ -73,7 +73,7 @@
           <!-- Card info -->
           <view wx:if="{{entry.card}}" class="entry-card-section">
             <view class="card-label-line">
-              <text class="card-label-icon">🃏</text>
+              <image class="card-label-icon" src="/images/icons/card_back_64.png" mode="aspectFit" />
               <text class="card-label">今日之牌</text>
             </view>
             <text class="card-name">{{entry.card.name_zh}}</text>
@@ -102,7 +102,7 @@
       <text class="empty-title">还没有日记记录</text>
       <text class="empty-desc">每天抽一张牌，记录你的感受</text>
       <button class="btn-empty-cta" bindtap="showCreateModal">
-        <text class="btn-empty-cta-icon">✦</text>
+        <image class="btn-empty-cta-icon" src="/images/icons/star_64.png" mode="aspectFit" />
         <text>抽取今日卡牌</text>
       </button>
     </view>

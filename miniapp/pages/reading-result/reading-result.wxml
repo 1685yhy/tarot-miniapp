@@ -175,7 +175,7 @@
           <view class="card-img-wrap enlarged-img {{enlargedImgLoaded ? 'card-img-wrap--loaded' : ''}}">
             <image class="card-img-inner" src="{{reading.drawn_cards[enlargedCardIndex].imagePath}}" mode="aspectFill" lazy-load wx:if="{{reading.drawn_cards[enlargedCardIndex].imagePath}}" bindload="onEnlargedImgLoad" />
             <view class="card-img-fallback" wx:if="{{!reading.drawn_cards[enlargedCardIndex].imagePath}}">
-              <text class="card-img-fallback-icon" style="font-size:100rpx">🃏</text>
+              <image class="card-img-fallback-icon" src="/images/icons/card_back_64.png" mode="aspectFit" />
             </view>
           </view>
         </view>
