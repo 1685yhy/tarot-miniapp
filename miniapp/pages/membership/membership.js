@@ -2,54 +2,77 @@
 const { request, getFriendlyError } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
 
+const TRIAL_STORAGE_KEY = 'trial_expiry';
+const TRIAL_MEMBER_KEY = 'is_trial_member';
+const TRIAL_DURATION_MS = 3 * 24 * 60 * 60 * 1000; // 3 days
+
 Page({
   data: {
-    products: [],
     pageLoading: true,
     pageError: null,
     purchasing: false,
+    isTrialActive: false,
+    trialExpiryDate: null,
+    trialDaysLeft: 0,
+    comparisonRows: [
+      { label: '每日解读', free: '1次', pro: '无限' },
+      { label: '每日追问', free: '3次', pro: '无限' },
+      { label: '可用牌阵', free: '4种基础', pro: '10种全部' },
+      { label: '行动建议', free: '✓', pro: '✓' },
+      { label: '年度报告', free: '✗', pro: '✓' },
+      { label: '每日一牌教学', free: '✓', pro: '✓' },
+      { label: '解读历史回顾', free: '✓', pro: '✓' },
+      { label: '专属客服', free: '✗', pro: '✓' },
+    ],
+    // 定价卡片数据（固定值，不依赖后端）
+    pricingMonthly: {
+      id: 'membership_monthly',
+      name: '月度会员',
+      price: 19.9,
+      type: 'membership',
+    },
+    pricingYearly: {
+      id: 'membership_yearly',
+      name: '年度会员',
+      price: 168,
+      type: 'membership',
+    },
+    pricingStudent: {
+      id: 'membership_student',
+      name: '学生会员',
+      price: 9.9,
+      type: 'membership',
+    },
   },
 
   async onLoad(options) {
     try {
       await checkLogin();
-      const allProducts = await request('/membership/products');
-      // Filter to show only membership-type products (hide single_reading/annual_report)
-      let products = allProducts.filter(p => p.type === 'membership');
-      // If navigated from annual-report page, also include the annual_report product
-      if (options && options.product === 'annual_report') {
-        const annualReportProduct = allProducts.find(p => p.id === 'annual_report');
-        if (annualReportProduct) {
-          products = [...products, annualReportProduct];
-        }
-      }
-      // Precompute display strings to avoid WXML method calls
-      products = products.map(p => {
-        const display = { ...p };
-        if (p.id === 'membership_yearly') {
-          display.pricePerDay = (p.price / 365).toFixed(2);
-          display.recommended = true;
-          display.daily_readings = p.daily_readings || 30;
-          display.unlimited_chat = p.unlimited_chat !== false;
-          display.annual_report = p.annual_report || false;
-        }
-        if (p.id === 'membership_monthly') {
-          display.recommended = false;
-          display.daily_readings = p.daily_readings || 10;
-          display.unlimited_chat = p.unlimited_chat !== false;
-          display.annual_report = false;
-        }
-        if (p.id === 'membership_lifetime') {
-          display.recommended = false;
-          display.daily_readings = -1;
-          display.unlimited_chat = true;
-          display.annual_report = true;
-        }
-        return display;
-      });
-      this.setData({ products, pageLoading: false });
+      this._checkTrialStatus();
+      this.setData({ pageLoading: false });
     } catch (err) {
       this.setData({ pageLoading: false, pageError: getFriendlyError(err) });
+    }
+  },
+
+  /** 检查本地试用状态 */
+  _checkTrialStatus() {
+    const expiry = wx.getStorageSync(TRIAL_STORAGE_KEY);
+    const isTrial = wx.getStorageSync(TRIAL_MEMBER_KEY);
+    if (expiry && isTrial) {
+      const now = Date.now();
+      if (now < expiry) {
+        const daysLeft = Math.ceil((expiry - now) / (24 * 60 * 60 * 1000));
+        this.setData({
+          isTrialActive: true,
+          trialExpiryDate: expiry,
+          trialDaysLeft: daysLeft,
+        });
+      } else {
+        // 试用已过期，清除状态
+        wx.removeStorageSync(TRIAL_STORAGE_KEY);
+        wx.removeStorageSync(TRIAL_MEMBER_KEY);
+      }
     }
   },
 
@@ -64,6 +87,23 @@ Page({
   onRetry() {
     this.setData({ pageError: null, pageLoading: true });
     this.onLoad();
+  },
+
+  /** 开启 3 天免费试用 */
+  onStartTrial() {
+    const trialExpiry = Date.now() + TRIAL_DURATION_MS;
+    wx.setStorageSync(TRIAL_STORAGE_KEY, trialExpiry);
+    wx.setStorageSync(TRIAL_MEMBER_KEY, true);
+    this.setData({
+      isTrialActive: true,
+      trialExpiryDate: trialExpiry,
+      trialDaysLeft: 3,
+    });
+    wx.showToast({ title: '试用已开启！3天内畅享全部功能', icon: 'success' });
+    // 跳转到首页，让用户立即体验
+    setTimeout(() => {
+      wx.switchTab({ url: '/pages/index/index' });
+    }, 1500);
   },
 
   async onPurchase(e) {

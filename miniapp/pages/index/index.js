@@ -110,6 +110,8 @@ Page({
     this._loadFreeReadings();
     // Check if daily card has been flipped today
     this._checkDailyCardFlipped();
+    // Check trial expiry and auto-revoke if expired
+    this._checkTrialExpiry();
   },
 
   /** Load free-reading usage from cached user (or refresh if stale) */
@@ -130,6 +132,22 @@ Page({
       }
     } catch (_err) {
       // Silently degrade — counts stay at defaults
+    }
+  },
+
+  /** Check trial expiry and auto-revoke if expired */
+  _checkTrialExpiry() {
+    try {
+      const expiry = wx.getStorageSync('trial_expiry');
+      const isTrial = wx.getStorageSync('is_trial_member');
+      if (expiry && isTrial && Date.now() >= expiry) {
+        wx.removeStorageSync('trial_expiry');
+        wx.removeStorageSync('is_trial_member');
+        this.setData({ isMember: false });
+        console.log('[trial] 试用已过期，自动撤销');
+      }
+    } catch (e) {
+      // silent
     }
   },
 
@@ -263,6 +281,11 @@ Page({
 
   goToAllSpreads() {
     wx.navigateTo({ url: '/pages/reading/reading' });
+  },
+
+  /** Navigate to the 9.9 yuan first reading (three-card spread) */
+  onStartFirstReading() {
+    wx.navigateTo({ url: '/pages/reading/reading?type=three_card' });
   },
 
   /** Show a brief explainer of what tarot is */

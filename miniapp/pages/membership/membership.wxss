@@ -1,6 +1,7 @@
 /* ============================================================
-   Membership Page — Starlight Design System
+   Membership Page — Redesigned v2
    Dark indigo surfaces · Gold highlights · Premium offering
+   Free trial · Comparison table · Simplified pricing
    ============================================================ */
 
 page {
@@ -87,13 +88,6 @@ page {
   padding: var(--spacing-4xl) var(--spacing-lg);
 }
 
-.error-icon {
-  font-size: calc(var(--font-size-display) + 24rpx);
-  display: block;
-  margin-bottom: var(--spacing-sm);
-  opacity: 0.40;
-}
-
 .error-text {
   font-size: var(--font-size-body);
   color: var(--color-text-secondary);
@@ -108,93 +102,258 @@ page {
   margin-bottom: var(--spacing-xl);
 }
 
-/* Buttons via common.wxss: .btn-primary, .btn--sm */
+/* ================================================================
+   Hero Section
+   ================================================================ */
+.mem-hero {
+  text-align: center;
+  padding: var(--spacing-xl) 0 var(--spacing-lg);
+}
+.mem-hero-icon {
+  width: 64rpx;
+  height: 64rpx;
+  display: block;
+  margin: 0 auto var(--spacing-sm);
+  opacity: 0.9;
+}
+.mem-hero-title {
+  font-size: var(--font-size-display);
+  font-weight: 700;
+  color: var(--color-gold);
+  display: block;
+  letter-spacing: 4rpx;
+}
+.mem-hero-sub {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-tertiary);
+  margin-top: 12rpx;
+  display: block;
+}
 
 /* ================================================================
-   Benefits — golden checkmark list
+   Free Trial Banner
    ================================================================ */
-.benefits {
-  position: relative;
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
+.free-trial-banner {
+  background: linear-gradient(145deg, #2A2A5A 0%, #353570 100%);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.25);
+  border-radius: 28rpx;
+  padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md);
+  text-align: center;
   margin-bottom: var(--spacing-xl);
-  background: var(--color-card);
-  border: 1rpx solid var(--color-gold-glow);
-  box-shadow: 0 2rpx 20rpx rgba(212, 175, 55, 0.05);
+  position: relative;
   overflow: hidden;
 }
 
-.benefits::before {
+.free-trial-banner::before {
   content: '';
   position: absolute;
-  top: var(--spacing-md);
+  top: 0;
   left: 0;
-  width: 4rpx;
-  height: calc(100% - var(--spacing-xl));
-  background: var(--color-gold);
-  border-radius: 0 2rpx 2rpx 0;
-  box-shadow: 0 0 10rpx rgba(244, 212, 140, 0.35);
+  right: 0;
+  height: 3rpx;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-gold-glow-strong) 30%,
+    var(--color-gold) 50%,
+    var(--color-gold-glow-strong) 70%,
+    transparent 100%
+  );
+  pointer-events: none;
 }
 
-.benefit-item {
-  padding: var(--spacing-sm) 0;
-  padding-left: var(--spacing-xl);
-  padding-right: var(--spacing-sm);
-  border-bottom: 1rpx solid rgba(244, 212, 140, 0.08);
-  position: relative;
+.trial-icon-wrap {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: rgba(244, 212, 140, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--spacing-sm);
 }
 
-.benefit-item:last-child {
-  border-bottom: none;
+.trial-icon {
+  font-size: 36rpx;
 }
 
-.benefit-item::before {
-  content: '✓';
-  position: absolute;
-  left: var(--spacing-sm);
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--color-gold);
-  font-size: var(--font-size-body);
+.trial-title {
+  font-size: var(--font-size-subhead);
   font-weight: 700;
-  text-shadow: 0 0 8rpx rgba(244, 212, 140, 0.35);
+  color: var(--color-gold);
+  display: block;
+  margin-bottom: 6rpx;
 }
 
-.benefit-item .text-body {
-  font-size: var(--font-size-body);
-  color: var(--color-text-primary);
+.trial-sub {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+  display: block;
+  margin-bottom: var(--spacing-md);
   line-height: 1.5;
 }
 
-/* ================================================================
-   Product cards — dark indigo, gold accents
-   ================================================================ */
-.products {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
+.trial-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 400rpx;
+  padding: var(--spacing-sm) 0;
+  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
+  color: #1A1A3E;
+  font-size: var(--font-size-body);
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius-pill);
+  letter-spacing: 2rpx;
+  box-shadow: 0 4rpx 28rpx rgba(244, 212, 140, 0.35), inset 0 1rpx 0 rgba(255, 255, 255, 0.3);
+  transition: all 0.15s ease-out;
 }
 
-.product-card {
-  position: relative;
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-2xl);
+.trial-btn::after {
+  border: none;
+}
+
+.trial-btn:active {
+  transform: scale(0.96);
+  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.25);
+}
+
+.trial-guarantee {
+  margin-top: var(--spacing-sm);
+  padding-bottom: var(--spacing-xs);
+}
+
+.trial-guarantee-text {
+  font-size: 22rpx;
+  color: var(--color-text-tertiary);
+  opacity: 0.7;
+}
+
+/* ================================================================
+   Comparison Table
+   ================================================================ */
+.cmp-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.cmp-section-title {
+  font-size: var(--font-size-subhead);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  display: block;
+  margin-bottom: var(--spacing-md);
   text-align: center;
-  background: var(--color-card);
-  border: 1rpx solid rgba(255, 255, 255, 0.04);
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.2);
-  transition: all 0.15s ease-out;
+  letter-spacing: 2rpx;
+}
+
+.cmp-table {
+  background: var(--color-surface-gradient);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
+  border-radius: 24rpx;
   overflow: hidden;
 }
 
-.product-card:active {
-  transform: scale(0.97);
-  border-color: var(--color-gold-glow);
-  box-shadow: 0 0 24rpx rgba(244, 212, 140, 0.35);
+.cmp-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 1rpx solid rgba(244, 212, 140, 0.06);
 }
 
-/* Golden top accent line */
-.product-card::before {
+.cmp-row:last-child {
+  border-bottom: none;
+}
+
+.cmp-row--header {
+  background: rgba(244, 212, 140, 0.06);
+}
+
+.cmp-cell {
+  flex: 1;
+  padding: var(--spacing-sm) var(--spacing-xs);
+  font-size: var(--font-size-caption);
+  text-align: center;
+  line-height: 1.4;
+}
+
+.cmp-cell--label {
+  flex: 1.4;
+  text-align: left;
+  padding-left: var(--spacing-md);
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.cmp-cell--free {
+  color: var(--color-text-tertiary);
+}
+
+.cmp-cell--pro {
+  color: var(--color-gold);
+  font-weight: 600;
+}
+
+.cmp-cell--no {
+  opacity: 0.4;
+}
+
+.cmp-row--header .cmp-cell--label {
+  color: var(--color-text-tertiary);
+  font-weight: 400;
+  font-size: 22rpx;
+}
+
+.cmp-row--header .cmp-cell--free,
+.cmp-row--header .cmp-cell--pro {
+  font-weight: 700;
+  font-size: var(--font-size-caption);
+}
+
+.cmp-row--header .cmp-cell--free {
+  color: var(--color-text-tertiary);
+}
+
+.cmp-row--header .cmp-cell--pro {
+  color: var(--color-gold);
+}
+
+/* ================================================================
+   Pricing Section
+   ================================================================ */
+.pricing-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.pricing-section-title {
+  font-size: var(--font-size-subhead);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  display: block;
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+  letter-spacing: 2rpx;
+}
+
+/* ---- Base Card ---- */
+.pricing-card {
+  position: relative;
+  background: var(--color-surface-gradient);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
+  border-radius: 24rpx;
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+  transition: all 0.2s;
+  overflow: hidden;
+}
+
+.pricing-card:active {
+  transform: scale(0.97);
+  border-color: var(--color-gold-glow-strong);
+}
+
+/* Golden top accent */
+.pricing-card::before {
   content: '';
   position: absolute;
   top: 0;
@@ -212,13 +371,14 @@ page {
   pointer-events: none;
 }
 
-/* ---- Recommended card — extra golden glow ---- */
-.product-card.recommended {
-  border-color: var(--color-gold-glow);
-  box-shadow: 0 4rpx 32rpx rgba(212, 175, 55, 0.08), 0 2rpx 12rpx rgba(0, 0, 0, 0.2);
+/* ---- Recommended Card ---- */
+.pricing-card--rec {
+  border-color: rgba(244, 212, 140, 0.35);
+  background: linear-gradient(145deg, #2A2A5A 0%, #353570 100%);
+  box-shadow: 0 4rpx 30rpx rgba(244, 212, 140, 0.12);
 }
 
-.product-card.recommended::before {
+.pricing-card--rec::before {
   background: linear-gradient(
     90deg,
     transparent 0%,
@@ -228,116 +388,184 @@ page {
     transparent 100%
   );
   height: 4rpx;
-  opacity: 0.6;
 }
 
-/* ---- Recommended badge ---- */
-.recommended-badge {
+.pricing-card-badge {
   position: absolute;
   top: -14rpx;
-  right: var(--spacing-lg);
-  background: linear-gradient(135deg, var(--color-gold-light), var(--color-gold));
-  color: var(--color-text-inverse);
-  font-size: var(--font-size-caption);
-  font-weight: 600;
-  letter-spacing: 1rpx;
+  right: 32rpx;
+  background: linear-gradient(135deg, #F4D48C, #E8C67A);
+  color: #1A1A3E;
+  font-size: 20rpx;
+  font-weight: 700;
   padding: 6rpx var(--spacing-sm);
-  border-radius: var(--radius-sm);
-  z-index: 2;
+  border-radius: 20rpx;
+  letter-spacing: 1rpx;
   box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.35);
 }
 
-/* ================================================================
-   Price display — gold for price, lavender for original
-   ================================================================ */
-.product-price {
+/* ---- Student Card ---- */
+.pricing-card--student {
+  border-color: rgba(184, 169, 224, 0.2);
+  background: linear-gradient(145deg, #252548 0%, #2A2A55 100%);
+}
+
+.pricing-card--student::before {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(184, 169, 224, 0.3) 30%,
+    var(--color-lavender) 50%,
+    rgba(184, 169, 224, 0.3) 70%,
+    transparent 100%
+  );
+}
+
+.pricing-card-student-badge {
+  font-size: var(--font-size-xs);
+  color: var(--color-lavender);
+  font-weight: 600;
+  padding: 4rpx var(--spacing-xs);
+  background: rgba(184, 169, 224, 0.1);
+  border-radius: var(--radius-pill);
+  display: inline-block;
+  margin-bottom: var(--spacing-xs);
+}
+
+.pricing-card-student-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-xxs);
-  margin: var(--spacing-sm) 0 var(--spacing-xxs);
+  gap: var(--spacing-xs);
+  margin-bottom: 4rpx;
 }
 
-.price-symbol {
+.pricing-card-student-sub {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+}
+
+/* ---- Card Content ---- */
+.pricing-card-name {
+  font-size: var(--font-size-subhead);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  display: block;
+  margin-bottom: var(--spacing-xs);
+}
+
+.pricing-card-price-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 2rpx;
+  margin-bottom: 4rpx;
+}
+
+.pricing-card-currency {
   font-size: var(--font-size-body);
   color: var(--color-gold);
-  vertical-align: super;
-  font-weight: 500;
+  font-weight: 600;
 }
 
-.price-value {
-  font-size: var(--font-size-display);
-  font-weight: 700;
+.pricing-card-amount {
+  font-size: 56rpx;
+  font-weight: 800;
   color: var(--color-gold);
   line-height: 1;
-  text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.12);
 }
 
-/* Original/Strikethrough price — lavender */
-.price-original {
+.pricing-card-period {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-tertiary);
+  margin-left: 4rpx;
+}
+
+.pricing-card-daily {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  display: block;
+  margin-bottom: 4rpx;
+}
+
+.pricing-card-save {
+  font-size: var(--font-size-xs);
+  color: var(--color-success);
+  font-weight: 500;
+  display: inline-block;
+  margin-bottom: var(--spacing-md);
+  background: rgba(123, 198, 160, 0.1);
+  padding: 4rpx var(--spacing-xs);
+  border-radius: var(--radius-pill);
+}
+
+.pricing-card-original {
   font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
   text-decoration: line-through;
-  margin-left: var(--spacing-xs);
-  vertical-align: baseline;
+  margin-right: var(--spacing-xs);
   opacity: 0.6;
 }
 
-/* ================================================================
-   Purchase button — golden pill with warm glow
-   ================================================================ */
-.btn-purchase {
+/* ---- CTA Button ---- */
+.pricing-card-btn {
   display: block;
-  width: 70%;
-  margin: var(--spacing-md) auto 0;
-  padding: var(--spacing-md) 0;
+  width: 80%;
+  margin: var(--spacing-sm) auto 0;
+  padding: var(--spacing-sm) 0;
   border: none;
   border-radius: var(--radius-pill);
   font-size: var(--font-size-body);
   font-weight: 700;
   color: var(--color-text-inverse);
-  background: linear-gradient(135deg, var(--color-gold-light), var(--color-gold));
+  background: linear-gradient(135deg, #F4D48C, #E8C67A);
   box-shadow: 0 4rpx 28rpx rgba(244, 212, 140, 0.35), inset 0 1rpx 0 rgba(255, 255, 255, 0.3);
   transition: all 0.15s ease-out;
   letter-spacing: 2rpx;
 }
 
-.btn-purchase::after {
+.pricing-card-btn::after {
   border: none;
 }
 
-.btn-purchase:active {
+.pricing-card-btn:active {
   transform: scale(0.96);
-  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.35);
+  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.25);
+}
+
+.pricing-card-btn--secondary {
+  background: transparent;
+  color: var(--color-gold);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.3);
+  box-shadow: none;
+}
+
+.pricing-card-btn--secondary:active {
+  background: rgba(244, 212, 140, 0.08);
+}
+
+.pricing-card-btn--student {
+  background: transparent;
+  color: var(--color-lavender);
+  border: 1.5rpx solid rgba(184, 169, 224, 0.3);
+  box-shadow: none;
+}
+
+.pricing-card-btn--student:active {
+  background: rgba(184, 169, 224, 0.08);
 }
 
 /* ================================================================
-   Guarantee
+   Footer Guarantee
    ================================================================ */
-.guarantee {
+.mem-footer {
   text-align: center;
-  padding: var(--spacing-2xl) 0;
-  position: relative;
+  padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-2xl);
 }
-
-.guarantee::before {
-  content: '';
-  display: block;
-  width: 80rpx;
-  height: 1rpx;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    var(--color-gold-glow) 50%,
-    transparent 100%
-  );
-  margin: 0 auto var(--spacing-xl);
-}
-
-.guarantee-text {
-  font-size: var(--font-size-caption);
+.mem-footer-text {
+  font-size: var(--font-size-xs);
   color: var(--color-text-tertiary);
-  line-height: 1.6;
+  opacity: 0.5;
 }
 
 /* ================================================================
@@ -387,166 +615,13 @@ page {
 .anim-fade-in-up-4 { opacity: 0; animation: fade-up 0.4s ease-out 0.20s forwards; }
 .anim-fade-in-up-5 { opacity: 0; animation: fade-up 0.4s ease-out 0.25s forwards; }
 
-/* ================================================================
-   New Tier Card Design
-   ================================================================ */
-.mem-hero {
-  text-align: center;
-  padding: var(--spacing-3xl) 0 var(--spacing-xl);
-}
-.mem-hero-icon {
-  font-size: 64rpx;
-  color: var(--color-gold);
-  display: block;
-  margin-bottom: 16rpx;
-}
-.mem-hero-title {
-  font-size: var(--font-size-display);
-  font-weight: 700;
-  color: var(--color-gold);
-  display: block;
-  letter-spacing: 4rpx;
-}
-.mem-hero-sub {
-  font-size: var(--font-size-caption);
-  color: var(--color-text-tertiary);
-  margin-top: 12rpx;
-  display: block;
-}
-
-.mem-tiers {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-  padding: 0 32rpx;
-}
-
-.mem-tier {
-  background: var(--color-surface-gradient);
-  border: 1.5rpx solid rgba(244,212,140,0.12);
-  border-radius: 24rpx;
-  padding: var(--spacing-xl) var(--spacing-lg);
-  position: relative;
-  transition: all 0.2s;
-}
-.mem-tier--rec {
-  border-color: rgba(244,212,140,0.35);
-  background: linear-gradient(145deg, #2A2A5A 0%, #313165 100%);
-  box-shadow: 0 4rpx 30rpx rgba(244,212,140,0.1);
-}
-
-.mem-tier-badge {
-  position: absolute;
-  top: -16rpx;
-  right: 32rpx;
-  background: linear-gradient(135deg, #F4D48C, #E8C67A);
-  color: #1A1A3E;
-  font-size: 20rpx;
-  font-weight: 700;
-  padding: 6rpx var(--spacing-sm);
-  border-radius: 20rpx;
-  letter-spacing: 1rpx;
-}
-
-.mem-tier-name {
-  font-size: var(--font-size-subhead);
-  font-weight: 700;
-  color: var(--color-text-primary);
-  display: block;
-}
-
-.mem-tier-price {
-  margin: var(--spacing-sm) 0 4rpx;
-  display: flex;
-  align-items: baseline;
-}
-.mem-tier-currency {
-  font-size: var(--font-size-body);
-  color: var(--color-gold);
-  font-weight: 600;
-}
-.mem-tier-amount {
-  font-size: 56rpx;
-  font-weight: 800;
-  color: var(--color-gold);
-  line-height: 1;
-}
-.mem-tier-period {
-  font-size: var(--font-size-caption);
-  color: var(--color-text-tertiary);
-  margin-left: 4rpx;
-}
-.mem-tier-daily {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-tertiary);
-  display: block;
-  margin-bottom: 20rpx;
-}
-
-.mem-tier-features {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  margin: var(--spacing-md) 0;
-  padding-top: 20rpx;
-  border-top: 1rpx solid rgba(244,212,140,0.08);
-}
-.mem-feat {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-}
-.mem-feat-icon {
-  font-size: 28rpx;
-  width: 40rpx;
-  text-align: center;
-}
-.mem-feat-text {
-  font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
-}
-
-.mem-tier-cta {
-  text-align: center;
-  background: linear-gradient(135deg, #F4D48C, #E8C67A);
-  color: #1A1A3E;
-  font-size: var(--font-size-body);
-  font-weight: 700;
-  padding: var(--spacing-sm) 0;
-  border-radius: var(--radius-pill);
-  letter-spacing: 2rpx;
-  margin-top: 8rpx;
-}
-
-.mem-single {
-  padding: 0 32rpx;
-  margin-top: 24rpx;
-}
-.mem-single-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-lg);
-  background: var(--color-surface);
-  border: 1rpx solid rgba(244,212,140,0.08);
-  border-radius: 16rpx;
-}
-.mem-single-name {
-  font-size: var(--font-size-body);
-  color: var(--color-text-primary);
-}
-.mem-single-price {
-  font-size: var(--font-size-subhead);
-  font-weight: 700;
-  color: var(--color-gold);
-}
-
-.mem-footer {
-  text-align: center;
-  padding: var(--spacing-xl) var(--spacing-lg);
-}
-.mem-footer-text {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-tertiary);
-  opacity: 0.5;
+@keyframes fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(24rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
