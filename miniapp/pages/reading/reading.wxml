@@ -66,8 +66,9 @@
           wx:key="key"
           data-spread="{{item}}"
           bindtap="onSelectSpread"
+          role="button"
         >
-          <image class="spread-card-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" />
+          <image class="spread-card-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" aria-label="{{item.name}}" />
           <view class="spread-card-info">
             <view class="spread-card-title-row">
               <text class="heading-4">{{item.name}}</text>
@@ -83,7 +84,7 @@
           <view class="premium-overlay" wx:if="{{item.premium}}">
             <view class="premium-overlay-bg"></view>
             <view class="premium-overlay-content">
-              <image class="premium-overlay-icon" src="/images/icons/lock_64.png" mode="aspectFit" />
+              <image class="premium-overlay-icon" src="/images/icons/lock_64.png" mode="aspectFit" aria-label="会员专属" />
               <text class="premium-overlay-text">会员专属</text>
               <text class="premium-overlay-sub">开通即可使用</text>
             </view>
@@ -93,7 +94,7 @@
     </view>
 
     <!-- ========== RITUAL STAGE 0: 冥想呼吸 ========== -->
-    <view wx:elif="{{ritualStage === 0}}" class="ritual-stage anim-fade-up anim-stagger-1" bindtap="onRitualTap">
+    <view wx:elif="{{ritualStage === 0}}" class="ritual-stage anim-fade-up anim-stagger-1" bindtap="onRitualTap" role="button">
       <view class="breathing-container">
         <view class="breathing-ring breathing-ring-outer"></view>
         <view class="breathing-ring breathing-ring-inner"></view>
@@ -118,7 +119,7 @@
     <!-- ========== 问题输入（默认跳过仪式，可选加入冥想） ========== -->
     <view wx:elif="{{showQuestionInput}}">
       <!-- 冥想仪式开关 -->
-      <view class="ritual-toggle {{ritualEnabled ? 'active' : ''}}" bindtap="onToggleRitual">
+      <view class="ritual-toggle {{ritualEnabled ? 'active' : ''}}" bindtap="onToggleRitual" role="button">
         <text class="ritual-toggle-text">静心冥想后再提问</text>
         <text class="ritual-toggle-icon">✦</text>
       </view>
@@ -163,7 +164,7 @@
           <view wx:for="{{displayThemes}}" wx:key="key"
             class="theme-item {{theme === item.key ? 'theme-active' : ''}}"
             bindtap="onThemeTap" data-theme="{{item.key}}">
-            <image class="theme-icon" src="{{item.icon}}" mode="aspectFit" />
+            <image class="theme-icon" src="{{item.icon}}" mode="aspectFit" aria-label="{{item.label}}" />
             <text class="theme-label">{{item.label}}</text>
           </view>
         </view>
@@ -186,14 +187,14 @@
 
       <!-- Mode selector cards -->
       <view class="mode-selector">
-        <view class="mode-card {{quickMode ? 'mode-active' : ''}}" bindtap="onSelectMode" data-mode="quick">
+        <view class="mode-card {{quickMode ? 'mode-active' : ''}}" bindtap="onSelectMode" data-mode="quick" role="button">
           <text class="mode-card-icon">⚡</text>
           <view class="mode-card-text-wrap">
             <text class="mode-card-name">快速</text>
             <text class="mode-card-desc">跳过仪式 · 10秒出结果</text>
           </view>
         </view>
-        <view class="mode-card {{!quickMode ? 'mode-active' : ''}}" bindtap="onSelectMode" data-mode="immersive">
+        <view class="mode-card {{!quickMode ? 'mode-active' : ''}}" bindtap="onSelectMode" data-mode="immersive" role="button">
           <text class="mode-card-icon">✨</text>
           <view class="mode-card-text-wrap">
             <text class="mode-card-name">沉浸</text>

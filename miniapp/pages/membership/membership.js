@@ -15,8 +15,8 @@ Page({
     trialExpiryDate: null,
     trialDaysLeft: 0,
     comparisonRows: [
-      { label: '每日解读', free: '1次', pro: '无限' },
-      { label: '每日追问', free: '3次', pro: '无限' },
+      { label: '每日解读', free: '5次', pro: '无限' },
+      { label: '每日追问', free: '8次', pro: '无限' },
       { label: '可用牌阵', free: '4种基础', pro: '10种全部' },
       { label: '行动建议', free: '✓', pro: '✓' },
       { label: '年度报告', free: '✗', pro: '✓' },

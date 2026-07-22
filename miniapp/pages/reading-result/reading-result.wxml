@@ -195,9 +195,9 @@
         <!-- Front: card image -->
         <view class="enlarged-front" wx:if="{{!isFlipped}}">
           <view class="card-img-wrap enlarged-img {{enlargedImgLoaded ? 'card-img-wrap--loaded' : ''}}">
-            <image class="card-img-inner" src="{{reading.drawn_cards[enlargedCardIndex].imagePath}}" mode="aspectFill" lazy-load wx:if="{{reading.drawn_cards[enlargedCardIndex].imagePath}}" bindload="onEnlargedImgLoad" />
+            <image class="card-img-inner" src="{{reading.drawn_cards[enlargedCardIndex].imagePath}}" mode="aspectFill" lazy-load wx:if="{{reading.drawn_cards[enlargedCardIndex].imagePath}}" bindload="onEnlargedImgLoad" aria-label="{{reading.drawn_cards[enlargedCardIndex].card_name}}，{{reading.drawn_cards[enlargedCardIndex].is_reversed ? '逆位' : '正位'}}" />
             <view class="card-img-fallback" wx:if="{{!reading.drawn_cards[enlargedCardIndex].imagePath}}">
-              <image class="card-img-fallback-icon" src="/images/icons/card_back_64.png" mode="aspectFit" />
+              <image class="card-img-fallback-icon" src="/images/icons/card_back_64.png" mode="aspectFit" aria-label="卡牌背面" />
             </view>
           </view>
         </view>

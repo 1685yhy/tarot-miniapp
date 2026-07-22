@@ -1,7 +1,7 @@
 <view class="tarot-card-wrapper {{isReversed ? 'reversed' : ''}} {{flipping ? 'flipping' : ''}}">
   <view class="tarot-card {{isReversed ? 'card-reversed' : ''}} card-{{cardType}} {{isMajor ? 'card-major' : ''}}">
     <!-- 卡牌图像 (ComfyUI生成的PNG) -->
-    <image wx:if="{{imagePath}}" class="card-image" src="{{imagePath}}" mode="aspectFill" lazy-load></image>
+    <image wx:if="{{imagePath}}" class="card-image" src="{{imagePath}}" mode="aspectFill" lazy-load aria-label="{{nameZh}}，{{isReversed ? '逆位' : '正位'}}"></image>
 
     <!-- 顶部金色装饰条 -->
     <view class="card-ornament-top"></view>

@@ -22,8 +22,8 @@ class Settings(BaseSettings):
     WECHAT_PLATFORM_CERT_SERIAL: str = ""
     WECHAT_PLATFORM_CERT: str = ""
 
-    # Auth
-    JWT_SECRET: str = "change-me-in-production"
+    # Auth — JWT_SECRET is required; no default. Set via .env or environment variable.
+    JWT_SECRET: str
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRE_MINUTES: int = 60 * 24 * 30  # 30 days
 

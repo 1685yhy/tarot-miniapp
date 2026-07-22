@@ -65,7 +65,7 @@
   <view class="anim-fade-in-up-2" style="margin:60rpx 0">
 
     <!-- BEFORE DRAW — card awaiting tap with shimmer, sparkles, float -->
-    <view class="daily-card-wrap {{!hasDrawnToday && !dailyCard ? 'card-ready' : ''}}" wx:if="{{!dailyCard && !dailyCardRestoring}}" bindtap="drawDailyCard" animation="{{cardAnimData}}">
+    <view class="daily-card-wrap {{!hasDrawnToday && !dailyCard ? 'card-ready' : ''}}" wx:if="{{!dailyCard && !dailyCardRestoring}}" bindtap="drawDailyCard" animation="{{cardAnimData}}" role="button">
       <view class="card card-warm card-float">
         <!-- Shimmer sweep — light glint across surface -->
         <view class="card-shimmer"></view>
@@ -111,7 +111,7 @@
 
         <!-- Card thumbnail -->
         <view class="daily-card-thumb-wrap">
-          <image wx:if="{{dailyCard.imagePath}}" class="daily-card-thumb" src="{{dailyCard.imagePath}}" mode="aspectFit" />
+          <image wx:if="{{dailyCard.imagePath}}" class="daily-card-thumb" src="{{dailyCard.imagePath}}" mode="aspectFit" aria-label="{{dailyCard.name_zh}}，今日指引" />
         </view>
 
         <!-- Flipped badge -->
@@ -126,7 +126,7 @@
 
         <!-- Streak badge (only if 2+ consecutive days) -->
         <view wx:if="{{streak >= 2}}" class="streak-badge">
-          <image class="streak-icon" src="/images/icons/star_64.png" mode="aspectFit" />
+          <image class="streak-icon" src="/images/icons/star_64.png" mode="aspectFit" aria-label="连续 {{streak}} 天" />
           <text class="streak-count">连续 {{streak}} 天</text>
         </view>
 
@@ -149,7 +149,7 @@
     <view class="card card-press pending-reading-card">
       <view class="pending-reading-left">
         <view class="pending-reading-icon-wrap">
-          <image class="pending-reading-icon" src="/images/icons/star_64.png" mode="aspectFit" />
+          <image class="pending-reading-icon" src="/images/icons/star_64.png" mode="aspectFit" aria-label="上次未完成的解读" />
         </view>
         <view>
           <text class="body-sm pending-reading-label">上次未完成的解读</text>
@@ -164,7 +164,7 @@
   <view class="anim-fade-in-up-2" style="margin-top:30rpx" bindtap="onGoDiary">
     <view class="card card-press diary-entry-card">
       <view class="diary-entry-left">
-        <image class="diary-entry-icon" src="/images/icons/diary_64.png" mode="aspectFit" />
+        <image class="diary-entry-icon" src="/images/icons/diary_64.png" mode="aspectFit" aria-label="记录今天" />
         <view>
           <text class="body-sm diary-entry-label">记录今天</text>
           <text wx:if="{{dailyCard}}" class="body-xs diary-entry-hint">和「{{dailyCard.name_zh}}」说说话</text>
@@ -174,13 +174,29 @@
     </view>
   </view>
 
-  <!-- 免费次数提示（进度条） -->
-  <view class="free-quota-bar anim-fade-in-up-3">
-    <view class="quota-progress-wrap" wx:if="{{!isMember}}">
+  <!-- 年度报告入口 -->
+  <view class="anim-fade-in-up-2" style="margin-top:30rpx" bindtap="{{isMember ? 'onGoAnnualReport' : 'onGoMembership'}}" role="button">
+    <view class="card card-press annual-report-card {{isMember ? '' : 'annual-report-card--locked'}}">
+      <view class="annual-report-left">
+        <image class="annual-report-icon" src="/images/icons/report_64.png" mode="aspectFit" aria-label="年度运势报告" />
+        <view>
+          <text class="body-sm annual-report-label">年度运势报告</text>
+          <text class="body-xs annual-report-hint">{{isMember ? '查看你的星 year ahead ✦' : '开通会员解锁 ✦'}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 免费次数提示（进度条） — 点击跳转会员页 -->
+  <view class="free-quota-bar anim-fade-in-up-3" wx:if="{{!isMember}}" bindtap="onGoMembership" role="button">
+    <view class="quota-progress-wrap">
       <view class="quota-progress" style="width: {{(freeReadingsTotal - freeReadingsUsed) / freeReadingsTotal * 100}}%"></view>
     </view>
-    <text class="quota-text" wx:if="{{!isMember && freeReadingsUsed < freeReadingsTotal}}">今日免费解读 {{freeReadingsUsed}}/{{freeReadingsTotal}} · 明日0点重置</text>
-    <text class="quota-text quota-text--exhausted" wx:elif="{{!isMember && freeReadingsUsed >= freeReadingsTotal}}">今日免费 {{freeReadingsTotal}}/{{freeReadingsTotal}} 次已用完 · 明日0点重置</text>
+    <text class="quota-text" wx:if="{{freeReadingsUsed < freeReadingsTotal}}">今日免费解读 {{freeReadingsUsed}}/{{freeReadingsTotal}} · 明日0点重置</text>
+    <view class="quota-cta" wx:elif="{{freeReadingsUsed >= freeReadingsTotal}}">
+      <text class="quota-text quota-text--exhausted">今日免费 {{freeReadingsTotal}}/{{freeReadingsTotal}} 次已用完</text>
+      <text class="quota-cta-btn">升级会员无限解读 →</text>
+    </view>
   </view>
 
   <!-- 9.9新人专享CTA -->
@@ -194,28 +210,28 @@
   <view class="section anim-fade-in-up-3">
     <text class="section-title">选择牌阵</text>
     <view class="spread-grid-2">
-      <view class="card card-press spread-card" bindtap="navigateToReading" data-type="three_card" animation="{{spreadAnimData[0]}}">
+      <view class="card card-press spread-card" bindtap="navigateToReading" data-type="three_card" animation="{{spreadAnimData[0]}}" role="button">
         <view class="spread-tag spread-tag-free">免费</view>
-        <image class="spread-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" />
+        <image class="spread-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" aria-label="三牌占卜" />
         <text class="body-sm">三牌占卜</text>
         <text class="body-xs">过去·现在·未来</text>
       </view>
-      <view class="card card-press spread-card" bindtap="navigateToReading" data-type="triangle" animation="{{spreadAnimData[1]}}">
+      <view class="card card-press spread-card" bindtap="navigateToReading" data-type="triangle" animation="{{spreadAnimData[1]}}" role="button">
         <view class="spread-tag spread-tag-premium">会员</view>
-        <image class="spread-icon" src="/images/icons/theme_love_64.png" mode="aspectFit" />
+        <image class="spread-icon" src="/images/icons/theme_love_64.png" mode="aspectFit" aria-label="恋人三角" />
         <text class="body-sm">恋人三角</text>
         <text class="body-xs">感情关系深度解读</text>
         <view class="spread-theme-chip spread-theme-chip--love">爱情</view>
       </view>
-      <view class="card card-press spread-card" bindtap="navigateToReading" data-type="celtic_cross" animation="{{spreadAnimData[2]}}">
+      <view class="card card-press spread-card" bindtap="navigateToReading" data-type="celtic_cross" animation="{{spreadAnimData[2]}}" role="button">
         <view class="spread-tag spread-tag-premium">会员</view>
-        <image class="spread-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" />
+        <image class="spread-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" aria-label="凯尔特十字" />
         <text class="body-sm">凯尔特十字</text>
         <text class="body-xs">全方位综合解牌</text>
       </view>
-      <view class="card card-press spread-card" bindtap="navigateToReading" data-type="career" animation="{{spreadAnimData[3]}}">
+      <view class="card card-press spread-card" bindtap="navigateToReading" data-type="career" animation="{{spreadAnimData[3]}}" role="button">
         <view class="spread-tag spread-tag-premium">会员</view>
-        <image class="spread-icon" src="/images/icons/theme_career_64.png" mode="aspectFit" />
+        <image class="spread-icon" src="/images/icons/theme_career_64.png" mode="aspectFit" aria-label="事业牌阵" />
         <text class="body-sm">事业牌阵</text>
         <text class="body-xs">职场方向与机遇</text>
         <view class="spread-theme-chip spread-theme-chip--career">事业</view>
@@ -224,6 +240,18 @@
     <view class="card card-press more-spreads" bindtap="goToAllSpreads" animation="{{spreadAnimData[4]}}">
       <text class="more-text anim-gentle-pulse">查看更多 · 共10种牌阵</text>
       <text class="more-arrow">→</text>
+    </view>
+
+    <!-- 会员解锁全部牌阵入口（仅非会员显示） -->
+    <view wx:if="{{!isMember}}" class="card card-press unlock-spreads-card" bindtap="onGoMembership" role="button">
+      <view class="unlock-spreads-left">
+        <image class="unlock-spreads-icon" src="/images/icons/lock_64.png" mode="aspectFit" aria-label="解锁全部牌阵" />
+      </view>
+      <view class="unlock-spreads-content">
+        <text class="unlock-spreads-title">解锁全部牌阵</text>
+        <text class="unlock-spreads-sub">会员专享 10 种牌阵 + 无限次解读</text>
+      </view>
+      <text class="unlock-spreads-arrow">→</text>
     </view>
 
     <!-- 塔罗简介 -->

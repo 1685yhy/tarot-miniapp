@@ -29,7 +29,7 @@ const { request, getFriendlyError } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
 const { playCardDrawSound } = require('../../utils/sound');
 
-const FREE_READINGS_LIMIT = 3; // matches the backend FREE_DAILY_READINGS (should match after backend update)
+const FREE_READINGS_LIMIT = 5; // matches the backend FREE_DAILY_READINGS (should match after backend update)
 
 const SPREADS = [
   { key: 'three_card', name: '三牌占卜', icon: '🕯️', desc: '过去·现在·未来', cards: 3, popular: true, defaultTheme: null, plainDesc: '最通用的牌阵，适合任何问题' },
@@ -86,9 +86,9 @@ Page({
     freeReadingsUsed: 0,
     freeReadingsTotal: FREE_READINGS_LIMIT,
     isMember: false,
-    // Draw mode: 'immersive' (default) or 'quick'
-    drawMode: 'immersive',
-    quickMode: false,
+    // Draw mode: 'quick' (default) or 'immersive'
+    drawMode: 'quick',
+    quickMode: true,
     // Onboarding Step 2
     showOnboarding: false,
     onboardingStep: 0,
@@ -98,7 +98,7 @@ Page({
 
   onLoad(options) {
     // Load draw mode preference from profile settings
-    const savedDrawMode = wx.getStorageSync('default_draw_mode') || 'immersive';
+    const savedDrawMode = wx.getStorageSync('default_draw_mode') || 'quick';
     this.setData({
       drawMode: savedDrawMode,
       quickMode: savedDrawMode === 'quick',
@@ -398,6 +398,24 @@ Page({
       wx.showToast({ title: '请先登录', icon: 'none' });
       return;
     }
+
+    // Show confirmation dialog before consuming reading quota
+    const isMember = this.data.isMember;
+    const confirmContent = isMember
+      ? '将消耗 1 次付费解读机会，确定要继续吗？'
+      : '将消耗 1 次免费解读机会，确定要继续吗？';
+
+    const confirmed = await new Promise((resolve) => {
+      wx.showModal({
+        title: '确认开始解读',
+        content: confirmContent,
+        confirmText: '确定',
+        cancelText: '取消',
+        success: (res) => resolve(res.confirm),
+      });
+    });
+
+    if (!confirmed) return;
 
     // Save pending context for result page
     const pending = {

@@ -33,9 +33,9 @@
       <view class="daily-card-label">今日之牌</view>
       <view class="daily-card-body">
         <view class="card-img-wrap daily-card-thumb {{dailyCardImgLoaded ? 'card-img-wrap--loaded' : ''}} {{dailyCardImgError ? 'card-img-wrap--error' : ''}}">
-          <image class="card-img-inner" src="{{dailyCard.imagePath}}" mode="aspectFill" lazy-load bindload="onDailyCardImgLoad" binderror="onDailyCardImgError" wx:if="{{dailyCard.imagePath}}" />
+          <image class="card-img-inner" src="{{dailyCard.imagePath}}" mode="aspectFill" lazy-load bindload="onDailyCardImgLoad" binderror="onDailyCardImgError" wx:if="{{dailyCard.imagePath}}" aria-label="{{dailyCard.name_zh}}，今日之牌" />
           <view class="card-img-fallback">
-            <image class="card-img-fallback-icon" src="/images/icons/card_back_64.png" mode="aspectFit" />
+            <image class="card-img-fallback-icon" src="/images/icons/card_back_64.png" mode="aspectFit" aria-label="卡牌背面" />
           </view>
         </view>
         <view class="daily-card-info">
@@ -45,14 +45,14 @@
         </view>
       </view>
     </view>
-    <view wx:else class="daily-card-prompt anim-fade-up anim-stagger-1" bindtap="onDailyCardPromptTap">
-      <image class="daily-card-prompt-icon" src="/images/icons/sparkle_64.png" mode="aspectFit" />
+    <view wx:else class="daily-card-prompt anim-fade-up anim-stagger-1" bindtap="onDailyCardPromptTap" role="button">
+      <image class="daily-card-prompt-icon" src="/images/icons/sparkle_64.png" mode="aspectFit" aria-label="抽取今日卡牌" />
       <text class="daily-card-prompt-text">抽取今日卡牌，解锁你的专属卡片</text>
     </view>
 
     <!-- Search bar -->
     <view class="search-bar anim-fade-up anim-stagger-1">
-      <image class="search-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" style="width:32rpx;height:32rpx;margin-right:var(--space-sm)" />
+      <image class="search-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" style="width:32rpx;height:32rpx;margin-right:var(--space-sm)" aria-label="搜索" />
       <input
         class="search-input"
         style="flex:1;font-size:var(--fs-body);color:var(--color-text-primary);background:transparent"
@@ -87,15 +87,15 @@
         <!-- 收藏星标 -->
         <view class="card-favorite {{item.favorited ? 'favorited' : ''}}"
           catchtap="onToggleFavorite" data-card-id="{{item.id}}">
-          <image class="fav-icon" src="/images/icons/{{item.favorited ? 'star_filled_64' : 'star_outline_64'}}.png" mode="aspectFit" />
+          <image class="fav-icon" src="/images/icons/{{item.favorited ? 'star_filled_64' : 'star_outline_64'}}.png" mode="aspectFit" aria-label="{{item.favorited ? '取消收藏' : '收藏'}}" />
         </view>
         <!-- 图片区：已激活 → 加载真实图；未激活 → 纯骨架 -->
         <view class="card-img-wrap card-thumb {{item._imgLoaded ? 'card-img-wrap--loaded' : ''}} {{item._imgError ? 'card-img-wrap--error' : ''}}" data-index="{{index}}">
           <image wx:if="{{item._active && item.imagePath}}"
             class="card-img-inner" src="{{item.imagePath}}" mode="aspectFill" lazy-load
-            bindload="onCardImgLoad" binderror="onCardImgError" data-index="{{index}}" />
+            bindload="onCardImgLoad" binderror="onCardImgError" data-index="{{index}}" aria-label="{{item.name_zh}}" />
           <view class="card-img-fallback" wx:if="{{!item.imagePath || item._imgError}}">
-            <image class="card-img-fallback-icon" src="/images/icons/card_back_64.png" mode="aspectFit" />
+            <image class="card-img-fallback-icon" src="/images/icons/card_back_64.png" mode="aspectFit" aria-label="{{item.name_zh}}（无图）" />
           </view>
         </view>
         <text class="card-number">{{item.card_number}}</text>
