@@ -41,7 +41,7 @@
 
   <!-- ===== Error state ===== -->
   <view wx:elif="{{pageError && !readingContext}}" class="error-state">
-    <text class="error-icon">&#x2726;</text>
+    <image class="error-icon" src="/images/icons/warning_64.png" mode="aspectFit" />
     <text class="error-text">星光暂时无法回应</text>
     <text class="error-hint">{{pageError}}</text>
     <button class="retry-btn" bindtap="onRetry">再试一次</button>
@@ -81,7 +81,7 @@
 
     <!-- ===== 发送失败重试 ===== -->
     <view wx:if="{{sendFailed}}" class="retry-bar" bindtap="onRetrySend">
-      <text class="retry-icon">⚠</text>
+      <image class="retry-icon" src="/images/icons/warning_64.png" mode="aspectFit" />
       <text class="retry-text">发送失败，点击重试</text>
     </view>
   </view>
