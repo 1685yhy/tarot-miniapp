@@ -310,6 +310,7 @@
   border: 1rpx solid rgba(244, 212, 140, 0.25);
   border-radius: var(--radius-pill);
   padding: var(--spacing-md) 56rpx;
+  min-height: 88rpx;
   font-size: var(--font-size-caption);
   letter-spacing: 3rpx;
   font-weight: 500;
@@ -328,7 +329,7 @@
   font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
   letter-spacing: 2rpx;
-  padding: var(--spacing-sm) var(--spacing-xl);
+  padding: 24rpx 48rpx;
   border: 1rpx solid rgba(160, 152, 192, 0.2);
   border-radius: var(--radius-pill);
   display: inline-block;
@@ -611,18 +612,18 @@
   100% { opacity: 1; transform: translateY(0); }
 }
 .letter-text {
-  animation: textFadeIn 0.6s ease-out both;
+  animation: textFadeIn 0.4s ease-out both;
 }
-.letter-text:nth-child(1) { animation-delay: 0.1s; }
-.letter-text:nth-child(2) { animation-delay: 0.25s; }
-.letter-text:nth-child(3) { animation-delay: 0.4s; }
-.letter-text:nth-child(4) { animation-delay: 0.55s; }
-.letter-text:nth-child(5) { animation-delay: 0.7s; }
-.letter-text:nth-child(6) { animation-delay: 0.85s; }
-.letter-text:nth-child(7) { animation-delay: 1.0s; }
-.letter-text:nth-child(8) { animation-delay: 1.15s; }
-.letter-text:nth-child(9) { animation-delay: 1.3s; }
-.letter-text:nth-child(10) { animation-delay: 1.45s; }
+.letter-text:nth-child(1) { animation-delay: 0.05s; }
+.letter-text:nth-child(2) { animation-delay: 0.1s; }
+.letter-text:nth-child(3) { animation-delay: 0.15s; }
+.letter-text:nth-child(4) { animation-delay: 0.2s; }
+.letter-text:nth-child(5) { animation-delay: 0.25s; }
+.letter-text:nth-child(6) { animation-delay: 0.3s; }
+.letter-text:nth-child(7) { animation-delay: 0.35s; }
+.letter-text:nth-child(8) { animation-delay: 0.4s; }
+.letter-text:nth-child(9) { animation-delay: 0.45s; }
+.letter-text:nth-child(10) { animation-delay: 0.5s; }
 
 /* ---- Toggle ---- */
 .letter-toggle {

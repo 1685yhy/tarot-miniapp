@@ -511,6 +511,7 @@ page {
   cursor: pointer;
   box-sizing: border-box;
   min-height: 120rpx;
+  min-width: 120rpx;
 }
 
 .theme-item:active {
@@ -542,6 +543,11 @@ page {
 
 .theme-active .theme-label {
   color: var(--color-gold);
+}
+
+/* Filter item for spread selection */
+.filter-item {
+  min-height: 88rpx;
 }
 
 /* ============================================================
@@ -914,7 +920,7 @@ page {
   margin: var(--spacing-md) auto 0;
   font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
-  padding: 20rpx 48rpx;
+  padding: 28rpx 48rpx;
   border: 1rpx solid rgba(160, 152, 192, 0.2);
   border-radius: var(--radius-pill);
   letter-spacing: 2rpx;
