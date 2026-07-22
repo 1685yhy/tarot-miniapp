@@ -125,7 +125,7 @@
       </view>
 
       <!-- ==========================================================
-           5. LETTER — The interpretation as personal prose
+           4. LETTER — The interpretation as personal prose
            ========================================================== -->
       <view class="letter-section">
         <view class="letter-body {{showFullInterpretation ? 'expanded' : 'collapsed'}}">
@@ -139,7 +139,7 @@
       </view>
 
       <!-- ==========================================================
-           4. ACTION SUGGESTIONS — Actionable checklist cards
+           5. ACTION SUGGESTIONS — Actionable checklist cards
            ========================================================== -->
       <action-cards
         wx:if="{{reading.action_items && reading.action_items.length > 0}}"
@@ -154,7 +154,7 @@
       </view>
 
       <!-- ==========================================================
-           5. ACTIONS — Warm, minimal, intentional
+           6. ACTIONS — Warm, minimal, intentional
            ========================================================== -->
       <view class="actions-section">
         <button class="btn-ask" bindtap="onAskMore">追问更多</button>
