@@ -599,6 +599,19 @@ page {
 }
 
 /* ==============================
+   AI解读时间提示 — subtle note below draw button
+   ============================== */
+.reading-time-note {
+  display: block;
+  text-align: center;
+  font-size: var(--font-size-caption, 24rpx);
+  color: var(--color-text-tertiary, rgba(160, 152, 192, 0.5));
+  letter-spacing: 2rpx;
+  margin-top: 12rpx;
+  opacity: 0.6;
+}
+
+/* ==============================
    RITUAL STAGE — Shared
    ============================== */
 .ritual-stage {
