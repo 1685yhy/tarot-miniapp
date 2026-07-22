@@ -84,6 +84,11 @@
         data-id="{{item.id}}"
         bindtap="onCardTap"
       >
+        <!-- 收藏星标 -->
+        <view class="card-favorite {{item.favorited ? 'favorited' : ''}}"
+          catchtap="onToggleFavorite" data-card-id="{{item.id}}">
+          <image class="fav-icon" src="/images/icons/{{item.favorited ? 'star_filled_64' : 'star_outline_64'}}.png" mode="aspectFit" />
+        </view>
         <!-- 图片区：已激活 → 加载真实图；未激活 → 纯骨架 -->
         <view class="card-img-wrap card-thumb {{item._imgLoaded ? 'card-img-wrap--loaded' : ''}} {{item._imgError ? 'card-img-wrap--error' : ''}}" data-index="{{index}}">
           <image wx:if="{{item._active && item.imagePath}}"

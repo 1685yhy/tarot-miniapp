@@ -357,14 +357,89 @@
 }
 
 /* ============================================================
+   HISTORY CARD — Card-style reading archive entries
+   ============================================================ */
+.history-card {
+  background: var(--color-surface-gradient);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  margin: var(--spacing-sm) var(--spacing-lg);
+  box-shadow: var(--shadow-card);
+  transition: all var(--duration-fast) var(--ease-out);
+  position: relative;
+  border-left: 4rpx solid var(--color-gold);
+}
+.history-card:first-child {
+  margin-top: var(--spacing-md);
+}
+.history-card:last-child {
+  margin-bottom: var(--spacing-md);
+}
+.history-card:active {
+  transform: scale(0.97);
+  border-color: rgba(244, 212, 140, 0.20);
+  box-shadow: var(--shadow-card-press);
+}
+.history-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xs);
+}
+.history-spread-type {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gold);
+  letter-spacing: 1rpx;
+}
+.history-date {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+}
+.history-question {
+  display: block;
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+  font-style: italic;
+  line-height: var(--line-height-base);
+  margin-bottom: var(--spacing-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.history-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--spacing-xxs);
+}
+.history-card-footer .history-theme {
+  font-size: var(--font-size-xs);
+  color: var(--color-lavender);
+  opacity: 0.80;
+}
+.history-action {
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gold);
+  letter-spacing: 1rpx;
+}
+
+/* ============================================================
    HISTORY SECTION — Card thumbnails on the left
    ============================================================ */
 .history-section {
   border-radius: var(--radius-lg);
-  overflow: hidden;
   background: var(--color-surface-gradient);
   border: 1.5rpx solid rgba(244, 212, 140, 0.12);
   box-shadow: var(--shadow-card);
+  padding-bottom: var(--spacing-xs);
+}
+
+/* History scroll view with padding for card cards */
+.history-section scroll-view {
+  /* overflow-y set inline via style */
 }
 
 .history-header {

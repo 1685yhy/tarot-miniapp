@@ -7,6 +7,16 @@ const { playCardRevealSound } = require('../../utils/sound');
 const IMAGE_BASE = 'https://xingxiang.chat/images/cards_full';
 const MAJOR_ARCANA_TOTAL = 22;
 
+const MILESTONES = {
+  1: '收集到第1张牌！78张牌等你探索 ✦',
+  5: '已收集5张！你对塔罗有了初步认识 ✦',
+  10: '10张了！大阿尔卡纳进度 {majorCount}/22',
+  22: '🎉 集齐所有大阿尔卡纳22张！你是塔罗大师',
+  30: '30张！超过三分之一的塔罗世界已被你解锁',
+  50: '50张！你已经超越了大多数人的塔罗知识',
+  78: '🏆 78张全收集！星光映照的完整故事都在你手中',
+};
+
 function getTodayStr() {
   const d = new Date();
   const y = d.getFullYear();
@@ -117,11 +127,32 @@ Page({
     if (!collectedMajorIds.includes(card.id)) {
       collectedMajorIds.push(card.id);
       wx.setStorageSync('collected_major_ids', collectedMajorIds);
+      const collectedCount = collectedMajorIds.length;
       this.setData({
-        collectedCount: collectedMajorIds.length,
+        collectedCount,
         collectedMajorIds,
       });
+
+      // Check milestone
+      this._checkMilestone(collectedCount);
     }
+  },
+
+  _checkMilestone(count) {
+    const milestone = MILESTONES[count];
+    if (!milestone) return;
+
+    const majorCount = count; // all collected are major arcana
+    const content = milestone.replace('{majorCount}', majorCount);
+
+    setTimeout(() => {
+      wx.showModal({
+        title: '收集里程碑',
+        content,
+        showCancel: false,
+        confirmText: '继续探索',
+      });
+    }, 500);
   },
 
   // ---- Card flip ----

@@ -275,7 +275,49 @@ def make_diamond():
 
     return im
 
-# ─── 10. SHARE BUTTON ─── (for 📤 in share button — reusing share_64.png style, but smaller version)
+# ─── 10. STAR FILLED ─── (for ★ favorite state)
+def make_star_filled():
+    im = make_base()
+    d = ImageDraw.Draw(im)
+    cx, cy = 128, 128
+    glow_circular(d, cx, cy, 45, 45)
+
+    # 5-pointed star
+    pts = []
+    for i in range(10):
+        a = math.radians(-90 + i * 36)
+        r = 48 if i % 2 == 0 else 20
+        pts.append((cx + r * math.cos(a), cy + r * math.sin(a)))
+    d.polygon(pts, fill=(244, 212, 140, 35), outline=GOLD, width=3)
+
+    # Center highlight
+    highlight_dot(d, cx, cy, 5)
+    # Tip highlights
+    for angle in [0, 72, 144, 216, 288]:
+        rad = math.radians(-90 + angle)
+        tx = cx + 48 * math.cos(rad)
+        ty = cy + 48 * math.sin(rad)
+        highlight_dot(d, int(tx), int(ty), 3)
+
+    return im
+
+# ─── 11. STAR OUTLINE ─── (for ☆ unfavorite state)
+def make_star_outline():
+    im = make_base()
+    d = ImageDraw.Draw(im)
+    cx, cy = 128, 128
+
+    # 5-pointed star (outline only, no fill, dimmer)
+    pts = []
+    for i in range(10):
+        a = math.radians(-90 + i * 36)
+        r = 48 if i % 2 == 0 else 20
+        pts.append((cx + r * math.cos(a), cy + r * math.sin(a)))
+    d.polygon(pts, fill=(244, 212, 140, 8), outline=(244, 212, 140, 120), width=2)
+
+    return im
+
+# ─── 12. SHARE BUTTON ─── (for 📤 in share button — reusing share_64.png style, but smaller version)
 def make_share_btn():
     """Simpler share icon for buttons (arrow up from box)."""
     im = make_base()
@@ -309,6 +351,8 @@ def main():
 
     icons = [
         ("star_64.png", make_star),
+        ("star_filled_64.png", make_star_filled),
+        ("star_outline_64.png", make_star_outline),
         ("warning_64.png", make_warning),
         ("card_back_64.png", make_card_back),
         ("lightning_64.png", make_lightning),
