@@ -375,19 +375,15 @@ Page({
     }
   },
 
-  /** Toggle between quick mode and immersive mode */
-  onToggleQuickMode() {
-    const newQuickMode = !this.data.quickMode;
+  /** Select draw mode: quick or immersive */
+  onSelectMode(e) {
+    const mode = e.currentTarget.dataset.mode;
+    const isQuick = mode === 'quick';
     this.setData({
-      quickMode: newQuickMode,
-      drawMode: newQuickMode ? 'quick' : 'immersive',
+      quickMode: isQuick,
+      drawMode: isQuick ? 'quick' : 'immersive',
     });
-    wx.setStorageSync('default_draw_mode', newQuickMode ? 'quick' : 'immersive');
-    wx.showToast({
-      title: newQuickMode ? '已切换为快速抽牌' : '已切换为沉浸解读',
-      icon: 'none',
-      duration: 1500,
-    });
+    wx.setStorageSync('default_draw_mode', isQuick ? 'quick' : 'immersive');
   },
 
   async onStartReading() {

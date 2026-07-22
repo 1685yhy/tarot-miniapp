@@ -37,6 +37,10 @@ Page({
     loadingTimeText: '',    // dynamic status text in stage 3
     showWaitOptions: false, // show the "continue waiting?" UI after timeout
 
+    // Quick / immersive mode
+    isQuick: false,
+    isImmersive: false,
+
     // Save / share
     isSaved: false,         // whether this reading is in saved_readings storage
 
@@ -87,12 +91,13 @@ Page({
       this._cachedError = null;
 
       if (isQuick) {
-        // Quick mode: skip stages 1-2, go directly to stage 3
-        this.setData({ loadingStage: 3, loadingDotCount: 1 });
-        this._startStage3();
+        // Quick mode: skip all loading stages, show result as soon as it arrives
+        this._isQuickMode = true;
+        this.setData({ isQuick: true, isImmersive: false, pageLoading: false });
         this._createReading();
       } else {
         // Immersive mode: full 3-stage animation
+        this.setData({ isQuick: false, isImmersive: true });
         this._startStages();
         this._createReading();
       }
@@ -101,6 +106,7 @@ Page({
 
     this._id = id;
     this._cachedReading = null;
+    this.setData({ isQuick: false, isImmersive: true });
 
     // Check if already saved in local storage
     const saved = wx.getStorageSync('saved_readings') || [];
@@ -306,15 +312,22 @@ Page({
      --------------------------------------------------------------- */
 
   _tryShowResult() {
-    if (this.data.loadingStage !== 3) return;
+    // Quick mode bypass — no loading stages to wait for
+    if (!this._isQuickMode && this.data.loadingStage !== 3) return;
 
     this._clearStage3Timers();
 
     if (this._cachedReading) {
-      const reading = this._cachedReading;
+      let reading = this._cachedReading;
       const spreadTypeName = SPREAD_TYPE_NAMES[reading.spread_type]
         || reading.spread_type
         || '三牌占卜';
+
+      // Quick mode: prepend ⚡ 快速解读 marker to interpretation text
+      if (this._isQuickMode && reading.interpretation) {
+        reading = { ...reading, interpretation: '⚡ 快速解读\n\n' + reading.interpretation };
+      }
+
       const tldr = this._extractTLDR(reading.interpretation);
       this.setData({ reading, tldr, spreadTypeName, pageLoading: false, showUndo: true, showFullInterpretation: false });
       // Trigger staggered card entrance animation after render

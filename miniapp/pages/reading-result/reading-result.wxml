@@ -96,6 +96,9 @@
         <!-- Spread type -->
         <text class="spread-type">{{spreadTypeName}}</text>
 
+        <!-- Immersive mode badge -->
+        <text class="mode-badge" wx:if="{{isImmersive}}">✨ 沉浸解读</text>
+
       </view>
 
       <!-- ==========================================================
