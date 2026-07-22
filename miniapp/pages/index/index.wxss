@@ -316,6 +316,11 @@
   font-size: var(--font-size-title);
 }
 
+.diary-entry-icon {
+  width: 48rpx;
+  height: 48rpx;
+}
+
 .diary-entry-label {
   display: block;
   font-weight: 500;

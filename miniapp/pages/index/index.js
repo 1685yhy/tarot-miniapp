@@ -279,6 +279,10 @@ Page({
     wx.navigateTo({ url: '/pages/diary/diary' });
   },
 
+  onGoDiary() {
+    wx.navigateTo({ url: '/pages/diary/diary' });
+  },
+
   goToAllSpreads() {
     wx.navigateTo({ url: '/pages/reading/reading' });
   },
