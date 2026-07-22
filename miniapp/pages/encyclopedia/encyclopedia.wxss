@@ -188,12 +188,41 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
+  position: relative;
 }
 
 .card-item:active {
   transform: scale(0.97);
   border-color: rgba(244, 212, 140, 0.20);
   box-shadow: var(--shadow-card-press);
+}
+
+/* ---- Favorite star badge ---- */
+.card-favorite {
+  position: absolute;
+  top: 12rpx;
+  right: 12rpx;
+  z-index: 3;
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(26, 26, 62, 0.70);
+  border-radius: 50%;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+.card-favorite:active {
+  transform: scale(1.20);
+  background: rgba(26, 26, 62, 0.90);
+}
+.card-favorite.favorited {
+  background: rgba(244, 212, 140, 0.15);
+}
+.fav-icon {
+  width: 32rpx;
+  height: 32rpx;
+  display: block;
 }
 
 /* ---- Card Thumbnail Image ---- */

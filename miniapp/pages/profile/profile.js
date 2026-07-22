@@ -46,6 +46,9 @@ Page({
     savedReadings: [],
     savedReadingsLoading: false,
 
+    // Favorites count
+    favoriteCount: 0,
+
     // Sound settings
     soundEnabled: true,
 
@@ -108,6 +111,12 @@ Page({
 
     // Also load saved readings from local storage
     this._loadSavedReadings();
+    this._loadFavoriteCount();
+  },
+
+  _loadFavoriteCount() {
+    const favoriteIds = wx.getStorageSync('favorite_cards') || [];
+    this.setData({ favoriteCount: favoriteIds.length });
   },
 
   async _loadSavedReadings() {
@@ -179,6 +188,13 @@ Page({
   onViewReading(e) {
     const id = e.currentTarget.dataset.id;
     wx.navigateTo({ url: `/pages/reading-result/reading-result?id=${id}` });
+  },
+
+  onGoFavorites() {
+    // Use globalData to signal favorites filter since switchTab doesn't support query params
+    const app = getApp();
+    app.globalData.showCardFavorites = true;
+    wx.switchTab({ url: '/pages/encyclopedia/encyclopedia' });
   },
 
   onGoDiary() {

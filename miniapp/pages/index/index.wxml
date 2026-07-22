@@ -129,6 +129,16 @@
           <image class="streak-icon" src="/images/icons/star_64.png" mode="aspectFit" />
           <text class="streak-count">连续 {{streak}} 天</text>
         </view>
+
+        <!-- Collection progress ring -->
+        <view class="collect-progress-wrap" wx:if="{{collectedCount > 0}}">
+          <view class="collect-progress-ring">
+            <view class="ring-bg"></view>
+            <view class="ring-fill" style="--progress: {{collectedCount / 22}}"></view>
+            <text class="ring-text">{{collectedCount}}/22</text>
+          </view>
+          <text class="ring-label">大牌收集</text>
+        </view>
       </view>
     </view>
 

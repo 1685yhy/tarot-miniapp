@@ -16,6 +16,7 @@ Page({
     pageError: null,
     tabs: [
       { key: 'all', label: '全部' },
+      { key: 'favorites', label: '收藏' },
       { key: 'major', label: '主牌 (22张)' },
       { key: 'wands', label: '权杖·行动' },
       { key: 'cups', label: '圣杯·情感' },
@@ -25,9 +26,13 @@ Page({
     suitZh: SUIT_ZH,
     loadedCount: 0,        // 当前已激活的卡牌数
     allActive: false,      // 是否已全部激活
+
+    // Favorites
+    favoriteIds: [],
+    favoriteCount: 0,
   },
 
-  async onLoad() {
+  async onLoad(options) {
     const app = getApp();
     const dailyCard = app.globalData && app.globalData.dailyCard
       ? { ...app.globalData.dailyCard, imagePath: computeImagePath(app.globalData.dailyCard) }
@@ -35,6 +40,13 @@ Page({
     this.setData({ dailyCard });
 
     await this.loadCards();
+
+    // If navigated from profile with favorites filter
+    if (app.globalData && app.globalData.showCardFavorites) {
+      app.globalData.showCardFavorites = false;
+      this.setData({ activeTab: 'favorites' });
+      this.filterCards('favorites', this.data.searchKeyword);
+    }
   },
 
   async loadCards() {
@@ -42,13 +54,25 @@ Page({
     try {
       const data = await request('/cards');
       const rawCards = Array.isArray(data) ? data : (data.cards || []);
+
+      // Load favorites from storage
+      const favoriteIds = wx.getStorageSync('favorite_cards') || [];
+      const favoriteSet = new Set(favoriteIds);
+
       const cards = rawCards.map(c => ({
         ...c,
         imagePath: computeImagePath(c),
         suitZh: SUIT_ZH[c.suit] || c.suit || '',
         _active: false,    // 分批激活
+        favorited: favoriteSet.has(c.id),
       }));
-      this.setData({ cards, filteredCards: cards, pageLoading: false });
+      this.setData({
+        cards,
+        filteredCards: cards,
+        pageLoading: false,
+        favoriteIds,
+        favoriteCount: favoriteIds.length,
+      });
 
       // 首屏激活第一批
       this._activateBatch(BATCH_SIZE);
@@ -135,6 +159,8 @@ Page({
       cards = cards.filter(c => c.suit === 'swords');
     } else if (tab === 'pentacles') {
       cards = cards.filter(c => c.suit === 'pentacles');
+    } else if (tab === 'favorites') {
+      cards = cards.filter(c => c.favorited);
     }
 
     if (keyword) {
@@ -154,6 +180,52 @@ Page({
       filteredCards: cards,
       loadedCount: Math.min(BATCH_SIZE, cards.length),
       allActive: cards.length <= BATCH_SIZE,
+    });
+  },
+
+  // ===================== 收藏 =====================
+
+  /** 切换收藏状态 */
+  onToggleFavorite(e) {
+    const cardId = e.currentTarget.dataset.cardId;
+    const { cards, favoriteIds } = this.data;
+
+    const idx = cards.findIndex(c => c.id === cardId);
+    if (idx === -1) return;
+
+    const wasFavorited = cards[idx].favorited;
+    let newFavoriteIds;
+    if (wasFavorited) {
+      newFavoriteIds = favoriteIds.filter(id => id !== cardId);
+    } else {
+      newFavoriteIds = [...favoriteIds, cardId];
+    }
+
+    // Update cards array
+    const favoritedKey = `cards[${idx}].favorited`;
+    const updates = { [favoritedKey]: !wasFavorited };
+
+    // Also update filteredCards if the card is visible
+    const fIdx = this.data.filteredCards.findIndex(c => c.id === cardId);
+    if (fIdx !== -1) {
+      updates[`filteredCards[${fIdx}].favorited`] = !wasFavorited;
+    }
+
+    updates.favoriteIds = newFavoriteIds;
+    updates.favoriteCount = newFavoriteIds.length;
+
+    this.setData(updates);
+    wx.setStorageSync('favorite_cards', newFavoriteIds);
+
+    // If viewing favorites tab and unfavorited, remove from view
+    if (this.data.activeTab === 'favorites' && wasFavorited) {
+      this.filterCards('favorites', this.data.searchKeyword);
+    }
+
+    wx.showToast({
+      title: wasFavorited ? '已取消收藏' : '已收藏',
+      icon: 'none',
+      duration: 1000,
     });
   },
 

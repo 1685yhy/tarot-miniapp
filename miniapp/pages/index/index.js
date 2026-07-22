@@ -68,6 +68,9 @@ Page({
     // v2.0: Daily card teaching entry state
     dailyCardFlipped: false,
     dailyCardRestoring: false,
+
+    // Collection progress
+    collectedCount: 0,
   },
 
   async onLoad() {
@@ -112,6 +115,13 @@ Page({
     this._checkDailyCardFlipped();
     // Check trial expiry and auto-revoke if expired
     this._checkTrialExpiry();
+    // Load collection progress
+    this._loadCollectionProgress();
+  },
+
+  _loadCollectionProgress() {
+    const collectedMajorIds = wx.getStorageSync('collected_major_ids') || [];
+    this.setData({ collectedCount: collectedMajorIds.length });
   },
 
   /** Load free-reading usage from cached user (or refresh if stale) */

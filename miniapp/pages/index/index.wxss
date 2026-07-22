@@ -1211,6 +1211,53 @@
   letter-spacing: 1rpx;
 }
 
+/* --- Collection progress ring --- */
+.collect-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+  position: relative;
+  z-index: 1;
+}
+.collect-progress-ring {
+  position: relative;
+  width: 56rpx;
+  height: 56rpx;
+  flex-shrink: 0;
+}
+.ring-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 4rpx solid rgba(244, 212, 140, 0.12);
+}
+.ring-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 4rpx solid transparent;
+  background: conic-gradient(var(--color-gold) 0deg, var(--color-gold) calc(var(--progress) * 360deg), transparent calc(var(--progress) * 360deg), transparent 360deg);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4rpx), #fff calc(100% - 4rpx));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 4rpx), #fff calc(100% - 4rpx));
+}
+.ring-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gold);
+  line-height: 1;
+}
+.ring-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  letter-spacing: 1rpx;
+}
+
 /* --- Card ready pulse (FOMO-inducing) --- */
 .card-ready .card-warm {
   animation:

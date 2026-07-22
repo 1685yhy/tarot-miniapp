@@ -43,5 +43,6 @@ App({
     user: null,
     dailyCard: null,
     onboardingCompleted: false,
+    showCardFavorites: false,
   },
 });
