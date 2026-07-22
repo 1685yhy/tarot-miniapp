@@ -1,5 +1,6 @@
 // pages/diary/diary.js
 const { request, getFriendlyError } = require('../../utils/api');
+const { computeImagePath } = require('../../utils/cards');
 
 Page({
   data: {
@@ -13,6 +14,9 @@ Page({
     pageLoading: true,
     pageError: null,
     loadingMore: false,
+    todayCard: null,
+    topCard: '',
+    moodTrend: '',
   },
 
   onReady() {
@@ -26,6 +30,7 @@ Page({
   async onShow() {
     this.setData({ page: 1, entries: [], pageLoading: true });
     await this.loadEntries();
+    this._loadTodayCard();
   },
 
   async loadEntries() {
@@ -36,6 +41,7 @@ Page({
         hasMore: data.entries && data.entries.length === 20,
         pageLoading: false,
       });
+      this._computeRetrospect();
     } catch (err) {
       this.setData({ pageLoading: false, pageError: getFriendlyError(err) });
     }
@@ -100,5 +106,41 @@ Page({
   onRetry() {
     this.setData({ pageError: null, pageLoading: true, page: 1, entries: [] });
     this.loadEntries();
+  },
+
+  /** 加载今日卡牌，在编辑器顶部展示 */
+  async _loadTodayCard() {
+    try {
+      const card = await request('/cards/daily');
+      card.imagePath = computeImagePath(card);
+      this.setData({ todayCard: card });
+    } catch(e) {
+      // 静默降级——今日卡牌加载失败不影响记录列表
+    }
+  },
+
+  /** 计算复盘数据：最常出现的牌 + 心情趋势 */
+  _computeRetrospect() {
+    const entries = this.data.entries;
+    if (entries.length < 3) return;
+
+    // 统计最常出现的牌
+    const cardCount = {};
+    entries.forEach(e => {
+      const name = e.card?.name_zh;
+      if (name) cardCount[name] = (cardCount[name] || 0) + 1;
+    });
+    const topEntry = Object.entries(cardCount).sort((a, b) => b[1] - a[1])[0];
+    const topCard = topEntry?.[0] || '未知';
+
+    // 心情趋势：最近3条记录的平均心情（1-5分）
+    const MOOD_SCORE_MAP = { happy: 4.5, calm: 3.5, excited: 5, anxious: 2, sad: 1, thoughtful: 3 };
+    const recent = entries.slice(0, 3);
+    const avgMood = recent.reduce((s, e) => {
+      return s + (e.mood_score || MOOD_SCORE_MAP[e.mood] || 3);
+    }, 0) / recent.length;
+    const moodTrend = avgMood > 3.5 ? '在变好 ✦' : avgMood < 2.5 ? '有些低落' : '比较平稳';
+
+    this.setData({ topCard, moodTrend });
   },
 });

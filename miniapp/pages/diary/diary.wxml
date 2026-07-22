@@ -39,6 +39,16 @@
       <text>记录今天</text>
     </button>
 
+    <!-- ===== 复盘卡片（≥3条记录时显示） ===== -->
+    <view class="retrospect-card" wx:if="{{entries.length >= 3}}">
+      <text class="retrospect-title">📊 本周回顾</text>
+      <text class="retrospect-summary">
+        这周你记录了 {{entries.length}} 次心情，
+        最常出现的牌是「{{topCard}}」，
+        你的心情趋势是{{moodTrend}}。
+      </text>
+    </view>
+
     <!-- ===== 日记列表 ===== -->
     <scroll-view
       wx:if="{{entries.length > 0}}"
@@ -49,9 +59,7 @@
       <view class="entries">
         <view
           class="entry-card"
-          wx:for="{{entries}}" wx:key="id"
-          wx:for-item="entry"
-          wx:key="id"
+          wx:for="{{entries}}" wx:for-item="entry" wx:key="id"
         >
           <!-- Card header: date + mood -->
           <view class="entry-header">
@@ -95,16 +103,10 @@
     </scroll-view>
 
     <!-- ===== 空状态 ===== -->
-    <view wx:if="{{entries.length === 0}}" class="empty-state">
-      <view class="empty-icon-wrap">
-        <text class="empty-star">✦</text>
-      </view>
-      <text class="empty-title">还没有日记记录</text>
-      <text class="empty-desc">每天抽一张牌，记录你的感受</text>
-      <button class="btn-empty-cta" bindtap="showCreateModal">
-        <image class="btn-empty-cta-icon" src="/images/icons/star_64.png" mode="aspectFit" />
-        <text>抽取今日卡牌</text>
-      </button>
+    <view class="empty-date-hint" wx:if="{{entries.length === 0}}" bindtap="showCreateModal">
+      <text class="hint-icon">🃏</text>
+      <text class="hint-text">今天抽到了什么牌？</text>
+      <text class="hint-sub">翻开每日一牌，记录此刻心情</text>
     </view>
 
   </view>
@@ -116,6 +118,15 @@
       <view class="modal-handle"></view>
 
       <text class="modal-title">今日星光日记</text>
+
+      <!-- 今日卡牌上下文 -->
+      <view class="diary-card-context" wx:if="{{todayCard}}">
+        <image class="diary-card-thumb" src="{{todayCard.imagePath}}" mode="aspectFill" />
+        <view class="diary-card-info">
+          <text class="diary-card-name">{{todayCard.name_zh}}</text>
+          <text class="diary-card-hint">今天抽到的牌</text>
+        </view>
+      </view>
 
       <!-- Mood selector -->
       <text class="modal-label">今天的心情</text>

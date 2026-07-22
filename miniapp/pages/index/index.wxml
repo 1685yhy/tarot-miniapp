@@ -150,15 +150,14 @@
     </view>
   </view>
 
-  <!-- 今日日记入口 -->
-  <view class="anim-fade-in-up-2" style="margin-top:30rpx" bindtap="goToDiary">
+  <!-- 今日记录入口 -->
+  <view class="anim-fade-in-up-2" style="margin-top:30rpx" bindtap="onGoDiary">
     <view class="card card-press diary-entry-card">
       <view class="diary-entry-left">
-        <text class="diary-entry-emoji">📖</text>
+        <image class="diary-entry-icon" src="/images/icons/diary_64.png" mode="aspectFit" />
         <view>
-          <text wx:if="{{hasTodayDiary}}" class="body-sm diary-entry-label">今日已记录 ✦</text>
-          <text wx:else class="body-sm diary-entry-label">记录今日感悟 ✦</text>
-          <text class="body-xs diary-entry-hint">开启日记 →</text>
+          <text class="body-sm diary-entry-label">记录今天</text>
+          <text wx:if="{{dailyCard}}" class="body-xs diary-entry-hint">和「{{dailyCard.name_zh}}」说说话</text>
         </view>
       </view>
       <text class="diary-entry-arrow">→</text>
