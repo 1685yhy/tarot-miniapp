@@ -18,54 +18,8 @@ page {
 }
 
 /* ================================================================
-   Typography helpers
+   Typography helpers (page-specific — scoped to avoid overriding common.wxss)
    ================================================================ */
-.heading-1 {
-  font-size: var(--font-size-title);
-  font-weight: 700;
-  color: var(--color-text-primary);
-  text-align: center;
-}
-
-.heading-3 {
-  font-size: var(--font-size-body);
-  font-weight: 600;
-  color: var(--color-text-primary);
-}
-
-.text-body {
-  font-size: var(--font-size-body);
-  color: var(--color-text-primary);
-  line-height: 1.6;
-}
-
-.text-secondary {
-  font-size: var(--font-size-body);
-  color: var(--color-text-secondary);
-}
-
-.text-dim {
-  font-size: var(--font-size-caption);
-  color: var(--color-text-tertiary);
-  display: block;
-}
-
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.flex-col {
-  flex-direction: column;
-}
-
-.gap-xs {
-  gap: 6rpx;
-}
-
-.mt-sm { margin-top: 12rpx; }
-.mt-xs { margin-top: 6rpx; }
 
 /* ================================================================
    Hero section

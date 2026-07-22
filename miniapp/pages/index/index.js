@@ -4,7 +4,7 @@ const { checkLogin } = require('../../utils/auth');
 const { computeImagePath } = require('../../utils/cards');
 const { createAnim, staggeredEntrance } = require('../../utils/animate');
 
-const FREE_READINGS_LIMIT = 3;
+const FREE_READINGS_LIMIT = 5;
 
 function getTodayStr() {
   const d = new Date();
@@ -300,6 +300,16 @@ Page({
   /** Navigate to the 9.9 yuan first reading (three-card spread) */
   onStartFirstReading() {
     wx.navigateTo({ url: '/pages/reading/reading?type=three_card' });
+  },
+
+  /** Navigate to annual report page (members only) */
+  onGoAnnualReport() {
+    wx.navigateTo({ url: '/pages/annual-report/annual-report' });
+  },
+
+  /** Navigate to membership page */
+  onGoMembership() {
+    wx.navigateTo({ url: '/pages/membership/membership' });
   },
 
   /** Show a brief explainer of what tarot is */

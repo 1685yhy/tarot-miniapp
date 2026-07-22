@@ -167,6 +167,13 @@ async def payment_callback(
             user.member_expires_at = now + timedelta(days=365)
         user.is_member = True
 
+    elif order.product_type == "membership_student":
+        if user.member_expires_at and user.member_expires_at > now:
+            user.member_expires_at += timedelta(days=30)
+        else:
+            user.member_expires_at = now + timedelta(days=30)
+        user.is_member = True
+
     elif order.product_type == "membership_lifetime":
         user.is_member = True
         user.member_expires_at = None  # Never expires

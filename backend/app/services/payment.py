@@ -21,9 +21,10 @@ logger = logging.getLogger(__name__)
 
 PRODUCTS = {
     "single_reading": {"name": "单次深度占卜", "price": 9.90, "type": "single_purchase", "cost": 0.002},
-    "membership_monthly": {"name": "月度会员", "price": 29.90, "type": "membership", "cost": 0.06, "daily_readings": 10, "unlimited_chat": True},
-    "membership_yearly": {"name": "年度会员", "price": 198.00, "type": "membership", "cost": 0.72, "daily_readings": 30, "unlimited_chat": True, "annual_report": True},
+    "membership_monthly": {"name": "月度会员", "price": 19.90, "type": "membership", "cost": 0.04, "daily_readings": 10, "unlimited_chat": True},
+    "membership_yearly": {"name": "年度会员", "price": 168.00, "type": "membership", "cost": 0.48, "daily_readings": 30, "unlimited_chat": True, "annual_report": True},
     "membership_lifetime": {"name": "永久会员", "price": 298.00, "type": "membership", "cost": 2.00, "daily_readings": -1, "unlimited_chat": True, "annual_report": True},
+    "membership_student": {"name": "学生会员", "price": 9.90, "type": "membership", "cost": 0.02, "daily_readings": 10, "unlimited_chat": True},
     "annual_report": {"name": "年度运势报告", "price": 29.90, "type": "single_purchase", "cost": 0.03},
 }
 

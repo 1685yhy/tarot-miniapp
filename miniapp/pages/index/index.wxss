@@ -337,6 +337,50 @@
   color: var(--color-text-tertiary);
 }
 
+/* ============================================================
+   4e. ANNUAL REPORT ENTRY CARD — home page entry point
+   ============================================================ */
+.annual-report-card {
+  padding: var(--spacing-md) var(--spacing-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, rgba(244,212,140,0.08) 0%, rgba(180,140,200,0.06) 100%);
+  border-color: rgba(244,212,140,0.15);
+}
+
+.annual-report-card--locked {
+  background: linear-gradient(135deg, rgba(100,100,140,0.06) 0%, rgba(80,80,120,0.04) 100%);
+  border-color: rgba(160,155,180,0.12);
+  opacity: 0.85;
+}
+
+.annual-report-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.annual-report-icon {
+  width: 48rpx;
+  height: 48rpx;
+}
+
+.annual-report-label {
+  display: block;
+  font-weight: 500;
+  color: var(--color-gold);
+}
+
+.annual-report-card--locked .annual-report-label {
+  color: var(--color-text-tertiary);
+}
+
+.annual-report-hint {
+  display: block;
+  margin-top: 4rpx;
+}
+
 /* -----------------------------------------------------------
    4b. AFTER-DRAW — Card Reveal & Particles
    ----------------------------------------------------------- */

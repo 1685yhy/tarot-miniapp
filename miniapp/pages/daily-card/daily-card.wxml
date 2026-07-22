@@ -18,7 +18,7 @@
 <view class="page" wx:elif="{{pageError}}">
   <view class="error-state">
     <view class="error-icon-area">
-      <image class="error-icon-img" src="/images/icons/start_reading_64.png" mode="aspectFit" />
+      <image class="error-icon-img" src="/images/icons/start_reading_64.png" mode="aspectFit" aria-label="连接错误" />
     </view>
     <text class="error-title">星光暂时无法连接</text>
     <text class="error-desc">{{pageError}}</text>
@@ -32,7 +32,7 @@
   <!-- Progress header: collection count -->
   <view class="collect-header">
     <view class="collect-header-left">
-      <text class="collect-label">大阿尔卡纳收集</text>
+      <text class="collect-label">大牌收集</text>
     </view>
     <text class="collect-count">
       <text class="collect-count-num">{{collectedCount}}</text>
@@ -64,7 +64,7 @@
       </view>
 
       <!-- Card front (face-up: actual card image) -->
-      <view class="card-face card-front {{frontVisible ? 'card-face--visible' : ''}}" bindtap="onCardTap">
+      <view class="card-face card-front {{frontVisible ? 'card-face--visible' : ''}}" bindtap="onCardTap" role="button">
         <view class="card-img-wrap {{cardImgLoaded ? 'card-img-wrap--loaded' : ''}} {{cardImgError ? 'card-img-wrap--error' : ''}}">
           <image
             class="card-img-inner"
@@ -72,9 +72,10 @@
             mode="widthFix"
             bindload="onCardImgLoad"
             binderror="onCardImgError"
+            aria-label="{{dailyCard.name_zh}}"
           />
           <view class="card-img-fallback">
-            <image class="card-img-fallback-icon" src="/images/icons/start_reading_64.png" mode="aspectFit" />
+            <image class="card-img-fallback-icon" src="/images/icons/start_reading_64.png" mode="aspectFit" aria-label="卡牌加载失败" />
           </view>
         </view>
 
@@ -93,7 +94,7 @@
       <text class="card-name-zh">{{dailyCard.name_zh}}</text>
       <text class="card-name-en">{{dailyCard.name_en}}</text>
       <view class="card-meta-tags">
-        <text class="badge badge--gold" wx:if="{{dailyCard.arcana === 'major'}}">大阿尔卡纳</text>
+        <text class="badge badge--gold" wx:if="{{dailyCard.arcana === 'major'}}">大牌</text>
         <text class="badge badge--gold" wx:elif="{{dailyCard.suit}}">{{dailyCard.suit}}</text>
         <text class="badge badge--lavender">{{dailyCard.card_number}}</text>
       </view>
@@ -123,7 +124,7 @@
       <!-- Section 1: 符号解读 -->
       <view class="teaching-section anim-fade-up anim-stagger-1">
         <view class="teaching-section-header">
-          <image class="teaching-section-icon" src="/images/icons/about_64.png" mode="aspectFit" />
+          <image class="teaching-section-icon" src="/images/icons/about_64.png" mode="aspectFit" aria-label="符号解读" />
           <text class="teaching-section-title">符号解读</text>
         </view>
         <view class="teaching-section-body">
@@ -156,7 +157,7 @@
       <!-- Section 2: 典故故事 -->
       <view class="teaching-section anim-fade-up anim-stagger-2">
         <view class="teaching-section-header">
-          <image class="teaching-section-icon" src="/images/icons/diary_64.png" mode="aspectFit" />
+          <image class="teaching-section-icon" src="/images/icons/diary_64.png" mode="aspectFit" aria-label="典故故事" />
           <text class="teaching-section-title">典故故事</text>
         </view>
         <view class="teaching-section-body">
@@ -167,7 +168,7 @@
       <!-- Section 3: 生活关联 -->
       <view class="teaching-section anim-fade-up anim-stagger-3">
         <view class="teaching-section-header">
-          <image class="teaching-section-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" />
+          <image class="teaching-section-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" aria-label="生活关联" />
           <text class="teaching-section-title">生活关联</text>
         </view>
         <view class="teaching-section-body">
@@ -190,7 +191,7 @@
 
     <view wx:else class="diary-entry-area">
       <view class="diary-entry-header">
-        <image class="diary-entry-icon" src="/images/icons/diary_64.png" mode="aspectFit" />
+        <image class="diary-entry-icon" src="/images/icons/diary_64.png" mode="aspectFit" aria-label="今日心情" />
         <text class="diary-entry-title">今日心情</text>
       </view>
       <textarea

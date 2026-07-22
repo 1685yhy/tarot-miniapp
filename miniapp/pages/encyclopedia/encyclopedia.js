@@ -17,7 +17,7 @@ Page({
     tabs: [
       { key: 'all', label: '全部' },
       { key: 'favorites', label: '收藏' },
-      { key: 'major', label: '主牌 (22张)' },
+      { key: 'major', label: '大牌 (22张)' },
       { key: 'wands', label: '权杖·行动' },
       { key: 'cups', label: '圣杯·情感' },
       { key: 'swords', label: '宝剑·思维' },

@@ -1,7 +1,7 @@
 // pages/chat/chat.js
 const { request, getFriendlyError } = require('../../utils/api');
 
-const FREE_CHATS_LIMIT = 5; // free follow-up questions per day
+const FREE_CHATS_LIMIT = 8; // free follow-up questions per day
 
 // Spread type key → Chinese display name
 const SPREAD_TYPE_NAMES = {

@@ -10,6 +10,20 @@ from app.api import auth, cards, chat, diary, membership, orders, readings, repo
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # ---- Startup guard: JWT_SECRET must not be placeholder in production ----
+    if settings.JWT_SECRET in ("change-me-in-production", "") and not settings.ENABLE_DEV_LOGIN:
+        import sys
+        print(
+            "FATAL: JWT_SECRET is still the insecure default "
+            "'change-me-in-production' and ENABLE_DEV_LOGIN is False.\n"
+            "The server refuses to start. Set a strong random JWT_SECRET in "
+            "your .env file (e.g. via `openssl rand -hex 32`).\n"
+            "If this is a development environment, set ENABLE_DEV_LOGIN=true "
+            "in .env to bypass this guard (not for production!).",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
     await create_all()
     yield
 
