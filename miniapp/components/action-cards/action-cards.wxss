@@ -39,8 +39,9 @@
 }
 
 .ac-header-icon {
-  font-size: var(--font-size-caption);
-  color: var(--color-gold);
+  width: 28rpx;
+  height: 28rpx;
+  display: block;
   opacity: 0.8;
 }
 
@@ -136,14 +137,18 @@
 
 /* ---- Category Icon ---- */
 .ac-category-icon {
-  font-size: 28rpx;
-  flex-shrink: 0;
   width: 32rpx;
+  flex-shrink: 0;
   text-align: center;
-  color: var(--color-gold);
   opacity: 0.7;
   margin-top: 2rpx;
   line-height: 1;
+}
+
+.ac-category-icon-img {
+  width: 24rpx;
+  height: 24rpx;
+  display: block;
 }
 
 .ac-item--checked .ac-category-icon {

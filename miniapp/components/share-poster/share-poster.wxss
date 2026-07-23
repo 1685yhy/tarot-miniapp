@@ -46,9 +46,9 @@
 }
 
 .sp-close-icon {
-  font-size: 28rpx;
-  color: rgba(240, 237, 232, 0.70);
-  line-height: 1;
+  width: 36rpx;
+  height: 36rpx;
+  display: block;
 }
 
 /* ---- Canvas (hidden — used only for drawing buffer) ---- */

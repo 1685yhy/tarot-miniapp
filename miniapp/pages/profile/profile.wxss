@@ -209,6 +209,13 @@
 
 /* active/disabled states via common .btn-primary */
 
+/* Inline icon inside buttons */
+.btn-inline-icon {
+  width: 28rpx;
+  height: 28rpx;
+  display: block;
+}
+
 /* ============================================================
    STATS ROW — Golden numbers · Lavender labels
    ============================================================ */

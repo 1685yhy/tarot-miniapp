@@ -90,8 +90,10 @@
   transform: scale(0.98);
 }
 .daily-card-prompt-icon {
-  font-size: var(--font-size-subhead);
+  width: 48rpx;
+  height: 48rpx;
   opacity: 0.60;
+  display: block;
 }
 .daily-card-prompt-text {
   font-size: var(--font-size-caption);
@@ -176,7 +178,7 @@
 }
 
 .card-item {
-  width: calc((100% - 28rpx) / 2);
+  width: calc((100% - var(--spacing-md)) / 2);
   background: var(--color-surface-gradient);
   border: 1.5rpx solid rgba(244, 212, 140, 0.12);
   border-radius: var(--radius-md);
@@ -418,7 +420,7 @@
 }
 
 .skeleton-card {
-  width: calc((100% - 24rpx) / 2);
+  width: calc((100% - var(--spacing-md)) / 2);
   height: 400rpx;
   border-radius: var(--radius-lg);
   background-image: linear-gradient(90deg, var(--color-surface) 25%, var(--color-surface-hover) 50%, var(--color-surface) 75%);
