@@ -97,10 +97,16 @@ const CARD_REGISTRY = {
 // ===== 图像路径映射：计算78张卡牌的真实ComfyUI PNG路径 =====
 const IMAGE_BASE = (() => {
   try {
-    const env = wx.getAccountInfoSync().miniProgram.envVersion;
-    // CDN image base — cards_thumb for list views, cards_full for detail views
+    const accountInfo = wx.getAccountInfoSync();
+    const env = accountInfo.miniProgram.envVersion;
+    // develop/trial: use HTTP direct IP (IDE simulator compat)
+    // release: use HTTPS CDN domain
+    if (env === 'develop' || env === 'trial') {
+      return 'http://124.221.233.214/images/cards_thumb';
+    }
     return 'https://xingxiang.chat/images/cards_thumb';
   } catch(e) {
+    // Fallback: try prod CDN (wx.getAccountInfoSync unavailable)
     return 'https://xingxiang.chat/images/cards_thumb';
   }
 })();

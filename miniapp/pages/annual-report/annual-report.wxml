@@ -182,7 +182,12 @@
                   <text class="screen-3-card-placeholder-emoji">🃏</text>
                 </view>
               </view>
-              <image wx:else class="screen-3-card-image" src="{{annualCardImagePath}}" mode="aspectFit" />
+              <image wx:elif="{{!annualCardImgError}}" class="screen-3-card-image" src="{{annualCardImagePath}}" mode="aspectFit" binderror="onAnnualCardImgError" />
+              <view wx:else class="screen-3-card-placeholder screen-3-card-fallback">
+                <view class="screen-3-card-placeholder-inner">
+                  <text class="screen-3-card-placeholder-name">{{annualCardName}}</text>
+                </view>
+              </view>
             </view>
           </view>
           <text class="screen-3-card-name">{{annualCardName}}</text>

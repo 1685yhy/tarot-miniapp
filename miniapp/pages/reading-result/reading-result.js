@@ -72,6 +72,7 @@ Page({
     isFlipped: false,        // front (false) or back (true)
     flipState: '',           // '' | 'flip-out' | 'flip-in'
     isAnimatingExit: false,  // true during exit animation before reset
+    enlargedImgError: false, // true if the enlarged card image failed to load
 
     // TL;DR summary
     tldr: [],
@@ -428,7 +429,11 @@ Page({
   },
 
   onEnlargedImgLoad() {
-    this.setData({ enlargedImgLoaded: true });
+    this.setData({ enlargedImgLoaded: true, enlargedImgError: false });
+  },
+
+  onEnlargedImgError() {
+    this.setData({ enlargedImgError: true, enlargedImgLoaded: false });
   },
 
   onUnload() {
@@ -508,6 +513,8 @@ Page({
       isFlipped: false,
       flipState: '',
       isAnimatingExit: false,
+      enlargedImgError: false,
+      enlargedImgLoaded: false,
     });
   },
 

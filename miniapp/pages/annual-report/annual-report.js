@@ -48,6 +48,7 @@ Page({
     annualCardImagePath: '',
     annualCardName: '',
     annualCardSuit: '',
+    annualCardImgError: false,
 
     // Share poster
     showSharePoster: false,
@@ -201,7 +202,12 @@ Page({
       annualCardImagePath: imagePath,
       annualCardName: cardName,
       annualCardSuit: card.suit || card.arcana || 'major',
+      annualCardImgError: false,
     });
+  },
+
+  onAnnualCardImgError() {
+    this.setData({ annualCardImgError: true });
   },
 
   onRetry() {

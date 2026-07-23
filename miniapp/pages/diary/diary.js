@@ -25,6 +25,9 @@ Page({
     weeklyReview: null,
     reviewLoading: false,
     reviewError: null,
+
+    // Card image error
+    diaryCardImgError: false,
   },
 
   onReady() {
@@ -68,7 +71,7 @@ Page({
   },
 
   showCreateModal() {
-    this.setData({ showCreate: true });
+    this.setData({ showCreate: true, diaryCardImgError: false });
   },
 
   hideCreateModal() {
@@ -77,6 +80,11 @@ Page({
 
   preventClose() {
     // 阻止事件冒泡——防止点击 modal 内部元素时关闭弹窗
+  },
+
+  /** Handle card thumbnail load error in diary create modal */
+  onDiaryCardImgError() {
+    this.setData({ diaryCardImgError: true });
   },
 
   onMoodSelect(e) {
