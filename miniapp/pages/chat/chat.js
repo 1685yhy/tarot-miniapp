@@ -151,8 +151,11 @@ Page({
   },
 
   /** 重试发送失败的消息 */
-  async onRetrySend() {
+  async onRetrySend(e) {
     if (this.data.sending) return;
+    // Only proceed if this message is actually failed
+    const isFailed = e && e.currentTarget && e.currentTarget.dataset.failed;
+    if (e && !isFailed) return;
     const text = this.data._pendingRetryText;
     if (!text) {
       this.setData({ sendFailed: false, _pendingRetryText: '' });

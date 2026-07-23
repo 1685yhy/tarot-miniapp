@@ -51,9 +51,9 @@
         <text class="topic-card-emoji">🌟</text>
       </view>
       <!-- Title -->
-      <text class="topic-card-title">{{topic.title}}</text>
+      <text class="topic-card-title">{{topic.topic.title}}</text>
       <!-- Reflective question -->
-      <text class="topic-card-desc">{{topic.description}}</text>
+      <text class="topic-card-desc">{{topic.topic.description}}</text>
       <!-- Post count -->
       <view class="topic-card-footer">
         <view class="topic-post-count">
