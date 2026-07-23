@@ -7,6 +7,16 @@ const { playPageEnterSound, playCardFlipSound, startAmbientSound, stopAmbientSou
 
 const FREE_READINGS_LIMIT = 5;
 
+const IMAGE_BASE = (() => {
+  try {
+    const env = wx.getAccountInfoSync().miniProgram.envVersion;
+    if (env === 'develop' || env === 'trial') {
+      return '/images/cards_thumb';
+    }
+  } catch(e) {}
+  return 'https://xingxiang.chat/images/cards_full';
+})();
+
 function getTodayStr() {
   const d = new Date();
   const y = d.getFullYear();
@@ -502,7 +512,7 @@ Page({
       await new Promise(r => setTimeout(r, 300));
       const zodiacSign = this.data.zodiacSign;
       const card = await request('/cards/daily', { data: { zodiac: zodiacSign } });
-      card.imagePath = computeImagePath(card, 'https://xingxiang.chat/images/cards_full');
+      card.imagePath = computeImagePath(card, IMAGE_BASE);
       this.setData({ dailyCard: card, drawingLoading: false });
       wx.hideLoading();
       // 保存到globalData供详情页使用
@@ -624,7 +634,7 @@ Page({
       try {
         const zodiacSign = this.data.zodiacSign;
         const card = await request('/cards/daily', { data: { zodiac: zodiacSign } });
-        card.imagePath = computeImagePath(card, 'https://xingxiang.chat/images/cards_full');
+        card.imagePath = computeImagePath(card, IMAGE_BASE);
         app.globalData.dailyCard = card;
         this.setData({ dailyCard, dailyCardRestoring: false });
       } catch (_err) {

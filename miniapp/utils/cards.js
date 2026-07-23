@@ -95,7 +95,17 @@ const CARD_REGISTRY = {
 };
 
 // ===== 图像路径映射：计算78张卡牌的真实ComfyUI PNG路径 =====
-const IMAGE_BASE = 'https://xingxiang.chat/images/cards_thumb';
+const IMAGE_BASE = (() => {
+  try {
+    const env = wx.getAccountInfoSync().miniProgram.envVersion;
+    if (env === 'develop' || env === 'trial') {
+      // IDE simulator: use local dev server (images in project directory)
+      return '/images/cards_thumb';
+    }
+  } catch(e) {}
+  // Production: CDN
+  return 'https://xingxiang.chat/images/cards_thumb';
+})();
 
 const ROMAN_MAP = {
   '0': 0, 'I': 1, 'II': 2, 'III': 3, 'IV': 4, 'V': 5,

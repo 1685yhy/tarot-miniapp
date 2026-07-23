@@ -4,7 +4,15 @@ const { request, getFriendlyError } = require('../../utils/api');
 const { computeImagePath } = require('../../utils/cards');
 const { playCardRevealSound } = require('../../utils/sound');
 
-const IMAGE_BASE = 'https://xingxiang.chat/images/cards_full';
+const IMAGE_BASE = (() => {
+  try {
+    const env = wx.getAccountInfoSync().miniProgram.envVersion;
+    if (env === 'develop' || env === 'trial') {
+      return '/images/cards_thumb';
+    }
+  } catch(e) {}
+  return 'https://xingxiang.chat/images/cards_full';
+})();
 const MAJOR_ARCANA_TOTAL = 22;
 
 const MILESTONES = {
