@@ -104,6 +104,104 @@
       </view>
     </view>
 
+    <!-- ===== 补充包：一次性购买 ===== -->
+    <view class="pack-section">
+      <text class="pricing-section-title">深度解读包</text>
+      <text class="pack-section-sub">一次性购买 · 永不过期 · 不限牌阵</text>
+
+      <!-- 3次包 -->
+      <view class="pack-card" data-product="{{pricingPack3}}" bindtap="onPurchasePack">
+        <view class="pack-card-left">
+          <text class="pack-card-name">3次深度解读</text>
+          <view class="pack-card-tag">一次性</view>
+        </view>
+        <view class="pack-card-right">
+          <view class="pack-card-price-row">
+            <text class="pack-card-currency">¥</text>
+            <text class="pack-card-amount">9.90</text>
+          </view>
+          <text class="pack-card-unit">¥3.30/次</text>
+        </view>
+        <button class="pack-card-btn" catchtap="onPurchasePack" data-product="{{pricingPack3}}">立即购买</button>
+      </view>
+
+      <!-- 10次包（超值） -->
+      <view class="pack-card pack-card--best" data-product="{{pricingPack10}}" bindtap="onPurchasePack">
+        <view class="pack-card-badge">超值</view>
+        <view class="pack-card-left">
+          <text class="pack-card-name">10次深度解读</text>
+          <view class="pack-card-tag">永久有效</view>
+        </view>
+        <view class="pack-card-right">
+          <view class="pack-card-price-row">
+            <text class="pack-card-currency">¥</text>
+            <text class="pack-card-amount">29.90</text>
+          </view>
+          <text class="pack-card-unit">¥2.99/次 · 省¥69</text>
+        </view>
+        <button class="pack-card-btn pack-card-btn--primary" catchtap="onPurchasePack" data-product="{{pricingPack10}}">立即购买</button>
+      </view>
+
+      <view class="pack-detail-link" bindtap="onPackDetail">
+        <text class="pack-detail-text">了解深度解读包 ›</text>
+      </view>
+    </view>
+
+    <!-- ===== 星光好物（电商引流） ===== -->
+    <view class="shop-section">
+      <view class="shop-section-header">
+        <text class="pricing-section-title">星光好物</text>
+        <text class="shop-section-badge">即将上线</text>
+      </view>
+      <text class="shop-section-sub">把星光带回家 ✦ 实体周边陆续上架</text>
+
+      <view class="shop-grid">
+        <!-- 塔罗牌 -->
+        <view class="shop-card" bindtap="onShopComingSoon">
+          <view class="shop-card-img">
+            <text class="shop-card-img-icon">🃏</text>
+          </view>
+          <text class="shop-card-name">实体塔罗牌</text>
+          <text class="shop-card-desc">78张AI原创限量版</text>
+          <view class="shop-card-bottom">
+            <text class="shop-card-price">¥88-168</text>
+            <text class="shop-card-badge-item">即将上线</text>
+          </view>
+        </view>
+
+        <!-- 水晶手串 -->
+        <view class="shop-card" bindtap="onShopComingSoon">
+          <view class="shop-card-img">
+            <text class="shop-card-img-icon">📿</text>
+          </view>
+          <text class="shop-card-name">星座水晶手串</text>
+          <text class="shop-card-desc">专属能量 · 十二星座</text>
+          <view class="shop-card-bottom">
+            <text class="shop-card-price">¥68-128</text>
+            <text class="shop-card-badge-item">即将上线</text>
+          </view>
+        </view>
+
+        <!-- 香薰蜡烛 -->
+        <view class="shop-card" bindtap="onShopComingSoon">
+          <view class="shop-card-img">
+            <text class="shop-card-img-icon">🕯️</text>
+          </view>
+          <text class="shop-card-name">塔罗香薰蜡烛</text>
+          <text class="shop-card-desc">四元素系列 · 占卜仪式感</text>
+          <view class="shop-card-bottom">
+            <text class="shop-card-price">¥48-88</text>
+            <text class="shop-card-badge-item">即将上线</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="shop-reserve-area">
+        <text class="shop-reserve-text">关注公众号「星光映照」获取上线通知</text>
+        <button class="shop-reserve-btn" bindtap="onShopComingSoon">立即预约</button>
+      </view>
+    </view>
+
     <!-- 底部保证 -->
     <view class="mem-footer">
       <text class="mem-footer-text">🔒 支付安全 · 随时可查 · 自动续费可关</text>

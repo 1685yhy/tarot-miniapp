@@ -930,6 +930,53 @@ page {
   font-weight: 500;
 }
 
+/* ─── Exhausted-state quick purchase buttons ─── */
+.exhausted-packs {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+}
+
+.exhausted-pack-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 200rpx;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.25);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+  color: var(--color-gold);
+  background: transparent;
+  letter-spacing: 1rpx;
+  transition: all 0.15s;
+  line-height: 1.4;
+}
+
+.exhausted-pack-btn::after {
+  border: none;
+}
+
+.exhausted-pack-btn:active {
+  background: rgba(244, 212, 140, 0.10);
+  transform: scale(0.96);
+}
+
+.exhausted-pack-btn--best {
+  background: linear-gradient(135deg, #F4D48C, #E8C67A);
+  color: var(--color-text-inverse);
+  border: none;
+  box-shadow: 0 2rpx 16rpx rgba(244, 212, 140, 0.25);
+  font-weight: 700;
+}
+
+.exhausted-pack-btn--best:active {
+  background: linear-gradient(135deg, #E8C67A, #D4B06A);
+  transform: scale(0.96);
+}
+
 /* ==============================
    Premium overlay (full-card lock)
    ============================== */

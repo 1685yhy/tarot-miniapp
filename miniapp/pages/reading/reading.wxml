@@ -50,13 +50,19 @@
       <text class="heading-2 section-title-center anim-fade-up anim-stagger-1">选择牌阵</text>
       <text class="text-secondary text-center mb-xxl anim-fade-up anim-stagger-1">不同问题，用不同牌阵</text>
 
-      <!-- 免费次数提示（进度条） -->
+      <!-- 免费次数提示（进度条 + 耗尽时购买入口） -->
       <view class="free-quota-bar anim-fade-up anim-stagger-1" wx:if="{{!isMember}}">
         <view class="quota-progress-wrap">
           <view class="quota-progress" style="width: {{(freeReadingsTotal - freeReadingsUsed) / freeReadingsTotal * 100}}%"></view>
         </view>
         <text class="quota-text" wx:if="{{freeReadingsUsed < freeReadingsTotal}}">今日免费解读 {{freeReadingsUsed}}/{{freeReadingsTotal}} · 明日0点重置</text>
-        <text class="quota-text quota-text--exhausted" wx:else>今日免费 {{freeReadingsTotal}}/{{freeReadingsTotal}} 次已用完 · 明天00:00恢复</text>
+        <view wx:else>
+          <text class="quota-text quota-text--exhausted">免费次数已用完 ✦ 购买补充包继续解读</text>
+          <view class="exhausted-packs">
+            <button class="exhausted-pack-btn" bindtap="onPurchasePackQuick" data-product="{{packQuick3}}">¥9.90 / 3次</button>
+            <button class="exhausted-pack-btn exhausted-pack-btn--best" bindtap="onPurchasePackQuick" data-product="{{packQuick10}}">¥29.90 / 10次</button>
+          </view>
+        </view>
       </view>
 
       <view class="spread-grid anim-fade-up anim-stagger-2">

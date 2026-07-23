@@ -43,6 +43,19 @@ Page({
       price: 9.9,
       type: 'membership',
     },
+    // 补充包（一次性购买，不自动续费）
+    pricingPack3: {
+      id: 'reading_pack_3',
+      name: '3次深度解读包',
+      price: 9.9,
+      type: 'reading_pack',
+    },
+    pricingPack10: {
+      id: 'reading_pack_10',
+      name: '10次深度解读包',
+      price: 29.9,
+      type: 'reading_pack',
+    },
   },
 
   async onLoad(options) {
@@ -165,5 +178,40 @@ Page({
       wx.hideLoading();
       wx.showToast({ title: '下单失败', icon: 'none' });
     }
+  },
+
+  /** 购买补充包（复用 onPurchase 的逻辑） */
+  onPurchasePack(e) {
+    // Delegate to onPurchase with the same data format
+    this.onPurchase(e);
+  },
+
+  /** 补充包详情：简单提示一次性、永不过期 */
+  onPackDetail() {
+    wx.showModal({
+      title: '什么是「深度解读包」？',
+      content: '一次性购买，永不过期。不限制使用期限，每次解读消耗1次，用完为止。不与会员权益冲突，会员同样可以叠加购买。',
+      showCancel: false,
+      confirmText: '知道了',
+    });
+  },
+
+  /** 预约商品 → 敬请期待弹窗 + 引导关注公众号 */
+  onShopComingSoon() {
+    wx.showModal({
+      title: '敬请期待 ✦',
+      content: '星光好物正在筹备中，将陆续上架实体塔罗牌、水晶手串等周边商品。\n\n关注公众号「星光映照」第一时间获取上线通知！',
+      confirmText: '我知道了',
+      showCancel: false,
+      success: () => {
+        // 复制公众号名称到剪贴板，方便用户搜索关注
+        wx.setClipboardData({
+          data: '星光映照',
+          success: () => {
+            wx.showToast({ title: '已复制公众号名称', icon: 'none' });
+          },
+        });
+      },
+    });
   },
 });

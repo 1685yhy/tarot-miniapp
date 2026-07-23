@@ -1,0 +1,186 @@
+<!-- pages/share-center/share-center.wxml -->
+<!-- 星光分享中心 — 邀请朋友 · 解锁奖励 -->
+
+<!-- ===== 加载骨架 ===== -->
+<view class="page" wx:if="{{pageLoading}}">
+  <view class="skeleton skeleton--card" style="margin-bottom:var(--spacing-xl)"></view>
+  <view class="skeleton skeleton--block" style="margin-bottom:var(--spacing-xl)"></view>
+  <view class="skeleton skeleton--text" style="width:40%"></view>
+  <view class="skeleton skeleton--text" style="width:60%"></view>
+</view>
+
+<!-- ===== 错误状态 ===== -->
+<view class="page" wx:elif="{{pageError}}">
+  <view class="error-state">
+    <text class="error-text">数据异常 ✦</text>
+    <text class="error-hint">{{pageError}}</text>
+    <button class="btn-primary" bindtap="onRetry">重新加载</button>
+  </view>
+</view>
+
+<!-- ===== 主内容 ===== -->
+<view class="page" wx:else>
+
+  <!-- ============ Hero: 邀请战绩 ============ -->
+  <view class="hero-card anim-fade-up anim-stagger-1">
+    <view class="hero-glow"></view>
+    <image class="hero-icon" src="/images/icons/star_64.png" mode="aspectFit" />
+    <text class="hero-title">星光分享中心</text>
+    <text class="hero-subtitle">邀请朋友，一起探索星辰的智慧</text>
+
+    <view class="hero-stats-row">
+      <view class="hero-stat">
+        <text class="hero-stat-num">{{stats.friends_joined || 0}}</text>
+        <text class="hero-stat-label">已邀请</text>
+      </view>
+      <view class="hero-stat-divider"></view>
+      <view class="hero-stat">
+        <text class="hero-stat-num">{{stats.free_deep_readings || 0}}</text>
+        <text class="hero-stat-label">已获解读</text>
+      </view>
+      <view class="hero-stat-divider"></view>
+      <view class="hero-stat">
+        <text class="hero-stat-num">{{stats.total_invites || 0}}</text>
+        <text class="hero-stat-label">邀请成功</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ============ 邀请码卡片 ============ -->
+  <view class="invite-code-card anim-fade-up anim-stagger-2">
+    <text class="invite-code-label">你的专属邀请码</text>
+    <view class="invite-code-row">
+      <text class="invite-code-text" selectable="true">{{inviteCode || 'STAR-****'}}</text>
+      <button class="copy-btn" bindtap="onCopyCode">
+        <image class="copy-btn-icon" src="/images/icons/star_64.png" mode="aspectFit" />
+        <text class="copy-btn-text">{{copied ? '已复制' : '复制'}}</text>
+      </button>
+    </view>
+    <text class="invite-code-hint">分享给朋友，你们都将获得 3 次免费深度解读</text>
+  </view>
+
+  <!-- ============ 邀请好友按钮 ============ -->
+  <view class="invite-action anim-fade-up anim-stagger-3" bindtap="onInviteFriend">
+    <view class="invite-btn-glow"></view>
+    <image class="invite-action-icon" src="/images/icons/sparkle_64.png" mode="aspectFit" />
+    <text class="invite-action-text">邀请朋友</text>
+    <text class="invite-action-arrow">→</text>
+  </view>
+
+  <!-- ============ 奖励进度 ============ -->
+  <view class="reward-section anim-fade-up anim-stagger-4">
+    <view class="reward-header">
+      <image class="reward-header-icon" src="/images/icons/star_filled_64.png" mode="aspectFit" />
+      <text class="reward-header-title">分享奖励进度</text>
+    </view>
+
+    <!-- Tier 1: 1 share -->
+    <view class="reward-tier {{stats.reward_tier >= 1 ? 'reward-tier--claimed' : ''}}">
+      <view class="tier-left">
+        <view class="tier-check {{stats.reward_tier >= 1 ? 'tier-check--done' : 'tier-check--pending'}}">
+          <text wx:if="{{stats.reward_tier >= 1}}" class="tier-check-icon">✓</text>
+          <text wx:else class="tier-check-num">1</text>
+        </view>
+        <view class="tier-info">
+          <text class="tier-title">首次分享</text>
+          <text class="tier-desc">+1 次免费深度解读</text>
+        </view>
+      </view>
+      <text class="tier-status {{stats.reward_tier >= 1 ? 'tier-status--done' : 'tier-status--pending'}}">
+        {{stats.reward_tier >= 1 ? '已领取' : '分享1次'}}
+      </text>
+    </view>
+
+    <!-- Tier 2: 3 shares -->
+    <view class="reward-tier {{stats.reward_tier >= 2 ? 'reward-tier--claimed' : ''}}">
+      <view class="tier-left">
+        <view class="tier-check {{stats.reward_tier >= 2 ? 'tier-check--done' : 'tier-check--pending'}}">
+          <text wx:if="{{stats.reward_tier >= 2}}" class="tier-check-icon">✓</text>
+          <text wx:else class="tier-check-num">3</text>
+        </view>
+        <view class="tier-info">
+          <text class="tier-title">分享达人</text>
+          <text class="tier-desc">+3 次免费深度解读</text>
+        </view>
+      </view>
+      <text class="tier-status {{stats.reward_tier >= 2 ? 'tier-status--done' : 'tier-status--pending'}}">
+        {{stats.reward_tier >= 2 ? '已领取' : '再分享' + nextTierRemaining(3) + '次'}}
+      </text>
+    </view>
+
+    <!-- Tier 3: 10 shares -->
+    <view class="reward-tier {{stats.reward_tier >= 3 ? 'reward-tier--claimed' : ''}}">
+      <view class="tier-left">
+        <view class="tier-check {{stats.reward_tier >= 3 ? 'tier-check--done' : 'tier-check--pending'}}">
+          <text wx:if="{{stats.reward_tier >= 3}}" class="tier-check-icon">✓</text>
+          <text wx:else class="tier-check-num">10</text>
+        </view>
+        <view class="tier-info">
+          <text class="tier-title">星光传播者</text>
+          <text class="tier-desc">1 周免费会员</text>
+        </view>
+      </view>
+      <text class="tier-status {{stats.reward_tier >= 3 ? 'tier-status--done' : 'tier-status--pending'}}">
+        {{stats.reward_tier >= 3 ? '已领取' : '再分享' + nextTierRemaining(10) + '次'}}
+      </text>
+    </view>
+
+    <!-- Tier 4: 30 shares -->
+    <view class="reward-tier {{stats.reward_tier >= 4 ? 'reward-tier--claimed' : ''}}">
+      <view class="tier-left">
+        <view class="tier-check {{stats.reward_tier >= 4 ? 'tier-check--done' : 'tier-check--pending'}}">
+          <text wx:if="{{stats.reward_tier >= 4}}" class="tier-check-icon">✓</text>
+          <text wx:else class="tier-check-num">30</text>
+        </view>
+        <view class="tier-info">
+          <text class="tier-title">星辰大使</text>
+          <text class="tier-desc">1 个月免费会员</text>
+        </view>
+      </view>
+      <text class="tier-status {{stats.reward_tier >= 4 ? 'tier-status--done' : 'tier-status--pending'}}">
+        {{stats.reward_tier >= 4 ? '已领取' : '再分享' + nextTierRemaining(30) + '次'}}
+      </text>
+    </view>
+
+    <!-- Progress bar -->
+    <view class="reward-progress-wrap">
+      <view class="reward-progress-bar">
+        <view class="reward-progress-fill" style="width: {{rewardProgressPercent}}%"></view>
+      </view>
+      <text class="reward-progress-text">已分享 {{stats.share_count || 0}} 次</text>
+      <text wx:if="{{stats.next_reward_tier}}" class="reward-progress-next">再分享 {{stats.next_reward_tier.remaining}} 次解锁下一档</text>
+      <text wx:else class="reward-progress-next reward-progress-next--complete">所有奖励已领取 ✦</text>
+    </view>
+  </view>
+
+  <!-- ============ 分享历史 ============ -->
+  <view class="history-section anim-fade-up anim-stagger-5">
+    <view class="history-header">
+      <image class="history-header-icon" src="/images/icons/history_64.png" mode="aspectFit" />
+      <text class="history-header-title">分享记录</text>
+    </view>
+
+    <view wx:if="{{shareHistory.length === 0}}" class="empty-state-inline">
+      <image class="empty-icon-img" src="/images/icons/theme_general_64.png" mode="aspectFit" />
+      <text class="empty-text">暂无分享记录</text>
+      <text class="empty-hint">分享解读或邀请朋友，记录会显示在这里</text>
+    </view>
+
+    <view wx:else>
+      <view
+        class="history-item"
+        wx:for="{{shareHistory}}" wx:key="id"
+      >
+        <text class="history-date">{{item.created_at_formatted}}</text>
+        <text class="history-type">{{item.channel_name || '微信'}}</text>
+        <text class="history-reward" wx:if="{{item.rewarded}}">+奖励</text>
+      </view>
+    </view>
+
+    <!-- Back to profile -->
+    <view class="back-action" bindtap="onBack">
+      <text class="back-text">返回个人中心</text>
+    </view>
+  </view>
+
+</view>

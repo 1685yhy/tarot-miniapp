@@ -1,0 +1,150 @@
+<!-- pages/community/community.wxml -->
+<!-- ===== 加载骨架 ===== -->
+<view class="page" wx:if="{{pageLoading}}">
+  <view class="skeleton skeleton--circle" style="margin:80rpx auto 30rpx"></view>
+  <view class="skeleton skeleton--title" style="width:50%;margin:0 auto"></view>
+  <view class="skeleton skeleton--text" style="width:70%;margin:12rpx auto 40rpx"></view>
+  <view class="skeleton skeleton--block" style="margin-bottom:20rpx"></view>
+  <view class="skeleton skeleton--text" style="width:30%;margin-bottom:20rpx"></view>
+  <view class="skeleton skeleton--block" style="margin-bottom:16rpx;height:120rpx"></view>
+  <view class="skeleton skeleton--block" style="margin-bottom:16rpx;height:120rpx"></view>
+  <view class="skeleton skeleton--block" style="margin-bottom:16rpx;height:120rpx"></view>
+</view>
+
+<!-- ===== 错误状态 ===== -->
+<view class="page" wx:elif="{{pageError}}">
+  <view class="error-state">
+    <text class="error-text">星光暂未连接</text>
+    <text class="error-hint">{{pageError}}</text>
+    <button class="btn-ghost" bindtap="onRetry">重新连接</button>
+  </view>
+</view>
+
+<!-- ===== 主内容 ===== -->
+<view class="page community-page" wx:else>
+
+  <!-- ===== Header ===== -->
+  <view class="community-header">
+    <view class="community-header-back" bindtap="goBack">
+      <text class="community-back-arrow">←</text>
+    </view>
+    <view class="community-header-title">
+      <text class="community-title-main">星光树洞</text>
+      <text class="community-title-sub">匿名倾诉 · 每日话题</text>
+    </view>
+  </view>
+
+  <!-- ===== 今日话题卡片 ===== -->
+  <view class="topic-card-wrap anim-fade-in-up-1">
+    <view class="topic-card">
+      <!-- Decorative glow -->
+      <view class="topic-card-glow"></view>
+      <!-- Star particles -->
+      <view class="topic-sparkles">
+        <view class="ts s1"></view>
+        <view class="ts s2"></view>
+        <view class="ts s3"></view>
+        <view class="ts s4"></view>
+      </view>
+      <!-- Card icon -->
+      <view class="topic-card-icon">
+        <text class="topic-card-emoji">🌟</text>
+      </view>
+      <!-- Title -->
+      <text class="topic-card-title">{{topic.title}}</text>
+      <!-- Reflective question -->
+      <text class="topic-card-desc">{{topic.description}}</text>
+      <!-- Post count -->
+      <view class="topic-card-footer">
+        <view class="topic-post-count">
+          <text class="topic-post-count-icon">✦</text>
+          <text class="topic-post-count-text">{{topic.post_count}} 条倾诉</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 树洞倾诉列表 ===== -->
+  <view class="posts-section">
+    <!-- Section header -->
+    <view class="posts-section-header">
+      <text class="posts-section-title">树洞回响</text>
+      <text wx:if="{{posts.length > 0}}" class="posts-section-count">{{total}} 条</text>
+    </view>
+
+    <!-- Posts list -->
+    <scroll-view
+      wx:if="{{posts.length > 0}}"
+      class="posts-scroll"
+      scroll-y
+      bindscrolltolower="loadMorePosts"
+    >
+      <view class="posts-list">
+        <view
+          class="post-card"
+          wx:for="{{posts}}"
+          wx:for-item="post"
+          wx:key="id"
+        >
+          <text class="post-content">{{post.content}}</text>
+          <text class="post-time">{{_formatTime(post.created_at)}}</text>
+        </view>
+      </view>
+
+      <!-- Load more -->
+      <view wx:if="{{loadingMore}}" class="load-more-hint">
+        <text class="load-more-text">加载中...</text>
+      </view>
+      <view wx:elif="{{!hasMore && posts.length > 0}}" class="load-more-hint">
+        <text class="load-more-text">— 已加载全部 —</text>
+      </view>
+    </scroll-view>
+
+    <!-- Empty state -->
+    <view wx:elif="{{!pageLoading}}" class="empty-posts" bindtap="openComposer">
+      <text class="empty-posts-icon">🕊️</text>
+      <text class="empty-posts-title">还没有人倾诉</text>
+      <text class="empty-posts-sub">成为第一个匿名发声的人</text>
+    </view>
+  </view>
+
+  <!-- ===== 浮动按钮 — 写倾诉 ===== -->
+  <view class="fab fab-write" bindtap="openComposer">
+    <text class="fab-write-icon">✎</text>
+  </view>
+
+  <!-- ===== 倾诉编辑器浮层 ===== -->
+  <view class="composer-overlay {{showComposer ? 'composer-overlay--visible' : ''}}" bindtap="closeComposer">
+    <view class="composer-sheet {{showComposer ? 'composer-sheet--show' : ''}}" catchtap="preventClose">
+      <!-- Handle -->
+      <view class="composer-handle"></view>
+
+      <text class="composer-title">匿名倾诉</text>
+      <text class="composer-hint">写下你的心声，无需留名</text>
+
+      <textarea
+        class="composer-input"
+        placeholder="此刻你心里在想什么？这里只有星光听见..."
+        value="{{composerContent}}"
+        bindinput="onComposerInput"
+        maxlength="500"
+        focus="{{composerFocused}}"
+        auto-height
+      />
+      <text class="composer-char-count">{{composerContent.length}}/500</text>
+
+      <button
+        class="btn-submit btn-primary"
+        disabled="{{submitting || composerContent.length === 0}}"
+        bindtap="onSubmitPost"
+      >
+        {{submitting ? '倾诉中...' : '匿名倾诉 ✦'}}
+      </button>
+      <view class="composer-anon-notice">
+        <text class="composer-anon-icon">✦</text>
+        <text class="composer-anon-text">匿名发布，不记录身份</text>
+      </view>
+    </view>
+  </view>
+
+</view>

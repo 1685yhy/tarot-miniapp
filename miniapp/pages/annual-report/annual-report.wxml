@@ -1,108 +1,376 @@
-<!-- pages/annual-report/annual-report.wxml -->
+<!-- ================================================================
+  Annual Report — Spotify Wrapped-style experience
+  8 screens, swipeable/tappable, with entrance animations
+=============================================================== -->
+
 <view class="container">
-  <!-- ===== 加载 ===== -->
-  <view wx:if="{{pageLoading}}" class="ar-loading">
-    <view class="skeleton skeleton-icon"></view>
-    <view class="skeleton skeleton-line"></view>
-  </view>
 
-  <!-- ===== 错误 ===== -->
-  <view wx:elif="{{pageError && !report}}" class="error-state">
-    <text class="error-text">年度报告暂时无法生成</text>
-    <text class="error-hint">{{pageError}}</text>
-    <button class="btn-primary btn-small" bindtap="onRetry">重新尝试</button>
-  </view>
+  <!-- ===== LOADING ===== -->
+  <block wx:if="{{pageLoading && !generating}}">
+    <view class="wrapped-loading">
+      <view class="wrapped-loading-orb">
+        <view class="wrapped-loading-ring"></view>
+        <text class="wrapped-loading-icon">✨</text>
+      </view>
+      <text class="wrapped-loading-title">加载年度报告...</text>
+    </view>
+  </block>
 
-  <!-- ===== 生成前 ===== -->
-  <view wx:elif="{{!report && !generating}}" class="ar-intro">
-    <view class="ar-intro-icon">📊</view>
-    <text class="ar-intro-title">年度运势报告</text>
-    <text class="ar-intro-desc">基于 13 张星光牌，AI 生成未来 12 个月专属运势。涵盖爱情、事业、财运，逐月详解。</text>
+  <!-- ===== ERROR ===== -->
+  <block wx:elif="{{pageError && !report}}">
+    <view class="wrapped-error">
+      <view class="wrapped-error-icon-wrap">
+        <text class="wrapped-error-icon">🌙</text>
+      </view>
+      <text class="wrapped-error-title">报告暂时无法生成</text>
+      <text class="wrapped-error-hint">{{pageError}}</text>
+      <button class="wrapped-retry-btn" bindtap="onRetry">重新尝试</button>
+    </view>
+  </block>
 
-    <view class="ar-preview-cards">
-      <view class="ar-preview-card" wx:for="{{[1,2,3,4,5,6]}}" wx:key="*this">
-        <view class="ar-preview-card-inner">🃏</view>
-        <text class="ar-preview-month">{{item}}月</text>
+  <!-- ===== GENERATING ===== -->
+  <block wx:elif="{{generating}}">
+    <view class="wrapped-generating">
+      <view class="wrapped-gen-orb">
+        <view class="wrapped-gen-ring-1"></view>
+        <view class="wrapped-gen-ring-2"></view>
+        <view class="wrapped-gen-ring-3"></view>
+        <text class="wrapped-gen-icon">🔮</text>
+      </view>
+      <text class="wrapped-gen-title">AI 正在生成你的年度报告...</text>
+      <text class="wrapped-gen-sub">回顾你这一年的星光旅程</text>
+      <view class="wrapped-gen-particles">
+        <view wx:for="{{[1,2,3,4,5,6,7,8]}}" wx:key="*this"
+          class="wrapped-gen-particle"
+          style="--i: {{item}}; left: {{10 + item * 10}}%"></view>
       </view>
     </view>
+  </block>
 
-    <button class="ar-gen-btn" bindtap="onGenerate">
-      <image class="btn-inline-icon" src="/images/icons/star_64.png" mode="aspectFit" />
-      <text>生成我的年度报告</text>
-    </button>
-    <button class="ar-buy-btn" bindtap="onBuySingle">单独购买 ¥29.90</button>
-    <text class="ar-intro-note">会员专属 · 也可单独购买</text>
-  </view>
-
-  <!-- ===== 生成中 ===== -->
-  <view wx:elif="{{generating}}" class="ar-generating">
-    <view class="ar-gen-orb">
-      <view class="ar-gen-ring"></view>
-      <text class="ar-gen-icon">🔮</text>
-    </view>
-    <text class="ar-gen-title">AI 正在抽取年度运势牌...</text>
-    <text class="ar-gen-sub">13 张牌 · 12 个月 · 一份完整报告</text>
-  </view>
-
-  <!-- ===== 报告结果 ===== -->
-  <view wx:elif="{{report}}" class="ar-report">
-    <!-- 报告头部 -->
-    <view class="ar-header">
-      <text class="ar-year">{{report.year || '2026'}}</text>
-      <text class="ar-title">年度运势报告</text>
-      <text class="ar-date">{{report.generated_at}}</text>
-    </view>
-
-    <!-- 统计卡片 -->
-    <view class="ar-stats">
-      <view class="ar-stat">
-        <text class="ar-stat-num">{{report.total_readings || 0}}</text>
-        <text class="ar-stat-label">年度解读</text>
+  <!-- ===== PRE-GENERATION INTRO ===== -->
+  <block wx:elif="{{!report && !generating && !pageLoading}}">
+    <view class="wrapped-pre-intro">
+      <!-- Cosmic background glow -->
+      <view class="pre-cosmic-glow"></view>
+      <view class="pre-stars">
+        <view wx:for="{{[1,2,3,4,5,6,7,8,9,10,11,12]}}" wx:key="*this"
+          class="pre-star" style="--i: {{item}}; top: {{5 + (item % 7) * 12}}%; left: {{5 + (item * 8) % 90}}%"></view>
       </view>
-      <view class="ar-stat">
-        <text class="ar-stat-num">{{report.top_spread || '三牌'}}</text>
-        <text class="ar-stat-label">常用牌阵</text>
-      </view>
-      <view class="ar-stat">
-        <text class="ar-stat-num">{{report.top_card || '--'}}</text>
-        <text class="ar-stat-label">本命牌</text>
-      </view>
-    </view>
 
-    <!-- 月度卡牌横滑 -->
-    <view class="ar-monthly">
-      <text class="ar-section-title">🃏 月度运势牌</text>
-      <scroll-view class="ar-monthly-scroll" scroll-x enhanced show-scrollbar="{{false}}">
-        <view class="ar-monthly-row">
-          <view class="ar-month-card" wx:for="{{report.cards}}" wx:key="month" wx:for-index="idx" data-cardidx="{{idx}}" bindtap="onCardPreview">
-            <tarot-card
-              nameZh="{{item.card_name}}"
-              positionName="{{item.month}}月"
-              isReversed="{{item.direction === '逆位'}}"
-            />
+      <view class="pre-icon-wrap">
+        <text class="pre-icon">✨</text>
+      </view>
+      <text class="pre-title">{{year}} · 星光年度报告</text>
+      <text class="pre-desc">像翻开一本星相书，回顾你这一年的占卜旅程<br/>最常抽到的牌 · 年度主题 · 塔罗人格</text>
+
+      <button class="pre-gen-btn" bindtap="onGenerate">
+        <text>生成我的年度报告</text>
+      </button>
+      <button class="pre-buy-btn" bindtap="onBuySingle">单独购买 ¥29.90</button>
+      <text class="pre-note">会员专属 · 也可单独购买</text>
+    </view>
+  </block>
+
+  <!-- ==============================================================
+    MAIN WRAPPED EXPERIENCE — 8 screens
+  ============================================================== -->
+  <block wx:elif="{{report}}">
+    <view class="wrapped-stage">
+
+      <!-- Progress dots -->
+      <view class="wrapped-progress">
+        <view wx:for="{{screenLabels}}" wx:key="*this"
+          class="wrapped-dot {{index <= currentScreen ? 'wrapped-dot--active' : ''}}"
+          style="width: {{100 / totalScreens - 2}}%"></view>
+      </view>
+
+      <!-- ============================================================
+        SCREEN 0: INTRO — Cosmic splash
+      ============================================================ -->
+      <view class="wrapped-screen {{currentScreen === 0 ? 'wrapped-screen--active' : ''}}" catchtap="onScreenTap" data-screen="0">
+        <view class="screen-cosmic-bg">
+          <view class="cosmic-ring cosmic-ring-1"></view>
+          <view class="cosmic-ring cosmic-ring-2"></view>
+          <view class="cosmic-ring cosmic-ring-3"></view>
+        </view>
+        <view class="screen-star-particles">
+          <view wx:for="{{[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]}}" wx:key="*this"
+            class="screen-star {{screenVisible ? 'star-float' : ''}}"
+            style="--i: {{item}}; animation-delay: {{item * 0.3}}s;
+                   top: {{5 + (item * 7) % 80}}%; left: {{8 + (item * 11) % 84}}%;
+                   width: {{6 + (item % 3) * 4}}rpx; height: {{6 + (item % 3) * 4}}rpx"></view>
+        </view>
+
+        <!-- Central content -->
+        <view class="screen-0-content {{screenVisible ? 'screen-0-content--visible' : ''}}">
+          <text class="screen-0-year">{{report.year}}</text>
+          <view class="screen-0-divider"></view>
+          <text class="screen-0-title">你的</text>
+          <text class="screen-0-subtitle">星光年度报告</text>
+          <view class="screen-0-sparkles">
+            <text class="screen-0-sparkle s1">✦</text>
+            <text class="screen-0-sparkle s2">✦</text>
+            <text class="screen-0-sparkle s3">✦</text>
+            <text class="screen-0-sparkle s4">✦</text>
+          </view>
+          <text class="screen-0-hint">轻触继续 →</text>
+        </view>
+      </view>
+
+      <!-- ============================================================
+        SCREEN 1: TOTAL READINGS — Big number reveal
+      ============================================================ -->
+      <view class="wrapped-screen {{currentScreen === 1 ? 'wrapped-screen--active' : ''}}" catchtap="onScreenTap" data-screen="1">
+        <view class="screen-bg-glow"></view>
+        <view class="screen-1-content">
+          <text class="screen-1-label">这一年，你一共占卜了</text>
+          <view class="screen-1-number-wrap">
+            <text class="screen-1-number {{showBigNumber ? 'screen-1-number--visible' : ''}}">{{report.total_readings || 0}}</text>
+            <text class="screen-1-unit">次</text>
+          </view>
+          <text class="screen-1-sub">每一次翻牌，都是一次与内心的对话</text>
+          <!-- Sparkle burst -->
+          <view wx:if="{{showBigNumber}}" class="sparkle-burst">
+            <view wx:for="{{[1,2,3,4,5,6]}}" wx:key="*this"
+              class="sparkle-particle" style="--i: {{item}}"></view>
           </view>
         </view>
-      </scroll-view>
-    </view>
+      </view>
 
-    <!-- 报告正文 -->
-    <view class="ar-body">
-      <text class="ar-section-title">📝 详细解读</text>
-      <view class="ar-text-card">
-        <text class="ar-text">{{report.report}}</text>
+      <!-- ============================================================
+        SCREEN 2: TOP THEME — "你最常思考的是"
+      ============================================================ -->
+      <view class="wrapped-screen {{currentScreen === 2 ? 'wrapped-screen--active' : ''}}" catchtap="onScreenTap" data-screen="2">
+        <view class="screen-bg-glow"></view>
+        <view class="screen-2-content">
+          <text class="screen-2-label">你最常思考的是</text>
+          <view class="screen-2-theme {{showSparkle ? 'screen-2-theme--visible' : ''}}">
+            <image wx:if="{{report.top_themes && report.top_themes.length > 0}}"
+              class="screen-2-icon" src="{{themeIcons[report.top_themes[0].theme] || themeIcons.general}}" mode="aspectFit" />
+            <text class="screen-2-theme-text">
+              {{report.top_themes && report.top_themes.length > 0 ? report.top_themes[0].label : '综合'}}
+            </text>
+          </view>
+          <view wx:if="{{report.top_themes && report.top_themes.length > 0}}"
+            class="screen-2-mini-chart">
+            <view wx:for="{{report.top_themes}}" wx:key="theme"
+              class="screen-2-mini-bar-wrap">
+              <view class="screen-2-mini-bar-label">{{item.label}}</view>
+              <view class="screen-2-mini-bar-track">
+                <view class="screen-2-mini-bar-fill {{showSparkle ? 'screen-2-mini-bar-fill--animate' : ''}}"
+                  style="width: {{item.count / Math.max(report.top_themes[0].count, 1) * 100}}%"></view>
+              </view>
+              <text class="screen-2-mini-bar-count">{{item.count}}次</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- ============================================================
+        SCREEN 3: ANNUAL CARD — Large card reveal
+      ============================================================ -->
+      <view class="wrapped-screen {{currentScreen === 3 ? 'wrapped-screen--active' : ''}}" catchtap="onScreenTap" data-screen="3">
+        <view class="screen-bg-card-glow"></view>
+        <view class="screen-3-content">
+          <text class="screen-3-label">你的年度之牌</text>
+          <view class="screen-3-card-wrap {{showCardReveal ? 'screen-3-card-wrap--reveal' : ''}}">
+            <view class="screen-3-card-glow-ring"></view>
+            <view class="screen-3-card-frame {{annualCardSuit || ''}}">
+              <!-- Placeholder if no image yet -->
+              <view wx:if="{{!annualCardImagePath}}" class="screen-3-card-placeholder">
+                <view class="screen-3-card-placeholder-inner">
+                  <text class="screen-3-card-placeholder-emoji">🃏</text>
+                </view>
+              </view>
+              <image wx:else class="screen-3-card-image" src="{{annualCardImagePath}}" mode="aspectFit" />
+            </view>
+          </view>
+          <text class="screen-3-card-name">{{annualCardName}}</text>
+          <text class="screen-3-card-meaning" wx:if="{{report.annual_theme_card && report.annual_theme_card.meaning}}">
+            {{report.annual_theme_card.meaning}}
+          </text>
+          <text class="screen-3-card-keyword" wx:if="{{report.annual_theme_card && report.annual_theme_card.keyword}}">
+            ✦ {{report.annual_theme_card.keyword}} ✦
+          </text>
+        </view>
+      </view>
+
+      <!-- ============================================================
+        SCREEN 4: TAROT PERSONALITY
+      ============================================================ -->
+      <view class="wrapped-screen {{currentScreen === 4 ? 'wrapped-screen--active' : ''}}" catchtap="onScreenTap" data-screen="4">
+        <view class="screen-bg-glow"></view>
+        <view class="screen-4-content {{screenVisible ? 'screen-4-content--visible' : ''}}">
+          <text class="screen-4-label">你的塔罗人格</text>
+          <view class="screen-4-archetype-badge">
+            <text class="screen-4-archetype-icon">✦</text>
+            <text class="screen-4-archetype-name">{{report.personality.archetype}}</text>
+          </view>
+          <text class="screen-4-desc">{{report.personality.description}}</text>
+          <text class="screen-4-insight" wx:if="{{report.personality.ai_insight}}">
+            "{{report.personality.ai_insight}}"
+          </text>
+          <view class="screen-4-card-stats">
+            <view class="screen-4-stat">
+              <text class="screen-4-stat-num">{{report.most_drawn_card.name || '--'}}</text>
+              <text class="screen-4-stat-label">最常抽到的牌</text>
+              <text class="screen-4-stat-sub">{{report.most_drawn_card.count || 0}}次</text>
+            </view>
+            <view class="screen-4-stat">
+              <text class="screen-4-stat-num">{{report.deck_completion.unique_cards_drawn || 0}}</text>
+              <text class="screen-4-stat-label">收集卡牌</text>
+              <text class="screen-4-stat-sub">共78张 · {{report.deck_completion.completion_rate || 0}}%</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- ============================================================
+        SCREEN 5: MONTHLY CHART — CSS bar chart
+      ============================================================ -->
+      <view class="wrapped-screen {{currentScreen === 5 ? 'wrapped-screen--active' : ''}}" catchtap="onScreenTap" data-screen="5">
+        <view class="screen-5-content">
+          <text class="screen-5-label">月度运势曲线</text>
+          <text class="screen-5-sub">你每个月的占卜活跃度</text>
+
+          <view class="screen-5-chart">
+            <view wx:for="{{report.monthly_chart}}" wx:key="month"
+              class="screen-5-bar-wrap">
+              <view class="screen-5-bar-track">
+                <view class="screen-5-bar-fill
+                  {{chartAnimated ? 'screen-5-bar-fill--animated' : ''}}
+                  {{item.count > 0 ? '' : 'screen-5-bar-empty'}}"
+                  style="height: {{chartAnimated ? (item.count / maxMonthlyCount * 100) : 0}}%;
+                         animation-delay: {{index * 0.1}}s">
+                  <text wx:if="{{item.count > 0}}" class="screen-5-bar-count">{{item.count}}</text>
+                </view>
+              </view>
+              <text class="screen-5-bar-label">{{item.label.replace('月','')}}</text>
+            </view>
+          </view>
+
+          <!-- Mood trend overlay -->
+          <view wx:if="{{report.has_diary && report.mood_trends && report.mood_trends.length > 0}}" class="screen-5-mood">
+            <text class="screen-5-mood-title">情绪轨迹</text>
+            <view class="screen-5-mood-row">
+              <view wx:for="{{report.mood_trends}}" wx:key="month"
+                class="screen-5-mood-dot {{item.mood_label ? 'mood-' + item.mood_label : ''}}
+                  {{chartAnimated ? 'screen-5-mood-dot--show' : ''}}"
+                style="animation-delay: {{0.8 + index * 0.1}}s">
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- ============================================================
+        SCREEN 6: NEW YEAR BLESSING
+      ============================================================ -->
+      <view class="wrapped-screen {{currentScreen === 6 ? 'wrapped-screen--active' : ''}}" catchtap="onScreenTap" data-screen="6">
+        <view class="screen-blessing-bg">
+          <view class="blessing-star-field">
+            <view wx:for="{{[1,2,3,4,5,6,7,8]}}" wx:key="*this"
+              class="blessing-star" style="--i: {{item}};
+                top: {{5 + (item * 12) % 90}}%; left: {{3 + (item * 13) % 94}}%"></view>
+          </view>
+        </view>
+        <view class="screen-6-content {{screenVisible ? 'screen-6-content--visible' : ''}}">
+          <view class="screen-6-quote-mark">"</view>
+          <view class="screen-6-blessing-text">
+            <text wx:if="{{report.new_year_blessing}}" class="screen-6-blessing-line">{{report.new_year_blessing}}</text>
+            <text wx:else class="screen-6-blessing-line">愿星光永远指引你的方向，在新的一年里，遇见更好的自己。</text>
+          </view>
+          <view class="screen-6-quote-mark screen-6-quote-mark--end">"</view>
+          <text class="screen-6-signature">—— 星光映照 · {{report.year + 1}}新年寄语</text>
+        </view>
+      </view>
+
+      <!-- ============================================================
+        SCREEN 7: SHARE — Poster + share buttons
+      ============================================================ -->
+      <view class="wrapped-screen {{currentScreen === 7 ? 'wrapped-screen--active' : ''}}" catchtap="onScreenTap" data-screen="7">
+        <view class="screen-7-content {{screenVisible ? 'screen-7-content--visible' : ''}}">
+          <text class="screen-7-title">分享你的年度报告</text>
+          <text class="screen-7-desc">让好友也看看你的星光旅程</text>
+
+          <!-- Share poster preview -->
+          <view class="screen-7-poster-preview" bindtap="onShowSharePoster">
+            <view class="screen-7-poster-placeholder">
+              <text class="screen-7-poster-icon">✨</text>
+              <text class="screen-7-poster-text">生成分享海报</text>
+            </view>
+          </view>
+
+          <!-- Share buttons -->
+          <view class="screen-7-buttons">
+            <button class="screen-7-btn screen-7-btn--moments" open-type="share">
+              <image class="screen-7-btn-icon" src="/images/icons/star_64.png" mode="aspectFit" />
+              <text>分享给好友</text>
+            </button>
+            <button class="screen-7-btn screen-7-btn--save" bindtap="onShareTimeline">
+              <image class="screen-7-btn-icon" src="/images/icons/heart_64.png" mode="aspectFit" />
+              <text>分享朋友圈</text>
+            </button>
+          </view>
+
+          <!-- Stats recap -->
+          <view class="screen-7-stats-recap">
+            <view class="screen-7-recap-item">
+              <text class="screen-7-recap-num">{{report.total_readings || 0}}</text>
+              <text class="screen-7-recap-label">次占卜</text>
+            </view>
+            <view class="screen-7-recap-divider"></view>
+            <view class="screen-7-recap-item">
+              <text class="screen-7-recap-num">{{report.annual_theme_card ? report.annual_theme_card.name : '--'}}</text>
+              <text class="screen-7-recap-label">年度之牌</text>
+            </view>
+            <view class="screen-7-recap-divider"></view>
+            <view class="screen-7-recap-item">
+              <text class="screen-7-recap-num">{{report.personality.archetype}}</text>
+              <text class="screen-7-recap-label">塔罗人格</text>
+            </view>
+          </view>
+
+          <button class="screen-7-redo" bindtap="onGenerate">
+            <image class="btn-inline-icon" src="/images/icons/refresh_64.png" mode="aspectFit" />
+            <text>重新生成</text>
+          </button>
+        </view>
+      </view>
+
+    </view><!-- /wrapped-stage -->
+  </block>
+
+  <!-- ===== SHARE POSTER MODAL ===== -->
+  <view class="poster-overlay {{showSharePoster ? 'poster-overlay--visible' : ''}}">
+    <view class="poster-modal">
+      <view class="poster-header">
+        <text class="poster-title">分享海报</text>
+        <view class="poster-close" bindtap="onCloseSharePoster">
+          <text class="poster-close-icon">✕</text>
+        </view>
+      </view>
+
+      <view class="poster-canvas-wrap">
+        <canvas wx:if="{{showSharePoster}}"
+          id="annualShareCanvas"
+          type="2d"
+          class="poster-canvas"
+          style="width: {{375}}px; height: {{500}}px"></canvas>
+        <view wx:if="{{sharePosterDrawing}}" class="poster-loading">
+          <view class="poster-loading-spinner"></view>
+          <text>生成海报中...</text>
+        </view>
+        <image wx:elif="{{sharePosterPath}}"
+          class="poster-preview-img" src="{{sharePosterPath}}" mode="aspectFit" />
+      </view>
+
+      <view class="poster-actions">
+        <button class="poster-save-btn" bindtap="onSavePoster" disabled="{{!sharePosterPath}}">
+          保存到相册
+        </button>
       </view>
     </view>
-
-    <!-- 操作 -->
-    <view class="ar-actions">
-      <button class="ar-share-btn" open-type="share">
-        <image class="btn-inline-icon" src="/images/icons/share_64.png" mode="aspectFit" />
-        <text>分享报告</text>
-      </button>
-      <button class="ar-redo-btn" bindtap="onGenerate">
-        <image class="btn-inline-icon" src="/images/icons/refresh_64.png" mode="aspectFit" />
-        <text>重新生成</text>
-      </button>
-    </view>
   </view>
+
 </view>

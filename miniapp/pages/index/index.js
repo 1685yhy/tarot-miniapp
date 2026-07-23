@@ -57,6 +57,8 @@ Page({
     isMember: false,
     // Pending reading recovery
     pendingReading: null,
+    // Community topic title for home entry
+    communityTopicTitle: '',
 
     // ---- wx.createAnimation native animation system ----
     // Toggle: set false to fall back to CSS animations only
@@ -69,6 +71,10 @@ Page({
     // v2.0: Daily card teaching entry state
     dailyCardFlipped: false,
     dailyCardRestoring: false,
+
+    // Annual report season flag (Dec-Jan)
+    isAnnualReportSeason: false,
+    annualReportYear: new Date().getFullYear(),
 
     // Collection progress
     collectedCount: 0,
@@ -152,6 +158,16 @@ Page({
     const storedZodiac = wx.getStorageSync('zodiac_sign') || '';
     this.setData({ zodiacSign: storedZodiac });
 
+    // Check if it's annual report season (Dec-Jan)
+    const currentMonth = new Date().getMonth() + 1;
+    const currentYear = new Date().getFullYear();
+    if (currentMonth === 12 || currentMonth === 1) {
+      this.setData({
+        isAnnualReportSeason: true,
+        annualReportYear: currentMonth === 1 ? currentYear - 1 : currentYear,
+      });
+    }
+
     // Onboarding flow (3 steps) — only for first-time users who haven't completed it
     const zodiacCompleted = wx.getStorageSync('zodiac_onboarding_done');
     if (!(onboardingCompleted || oldDone) && !zodiacCompleted) {
@@ -186,9 +202,26 @@ Page({
       this.setData({ zodiacSign: storedZodiac });
     }
     this._loadTasks();
+    // Load community topic title for home entry
+    this._loadCommunityTopic();
     // Resume ambient sound if previously stopped
     if (wx.getStorageSync('ambient_enabled') === true) {
       startAmbientSound();
+    }
+
+    // Check for share success flag and show reward feedback banner
+    this._checkShareSuccessFeedback();
+  },
+
+  /** Load today's community topic title for the home entry card */
+  async _loadCommunityTopic() {
+    try {
+      const data = await request('/community/today');
+      if (data && data.topic) {
+        this.setData({ communityTopicTitle: data.topic.title });
+      }
+    } catch (_err) {
+      // Silent degrade — entry just shows default text
     }
   },
 
@@ -273,6 +306,43 @@ Page({
       });
     } catch (_err) {
       // Silent degrade — task UI just shows defaults (all false, 0/3)
+    }
+  },
+
+  /** Check for pending share-success feedback from reading-result page */
+  _checkShareSuccessFeedback() {
+    const shareSuccess = wx.getStorageSync('_share_success_flag');
+    if (shareSuccess) {
+      wx.removeStorageSync('_share_success_flag');
+      this._loadShareStatsAndShowBanner();
+    }
+  },
+
+  /** Show a subtle banner with share reward info */
+  async _loadShareStatsAndShowBanner() {
+    try {
+      const stats = await request('/share/stats?days=365');
+      const shareCount = stats.share_count || 0;
+      let msg = '';
+      if (shareCount < 3) {
+        const remaining = 3 - shareCount;
+        msg = `分享成功！再分享 ${remaining} 次解锁 +3 次免费解读`;
+      } else if (shareCount < 10) {
+        const remaining = 10 - shareCount;
+        msg = `分享成功！再分享 ${remaining} 次解锁 1 周免费会员`;
+      } else if (shareCount < 30) {
+        const remaining = 30 - shareCount;
+        msg = `分享成功！再分享 ${remaining} 次解锁 1 个月免费会员`;
+      } else {
+        msg = '分享成功！你已解锁全部奖励 ✦';
+      }
+      wx.showToast({
+        title: msg,
+        icon: 'none',
+        duration: 3000,
+      });
+    } catch (_err) {
+      // Silent fail
     }
   },
 
@@ -447,6 +517,11 @@ Page({
 
   goToAllSpreads() {
     wx.navigateTo({ url: '/pages/reading/reading' });
+  },
+
+  /** Navigate to community / tree hole page */
+  onGoCommunity() {
+    wx.navigateTo({ url: '/pages/community/community' });
   },
 
   /** Navigate to the 9.9 yuan first reading (three-card spread) */

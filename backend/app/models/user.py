@@ -22,6 +22,11 @@ class User(Base):
     last_reading_date: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     annual_report_data: Mapped[str | None] = mapped_column(Text, nullable=True)
     annual_report_year: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    # Viral share / invite fields
+    invite_code: Mapped[str | None] = mapped_column(String(16), unique=True, nullable=True, index=True)
+    share_count: Mapped[int] = mapped_column(Integer, default=0)
+    free_deep_readings: Mapped[int] = mapped_column(Integer, default=0)
+    reward_tier: Mapped[int] = mapped_column(Integer, default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 

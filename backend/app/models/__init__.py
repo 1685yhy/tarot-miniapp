@@ -4,8 +4,9 @@ from app.models.card_teaching import CardTeaching
 from app.models.reading import Reading, DrawnCard, ChatMessage
 from app.models.order import Order
 from app.models.diary import DiaryEntry
-from app.models.share_log import ShareLog
+from app.models.share_log import ShareLog, Invite
 from app.models.checkin import CheckIn
+from app.models.community import Topic, Post
 
 __all__ = [
     "User",
@@ -17,5 +18,8 @@ __all__ = [
     "Order",
     "DiaryEntry",
     "ShareLog",
+    "Invite",
     "CheckIn",
+    "Topic",
+    "Post",
 ]
