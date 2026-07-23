@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.db.database import create_all
 from app.config import settings
-from app.api import auth, cards, chat, diary, membership, orders, readings, report, share, tasks
+from app.api import auth, cards, chat, diary, membership, orders, readings, report, share, tasks, community
 
 
 @asynccontextmanager
@@ -48,6 +48,7 @@ app.include_router(membership.router)
 app.include_router(readings.router)
 app.include_router(report.router)
 app.include_router(share.router)
+app.include_router(community.router)
 
 
 @app.get("/health")

@@ -57,6 +57,16 @@ Page({
 
     // Draw mode preference
     defaultDrawMode: 'immersive',
+
+    // Annual report notification reminder
+    yearEndReminderEnabled: false,
+
+    // Annual report season flag
+    isAnnualReportSeason: false,
+    annualReportYear: new Date().getFullYear(),
+
+    // Invite / share rewards
+    inviteRewards: 0,
   },
 
   // —— History card image loading ——
@@ -81,19 +91,35 @@ Page({
       soundEnabled: sound.sfxEnabled,
       ambientEnabled: sound.ambientEnabled,
       defaultDrawMode: wx.getStorageSync('default_draw_mode') || 'immersive',
+      yearEndReminderEnabled: wx.getStorageSync('year_end_reminder') === true,
+      isAnnualReportSeason: false,
     });
+
+    // Check annual report season (Dec-Jan)
+    const month = new Date().getMonth() + 1;
+    const year = new Date().getFullYear();
+    if (month === 12 || month === 1) {
+      this.setData({
+        isAnnualReportSeason: true,
+        annualReportYear: month === 1 ? year - 1 : year,
+      });
+    }
   },
 
   async loadData() {
     this.setData({ pageLoading: true });
     try {
       const user = await checkLogin();
-      const [status, history] = await Promise.all([
+      const [status, history, shareStats] = await Promise.all([
         request('/membership/status'),
         request('/readings/history?page=1&page_size=20'),
+        request('/share/stats?days=365'),
       ]);
       // Subtle entrance chime
       sound.playPageEnterSound();
+
+      // Load invite rewards from share stats
+      const inviteRewards = shareStats?.free_deep_readings || 0;
 
       this.setData({
         user,
@@ -107,6 +133,7 @@ Page({
           firstCardImage: computeCardImage(item.first_card_name),
           createdAtFormatted: item.created_at ? item.created_at.split('T')[0] : '',
         })),
+        inviteRewards,
         historyTotal: history.total || (history.items ? history.items.length : 0),
         pageLoading: false,
         historyPage: 1,
@@ -210,6 +237,21 @@ Page({
 
   onGoAnnualReport() {
     wx.navigateTo({ url: '/pages/annual-report/annual-report' });
+  },
+
+  onToggleYearEndReminder() {
+    const newVal = !this.data.yearEndReminderEnabled;
+    wx.setStorageSync('year_end_reminder', newVal);
+    this.setData({ yearEndReminderEnabled: newVal });
+    wx.showToast({
+      title: newVal ? '已开启年度报告提醒' : '已关闭年度报告提醒',
+      icon: 'none',
+      duration: 1500,
+    });
+  },
+
+  onGoShareCenter() {
+    wx.navigateTo({ url: '/pages/share-center/share-center' });
   },
 
   onGoAbout() {

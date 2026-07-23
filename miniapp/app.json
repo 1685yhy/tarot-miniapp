@@ -40,6 +40,14 @@
     {
       "root": "pages/checkin/",
       "pages": ["checkin"]
+    },
+    {
+      "root": "pages/community/",
+      "pages": ["community"]
+    },
+    {
+      "root": "pages/share-center/",
+      "pages": ["share-center"]
     }
   ],
   "window": {

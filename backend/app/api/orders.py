@@ -178,6 +178,12 @@ async def payment_callback(
         user.is_member = True
         user.member_expires_at = None  # Never expires
 
+    elif order.product_type == "reading_pack_3":
+        user.paid_readings_balance = (user.paid_readings_balance or 0) + 3
+
+    elif order.product_type == "reading_pack_10":
+        user.paid_readings_balance = (user.paid_readings_balance or 0) + 10
+
     # annual_report – no membership benefit, handled by report system
 
     await db.flush()

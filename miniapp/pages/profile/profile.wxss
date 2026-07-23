@@ -356,6 +356,58 @@
   font-weight: var(--font-weight-bold);
 }
 
+/* Invite menu item — subtle gold emphasis */
+.menu-item--invite {
+  border-left: 3rpx solid rgba(244, 212, 140, 0.25);
+}
+
+/* Seasonal annual report menu item — gold glow */
+.menu-item--annual-season {
+  border-left: 3rpx solid rgba(244, 212, 140, 0.30);
+  background: linear-gradient(135deg, rgba(244,212,140,0.06) 0%, rgba(184,169,224,0.03) 100%);
+}
+
+.menu-season-badge {
+  font-size: 24rpx;
+  margin-right: 6rpx;
+  animation: season-badge-glow 2s ease-in-out infinite;
+}
+
+@keyframes season-badge-glow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.menu-arrow-img--season {
+  animation: arrow-season 1.5s ease-in-out infinite;
+}
+
+@keyframes arrow-season {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+/* Invite reward badge — small gold circle with count */
+.menu-badge-invite {
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, #F4D48C 0%, #D4B06A 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: var(--spacing-xs);
+  flex-shrink: 0;
+  box-shadow: 0 0 12rpx rgba(244, 212, 140, 0.30);
+}
+
+.menu-badge-text {
+  font-size: 20rpx;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-inverse);
+  line-height: 1;
+}
+
 /* ============================================================
    HISTORY CARD — Card-style reading archive entries
    ============================================================ */

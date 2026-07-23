@@ -647,6 +647,36 @@ Page({
       ? `我抽到了「${cardName}」—— ${keyInsight} ✦ 你也来试试星光塔罗`
       : `我的星光解读 ✦ ${spreadName}`;
 
+    // Track share event and show reward toast on success
+    const user = wx.getStorageSync('user') || {};
+    const sharerId = user.id || '';
+
+    if (sharerId) {
+      // Fire-and-forget share tracking
+      request('/share/track', {
+        method: 'POST',
+        data: {
+          sharer_id: sharerId,
+          channel: 'wechat_friend',
+          share_type: 'reading',
+          ref_id: reading.id,
+        },
+      }).then((res) => {
+        if (res && res.rewarded) {
+          wx.showToast({
+            title: '分享成功！奖励已发放 ✦',
+            icon: 'success',
+            duration: 2000,
+          });
+        }
+        // Set flag so the index page can show tier progress feedback
+        wx.setStorageSync('_share_success_flag', true);
+      }).catch(() => {
+        // Silent fail — still set flag so homepage banner can show
+        wx.setStorageSync('_share_success_flag', true);
+      });
+    }
+
     return {
       title: title,
       path: `/pages/reading-result/reading-result?id=${reading.id}`,

@@ -338,6 +338,48 @@
 }
 
 /* ============================================================
+   4f. COMMUNITY ENTRY CARD — home page tree hole entry
+   ============================================================ */
+.community-entry-card {
+  padding: var(--spacing-md) var(--spacing-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, rgba(244,212,140,0.08) 0%, rgba(180,140,200,0.06) 100%);
+  border-color: rgba(244,212,140,0.15);
+}
+
+.community-entry-icon {
+  width: 48rpx;
+  height: 48rpx;
+  background: rgba(244,212,140,0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.community-entry-emoji {
+  font-size: var(--font-size-body);
+}
+
+.community-entry-label {
+  display: block;
+  font-weight: 500;
+  color: var(--color-gold);
+}
+
+.community-entry-hint {
+  display: block;
+  margin-top: 4rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 380rpx;
+}
+
+/* ============================================================
    4e. ANNUAL REPORT ENTRY CARD — home page entry point
    ============================================================ */
 .annual-report-card {
@@ -379,6 +421,89 @@
 .annual-report-hint {
   display: block;
   margin-top: 4rpx;
+}
+
+/* ============================================================
+   4f. SEASONAL ANNUAL REPORT BANNER — Dec-Jan splash
+   ============================================================ */
+.annual-report-season-banner {
+  position: relative;
+  padding: 40rpx 32rpx;
+  border-radius: 24rpx;
+  background: linear-gradient(135deg, rgba(244,212,140,0.10) 0%, rgba(184,169,224,0.06) 100%);
+  border: 1rpx solid rgba(244,212,140,0.15);
+  overflow: hidden;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.annual-report-season-banner:active {
+  transform: scale(0.97);
+  border-color: rgba(244,212,140,0.30);
+}
+
+.season-banner-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 400rpx;
+  height: 400rpx;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(244,212,140,0.08) 0%, transparent 60%);
+  pointer-events: none;
+  animation: season-glow 3s ease-in-out infinite;
+}
+
+@keyframes season-glow {
+  0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+}
+
+.season-banner-stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.season-banner-star {
+  position: absolute;
+  width: 4rpx;
+  height: 4rpx;
+  background: #F4D48C;
+  border-radius: 50%;
+  opacity: 0;
+  animation: season-star 2s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 0.5s);
+}
+
+.season-banner-star:nth-child(1) { top: 15%; left: 20%; }
+.season-banner-star:nth-child(2) { top: 25%; right: 15%; }
+.season-banner-star:nth-child(3) { bottom: 30%; left: 30%; }
+
+@keyframes season-star {
+  0%, 100% { opacity: 0; transform: scale(0.5); }
+  50% { opacity: 0.8; transform: scale(1.5); }
+}
+
+.season-banner-label {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #F4D48C;
+  letter-spacing: 3rpx;
+  margin-bottom: 8rpx;
+  position: relative;
+  z-index: 1;
+}
+
+.season-banner-cta {
+  display: block;
+  font-size: 24rpx;
+  color: rgba(176,169,224,0.6);
+  letter-spacing: 2rpx;
+  position: relative;
+  z-index: 1;
 }
 
 /* -----------------------------------------------------------

@@ -102,6 +102,15 @@ Page({
     // Draw mode: 'quick' (default) or 'immersive'
     drawMode: 'quick',
     quickMode: true,
+    // Quick purchase packs in exhausted state
+    packQuick3: {
+      id: 'reading_pack_3',
+      price: '9.90',
+    },
+    packQuick10: {
+      id: 'reading_pack_10',
+      price: '29.90',
+    },
     // Onboarding Step 2
     showOnboarding: false,
     onboardingStep: 0,
@@ -408,6 +417,66 @@ Page({
       drawMode: isQuick ? 'quick' : 'immersive',
     });
     wx.setStorageSync('default_draw_mode', isQuick ? 'quick' : 'immersive');
+  },
+
+  /** 快速购买补充包（从免费次数耗尽状态直接购买） */
+  async onPurchasePackQuick(e) {
+    const product = e.currentTarget.dataset.product;
+    if (!product || !product.id) return;
+
+    try {
+      await checkLogin();
+    } catch (err) {
+      wx.showToast({ title: '请先登录', icon: 'none' });
+      return;
+    }
+
+    wx.showLoading({ title: '创建订单...' });
+    try {
+      const order = await request('/orders', {
+        method: 'POST',
+        data: { product_type: product.id },
+      });
+      wx.hideLoading();
+
+      if (!order.payment_params) {
+        wx.showModal({
+          title: '支付未配置',
+          content: '微信支付商户尚未配置完成。请先在服务器 .env 中配置微信支付参数。',
+          showCancel: false,
+        });
+        return;
+      }
+
+      wx.requestPayment({
+        timeStamp: order.payment_params.timeStamp,
+        nonceStr: order.payment_params.nonceStr,
+        package: order.payment_params.package,
+        signType: order.payment_params.signType || 'HMAC-SHA256',
+        paySign: order.payment_params.paySign,
+        success: () => {
+          wx.showToast({ title: '购买成功！继续解读', icon: 'success' });
+          // 刷新用户信息，更新剩余次数
+          this._loadFreeReadings();
+          // 自动继续之前选择的牌阵解读
+          if (this.data.selectedSpread) {
+            setTimeout(() => {
+              this.onStartReading();
+            }, 1200);
+          }
+        },
+        fail: (err) => {
+          if (err.errMsg && err.errMsg.includes('cancel')) {
+            wx.showToast({ title: '支付已取消', icon: 'none' });
+          } else {
+            wx.showToast({ title: '支付失败，请重试', icon: 'none' });
+          }
+        },
+      });
+    } catch (err) {
+      wx.hideLoading();
+      wx.showToast({ title: '下单失败', icon: 'none' });
+    }
   },
 
   async onStartReading() {

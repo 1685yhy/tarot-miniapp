@@ -238,6 +238,23 @@
     </view>
   </view>
 
+  <!-- 星光树洞入口 -->
+  <view class="anim-fade-in-up-2" style="margin-top:30rpx" bindtap="onGoCommunity">
+    <view class="card card-press community-entry-card">
+      <view class="diary-entry-left">
+        <view class="community-entry-icon">
+          <text class="community-entry-emoji">🕊️</text>
+        </view>
+        <view>
+          <text class="body-sm community-entry-label">星光树洞 ✦ 今日话题</text>
+          <text wx:if="{{communityTopicTitle}}" class="body-xs community-entry-hint">「{{communityTopicTitle}}」</text>
+          <text wx:else class="body-xs community-entry-hint">匿名倾诉，与星光对话</text>
+        </view>
+      </view>
+      <text class="diary-entry-arrow">→</text>
+    </view>
+  </view>
+
   <!-- 未完成解读恢复入口 -->
   <view wx:if="{{pendingReading}}" class="anim-fade-in-up-2" style="margin-top:30rpx" bindtap="onContinueReading">
     <view class="card card-press pending-reading-card">
@@ -268,9 +285,19 @@
     </view>
   </view>
 
-  <!-- 年度报告入口 -->
+  <!-- 年度报告入口（带季节性横幅） -->
   <view class="anim-fade-in-up-2" style="margin-top:30rpx" bindtap="{{isMember ? 'onGoAnnualReport' : 'onGoMembership'}}" role="button">
-    <view class="card card-press annual-report-card {{isMember ? '' : 'annual-report-card--locked'}}">
+    <!-- Seasonal banner (Dec-Jan only) -->
+    <view wx:if="{{isAnnualReportSeason}}" class="annual-report-season-banner">
+      <view class="season-banner-glow"></view>
+      <view class="season-banner-stars">
+        <view wx:for="{{[1,2,3]}}" wx:key="*this" class="season-banner-star" style="--i: {{item}}"></view>
+      </view>
+      <text class="season-banner-label">{{annualReportYear}} 年度报告已上线</text>
+      <text class="season-banner-cta">{{isMember ? '查看你的星光旅程 ✦' : '开通会员查看 ✦'}}</text>
+    </view>
+    <!-- Default card (non-Dec/Jan) -->
+    <view wx:else class="card card-press annual-report-card {{isMember ? '' : 'annual-report-card--locked'}}">
       <view class="annual-report-left">
         <image class="annual-report-icon" src="/images/icons/report_64.png" mode="aspectFit" aria-label="年度运势报告" />
         <view>

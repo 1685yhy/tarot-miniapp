@@ -2,7 +2,9 @@
 Share / viral-tracking API endpoints.
 
 - POST  /share/track       – log a share event and reward the sharer
-- GET   /share/stats       – (optional) share analytics for the current user
+- POST  /share/invite      – accept invite code from new user, reward both
+- GET   /share/stats       – share analytics for the current user
+- GET   /share/invite-code – generate/return user's unique invite code
 - GET   /share/wxa-code    – generate a mini-program code image (wxacode)
 """
 
@@ -12,7 +14,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_db
 from app.models.user import User
-from app.services.share import get_share_stats, record_share
+from app.services.share import (
+    get_share_stats,
+    record_share,
+    get_or_create_invite_code,
+    process_invite,
+)
 from app.services.wxacode import get_wxacode
 from app.utils.auth import get_current_user
 
@@ -35,11 +42,37 @@ class TrackShareResponse(BaseModel):
     success: bool = True
     rewarded: bool = False
     free_readings_remaining: int | None = None
+    share_count: int = 0
+    reward_tier: int | None = None
+
+
+class InviteRequest(BaseModel):
+    invite_code: str
+
+
+class InviteResponse(BaseModel):
+    success: bool
+    error: str | None = None
+    inviter_reward: int | None = None
+    invitee_reward: int | None = None
+    inviter_name: str | None = None
+
+
+class InviteCodeResponse(BaseModel):
+    invite_code: str
 
 
 class ShareStatsResponse(BaseModel):
     total_shares: int = 0
+    share_count: int = 0
     channels: dict[str, int] = {}
+    total_invites: int = 0
+    friends_joined: int = 0
+    free_deep_readings: int = 0
+    free_readings_earned: int = 0
+    reward_tier: int = 0
+    next_reward_tier: dict | None = None
+    invite_code: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -55,9 +88,8 @@ async def track_share(
     """
     Track a share event.
 
-    If *sharer_id* is provided the user receives a reward (one free reading
-    returned). No authentication is required so the event can be recorded even
-    before the user logs in (e.g. from a cached card-share page).
+    If *sharer_id* is provided the user's share_count increments and
+    tier-based rewards are evaluated.
     """
     result = await record_share(
         db,
@@ -70,6 +102,31 @@ async def track_share(
         success=True,
         rewarded=result["rewarded"],
         free_readings_remaining=result["free_readings_remaining"],
+        share_count=result["share_count"],
+        reward_tier=result["reward_tier"],
+    )
+
+
+@router.post("/invite", response_model=InviteResponse)
+async def invite(
+    body: InviteRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Accept an invite code from a new user.
+
+    Gives BOTH the inviter and the invitee +3 free deep readings each.
+    """
+    result = await process_invite(db, inviter_code=body.invite_code, invitee_user=user)
+    if not result["success"]:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=400, detail=result["error"])
+    return InviteResponse(
+        success=True,
+        inviter_reward=result["inviter_reward"],
+        invitee_reward=result["invitee_reward"],
+        inviter_name=result["inviter_name"],
     )
 
 
@@ -85,6 +142,16 @@ async def share_stats(
     *days* controls the look-back window (default 7).
     """
     return await get_share_stats(db, sharer_id=user.id, days=days)
+
+
+@router.get("/invite-code", response_model=InviteCodeResponse)
+async def get_invite_code(
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Return the user's unique invite code (generates if not yet created)."""
+    code = await get_or_create_invite_code(db, user)
+    return InviteCodeResponse(invite_code=code)
 
 
 @router.get("/wxa-code")
