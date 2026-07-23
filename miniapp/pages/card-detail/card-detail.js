@@ -4,7 +4,16 @@ const { computeImagePath } = require('../../utils/cards');
 
 // ---- Full-size image base (overrides default cards_thumb) ----
 // Full-size card images — served via CDN (xingxiang.chat/images/cards_full/)
-const IMAGE_BASE = 'https://xingxiang.chat/images/cards_full';
+// Development: use local dev server images
+const IMAGE_BASE = (() => {
+  try {
+    const env = wx.getAccountInfoSync().miniProgram.envVersion;
+    if (env === 'develop' || env === 'trial') {
+      return '/images/cards_thumb';
+    }
+  } catch(e) {}
+  return 'https://xingxiang.chat/images/cards_full';
+})();
 
 Page({
   data: {
