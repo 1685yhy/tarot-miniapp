@@ -14,11 +14,14 @@ Page({
 
   async onLoad() {
     await this._loadAll();
+    this._loaded = true;
   },
 
   async onShow() {
-    // Refresh stats every time page becomes visible
-    await this._loadAll();
+    // Refresh stats every time page becomes visible (skip the initial onShow that fires right after onLoad)
+    if (this._loaded) {
+      await this._loadAll();
+    }
   },
 
   async _loadAll() {

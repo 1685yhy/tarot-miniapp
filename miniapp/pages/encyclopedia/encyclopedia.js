@@ -50,6 +50,25 @@ Page({
     }
   },
 
+  onShow() {
+    // Refresh favorites data when switching tabs (e.g. user adds favorites from card-detail page)
+    const favoriteIds = wx.getStorageSync('favorite_cards') || [];
+    const favoriteSet = new Set(favoriteIds);
+    const cards = this.data.cards.map(c => ({ ...c, favorited: favoriteSet.has(c.id) }));
+    const filteredCards = this.data.filteredCards.map(c => ({ ...c, favorited: favoriteSet.has(c.id) }));
+    // Refresh daily card reference from globalData (may have been updated on index page)
+    const app = getApp();
+    const dailyCard = app.globalData && app.globalData.dailyCard
+      ? { ...app.globalData.dailyCard, imagePath: computeImagePath(app.globalData.dailyCard) }
+      : this.data.dailyCard;
+    this.setData({ cards, filteredCards, favoriteIds, favoriteCount: favoriteIds.length, dailyCard });
+
+    // Re-apply favorites filter if currently viewing favorites tab
+    if (this.data.activeTab === 'favorites') {
+      this.filterCards('favorites', this.data.searchKeyword);
+    }
+  },
+
   async loadCards() {
     this.setData({ pageLoading: true });
     try {

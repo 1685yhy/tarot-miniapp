@@ -77,7 +77,7 @@
 
 .topic-card {
   position: relative;
-  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 100%);
+  background: var(--color-surface-gradient);
   border: 1.5rpx solid rgba(244, 212, 140, 0.25);
   border-radius: var(--radius-lg);
   padding: var(--spacing-xl) var(--spacing-lg);
@@ -408,7 +408,7 @@
 
 .composer-sheet {
   width: 100%;
-  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 100%);
+  background: var(--color-surface-gradient);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   padding: var(--spacing-lg) var(--page-padding) calc(var(--spacing-xl) + var(--safe-area-bottom));
   padding-bottom: calc(var(--spacing-xl) + var(--safe-area-bottom));
@@ -546,7 +546,6 @@
   justify-content: center;
   padding: 120rpx var(--spacing-lg) 80rpx;
   text-align: center;
-  animation: page-fade-up 0.6s var(--ease-soft) forwards;
 }
 
 .error-text {
