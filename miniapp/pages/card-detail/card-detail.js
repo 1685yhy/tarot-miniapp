@@ -4,16 +4,7 @@ const { computeImagePath } = require('../../utils/cards');
 
 // ---- Full-size image base (overrides default cards_thumb) ----
 // Full-size card images — served via CDN (xingxiang.chat/images/cards_full/)
-// Development: use HTTP direct IP (IDE simulator compat)
-const IMAGE_BASE = (() => {
-  try {
-    const env = wx.getAccountInfoSync().miniProgram.envVersion;
-    if (env === 'develop' || env === 'trial') {
-      return 'http://124.221.233.214/images/cards_full';
-    }
-  } catch(e) {}
-  return 'https://xingxiang.chat/images/cards_full';
-})();
+const IMAGE_BASE = 'https://xingxiang.chat/images/cards_full';
 
 Page({
   data: {
