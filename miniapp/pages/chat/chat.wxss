@@ -176,10 +176,10 @@ page {
 }
 
 .error-icon {
-  font-size: var(--font-size-title);
-  color: var(--color-gold-glow);
-  margin-bottom: 24rpx;
+  width: 80rpx;
+  height: 80rpx;
   display: block;
+  margin-bottom: 24rpx;
 }
 
 .error-text {
@@ -352,7 +352,7 @@ page {
   align-items: center;
   gap: var(--spacing-sm);
   padding: var(--spacing-sm) var(--spacing-lg);
-  padding-bottom: calc(env(safe-area-inset-bottom) + 20rpx);
+  padding-bottom: calc(var(--safe-area-bottom) + 20rpx);
   background: rgba(26, 26, 62, 0.97);
   border-top: 1.5rpx solid rgba(244, 212, 140, 0.08);
   z-index: 100;
@@ -490,8 +490,9 @@ page {
 }
 
 .retry-icon {
-  font-size: var(--font-size-caption);
-  color: var(--color-error);
+  width: 32rpx;
+  height: 32rpx;
+  display: block;
 }
 
 .retry-text {

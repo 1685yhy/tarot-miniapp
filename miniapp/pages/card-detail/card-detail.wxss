@@ -594,9 +594,9 @@ page {
 }
 
 .error-icon {
-  font-size: var(--font-size-title);
-  color: var(--color-lavender);
-  opacity: 0.70;
+  width: 48rpx;
+  height: 48rpx;
+  display: block;
 }
 
 .error-text {

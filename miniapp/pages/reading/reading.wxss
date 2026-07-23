@@ -1011,9 +1011,9 @@ page {
 }
 
 .premium-overlay-icon {
-  font-size: var(--font-size-body);
-  color: var(--color-gold);
-  line-height: 1.2;
+  width: 40rpx;
+  height: 40rpx;
+  display: block;
 }
 
 .premium-overlay-text {
