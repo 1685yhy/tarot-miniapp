@@ -177,11 +177,6 @@
       </view>
     </scroll-view>
 
-    <!-- ===== 返回首页 ===== -->
-    <view class="back-home" bindtap="onGoHome" style="margin:40rpx 0 60rpx;text-align:center;">
-      <text class="back-home-text" style="color:var(--color-lavender);font-size:28rpx;">← 返回首页</text>
-    </view>
-
     <!-- ===== 空状态 ===== -->
     <view class="empty-date-hint" wx:if="{{entries.length === 0}}" bindtap="showCreateModal">
       <text class="hint-icon">🃏</text>

@@ -87,10 +87,7 @@
     </view>
   </view>
 
-  <!-- ===== Back to Home ===== -->
-  <view class="back-action" bindtap="onGoHome" style="margin:40rpx 0 60rpx;text-align:center;">
-    <text class="back-text" style="color:var(--color-lavender);font-size:28rpx;">← 返回首页</text>
-  </view>
+  <!-- Back to Home removed — native nav bar provides back button -->
 
   <view class="footer-spacer"></view>
 </view>

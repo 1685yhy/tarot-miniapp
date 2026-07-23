@@ -33,6 +33,11 @@ Page({
     favoriteCount: 0,
     // Empty state type: 'search' (default) or 'favorites'
     emptyStateType: 'search',
+
+    // Daily card context
+    dailyCard: null,
+    dailyCardImgLoaded: false,
+    dailyCardImgError: false,
   },
 
   async onLoad(options) {

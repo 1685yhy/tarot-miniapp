@@ -53,7 +53,7 @@
       <!-- User message -->
       <view wx:if="{{item.role === 'user'}}" class="msg-wrap msg-user msg-enter">
         <text class="role-label role-user">你</text>
-        <view class="msg-bubble bubble-user {{item.failed ? 'bubble-failed' : ''}}" bindtap="{{item.failed ? 'onRetrySend' : ''}}">
+        <view class="msg-bubble bubble-user {{item.failed ? 'bubble-failed' : ''}}" data-failed="{{item.failed}}" bindtap="onRetrySend">
           <text class="msg-text msg-text-user">{{item.content}}</text>
           <text wx:if="{{item.failed}}" class="msg-failed-hint">发送失败 · 点击重试</text>
         </view>
@@ -101,7 +101,7 @@
     />
   </label>
   <view class="send-btn {{sending || !canSend ? 'send-btn--disabled' : ''}}"
-    bindtap="{{(!sending && canSend) ? 'onSend' : ''}}"
+    bindtap="onSend"
     aria-label="发送"
     role="button"
   >
@@ -116,7 +116,4 @@
   <text class="quota-text">今日免费追问 {{chatFreeTotal - remainingFree}}/{{chatFreeTotal}} · 明日0点重置</text>
 </view>
 
-<!-- ===== Back to Home ===== -->
-<view class="back-home" bindtap="onGoHome" style="padding:20rpx 0 40rpx;text-align:center;">
-  <text class="back-home-text" style="color:var(--color-lavender);font-size:28rpx;">← 回到首页</text>
-</view>
+<!-- Back to Home removed — native nav bar provides back button -->

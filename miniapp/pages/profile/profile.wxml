@@ -200,7 +200,6 @@
           <view
             class="history-item anim-slide-up anim-stagger-{{index + 1}}"
             wx:for="{{savedReadings}}" wx:key="id"
-            wx:key="id"
             data-id="{{item.id}}"
             bindtap="onViewReading"
           >
