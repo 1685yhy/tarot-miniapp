@@ -4,7 +4,7 @@ const { computeImagePath } = require('../../utils/cards');
 const { SUIT_ZH } = require('../../utils/constants');
 const { playPageEnterSound } = require('../../utils/sound');
 
-const BATCH_SIZE = 12;   // 首屏+预加载批量（6行×2列）
+const BATCH_SIZE = 6;   // 首屏渐进加载（3行×2列，分批显示）
 const CARD_ROW_HEIGHT = 320; // rpx — 估算每行高度（含gap）
 
 Page({
@@ -115,7 +115,7 @@ Page({
 
   // ===================== 分批渐进加载 =====================
 
-  /** 激活前 N 张卡牌（触发 image 渲染） */
+  /** 激活前 N 张卡牌（触发 image 渲染），每张间隔 60ms 渐进出现 */
   _activateBatch(targetCount) {
     const { filteredCards, loadedCount, allActive } = this.data;
     if (allActive) return;
@@ -124,14 +124,25 @@ Page({
 
     if (next <= loadedCount) return;
 
-    // 批量 setData — 激活 [loadedCount, next) 范围的卡牌
-    const updates = {};
+    // 渐进式激活：每张卡牌间隔 60ms，避免一次性全部弹出
+    const stagger = 60;
     for (let i = loadedCount; i < next; i++) {
-      updates[`filteredCards[${i}]._active`] = true;
+      const delay = (i - loadedCount) * stagger;
+      const timer = setTimeout(() => {
+        this.setData({
+          [`filteredCards[${i}]._active`]: true,
+          [`filteredCards[${i}]._anim`]: true,
+        });
+        this._timers = this._timers.filter(t => t !== timer);
+      }, delay);
+      if (!this._timers) this._timers = [];
+      this._timers.push(timer);
     }
-    updates.loadedCount = next;
-    updates.allActive = next >= total;
-    this.setData(updates);
+
+    this.setData({
+      loadedCount: next,
+      allActive: next >= total,
+    });
   },
 
   /** 滚动事件 — 接近当前加载边界时自动激活下一批 */
@@ -313,6 +324,7 @@ Page({
 
   onUnload() {
     if (this._searchTimer) clearTimeout(this._searchTimer);
+    if (this._timers) this._timers.forEach(t => clearTimeout(t));
   },
 
   onReady() {
@@ -320,6 +332,6 @@ Page({
   },
 
   onHide() {
-    // Cleanup hook — reserved for future use
+    if (this._timers) this._timers.forEach(t => clearTimeout(t));
   },
 });
