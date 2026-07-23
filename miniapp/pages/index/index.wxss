@@ -1659,6 +1659,134 @@
 }
 
 /* ============================================================
+   24. TASKS CARD — "今日任务" widget on homepage
+   ============================================================ */
+
+.tasks-card {
+  padding: var(--spacing-md, 24rpx);
+  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 100%);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
+  border-radius: var(--radius-lg, 24rpx);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.tasks-card:active {
+  transform: scale(0.97);
+  border-color: rgba(244, 212, 140, 0.20) !important;
+}
+
+.tasks-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-sm, 16rpx);
+}
+
+.tasks-card-title {
+  font-size: var(--font-size-subhead, 36rpx);
+  font-weight: 600;
+  color: var(--color-gold, #F4D48C);
+  letter-spacing: 3rpx;
+}
+
+.tasks-card-stats {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs, 12rpx);
+}
+
+.tasks-card-progress {
+  font-size: var(--font-size-xs, 20rpx);
+  color: var(--color-lavender, #B8A9E0);
+  letter-spacing: 1rpx;
+  flex-shrink: 0;
+}
+
+.tasks-progress-bar {
+  width: 60rpx;
+  height: 6rpx;
+  background: rgba(184, 169, 224, 0.12);
+  border-radius: 999rpx;
+  overflow: hidden;
+}
+
+.tasks-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #F4D48C, #D4B06A);
+  border-radius: 999rpx;
+  transition: width 0.4s ease-out;
+}
+
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs, 12rpx);
+  margin-bottom: var(--spacing-sm, 16rpx);
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 16rpx);
+  padding: var(--spacing-xs, 12rpx) 0;
+  border-bottom: 1rpx solid rgba(244, 212, 140, 0.06);
+}
+
+.task-item:last-child {
+  border-bottom: none;
+}
+
+.task-check {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  border: 2rpx solid rgba(244, 212, 140, 0.20);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.task-check--checked {
+  background: linear-gradient(135deg, #F4D48C 0%, #D4B06A 100%);
+  border-color: #F4D48C;
+}
+
+.task-check-icon {
+  font-size: 18rpx;
+  color: #1A1A3E;
+  font-weight: 700;
+}
+
+.task-name {
+  font-size: var(--font-size-caption, 24rpx);
+  color: var(--color-text-primary, #F0EDE8);
+  letter-spacing: 1rpx;
+}
+
+.task-item--done .task-name {
+  color: var(--color-gold, #F4D48C);
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+.tasks-card-footer {
+  padding-top: var(--spacing-xs, 12rpx);
+  border-top: 1rpx solid rgba(244, 212, 140, 0.06);
+}
+
+.tasks-card-reward {
+  font-size: var(--font-size-xs, 20rpx);
+  color: var(--color-text-tertiary, #9A95B8);
+  letter-spacing: 1rpx;
+  display: block;
+  text-align: center;
+}
+
+/* ============================================================
    ACCESSIBILITY: Reduced Motion
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
@@ -1845,8 +1973,263 @@
   max-width: 320rpx;
 }
 
-.tarot-overlay-btn:active {
+/* ============================================================
+   26. TIME-OF-DAY GREETING — Gentle fade-in on each page visit
+   ============================================================ */
+
+.greeting-text {
+  display: block;
+  font-size: var(--font-size-caption, 24rpx);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-lavender, #B8A9E0);
+  letter-spacing: 3rpx;
+  margin-top: 16rpx;
+  opacity: 0.85;
+  text-shadow: 0 0 20rpx rgba(184, 169, 224, 0.08);
+  position: relative;
+  z-index: 1;
+}
+
+.anim-greeting-fade {
+  animation: greeting-fade-in 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes greeting-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(8rpx);
+  }
+  100% {
+    opacity: 0.85;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================
+   27. ONBOARDING OVERLAY (v2.1) — Full-screen 3-step flow
+   ============================================================ */
+
+.onboarding-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(26, 26, 62, 0.97);
+  z-index: var(--z-modal, 1000);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg, 32rpx);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease-soft);
+}
+
+.onboarding-overlay--visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.onboarding-card {
+  position: relative;
+  width: 100%;
+  max-width: 580rpx;
+  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 100%);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.30);
+  border-radius: var(--radius-lg, 24rpx);
+  padding: var(--spacing-2xl, 48rpx) var(--spacing-lg, 32rpx) var(--spacing-xl, 32rpx);
+  text-align: center;
+  box-shadow:
+    0 8rpx 40rpx rgba(0, 0, 0, 0.35),
+    0 0 60rpx rgba(244, 212, 140, 0.10);
+  animation: overlay-enter 0.4s var(--ease-soft) forwards;
+}
+
+/* Step dots */
+.onboarding-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  margin-bottom: var(--spacing-xl, 48rpx);
+}
+
+.onboarding-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: rgba(244, 212, 140, 0.15);
+  transition: all 0.3s ease;
+}
+
+.onboarding-dot--active {
+  background: var(--color-gold, #F4D48C);
+  box-shadow: 0 0 12rpx rgba(244, 212, 140, 0.40);
+  width: 24rpx;
+  border-radius: 12rpx;
+}
+
+/* Step content */
+.onboarding-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.onboarding-emoji-wrap {
+  width: 120rpx;
+  height: 120rpx;
+  margin: 0 auto var(--spacing-lg, 32rpx);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(244, 212, 140, 0.08);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.25);
+  border-radius: var(--radius-lg, 24rpx);
+  box-shadow:
+    0 0 40rpx rgba(244, 212, 140, 0.12),
+    0 0 80rpx rgba(244, 212, 140, 0.05);
+}
+
+.onboarding-emoji {
+  font-size: 52rpx;
+}
+
+.onboarding-title {
+  display: block;
+  font-size: var(--font-size-title, 40rpx);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-gold, #F4D48C);
+  letter-spacing: 4rpx;
+  margin-bottom: var(--spacing-sm, 24rpx);
+  text-shadow: 0 0 30rpx rgba(244, 212, 140, 0.12);
+}
+
+.onboarding-desc {
+  display: block;
+  font-size: var(--font-size-body, 30rpx);
+  color: var(--color-text-primary, #F0EDE8);
+  line-height: var(--line-height-base, 1.6);
+  letter-spacing: 2rpx;
+  margin-bottom: var(--spacing-xs, 12rpx);
+}
+
+.onboarding-sub {
+  display: block;
+  font-size: var(--font-size-caption, 24rpx);
+  color: var(--color-lavender, #B8A9E0);
+  opacity: 0.80;
+  letter-spacing: 2rpx;
+  margin-top: var(--spacing-xs, 12rpx);
+  line-height: var(--line-height-base, 1.6);
+}
+
+/* Navigation button */
+.onboarding-nav {
+  margin-top: var(--spacing-xl, 48rpx);
+}
+
+.onboarding-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24rpx 64rpx;
+  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
+  border-radius: var(--radius-pill, 999rpx);
+  box-shadow: var(--shadow-gold-button);
+  transition: all var(--duration-fast) var(--ease-out);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.onboarding-btn:active {
   transform: scale(0.97);
-  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.20);
   opacity: 0.92;
+}
+
+.onboarding-btn-text {
+  font-size: var(--font-size-body, 30rpx);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-text-inverse);
+  letter-spacing: 4rpx;
+}
+
+/* ============================================================
+   28. ZODIAC GRID (onboarding step 3)
+   ============================================================ */
+
+.zodiac-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16rpx;
+  margin: var(--spacing-lg, 32rpx) 0 var(--spacing-sm, 24rpx);
+  width: 100%;
+  max-width: 480rpx;
+}
+
+.zodiac-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: calc((100% - 32rpx) / 3);
+  padding: 16rpx 8rpx;
+  background: rgba(244, 212, 140, 0.06);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.15);
+  border-radius: var(--radius-md, 16rpx);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all var(--duration-fast) var(--ease-out);
+  box-sizing: border-box;
+}
+
+.zodiac-item:active {
+  background: rgba(244, 212, 140, 0.18);
+  border-color: rgba(244, 212, 140, 0.40);
+  transform: scale(0.95);
+}
+
+.zodiac-item-emoji {
+  font-size: 40rpx;
+  display: block;
+  margin-bottom: 6rpx;
+}
+
+.zodiac-item-name {
+  font-size: var(--font-size-xs, 20rpx);
+  color: var(--color-text-primary, #F0EDE8);
+  letter-spacing: 1rpx;
+  display: block;
+}
+
+/* Skip link */
+.zodiac-skip {
+  display: inline-block;
+  padding: 12rpx 24rpx;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.zodiac-skip:active {
+  opacity: 0.60;
+}
+
+.zodiac-skip-text {
+  font-size: var(--font-size-caption, 24rpx);
+  color: var(--color-text-tertiary, #A098C0);
+  letter-spacing: 2rpx;
+  border-bottom: 1rpx dashed rgba(160, 152, 192, 0.25);
+}
+
+@keyframes overlay-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

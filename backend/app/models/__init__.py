@@ -5,6 +5,7 @@ from app.models.reading import Reading, DrawnCard, ChatMessage
 from app.models.order import Order
 from app.models.diary import DiaryEntry
 from app.models.share_log import ShareLog
+from app.models.checkin import CheckIn
 
 __all__ = [
     "User",
@@ -16,4 +17,5 @@ __all__ = [
     "Order",
     "DiaryEntry",
     "ShareLog",
+    "CheckIn",
 ]

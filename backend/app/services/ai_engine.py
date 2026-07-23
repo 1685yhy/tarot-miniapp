@@ -3,6 +3,9 @@ Tarot AI interpretation engine.
 
 Uses DeepSeek API (OpenAI-compatible) to generate thoughtful tarot
 readings based on the cards drawn and the user's question.
+
+Supports multiple reader personas and user-history context injection
+so the AI remembers who it's talking to.
 """
 
 import datetime
@@ -11,6 +14,7 @@ import logging
 from openai import AsyncOpenAI
 
 from app.config import settings
+from app.services.ai_personas import get_persona, get_persona_prompt_suffix
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +70,79 @@ def _get_time_greeting() -> str:
         return "夜幕降临，星光渐亮..."
     else:
         return "夜深人静，是最适合与自己对话的时刻..."
+
+
+_SPREAD_TYPE_NAMES = {
+    "three_card": "三牌占卜",
+    "triangle": "恋人三角",
+    "decision": "二择一",
+    "celtic_cross": "凯尔特十字",
+    "career": "事业牌阵",
+    "finance": "财运牌阵",
+    "life_cross": "人生十字",
+    "horseshoe": "马蹄牌阵",
+    "relationship": "关系牌阵",
+    "year_ahead": "年度运势",
+    "daily": "每日占卜",
+}
+
+_THEME_LABELS = {
+    "love": "爱情",
+    "career": "事业",
+    "finance": "财运",
+    "general": "综合",
+}
+
+
+def _build_user_context(
+    total_count: int = 0,
+    common_spread: str | None = None,
+    common_theme: str | None = None,
+    streak: int = 0,
+    last_3_summaries: list[str] | None = None,
+) -> str:
+    """Build a context block about the user's reading history.
+
+    This is injected into the AI prompt so the tarot reader "remembers"
+    the user and can personalise the reading.
+
+    Args:
+        total_count:   Total number of readings the user has ever done.
+        common_spread: Most frequent spread type key, or None.
+        common_theme:  Most frequent theme key (love/career/finance/general), or None.
+        streak:        Consecutive-day reading streak length.
+        last_3_summaries: Short summaries (question or spread name) of the
+                          last 3 readings, most recent first.
+
+    Returns:
+        A formatted Chinese-language context block, or empty string if
+        there is no history.
+    """
+    if total_count <= 0:
+        return ""
+    spread_name = _SPREAD_TYPE_NAMES.get(common_spread or "", common_spread or "")
+    theme_label = _THEME_LABELS.get(common_theme or "", common_theme or "")
+
+    lines = ["\n【关于这位占卜者】"]
+    lines.append(f"- 累计占卜次数：{total_count} 次")
+    if spread_name:
+        lines.append(f"- 常用牌阵：{spread_name}")
+    if theme_label and common_theme != "general":
+        lines.append(f"- 常问主题：{theme_label}")
+    if streak > 1:
+        lines.append(f"- 已连续占卜 {streak} 天")
+
+    if last_3_summaries:
+        lines.append("- 最近占卜记录：")
+        labels = ["上次", "再上次", "之前"]
+        for i, summary in enumerate(last_3_summaries):
+            if i >= len(labels):
+                break
+            if summary.strip():
+                lines.append(f"  · {labels[i]}问的是：「{summary.strip()[:60]}」")
+
+    lines.append("")
+    return "\n".join(lines)
 
 
 def _analyze_sentiment(question: str | None) -> str:
@@ -185,6 +262,8 @@ async def generate_reading(
     theme: str | None,
     cards_info: list[dict],
     teaching_info: dict[int, dict] | None = None,
+    persona: str | None = None,
+    user_context: str | None = None,
 ) -> str | None:
     """
     Call the DeepSeek API to produce a full tarot reading.
@@ -196,6 +275,10 @@ async def generate_reading(
         cards_info:   Enriched card data from the DB (card + meaning fields).
         teaching_info: Optional dict keyed by card_id with teaching data
                        (symbols, story, element_association, etc.).
+        persona:      Optional persona key (gentle_star / wise_moon / frank_sun).
+                      When set, the AI adopts the persona's voice and style.
+        user_context: Optional pre-built context block about the user's reading
+                      history, built by ``_build_user_context()``.
 
     Returns:
         The interpretation text, or ``None`` if the API call fails
@@ -204,22 +287,40 @@ async def generate_reading(
     if not settings.DEEPSEEK_API_KEY:
         return None
 
+    # --- Resolve persona ---
+    persona_key = persona or None
+    persona_name = get_persona(persona_key)["name"]
+    persona_prompt = get_persona_prompt_suffix(persona_key)
+
     # --- Build dynamic system prompt with personalization ---
     time_greeting = _get_time_greeting()
     tone_guidance = _analyze_sentiment(question)
     nudge_instruction = _get_nudge_instruction(theme)
 
+    # Persona-aware greeting replaces the generic time greeting when persona is set
+    if persona_key:
+        from app.services.ai_personas import get_persona_greeting
+        persona_greeting = get_persona_greeting(persona_key)
+        opening = f"{time_greeting} 我是{persona_name}。{persona_greeting}"
+    else:
+        opening = time_greeting
+
     dynamic_system_prompt = (
-        f"{time_greeting}\n\n"
+        f"{opening}\n\n"
         f"{SYSTEM_PROMPT}"
+        f"{persona_prompt}"
         f"{tone_guidance}"
         f"{nudge_instruction}"
     )
 
     cards_text = _build_cards_text(cards_info, theme=theme, teaching_info=teaching_info)
 
+    # Build user context block — injected so the AI "remembers" the user
+    user_context_block = user_context or ""
+
     user_prompt = (
-        f"现在是{datetime.datetime.now().strftime('%H:%M')}，{time_greeting}\n\n"
+        f"现在是{datetime.datetime.now().strftime('%H:%M')}，{opening}\n\n"
+        f"{user_context_block}"
         f"请为用户进行塔罗解读。\n\n"
         f"牌阵类型: {spread_type}\n"
         f"用户问题: {question or '未指定具体问题'}\n"

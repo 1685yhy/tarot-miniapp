@@ -28,3 +28,4 @@ class User(Base):
     readings: Mapped[list["Reading"]] = relationship(back_populates="user")
     orders: Mapped[list["Order"]] = relationship(back_populates="user")
     diary_entries: Mapped[list["DiaryEntry"]] = relationship(back_populates="user")
+    checkins: Mapped[list["CheckIn"]] = relationship(back_populates="user")  # noqa: F821

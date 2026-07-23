@@ -38,3 +38,23 @@ class DiaryEntryBrief(BaseModel):
 class DiaryListResponse(BaseModel):
     entries: list[DiaryEntryBrief]
     page: int
+
+
+class WeeklyMoodTrend(BaseModel):
+    date: str
+    mood_score: float
+    mood_label: str
+    mood_emoji: str
+
+
+class DiaryReviewResponse(BaseModel):
+    period: str = "weekly"
+    week_range: str | None = None
+    entry_count: int = 0
+    mood_trends: list[WeeklyMoodTrend] = []
+    top_card_name: str | None = None
+    top_card_count: int = 0
+    top_card_meaning: str | None = None
+    ai_insight: str | None = None
+    next_week_guidance: str | None = None
+    emotional_trend_summary: str | None = None

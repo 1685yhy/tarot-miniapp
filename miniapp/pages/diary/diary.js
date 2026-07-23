@@ -2,6 +2,9 @@
 const { request, getFriendlyError } = require('../../utils/api');
 const { computeImagePath } = require('../../utils/cards');
 
+// Mood score map for trend analysis
+const MOOD_SCORE_MAP = { happy: 4.5, calm: 3.5, excited: 5, anxious: 2, sad: 1, thoughtful: 3 };
+
 Page({
   data: {
     entries: [],
@@ -17,6 +20,11 @@ Page({
     todayCard: null,
     topCard: '',
     moodTrend: '',
+
+    // Weekly AI review
+    weeklyReview: null,
+    reviewLoading: false,
+    reviewError: null,
   },
 
   onReady() {
@@ -28,7 +36,7 @@ Page({
   },
 
   async onShow() {
-    this.setData({ page: 1, entries: [], pageLoading: true });
+    this.setData({ page: 1, entries: [], pageLoading: true, weeklyReview: null });
     await this.loadEntries();
     this._loadTodayCard();
   },
@@ -36,12 +44,17 @@ Page({
   async loadEntries() {
     try {
       const data = await request(`/diary/entries?page=${this.data.page}`);
+      const entries = [...this.data.entries, ...(data.entries || [])];
       this.setData({
-        entries: [...this.data.entries, ...(data.entries || [])],
+        entries,
         hasMore: data.entries && data.entries.length === 20,
         pageLoading: false,
       });
       this._computeRetrospect();
+      // Auto-load weekly review if enough entries
+      if (entries.length >= 3 && !this.data.weeklyReview && !this.data.reviewLoading) {
+        this._loadWeeklyReview();
+      }
     } catch (err) {
       this.setData({ pageLoading: false, pageError: getFriendlyError(err) });
     }
@@ -97,6 +110,10 @@ Page({
         creating: false,
       });
       wx.showToast({ title: '记录成功 ✨', icon: 'success' });
+      // Refresh weekly review after new entry
+      if (this.data.entries.length >= 3) {
+        this._loadWeeklyReview();
+      }
     } catch (err) {
       wx.showToast({ title: '记录失败', icon: 'none' });
       this.setData({ creating: false });
@@ -104,11 +121,11 @@ Page({
   },
 
   onRetry() {
-    this.setData({ pageError: null, pageLoading: true, page: 1, entries: [] });
+    this.setData({ pageError: null, pageLoading: true, page: 1, entries: [], weeklyReview: null });
     this.loadEntries();
   },
 
-  /** 加载今日卡牌，在编辑器顶部展示 */
+  /** Load today's card to show in the editor header */
   async _loadTodayCard() {
     try {
       const card = await request('/cards/daily');
@@ -119,7 +136,7 @@ Page({
     }
   },
 
-  /** 计算复盘数据：最常出现的牌 + 心情趋势 */
+  /** Compute local fallback retrospect data (kept for backward compat) */
   _computeRetrospect() {
     const entries = this.data.entries;
     if (entries.length < 3) return;
@@ -134,7 +151,6 @@ Page({
     const topCard = topEntry?.[0] || '未知';
 
     // 心情趋势：最近3条记录的平均心情（1-5分）
-    const MOOD_SCORE_MAP = { happy: 4.5, calm: 3.5, excited: 5, anxious: 2, sad: 1, thoughtful: 3 };
     const recent = entries.slice(0, 3);
     const avgMood = recent.reduce((s, e) => {
       return s + (e.mood_score || MOOD_SCORE_MAP[e.mood] || 3);
@@ -142,5 +158,32 @@ Page({
     const moodTrend = avgMood > 3.5 ? '在变好 ✦' : avgMood < 2.5 ? '有些低落' : '比较平稳';
 
     this.setData({ topCard, moodTrend });
+  },
+
+  // ============================================================
+  // AI Weekly Review
+  // ============================================================
+
+  /** Fetch AI weekly review from backend */
+  async _loadWeeklyReview() {
+    if (this.data.reviewLoading) return;
+    this.setData({ reviewLoading: true, reviewError: null });
+    try {
+      const review = await request('/diary/review?period=weekly');
+      this.setData({ weeklyReview: review, reviewLoading: false });
+    } catch (err) {
+      this.setData({ reviewLoading: false, reviewError: getFriendlyError(err) });
+    }
+  },
+
+  /** User tap to refresh weekly review */
+  onRefreshReview() {
+    this._loadWeeklyReview();
+    wx.vibrateShort({ type: 'light' }).catch(() => {});
+  },
+
+  /** Get CSS width percentage for mood chart bar */
+  _getMoodBarWidth(score) {
+    return Math.max(10, (score / 5) * 100);
   },
 });

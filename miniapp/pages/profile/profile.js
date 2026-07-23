@@ -52,6 +52,9 @@ Page({
     // Sound settings
     soundEnabled: true,
 
+    // Ambient sound
+    ambientEnabled: false,
+
     // Draw mode preference
     defaultDrawMode: 'immersive',
   },
@@ -76,6 +79,7 @@ Page({
     // Sync sound state from sound module
     this.setData({
       soundEnabled: sound.sfxEnabled,
+      ambientEnabled: sound.ambientEnabled,
       defaultDrawMode: wx.getStorageSync('default_draw_mode') || 'immersive',
     });
   },
@@ -221,6 +225,16 @@ Page({
     this.setData({ soundEnabled: newVal });
     wx.showToast({
       title: newVal ? '音效已开启' : '音效已关闭',
+      icon: 'none',
+      duration: 1500,
+    });
+  },
+
+  onToggleAmbient() {
+    const newVal = sound.toggleAmbient();
+    this.setData({ ambientEnabled: newVal });
+    wx.showToast({
+      title: newVal ? '星空环境音已开启 🌙' : '星空环境音已关闭',
       icon: 'none',
       duration: 1500,
     });

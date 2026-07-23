@@ -59,6 +59,9 @@ Page({
     diaryText: '',
     diarySaving: false,
     diarySaved: false,
+
+    // v2.1: Zodiac sign
+    zodiacSign: '',
   },
 
   async onLoad() {
@@ -69,8 +72,12 @@ Page({
     // Load collection progress from storage
     this._loadCollectionProgress();
 
+    // v2.1: Load stored zodiac sign
+    const storedZodiac = wx.getStorageSync('zodiac_sign') || '';
+    this.setData({ zodiacSign: storedZodiac });
+
     try {
-      const card = await request('/cards/daily');
+      const card = await request('/cards/daily', { data: { zodiac: storedZodiac } });
       card.imagePath = computeImagePath(card, IMAGE_BASE);
 
       this.setData({

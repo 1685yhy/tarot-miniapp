@@ -3,7 +3,7 @@ const { request, getFriendlyError } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
 const { computeImagePath } = require('../../utils/cards');
 const { createAnim, staggeredEntrance } = require('../../utils/animate');
-const { playPageEnterSound, playCardFlipSound } = require('../../utils/sound');
+const { playPageEnterSound, playCardFlipSound, startAmbientSound, stopAmbientSound } = require('../../utils/sound');
 
 const FREE_READINGS_LIMIT = 5;
 
@@ -72,10 +72,39 @@ Page({
 
     // Collection progress
     collectedCount: 0,
+    // Today's tasks (checked from /tasks/status)
+    tasksCheckedIn: false,
+    tasksDailyCardDrawn: false,
+    tasksReadingDone: false,
+    tasksShared: false,
+    tasksCompleted: 0,
+    tasksTotal: 3,
+    taskStreak: 0,
     // Immersive tarot explainer overlay
     showTarotOverlay: false,
     // Shooting star easter egg
     shootingStarActive: false,
+
+    // v2.1: Time-of-day greeting
+    greetingText: '',
+    greetingAnimKey: 0,
+
+    // v2.1: Zodiac sign onboarding
+    zodiacSign: '',
+    zodiacList: [
+      { key: 'aries', name: '白羊座', emoji: '♈' },
+      { key: 'taurus', name: '金牛座', emoji: '♉' },
+      { key: 'gemini', name: '双子座', emoji: '♊' },
+      { key: 'cancer', name: '巨蟹座', emoji: '♋' },
+      { key: 'leo', name: '狮子座', emoji: '♌' },
+      { key: 'virgo', name: '处女座', emoji: '♍' },
+      { key: 'libra', name: '天秤座', emoji: '♎' },
+      { key: 'scorpio', name: '天蝎座', emoji: '♏' },
+      { key: 'sagittarius', name: '射手座', emoji: '♐' },
+      { key: 'capricorn', name: '摩羯座', emoji: '♑' },
+      { key: 'aquarius', name: '水瓶座', emoji: '♒' },
+      { key: 'pisces', name: '双鱼座', emoji: '♓' },
+    ],
   },
 
   async onLoad() {
@@ -95,6 +124,7 @@ Page({
       this._initDailyState();
       this._loadFreeReadings();
       this._restoreDailyCard();
+      this._loadTasks();
     } catch (err) {
       this.setData({ pageLoading: false, pageError: getFriendlyError(err) });
     }
@@ -107,11 +137,24 @@ Page({
       appEnter.globalData._pageHapticPlayed = true;
     }
 
+    // Start ambient sound if user has it enabled
+    if (wx.getStorageSync('ambient_enabled') === true) {
+      startAmbientSound();
+    }
+
     // Init shooting star easter egg with random intervals
     this._initShootingStar();
 
-    // Show Step 1 bubble if first-time user
-    if (!(onboardingCompleted || oldDone) && onboardingStep === 1) {
+    // v2.1: Compute time-of-day greeting
+    this._computeGreeting();
+
+    // v2.1: Load stored zodiac sign
+    const storedZodiac = wx.getStorageSync('zodiac_sign') || '';
+    this.setData({ zodiacSign: storedZodiac });
+
+    // Onboarding flow (3 steps) — only for first-time users who haven't completed it
+    const zodiacCompleted = wx.getStorageSync('zodiac_onboarding_done');
+    if (!(onboardingCompleted || oldDone) && !zodiacCompleted) {
       this.setData({ showOnboarding: true, onboardingStep: 1 });
     }
 
@@ -135,11 +178,47 @@ Page({
     this._loadCollectionProgress();
     // Re-init shooting star timer if page was hidden
     this._initShootingStar();
+    // v2.1: Recompute greeting (in case hour changed)
+    this._computeGreeting();
+    // v2.1: Refresh zodiac from storage (user might update elsewhere)
+    const storedZodiac = wx.getStorageSync('zodiac_sign') || '';
+    if (storedZodiac !== this.data.zodiacSign) {
+      this.setData({ zodiacSign: storedZodiac });
+    }
+    this._loadTasks();
+    // Resume ambient sound if previously stopped
+    if (wx.getStorageSync('ambient_enabled') === true) {
+      startAmbientSound();
+    }
   },
 
   _loadCollectionProgress() {
     const collectedMajorIds = wx.getStorageSync('collected_major_ids') || [];
     this.setData({ collectedCount: collectedMajorIds.length });
+  },
+
+  /** v2.1: Compute time-of-day greeting with optional nickname */
+  _computeGreeting() {
+    const h = new Date().getHours();
+    let base = '';
+    if (h >= 5 && h < 11) {
+      base = '晨光中的指引 ✦';
+    } else if (h >= 11 && h < 14) {
+      base = '午后的星光 ✦';
+    } else if (h >= 14 && h < 18) {
+      base = '傍晚的思绪 ✦';
+    } else if (h >= 18 && h < 22) {
+      base = '夜幕低垂 ✦';
+    } else {
+      base = '深夜静思 ✦';
+    }
+    const user = wx.getStorageSync('user') || {};
+    const nickname = user.nickname || '';
+    const greetingText = nickname ? `${base} ${nickname}` : base;
+    this.setData({
+      greetingText,
+      greetingAnimKey: this.data.greetingAnimKey + 1,
+    });
   },
 
   /** Load free-reading usage from cached user (or refresh if stale) */
@@ -177,6 +256,29 @@ Page({
     } catch (e) {
       // silent
     }
+  },
+
+  /** Load today's task status from server */
+  async _loadTasks() {
+    try {
+      const status = await request('/tasks/status');
+      this.setData({
+        tasksCheckedIn: status.checked_in_today,
+        tasksDailyCardDrawn: status.daily_card_drawn,
+        tasksReadingDone: status.reading_done_today,
+        tasksShared: status.shared_today,
+        tasksCompleted: status.tasks_completed,
+        tasksTotal: status.tasks_total,
+        taskStreak: status.streak,
+      });
+    } catch (_err) {
+      // Silent degrade — task UI just shows defaults (all false, 0/3)
+    }
+  },
+
+  /** Navigate to checkin page */
+  onGoCheckin() {
+    wx.navigateTo({ url: '/pages/checkin/checkin' });
   },
 
   /** Initialize daily streak and reminder state from storage */
@@ -234,9 +336,40 @@ Page({
     }
   },
 
-  /** Step 1 → Step 2: dismiss bubble, persist progress */
+  /** Step 1 → Step 2 → Step 3 (zodiac picker): dismiss bubble, persist progress */
   onNextOnboarding() {
-    wx.setStorageSync('onboarding_step', 2);
+    const nextStep = this.data.onboardingStep + 1;
+    if (nextStep > 3) {
+      // All 3 steps done — close onboarding
+      wx.setStorageSync('onboarding_completed', true);
+      wx.setStorageSync('onboarding_step', 3);
+      this.setData({ showOnboarding: false, onboardingStep: 0 });
+      return;
+    }
+    wx.setStorageSync('onboarding_step', nextStep);
+    this.setData({ onboardingStep: nextStep });
+  },
+
+  /** Select a zodiac sign on step 3 */
+  onSelectZodiac(e) {
+    const sign = e.currentTarget.dataset.sign;
+    wx.setStorageSync('zodiac_sign', sign);
+    wx.setStorageSync('zodiac_onboarding_done', true);
+    wx.setStorageSync('onboarding_completed', true);
+    wx.setStorageSync('onboarding_step', 3);
+    this.setData({
+      zodiacSign: sign,
+      showOnboarding: false,
+      onboardingStep: 0,
+    });
+    try { wx.vibrateShort({ type: 'light' }); } catch (e) {}
+  },
+
+  /** Skip zodiac selection */
+  onSkipZodiac() {
+    wx.setStorageSync('zodiac_onboarding_done', true);
+    wx.setStorageSync('onboarding_completed', true);
+    wx.setStorageSync('onboarding_step', 3);
     this.setData({ showOnboarding: false, onboardingStep: 0 });
   },
 
@@ -280,7 +413,8 @@ Page({
     try {
       // Emphasis: extra delay so pre-draw state lingers before reveal transition (300ms)
       await new Promise(r => setTimeout(r, 300));
-      const card = await request('/cards/daily');
+      const zodiacSign = this.data.zodiacSign;
+      const card = await request('/cards/daily', { data: { zodiac: zodiacSign } });
       card.imagePath = computeImagePath(card, 'https://xingxiang.chat/images/cards_full');
       this.setData({ dailyCard: card, drawingLoading: false });
       wx.hideLoading();
@@ -391,7 +525,8 @@ Page({
     if (this.data.hasDrawnToday) {
       this.setData({ dailyCardRestoring: true });
       try {
-        const card = await request('/cards/daily');
+        const zodiacSign = this.data.zodiacSign;
+        const card = await request('/cards/daily', { data: { zodiac: zodiacSign } });
         card.imagePath = computeImagePath(card, 'https://xingxiang.chat/images/cards_full');
         app.globalData.dailyCard = card;
         this.setData({ dailyCard, dailyCardRestoring: false });
@@ -447,6 +582,8 @@ Page({
   onHide() {
     this._clearTimers();
     this._shootingStarReady = false;
+    // Stop ambient sound when page hidden (will resume on show)
+    stopAmbientSound();
   },
 
   _pushTimer(timer) {
