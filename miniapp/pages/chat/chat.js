@@ -185,4 +185,8 @@ Page({
       wx.pageScrollTo({ scrollTop: 99999, duration: 200 });
     }).exec();
   },
+
+  onGoHome() {
+    wx.switchTab({ url: '/pages/index/index' });
+  },
 });

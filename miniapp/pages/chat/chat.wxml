@@ -115,3 +115,8 @@
   </view>
   <text class="quota-text">今日免费追问 {{chatFreeTotal - remainingFree}}/{{chatFreeTotal}} · 明日0点重置</text>
 </view>
+
+<!-- ===== Back to Home ===== -->
+<view class="back-home" bindtap="onGoHome" style="padding:20rpx 0 40rpx;text-align:center;">
+  <text class="back-home-text" style="color:var(--color-lavender);font-size:28rpx;">← 回到首页</text>
+</view>

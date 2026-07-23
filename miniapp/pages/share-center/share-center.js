@@ -90,9 +90,10 @@ Page({
       await wx.setClipboardData({ data: code });
       this.setData({ copied: true });
       wx.showToast({ title: '邀请码已复制', icon: 'success' });
-      setTimeout(() => {
+      if (!this._timers) this._timers = [];
+      this._timers.push(setTimeout(() => {
         this.setData({ copied: false });
-      }, 2000);
+      }, 2000));
     } catch (_err) {
       wx.showToast({ title: '复制失败', icon: 'none' });
     }
@@ -132,6 +133,21 @@ Page({
 
   onRetry() {
     this._loadAll();
+  },
+
+  onUnload() {
+    this._clearTimers();
+  },
+
+  onHide() {
+    this._clearTimers();
+  },
+
+  _clearTimers() {
+    if (this._timers) {
+      this._timers.forEach(t => clearTimeout(t));
+      this._timers = [];
+    }
   },
 
   onBack() {

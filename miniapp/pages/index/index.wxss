@@ -1409,10 +1409,12 @@
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 4rpx solid transparent;
-  background: conic-gradient(var(--color-gold) 0deg, var(--color-gold) calc(var(--progress) * 360deg), transparent calc(var(--progress) * 360deg), transparent 360deg);
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4rpx), #fff calc(100% - 4rpx));
-  mask: radial-gradient(farthest-side, transparent calc(100% - 4rpx), #fff calc(100% - 4rpx));
+  border: 4rpx solid var(--color-gold);
+  /*
+     WXSS does not support conic-gradient or CSS mask.
+     A full gold ring is shown here; the count text (e.g. "8/22")
+     inside the ring communicates the precise progress.
+  */
 }
 .ring-text {
   position: absolute;

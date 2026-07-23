@@ -55,64 +55,52 @@
     <view wx:elif="{{showReminder && !dailyCard}}" class="daily-reminder-badge anim-gentle-pulse">今日运势待开启</view>
   </view>
 
-  <!-- ===== 3-Step Onboarding Overlay (v2.1) ===== -->
+  <!-- ===== 3-Step Onboarding Overlay (v2.1) — simplified, all steps visible at once ===== -->
   <view class="onboarding-overlay {{showOnboarding ? 'onboarding-overlay--visible' : ''}}">
     <view class="onboarding-card">
 
-      <!-- Step dots -->
-      <view class="onboarding-dots">
-        <view class="onboarding-dot {{onboardingStep >= 1 ? 'onboarding-dot--active' : ''}}"></view>
-        <view class="onboarding-dot {{onboardingStep >= 2 ? 'onboarding-dot--active' : ''}}"></view>
-        <view class="onboarding-dot {{onboardingStep >= 3 ? 'onboarding-dot--active' : ''}}"></view>
-      </view>
-
-      <!-- Step 1: 每日一牌 -->
-      <view wx:if="{{onboardingStep === 1}}" class="onboarding-step anim-fade-in-up-1">
-        <view class="onboarding-emoji-wrap"><text class="onboarding-emoji">✨</text></view>
-        <text class="onboarding-title">每日一牌</text>
-        <text class="onboarding-desc">轻触卡片，获得今日专属指引</text>
-        <text class="onboarding-sub">每天一张牌，学会认识自己的内心 ✦</text>
-      </view>
-
-      <!-- Step 2: 牌阵解读 -->
-      <view wx:elif="{{onboardingStep === 2}}" class="onboarding-step anim-fade-in-up-1">
-        <view class="onboarding-emoji-wrap"><text class="onboarding-emoji">🔮</text></view>
-        <text class="onboarding-title">牌阵解读</text>
-        <text class="onboarding-desc">选择牌阵，AI为您深度解读</text>
-        <text class="onboarding-sub">三牌占卜·恋人三角·凯尔特十字·事业牌阵·共10种</text>
-      </view>
-
-      <!-- Step 3: 星座选择 -->
-      <view wx:elif="{{onboardingStep === 3}}" class="onboarding-step anim-fade-in-up-1">
-        <view class="onboarding-emoji-wrap"><text class="onboarding-emoji">🌟</text></view>
-        <text class="onboarding-title">选择你的星座</text>
-        <text class="onboarding-desc">选填 — 让每日运势更贴合你的星象</text>
-
-        <!-- Zodiac grid -->
-        <view class="zodiac-grid">
-          <view
-            class="zodiac-item"
-            wx:for="{{zodiacList}}"
-            wx:key="key"
-            wx:for-item="z"
-            bindtap="onSelectZodiac"
-            data-sign="{{z.name}}"
-          >
-            <text class="zodiac-item-emoji">{{z.emoji}}</text>
-            <text class="zodiac-item-name">{{z.name}}</text>
+      <!-- All 3 info steps shown together -->
+      <view class="onboarding-all-steps">
+        <view class="onboarding-step-mini">
+          <view class="onboarding-emoji-wrap"><text class="onboarding-emoji">✨</text></view>
+          <view class="onboarding-step-mini-text">
+            <text class="onboarding-step-mini-title">每日一牌</text>
+            <text class="onboarding-step-mini-desc">轻触卡片，获得今日专属指引</text>
           </view>
         </view>
-
-        <view class="zodiac-skip" bindtap="onSkipZodiac">
-          <text class="zodiac-skip-text">跳过，不设置</text>
+        <view class="onboarding-step-mini">
+          <view class="onboarding-emoji-wrap"><text class="onboarding-emoji">🔮</text></view>
+          <view class="onboarding-step-mini-text">
+            <text class="onboarding-step-mini-title">牌阵解读</text>
+            <text class="onboarding-step-mini-desc">选择牌阵，AI为您深度解读</text>
+          </view>
+        </view>
+        <view class="onboarding-step-mini">
+          <view class="onboarding-emoji-wrap"><text class="onboarding-emoji">🌟</text></view>
+          <view class="onboarding-step-mini-text">
+            <text class="onboarding-step-mini-title">选择你的星座</text>
+            <text class="onboarding-step-mini-desc">选填 — 让每日运势更贴合你的星象</text>
+          </view>
         </view>
       </view>
 
-      <!-- Navigation -->
-      <view class="onboarding-nav" wx:if="{{onboardingStep < 3}}">
-        <view class="onboarding-btn" bindtap="onNextOnboarding">
-          <text class="onboarding-btn-text">下一步</text>
+      <!-- Zodiac grid -->
+      <view class="zodiac-grid">
+        <view
+          class="zodiac-item"
+          wx:for="{{zodiacList}}"
+          wx:key="key"
+          wx:for-item="z"
+          bindtap="onSelectZodiac"
+          data-sign="{{z.name}}"
+        >
+          <text class="zodiac-item-emoji">{{z.emoji}}</text>
+          <text class="zodiac-item-name">{{z.name}}</text>
         </view>
+      </view>
+
+      <view class="zodiac-skip" bindtap="onSkipZodiac">
+        <text class="zodiac-skip-text">跳过，开始使用</text>
       </view>
     </view>
   </view>

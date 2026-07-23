@@ -409,6 +409,10 @@ Page({
     wx.navigateTo({ url: '/pages/membership/membership?product=annual_report' });
   },
 
+  onGoHome() {
+    wx.switchTab({ url: '/pages/index/index' });
+  },
+
   // ════════════════════════════════════════════════════════════════
   //  UTILITY
   // ════════════════════════════════════════════════════════════════

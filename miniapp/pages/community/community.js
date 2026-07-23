@@ -37,7 +37,12 @@ Page({
   /** Load today's topic from API */
   async _loadTodayTopic() {
     const data = await request('/community/today');
-    this.setData({ topic: data });
+    // Guard: API must return { topic: { id, title } } shape
+    if (data && data.topic && data.topic.id) {
+      this.setData({ topic: data });
+    } else {
+      throw new Error('话题数据格式异常');
+    }
   },
 
   /** Load posts for current topic */
@@ -72,7 +77,7 @@ Page({
     try {
       await this._loadPosts(this.data.page + 1);
     } catch (_err) {
-      // Silent degrade
+      wx.showToast({ title: '加载更多失败', icon: 'none' });
     }
     this.setData({ loadingMore: false });
   },

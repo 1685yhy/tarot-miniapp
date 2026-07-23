@@ -99,4 +99,8 @@ Page({
     const id = this.options?.id;
     if (id) this.loadCard(id);
   },
+
+  onGoBack() {
+    wx.switchTab({ url: '/pages/encyclopedia/encyclopedia' });
+  },
 });

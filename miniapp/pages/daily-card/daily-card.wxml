@@ -216,6 +216,11 @@
     </view>
   </view>
 
+  <!-- ===== Back to Home ===== -->
+  <view class="back-home" bindtap="onGoHome" style="margin:40rpx 0 20rpx;text-align:center;">
+    <text class="back-home-text" style="color:var(--color-lavender);font-size:28rpx;">← 返回首页</text>
+  </view>
+
   <!-- Bottom spacer for safe area -->
   <view class="safe-bottom"></view>
 </view>

@@ -25,6 +25,9 @@
       <text class="wrapped-error-title">报告暂时无法生成</text>
       <text class="wrapped-error-hint">{{pageError}}</text>
       <button class="wrapped-retry-btn" bindtap="onRetry">重新尝试</button>
+      <view class="wrapped-back-home" bindtap="onGoHome" style="margin-top:30rpx;text-align:center;">
+        <text style="color:var(--color-lavender);font-size:26rpx;">← 返回首页</text>
+      </view>
     </view>
   </block>
 
@@ -68,6 +71,9 @@
       </button>
       <button class="pre-buy-btn" bindtap="onBuySingle">单独购买 ¥29.90</button>
       <text class="pre-note">会员专属 · 也可单独购买</text>
+      <view class="pre-back-home" bindtap="onGoHome" style="margin-top:30rpx;text-align:center;">
+        <text style="color:var(--color-lavender);font-size:26rpx;">← 返回首页</text>
+      </view>
     </view>
   </block>
 
@@ -335,8 +341,14 @@
             <image class="btn-inline-icon" src="/images/icons/refresh_64.png" mode="aspectFit" />
             <text>重新生成</text>
           </button>
+
+          <!-- Home link -->
+          <view class="home-link" bindtap="onGoHome" style="margin-top:30rpx;text-align:center;">
+            <text style="color:var(--color-lavender);font-size:26rpx;">返回首页</text>
+          </view>
         </view>
       </view>
+
 
     </view><!-- /wrapped-stage -->
   </block>

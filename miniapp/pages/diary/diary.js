@@ -186,4 +186,8 @@ Page({
   _getMoodBarWidth(score) {
     return Math.max(10, (score / 5) * 100);
   },
+
+  onGoHome() {
+    wx.switchTab({ url: '/pages/index/index' });
+  },
 });

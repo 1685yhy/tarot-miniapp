@@ -130,6 +130,12 @@ Page({
     const type = (options && options.type) || '';
     if (type) {
       const spread = SPREADS.find(s => s.key === type);
+      if (!spread) {
+        // Unknown spread type — show grid with a brief error toast
+        this.setData({ pageLoading: false });
+        wx.showToast({ title: '未知的牌阵类型', icon: 'none' });
+        return;
+      }
       if (spread) {
         // Check for pending reading context (from home page "继续" flow)
         const pending = wx.getStorageSync('pending_reading');
@@ -494,9 +500,11 @@ Page({
 
     // Show confirmation dialog before consuming reading quota
     const isMember = this.data.isMember;
+    const used = this.data.freeReadingsUsed || 0;
+    const total = this.data.freeReadingsTotal || FREE_READINGS_LIMIT;
     const confirmContent = isMember
-      ? '将消耗 1 次付费解读机会，确定要继续吗？'
-      : '将消耗 1 次免费解读机会，确定要继续吗？';
+      ? '会员可无限次解读，确定要继续吗？'
+      : `将消耗 1 次免费解读机会（今日 ${used}/${total}），确定要继续吗？`;
 
     const confirmed = await new Promise((resolve) => {
       wx.showModal({
