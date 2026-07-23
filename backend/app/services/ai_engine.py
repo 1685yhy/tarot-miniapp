@@ -105,7 +105,34 @@ def _card_direction_tag(card: dict) -> str:
     return "逆位" if card.get("is_reversed") else "正位"
 
 
-def _build_cards_text(cards_info: list[dict], theme: str | None = None) -> str:
+def _build_teaching_text(card: dict, teaching: dict | None) -> str:
+    """Build a teaching-data block for one card (symbols + element)."""
+    if not teaching:
+        return ""
+    lines: list[str] = []
+    symbols = teaching.get("symbols", [])
+    if symbols:
+        lines.append("  牌面象征符号：")
+        for s in symbols[:5]:  # cap at 5 symbols per card
+            lines.append(f"    {s['symbol']}（{s['meaning']}）")
+    element = teaching.get("element_association", "")
+    if element:
+        lines.append(f"  元素关联：{element}")
+    story = teaching.get("story", "")
+    if story:
+        # Shorten story to ~120 chars for the prompt
+        short_story = story[:120].rsplit("。", 1)[0] + "。" if "。" in story[:120] else story[:120]
+        lines.append(f"  典故：{short_story}")
+    if lines:
+        lines.append("")  # blank line separator
+    return "\n".join(lines)
+
+
+def _build_cards_text(
+    cards_info: list[dict],
+    theme: str | None = None,
+    teaching_info: dict[int, dict] | None = None,
+) -> str:
     """Build a formatted block describing all drawn cards for the prompt.
 
     Args:
@@ -113,6 +140,8 @@ def _build_cards_text(cards_info: list[dict], theme: str | None = None) -> str:
         theme:       Optional theme (love / career / finance / general).
                      When set, uses theme-specific meaning fields
                      (e.g. "love_upright") instead of the generic "meaning_upright".
+        teaching_info: Optional dict keyed by card_id with teaching data
+                       (symbols, story, element_association, etc.).
     """
     keys = _THEME_MEANING_KEY_MAP.get(theme) if theme else None
     theme_upright = keys[0] if keys else None
@@ -134,8 +163,19 @@ def _build_cards_text(cards_info: list[dict], theme: str | None = None) -> str:
         )
         lines.append(f"  画面描述：{c['image_description']}")
         lines.append(
-            f"  含义：{c[meaning_key]}\n"
+            f"  含义：{c[meaning_key]}"
         )
+
+        # Append teaching data if available
+        if teaching_info:
+            card_id = c.get("card_id")
+            if card_id is not None:
+                teaching = teaching_info.get(card_id)
+                if teaching:
+                    teaching_text = _build_teaching_text(c, teaching)
+                    if teaching_text:
+                        lines.append(teaching_text.strip())
+        lines.append("")  # blank line between cards
     return "\n".join(lines)
 
 
@@ -144,6 +184,7 @@ async def generate_reading(
     question: str | None,
     theme: str | None,
     cards_info: list[dict],
+    teaching_info: dict[int, dict] | None = None,
 ) -> str | None:
     """
     Call the DeepSeek API to produce a full tarot reading.
@@ -153,6 +194,8 @@ async def generate_reading(
         question:     Optional free-text question from the user.
         theme:        Optional theme (love / career / finance / general).
         cards_info:   Enriched card data from the DB (card + meaning fields).
+        teaching_info: Optional dict keyed by card_id with teaching data
+                       (symbols, story, element_association, etc.).
 
     Returns:
         The interpretation text, or ``None`` if the API call fails
@@ -173,7 +216,7 @@ async def generate_reading(
         f"{nudge_instruction}"
     )
 
-    cards_text = _build_cards_text(cards_info, theme=theme)
+    cards_text = _build_cards_text(cards_info, theme=theme, teaching_info=teaching_info)
 
     user_prompt = (
         f"现在是{datetime.datetime.now().strftime('%H:%M')}，{time_greeting}\n\n"

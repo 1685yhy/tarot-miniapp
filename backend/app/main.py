@@ -72,10 +72,10 @@ async def health():
 
 # Develop mode: serve card images from local filesystem
 import os
-CARDS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "miniapp", "images", "cards_thumb")
+CARDS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "dev-assets", "cards_thumb")
 if os.path.isdir(CARDS_DIR):
     app.mount("/images/cards", StaticFiles(directory=CARDS_DIR), name="cards")
-CARDS_FULL = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "miniapp", "images", "cards_v3")
+CARDS_FULL = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "dev-assets", "cards_v3")
 if os.path.isdir(CARDS_FULL):
     app.mount("/images/cards_full", StaticFiles(directory=CARDS_FULL), name="cards_full")
 ICONS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "miniapp", "images", "icons")

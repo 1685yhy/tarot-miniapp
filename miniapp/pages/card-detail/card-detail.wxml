@@ -79,7 +79,7 @@
       >{{item}}</text>
     </view>
 
-    <!-- ==================== UPRIGHT / REVERSED SWITCHER ==================== -->
+    <!-- ==================== UPRIGHT / REVERSED / TEACHING SWITCHER ==================== -->
     <view class="tab-switcher">
       <view
         class="tab-item {{activeTab === 'upright' ? 'tab-active' : ''}}"
@@ -91,6 +91,11 @@
         data-tab="reversed"
         bindtap="onTabTap"
       >逆位</view>
+      <view
+        class="tab-item {{activeTab === 'teaching' ? 'tab-active' : ''}}"
+        data-tab="teaching"
+        bindtap="onTabTap"
+      >深度解析</view>
     </view>
 
     <!-- ==================== MEANINGS — UPRIGHT ==================== -->
@@ -118,7 +123,7 @@
     </view>
 
     <!-- ==================== MEANINGS — REVERSED ==================== -->
-    <view wx:else>
+    <view wx:elif="{{activeTab === 'reversed'}}">
       <view class="meaning-card">
         <text class="meaning-title">✦ 总述</text>
         <text class="meaning-text">{{card.meaning_reversed}}</text>
@@ -139,6 +144,84 @@
         <text class="meaning-title">✦ 健康</text>
         <text class="meaning-text">{{card.health_reversed}}</text>
       </view>
+    </view>
+
+    <!-- ==================== TEACHING — 深度解析 ==================== -->
+    <view wx:elif="{{activeTab === 'teaching'}}" class="teaching-root">
+
+      <!-- Teaching loading skeleton -->
+      <view wx:if="{{teachingLoading}}" class="teaching-loading">
+        <view class="skeleton skeleton-text-lg"></view>
+        <view class="skeleton skeleton-text"></view>
+        <view class="skeleton skeleton-text"></view>
+        <view class="skeleton skeleton-block"></view>
+      </view>
+
+      <!-- Teaching content -->
+      <block wx:elif="{{teaching}}" class="teaching-content">
+
+        <!-- 牌面象征符号解读 -->
+        <view class="teaching-section" wx:if="{{teaching.symbols && teaching.symbols.length}}">
+          <text class="teaching-section-title">✦ 牌面符号解读</text>
+          <view class="symbol-list">
+            <view
+              class="symbol-item"
+              wx:for="{{teaching.symbols}}" wx:key="index"
+              wx:for-index="idx"
+            >
+              <view class="symbol-badge">{{idx + 1}}</view>
+              <view class="symbol-body">
+                <text class="symbol-name">{{item.symbol}}</text>
+                <text class="symbol-meaning">{{item.meaning}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 学习关键词 -->
+        <view class="teaching-section" wx:if="{{teaching.keywords_learning && teaching.keywords_learning.length}}">
+          <text class="teaching-section-title">✦ 学习关键词</text>
+          <view class="keywords-learning-row">
+            <text
+              class="keyword-learning-tag"
+              wx:for="{{teaching.keywords_learning}}" wx:key="*this"
+            >{{item}}</text>
+          </view>
+        </view>
+
+        <!-- 典故故事 -->
+        <view class="teaching-section" wx:if="{{teaching.story}}">
+          <text class="teaching-section-title">✦ 典故故事</text>
+          <view class="story-card">
+            <text class="story-text">{{teaching.story}}</text>
+          </view>
+        </view>
+
+        <!-- 生活关联 -->
+        <view class="teaching-section" wx:if="{{teaching.life_connection}}">
+          <text class="teaching-section-title">✦ 生活关联</text>
+          <view class="life-connection-card">
+            <text class="life-connection-icon">💫</text>
+            <text class="life-connection-text">{{teaching.life_connection}}</text>
+          </view>
+        </view>
+
+        <!-- 元素属性 -->
+        <view class="teaching-section teaching-section-last" wx:if="{{teaching.element_association}}">
+          <text class="teaching-section-title">✦ 元素属性</text>
+          <view class="element-card">
+            <text class="element-text">{{teaching.element_association}}</text>
+          </view>
+        </view>
+
+      </block>
+
+      <!-- Teaching data unavailable -->
+      <view wx:else class="teaching-unavailable">
+        <text class="teaching-unavailable-text">深度解析数据暂未收录</text>
+        <text class="teaching-unavailable-hint">这张卡牌的教学内容正在完善中</text>
+      </view>
+
     </view>
 
     <!-- ==================== ADDITIONAL INFO ==================== -->

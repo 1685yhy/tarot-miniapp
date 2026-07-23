@@ -10,9 +10,11 @@ const IMAGE_BASE = 'https://xingxiang.chat/images/cards_full';
 Page({
   data: {
     card: null,
-    activeTab: 'upright', // upright / reversed
+    teaching: null,
+    activeTab: 'upright', // upright / reversed / teaching
     pageLoading: true,
     pageError: null,
+    teachingLoading: false,
   },
 
   async onLoad(options) {
@@ -66,9 +68,26 @@ Page({
       }
       if (this._destroyed) return;
       this.setData({ card, pageLoading: false });
+      // Fetch teaching data after card loads
+      this.loadTeachingData(id);
     } catch (err) {
       if (this._destroyed) return;
       this.setData({ pageLoading: false, pageError: getFriendlyError(err) });
+    }
+  },
+
+  async loadTeachingData(cardId) {
+    if (this._destroyed) return;
+    this.setData({ teachingLoading: true });
+    try {
+      const teaching = await request(`/cards/${cardId}/teaching`);
+      if (this._destroyed) return;
+      this.setData({ teaching, teachingLoading: false });
+    } catch (err) {
+      if (this._destroyed) return;
+      // Teaching data is non-critical; silently fail
+      this.setData({ teachingLoading: false });
+      console.warn('[card-detail] 教学数据加载失败:', err.message);
     }
   },
 

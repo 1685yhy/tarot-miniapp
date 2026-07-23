@@ -7,8 +7,8 @@
  *     visible="{{showSharePoster}}"
  *     cardImagePath="{{shareCardImage}}"
  *     cardName="{{shareCardName}}"
- *     quote="{{shareQuote}}"
- *     spreadType="{{reading.spread_type}}"
+ *     keyInsight="{{shareKeyInsight}}"
+ *     nickname="{{userNickname}}"
  *     bind:close="onCloseSharePoster"
  *   />
  */
@@ -29,12 +29,11 @@ Component({
       type: String,
       value: '',
     },
-    quote: {
+    keyInsight: {
       type: String,
       value: '',
-      observer: '_onQuoteChange',
     },
-    spreadType: {
+    nickname: {
       type: String,
       value: '',
     },
@@ -67,22 +66,14 @@ Component({
     },
 
     /* ---------------------------------------------------------------
-       Truncate quote to max 150 chars
-       --------------------------------------------------------------- */
-    _onQuoteChange(quote) {
-      if (quote && quote.length > 150) {
-        this.setData({ quote: quote.substring(0, 147) + '...' });
-      }
-    },
-
-    /* ---------------------------------------------------------------
        Determine canvas logical size based on screen width
        --------------------------------------------------------------- */
     _initCanvasSize() {
       const sysInfo = wx.getSystemInfoSync();
       const screenWidth = sysInfo.screenWidth || 375;
+      // 3:4 portrait ratio (optimal for Moments)
       const posterW = screenWidth;
-      const posterH = Math.round(screenWidth * (1334 / 750));
+      const posterH = Math.round(screenWidth * (4 / 3));
       this.setData({
         canvasW: posterW,
         canvasH: posterH,
@@ -93,7 +84,7 @@ Component({
        Draw the poster on canvas using the utility
        --------------------------------------------------------------- */
     _drawPoster() {
-      const { cardImagePath, cardName, quote, spreadType } = this.properties;
+      const { cardImagePath, cardName, keyInsight, nickname } = this.properties;
 
       // Use the first card image; if cardImagePath is empty, skip
       if (!cardImagePath && !cardName) {
@@ -107,8 +98,8 @@ Component({
         context: this,
         cardImagePath: cardImagePath || '',
         cardName: cardName || '',
-        quote: (quote || '').substring(0, 120), // limit to 120 chars
-        spreadType: spreadType || '三牌占卜',
+        keyInsight: keyInsight || '',
+        nickname: nickname || '',
         onSuccess: (tempFilePath) => {
           this.setData({
             previewPath: tempFilePath,
@@ -166,9 +157,6 @@ Component({
       if (!previewPath) return;
 
       // Trigger the page-level onShareAppMessage with the poster image
-      // Note: We set a global/hack so the page's share method picks up this path.
-      // The alternative is to use wx.shareAppMessage which is not available in all versions.
-      // We use a custom event to let the parent page handle sharing.
       this.triggerEvent('share', { imagePath: previewPath });
     },
 

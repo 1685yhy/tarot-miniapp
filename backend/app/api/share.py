@@ -1,17 +1,19 @@
 """
 Share / viral-tracking API endpoints.
 
-- POST  /share/track   – log a share event and reward the sharer
-- GET   /share/stats   – (optional) share analytics for the current user
+- POST  /share/track       – log a share event and reward the sharer
+- GET   /share/stats       – (optional) share analytics for the current user
+- GET   /share/wxa-code    – generate a mini-program code image (wxacode)
 """
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query, Response
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_db
 from app.models.user import User
 from app.services.share import get_share_stats, record_share
+from app.services.wxacode import get_wxacode
 from app.utils.auth import get_current_user
 
 router = APIRouter(prefix="/share", tags=["分享裂变"])
@@ -83,3 +85,28 @@ async def share_stats(
     *days* controls the look-back window (default 7).
     """
     return await get_share_stats(db, sharer_id=user.id, days=days)
+
+
+@router.get("/wxa-code")
+async def wxa_code(
+    page: str = Query("pages/index/index", description="Mini-program page path"),
+    width: int = Query(280, ge=200, le=1280, description="QR code width in px"),
+    scene: str = Query("", description="Scene string (max 32 chars)"),
+):
+    """
+    Generate a WeChat mini-program code (unlimited) image.
+
+    Calls WeChat's ``wxacode.getUnlimited`` API under the hood and returns
+    the raw PNG bytes directly, so the client can display it on a canvas or
+    save it.
+
+    - **page**  — path to the published page (default: ``pages/index/index``)
+    - **width** — image width in px (200–1280, default: 280)
+    - **scene** — optional scene string passed to the mini-program on scan
+    """
+    try:
+        png_bytes = await get_wxacode(scene=scene, page=page, width=width)
+        return Response(content=png_bytes, media_type="image/png")
+    except RuntimeError as exc:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=502, detail=str(exc))

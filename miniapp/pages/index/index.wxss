@@ -39,12 +39,12 @@
   );
   pointer-events: none;
   z-index: 0;
-  animation: hero-glow-pulse 6s ease-in-out infinite;
+  animation: hero-glow-pulse 4s ease-in-out infinite;
 }
 
 @keyframes hero-glow-pulse {
   0%, 100% {
-    opacity: 0.5;
+    opacity: 0.8;
     transform: translate(-50%, -50%) scale(1);
   }
   15% {
@@ -1039,18 +1039,22 @@
 .shooting-star::after {
   content: '';
   position: absolute;
-  width: 4rpx;
-  height: 4rpx;
+  width: 6rpx;
+  height: 6rpx;
   top: 12%;
   left: 105%;
   background: #F4D48C;
   border-radius: 50%;
   box-shadow:
-    0 0 8rpx 2rpx rgba(244,212,140,0.20),
-    -20rpx 7rpx 2rpx -1rpx rgba(244,212,140,0.22),
-    -40rpx 14rpx 3rpx -2rpx rgba(244,212,140,0.10),
-    -60rpx 20rpx 4rpx -3rpx rgba(244,212,140,0.05);
+    0 0 12rpx 4rpx rgba(244,212,140,0.30),
+    -30rpx 10rpx 3rpx -1rpx rgba(244,212,140,0.25),
+    -60rpx 20rpx 4rpx -2rpx rgba(244,212,140,0.12),
+    -90rpx 30rpx 5rpx -3rpx rgba(244,212,140,0.06);
   animation: none;
+}
+
+.shooting-star.shooting-star--active::after {
+  animation: shooting-star-fly 4.5s ease-in-out 1 both;
 }
 
 @keyframes shooting-star-fly {
@@ -1674,4 +1678,175 @@
   }
   .sparkle-field .sparkle { opacity: 0; }
   .daily-card-glow-overlay { opacity: 0.6; border-color: rgba(244,212,140,0.30); }
+  .to-star { animation: none !important; opacity: 0.08; }
+  .tarot-overlay-content { animation: none; }
+}
+
+/* ============================================================
+   25. TAROT EXPLAINER OVERLAY — Immersive cosmic overlay
+   Full-screen fixed overlay with centered card content,
+   golden border, floating stars, and an entrance animation.
+   ============================================================ */
+
+/* --- Full-screen backdrop --- */
+.tarot-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(26, 26, 62, 0.96);
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease-soft);
+}
+
+.tarot-overlay--visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* --- Centered content card --- */
+.tarot-overlay-content {
+  position: relative;
+  width: 100%;
+  max-width: 580rpx;
+  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 100%);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.30);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-2xl) var(--spacing-lg) var(--spacing-xl);
+  text-align: center;
+  overflow: hidden;
+  box-shadow:
+    0 8rpx 40rpx rgba(0, 0, 0, 0.35),
+    0 0 60rpx rgba(244, 212, 140, 0.10),
+    0 0 120rpx rgba(244, 212, 140, 0.05);
+  animation: overlay-enter 0.4s var(--ease-soft) forwards;
+  transform-origin: center;
+}
+
+@keyframes overlay-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* --- Star particles inside the card (reuse sparkle-float) --- */
+.tarot-overlay-stars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.to-star {
+  position: absolute;
+  width: 4rpx;
+  height: 4rpx;
+  background: #F4D48C;
+  border-radius: 50%;
+  opacity: 0;
+  box-shadow: 0 0 6rpx 2rpx rgba(244, 212, 140, 0.20);
+}
+
+.to-star.s1 { top: 12%; left: 10%; animation: sparkle-float 3.2s ease-in-out 0.3s infinite; }
+.to-star.s2 { top: 18%; left: 85%; animation: sparkle-float 3.8s ease-in-out 0.9s infinite; }
+.to-star.s3 { top: 75%; left: 8%; animation: sparkle-float 2.8s ease-in-out 0.1s infinite; }
+.to-star.s4 { top: 70%; left: 88%; animation: sparkle-float 3.5s ease-in-out 1.6s infinite; }
+.to-star.s5 { top: 85%; left: 45%; animation: sparkle-float 4.2s ease-in-out 2.2s infinite; }
+.to-star.s6 { top: 30%; left: 50%; animation: sparkle-float 2.6s ease-in-out 0.7s infinite; }
+
+/* --- Central glowing card icon --- */
+.tarot-overlay-icon {
+  position: relative;
+  margin-bottom: var(--spacing-lg);
+}
+
+.to-card-icon {
+  width: 120rpx;
+  height: 120rpx;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(244, 212, 140, 0.08);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.25);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    0 0 40rpx rgba(244, 212, 140, 0.12),
+    0 0 80rpx rgba(244, 212, 140, 0.05);
+  position: relative;
+  z-index: 1;
+}
+
+.to-card-emoji {
+  font-size: 52rpx;
+}
+
+/* --- Title in gold --- */
+.tarot-overlay-title {
+  display: block;
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gold);
+  line-height: var(--line-height-tight);
+  letter-spacing: 4rpx;
+  margin-bottom: var(--spacing-md);
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 0 30rpx rgba(244, 212, 140, 0.12);
+}
+
+/* --- Body text in lavender --- */
+.tarot-overlay-body {
+  display: block;
+  font-size: var(--font-size-caption);
+  color: var(--color-lavender);
+  line-height: var(--line-height-loose);
+  letter-spacing: 2rpx;
+  position: relative;
+  z-index: 1;
+  opacity: 0.90;
+}
+
+/* --- Button — gold gradient matching .btn-primary --- */
+.tarot-overlay-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: var(--spacing-lg) auto 0;
+  padding: 24rpx 48rpx;
+  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-inverse);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 3rpx;
+  box-shadow: var(--shadow-gold-button);
+  position: relative;
+  z-index: 1;
+  transition: all var(--duration-fast) var(--ease-out);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  max-width: 320rpx;
+}
+
+.tarot-overlay-btn:active {
+  transform: scale(0.97);
+  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.20);
+  opacity: 0.92;
 }

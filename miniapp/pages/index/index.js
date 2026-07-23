@@ -3,6 +3,7 @@ const { request, getFriendlyError } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
 const { computeImagePath } = require('../../utils/cards');
 const { createAnim, staggeredEntrance } = require('../../utils/animate');
+const { playPageEnterSound, playCardFlipSound } = require('../../utils/sound');
 
 const FREE_READINGS_LIMIT = 5;
 
@@ -71,6 +72,10 @@ Page({
 
     // Collection progress
     collectedCount: 0,
+    // Immersive tarot explainer overlay
+    showTarotOverlay: false,
+    // Shooting star easter egg
+    shootingStarActive: false,
   },
 
   async onLoad() {
@@ -93,6 +98,17 @@ Page({
     } catch (err) {
       this.setData({ pageLoading: false, pageError: getFriendlyError(err) });
     }
+
+    // Entrance sound + micro-haptic (once per session)
+    playPageEnterSound();
+    const appEnter = getApp();
+    if (!appEnter.globalData._pageHapticPlayed) {
+      wx.vibrateShort({ type: 'light' }).catch(() => {});
+      appEnter.globalData._pageHapticPlayed = true;
+    }
+
+    // Init shooting star easter egg with random intervals
+    this._initShootingStar();
 
     // Show Step 1 bubble if first-time user
     if (!(onboardingCompleted || oldDone) && onboardingStep === 1) {
@@ -117,6 +133,8 @@ Page({
     this._checkTrialExpiry();
     // Load collection progress
     this._loadCollectionProgress();
+    // Re-init shooting star timer if page was hidden
+    this._initShootingStar();
   },
 
   _loadCollectionProgress() {
@@ -314,12 +332,12 @@ Page({
 
   /** Show a brief explainer of what tarot is */
   showTarotExplainer() {
-    wx.showModal({
-      title: '什么是塔罗？',
-      content: '塔罗是一面镜子，帮你看见自己内心已经知道、却未说出口的东西。每张牌是一种人生情境的映射，而非对未来的预言。解读的意义在于激发你的内在思考——答案不在牌里，而在你心里。',
-      showCancel: false,
-      confirmText: '明白了',
-    });
+    this.setData({ showTarotOverlay: true });
+  },
+
+  /** Close the tarot explainer overlay */
+  closeTarotOverlay() {
+    this.setData({ showTarotOverlay: false });
   },
 
   /** Check for a saved pending reading to offer recovery */
@@ -383,12 +401,52 @@ Page({
     }
   },
 
+  // ===================== Shooting star easter egg =====================
+
+  /** Init the shooting star scheduler (guarded — won't double-init) */
+  _initShootingStar() {
+    if (this._shootingStarReady) return;
+    this._shootingStarReady = true;
+    this._scheduleShootingStar();
+  },
+
+  /** Schedule next shooting star appearance at random 20-45s */
+  _scheduleShootingStar() {
+    const delay = 20000 + Math.random() * 25000; // 20-45 seconds
+    this._pushTimer(setTimeout(() => {
+      this._triggerShootingStar();
+    }, delay));
+  },
+
+  /** Fire the shooting star: toggle class, play sound, haptic */
+  _triggerShootingStar() {
+    // Reset first to guarantee CSS animation re-triggers
+    this.setData({ shootingStarActive: false });
+    // Re-add class after a micro delay to restart the animation
+    this._pushTimer(setTimeout(() => {
+      this.setData({ shootingStarActive: true });
+    }, 30));
+
+    // Magical swoosh sound
+    playCardFlipSound();
+
+    // Light haptic for the magical moment
+    wx.vibrateShort({ type: 'light' }).catch(() => {});
+
+    // Reset class after animation completes, then schedule next
+    this._pushTimer(setTimeout(() => {
+      this.setData({ shootingStarActive: false });
+      this._scheduleShootingStar();
+    }, 5000));
+  },
+
   onUnload() {
     this._clearTimers();
   },
 
   onHide() {
     this._clearTimers();
+    this._shootingStarReady = false;
   },
 
   _pushTimer(timer) {

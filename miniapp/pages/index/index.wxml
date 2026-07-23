@@ -38,7 +38,7 @@
   <view class="nebula nebula-gold"></view>
 
   <!-- Shooting star (rare easter egg) -->
-  <view class="shooting-star"></view>
+  <view class="shooting-star {{shootingStarActive ? 'shooting-star--active' : ''}}"></view>
 
   <!-- Hero -->
   <view class="hero anim-fade-in-up-1">
@@ -257,6 +257,39 @@
     <!-- 塔罗简介 -->
     <view class="tarot-explainer-wrap">
       <text class="tarot-explainer-link" bindtap="showTarotExplainer">什么是塔罗？</text>
+    </view>
+  </view>
+
+  <!-- ===== 塔罗简介 — 沉浸式浮层 ===== -->
+  <view class="tarot-overlay {{showTarotOverlay ? 'tarot-overlay--visible' : ''}}" bindtap="closeTarotOverlay">
+    <view class="tarot-overlay-content" catchtap="">
+      <!-- Star particles inside the card -->
+      <view class="tarot-overlay-stars">
+        <view class="to-star s1"></view>
+        <view class="to-star s2"></view>
+        <view class="to-star s3"></view>
+        <view class="to-star s4"></view>
+        <view class="to-star s5"></view>
+        <view class="to-star s6"></view>
+      </view>
+
+      <!-- Central glowing card icon -->
+      <view class="tarot-overlay-icon">
+        <view class="to-card-icon">
+          <text class="to-card-emoji">🔮</text>
+        </view>
+      </view>
+
+      <!-- Title -->
+      <text class="tarot-overlay-title">什么是塔罗？</text>
+
+      <!-- Body text -->
+      <text class="tarot-overlay-body">塔罗不是预测命运的工具，而是一面镜子——帮你看见自己内心已经知道、却未说出口的东西。每张牌都是一扇窗，照见你此刻的心境、困惑与可能。星光映照，陪你遇见自己。</text>
+
+      <!-- Button -->
+      <view class="tarot-overlay-btn" bindtap="closeTarotOverlay">
+        <text>开始探索 ✦</text>
+      </view>
     </view>
   </view>
 </view>
