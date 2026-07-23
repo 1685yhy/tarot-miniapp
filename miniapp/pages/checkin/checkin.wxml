@@ -7,10 +7,17 @@
     <text class="loading-text">加载中...</text>
   </view>
 
+  <!-- ===== 错误状态 ===== -->
+  <view wx:elif="{{pageError}}" class="error-state">
+    <text class="error-text">签到数据异常</text>
+    <text class="error-hint">{{pageError}}</text>
+    <button class="btn-ghost" bindtap="onRetry">重新连接</button>
+  </view>
+
   <view wx:else>
 
     <!-- ===== Streak Counter with Cosmic Animation ===== -->
-    <view class="streak-section">
+    <view class="streak-section anim-fade-up anim-stagger-1">
       <view class="streak-circle">
         <view class="streak-glow"></view>
         <text class="streak-number">{{streak}}</text>
@@ -26,7 +33,7 @@
     </view>
 
     <!-- ===== Weekly Calendar ===== -->
-    <view class="calendar-section">
+    <view class="calendar-section anim-fade-up anim-stagger-2">
       <text class="section-title">本周签到</text>
       <view class="calendar-strip">
         <view class="calendar-day" wx:for="{{weekDates}}" wx:key="date">
@@ -41,7 +48,7 @@
     </view>
 
     <!-- ===== Check-In Button ===== -->
-    <view class="checkin-btn-wrap">
+    <view class="checkin-btn-wrap anim-fade-up anim-stagger-3">
       <button class="checkin-btn {{checkedIn ? 'checkin-btn--done' : ''}}" bindtap="onCheckIn" disabled="{{checkedIn}}">
         <text wx:if="{{!checkedIn}}">✨ 今日签到</text>
         <text wx:else>✓ 今日已签到</text>
@@ -50,7 +57,7 @@
     </view>
 
     <!-- ===== Level Description ===== -->
-    <view wx:if="{{level}}" class="level-desc-section">
+    <view wx:if="{{level}}" class="level-desc-section anim-fade-up anim-stagger-4">
       <text class="section-title">等级说明</text>
       <view class="level-list">
         <view class="level-item" wx:for="{{LEVELS}}" wx:key="name">

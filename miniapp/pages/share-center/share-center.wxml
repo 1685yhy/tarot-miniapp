@@ -14,7 +14,7 @@
   <view class="error-state">
     <text class="error-text">数据异常 ✦</text>
     <text class="error-hint">{{pageError}}</text>
-    <button class="btn-primary" bindtap="onRetry">重新加载</button>
+    <button class="btn-primary" bindtap="onRetry">重新连接</button>
   </view>
 </view>
 

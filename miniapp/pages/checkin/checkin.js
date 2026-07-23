@@ -1,5 +1,5 @@
 // pages/checkin/checkin.js
-const { request } = require('../../utils/api');
+const { request, getFriendlyError } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
 
 // ── Level definitions (mirrors backend) ──
@@ -41,6 +41,7 @@ function getWeekDates() {
 Page({
   data: {
     loading: true,
+    pageError: null,
     checkedIn: false,
     streak: 0,
     reward: '',
@@ -64,14 +65,16 @@ Page({
       await this._loadStatus();
     } catch (err) {
       console.error('[checkin] 加载失败', err);
-      wx.showToast({ title: '加载失败', icon: 'none' });
+      this.setData({ pageError: getFriendlyError(err) || '加载失败' });
     } finally {
       this.setData({ loading: false });
     }
   },
 
   async onShow() {
-    if (!this.data.loading) {
+    // Refresh status when returning from background (e.g. after being sent to mini-program settings)
+    // Skip if still initial loading or if already checked in (no need to re-fetch)
+    if (!this.data.loading && !this.data.pageError) {
       await this._loadStatus();
     }
   },
@@ -173,7 +176,8 @@ Page({
     }, 2500);
   },
 
-  onGoHome() {
-    wx.switchTab({ url: '/pages/index/index' });
+  onRetry() {
+    this.setData({ pageError: null, loading: true });
+    this.onLoad();
   },
 });
