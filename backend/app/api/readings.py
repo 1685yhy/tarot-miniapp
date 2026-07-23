@@ -96,6 +96,19 @@ _CAREER_KEYWORDS = [
     "副业", "创业",
 ]
 
+_SPREAD_TYPE_NAMES = {
+    "three_card": "三牌占卜",
+    "triangle": "恋人三角",
+    "decision": "二择一",
+    "celtic_cross": "凯尔特十字",
+    "career": "事业牌阵",
+    "finance": "财运牌阵",
+    "life_cross": "人生十字",
+    "horseshoe": "马蹄牌阵",
+    "relationship": "关系牌阵",
+    "year_ahead": "年度运势",
+}
+
 
 async def _build_user_context_block(
     db: AsyncSession, user_id: str,
@@ -152,7 +165,7 @@ async def _build_user_context_block(
     last_3_root = readings[:3]
     last_3_summaries: list[str] = []
     for r in last_3_root:
-        summary = r.question or SPREAD_TYPE_NAMES.get(r.spread_type, r.spread_type)
+        summary = r.question or _SPREAD_TYPE_NAMES.get(r.spread_type, r.spread_type)
         last_3_summaries.append(summary[:60])
 
     return _build_user_context(
@@ -162,20 +175,6 @@ async def _build_user_context_block(
         streak=streak,
         last_3_summaries=last_3_summaries,
     )
-
-
-_SPREAD_TYPE_NAMES = {
-    "three_card": "三牌占卜",
-    "triangle": "恋人三角",
-    "decision": "二择一",
-    "celtic_cross": "凯尔特十字",
-    "career": "事业牌阵",
-    "finance": "财运牌阵",
-    "life_cross": "人生十字",
-    "horseshoe": "马蹄牌阵",
-    "relationship": "关系牌阵",
-    "year_ahead": "年度运势",
-}
 
 
 def _categorize_action(content: str) -> str:
