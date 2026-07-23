@@ -158,12 +158,12 @@
 
 /* ================================================================
    STAGE 2 — Flip Icon
-   A card rotating on its Y axis (3D flip)
+   Card flip using scaleX (2D squish) — WXSS doesn't support
+   perspective/rotateY, so we use the "squish & swap" technique
    ================================================================ */
 .flip-icon {
   width: 80rpx;
   height: 112rpx;
-  perspective: 500rpx;
   margin-bottom: var(--spacing-xl);
 }
 
@@ -178,22 +178,26 @@
 
 @keyframes card-flip {
   0% {
-    transform: rotateY(0deg);
+    transform: scaleX(1);
     border-color: rgba(244, 212, 140, 0.35);
   }
   25% {
+    transform: scaleX(0.3);
     border-color: rgba(244, 212, 140, 0.7);
+    background: rgba(37, 37, 80, 0.55);
   }
   50% {
-    transform: rotateY(180deg);
+    transform: scaleX(-1);
     border-color: rgba(244, 212, 140, 0.9);
     background: rgba(37, 37, 80, 0.7);
   }
   75% {
+    transform: scaleX(0.3);
     border-color: rgba(244, 212, 140, 0.7);
+    background: rgba(37, 37, 80, 0.55);
   }
   100% {
-    transform: rotateY(360deg);
+    transform: scaleX(1);
     border-color: rgba(244, 212, 140, 0.35);
   }
 }

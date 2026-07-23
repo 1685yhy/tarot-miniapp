@@ -93,8 +93,19 @@ Page({
     // Analytics & accessibility hook — reserved for future use
   },
 
+  onUnload() {
+    this._clearTimers();
+  },
+
   onHide() {
-    // Cleanup hook — reserved for future use
+    this._clearTimers();
+  },
+
+  _clearTimers() {
+    if (this._timers) {
+      this._timers.forEach(t => clearTimeout(t));
+      this._timers = [];
+    }
   },
 
   onRetry() {
@@ -114,9 +125,10 @@ Page({
     });
     wx.showToast({ title: '试用已开启！3天内畅享全部功能', icon: 'success' });
     // 跳转到首页，让用户立即体验
-    setTimeout(() => {
+    if (!this._timers) this._timers = [];
+    this._timers.push(setTimeout(() => {
       wx.switchTab({ url: '/pages/index/index' });
-    }, 1500);
+    }, 1500));
   },
 
   async onPurchase(e) {
@@ -160,9 +172,10 @@ Page({
         success: () => {
           this.setData({ purchasing: false });
           wx.showToast({ title: '支付成功！', icon: 'success' });
-          setTimeout(() => {
+          if (!this._timers) this._timers = [];
+          this._timers.push(setTimeout(() => {
             wx.redirectTo({ url: '/pages/reading/reading' });
-          }, 1500);
+          }, 1500));
         },
         fail: (err) => {
           this.setData({ purchasing: false });

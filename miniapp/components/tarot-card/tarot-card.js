@@ -47,6 +47,12 @@ Component({
         this.properties.imagePath
       );
     },
+    detached() {
+      if (this._flipTimer) {
+        clearTimeout(this._flipTimer);
+        this._flipTimer = null;
+      }
+    },
   },
 
   methods: {
@@ -104,8 +110,9 @@ Component({
 
     triggerFlip() {
       this.setData({ flipping: true });
-      setTimeout(() => {
+      this._flipTimer = setTimeout(() => {
         this.setData({ flipping: false });
+        this._flipTimer = null;
       }, 800);
     },
   },

@@ -114,14 +114,13 @@ Page({
   },
 
   async onLoad() {
-    // ── Onboarding: migrate old key and determine current step ──
+    // ── Onboarding: migrate old key ──
     const onboardingCompleted = wx.getStorageSync('onboarding_completed');
     const oldDone = wx.getStorageSync('onboarding_done');
     if (oldDone) {
       wx.setStorageSync('onboarding_completed', true);
       wx.removeStorageSync('onboarding_done');
     }
-    const onboardingStep = wx.getStorageSync('onboarding_step') || 1;
 
     // Always load page content (bubble floats on top, not a full-screen block)
     try {
@@ -168,10 +167,19 @@ Page({
       });
     }
 
-    // Onboarding flow (3 steps) — only for first-time users who haven't completed it
+    // Onboarding flow — simplified: show all 3 steps, auto-dismiss after 5s
     const zodiacCompleted = wx.getStorageSync('zodiac_onboarding_done');
     if (!(onboardingCompleted || oldDone) && !zodiacCompleted) {
-      this.setData({ showOnboarding: true, onboardingStep: 1 });
+      this.setData({ showOnboarding: true, onboardingStep: 0 });
+      // Auto-dismiss after 5 seconds
+      this._onboardingTimer = setTimeout(() => {
+        if (this.data.showOnboarding) {
+          wx.setStorageSync('onboarding_completed', true);
+          wx.setStorageSync('zodiac_onboarding_done', true);
+          wx.removeStorageSync('onboarding_step');
+          this.setData({ showOnboarding: false, onboardingStep: 0 });
+        }
+      }, 5000);
     }
 
     // Check for pending reading to show recovery card
@@ -226,8 +234,13 @@ Page({
   },
 
   _loadCollectionProgress() {
-    const collectedMajorIds = wx.getStorageSync('collected_major_ids') || [];
-    this.setData({ collectedCount: collectedMajorIds.length });
+    try {
+      const collectedMajorIds = wx.getStorageSync('collected_major_ids') || [];
+      this.setData({ collectedCount: collectedMajorIds.length });
+    } catch (_e) {
+      // Storage corrupted — reset silently
+      this.setData({ collectedCount: 0 });
+    }
   },
 
   /** v2.1: Compute time-of-day greeting with optional nickname */
@@ -412,11 +425,12 @@ Page({
     if (nextStep > 3) {
       // All 3 steps done — close onboarding
       wx.setStorageSync('onboarding_completed', true);
-      wx.setStorageSync('onboarding_step', 3);
+      wx.setStorageSync('zodiac_onboarding_done', true);
+      wx.removeStorageSync('onboarding_step');
+      if (this._onboardingTimer) clearTimeout(this._onboardingTimer);
       this.setData({ showOnboarding: false, onboardingStep: 0 });
       return;
     }
-    wx.setStorageSync('onboarding_step', nextStep);
     this.setData({ onboardingStep: nextStep });
   },
 
@@ -426,7 +440,8 @@ Page({
     wx.setStorageSync('zodiac_sign', sign);
     wx.setStorageSync('zodiac_onboarding_done', true);
     wx.setStorageSync('onboarding_completed', true);
-    wx.setStorageSync('onboarding_step', 3);
+    wx.removeStorageSync('onboarding_step');
+    if (this._onboardingTimer) clearTimeout(this._onboardingTimer);
     this.setData({
       zodiacSign: sign,
       showOnboarding: false,
@@ -439,7 +454,8 @@ Page({
   onSkipZodiac() {
     wx.setStorageSync('zodiac_onboarding_done', true);
     wx.setStorageSync('onboarding_completed', true);
-    wx.setStorageSync('onboarding_step', 3);
+    wx.removeStorageSync('onboarding_step');
+    if (this._onboardingTimer) clearTimeout(this._onboardingTimer);
     this.setData({ showOnboarding: false, onboardingStep: 0 });
   },
 
@@ -651,10 +667,12 @@ Page({
   },
 
   onUnload() {
+    if (this._onboardingTimer) clearTimeout(this._onboardingTimer);
     this._clearTimers();
   },
 
   onHide() {
+    if (this._onboardingTimer) clearTimeout(this._onboardingTimer);
     this._clearTimers();
     this._shootingStarReady = false;
     // Stop ambient sound when page hidden (will resume on show)

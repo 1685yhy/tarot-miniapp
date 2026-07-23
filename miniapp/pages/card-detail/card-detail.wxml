@@ -236,5 +236,10 @@
       <text class="meta-label" wx:if="{{card.zodiac}}">{{card.zodiac}}</text>
     </view>
 
+    <!-- ===== Back navigation ===== -->
+    <view class="back-nav" bindtap="onGoBack" style="margin:40rpx 0 60rpx;text-align:center;">
+      <text class="back-nav-text" style="color:var(--color-lavender);font-size:28rpx;">← 返回百科</text>
+    </view>
+
   </view>
 </view>

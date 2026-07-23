@@ -59,12 +59,7 @@ if (BASE_URL.includes('your-domain') && ENV !== 'develop') {
     '  请在 api.js 中将 ENV_URLS.release 替换为真实域名，\n' +
     '  或通过第三方平台的 extConfig.BASE_URL 传入正确地址。'
   );
-  // 给用户可见提示，避免带着占位符上线
-  wx.showModal({
-    title: 'API 配置错误',
-    content: '正式环境 BASE_URL 仍为占位符 "your-domain"，请联系开发者修改 api.js 中的 release URL。',
-    showCancel: false,
-  });
+  // 不阻塞用户——API调用会以网络错误失败，由调用方优雅处理
 } else if (BASE_URL.includes('your-domain') && ENV === 'develop') {
   console.warn(
     '[tarot] 提醒：release URL 仍为占位符 "your-domain"。\n' +
@@ -95,8 +90,15 @@ const request = async (url, options = {}, retryCount = 0) => {
       success: (res) => {
         if (res.statusCode === 401) {
           wx.removeStorageSync('token');
-          wx.reLaunch({ url: '/pages/index/index' });
-          reject(new Error('登录过期'));
+          const app = getApp();
+          const redirectCount = app.globalData._authRedirectCount || 0;
+          if (redirectCount >= 1) {
+            reject(new Error('登录状态异常，请稍后重试'));
+          } else {
+            app.globalData._authRedirectCount = redirectCount + 1;
+            wx.reLaunch({ url: '/pages/index/index' });
+            reject(new Error('登录过期'));
+          }
         } else if (res.statusCode >= 200 && res.statusCode < 300) {
           resolve(res.data);
         } else {

@@ -119,21 +119,31 @@ Page({
   // ---- Collection progress ----
 
   _loadCollectionProgress() {
-    const collectedMajorIds = wx.getStorageSync('collected_major_ids') || [];
-    this.setData({
-      collectedCount: collectedMajorIds.length,
-      collectedMajorIds,
-    });
+    try {
+      const collectedMajorIds = wx.getStorageSync('collected_major_ids') || [];
+      this.setData({
+        collectedCount: collectedMajorIds.length,
+        collectedMajorIds,
+      });
+    } catch (_e) {
+      // Storage corrupted — reset silently
+      this.setData({ collectedCount: 0, collectedMajorIds: [] });
+    }
   },
 
   _saveCollectionProgress() {
     const card = this.data.dailyCard;
     if (!card || card.arcana !== 'major') return;
 
-    const collectedMajorIds = wx.getStorageSync('collected_major_ids') || [];
+    let collectedMajorIds;
+    try {
+      collectedMajorIds = wx.getStorageSync('collected_major_ids') || [];
+    } catch (_e) {
+      collectedMajorIds = [];
+    }
     if (!collectedMajorIds.includes(card.id)) {
       collectedMajorIds.push(card.id);
-      wx.setStorageSync('collected_major_ids', collectedMajorIds);
+      try { wx.setStorageSync('collected_major_ids', collectedMajorIds); } catch (_e) {}
       const collectedCount = collectedMajorIds.length;
       this.setData({
         collectedCount,
@@ -173,7 +183,7 @@ Page({
     wx.vibrateShort({ type: 'light' }).catch(() => {});
 
     // Midpoint (~700ms): swap card faces
-    this._flipTimer = setTimeout(() => {
+    this._midFlipTimer = setTimeout(() => {
       this.setData({
         backHidden: true,
         frontVisible: true,
@@ -181,7 +191,7 @@ Page({
     }, 700);
 
     // End of flip animation (1.5s): glow + teaching reveal
-    this._flipTimer = setTimeout(() => {
+    this._endFlipTimer = setTimeout(() => {
       this.setData({
         isFlipped: true,
         isAnimating: false,
@@ -262,8 +272,9 @@ Page({
   // ---- Cleanup ----
 
   onUnload() {
-    if (this._flipTimer) clearTimeout(this._flipTimer);
-    if (this._glowTimer) clearTimeout(this._glowTimer);
+    if (this._midFlipTimer) { clearTimeout(this._midFlipTimer); this._midFlipTimer = null; }
+    if (this._endFlipTimer) { clearTimeout(this._endFlipTimer); this._endFlipTimer = null; }
+    if (this._glowTimer) { clearTimeout(this._glowTimer); this._glowTimer = null; }
   },
 
   onReady() {
@@ -271,6 +282,12 @@ Page({
   },
 
   onHide() {
-    // Cleanup hook — reserved for future use
+    if (this._midFlipTimer) { clearTimeout(this._midFlipTimer); this._midFlipTimer = null; }
+    if (this._endFlipTimer) { clearTimeout(this._endFlipTimer); this._endFlipTimer = null; }
+    if (this._glowTimer) { clearTimeout(this._glowTimer); this._glowTimer = null; }
+  },
+
+  onGoHome() {
+    wx.switchTab({ url: '/pages/index/index' });
   },
 });

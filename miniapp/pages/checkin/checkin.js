@@ -44,6 +44,7 @@ Page({
     pageError: null,
     checkedIn: false,
     streak: 0,
+    checkingIn: false, // guard for rapid double-tap
     reward: '',
     // Week calendar
     weekDates: getWeekDates(),
@@ -58,6 +59,8 @@ Page({
     // Particle animation
     particles: [],
   },
+
+  _timers: [],
 
   async onLoad() {
     try {
@@ -83,12 +86,15 @@ Page({
     try {
       const status = await request('/tasks/status');
       const lv = resolveLevel(status.streak);
+      // Guard: API must return level info for next_level / days_needed
+      const nextLevelName = (status.level && status.level.next_level) || '';
+      const daysNeeded = (status.level && status.level.days_needed) || 0;
       this.setData({
         checkedIn: status.checked_in_today,
         streak: status.streak,
         level: lv,
-        nextLevelName: status.level.next_level,
-        daysNeeded: status.level.days_needed,
+        nextLevelName,
+        daysNeeded,
       });
       // Load checkin history for the week
       await this._loadWeekHistory();
@@ -98,27 +104,30 @@ Page({
   },
 
   async _loadWeekHistory() {
-    // Get all checkins for this week range from the backend
-    // Since we don't have a dedicated endpoint, we leverage the fact
-    // that the streak info tells us consecutive days, and we build
-    // the week display from local logic
+    // 注意：这是基于 streak 的客户端近似，而非真实的每日签到历史。
+    // streak 表示「连续签到天数截至今天」，因此我们标记今天及之前 (streak-1) 天。
+    // 仅标记落在当前周范围内的日期。
+    // 如需精确的每日历史，应由后端提供专用接口返回完整签到记录。
     try {
-      // We'll do a simple approach: mark today and consecutive past days
       const streak = this.data.streak;
       const weekDates = this.data.weekDates;
       const today = new Date();
-      const todayStr = weekDates.find(d => d.isToday)?.date;
-
-      // For a more accurate history, we check which dates in the week are checked in
-      // Based on streak, we know the user has checked in for `streak` consecutive days ending today
       const history = [];
-      for (const d of weekDates) {
-        const dateObj = new Date(d.date);
-        const diffDays = Math.round((today - dateObj) / (24 * 60 * 60 * 1000));
-        if (diffDays >= 0 && diffDays < streak) {
-          history.push(d.date);
+
+      // 标记今天及之前 (streak-1) 个连续日
+      for (let i = 0; i < streak; i++) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const dateStr = `${y}-${m}-${day}`;
+        // 仅当该日期落在当前周范围内才标记
+        if (weekDates.some(wd => wd.date === dateStr)) {
+          history.push(dateStr);
         }
       }
+
       this.setData({ checkinHistory: history });
     } catch (err) {
       console.error('[checkin] 获取历史失败', err);
@@ -126,7 +135,8 @@ Page({
   },
 
   async onCheckIn() {
-    if (this.data.checkedIn) return;
+    if (this.data.checkedIn || this.data.checkingIn) return;
+    this.setData({ checkingIn: true });
 
     wx.showLoading({ title: '签到中...' });
     try {
@@ -134,6 +144,7 @@ Page({
       this.setData({
         checkedIn: result.signed_in,
         streak: result.streak,
+        checkingIn: false,
       });
 
       // Show reward animation
@@ -148,6 +159,7 @@ Page({
 
       wx.hideLoading();
     } catch (err) {
+      this.setData({ checkingIn: false });
       wx.hideLoading();
       wx.showToast({ title: '签到失败，请重试', icon: 'none' });
     }
@@ -170,14 +182,31 @@ Page({
       particles,
     });
 
-    // Auto-hide after 2.5s
-    setTimeout(() => {
+    // Auto-hide after 2.5s (tracked for cleanup on page unload)
+    this._timers.push(setTimeout(() => {
       this.setData({ showRewardAnim: false });
-    }, 2500);
+    }, 2500));
+  },
+
+  onUnload() {
+    this._clearTimers();
+  },
+
+  onHide() {
+    this._clearTimers();
+  },
+
+  _clearTimers() {
+    this._timers.forEach(t => clearTimeout(t));
+    this._timers = [];
   },
 
   onRetry() {
     this.setData({ pageError: null, loading: true });
     this.onLoad();
+  },
+
+  onGoHome() {
+    wx.switchTab({ url: '/pages/index/index' });
   },
 });

@@ -149,12 +149,21 @@ Page({
   },
 
   _loadFavoriteCount() {
-    const favoriteIds = wx.getStorageSync('favorite_cards') || [];
-    this.setData({ favoriteCount: favoriteIds.length });
+    try {
+      const favoriteIds = wx.getStorageSync('favorite_cards') || [];
+      this.setData({ favoriteCount: favoriteIds.length });
+    } catch (_e) {
+      this.setData({ favoriteCount: 0 });
+    }
   },
 
   async _loadSavedReadings() {
-    const savedIds = wx.getStorageSync('saved_readings') || [];
+    let savedIds;
+    try {
+      savedIds = wx.getStorageSync('saved_readings') || [];
+    } catch (_e) {
+      savedIds = [];
+    }
     if (!savedIds.length) {
       this.setData({ savedReadings: [], savedReadingsLoading: false });
       return;
@@ -216,7 +225,7 @@ Page({
   },
 
   onGoToReading() {
-    wx.switchTab({ url: '/pages/index/index' });
+    wx.navigateTo({ url: '/pages/reading/reading' });
   },
 
   onViewReading(e) {

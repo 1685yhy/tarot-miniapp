@@ -31,6 +31,8 @@ Page({
     // Favorites
     favoriteIds: [],
     favoriteCount: 0,
+    // Empty state type: 'search' (default) or 'favorites'
+    emptyStateType: 'search',
   },
 
   async onLoad(options) {
@@ -66,6 +68,8 @@ Page({
     // Re-apply favorites filter if currently viewing favorites tab
     if (this.data.activeTab === 'favorites') {
       this.filterCards('favorites', this.data.searchKeyword);
+    } else if (this.data.activeTab === 'favorites' && this.data.filteredCards.length === 0) {
+      this.setData({ emptyStateType: 'favorites' });
     }
   },
 
@@ -197,12 +201,16 @@ Page({
       );
     }
 
+    // Determine empty state message type
+    const isEmptyFavorites = tab === 'favorites' && cards.length === 0 && !keyword;
+
     // 重置激活状态 + 激活第一批
     cards = cards.map((c, i) => ({ ...c, _active: i < BATCH_SIZE }));
     this.setData({
       filteredCards: cards,
       loadedCount: Math.min(BATCH_SIZE, cards.length),
       allActive: cards.length <= BATCH_SIZE,
+      emptyStateType: isEmptyFavorites ? 'favorites' : 'search',
     });
   },
 

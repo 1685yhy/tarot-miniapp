@@ -145,15 +145,14 @@ Page({
         method: 'POST',
         data: data,
       });
-      if (this._destroyed) return;
       wx.removeStorageSync('pending_reading');
+      // Always cache result — even if page was hidden (onShow will pick it up)
       this._cachedReading = result;
-      this._tryShowResult();
+      if (!this._destroyed) { this._tryShowResult(); }
     } catch (err) {
-      if (this._destroyed) return;
+      // Always cache error — even if page was hidden (onShow will pick it up)
       this._cachedError = getFriendlyError(err);
-      // Show error after stages complete, or immediately if timeout
-      this._tryShowResult();
+      if (!this._destroyed) { this._tryShowResult(); }
     }
   },
 
@@ -254,11 +253,11 @@ Page({
       }
 
       this._cachedReading = reading;
-      this._tryShowResult();
+      if (!this._destroyed) { this._tryShowResult(); }
     } catch (err) {
-      if (this._destroyed) return;
+      // Always cache error — even if page was hidden (onShow will pick it up)
       this._cachedError = getFriendlyError(err);
-      this._tryShowResult();
+      if (!this._destroyed) { this._tryShowResult(); }
     }
   },
 
@@ -435,13 +434,23 @@ Page({
   onUnload() {
     this._destroyed = true;
     this._clearStageTimers();
-    if (this._onboardingTimer) {
-      clearTimeout(this._onboardingTimer);
-      this._onboardingTimer = null;
-    }
+    if (this._onboardingTimer) { clearTimeout(this._onboardingTimer); this._onboardingTimer = null; }
+    if (this._navBackTimer) { clearTimeout(this._navBackTimer); this._navBackTimer = null; }
+  },
+
+  onHide() {
+    this._destroyed = true;
+    this._clearStageTimers();
+    if (this._onboardingTimer) { clearTimeout(this._onboardingTimer); this._onboardingTimer = null; }
+    if (this._navBackTimer) { clearTimeout(this._navBackTimer); this._navBackTimer = null; }
   },
 
   onShow() {
+    // If page was hidden mid-load, reset destroyed flag and check for cached result
+    this._destroyed = false;
+    if (this._cachedReading || this._cachedError) {
+      this._tryShowResult();
+    }
     // Check if a background reading was completed while we were away
     const completed = wx.getStorageSync('reading_completed');
     if (completed) {
@@ -480,7 +489,7 @@ Page({
       });
     }
     wx.showToast({ title: '解读生成后可在记录中查看', icon: 'none', duration: 2000 });
-    setTimeout(() => { wx.navigateBack(); }, 2200);
+    this._navBackTimer = setTimeout(() => { wx.navigateBack(); }, 2200);
   },
 
   onCardSwiperChange(e) {
