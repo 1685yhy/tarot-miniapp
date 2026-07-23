@@ -1010,6 +1010,41 @@ page {
   background: rgba(160, 152, 192, 0.05);
 }
 
+/* ==============================
+   Theme lock banner — for themed spreads
+   ============================== */
+.theme-lock-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  margin: var(--spacing-lg) auto;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: rgba(244, 212, 140, 0.06);
+  border: 1rpx solid rgba(244, 212, 140, 0.15);
+  border-radius: 999rpx;
+  width: fit-content;
+}
+
+.theme-lock-icon {
+  font-size: var(--font-size-caption);
+  color: var(--color-gold);
+  opacity: 0.7;
+}
+
+.theme-lock-text {
+  font-size: var(--font-size-caption);
+  color: var(--color-lavender);
+  letter-spacing: 2rpx;
+}
+
+.theme-lock-keyword {
+  color: var(--color-gold);
+  font-weight: 600;
+  letter-spacing: 3rpx;
+  padding: 0 4rpx;
+}
+
 /* Center wrapper for back button */
 .spread-grid + view:has(.btn-back-spreads),
 view:has(> .btn-back-spreads) {
@@ -1058,6 +1093,103 @@ view:has(> .btn-back-spreads) {
   .shuffle-card { animation: none; }
   .breathing-ring { animation: none; }
   .breathing-circle { animation: none; }
+}
+
+/* ==============================
+   Persona selection — reader character cards
+   ============================== */
+.persona-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.persona-section-label {
+  display: block;
+  text-align: center;
+  color: var(--color-gold);
+  font-size: var(--font-size-caption);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  margin-bottom: 20rpx;
+  opacity: 0.85;
+}
+
+.persona-options {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: center;
+}
+
+.persona-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xxs);
+  flex: 1;
+  text-align: center;
+  padding: var(--spacing-md) var(--spacing-xxs);
+  background: var(--color-surface);
+  border: 1.5rpx solid rgba(244,212,140,0.12);
+  border-radius: 16rpx;
+  transition: all 0.2s ease-out;
+  cursor: pointer;
+  box-sizing: border-box;
+  min-height: 140rpx;
+  min-width: 80rpx;
+}
+
+.persona-card:active {
+  transform: scale(0.96);
+}
+
+.persona-card.persona-active {
+  background: rgba(244,212,140,0.10);
+  border-color: var(--color-gold);
+  border-width: 2rpx;
+  box-shadow: 0 0 24rpx rgba(244,212,140,0.18);
+}
+
+.persona-icon {
+  font-size: 48rpx;
+  line-height: 1.1;
+  display: block;
+  opacity: 0.75;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.persona-active .persona-icon {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.persona-text-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2rpx;
+  min-width: 0;
+}
+
+.persona-name {
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  letter-spacing: 0.04em;
+}
+
+.persona-active .persona-name {
+  color: var(--color-gold);
+}
+
+.persona-label {
+  font-size: 20rpx;
+  color: var(--color-text-tertiary);
+  letter-spacing: 1rpx;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+
+.persona-active .persona-label {
+  color: var(--color-gold);
+  opacity: 0.85;
 }
 
 /* ============================================================

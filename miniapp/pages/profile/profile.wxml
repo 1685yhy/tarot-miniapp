@@ -113,7 +113,18 @@
         <image wx:if="{{soundEnabled}}" class="menu-arrow-img" src="/images/icons/star_64.png" mode="aspectFit" />
         <text wx:else class="menu-arrow">○</text>
       </view>
-      <view class="menu-item anim-slide-up anim-stagger-6" bindtap="onToggleDrawMode">
+      <view class="menu-item anim-slide-up anim-stagger-6" bindtap="onToggleAmbient">
+        <view class="menu-icon-wrap">
+          <image src="/images/icons/theme_general_64.png" mode="aspectFit" class="menu-icon-img"></image>
+        </view>
+        <view class="menu-content">
+          <text class="menu-title">🌙 星空环境音</text>
+          <text class="menu-desc">{{ambientEnabled ? '已开启' : '已关闭'}}</text>
+        </view>
+        <image wx:if="{{ambientEnabled}}" class="menu-arrow-img" src="/images/icons/star_64.png" mode="aspectFit" />
+        <text wx:else class="menu-arrow">○</text>
+      </view>
+      <view class="menu-item anim-slide-up anim-stagger-8" bindtap="onToggleDrawMode">
         <view class="menu-icon-wrap">
           <image src="/images/icons/theme_general_64.png" mode="aspectFit" class="menu-icon-img"></image>
         </view>
@@ -124,7 +135,7 @@
         <image wx:if="{{defaultDrawMode === 'immersive'}}" class="menu-arrow-img" src="/images/icons/sparkle_64.png" mode="aspectFit" />
         <image wx:else class="menu-arrow-img" src="/images/icons/lightning_64.png" mode="aspectFit" />
       </view>
-      <view class="menu-item anim-slide-up anim-stagger-7" bindtap="onGoAbout">
+      <view class="menu-item anim-slide-up anim-stagger-9" bindtap="onGoAbout">
         <view class="menu-icon-wrap">
           <image src="/images/icons/about_64.png" mode="aspectFit" class="menu-icon-img"></image>
         </view>

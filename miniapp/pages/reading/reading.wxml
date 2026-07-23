@@ -176,6 +176,22 @@
         <text class="theme-lock-text">此牌阵侧重<text class="theme-lock-keyword">{{themeDefaultLabel}}</text>解读</text>
       </view>
 
+      <!-- ========== Persona selection ========== -->
+      <view class="persona-section anim-fade-up anim-stagger-4">
+        <text class="persona-section-label">选择解读师</text>
+        <view class="persona-options">
+          <view wx:for="{{personas}}" wx:key="key"
+            class="persona-card {{selectedPersona === item.key ? 'persona-active' : ''}}"
+            bindtap="onPersonaTap" data-persona="{{item.key}}">
+            <text class="persona-icon">{{item.icon}}</text>
+            <view class="persona-text-wrap">
+              <text class="persona-name">{{item.name}}</text>
+              <text class="persona-label">{{item.label}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
       <!-- Draw button -->
       <button class="btn-primary btn--full {{isDrawing ? 'btn-drawing' : ''}}" bindtap="onStartReading" disabled="{{isDrawing}}">
         <text wx:if="{{!isDrawing}}">翻开牌阵</text>

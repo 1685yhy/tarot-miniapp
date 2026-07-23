@@ -609,6 +609,38 @@
 }
 
 /* ================================================================
+   2.5 PERSONA BADGE — Interpreter identity
+   ================================================================ */
+.persona-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-lg);
+  padding: 12rpx 28rpx;
+  background: rgba(244, 212, 140, 0.06);
+  border: 1rpx solid rgba(244, 212, 140, 0.15);
+  border-radius: 999rpx;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.persona-badge-icon {
+  font-size: 32rpx;
+  line-height: 1;
+  color: var(--color-gold);
+}
+
+.persona-badge-text {
+  font-size: var(--font-size-caption);
+  color: var(--color-gold);
+  letter-spacing: 2rpx;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+/* ================================================================
    2. DIVIDER — Quiet, thin, centered gold line
    ================================================================ */
 .divider {

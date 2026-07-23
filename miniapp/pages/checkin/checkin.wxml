@@ -1,0 +1,84 @@
+<view class="page">
+  <!-- Stars background -->
+  <view class="stars-layer"></view>
+
+  <view wx:if="{{loading}}" class="loading-wrap">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <view wx:else>
+
+    <!-- ===== Streak Counter with Cosmic Animation ===== -->
+    <view class="streak-section">
+      <view class="streak-circle">
+        <view class="streak-glow"></view>
+        <text class="streak-number">{{streak}}</text>
+        <text class="streak-label">天</text>
+      </view>
+      <text class="streak-subtitle">连续签到</text>
+
+      <!-- Level Badge -->
+      <view wx:if="{{level}}" class="level-badge" style="border-color: {{level.badgeColor}}; background: {{level.badgeColor}}18;">
+        <text class="level-name" style="color: {{level.badgeColor}};">{{level.name}}</text>
+      </view>
+      <text wx:if="{{daysNeeded > 0 && nextLevelName}}" class="level-progress">距离「{{nextLevelName}}」还需 {{daysNeeded}} 天</text>
+    </view>
+
+    <!-- ===== Weekly Calendar ===== -->
+    <view class="calendar-section">
+      <text class="section-title">本周签到</text>
+      <view class="calendar-strip">
+        <view class="calendar-day" wx:for="{{weekDates}}" wx:key="date">
+          <text class="day-label">{{item.dayLabel}}</text>
+          <view class="day-circle {{item.isToday ? 'day-today' : ''}} {{checkinHistory.indexOf(item.date) !== -1 ? 'day-checked' : ''}}">
+            <text wx:if="{{checkinHistory.indexOf(item.date) !== -1}}" class="day-checkmark">✓</text>
+            <text wx:elif="{{item.isToday && !checkedIn}}" class="day-dot">·</text>
+          </view>
+          <text class="day-num {{item.isToday ? 'day-num-today' : ''}}">{{item.dayNum}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ===== Check-In Button ===== -->
+    <view class="checkin-btn-wrap">
+      <button class="checkin-btn {{checkedIn ? 'checkin-btn--done' : ''}}" bindtap="onCheckIn" disabled="{{checkedIn}}">
+        <text wx:if="{{!checkedIn}}">✨ 今日签到</text>
+        <text wx:else>✓ 今日已签到</text>
+      </button>
+      <text wx:if="{{!checkedIn}}" class="checkin-hint">完成每日任务可额外获得免费解读次数</text>
+    </view>
+
+    <!-- ===== Level Description ===== -->
+    <view wx:if="{{level}}" class="level-desc-section">
+      <text class="section-title">等级说明</text>
+      <view class="level-list">
+        <view class="level-item" wx:for="{{LEVELS}}" wx:key="name">
+          <view class="level-dot" style="background: {{item.badgeColor}};"></view>
+          <view class="level-info">
+            <text class="level-item-name" style="color: {{item.badgeColor}};">{{item.name}}</text>
+            <text class="level-item-range">{{item.min == 0 ? '0' : item.min}}-{{item.max >= 100 ? '∞' : item.max}} 天</text>
+          </view>
+          <text wx:if="{{item.name === level.name}}" class="level-current-tag">当前</text>
+        </view>
+      </view>
+    </view>
+
+  </view>
+
+  <!-- ===== Reward Animation Overlay ===== -->
+  <view class="reward-overlay {{showRewardAnim ? 'reward-overlay--visible' : ''}}">
+    <view class="reward-particles">
+      <view class="particle" wx:for="{{particles}}" wx:key="id"
+        style="left: {{item.x}}%; animation-delay: {{item.delay}}s; width: {{item.size}}rpx; height: {{item.size}}rpx;">
+      </view>
+    </view>
+    <view class="reward-popup">
+      <text class="reward-emoji">🌟</text>
+      <text class="reward-title">签到成功</text>
+      <text class="reward-text">{{rewardText}}</text>
+    </view>
+  </view>
+
+  <view class="footer-spacer"></view>
+</view>

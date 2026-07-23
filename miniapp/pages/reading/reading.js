@@ -58,6 +58,15 @@ const THEME_ICONS = {
   general: '/images/icons/theme_general_64.png',
 };
 
+// ── Reader Personas ──────────────────────────────────────────────
+const PERSONAS = [
+  { key: 'gentle_star', name: '温和的星', icon: '✦', label: '温暖陪伴' },
+  { key: 'wise_moon',  name: '智慧的月', icon: '☽', label: '理性分析' },
+  { key: 'frank_sun',  name: '率直的太阳', icon: '☀', label: '直击要害' },
+];
+
+const DEFAULT_PERSONA = 'wise_moon';
+
 // Build ordered theme list: themed spreads show ONLY their theme; general shows all
 function buildDisplayThemes(defaultTheme) {
   const all = ['general', 'love', 'career', 'finance'];
@@ -86,6 +95,10 @@ Page({
     freeReadingsUsed: 0,
     freeReadingsTotal: FREE_READINGS_LIMIT,
     isMember: false,
+    // Reader persona selection
+    personas: PERSONAS,
+    selectedPersona: DEFAULT_PERSONA,
+
     // Draw mode: 'quick' (default) or 'immersive'
     drawMode: 'quick',
     quickMode: true,
@@ -113,10 +126,12 @@ Page({
         const pending = wx.getStorageSync('pending_reading');
         let restoredQuestion = '';
         let restoredTheme = '';
+        let restoredPersona = '';
         if (pending && pending.spread_type === type) {
           if (!pending.timestamp || Date.now() - pending.timestamp < 24 * 60 * 60 * 1000) {
             restoredQuestion = pending.question || '';
             restoredTheme = pending.theme || '';
+            restoredPersona = pending.persona || '';
           }
           wx.removeStorageSync('pending_reading');
         }
@@ -138,6 +153,7 @@ Page({
           themeHint: themeHint,
           displayThemes: displayThemes,
           question: restoredQuestion,
+          selectedPersona: restoredPersona || DEFAULT_PERSONA,
           showQuestionInput: !spread.premium,
           pageLoading: false,
         });
@@ -301,6 +317,7 @@ Page({
       theme: theme,
       themeHint: themeHint,
       displayThemes: displayThemes,
+      selectedPersona: DEFAULT_PERSONA,
       showQuestionInput: true,
     });
   },
@@ -338,6 +355,11 @@ Page({
     this.setData({ theme: newTheme, themeHint });
   },
 
+  onPersonaTap(e) {
+    const persona = e.currentTarget.dataset.persona;
+    this.setData({ selectedPersona: persona });
+  },
+
   onBackToSpreads() {
     this._clearTimers();
     this.setData({
@@ -349,6 +371,7 @@ Page({
       question: '',
       theme: '',
       themeHint: '',
+      selectedPersona: DEFAULT_PERSONA,
     });
   },
 
@@ -371,6 +394,7 @@ Page({
         ritualEnabled: false,
         theme: '',
         themeHint: '',
+        selectedPersona: DEFAULT_PERSONA,
       });
     }
   },
@@ -422,6 +446,7 @@ Page({
       spread_type: selectedSpread.key,
       question: this.data.question || null,
       theme: this.data.theme || 'general',
+      persona: this.data.selectedPersona || DEFAULT_PERSONA,
       timestamp: Date.now(),
     };
     wx.setStorageSync('pending_reading', pending);

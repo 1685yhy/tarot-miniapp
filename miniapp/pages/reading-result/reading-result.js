@@ -4,6 +4,13 @@ const { cardEnter } = require('../../utils/animate');
 const { computeImagePath } = require('../../utils/cards');
 const { playCardRevealSound } = require('../../utils/sound');
 
+// ---- Persona data (must match reading.js PERSONAS) ----
+const PERSONA_DATA = {
+  gentle_star: { name: '温和的星', icon: '✦', signature: '— 来自 温和的星 ✦ 愿你被星光温柔以待' },
+  wise_moon:   { name: '智慧的月', icon: '☽', signature: '— 来自 智慧的月 ☽ 愿你的心如月光般澄明' },
+  frank_sun:   { name: '率直的太阳', icon: '☀', signature: '— 来自 率直的太阳 ☀ 直面真相，才有改变的力量' },
+};
+
 // ---- Spread type key → Chinese name (must match reading.js SPREADS) ----
 const SPREAD_TYPE_NAMES = {
   three_card: '三牌占卜',
@@ -26,6 +33,7 @@ const SPREAD_TYPE_NAMES = {
 Page({
   data: {
     reading: null,
+    personaDisplay: null,
     pageLoading: true,
     pageError: null,
     activeCardIndex: 0,
@@ -130,6 +138,7 @@ Page({
       spread_type: this._pendingSpread,
       question: (pending && pending.question) || null,
       theme: (pending && pending.theme) || 'general',
+      persona: (pending && pending.persona) || null,
     };
     try {
       const result = await request(`/readings/spread/${this._pendingSpread}`, {
@@ -329,8 +338,24 @@ Page({
         reading = { ...reading, interpretation: '⚡ 快速解读\n\n' + reading.interpretation };
       }
 
+      // Append persona signature to interpretation
+      let personaDisplay = null;
+      if (reading.persona) {
+        const pData = PERSONA_DATA[reading.persona];
+        if (pData) {
+          personaDisplay = { name: pData.name, icon: pData.icon, signature: pData.signature };
+          // Append signature to the end of interpretation text
+          if (reading.interpretation) {
+            reading = {
+              ...reading,
+              interpretation: reading.interpretation + '\n\n' + pData.signature,
+            };
+          }
+        }
+      }
+
       const tldr = this._extractTLDR(reading.interpretation);
-      this.setData({ reading, tldr, spreadTypeName, pageLoading: false, showUndo: true, showFullInterpretation: false });
+      this.setData({ reading, personaDisplay, tldr, spreadTypeName, pageLoading: false, showUndo: true, showFullInterpretation: false });
       // Trigger staggered card entrance animation after render
       this._animateCardReveal();
       // Play reveal sound when reading result appears
@@ -450,6 +475,7 @@ Page({
         spread: pending.spread_type,
         question: pending.question,
         theme: pending.theme,
+        persona: pending.persona || null,
         timestamp: Date.now(),
       });
     }

@@ -18,6 +18,7 @@ class ChatMessageResponse(BaseModel):
 class CreateReadingRequest(BaseModel):
     question: str | None = None
     theme: str | None = None  # love / career / finance / general
+    persona: str | None = None  # gentle_star / wise_moon / frank_sun
 
 
 # ── Response ─────────────────────────────────────────────────────────
@@ -49,6 +50,7 @@ class ReadingResponse(BaseModel):
     spread_type: str
     question: str | None
     theme: str | None
+    persona: str | None = None
     interpretation: str | None
     is_paid: bool
     created_at: datetime
@@ -64,6 +66,7 @@ class ReadingHistoryItem(BaseModel):
     spread_type: str
     question: str | None
     theme: str | None
+    persona: str | None = None
     interpretation: str | None
     is_paid: bool
     created_at: datetime

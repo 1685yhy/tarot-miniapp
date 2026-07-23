@@ -47,17 +47,73 @@
     <text class="title-1" style="text-align:center;display:block">星光映照</text>
     <text class="body-text" style="text-align:center;display:block;margin-top:12rpx">每日一牌，遇见自己</text>
 
+    <!-- v2.1: Time-of-day greeting -->
+    <text wx:if="{{greetingText}}" class="greeting-text anim-greeting-fade" key="{{greetingAnimKey}}">{{greetingText}}</text>
+
     <!-- Daily reminder badge -->
     <view wx:if="{{hasDrawnToday}}" class="daily-updated-badge anim-slide-up">✓ 今日运势已更新</view>
     <view wx:elif="{{showReminder && !dailyCard}}" class="daily-reminder-badge anim-gentle-pulse">今日运势待开启</view>
   </view>
 
-  <!-- ===== Step 1 引导气泡（每日卡牌上方） ===== -->
-  <view class="onboarding-bubble-wrap {{showOnboarding && onboardingStep === 1 ? 'bubble-visible' : ''}}">
-    <view class="onboarding-bubble" bindtap="onNextOnboarding">
-      <text class="bubble-text">每天一张牌，学会认识自己的内心 ✦</text>
-      <text class="bubble-action">轻触卡牌开始</text>
-      <view class="bubble-arrow"></view>
+  <!-- ===== 3-Step Onboarding Overlay (v2.1) ===== -->
+  <view class="onboarding-overlay {{showOnboarding ? 'onboarding-overlay--visible' : ''}}">
+    <view class="onboarding-card">
+
+      <!-- Step dots -->
+      <view class="onboarding-dots">
+        <view class="onboarding-dot {{onboardingStep >= 1 ? 'onboarding-dot--active' : ''}}"></view>
+        <view class="onboarding-dot {{onboardingStep >= 2 ? 'onboarding-dot--active' : ''}}"></view>
+        <view class="onboarding-dot {{onboardingStep >= 3 ? 'onboarding-dot--active' : ''}}"></view>
+      </view>
+
+      <!-- Step 1: 每日一牌 -->
+      <view wx:if="{{onboardingStep === 1}}" class="onboarding-step anim-fade-in-up-1">
+        <view class="onboarding-emoji-wrap"><text class="onboarding-emoji">✨</text></view>
+        <text class="onboarding-title">每日一牌</text>
+        <text class="onboarding-desc">轻触卡片，获得今日专属指引</text>
+        <text class="onboarding-sub">每天一张牌，学会认识自己的内心 ✦</text>
+      </view>
+
+      <!-- Step 2: 牌阵解读 -->
+      <view wx:elif="{{onboardingStep === 2}}" class="onboarding-step anim-fade-in-up-1">
+        <view class="onboarding-emoji-wrap"><text class="onboarding-emoji">🔮</text></view>
+        <text class="onboarding-title">牌阵解读</text>
+        <text class="onboarding-desc">选择牌阵，AI为您深度解读</text>
+        <text class="onboarding-sub">三牌占卜·恋人三角·凯尔特十字·事业牌阵·共10种</text>
+      </view>
+
+      <!-- Step 3: 星座选择 -->
+      <view wx:elif="{{onboardingStep === 3}}" class="onboarding-step anim-fade-in-up-1">
+        <view class="onboarding-emoji-wrap"><text class="onboarding-emoji">🌟</text></view>
+        <text class="onboarding-title">选择你的星座</text>
+        <text class="onboarding-desc">选填 — 让每日运势更贴合你的星象</text>
+
+        <!-- Zodiac grid -->
+        <view class="zodiac-grid">
+          <view
+            class="zodiac-item"
+            wx:for="{{zodiacList}}"
+            wx:key="key"
+            wx:for-item="z"
+            bindtap="onSelectZodiac"
+            data-sign="{{z.name}}"
+          >
+            <text class="zodiac-item-emoji">{{z.emoji}}</text>
+            <text class="zodiac-item-name">{{z.name}}</text>
+          </view>
+        </view>
+
+        <view class="zodiac-skip" bindtap="onSkipZodiac">
+          <text class="zodiac-skip-text">跳过，不设置</text>
+        </view>
+      </view>
+
+      <!-- Navigation -->
+      <view class="onboarding-nav" wx:if="{{onboardingStep < 3}}">
+        <view class="onboarding-btn" bindtap="onNextOnboarding">
+          <text class="onboarding-btn-text">下一步</text>
+        </view>
+      </view>
     </view>
   </view>
 
@@ -142,6 +198,44 @@
       </view>
     </view>
 
+  </view>
+
+  <!-- ===== 今日任务卡片 ===== -->
+  <view class="anim-fade-in-up-2" style="margin-top:30rpx">
+    <view class="card tasks-card" bindtap="onGoCheckin">
+      <view class="tasks-card-header">
+        <text class="tasks-card-title">今日任务</text>
+        <view class="tasks-card-stats">
+          <text class="tasks-card-progress">{{tasksCompleted}}/{{tasksTotal}} 完成</text>
+          <view class="tasks-progress-bar">
+            <view class="tasks-progress-fill" style="width: {{tasksTotal > 0 ? (tasksCompleted / tasksTotal * 100) : 0}}%"></view>
+          </view>
+        </view>
+      </view>
+      <view class="tasks-list">
+        <view class="task-item {{tasksDailyCardDrawn ? 'task-item--done' : ''}}">
+          <view class="task-check {{tasksDailyCardDrawn ? 'task-check--checked' : ''}}">
+            <text wx:if="{{tasksDailyCardDrawn}}" class="task-check-icon">✓</text>
+          </view>
+          <text class="task-name">抽一张每日牌</text>
+        </view>
+        <view class="task-item {{tasksReadingDone ? 'task-item--done' : ''}}">
+          <view class="task-check {{tasksReadingDone ? 'task-check--checked' : ''}}">
+            <text wx:if="{{tasksReadingDone}}" class="task-check-icon">✓</text>
+          </view>
+          <text class="task-name">完成一次解读</text>
+        </view>
+        <view class="task-item {{tasksShared ? 'task-item--done' : ''}}">
+          <view class="task-check {{tasksShared ? 'task-check--checked' : ''}}">
+            <text wx:if="{{tasksShared}}" class="task-check-icon">✓</text>
+          </view>
+          <text class="task-name">分享你的解读</text>
+        </view>
+      </view>
+      <view class="tasks-card-footer">
+        <text class="tasks-card-reward">每完成一项任务 +1 免费解读次数</text>
+      </view>
+    </view>
   </view>
 
   <!-- 未完成解读恢复入口 -->

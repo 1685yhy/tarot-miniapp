@@ -32,7 +32,8 @@ from app.schemas.reading import (
     ReadingHistoryResponse,
     ReadingResponse,
 )
-from app.services.ai_engine import generate_reading
+from app.services.ai_engine import generate_reading, _build_user_context
+from app.services.ai_personas import get_persona
 from app.services.tarot import draw_cards
 from app.utils.auth import get_current_user
 
@@ -94,6 +95,87 @@ _CAREER_KEYWORDS = [
     "专业", "进修", "课程", "读书", "绩效", "求职", "跳槽",
     "副业", "创业",
 ]
+
+
+async def _build_user_context_block(
+    db: AsyncSession, user_id: str,
+) -> str:
+    """Query the user's reading history and build a context block for the AI.
+
+    Returns an empty string if the user has no history.
+    """
+    from collections import Counter
+
+    # Fetch all readings for this user (capped at 200 for performance)
+    result = await db.execute(
+        select(Reading)
+        .where(Reading.user_id == user_id)
+        .order_by(Reading.created_at.desc())
+        .limit(200)
+    )
+    readings: list[Reading] = list(result.scalars().all())
+    if not readings:
+        return ""
+
+    total_count = len(readings)
+
+    # Most common spread type
+    spread_counter: Counter[str] = Counter(r.spread_type for r in readings)
+    common_spread = spread_counter.most_common(1)[0][0] if spread_counter else None
+
+    # Most common theme (excluding None/general)
+    theme_counter: Counter[str] = Counter(
+        r.theme for r in readings if r.theme and r.theme != "general"
+    )
+    common_theme = theme_counter.most_common(1)[0][0] if theme_counter else None
+
+    # Streak: consecutive days from the most recent reading date backwards
+    unique_dates = sorted(
+        set(r.created_at.date() for r in readings if r.created_at), reverse=True
+    )
+    streak = 0
+    if unique_dates:
+        from datetime import timedelta, timezone
+        last_date = unique_dates[0]
+        today = datetime.now(timezone.utc).date()
+        # If the most recent reading is not today or yesterday, streak = 0
+        if (today - last_date).days <= 1:
+            check = last_date
+            for d in unique_dates:
+                if d == check:
+                    streak += 1
+                    check -= timedelta(days=1)
+                else:
+                    break
+
+    # Last 3 reading summaries (question text, or fallback to spread type)
+    last_3_root = readings[:3]
+    last_3_summaries: list[str] = []
+    for r in last_3_root:
+        summary = r.question or SPREAD_TYPE_NAMES.get(r.spread_type, r.spread_type)
+        last_3_summaries.append(summary[:60])
+
+    return _build_user_context(
+        total_count=total_count,
+        common_spread=common_spread,
+        common_theme=common_theme,
+        streak=streak,
+        last_3_summaries=last_3_summaries,
+    )
+
+
+_SPREAD_TYPE_NAMES = {
+    "three_card": "三牌占卜",
+    "triangle": "恋人三角",
+    "decision": "二择一",
+    "celtic_cross": "凯尔特十字",
+    "career": "事业牌阵",
+    "finance": "财运牌阵",
+    "life_cross": "人生十字",
+    "horseshoe": "马蹄牌阵",
+    "relationship": "关系牌阵",
+    "year_ahead": "年度运势",
+}
 
 
 def _categorize_action(content: str) -> str:
@@ -194,12 +276,19 @@ async def create_reading(
     # ── Draw cards ──
     cards_data = draw_cards(spread_type)
 
+    # ── Resolve persona ──
+    persona_key = req.persona or None
+    if persona_key:
+        # Validate against registry
+        _ = get_persona(persona_key)
+
     # ── Create reading record ──
     reading = Reading(
         user_id=user.id,
         spread_type=spread_type,
         question=req.question,
         theme=req.theme,
+        persona=persona_key,
         is_paid=user.is_member or uses_paid_credit,
     )
     db.add(reading)
@@ -257,9 +346,15 @@ async def create_reading(
                 "element_association": teaching_row.element_association,
             }
 
+    # ── Build user context block (async DB query) ──
+    user_context = await _build_user_context_block(db, user.id)
+
     # ── Generate AI interpretation ──
     interpretation = await generate_reading(
-        spread_type, req.question, req.theme, cards_info, teaching_info=teaching_info
+        spread_type, req.question, req.theme, cards_info,
+        teaching_info=teaching_info,
+        persona=persona_key,
+        user_context=user_context,
     )
     action_items: list[dict] = []
     if interpretation is not None:
@@ -306,6 +401,7 @@ async def create_reading(
         spread_type=reading.spread_type,
         question=reading.question,
         theme=reading.theme,
+        persona=reading.persona,
         interpretation=reading.interpretation,
         is_paid=reading.is_paid,
         created_at=reading.created_at,
@@ -355,6 +451,7 @@ async def list_readings(
                 spread_type=r.spread_type,
                 question=r.question,
                 theme=r.theme,
+                persona=r.persona,
                 interpretation=r.interpretation,
                 is_paid=r.is_paid,
                 created_at=r.created_at,
@@ -393,6 +490,7 @@ async def get_reading(
         spread_type=reading.spread_type,
         question=reading.question,
         theme=reading.theme,
+        persona=reading.persona,
         interpretation=reading.interpretation,
         is_paid=reading.is_paid,
         created_at=reading.created_at,
@@ -465,9 +563,14 @@ async def reinterpret_reading(
                 "element_association": teaching_row.element_association,
             }
 
+    # ── Build user context block (async DB query) ──
+    user_context = await _build_user_context_block(db, user.id)
+
     interpretation = await generate_reading(
         reading.spread_type, reading.question, reading.theme, cards_info,
         teaching_info=teaching_info,
+        persona=reading.persona,
+        user_context=user_context,
     )
     action_items: list[dict] = []
     if interpretation is not None:
@@ -483,6 +586,7 @@ async def reinterpret_reading(
         spread_type=reading.spread_type,
         question=reading.question,
         theme=reading.theme,
+        persona=reading.persona,
         interpretation=reading.interpretation,
         is_paid=reading.is_paid,
         created_at=reading.created_at,

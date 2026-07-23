@@ -1,0 +1,466 @@
+/* ============================================================
+   签到页面 — 星光签到大厅
+   ============================================================ */
+
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #1A1A3E 0%, #22225A 40%, #25255A 100%);
+  padding: 0 var(--spacing-lg, 32rpx) 40rpx;
+  position: relative;
+}
+
+/* --- Stars background (fixed) --- */
+.stars-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.stars-layer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4rpx;
+  height: 4rpx;
+  background: transparent;
+  border-radius: 50%;
+  box-shadow:
+    40rpx 80rpx rgba(255,255,255,0.06),
+    120rpx 180rpx rgba(255,255,255,0.05),
+    200rpx 50rpx rgba(255,255,255,0.08),
+    300rpx 250rpx rgba(255,255,255,0.04),
+    400rpx 120rpx rgba(255,255,255,0.07),
+    500rpx 80rpx rgba(255,255,255,0.05),
+    80rpx 400rpx rgba(255,255,255,0.06),
+    250rpx 500rpx rgba(255,255,255,0.05),
+    420rpx 380rpx rgba(255,255,255,0.07),
+    550rpx 600rpx rgba(255,255,255,0.04),
+    180rpx 700rpx rgba(255,255,255,0.06),
+    350rpx 800rpx rgba(255,255,255,0.05);
+}
+
+/* ============================================================
+   Loading
+   ============================================================ */
+.loading-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 200rpx 0;
+}
+
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 4rpx solid rgba(244, 212, 140, 0.15);
+  border-top-color: #F4D48C;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: var(--spacing-md);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: var(--font-size-caption, 24rpx);
+  color: var(--color-lavender, #B8A9E0);
+  letter-spacing: 2rpx;
+}
+
+/* ============================================================
+   Streak Section
+   ============================================================ */
+.streak-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60rpx 0 40rpx;
+  position: relative;
+  z-index: 1;
+}
+
+.streak-circle {
+  position: relative;
+  width: 180rpx;
+  height: 180rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.streak-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(244, 212, 140, 0.12) 0%, transparent 70%);
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+.streak-circle::before {
+  content: '';
+  position: absolute;
+  inset: 4rpx;
+  border-radius: 50%;
+  border: 4rpx solid rgba(244, 212, 140, 0.25);
+}
+
+.streak-number {
+  font-size: 72rpx;
+  font-weight: 700;
+  color: #F4D48C;
+  line-height: 1;
+  text-shadow: 0 0 40rpx rgba(244, 212, 140, 0.25);
+  position: relative;
+  z-index: 1;
+}
+
+.streak-label {
+  font-size: var(--font-size-caption, 24rpx);
+  color: var(--color-lavender, #B8A9E0);
+  letter-spacing: 4rpx;
+  position: relative;
+  z-index: 1;
+}
+
+.streak-subtitle {
+  font-size: var(--font-size-subhead, 36rpx);
+  color: var(--color-text-primary, #F0EDE8);
+  font-weight: 500;
+  letter-spacing: 4rpx;
+  margin-bottom: var(--spacing-md);
+}
+
+/* Level Badge */
+.level-badge {
+  display: inline-flex;
+  padding: 8rpx 28rpx;
+  border-radius: var(--radius-pill, 999rpx);
+  border: 2rpx solid;
+  margin-bottom: var(--spacing-xs);
+}
+
+.level-name {
+  font-size: var(--font-size-caption, 24rpx);
+  font-weight: 600;
+  letter-spacing: 3rpx;
+}
+
+.level-progress {
+  font-size: var(--font-size-xs, 20rpx);
+  color: var(--color-text-tertiary, #9A95B8);
+  letter-spacing: 1rpx;
+}
+
+/* ============================================================
+   Calendar Section
+   ============================================================ */
+.calendar-section {
+  padding: var(--spacing-lg, 32rpx) 0;
+  position: relative;
+  z-index: 1;
+}
+
+.section-title {
+  font-size: var(--font-size-subhead, 36rpx);
+  font-weight: 600;
+  color: var(--color-text-primary, #F0EDE8);
+  display: block;
+  margin-bottom: var(--spacing-md, 24rpx);
+  letter-spacing: 2rpx;
+  padding-left: var(--spacing-md, 24rpx);
+  border-left: 3rpx solid var(--color-gold, #F4D48C);
+}
+
+.calendar-strip {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-md, 24rpx) var(--spacing-sm, 16rpx);
+  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 100%);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
+  border-radius: var(--radius-lg, 24rpx);
+}
+
+.calendar-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  flex: 1;
+}
+
+.day-label {
+  font-size: var(--font-size-xs, 20rpx);
+  color: var(--color-text-tertiary, #9A95B8);
+  letter-spacing: 1rpx;
+}
+
+.day-circle {
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(244, 212, 140, 0.06);
+  border: 2rpx solid transparent;
+  transition: all 0.2s ease;
+}
+
+.day-circle.day-today {
+  border-color: rgba(244, 212, 140, 0.30);
+  background: rgba(244, 212, 140, 0.08);
+}
+
+.day-circle.day-checked {
+  background: linear-gradient(135deg, #F4D48C 0%, #D4B06A 100%);
+  border-color: #F4D48C;
+  box-shadow: 0 0 20rpx rgba(244, 212, 140, 0.30);
+}
+
+.day-checkmark {
+  font-size: 24rpx;
+  color: #1A1A3E;
+  font-weight: 700;
+}
+
+.day-dot {
+  font-size: 28rpx;
+  color: rgba(244, 212, 140, 0.30);
+}
+
+.day-num {
+  font-size: var(--font-size-xs, 20rpx);
+  color: var(--color-text-tertiary, #9A95B8);
+}
+
+.day-num-today {
+  color: var(--color-gold, #F4D48C);
+  font-weight: 600;
+}
+
+/* ============================================================
+   Check-in Button
+   ============================================================ */
+.checkin-btn-wrap {
+  padding: var(--spacing-lg, 32rpx) 0;
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.checkin-btn {
+  width: 90%;
+  max-width: 500rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
+  border-radius: var(--radius-pill, 999rpx);
+  color: #1A1A3E;
+  font-size: var(--font-size-body, 30rpx);
+  font-weight: 600;
+  letter-spacing: 4rpx;
+  box-shadow: 0 4rpx 24rpx rgba(244, 212, 140, 0.30);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.checkin-btn:active {
+  transform: scale(0.97);
+  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.20);
+  opacity: 0.92;
+}
+
+.checkin-btn--done {
+  background: rgba(244, 212, 140, 0.10);
+  color: var(--color-gold, #F4D48C);
+  border: 2rpx solid rgba(244, 212, 140, 0.30);
+  box-shadow: none;
+}
+
+.checkin-btn[disabled] {
+  opacity: 0.7;
+}
+
+.checkin-hint {
+  display: block;
+  margin-top: var(--spacing-sm, 16rpx);
+  font-size: var(--font-size-xs, 20rpx);
+  color: var(--color-text-tertiary, #9A95B8);
+  letter-spacing: 1rpx;
+  opacity: 0.7;
+}
+
+/* ============================================================
+   Level Description
+   ============================================================ */
+.level-desc-section {
+  padding: var(--spacing-lg, 32rpx) 0;
+  position: relative;
+  z-index: 1;
+}
+
+.level-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 16rpx);
+}
+
+.level-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 16rpx);
+  padding: var(--spacing-sm, 16rpx) var(--spacing-md, 24rpx);
+  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 100%);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.08);
+  border-radius: var(--radius-md, 16rpx);
+}
+
+.level-dot {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.level-info {
+  flex: 1;
+}
+
+.level-item-name {
+  display: block;
+  font-size: var(--font-size-caption, 24rpx);
+  font-weight: 600;
+  letter-spacing: 2rpx;
+}
+
+.level-item-range {
+  display: block;
+  font-size: var(--font-size-xs, 20rpx);
+  color: var(--color-text-tertiary, #9A95B8);
+  margin-top: 4rpx;
+}
+
+.level-current-tag {
+  font-size: var(--font-size-xs, 20rpx);
+  color: var(--color-gold, #F4D48C);
+  background: rgba(244, 212, 140, 0.12);
+  padding: 4rpx 16rpx;
+  border-radius: var(--radius-pill, 999rpx);
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   Reward Animation Overlay
+   ============================================================ */
+.reward-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(26, 26, 62, 0.85);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.reward-overlay--visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.reward-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  top: 40%;
+  border-radius: 50%;
+  background: #F4D48C;
+  box-shadow: 0 0 12rpx 4rpx rgba(244, 212, 140, 0.30);
+  animation: particle-rise 1.5s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes particle-rise {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-400rpx) scale(0.3);
+  }
+}
+
+.reward-popup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 100%);
+  border: 2rpx solid rgba(244, 212, 140, 0.30);
+  border-radius: var(--radius-lg, 24rpx);
+  padding: var(--spacing-2xl, 48rpx) var(--spacing-xl, 56rpx);
+  box-shadow:
+    0 8rpx 40rpx rgba(0, 0, 0, 0.35),
+    0 0 60rpx rgba(244, 212, 140, 0.15);
+  animation: popup-enter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 1;
+}
+
+@keyframes popup-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.reward-emoji {
+  font-size: 64rpx;
+  margin-bottom: var(--spacing-sm, 16rpx);
+}
+
+.reward-title {
+  font-size: var(--font-size-title, 40rpx);
+  font-weight: 600;
+  color: var(--color-gold, #F4D48C);
+  letter-spacing: 3rpx;
+  margin-bottom: var(--spacing-xs, 12rpx);
+}
+
+.reward-text {
+  font-size: var(--font-size-body, 30rpx);
+  color: var(--color-lavender, #B8A9E0);
+  letter-spacing: 2rpx;
+}
+
+/* Footer spacer for safe area */
+.footer-spacer {
+  height: 60rpx;
+}

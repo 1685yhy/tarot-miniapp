@@ -36,6 +36,10 @@
     {
       "root": "pages/diary/",
       "pages": ["diary"]
+    },
+    {
+      "root": "pages/checkin/",
+      "pages": ["checkin"]
     }
   ],
   "window": {
@@ -74,7 +78,7 @@
   "preloadRule": {
     "pages/index/index": {
       "network": "all",
-      "packages": ["pages/daily-card/", "pages/reading/", "pages/reading-result/"]
+      "packages": ["pages/daily-card/", "pages/reading/", "pages/reading-result/", "pages/checkin/"]
     },
     "pages/encyclopedia/encyclopedia": {
       "network": "all",

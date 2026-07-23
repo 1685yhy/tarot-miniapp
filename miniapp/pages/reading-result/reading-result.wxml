@@ -128,6 +128,14 @@
       </view>
 
       <!-- ==========================================================
+           3.5 PERSONA BADGE — Who is interpreting
+           ========================================================== -->
+      <view class="persona-badge" wx:if="{{personaDisplay}}">
+        <text class="persona-badge-icon">{{personaDisplay.icon}}</text>
+        <text class="persona-badge-text">{{personaDisplay.name}} 为你解读</text>
+      </view>
+
+      <!-- ==========================================================
            4. LETTER — The interpretation as personal prose
            ========================================================== -->
       <view class="letter-section">

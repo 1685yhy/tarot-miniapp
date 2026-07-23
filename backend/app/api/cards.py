@@ -43,13 +43,30 @@ async def list_cards(
 
 
 @router.get("/daily", response_model=CardDetail)
-async def daily_card(db: AsyncSession = Depends(get_db)):
-    """每日一牌 - 随机抽取一张（使用数据库随机排序，避免ID不连续问题）"""
+async def daily_card(
+    zodiac: str | None = Query(None, description="用户星座，如 白羊座"),
+    db: AsyncSession = Depends(get_db),
+):
+    """每日一牌 - 随机抽取一张（使用数据库随机排序，避免ID不连续问题）
+
+    zodiac: 可选星座参数，用于为 AI 解读提供个性化星象上下文
+    """
     result = await db.execute(
         select(TarotCard).order_by(func.random()).limit(1)
     )
     card = result.scalar_one()
-    return CardDetail.model_validate(card)
+
+    # 如果提供了星座，将星座信息附加到返回数据中供前端/解读使用
+    card_detail = CardDetail.model_validate(card)
+    if zodiac:
+        # 添加星座上下文到关键词中（解读端可提取使用）
+        zodiac_context = f"【星座参考】用户星座：{zodiac}。请结合该星座当日星象特点提供更有针对性的解读。"
+        if card_detail.keywords_upright:
+            card_detail.keywords_upright = f"{card_detail.keywords_upright}\n{zodiac_context}"
+        else:
+            card_detail.keywords_upright = zodiac_context
+
+    return card_detail
 
 
 @router.get("/{card_id}", response_model=CardDetail)

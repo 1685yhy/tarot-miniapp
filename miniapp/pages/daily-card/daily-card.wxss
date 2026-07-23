@@ -737,6 +737,28 @@
    7. SAFE AREA
    ----------------------------------------------------------- */
 
+/* -----------------------------------------------------------
+   8. ZODIAC BADGE (v2.1)
+   ----------------------------------------------------------- */
+
+.zodiac-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--spacing-sm, 24rpx);
+  padding: 6rpx 20rpx;
+  background: rgba(244, 212, 140, 0.08);
+  border: 1rpx solid rgba(244, 212, 140, 0.20);
+  border-radius: var(--radius-pill, 999rpx);
+}
+
+.zodiac-badge-text {
+  font-size: var(--font-size-xs, 20rpx);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-gold, #F4D48C);
+  letter-spacing: 2rpx;
+}
+
 .safe-bottom {
   padding-bottom: var(--safe-area-bottom);
   height: var(--spacing-xl);

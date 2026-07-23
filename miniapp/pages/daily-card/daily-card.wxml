@@ -98,6 +98,10 @@
         <text class="badge badge--gold" wx:elif="{{dailyCard.suit}}">{{dailyCard.suit}}</text>
         <text class="badge badge--lavender">{{dailyCard.card_number}}</text>
       </view>
+      <!-- v2.1: Zodiac sign badge -->
+      <view wx:if="{{zodiacSign}}" class="zodiac-badge">
+        <text class="zodiac-badge-text">{{zodiacSign}}今日运势</text>
+      </view>
     </view>
   </view>
 
