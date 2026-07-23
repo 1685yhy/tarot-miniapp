@@ -289,6 +289,8 @@
   transition: all var(--duration-fast) var(--ease-soft);
   position: relative;
   min-height: 88rpx;
+  height: 100rpx;
+  box-sizing: border-box;
 }
 
 .menu-item + .menu-item {
@@ -376,6 +378,15 @@
 @keyframes season-badge-glow {
   0%, 100% { opacity: 0.6; }
   50% { opacity: 1; }
+}
+
+/* Right arrow image — toggle/status indicators */
+.menu-arrow-img {
+  width: 36rpx;
+  height: 36rpx;
+  flex-shrink: 0;
+  margin-left: var(--spacing-sm);
+  display: block;
 }
 
 .menu-arrow-img--season {
