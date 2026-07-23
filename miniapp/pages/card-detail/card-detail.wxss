@@ -117,7 +117,7 @@ page {
   bottom: 8rpx;
   right: 8rpx;
   border-width: 0 2rpx 2rpx 0;
-  border-radius: 0 0 4rpx 0;
+  border-radius: 0 4rpx 0 0;
 }
 
 /* ── Card name — large gold ── */
@@ -177,7 +177,7 @@ page {
 }
 
 /* ================================================================
-   TAB SWITCHER — Upright / Reversed pill pair
+   TAB SWITCHER — Upright / Reversed / Teaching pill pair
    ================================================================ */
 .tab-switcher {
   display: flex;
@@ -270,6 +270,217 @@ page {
   line-height: 1.75;
   letter-spacing: 1rpx;
   text-rendering: optimizeLegibility;
+}
+
+/* ================================================================
+   TEACHING — 深度解析 Section
+   ================================================================ */
+.teaching-root {
+  animation: sl-fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 0.35s;
+  opacity: 0;
+}
+
+/* ── Teaching section card ── */
+.teaching-section {
+  background: linear-gradient(
+    135deg,
+    var(--color-card) 0%,
+    rgba(24, 23, 52, 0.85) 100%
+  );
+  border: 1rpx solid rgba(212, 175, 55, 0.12);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  margin-bottom: var(--spacing-2xl);
+  box-shadow:
+    0 2rpx 16rpx rgba(0, 0, 0, 0.20),
+    0 0 1rpx rgba(212, 175, 55, 0.04);
+}
+
+.teaching-section-last {
+  margin-bottom: 0;
+}
+
+.teaching-section-title {
+  display: block;
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+  color: var(--color-gold-light);
+  letter-spacing: 4rpx;
+  margin-bottom: var(--spacing-md);
+  line-height: 1.4;
+}
+
+/* ── Symbol list — numbered badge items ── */
+.symbol-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.symbol-item {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+}
+
+.symbol-badge {
+  flex-shrink: 0;
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: var(--radius-pill);
+  background: rgba(212, 175, 55, 0.12);
+  border: 1rpx solid rgba(212, 175, 55, 0.20);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+  color: var(--color-gold-light);
+  line-height: 1;
+  margin-top: 4rpx;
+}
+
+.symbol-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.symbol-name {
+  display: block;
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  color: var(--color-lavender-light);
+  line-height: 1.4;
+  margin-bottom: 4rpx;
+  letter-spacing: 1rpx;
+}
+
+.symbol-meaning {
+  display: block;
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  letter-spacing: 1rpx;
+}
+
+/* ── Learning keywords — lavender pills ── */
+.keywords-learning-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.keyword-learning-tag {
+  display: inline-block;
+  padding: var(--spacing-xxs) var(--spacing-md);
+  font-size: var(--font-size-caption);
+  color: var(--color-lavender);
+  background: rgba(184, 169, 224, 0.09);
+  border: 1rpx solid rgba(184, 169, 224, 0.18);
+  border-radius: var(--radius-pill);
+  letter-spacing: 2rpx;
+  line-height: 1.4;
+  transition: all 0.15s ease-out;
+}
+
+.keyword-learning-tag:active {
+  background: rgba(184, 169, 224, 0.18);
+  border-color: rgba(184, 169, 224, 0.35);
+}
+
+/* ── Story card — cream text, larger leading ── */
+.story-card {
+  position: relative;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  border-left: 3rpx solid rgba(212, 175, 55, 0.25);
+}
+
+.story-text {
+  display: block;
+  font-size: var(--font-size-body);
+  color: var(--color-text-primary);
+  line-height: 1.8;
+  letter-spacing: 1rpx;
+}
+
+/* ── Life connection — highlighted reflection card ── */
+.life-connection-card {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  background: rgba(212, 175, 55, 0.05);
+  border: 1rpx solid rgba(212, 175, 55, 0.15);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+}
+
+.life-connection-icon {
+  flex-shrink: 0;
+  font-size: 40rpx;
+  line-height: 1.2;
+}
+
+.life-connection-text {
+  flex: 1;
+  font-size: var(--font-size-body);
+  color: var(--color-gold-light);
+  line-height: 1.7;
+  letter-spacing: 1rpx;
+  font-style: italic;
+}
+
+/* ── Element card — lavender accent ── */
+.element-card {
+  background: rgba(184, 169, 224, 0.06);
+  border: 1rpx solid rgba(184, 169, 224, 0.12);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+}
+
+.element-text {
+  display: block;
+  font-size: var(--font-size-body);
+  color: var(--color-lavender);
+  line-height: 1.7;
+  letter-spacing: 1rpx;
+}
+
+/* ── Teaching loading skeleton ── */
+.teaching-loading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg) 0;
+}
+
+/* ── Teaching unavailable state ── */
+.teaching-unavailable {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-3xl) var(--spacing-lg);
+  text-align: center;
+}
+
+.teaching-unavailable-text {
+  display: block;
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
+  letter-spacing: 2rpx;
+  margin-bottom: var(--spacing-xs);
+}
+
+.teaching-unavailable-hint {
+  display: block;
+  font-size: var(--font-size-caption);
+  color: var(--color-text-tertiary);
+  line-height: 1.5;
+  letter-spacing: 1rpx;
 }
 
 /* ================================================================

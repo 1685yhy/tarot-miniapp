@@ -1,18 +1,43 @@
 /**
- * Canvas 海报绘制工具
- * 生成包含牌面图片、解读精华、小程序码的分享海报
- * 基于 WeChat Canvas 2D API (type="2d")
+ * Canvas poster drawing utility
+ *
+ * Generates a share poster for WeChat Moments / friends, including:
+ *   - Decorative star particles
+ *   - User nickname
+ *   - Card image (rounded, with golden border)
+ *   - Card name
+ *   - Key insight excerpt from the AI interpretation
+ *   - Real WeChat mini-program code (wxacode) from our backend
+ *   - Brand footer
+ *
+ * Poster aspect ratio: 3:4 (optimal for Moments sharing)
+ *
+ * Canvas 2D API (type="2d")
  */
 
-/**
- * 绘制圆角矩形路径
- * @param {CanvasRenderingContext2D} ctx
- * @param {number} x
- * @param {number} y
- * @param {number} w
- * @param {number} h
- * @param {number} r - 圆角半径 (px)
- */
+// ── Import BASE_URL from the API client ──────────────────────────────
+const { BASE_URL } = require('./api');
+
+// ── Configuration ────────────────────────────────────────────────────
+const TARGET_ASPECT = 3 / 4;         // width / height → 3:4 portrait
+const QR_SIZE_RATIO = 0.13;          // QR code as fraction of canvas width
+const CARD_WIDTH_RATIO = 0.56;       // card image ~56% of canvas width
+const CARD_ASPECT = 1.5;             // tarot card height / width
+
+// ── Colour palette ───────────────────────────────────────────────────
+const C_GOLD      = '#F4D48C';
+const C_GOLD_MUTED = '#C4A46C';
+const C_WHITE     = '#F0EDE8';
+const C_MUTED     = '#B8A9E0';
+const C_DARK      = '#1A1A3E';
+const C_BG_TOP    = '#1A1A3E';
+const C_BG_MID    = '#12122E';
+const C_BG_BOT    = '#0B0B16';
+
+// =====================================================================
+//  Helpers
+// =====================================================================
+
 function _roundRect(ctx, x, y, w, h, r) {
   r = Math.min(r, w / 2, h / 2);
   ctx.beginPath();
@@ -28,13 +53,6 @@ function _roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-/**
- * 自动换行：将长文本按指定宽度分割为多行
- * @param {CanvasRenderingContext2D} ctx
- * @param {string} text
- * @param {number} maxWidth - 最大行宽 (px)
- * @returns {string[]} 行数组
- */
 function _wrapText(ctx, text, maxWidth) {
   const lines = [];
   let current = '';
@@ -52,217 +70,305 @@ function _wrapText(ctx, text, maxWidth) {
   return lines;
 }
 
+// =====================================================================
+//  Drawing functions
+// =====================================================================
+
 /**
- * 绘制解读语录区块
+ * Draw the decorative star particles at the top of the poster.
  */
-function _drawQuoteSection(ctx, W, H, nameBottomY, cardName, quote, cardW) {
-  const quoteMarginTop = 24;
-  const quoteY = nameBottomY + quoteMarginTop + 16;
-  const quoteCardW = Math.round(W * 0.84);
-  const quoteCardX = Math.round((W - quoteCardW) / 2);
-  const quotePadding = 20;
-  const quoteInnerW = quoteCardW - quotePadding * 2;
-  const quoteFontSize = Math.round(W * 0.037);   // ≈ 28rpx
-  const quoteLineHeight = Math.round(quoteFontSize * 1.8);
-  const quoteMarkSize = Math.round(W * 0.064);    // ≈ 48rpx
+function _drawStars(ctx, W) {
+  const starCount = 12;
+  // Simple star is a small circle; positions are deterministic relative to W
+  for (let i = 0; i < starCount; i++) {
+    const x = (W / (starCount + 1)) * (i + 1) + (i % 3 - 1) * 6;
+    const y = 6 + (i % 4) * 2;
+    const r = 1.2 + (i % 3) * 0.3;
+    ctx.save();
+    ctx.fillStyle = i % 2 === 0 ? C_GOLD : C_MUTED;
+    ctx.globalAlpha = 0.6 + (i % 3) * 0.15;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
 
-  // Measure quote text lines
-  ctx.font = `${quoteFontSize}px "PingFang SC", "Helvetica Neue", sans-serif`;
-  const quoteLines = quote ? _wrapText(ctx, quote, quoteInnerW) : [''];
+/**
+ * Draw the brand header and user nickname.
+ * Returns the Y coordinate just below the header area.
+ */
+function _drawHeader(ctx, W, nickname) {
+  let y = 14;
 
-  // Quote card height: opening mark + lines + closing mark + padding
-  const quoteContentH = quoteLines.length * quoteLineHeight + quoteMarkSize + 8;
-  const quoteCardH = quotePadding * 2 + quoteContentH;
-
-  // Semi-transparent white card background
+  // Brand header
   ctx.save();
-  _roundRect(ctx, quoteCardX, quoteY, quoteCardW, quoteCardH, 8);
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-  ctx.fill();
+  ctx.fillStyle = C_GOLD;
+  ctx.font = `bold ${Math.round(W * 0.043)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillText('✦ 星光映照 ✦', W / 2, y);
   ctx.restore();
 
-  // Opening quote mark
+  // Decorative line under brand
+  const lineW = Math.round(W * 0.3);
+  const lineX = Math.round((W - lineW) / 2);
+  const lineY = y + Math.round(W * 0.058);
   ctx.save();
-  ctx.fillStyle = '#F4D48C';
-  ctx.font = `${quoteMarkSize}px "PingFang SC", "Helvetica Neue", sans-serif`;
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'top';
-  ctx.fillText('❝', quoteCardX + quotePadding, quoteY + quotePadding);
+  ctx.strokeStyle = C_GOLD;
+  ctx.globalAlpha = 0.4;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(lineX, lineY);
+  ctx.lineTo(lineX + lineW, lineY);
+  ctx.stroke();
   ctx.restore();
 
-  // Quote text
+  // Nickname
+  if (nickname) {
+    const nickY = lineY + 6;
+    ctx.save();
+    ctx.fillStyle = C_MUTED;
+    ctx.font = `${Math.round(W * 0.032)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(nickname, W / 2, nickY);
+    ctx.restore();
+    return nickY + Math.round(W * 0.048);
+  }
+
+  return lineY + Math.round(W * 0.045);
+}
+
+/**
+ * Draw the tarot card image with rounded corners and gold border.
+ * Returns the Y coordinate of the bottom of the card image.
+ */
+function _drawCardImage(ctx, W, Y, imgElement) {
+  const cardW = Math.round(W * CARD_WIDTH_RATIO);
+  const cardH = Math.round(cardW * CARD_ASPECT);
+  const cardX = Math.round((W - cardW) / 2);
+  const r = Math.round(cardW * 0.018);
+
+  // Draw card image (clipped to rounded rect)
   ctx.save();
-  ctx.fillStyle = '#F0EDE8';
-  ctx.font = `${quoteFontSize}px "PingFang SC", "Helvetica Neue", sans-serif`;
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'top';
-  let lineY = quoteY + quotePadding + quoteMarkSize + 4;
-  for (const line of quoteLines) {
-    ctx.fillText(line, quoteCardX + quotePadding, lineY);
-    lineY += quoteLineHeight;
+  _roundRect(ctx, cardX, Y, cardW, cardH, r);
+  ctx.clip();
+  if (imgElement) {
+    ctx.drawImage(imgElement, cardX, Y, cardW, cardH);
+  } else {
+    // Fallback placeholder fill
+    ctx.fillStyle = '#252550';
+    ctx.fillRect(cardX, Y, cardW, cardH);
   }
   ctx.restore();
 
-  // Closing quote mark
-  const closeQuoteY = lineY - quoteLineHeight + 4;
+  // Gold border
   ctx.save();
-  ctx.fillStyle = '#F4D48C';
-  ctx.font = `${quoteMarkSize}px "PingFang SC", "Helvetica Neue", sans-serif`;
-  ctx.textAlign = 'right';
-  ctx.textBaseline = 'bottom';
-  ctx.fillText('❞', quoteCardX + quoteCardW - quotePadding, closeQuoteY + quoteMarkSize);
+  _roundRect(ctx, cardX, Y, cardW, cardH, r);
+  ctx.strokeStyle = C_GOLD;
+  ctx.lineWidth = 1.5;
+  ctx.globalAlpha = 0.7;
+  ctx.stroke();
   ctx.restore();
 
-  return quoteY + quoteCardH; // return bottom of quote section
+  return Y + cardH;
 }
 
 /**
- * 绘制底部分享区域
+ * Draw the card name below the image.
+ * Returns the Y coordinate just below the card name.
  */
-function _drawBottomSection(ctx, W, H, spreadType) {
-  const bottomY = H - 100;
-
-  // "星光映照 · {spreadType}" — 品牌标识
+function _drawCardName(ctx, W, Y, cardName) {
+  if (!cardName) return Y + 4;
+  const nameY = Y + 6;
   ctx.save();
-  ctx.fillStyle = '#F4D48C';
-  ctx.font = `${Math.round(W * 0.037)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+  ctx.fillStyle = C_GOLD;
+  ctx.font = `bold ${Math.round(W * 0.043)}px "PingFang SC", "Helvetica Neue", sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
-  const brandText = '星光映照 · ' + (spreadType || '三牌占卜');
-  ctx.fillText(brandText, W / 2, bottomY);
+  ctx.fillText(cardName, W / 2, nameY);
   ctx.restore();
+  return nameY + Math.round(W * 0.060);
+}
 
-  // Subtitle — 引导文字
-  const subtitleY = bottomY + Math.round(W * 0.048);
+/**
+ * Draw the key insight excerpt.
+ * Returns the Y coordinate just below the insight text block.
+ */
+function _drawKeyInsight(ctx, W, Y, insight) {
+  if (!insight) return Y + 4;
+  const maxW = Math.round(W * 0.78);
+  const x = Math.round((W - maxW) / 2);
+  const fontSize = Math.round(W * 0.032);
+  const lineH = Math.round(fontSize * 1.6);
+
   ctx.save();
-  ctx.fillStyle = '#B8A9E0';
-  ctx.font = `${Math.round(W * 0.032)}px "PingFang SC", "Helvetica Neue", sans-serif`;
-  ctx.textAlign = 'center';
+  ctx.fillStyle = C_WHITE;
+  ctx.font = `${fontSize}px "PingFang SC", "Helvetica Neue", sans-serif`;
+  ctx.textAlign = 'left';
   ctx.textBaseline = 'top';
-  ctx.fillText('扫描小程序码，探索你的命运', W / 2, subtitleY);
+
+  const lines = _wrapText(ctx, insight, maxW);
+  let textY = Y;
+  for (let i = 0; i < Math.min(lines.length, 2); i++) {
+    ctx.fillText(lines[i], x, textY);
+    textY += lineH;
+  }
   ctx.restore();
 
-  // QR code placeholder — white rounded square
-  const qrSize = Math.round(W * 0.16);   // ≈ 120rpx
+  return Y + Math.min(lines.length, 2) * lineH + 4;
+}
+
+/**
+ * Draw the QR code image and its call-to-action.
+ * Returns the Y coordinate just below the QR area.
+ */
+function _drawQRCode(ctx, W, Y, qrImg) {
+  const qrSize = Math.round(W * QR_SIZE_RATIO);
   const qrX = Math.round((W - qrSize) / 2);
-  const qrY = subtitleY + Math.round(W * 0.048) + 4;
+  const gap = Math.round(W * 0.024);
 
+  const qrAreaY = Y + gap;
+
+  // Draw the QR code image (with rounded corners)
   ctx.save();
-  _roundRect(ctx, qrX, qrY, qrSize, qrSize, 10);
-  ctx.fillStyle = '#FFFFFF';
-  ctx.fill();
+  _roundRect(ctx, qrX, qrAreaY, qrSize, qrSize, 6);
+  ctx.clip();
+  if (qrImg) {
+    ctx.drawImage(qrImg, qrX, qrAreaY, qrSize, qrSize);
+  } else {
+    // Placeholder fallback — so the poster is never blank
+    ctx.fillStyle = C_WHITE;
+    ctx.fillRect(qrX, qrAreaY, qrSize, qrSize);
+  }
   ctx.restore();
 
-  // QR placeholder text
+  // QR white border (always draw border, so placeholder looks intentional)
   ctx.save();
-  ctx.fillStyle = '#1A1A3E';
-  ctx.font = `${Math.round(W * 0.032)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+  _roundRect(ctx, qrX, qrAreaY, qrSize, qrSize, 6);
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  ctx.restore();
+
+  // Call-to-action text below QR code
+  const ctaY = qrAreaY + qrSize + 4;
+  ctx.save();
+  ctx.fillStyle = C_MUTED;
+  ctx.font = `${Math.round(W * 0.028)}px "PingFang SC", "Helvetica Neue", sans-serif`;
   ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('小程序码', W / 2, qrY + qrSize / 2);
+  ctx.textBaseline = 'top';
+  ctx.fillText('扫码探索你的命运', W / 2, ctaY);
   ctx.restore();
+
+  return ctaY + Math.round(W * 0.042);
 }
 
 /**
- * 绘制分享海报
- *
- * 在指定 Canvas 上完整绘制海报，绘制完成后通过 onSuccess 返回临时文件路径。
- *
- * @param {string} canvasId - Canvas 元素 ID
- * @param {Object} options
- * @param {Object}   options.context       - 组件或页面的 this 引用（用于 SelectorQuery）
- * @param {string}   options.cardImagePath - 牌面图片 URL
- * @param {string}   options.cardName      - 牌名（含中英文），如 "愚者 · The Fool"
- * @param {string}   options.quote         - 解读精华（建议 120 字内）
- * @param {string}   options.spreadType    - 占卜类型，如 "三牌占卜"
- * @param {Function} options.onSuccess     - 绘制成功回调，参数为 (tempFilePath)
- * @param {Function} options.onError       - 绘制失败回调，参数为 (Error)
+ * Draw the brand footer.
  */
-function drawSharePoster(canvasId, options) {
-  const { context, cardImagePath, cardName, quote, spreadType, onSuccess, onError } = options || {};
+function _drawFooter(ctx, W, Y) {
+  ctx.save();
+  ctx.fillStyle = C_GOLD;
+  ctx.globalAlpha = 0.6;
+  ctx.font = `${Math.round(W * 0.030)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillText('星光映照 · 塔罗占卜', W / 2, Y);
+  ctx.restore();
+}
+
+// =====================================================================
+//  Main entry — drawSharePoster
+// =====================================================================
+
+/**
+ * Draw a share poster on a WeChat Canvas 2D element.
+ *
+ * @param {string}   canvasId          - Canvas element ID
+ * @param {Object}   opts              - Options object
+ * @param {Object}   opts.context      - Component/page `this` (for SelectorQuery)
+ * @param {string}   opts.cardImagePath - Tarot card image URL
+ * @param {string}   opts.cardName     - Card display name (e.g. "愚者 · The Fool")
+ * @param {string}   opts.keyInsight   - Short excerpt from the interpretation
+ * @param {string}   opts.nickname     - User's display name
+ * @param {Function} opts.onSuccess    - Callback (tempFilePath)
+ * @param {Function} opts.onError      - Callback (Error)
+ */
+function drawSharePoster(canvasId, opts) {
+  const { context, cardImagePath, cardName, keyInsight, nickname, onSuccess, onError } = opts || {};
 
   if (!context || !canvasId) {
-    if (onError) onError(new Error('缺少必要参数: context / canvasId'));
+    if (onError) onError(new Error('Missing required params: context / canvasId'));
     return;
   }
 
   const sysInfo = wx.getSystemInfoSync();
   const W = sysInfo.screenWidth || 375;
   const dpr = sysInfo.pixelRatio || 2;
-  const H = Math.round(W * (1334 / 750));
+  const H = Math.round(W / TARGET_ASPECT);   // 3:4 portrait
 
   const query = wx.createSelectorQuery().in(context);
   query.select('#' + canvasId).fields({ node: true, size: true }).exec(function (res) {
     if (!res || !res[0] || !res[0].node) {
-      if (onError) onError(new Error('Canvas 节点未找到'));
+      if (onError) onError(new Error('Canvas node not found'));
       return;
     }
 
     const canvas = res[0].node;
     const ctx = canvas.getContext('2d');
 
-    // Set canvas buffer size to physical pixels
+    // Set canvas buffer to physical pixels
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
     ctx.scale(dpr, dpr);
 
-    // ---- 1. Background: deep indigo gradient ----
+    // ── 1. Background gradient ──
     const gradient = ctx.createLinearGradient(0, 0, 0, H);
-    gradient.addColorStop(0, '#1A1A3E');
-    gradient.addColorStop(0.5, '#12122E');
-    gradient.addColorStop(1, '#0B0B16');
+    gradient.addColorStop(0, C_BG_TOP);
+    gradient.addColorStop(0.5, C_BG_MID);
+    gradient.addColorStop(1, C_BG_BOT);
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, W, H);
 
-    // ---- 2. Card image ----
-    const cardW = Math.round(W * 0.8);      // ≈ 600rpx
-    const cardH = Math.round(cardW * 1.5);   // ≈ 900rpx
-    const cardX = Math.round((W - cardW) / 2);
-    const cardY = Math.round(H * 0.05);      // top margin ≈ 5%
-    const borderRadius = Math.round(cardW * 0.015);  // ≈ 10rpx
+    // ── 2. Decorative stars ──
+    _drawStars(ctx, W);
 
-    function drawCardImage(imgElement) {
-      // Clip + draw image with rounded corners
-      ctx.save();
-      _roundRect(ctx, cardX, cardY, cardW, cardH, borderRadius);
-      ctx.clip();
-      if (imgElement) {
-        ctx.drawImage(imgElement, cardX, cardY, cardW, cardH);
-      } else {
-        // Fallback: colored rectangle
-        ctx.fillStyle = '#252550';
-        ctx.fill();
-      }
-      ctx.restore();
+    // ── 3. Header + nickname ──
+    const headerBottom = _drawHeader(ctx, W, nickname);
 
-      // Golden border
-      ctx.save();
-      _roundRect(ctx, cardX, cardY, cardW, cardH, borderRadius);
-      ctx.strokeStyle = '#F4D48C';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-      ctx.restore();
-    }
+    // ── 4. Load card image, QR code, then draw everything ──
+    let cardImageLoaded = false;
+    let qrImageLoaded = false;
+    let cardImg = null;
+    let qrImg = null;
+    let drawAttempted = false;
 
-    function drawRemaining() {
-      // ---- 3. Card name below image ----
-      const nameY = cardY + cardH + Math.round(H * 0.022);
-      ctx.save();
-      ctx.fillStyle = '#F4D48C';
-      ctx.font = `bold ${Math.round(W * 0.048)}px "PingFang SC", "Helvetica Neue", sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'top';
-      ctx.fillText(cardName || '', W / 2, nameY);
-      ctx.restore();
+    function _tryDraw() {
+      if (drawAttempted) return;
+      if (!cardImageLoaded) return;
+      // QR code is optional — we don't block on it forever
+      // After a 5s timeout, draw without QR code
+      drawAttempted = true;
 
-      // ---- 4. Quote section ----
-      const nameBottomY = nameY + Math.round(W * 0.048);
-      const quoteBottomY = _drawQuoteSection(ctx, W, H, nameBottomY, cardName, quote, cardW);
+      // Card image
+      const cardBottom = _drawCardImage(ctx, W, headerBottom, cardImg);
 
-      // ---- 5. Bottom area ----
-      _drawBottomSection(ctx, W, H, spreadType);
+      // Card name
+      const nameBottom = _drawCardName(ctx, W, cardBottom, cardName);
 
-      // ---- Export ----
+      // Key insight
+      const insightBottom = _drawKeyInsight(ctx, W, nameBottom, keyInsight);
+
+      // QR code (if loaded)
+      const qrY = Math.min(insightBottom, H - Math.round(W * 0.22));
+      _drawQRCode(ctx, W, qrY, qrImg);
+
+      // Footer
+      _drawFooter(ctx, W, H - Math.round(W * 0.040));
+
+      // Export
       wx.canvasToTempFilePath({
         canvas: canvas,
         success: function (res2) {
@@ -274,24 +380,64 @@ function drawSharePoster(canvasId, options) {
       }, context);
     }
 
-    // Load card image then draw everything
+    // Load card image
     if (cardImagePath) {
       const img = canvas.createImage();
       img.onload = function () {
-        drawCardImage(img);
-        drawRemaining();
+        cardImg = img;
+        cardImageLoaded = true;
+        _tryDraw();
       };
       img.onerror = function () {
-        // Image failed — draw placeholder
-        drawCardImage(null);
-        drawRemaining();
+        // Card image failed — still draw with placeholder
+        cardImageLoaded = true;
+        _tryDraw();
       };
       img.src = cardImagePath;
     } else {
-      // No image path — draw placeholder
-      drawCardImage(null);
-      drawRemaining();
+      cardImageLoaded = true;
     }
+
+    // Load QR code from backend
+    // We use wx.downloadFile for broad domain compatibility
+    const qrUrl = BASE_URL + '/share/wxa-code?path=' + encodeURIComponent('pages/index/index') + '&width=280';
+    wx.downloadFile({
+      url: qrUrl,
+      success: function (dlRes) {
+        if (dlRes.statusCode !== 200) {
+          // QR download failed — proceed without it
+          qrImageLoaded = true;
+          _tryDraw();
+          return;
+        }
+        const q = canvas.createImage();
+        q.onload = function () {
+          qrImg = q;
+          qrImageLoaded = true;
+          _tryDraw();
+        };
+        q.onerror = function () {
+          qrImageLoaded = true;
+          _tryDraw();
+        };
+        q.src = dlRes.tempFilePath;
+      },
+      fail: function () {
+        // QR download failed — proceed without it
+        qrImageLoaded = true;
+        _tryDraw();
+      },
+    });
+
+    // Safety timeout: if QR code hasn't loaded in 5s, draw without it
+    setTimeout(function () {
+      if (!cardImageLoaded) {
+        // Card image still not loaded — this shouldn't happen (card has its own onerror),
+        // but just in case:
+        cardImageLoaded = true;
+      }
+      _tryDraw();
+    }, 5000);
   });
 }
 

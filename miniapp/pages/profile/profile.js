@@ -88,6 +88,9 @@ Page({
         request('/membership/status'),
         request('/readings/history?page=1&page_size=20'),
       ]);
+      // Subtle entrance chime
+      sound.playPageEnterSound();
+
       this.setData({
         user,
         memberStatus: status ? {

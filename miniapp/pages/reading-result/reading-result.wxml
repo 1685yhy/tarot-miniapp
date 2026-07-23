@@ -226,8 +226,8 @@
   visible="{{showSharePoster}}"
   cardImagePath="{{shareCardImage}}"
   cardName="{{shareCardName}}"
-  quote="{{shareQuote}}"
-  spreadType="{{reading.spread_type}}"
+  keyInsight="{{shareKeyInsight}}"
+  nickname="{{userNickname}}"
   bind:close="onCloseSharePoster"
   bind:share="onSharePosterToFriend"
 />

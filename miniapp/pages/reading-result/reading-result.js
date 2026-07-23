@@ -56,7 +56,8 @@ Page({
     showSharePoster: false,
     shareCardImage: '',
     shareCardName: '',
-    shareQuote: '',
+    shareKeyInsight: '',
+    userNickname: '',
 
     // Interactive card enlargement
     enlargedCardIndex: -1,   // -1 = none; 0/1/2 = which card is enlarged
@@ -587,16 +588,41 @@ Page({
   },
 
   /* ---------------------------------------------------------------
-     Share — WeChat built-in share
+     Share — WeChat built-in share (personalized)
      --------------------------------------------------------------- */
 
   onShareAppMessage() {
     const reading = this.data.reading;
     if (!reading) return { title: '星光塔罗解读' };
 
+    // Extract a 15-char key insight from the interpretation
+    let keyInsight = '';
+    if (reading.interpretation) {
+      const clean = reading.interpretation
+        .replace(/#{1,4}\s+/g, '')
+        .replace(/\*\*(.+?)\*\*/g, '$1')
+        .replace(/\n+/g, '')
+        .trim();
+      keyInsight = clean.length > 15 ? clean.slice(0, 15) + '…' : clean;
+    }
+
+    // Use first card name if available
+    let cardName = '星光塔罗';
+    if (reading.drawn_cards && reading.drawn_cards.length > 0) {
+      cardName = reading.drawn_cards[0].card_name_zh
+        || reading.drawn_cards[0].card_name
+        || '星光塔罗';
+    }
+
     const spreadName = SPREAD_TYPE_NAMES[reading.spread_type] || reading.spread_type || '三牌占卜';
+
+    // Personalized share text
+    const title = keyInsight
+      ? `我抽到了「${cardName}」—— ${keyInsight} ✦ 你也来试试星光塔罗`
+      : `我的星光解读 ✦ ${spreadName}`;
+
     return {
-      title: `我的星光解读 ✦ ${spreadName}`,
+      title: title,
       path: `/pages/reading-result/reading-result?id=${reading.id}`,
     };
   },
@@ -618,21 +644,27 @@ Page({
     const cardName = (firstCard.card_name_zh || firstCard.card_name || '') +
       ' · ' + (firstCard.card_name_en || firstCard.name_en || '');
 
-    // Extract a quote snippet from the interpretation (first 120 chars)
-    let quote = '';
+    // Extract a short key insight (15 chars) for the poster
+    let keyInsight = '';
     if (reading.interpretation) {
-      quote = reading.interpretation
+      const clean = reading.interpretation
         .replace(/#{1,4}\s+/g, '')
         .replace(/\*\*(.+?)\*\*/g, '$1')
-        .replace(/\n{3,}/g, '\n')
+        .replace(/\n+/g, '')
         .trim();
+      keyInsight = clean.length > 15 ? clean.slice(0, 15) + '…' : clean;
     }
+
+    // Get user nickname
+    const user = wx.getStorageSync('user') || {};
+    const nickname = user.nickname || user.nickName || '';
 
     this.setData({
       showSharePoster: true,
       shareCardImage: cardImage,
       shareCardName: cardName,
-      shareQuote: quote,
+      shareKeyInsight: keyInsight,
+      userNickname: nickname,
     });
   },
 

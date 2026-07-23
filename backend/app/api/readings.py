@@ -7,6 +7,7 @@ Tarot reading API endpoints.
 - DELETE /readings/history                – delete the current user's reading history
 """
 
+import json
 import re
 import uuid as uuid_lib
 from datetime import datetime, timezone
@@ -19,6 +20,7 @@ from sqlalchemy.orm import selectinload
 from app.config import settings
 from app.db.database import get_db
 from app.models.card import TarotCard
+from app.models.card_teaching import CardTeaching
 from app.models.reading import ChatMessage, DrawnCard, Reading
 from app.models.user import User
 from app.schemas.reading import (
@@ -239,9 +241,25 @@ async def create_reading(
             }
         )
 
+    # ── Fetch teaching data for the drawn cards ──
+    card_ids = [c["card_id"] for c in cards_data]
+    teaching_info: dict[int, dict] = {}
+    if card_ids:
+        t_result = await db.execute(
+            select(CardTeaching).where(CardTeaching.card_id.in_(card_ids))
+        )
+        for teaching_row in t_result.scalars().all():
+            teaching_info[teaching_row.card_id] = {
+                "symbols": json.loads(teaching_row.symbols),
+                "story": teaching_row.story,
+                "keywords_learning": json.loads(teaching_row.keywords_learning),
+                "life_connection": teaching_row.life_connection,
+                "element_association": teaching_row.element_association,
+            }
+
     # ── Generate AI interpretation ──
     interpretation = await generate_reading(
-        spread_type, req.question, req.theme, cards_info
+        spread_type, req.question, req.theme, cards_info, teaching_info=teaching_info
     )
     action_items: list[dict] = []
     if interpretation is not None:
@@ -431,8 +449,25 @@ async def reinterpret_reading(
             }
         )
 
+    # ── Fetch teaching data for re-interpretation ──
+    card_ids = [c.get("card_id") for c in cards_info if c.get("card_id")]
+    teaching_info: dict[int, dict] = {}
+    if card_ids:
+        t_result = await db.execute(
+            select(CardTeaching).where(CardTeaching.card_id.in_(card_ids))
+        )
+        for teaching_row in t_result.scalars().all():
+            teaching_info[teaching_row.card_id] = {
+                "symbols": json.loads(teaching_row.symbols),
+                "story": teaching_row.story,
+                "keywords_learning": json.loads(teaching_row.keywords_learning),
+                "life_connection": teaching_row.life_connection,
+                "element_association": teaching_row.element_association,
+            }
+
     interpretation = await generate_reading(
-        reading.spread_type, reading.question, reading.theme, cards_info
+        reading.spread_type, reading.question, reading.theme, cards_info,
+        teaching_info=teaching_info,
     )
     action_items: list[dict] = []
     if interpretation is not None:

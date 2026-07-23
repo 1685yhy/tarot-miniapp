@@ -2,6 +2,7 @@
 const { request, getFriendlyError } = require('../../utils/api');
 const { computeImagePath } = require('../../utils/cards');
 const { SUIT_ZH } = require('../../utils/constants');
+const { playPageEnterSound } = require('../../utils/sound');
 
 const BATCH_SIZE = 12;   // 首屏+预加载批量（6行×2列）
 const CARD_ROW_HEIGHT = 320; // rpx — 估算每行高度（含gap）
@@ -73,6 +74,9 @@ Page({
         favoriteIds,
         favoriteCount: favoriteIds.length,
       });
+
+      // Entrance chime on first load
+      playPageEnterSound();
 
       // 首屏激活第一批
       this._activateBatch(BATCH_SIZE);
