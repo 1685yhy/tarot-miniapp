@@ -29,6 +29,7 @@ Component({
     cardNumberDisplay: '',
     displayNameEn: '',
     isMajor: true,
+    cardImgError: false,
   },
 
   observers: {
@@ -58,6 +59,9 @@ Component({
   methods: {
     resolveCard(nameZh, cardType, nameEn, cardNumber, imagePath) {
       const hasExternalImage = !!imagePath;
+
+      // Reset card image error state when resolving a new card
+      this.setData({ cardImgError: false });
 
       // 如果显式传了cardType，优先使用
       if (cardType) {
@@ -93,6 +97,11 @@ Component({
           imagePath: hasExternalImage ? imagePath : '',
         });
       }
+    },
+
+    /** Handle card image load error — show CSS fallback instead */
+    onCardImgError() {
+      this.setData({ cardImgError: true });
     },
 
     _guessSuit(nameZh) {

@@ -97,6 +97,7 @@ Page({
 
     // v2.1: Zodiac sign onboarding
     zodiacSign: '',
+    dailyCardImgError: false,
     zodiacList: [
       { key: 'aries', name: '白羊座', emoji: '♈' },
       { key: 'taurus', name: '金牛座', emoji: '♉' },
@@ -516,6 +517,11 @@ Page({
       wx.hideLoading();
       wx.showToast({ title: '抽取失败，请重试', icon: 'none' });
     }
+  },
+
+  /** Handle daily card thumbnail image load error */
+  onDailyCardImgError() {
+    this.setData({ dailyCardImgError: true });
   },
 
   navigateToReading(e) {

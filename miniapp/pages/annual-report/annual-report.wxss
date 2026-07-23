@@ -834,6 +834,26 @@ page {
   height: 100%;
 }
 
+/* Fallback when annual card image fails to load */
+.screen-3-card-fallback {
+  background: linear-gradient(150deg, #1A1A3E 0%, #252550 100%) !important;
+}
+
+.screen-3-card-placeholder-name {
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-lavender-light);
+  text-align: center;
+  letter-spacing: 3rpx;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: rgba(26, 16, 53, 0.70);
+  border: 1rpx solid rgba(212, 168, 83, 0.20);
+  border-radius: var(--radius-sm);
+  max-width: 180rpx;
+  line-height: 1.5;
+  text-shadow: 0 0 8rpx rgba(212, 168, 83, 0.30);
+}
+
 .screen-3-card-name {
   font-size: 40rpx;
   font-weight: 800;

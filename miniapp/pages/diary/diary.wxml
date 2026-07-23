@@ -196,7 +196,10 @@
 
       <!-- 今日卡牌上下文 -->
       <view class="diary-card-context" wx:if="{{todayCard}}">
-        <image class="diary-card-thumb" src="{{todayCard.imagePath}}" mode="aspectFill" />
+        <image class="diary-card-thumb" src="{{todayCard.imagePath}}" mode="aspectFill" binderror="onDiaryCardImgError" wx:if="{{!diaryCardImgError}}" />
+        <view wx:elif="{{diaryCardImgError}}" class="diary-card-thumb diary-card-thumb-fallback">
+          <text class="diary-card-fallback-name">{{todayCard.name_zh}}</text>
+        </view>
         <view class="diary-card-info">
           <text class="diary-card-name">{{todayCard.name_zh}}</text>
           <text class="diary-card-hint">今天抽到的牌</text>

@@ -67,6 +67,7 @@
       <view class="card-face card-front {{frontVisible ? 'card-face--visible' : ''}}" bindtap="onCardTap" role="button">
         <view class="card-img-wrap {{cardImgLoaded ? 'card-img-wrap--loaded' : ''}} {{cardImgError ? 'card-img-wrap--error' : ''}}">
           <image
+            wx:if="{{!cardImgError}}"
             class="card-img-inner"
             src="{{dailyCard.imagePath}}"
             mode="widthFix"
@@ -74,8 +75,9 @@
             binderror="onCardImgError"
             aria-label="{{dailyCard.name_zh}}"
           />
-          <view class="card-img-fallback">
-            <image class="card-img-fallback-icon" src="/images/icons/start_reading_64.png" mode="aspectFit" aria-label="卡牌加载失败" />
+          <view wx:if="{{cardImgError}}" class="card-img-fallback-text">
+            <text class="fallback-cardname">{{dailyCard.name_zh}}</text>
+            <text class="fallback-hint">图片暂不可用</text>
           </view>
         </view>
 

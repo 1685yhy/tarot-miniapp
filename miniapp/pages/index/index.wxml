@@ -154,8 +154,14 @@
         </view>
 
         <!-- Card thumbnail -->
-        <view class="daily-card-thumb-wrap">
-          <image wx:if="{{dailyCard.imagePath}}" class="daily-card-thumb" src="{{dailyCard.imagePath}}" mode="aspectFit" aria-label="{{dailyCard.name_zh}}，今日指引" />
+        <view class="daily-card-thumb-wrap {{dailyCardImgError ? 'daily-card-thumb-error' : ''}}">
+          <image wx:if="{{dailyCard.imagePath && !dailyCardImgError}}" class="daily-card-thumb" src="{{dailyCard.imagePath}}" mode="aspectFit" binderror="onDailyCardImgError" aria-label="{{dailyCard.name_zh}}，今日指引" />
+          <view wx:elif="{{dailyCardImgError}}" class="daily-card-thumb-fallback">
+            <text class="thumb-fallback-name">{{dailyCard.name_zh}}</text>
+          </view>
+          <view wx:else class="daily-card-thumb-fallback">
+            <!-- no image path yet -->
+          </view>
         </view>
 
         <!-- Flipped badge -->

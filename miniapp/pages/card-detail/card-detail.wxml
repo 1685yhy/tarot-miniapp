@@ -52,7 +52,7 @@
             class="card-img-inner hero-image"
             src="{{card.imagePath}}"
             mode="aspectFit"
-            wx:if="{{card.imagePath}}"
+            wx:if="{{card.imagePath && !heroImgError}}"
             bindload="onHeroImgLoad"
             binderror="onHeroImgError"
             aria-label="{{card.name_zh}}"
