@@ -12,7 +12,7 @@
     <!-- 卡面主区域 -->
     <view class="card-art">
       <!-- 星空微光背景 (无真实图像或加载失败时显示) -->
-      <view wx:if="{{!imagePath || cardImgError}}" class="star-field">
+      <view wx:if="{{!imagePath || cardImgError}}" class="star-field" aria-label="{{cardImgError ? '塔罗牌卡面加载中' : '塔罗牌背面'}}">
         <view class="star s1"></view><view class="star s2"></view>
         <view class="star s3"></view><view class="star s4"></view>
         <view class="star s5"></view><view class="star s6"></view>
