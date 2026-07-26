@@ -203,7 +203,7 @@
         <!-- Front: card image -->
         <view class="enlarged-front" wx:if="{{!isFlipped}}">
           <view class="card-img-wrap enlarged-img {{enlargedImgLoaded ? 'card-img-wrap--loaded' : ''}} {{enlargedImgError ? 'card-img-wrap--error' : ''}}">
-            <image class="card-img-inner" src="{{reading.drawn_cards[enlargedCardIndex].imagePath}}" mode="aspectFill" lazy-load wx:if="{{reading.drawn_cards[enlargedCardIndex].imagePath && !enlargedImgError}}" bindload="onEnlargedImgLoad" binderror="onEnlargedImgError" aria-label="{{reading.drawn_cards[enlargedCardIndex].card_name}}，{{reading.drawn_cards[enlargedCardIndex].is_reversed ? '逆位' : '正位'}}" />
+            <image class="card-img-inner" src="{{reading.drawn_cards[enlargedCardIndex].imagePath}}" mode="aspectFill" lazy-load wx:if="{{reading.drawn_cards[enlargedCardIndex].imagePath && !enlargedImgError}}" bindload="onEnlargedImgLoad" binderror="onEnlargedImgError" aria-label="{{reading.drawn_cards[enlargedCardIndex].card_name}} · 第{{enlargedCardIndex + 1}}张 · {{reading.drawn_cards[enlargedCardIndex].position_name || ''}}位" />
             <view class="card-img-fallback" wx:if="{{!reading.drawn_cards[enlargedCardIndex].imagePath || enlargedImgError}}">
               <text class="fallback-name-text">{{reading.drawn_cards[enlargedCardIndex].card_name}}</text>
             </view>

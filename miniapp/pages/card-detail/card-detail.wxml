@@ -55,10 +55,10 @@
             wx:if="{{card.imagePath && !heroImgError}}"
             bindload="onHeroImgLoad"
             binderror="onHeroImgError"
-            aria-label="{{card.name_zh}}"
+            aria-label="{{card.name_zh}} · {{card.suit_cn || '大牌'}} · {{card.type_cn || ''}} — 塔罗卡牌详情"
           />
           <view class="card-img-fallback" wx:if="{{!card.imagePath || heroImgError}}">
-            <image class="card-img-fallback-icon" src="/images/icons/card_back_64.png" mode="aspectFit" aria-label="{{card.name_zh}}（无图）" />
+            <image class="card-img-fallback-icon" src="/images/icons/card_back_64.png" mode="aspectFit" aria-label="{{card.name_zh}} · {{card.suit_cn || '大牌'}} — 塔罗卡牌详情（无图）" />
           </view>
         </view>
         <!-- Decorative corner accents -->

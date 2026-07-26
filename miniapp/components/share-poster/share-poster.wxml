@@ -7,7 +7,7 @@
 
   <!-- Close button (top-right corner) -->
   <view class="sp-close" bindtap="onClose">
-    <image class="sp-close-icon" src="/images/icons/close_64.png" mode="aspectFit" />
+    <image class="sp-close-icon" src="/images/icons/close_64.png" mode="aspectFit" aria-label="关闭" />
   </view>
 
   <!-- Canvas (hidden from view, used for drawing) -->
@@ -32,7 +32,7 @@
 
   <!-- Preview image (once drawn) -->
   <view class="sp-preview-wrap" wx:elif="{{previewPath}}">
-    <image class="sp-preview" src="{{previewPath}}" mode="widthFix"></image>
+    <image class="sp-preview" src="{{previewPath}}" mode="widthFix" aria-label="分享海报预览"></image>
   </view>
 
   <!-- Bottom action buttons -->

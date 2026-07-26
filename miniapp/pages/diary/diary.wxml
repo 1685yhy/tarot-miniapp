@@ -35,7 +35,7 @@
 
     <!-- Create entry button -->
     <button class="btn-create" bindtap="showCreateModal">
-      <image class="btn-create-icon" src="/images/icons/star_64.png" mode="aspectFit" />
+      <image class="btn-create-icon" src="/images/icons/star_64.png" mode="aspectFit" aria-label="记录今天" />
       <text>记录今天</text>
     </button>
 
@@ -156,7 +156,7 @@
           <!-- Card info -->
           <view wx:if="{{entry.card}}" class="entry-card-section">
             <view class="card-label-line">
-              <image class="card-label-icon" src="/images/icons/card_back_64.png" mode="aspectFit" />
+              <image class="card-label-icon" src="/images/icons/card_back_64.png" mode="aspectFit" aria-label="今日之牌" />
               <text class="card-label">今日之牌</text>
             </view>
             <text class="card-name">{{entry.card.name_zh}}</text>
@@ -196,7 +196,7 @@
 
       <!-- 今日卡牌上下文 -->
       <view class="diary-card-context" wx:if="{{todayCard}}">
-        <image class="diary-card-thumb" src="{{todayCard.imagePath}}" mode="aspectFill" binderror="onDiaryCardImgError" wx:if="{{!diaryCardImgError}}" />
+        <image class="diary-card-thumb" src="{{todayCard.imagePath}}" mode="aspectFill" binderror="onDiaryCardImgError" wx:if="{{!diaryCardImgError}}" aria-label="{{todayCard.name_zh}} — 今日卡牌" />
         <view wx:elif="{{diaryCardImgError}}" class="diary-card-thumb diary-card-thumb-fallback">
           <text class="diary-card-fallback-name">{{todayCard.name_zh}}</text>
         </view>

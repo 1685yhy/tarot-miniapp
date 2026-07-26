@@ -20,7 +20,7 @@
 
   <!-- Header -->
   <view class="ac-header">
-    <image class="ac-header-icon" src="/images/icons/star_64.png" mode="aspectFit" />
+    <image class="ac-header-icon" src="/images/icons/star_64.png" mode="aspectFit" aria-label="今日行动建议" />
     <text class="ac-header-title">今日行动建议</text>
   </view>
 
@@ -43,9 +43,9 @@
 
       <!-- Category icon -->
       <view class="ac-category-icon">
-        <image wx:if="{{item.category === 'love'}}" class="ac-category-icon-img" src="/images/icons/heart_64.png" mode="aspectFit" />
-        <image wx:elif="{{item.category === 'career'}}" class="ac-category-icon-img" src="/images/icons/diamond_64.png" mode="aspectFit" />
-        <image wx:else class="ac-category-icon-img" src="/images/icons/star_64.png" mode="aspectFit" />
+        <image wx:if="{{item.category === 'love'}}" class="ac-category-icon-img" src="/images/icons/heart_64.png" mode="aspectFit" aria-label="爱情建议" />
+        <image wx:elif="{{item.category === 'career'}}" class="ac-category-icon-img" src="/images/icons/diamond_64.png" mode="aspectFit" aria-label="事业建议" />
+        <image wx:else class="ac-category-icon-img" src="/images/icons/star_64.png" mode="aspectFit" aria-label="行动建议" />
       </view>
 
       <!-- Content text -->

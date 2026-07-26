@@ -21,7 +21,7 @@
   <view wx:else>
     <!-- Hero -->
     <view class="mem-hero">
-      <image class="mem-hero-icon" src="/images/icons/star_64.png" mode="aspectFit" />
+      <image class="mem-hero-icon" src="/images/icons/star_64.png" mode="aspectFit" aria-label="星光会员" />
       <text class="mem-hero-title">星光会员</text>
       <text class="mem-hero-sub">解锁全部牌阵 · AI 无限解读</text>
     </view>

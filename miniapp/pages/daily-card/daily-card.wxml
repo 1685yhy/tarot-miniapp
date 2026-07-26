@@ -73,7 +73,7 @@
             mode="widthFix"
             bindload="onCardImgLoad"
             binderror="onCardImgError"
-            aria-label="{{dailyCard.name_zh}}"
+            aria-label="今日塔罗 — {{dailyCard.name_zh}}"
           />
           <view wx:if="{{cardImgError}}" class="card-img-fallback-text">
             <text class="fallback-cardname">{{dailyCard.name_zh}}</text>

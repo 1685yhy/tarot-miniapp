@@ -209,14 +209,14 @@
 
       <!-- Mode selector cards -->
       <view class="mode-selector">
-        <view class="mode-card {{quickMode ? 'mode-active' : ''}}" bindtap="onSelectMode" data-mode="quick" role="button">
+        <view class="mode-card {{quickMode ? 'mode-active' : ''}}" bindtap="onSelectMode" data-mode="quick" role="button" aria-label="快速抽牌模式">
           <text class="mode-card-icon">⚡</text>
           <view class="mode-card-text-wrap">
             <text class="mode-card-name">快速</text>
             <text class="mode-card-desc">跳过仪式 · 10秒出结果</text>
           </view>
         </view>
-        <view class="mode-card {{!quickMode ? 'mode-active' : ''}}" bindtap="onSelectMode" data-mode="immersive" role="button">
+        <view class="mode-card {{!quickMode ? 'mode-active' : ''}}" bindtap="onSelectMode" data-mode="immersive" role="button" aria-label="沉浸解读模式">
           <text class="mode-card-icon">✨</text>
           <view class="mode-card-text-wrap">
             <text class="mode-card-name">沉浸</text>
