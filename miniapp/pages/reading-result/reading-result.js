@@ -77,6 +77,9 @@ Page({
     // TL;DR summary
     tldr: [],
 
+    // Membership / user state
+    isMember: false,
+
     // Onboarding Step 3
     showOnboarding: false,
     onboardingStep: 0,
@@ -87,6 +90,10 @@ Page({
     const isPending = options && options.pending === '1';
     const spread = options && options.spread;
     const isQuick = options && options.quick === '1';
+
+    // Load member status
+    const user = wx.getStorageSync('user') || {};
+    this.setData({ isMember: !!user.is_member });
 
     if (!id && !isPending) {
       wx.showToast({ title: '参数错误', icon: 'none' });
@@ -613,6 +620,11 @@ Page({
 
   onBackHome() {
     wx.switchTab({ url: '/pages/index/index' });
+  },
+
+  /** Navigate to membership page */
+  onGoMembership() {
+    wx.navigateTo({ url: '/pages/membership/membership' });
   },
 
   /* ---------------------------------------------------------------

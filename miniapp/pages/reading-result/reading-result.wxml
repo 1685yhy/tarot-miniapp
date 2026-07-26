@@ -180,6 +180,18 @@
         </view>
       </view>
 
+      <!-- 非会员：解读结束后的柔和引导 -->
+      <view class="unlock-cta" wx:if="{{!isMember}}">
+        <view class="unlock-divider">
+          <text class="unlock-divider-line"></text>
+          <text class="unlock-divider-star">✦</text>
+          <text class="unlock-divider-line"></text>
+        </view>
+        <text class="unlock-title">喜欢这次解读吗？</text>
+        <text class="unlock-desc">开通会员，解锁全部 10 种牌阵 · AI 无限追问</text>
+        <button class="unlock-btn" bindtap="onGoMembership">解锁无限星光</button>
+      </view>
+
       <!-- Undo bar — allow user to retract and re-draw -->
       <view class="undo-bar" wx:if="{{showUndo && !pageLoading}}" bindtap="onUndoReading">
         <text class="undo-text">↩ 重新抽牌</text>

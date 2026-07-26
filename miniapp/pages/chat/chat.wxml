@@ -84,6 +84,14 @@
       <image class="retry-icon" src="/images/icons/warning_64.png" mode="aspectFit" aria-label="发送失败" />
       <text class="retry-text">发送失败，点击重试</text>
     </view>
+
+    <!-- ===== 追问额度耗尽会员引导 ===== -->
+    <view class="chat-membership-prompt" wx:if="{{showMembershipPrompt}}">
+      <text class="cmp-icon">💫</text>
+      <text class="cmp-text">今日追问次数已用完</text>
+      <text class="cmp-sub">会员无限追问 · AI 深度陪伴</text>
+      <button class="cmp-btn" bindtap="onGoMembership">了解会员</button>
+    </view>
   </view>
 
 </view>

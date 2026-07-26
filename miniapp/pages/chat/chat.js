@@ -37,6 +37,10 @@ Page({
     readingContext: null, // { question, spread_type }
     sendFailed: false,     // true when last send failed, shows retry bar
     _pendingRetryText: '', // failed message text to retry
+
+    // Membership prompt when quota exhausted
+    showMembershipPrompt: false,
+    membershipPromptText: '',
   },
 
   async onLoad(options) {
@@ -134,6 +138,16 @@ Page({
       this.scrollToBottom();
     } catch (err) {
       if (this._destroyed) return;
+      // 402: quota exhausted — show membership prompt instead of retry
+      if (err.statusCode === 402) {
+        this.setData({
+          sending: false,
+          aiThinking: false,
+          showMembershipPrompt: true,
+          membershipPromptText: '今日追问已达上限',
+        });
+        return;
+      }
       // 保留用户消息，标记发送失败，允许点击重试
       const lastMsg = messages[messages.length - 1];
       lastMsg.failed = true;
@@ -177,6 +191,16 @@ Page({
       this.scrollToBottom();
     } catch (err) {
       if (this._destroyed) return;
+      // 402: quota exhausted — show membership prompt
+      if (err.statusCode === 402) {
+        this.setData({
+          sending: false,
+          aiThinking: false,
+          showMembershipPrompt: true,
+          membershipPromptText: '今日追问已达上限',
+        });
+        return;
+      }
       messages[messages.length - 1] = { role: 'user', content: text, failed: true };
       this.setData({ messages, sending: false, aiThinking: false, inputText: text, canSend: true,
         sendFailed: true, _pendingRetryText: text });
@@ -187,6 +211,11 @@ Page({
     wx.createSelectorQuery().select('#chat-bottom').boundingClientRect(() => {
       wx.pageScrollTo({ scrollTop: 99999, duration: 200 });
     }).exec();
+  },
+
+  /** Navigate to membership page */
+  onGoMembership() {
+    wx.navigateTo({ url: '/pages/membership/membership' });
   },
 
   onGoHome() {
