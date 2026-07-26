@@ -30,6 +30,9 @@ class Settings(BaseSettings):
     # Super admin — these user IDs bypass all free-tier limits
     SUPER_ADMIN_IDS: list[str] = ["15eda012-5ad2-4211-ad06-072d194f617d"]
 
+    # Sentry
+    SENTRY_DSN: str = ""
+
     # Dev login toggle — production must be false; backend guarded by 404
     ENABLE_DEV_LOGIN: bool = False
 
