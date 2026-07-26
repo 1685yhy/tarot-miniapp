@@ -1,4 +1,7 @@
 from contextlib import asynccontextmanager
+import logging
+
+import sentry_sdk
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -6,6 +9,24 @@ from fastapi.staticfiles import StaticFiles
 from app.db.database import create_all
 from app.config import settings
 from app.api import auth, cards, chat, diary, membership, orders, readings, report, share, tasks, community
+from app.api.monitor import router as monitor_router
+from app.middleware.metrics import MetricsMiddleware
+
+logger = logging.getLogger(__name__)
+
+# ---- Sentry initialization ----
+try:
+    if settings.SENTRY_DSN:
+        sentry_sdk.init(
+            dsn=settings.SENTRY_DSN,
+            traces_sample_rate=0.1,
+            environment="development" if settings.ENABLE_DEV_LOGIN else "production",
+        )
+        logger.info("Sentry SDK initialized")
+    else:
+        logger.info("Sentry DSN not set — skipping Sentry initialization")
+except Exception:
+    logger.exception("Failed to initialize Sentry SDK — continuing without it")
 
 
 @asynccontextmanager
@@ -49,6 +70,10 @@ app.include_router(readings.router)
 app.include_router(report.router)
 app.include_router(share.router)
 app.include_router(community.router)
+app.include_router(monitor_router)
+
+# Metrics middleware — must be added after routers so path patterns are resolved
+app.add_middleware(MetricsMiddleware)
 
 
 @app.get("/health")
