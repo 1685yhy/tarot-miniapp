@@ -1969,6 +1969,7 @@
   .daily-card-glow-overlay { opacity: 0.6; border-color: rgba(244,212,140,0.30); }
   .to-star { animation: none !important; opacity: 0.08; }
   .tarot-overlay-content { animation: none; }
+  .mp-star { animation: none; }
 }
 
 /* ============================================================
