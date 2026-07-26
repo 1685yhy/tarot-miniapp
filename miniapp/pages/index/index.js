@@ -105,6 +105,10 @@ Page({
     greetingText: '',
     greetingAnimKey: 0,
 
+    // Membership smart prompt
+    showMembershipPrompt: false,
+    membershipPromptReason: '', // 'quota_exhausted' | 'near_limit'
+
     // v2.1: Zodiac sign onboarding
     zodiacSign: '',
     dailyCardImgError: false,
@@ -297,6 +301,37 @@ Page({
     } catch (_err) {
       // Silently degrade — counts stay at defaults
     }
+    this._checkMembershipPrompt();
+  },
+
+  /** Show membership CTA when free quota is exhausted or nearly so */
+  _checkMembershipPrompt() {
+    const freeReadingsUsed = this.data.freeReadingsUsed;
+    const freeReadingsTotal = this.data.freeReadingsTotal;
+    const isMember = this.data.isMember;
+    const freeLeft = Math.max(0, freeReadingsTotal - freeReadingsUsed);
+
+    if (isMember) {
+      this.setData({ showMembershipPrompt: false });
+      return;
+    }
+
+    if (freeLeft <= 0) {
+      this.setData({
+        showMembershipPrompt: true,
+        membershipPromptReason: 'quota_exhausted',
+      });
+    } else if (freeLeft === 1) {
+      this.setData({
+        showMembershipPrompt: true,
+        membershipPromptReason: 'near_limit',
+      });
+    }
+  },
+
+  /** Dismiss the membership prompt card */
+  onDismissMembership() {
+    this.setData({ showMembershipPrompt: false });
   },
 
   /** Check trial expiry and auto-revoke if expired */

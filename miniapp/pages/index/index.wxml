@@ -314,6 +314,25 @@
     </view>
   </view>
 
+  <!-- 会员引导卡片 — 仅在触发条件满足时展示 -->
+  <view class="membership-prompt {{showMembershipPrompt ? 'membership-prompt--visible' : ''}}"
+    wx:if="{{showMembershipPrompt && !isMember}}">
+    <view class="mp-card">
+      <view class="mp-stars">
+        <view class="mp-star mp-star-1"></view>
+        <view class="mp-star mp-star-2"></view>
+        <view class="mp-star mp-star-3"></view>
+      </view>
+      <text class="mp-icon">✨</text>
+      <text class="mp-title">{{membershipPromptReason === 'quota_exhausted' ? '今日星光已用完' : '今日星光即将用完'}}</text>
+      <text class="mp-desc">开通会员 · 无限解读 · 每日低至 ¥0.46</text>
+      <button class="mp-btn" bindtap="onGoMembership">
+        <text>解锁无限星光 ✦</text>
+      </button>
+      <text class="mp-dismiss" bindtap="onDismissMembership">暂不需要</text>
+    </view>
+  </view>
+
   <!-- 9.9新人专享CTA -->
   <view class="hero-cta anim-fade-in-up-3" bindtap="onStartFirstReading" wx:if="{{!isMember && freeReadingsUsed === 0}}">
     <view class="hero-cta-glow"></view>
