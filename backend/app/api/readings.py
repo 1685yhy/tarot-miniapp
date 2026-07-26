@@ -354,6 +354,7 @@ async def create_reading(
         teaching_info=teaching_info,
         persona=persona_key,
         user_context=user_context,
+        zodiac_sign=req.zodiac,
     )
     action_items: list[dict] = []
     if interpretation is not None:

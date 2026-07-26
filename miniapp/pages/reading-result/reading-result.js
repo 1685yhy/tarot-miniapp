@@ -147,6 +147,7 @@ Page({
       question: (pending && pending.question) || null,
       theme: (pending && pending.theme) || 'general',
       persona: (pending && pending.persona) || null,
+      zodiac: (pending && pending.zodiac) || '',
     };
     try {
       const result = await request(`/readings/spread/${this._pendingSpread}`, {

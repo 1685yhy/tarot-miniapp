@@ -530,6 +530,7 @@ Page({
       question: this.data.question || null,
       theme: this.data.theme || 'general',
       persona: this.data.selectedPersona || DEFAULT_PERSONA,
+      zodiac: wx.getStorageSync('zodiac_sign') || '',
       timestamp: Date.now(),
     };
     wx.setStorageSync('pending_reading', pending);
