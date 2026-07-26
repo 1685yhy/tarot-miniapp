@@ -69,6 +69,16 @@
       </view>
       <text class="hero-name-zh">{{card.name_zh}}</text>
       <text class="hero-name-en">{{card.name_en}}</text>
+
+      <!-- ==================== ACTION BUTTONS ==================== -->
+      <view class="action-row" wx:if="{{card}}">
+        <view class="action-btn" bindtap="onCollect" aria-label="收藏 {{card.name_zh}}" aria-role="button">
+          <text>收藏</text>
+        </view>
+        <view class="action-btn" bindtap="onShare" aria-label="分享 {{card.name_zh}}" aria-role="button">
+          <text>分享</text>
+        </view>
+      </view>
     </view>
 
     <!-- ==================== KEYWORD TAGS ==================== -->
@@ -85,11 +95,13 @@
         class="tab-item {{activeTab === 'upright' ? 'tab-active' : ''}}"
         data-tab="upright"
         bindtap="onTabTap"
+        role="text"
       >正位</view>
       <view
         class="tab-item {{activeTab === 'reversed' ? 'tab-active' : ''}}"
         data-tab="reversed"
         bindtap="onTabTap"
+        role="text"
       >逆位</view>
       <view
         class="tab-item {{activeTab === 'teaching' ? 'tab-active' : ''}}"

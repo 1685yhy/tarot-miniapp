@@ -155,7 +155,7 @@
 
         <!-- Card thumbnail -->
         <view class="daily-card-thumb-wrap {{dailyCardImgError ? 'daily-card-thumb-error' : ''}}">
-          <image wx:if="{{dailyCard.imagePath && !dailyCardImgError}}" class="daily-card-thumb" src="{{dailyCard.imagePath}}" mode="aspectFit" binderror="onDailyCardImgError" aria-label="{{dailyCard.name_zh}}，今日指引" />
+          <image wx:if="{{dailyCard.imagePath && !dailyCardImgError}}" class="daily-card-thumb" src="{{dailyCard.imagePath}}" mode="aspectFit" binderror="onDailyCardImgError" aria-label="今日塔罗 — {{dailyCard.name_cn || dailyCard.name_zh || '每日一牌'}}" />
           <view wx:elif="{{dailyCardImgError}}" class="daily-card-thumb-fallback">
             <text class="thumb-fallback-name">{{dailyCard.name_zh}}</text>
           </view>
