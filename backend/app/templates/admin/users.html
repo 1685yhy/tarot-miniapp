@@ -1,0 +1,74 @@
+{% extends "admin/base.html" %}
+{% block title %}用户管理 · 星光映照{% endblock %}
+{% block header %}<h1 class="page-title">用户管理</h1>{% endblock %}
+{% block content %}
+
+<div class="toolbar">
+    <form method="GET" action="/admin/users" class="toolbar-form">
+        <input
+            type="text"
+            name="search"
+            value="{{ search }}"
+            placeholder="搜索昵称 / OpenID…"
+            class="input-search"
+        />
+        <select name="membership" class="input-select" onchange="this.form.submit()">
+            <option value="all" {% if membership == 'all' %}selected{% endif %}>全部</option>
+            <option value="member" {% if membership == 'member' %}selected{% endif %}>会员</option>
+            <option value="non-member" {% if membership == 'non-member' %}selected{% endif %}>非会员</option>
+        </select>
+        <button type="submit" class="btn btn-primary">搜索</button>
+    </form>
+    <span class="toolbar-total">共 {{ total }} 人</span>
+</div>
+
+<div class="table-wrap">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>昵称</th>
+                <th>OpenID</th>
+                <th>会员</th>
+                <th>会员到期</th>
+                <th>占卜次数</th>
+                <th>注册时间</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in users %}
+            <tr>
+                <td class="cell-id">{{ u.id[:8] }}…</td>
+                <td>{{ u.nickname }}</td>
+                <td class="cell-mono">{{ u.openid[:16] }}…</td>
+                <td>
+                    {% if u.is_member %}
+                    <span class="badge badge--member">会员</span>
+                    {% else %}
+                    <span class="badge badge--nonmember">普通</span>
+                    {% endif %}
+                </td>
+                <td>{{ u.member_expires_at.strftime('%Y-%m-%d') if u.member_expires_at else '-' }}</td>
+                <td>{{ u.reading_count }}</td>
+                <td>{{ u.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="7" class="cell-empty">暂无数据</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if total_pages > 1 %}
+<div class="pagination">
+    {% if page > 1 %}
+    <a href="?page={{ page - 1 }}&search={{ search }}&membership={{ membership }}" class="page-link">&laquo; 上一页</a>
+    {% endif %}
+    <span class="page-info">{{ page }} / {{ total_pages }}</span>
+    {% if page < total_pages %}
+    <a href="?page={{ page + 1 }}&search={{ search }}&membership={{ membership }}" class="page-link">下一页 &raquo;</a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}

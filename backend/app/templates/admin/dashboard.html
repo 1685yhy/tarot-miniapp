@@ -1,0 +1,53 @@
+{% extends "admin/base.html" %}
+{% block title %}仪表盘 · 星光映照{% endblock %}
+{% block header %}<h1 class="page-title">仪表盘</h1>{% endblock %}
+{% block content %}
+
+<div class="stats-grid">
+    <div class="stat-card stat-card--dau">
+        <div class="stat-label">今日 DAU</div>
+        <div class="stat-value">{{ dau }}</div>
+        <div class="stat-desc">活跃用户</div>
+    </div>
+    <div class="stat-card stat-card--revenue">
+        <div class="stat-label">今日收入</div>
+        <div class="stat-value stat-value--currency">{{ "%.2f"|format(revenue) }}</div>
+        <div class="stat-desc">元</div>
+    </div>
+    <div class="stat-card stat-card--ai">
+        <div class="stat-label">AI 调用</div>
+        <div class="stat-value">{{ ai_calls }}</div>
+        <div class="stat-desc">今日占卜次数</div>
+    </div>
+    <div class="stat-card stat-card--conversion">
+        <div class="stat-label">转化率</div>
+        <div class="stat-value">{{ conversion_rate }}%</div>
+        <div class="stat-desc">付费占比</div>
+    </div>
+    <div class="stat-card stat-card--users">
+        <div class="stat-label">总用户</div>
+        <div class="stat-value">{{ total_users }}</div>
+        <div class="stat-desc">累计注册</div>
+    </div>
+    <div class="stat-card stat-card--orders">
+        <div class="stat-label">总订单</div>
+        <div class="stat-value">{{ total_orders }}</div>
+        <div class="stat-desc">累计订单</div>
+    </div>
+</div>
+
+<!-- 7-day trend chart (simple bar) -->
+<div class="chart-section">
+    <h2 class="section-title">近 7 日占卜趋势</h2>
+    <div class="bar-chart">
+        {% for i in range(7) %}
+        <div class="bar-column">
+            <div class="bar-value">{{ trend[i] }}</div>
+            <div class="bar-bar" style="height: {{ (trend[i] / (trend|max or 1)) * 160 }}px;"></div>
+            <div class="bar-label">{{ days[i] }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

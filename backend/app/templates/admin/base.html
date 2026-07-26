@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}星光映照 · 管理后台{% endblock %}</title>
+    <link rel="stylesheet" href="/static/admin.css">
+    {% block head %}{% endblock %}
+</head>
+<body>
+<div class="admin-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-icon">&#9733;</span>
+            <span class="brand-text">星光映照</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="/admin" class="nav-item {% if request.url.path == '/admin' %}active{% endif %}">
+                <span class="nav-icon">&#9632;</span>
+                <span class="nav-label">仪表盘</span>
+            </a>
+            <a href="/admin/users" class="nav-item {% if 'users' in request.url.path %}active{% endif %}">
+                <span class="nav-icon">&#9644;</span>
+                <span class="nav-label">用户管理</span>
+            </a>
+            <a href="/admin/readings" class="nav-item {% if 'readings' in request.url.path %}active{% endif %}">
+                <span class="nav-icon">&#9670;</span>
+                <span class="nav-label">占卜记录</span>
+            </a>
+            <a href="/admin/orders" class="nav-item {% if 'orders' in request.url.path %}active{% endif %}">
+                <span class="nav-icon">&#9679;</span>
+                <span class="nav-label">订单管理</span>
+            </a>
+            <a href="/admin/content" class="nav-item {% if 'content' in request.url.path %}active{% endif %}">
+                <span class="nav-icon">&#9660;</span>
+                <span class="nav-label">牌面管理</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <span class="admin-name">{{ admin.nickname or 'Admin' }}</span>
+            <span class="admin-version">v1.0</span>
+        </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main-content">
+        <header class="page-header">
+            {% block header %}{% endblock %}
+        </header>
+        <section class="page-body">
+            {% block content %}{% endblock %}
+        </section>
+    </main>
+
+</div>
+{% block scripts %}{% endblock %}
+</body>
+</html>

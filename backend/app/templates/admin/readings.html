@@ -1,0 +1,61 @@
+{% extends "admin/base.html" %}
+{% block title %}占卜记录 · 星光映照{% endblock %}
+{% block header %}<h1 class="page-title">占卜记录</h1>{% endblock %}
+{% block content %}
+
+<div class="toolbar">
+    <span class="toolbar-total">共 {{ total }} 条记录</span>
+</div>
+
+<div class="table-wrap">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>用户</th>
+                <th>牌阵</th>
+                <th>主题</th>
+                <th>人格</th>
+                <th>付费</th>
+                <th>AI 解读预览</th>
+                <th>时间</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in readings %}
+            <tr>
+                <td class="cell-id">{{ r.id[:8] }}…</td>
+                <td>{{ r.user_nickname }}</td>
+                <td>{{ r.spread_type }}</td>
+                <td>{{ r.theme }}</td>
+                <td>{{ r.persona }}</td>
+                <td>
+                    {% if r.is_paid %}
+                    <span class="badge badge--paid">已付费</span>
+                    {% else %}
+                    <span class="badge badge--free">免费</span>
+                    {% endif %}
+                </td>
+                <td class="cell-preview">{{ r.preview }}</td>
+                <td>{{ r.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="8" class="cell-empty">暂无数据</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if total_pages > 1 %}
+<div class="pagination">
+    {% if page > 1 %}
+    <a href="?page={{ page - 1 }}" class="page-link">&laquo; 上一页</a>
+    {% endif %}
+    <span class="page-info">{{ page }} / {{ total_pages }}</span>
+    {% if page < total_pages %}
+    <a href="?page={{ page + 1 }}" class="page-link">下一页 &raquo;</a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}
