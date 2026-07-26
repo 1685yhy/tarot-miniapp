@@ -56,7 +56,7 @@ Page({
     ambientEnabled: false,
 
     // Draw mode preference
-    defaultDrawMode: 'immersive',
+    defaultDrawMode: 'quick',
 
     // Annual report notification reminder
     yearEndReminderEnabled: false,
@@ -90,7 +90,7 @@ Page({
     this.setData({
       soundEnabled: sound.sfxEnabled,
       ambientEnabled: sound.ambientEnabled,
-      defaultDrawMode: wx.getStorageSync('default_draw_mode') || 'immersive',
+      defaultDrawMode: wx.getStorageSync('default_draw_mode') || 'quick',
       yearEndReminderEnabled: wx.getStorageSync('year_end_reminder') === true,
       isAnnualReportSeason: false,
     });
@@ -245,6 +245,13 @@ Page({
   },
 
   onGoAnnualReport() {
+    const app = getApp();
+    const user = app.globalData.user;
+    if (!user || !user.is_member) {
+      wx.showToast({ title: '会员专属功能', icon: 'none' });
+      wx.navigateTo({ url: '/pages/membership/membership' });
+      return;
+    }
     wx.navigateTo({ url: '/pages/annual-report/annual-report' });
   },
 

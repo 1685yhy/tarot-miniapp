@@ -24,7 +24,7 @@
   <!-- ============ Hero: 邀请战绩 ============ -->
   <view class="hero-card anim-fade-up anim-stagger-1">
     <view class="hero-glow"></view>
-    <image class="hero-icon" src="/images/icons/star_64.png" mode="aspectFit" />
+    <image class="hero-icon" src="/images/icons/star_64.png" mode="aspectFit" aria-label="星光分享中心" />
     <text class="hero-title">星光分享中心</text>
     <text class="hero-subtitle">邀请朋友，一起探索星辰的智慧</text>
 
@@ -52,7 +52,7 @@
     <view class="invite-code-row">
       <text class="invite-code-text" selectable="true">{{inviteCode || 'STAR-****'}}</text>
       <button class="copy-btn" bindtap="onCopyCode">
-        <image class="copy-btn-icon" src="/images/icons/star_64.png" mode="aspectFit" />
+        <image class="copy-btn-icon" src="/images/icons/star_64.png" mode="aspectFit" aria-label="复制邀请码" />
         <text class="copy-btn-text">{{copied ? '已复制' : '复制'}}</text>
       </button>
     </view>
@@ -62,7 +62,7 @@
   <!-- ============ 邀请好友按钮 ============ -->
   <view class="invite-action anim-fade-up anim-stagger-3" bindtap="onInviteFriend">
     <view class="invite-btn-glow"></view>
-    <image class="invite-action-icon" src="/images/icons/sparkle_64.png" mode="aspectFit" />
+    <image class="invite-action-icon" src="/images/icons/sparkle_64.png" mode="aspectFit" aria-label="邀请朋友" />
     <text class="invite-action-text">邀请朋友</text>
     <text class="invite-action-arrow">→</text>
   </view>
@@ -70,7 +70,7 @@
   <!-- ============ 奖励进度 ============ -->
   <view class="reward-section anim-fade-up anim-stagger-4">
     <view class="reward-header">
-      <image class="reward-header-icon" src="/images/icons/star_filled_64.png" mode="aspectFit" />
+      <image class="reward-header-icon" src="/images/icons/star_filled_64.png" mode="aspectFit" aria-label="分享奖励" />
       <text class="reward-header-title">分享奖励进度</text>
     </view>
 
@@ -156,12 +156,12 @@
   <!-- ============ 分享历史 ============ -->
   <view class="history-section anim-fade-up anim-stagger-5">
     <view class="history-header">
-      <image class="history-header-icon" src="/images/icons/history_64.png" mode="aspectFit" />
+      <image class="history-header-icon" src="/images/icons/history_64.png" mode="aspectFit" aria-label="分享记录" />
       <text class="history-header-title">分享记录</text>
     </view>
 
     <view wx:if="{{shareHistory.length === 0}}" class="empty-state-inline">
-      <image class="empty-icon-img" src="/images/icons/theme_general_64.png" mode="aspectFit" />
+      <image class="empty-icon-img" src="/images/icons/theme_general_64.png" mode="aspectFit" aria-label="暂无分享记录" />
       <text class="empty-text">暂无分享记录</text>
       <text class="empty-hint">分享解读或邀请朋友，记录会显示在这里</text>
     </view>
