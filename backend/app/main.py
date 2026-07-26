@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 import logging
+import os
 
 import sentry_sdk
 from fastapi import FastAPI
@@ -8,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.db.database import create_all
 from app.config import settings
-from app.api import auth, cards, chat, diary, membership, orders, readings, report, share, tasks, community
+from app.api import auth, cards, chat, diary, membership, orders, readings, report, share, tasks, community, admin
 from app.api.monitor import router as monitor_router
 from app.middleware.metrics import MetricsMiddleware
 
@@ -71,6 +72,12 @@ app.include_router(report.router)
 app.include_router(share.router)
 app.include_router(community.router)
 app.include_router(monitor_router)
+app.include_router(admin.router)
+
+# Admin static files (mount before dev-assets so /static doesn't conflict)
+STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
+if os.path.isdir(STATIC_DIR):
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # Metrics middleware — must be added after routers so path patterns are resolved
 app.add_middleware(MetricsMiddleware)
@@ -98,7 +105,6 @@ async def health():
 
 
 # Develop mode: serve card images from local filesystem
-import os
 CARDS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "dev-assets", "cards_thumb")
 if os.path.isdir(CARDS_DIR):
     app.mount("/images/cards", StaticFiles(directory=CARDS_DIR), name="cards")

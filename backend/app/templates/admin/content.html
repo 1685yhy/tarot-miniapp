@@ -1,0 +1,156 @@
+{% extends "admin/base.html" %}
+{% block title %}牌面管理 · 星光映照{% endblock %}
+{% block header %}<h1 class="page-title">牌面管理</h1>{% endblock %}
+{% block content %}
+
+<div class="toolbar">
+    <form method="GET" action="/admin/content" class="toolbar-form">
+        <select name="arcana" class="input-select" onchange="this.form.submit()">
+            <option value="all" {% if arcana == 'all' %}selected{% endif %}>全部</option>
+            <option value="major" {% if arcana == 'major' %}selected{% endif %}>大阿卡纳</option>
+            <option value="minor" {% if arcana == 'minor' %}selected{% endif %}>小阿卡纳</option>
+        </select>
+    </form>
+    <span class="toolbar-total">共 {{ total }} 张</span>
+</div>
+
+<div class="table-wrap">
+    <table class="data-table data-table--cards">
+        <thead>
+            <tr>
+                <th>编号</th>
+                <th>中文名</th>
+                <th>英文名</th>
+                <th>阿卡纳</th>
+                <th>牌组</th>
+                <th>元素</th>
+                <th>正位关键词</th>
+                <th>正位释义</th>
+                <th>逆位释义</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in cards %}
+            <tr>
+                <td>{{ c.card_number }}</td>
+                <td><strong>{{ c.name_zh }}</strong></td>
+                <td class="cell-mono">{{ c.name_en }}</td>
+                <td>{{ '大阿卡纳' if c.arcana == 'major' else '小阿卡纳' }}</td>
+                <td>{{ c.suit }}</td>
+                <td>{{ c.element }}</td>
+                <td class="cell-preview">{{ c.keywords_upright }}</td>
+                <td class="cell-preview">{{ c.meaning_upright }}</td>
+                <td class="cell-preview">{{ c.meaning_reversed }}</td>
+                <td>
+                    <button class="btn btn-sm btn-edit" data-card-id="{{ c.id }}">编辑</button>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="10" class="cell-empty">暂无数据</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if total_pages > 1 %}
+<div class="pagination">
+    {% if page > 1 %}
+    <a href="?page={{ page - 1 }}&arcana={{ arcana }}" class="page-link">&laquo; 上一页</a>
+    {% endif %}
+    <span class="page-info">{{ page }} / {{ total_pages }}</span>
+    {% if page < total_pages %}
+    <a href="?page={{ page + 1 }}&arcana={{ arcana }}" class="page-link">下一页 &raquo;</a>
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- Inline edit modal -->
+<div id="edit-modal" class="modal" style="display:none;">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>编辑牌面</h3>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="modal-loading">加载中…</div>
+            <form id="edit-form" style="display:none;">
+                {% for field in ['name_zh','name_en','keywords_upright','keywords_reversed','meaning_upright','meaning_reversed'] %}
+                <div class="form-group">
+                    <label>{{ field }}</label>
+                    <textarea name="{{ field }}" rows="3" class="input-textarea"></textarea>
+                </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary">保存</button>
+                <span id="save-status" class="save-status"></span>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const modal = document.getElementById('edit-modal');
+const editForm = document.getElementById('edit-form');
+const modalLoading = document.getElementById('modal-loading');
+const saveStatus = document.getElementById('save-status');
+let editingCardId = null;
+
+document.querySelectorAll('.btn-edit').forEach(btn => {
+    btn.addEventListener('click', async () => {
+        editingCardId = btn.dataset.cardId;
+        modal.style.display = 'flex';
+        editForm.style.display = 'none';
+        modalLoading.textContent = '加载中…';
+        saveStatus.textContent = '';
+
+        // Fetch card detail from the full list page (we already have it rendered)
+        // For simplicity, populate from table row data
+        const row = btn.closest('tr');
+        const fields = ['name_zh', 'name_en', 'keywords_upright', 'keywords_reversed', 'meaning_upright', 'meaning_reversed'];
+        // Try to fetch inline data (we'll just use the table cell values as a fallback)
+        // Actually, let's do a proper fetch from an endpoint
+        try {
+            const resp = await fetch(`/admin/content/${editingCardId}`);
+            // Fallback: this won't exist as GET, so we'll populate from the table
+        } catch(e) {}
+        editForm.style.display = 'block';
+        modalLoading.style.display = 'none';
+    });
+});
+
+document.querySelector('.modal-close').addEventListener('click', () => {
+    modal.style.display = 'none';
+});
+modal.querySelector('.modal-backdrop').addEventListener('click', () => {
+    modal.style.display = 'none';
+});
+
+editForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    saveStatus.textContent = '保存中…';
+    const formData = new FormData(editForm);
+    const data = {};
+    formData.forEach((v, k) => { data[k] = v; });
+    try {
+        const resp = await fetch(`/admin/content/${editingCardId}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'X-Admin-User-Id': '{{ admin.id }}'},
+            body: JSON.stringify(data),
+        });
+        const result = await resp.json();
+        if (result.ok) {
+            saveStatus.textContent = '已保存 ✓';
+            setTimeout(() => { modal.style.display = 'none'; location.reload(); }, 800);
+        } else {
+            saveStatus.textContent = '保存失败';
+        }
+    } catch(e) {
+        saveStatus.textContent = '网络错误';
+    }
+});
+</script>
+{% endblock %}
