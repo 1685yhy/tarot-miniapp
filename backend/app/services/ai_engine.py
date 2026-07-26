@@ -52,6 +52,13 @@ SYSTEM_PROMPT = """你是一位经验丰富的塔罗占卜师，拥有20年解�
 - 始终强调用户自己有选择的自由和能力"""
 
 
+ZODIAC_CN = {
+    "aries": "白羊座", "taurus": "金牛座", "gemini": "双子座",
+    "cancer": "巨蟹座", "leo": "狮子座", "virgo": "处女座",
+    "libra": "天秤座", "scorpio": "天蝎座", "sagittarius": "射手座",
+    "capricorn": "摩羯座", "aquarius": "水瓶座", "pisces": "双鱼座",
+}
+
 _THEME_MEANING_KEY_MAP = {
     "love": ("love_upright", "love_reversed"),
     "career": ("career_upright", "career_reversed"),
@@ -264,6 +271,7 @@ async def generate_reading(
     teaching_info: dict[int, dict] | None = None,
     persona: str | None = None,
     user_context: str | None = None,
+    zodiac_sign: str | None = None,
 ) -> str | None:
     """
     Call the DeepSeek API to produce a full tarot reading.
@@ -305,10 +313,21 @@ async def generate_reading(
     else:
         opening = time_greeting
 
+    # --- Build zodiac context block ---
+    zodiac_block = ""
+    if zodiac_sign:
+        zodiac_cn = ZODIAC_CN.get(zodiac_sign.lower(), zodiac_sign)
+        zodiac_block = (
+            f"\n\n【占卜者星座】{zodiac_cn}\n"
+            f"请自然地结合{zodiac_cn}的性格特质进行解读——"
+            f"不是星座决定论，而是作为理解用户视角的参考。"
+        )
+
     dynamic_system_prompt = (
         f"{opening}\n\n"
         f"{SYSTEM_PROMPT}"
         f"{persona_prompt}"
+        f"{zodiac_block}"
         f"{tone_guidance}"
         f"{nudge_instruction}"
     )

@@ -19,6 +19,7 @@ class CreateReadingRequest(BaseModel):
     question: str | None = None
     theme: str | None = None  # love / career / finance / general
     persona: str | None = None  # gentle_star / wise_moon / frank_sun
+    zodiac: str | None = None  # aries / taurus / gemini / cancer / leo / virgo / libra / scorpio / sagittarius / capricorn / aquarius / pisces
 
 
 # ── Response ─────────────────────────────────────────────────────────
