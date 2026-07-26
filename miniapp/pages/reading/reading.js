@@ -29,7 +29,12 @@ const { request, getFriendlyError } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
 const { playCardDrawSound } = require('../../utils/sound');
 
-const FREE_READINGS_LIMIT = 5; // matches the backend FREE_DAILY_READINGS (should match after backend update)
+/** Get free daily readings limit from member status (or fallback) */
+function _getFreeReadingsLimit() {
+  const app = getApp();
+  const quota = app.globalData.memberStatus?.free_quota;
+  return quota?.daily_readings || 3;
+}
 
 const SPREADS = [
   { key: 'three_card', name: '三牌占卜', icon: '🕯️', desc: '过去·现在·未来', cards: 3, popular: true, defaultTheme: null, plainDesc: '最通用的牌阵，适合任何问题' },
@@ -93,7 +98,7 @@ Page({
     pageError: null,
     // Free tier display
     freeReadingsUsed: 0,
-    freeReadingsTotal: FREE_READINGS_LIMIT,
+    freeReadingsTotal: _getFreeReadingsLimit(),
     isMember: false,
     // Reader persona selection
     personas: PERSONAS,
@@ -225,14 +230,15 @@ Page({
     try {
       const user = await checkLogin({ refresh: true });
       if (user) {
-        this.setData({
-          freeReadingsUsed: user.free_readings_today || 0,
-          freeReadingsTotal: FREE_READINGS_LIMIT,
-          isMember: !!user.is_member,
-        });
         const app = getApp();
+        app.globalData.memberStatus = { free_quota: user.free_quota };
         app.globalData.freeReadingsUsed = user.free_readings_today || 0;
         app.globalData.isMember = !!user.is_member;
+        this.setData({
+          freeReadingsUsed: user.free_readings_today || 0,
+          freeReadingsTotal: _getFreeReadingsLimit(),
+          isMember: !!user.is_member,
+        });
       }
     } catch (_err) {
       // Silently degrade — counts stay at defaults
@@ -501,7 +507,7 @@ Page({
     // Show confirmation dialog before consuming reading quota
     const isMember = this.data.isMember;
     const used = this.data.freeReadingsUsed || 0;
-    const total = this.data.freeReadingsTotal || FREE_READINGS_LIMIT;
+    const total = this.data.freeReadingsTotal || _getFreeReadingsLimit();
     const confirmContent = isMember
       ? '会员可无限次解读，确定要继续吗？'
       : `将消耗 1 次免费解读机会（今日 ${used}/${total}），确定要继续吗？`;

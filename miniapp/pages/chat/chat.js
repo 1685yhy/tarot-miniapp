@@ -1,7 +1,13 @@
 // pages/chat/chat.js
 const { request, getFriendlyError } = require('../../utils/api');
+const { checkLogin } = require('../../utils/auth');
 
-const FREE_CHATS_LIMIT = 8; // free follow-up questions per day
+/** Get free daily chat limit from member status (or fallback) */
+function _getFreeChatsLimit() {
+  const app = getApp();
+  const quota = app.globalData.memberStatus?.free_quota;
+  return quota?.daily_chats || 3;
+}
 
 // Spread type key → Chinese display name
 const SPREAD_TYPE_NAMES = {
@@ -31,7 +37,7 @@ Page({
     sending: false,
     aiThinking: false,
     remainingFree: 0,
-    chatFreeTotal: FREE_CHATS_LIMIT,
+    chatFreeTotal: _getFreeChatsLimit(),
     pageLoading: false,
     pageError: null,
     readingContext: null, // { question, spread_type }
@@ -83,6 +89,16 @@ Page({
       if (this._destroyed) return;
       this.setData({ pageLoading: false, pageError: getFriendlyError(err) });
     }
+
+    // Refresh member status so free chat limit shows real data
+    try {
+      const app = getApp();
+      if (!app.globalData.memberStatus) {
+        const user = await checkLogin({ refresh: true });
+        app.globalData.memberStatus = { free_quota: user.free_quota };
+        this.setData({ chatFreeTotal: _getFreeChatsLimit() });
+      }
+    } catch (_e) { /* silent degrade */ }
   },
 
   onUnload() {
