@@ -14,16 +14,7 @@ Page({
     isTrialActive: false,
     trialExpiryDate: null,
     trialDaysLeft: 0,
-    comparisonRows: [
-      { label: '每日解读', free: '5次', pro: '无限' },
-      { label: '每日追问', free: '8次', pro: '无限' },
-      { label: '可用牌阵', free: '4种基础', pro: '10种全部' },
-      { label: '行动建议', free: '✓', pro: '✓' },
-      { label: '年度报告', free: '✗', pro: '✓' },
-      { label: '每日一牌教学', free: '✓', pro: '✓' },
-      { label: '解读历史回顾', free: '✓', pro: '✓' },
-      { label: '专属客服', free: '✗', pro: '✓' },
-    ],
+    comparisonRows: [], // dynamically populated from API on load
     // 定价卡片数据（固定值，不依赖后端）
     pricingMonthly: {
       id: 'membership_monthly',
@@ -60,12 +51,34 @@ Page({
 
   async onLoad(options) {
     try {
-      await checkLogin();
+      const user = await checkLogin({ refresh: true });
+      const app = getApp();
+      app.globalData.memberStatus = { free_quota: user.free_quota || {} };
+      this._populateComparisonTable(user);
       this._checkTrialStatus();
       this.setData({ pageLoading: false });
     } catch (err) {
       this.setData({ pageLoading: false, pageError: getFriendlyError(err) });
     }
+  },
+
+  /** Populate comparison table from real membership status data */
+  _populateComparisonTable(user) {
+    const quota = user.free_quota || {};
+    const dailyReadings = quota.daily_readings || 3;
+    const dailyChats = quota.daily_chats || 3;
+    this.setData({
+      comparisonRows: [
+        { label: '每日解读', free: `${dailyReadings}次`, pro: '无限' },
+        { label: '每日追问', free: `${dailyChats}次`, pro: '无限' },
+        { label: '可用牌阵', free: '4种基础', pro: '10种全部' },
+        { label: '行动建议', free: '✓', pro: '✓' },
+        { label: '年度报告', free: '✗', pro: '✓' },
+        { label: '每日一牌教学', free: '✓', pro: '✓' },
+        { label: '解读历史回顾', free: '✓', pro: '✓' },
+        { label: '专属客服', free: '✗', pro: '✓' },
+      ],
+    });
   },
 
   /** 检查本地试用状态 */

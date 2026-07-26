@@ -7,6 +7,7 @@ Membership-status & product-listing endpoints.
 
 from fastapi import APIRouter, Depends
 
+from app.config import settings
 from app.models.user import User
 from app.services.payment import PRODUCTS
 from app.utils.auth import get_current_user
@@ -22,6 +23,12 @@ async def membership_status(user: User = Depends(get_current_user)):
         "expires_at": user.member_expires_at,
         "free_readings_today": user.free_readings_today,
         "free_chats_today": user.free_chats_today,
+        "free_quota": {
+            "daily_readings": settings.FREE_DAILY_READINGS,
+            "daily_chats": settings.FREE_CHAT_MESSAGES,
+            "readings_used_today": user.free_readings_today,
+            "chats_used_today": user.free_chats_today,
+        },
     }
 
 

@@ -5,7 +5,12 @@ const { computeImagePath } = require('../../utils/cards');
 const { createAnim, staggeredEntrance } = require('../../utils/animate');
 const { playPageEnterSound, playCardFlipSound, startAmbientSound, stopAmbientSound } = require('../../utils/sound');
 
-const FREE_READINGS_LIMIT = 5;
+/** Get free daily readings limit from member status (or fallback) */
+function _getFreeReadingsLimit() {
+  const app = getApp();
+  const quota = app.globalData.memberStatus?.free_quota;
+  return quota?.daily_readings || 3;
+}
 
 const IMAGE_BASE = (() => {
   try {
@@ -63,7 +68,7 @@ Page({
     showReminder: false,
     // Free tier display
     freeReadingsUsed: 0,
-    freeReadingsTotal: FREE_READINGS_LIMIT,
+    freeReadingsTotal: _getFreeReadingsLimit(),
     isMember: false,
     // Pending reading recovery
     pendingReading: null,
@@ -289,14 +294,15 @@ Page({
       if (user) {
         const used = user.free_readings_today || 0;
         const isMember = !!user.is_member;
-        this.setData({
-          freeReadingsUsed: used,
-          freeReadingsTotal: FREE_READINGS_LIMIT,
-          isMember,
-        });
         const app = getApp();
+        app.globalData.memberStatus = { free_quota: user.free_quota };
         app.globalData.freeReadingsUsed = used;
         app.globalData.isMember = isMember;
+        this.setData({
+          freeReadingsUsed: used,
+          freeReadingsTotal: _getFreeReadingsLimit(),
+          isMember,
+        });
       }
     } catch (_err) {
       // Silently degrade — counts stay at defaults
