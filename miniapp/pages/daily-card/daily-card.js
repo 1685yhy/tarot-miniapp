@@ -70,6 +70,13 @@ Page({
 
     // v2.1: Zodiac sign
     zodiacSign: '',
+
+    // Streak context (from checkin system — optional enhancement)
+    dailyStreak: -1,
+    streakEncouragement: '',
+    nextMilestone: 7,
+    milestoneProgress: 0,
+    streakHint: '',
   },
 
   async onLoad() {
@@ -83,6 +90,9 @@ Page({
     // v2.1: Load stored zodiac sign
     const storedZodiac = wx.getStorageSync('zodiac_sign') || '';
     this.setData({ zodiacSign: storedZodiac });
+
+    // Load streak context from checkin system (fire-and-forget, non-blocking)
+    this._loadStreakContext();
 
     try {
       const card = await request('/cards/daily', { data: { zodiac: storedZodiac } });
@@ -178,6 +188,56 @@ Page({
         confirmText: '继续探索',
       });
     }, 500);
+  },
+
+  // ---- Streak context from checkin system ----
+
+  _loadStreakContext() {
+    // Streak info is an enhancement — gracefully handle failures
+    request('/tasks/status').then(res => {
+      if (res && res.streak !== undefined) {
+        const streak = res.streak || 0;
+        const level = res.level || { name: '星光旅人' };
+
+        // Compute encouragement text by streak tier
+        let encouragement = '';
+        if (streak === 0) {
+          encouragement = '今天开始你的星光之旅吧 ✦';
+        } else if (streak < 3) {
+          encouragement = `已连续 ${streak} 天 · 星光初现`;
+        } else if (streak < 7) {
+          encouragement = `连续 ${streak} 天 · 星辰相伴`;
+        } else if (streak < 30) {
+          encouragement = `连续 ${streak} 天 · ${level.name}`;
+        } else {
+          encouragement = `${level.name} · 星光不负赶路人`;
+        }
+
+        // Compute next milestone (7, 30, 100) and progress
+        let nextMilestone = 7;
+        let nextName = '星辰学徒';
+        if (streak >= 7) { nextMilestone = 30; nextName = '月光智者'; }
+        if (streak >= 30) { nextMilestone = 100; nextName = '银河导师'; }
+
+        const milestoneProgress = Math.min(100, (streak / nextMilestone) * 100);
+        const daysToGo = nextMilestone - streak;
+
+        let streakHint = '';
+        if (streak < 100 && daysToGo > 0) {
+          streakHint = `再坚持 ${daysToGo} 天解锁${nextName} ✦`;
+        }
+
+        this.setData({
+          dailyStreak: streak,
+          streakEncouragement: encouragement,
+          nextMilestone,
+          milestoneProgress,
+          streakHint,
+        });
+      }
+    }).catch(() => {
+      // Silently fail — streak info is optional enhancement, not critical
+    });
   },
 
   // ---- Card flip ----

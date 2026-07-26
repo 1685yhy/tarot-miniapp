@@ -107,6 +107,15 @@
     </view>
   </view>
 
+  <!-- ===== Streak encouragement banner (from checkin system) ===== -->
+  <view class="streak-banner" wx:if="{{dailyStreak >= 0}}">
+    <view class="streak-progress-track">
+      <view class="streak-progress-fill" style="width: {{milestoneProgress}}%"></view>
+    </view>
+    <text class="streak-text">{{streakEncouragement}}</text>
+    <text class="streak-hint" wx:if="{{streakHint}}">{{streakHint}}</text>
+  </view>
+
   <!-- ===== Teaching area (revealed after flip) ===== -->
   <view class="teaching-area {{showTeaching ? 'teaching-area--visible' : ''}}">
 
