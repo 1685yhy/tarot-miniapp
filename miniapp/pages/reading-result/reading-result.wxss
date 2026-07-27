@@ -1182,3 +1182,105 @@
   color: #1a1a2e; font-size: 28rpx; font-weight: 600;
   border-radius: 48rpx; padding: 20rpx 56rpx; border: none;
 }
+
+/* ============================================================
+   Share CTA — Tasteful share prompt card after interpretation
+   ============================================================ */
+.share-cta-wrap {
+  margin: var(--spacing-lg) 0;
+  transition: all 0.3s ease-out;
+  max-height: 600rpx;
+  opacity: 1;
+  overflow: hidden;
+}
+.share-cta-wrap.dismissed {
+  max-height: 0;
+  opacity: 0;
+  margin: 0;
+  pointer-events: none;
+}
+.share-cta-card {
+  position: relative;
+  background: linear-gradient(145deg, rgba(42,42,90,0.7) 0%, rgba(53,53,112,0.5) 100%);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.2);
+  border-radius: 24rpx;
+  padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md);
+  text-align: center;
+  overflow: hidden;
+}
+.share-cta-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2rpx;
+  background: linear-gradient(90deg, transparent, rgba(244,212,140,0.3), transparent);
+  pointer-events: none;
+}
+.share-cta-close {
+  position: absolute;
+  top: 12rpx;
+  right: 20rpx;
+  width: 44rpx;
+  height: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--color-text-tertiary);
+  font-size: 26rpx;
+  opacity: 0.5;
+  cursor: pointer;
+  transition: opacity 0.2s, background 0.2s;
+}
+.share-cta-close:active {
+  opacity: 0.8;
+  background: rgba(255,255,255,0.05);
+}
+.share-cta-icon {
+  font-size: 44rpx;
+  color: var(--color-gold);
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  text-shadow: 0 0 20rpx rgba(244,212,140,0.3);
+}
+.share-cta-title {
+  font-size: var(--font-size-subhead);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  display: block;
+  margin-bottom: 6rpx;
+  letter-spacing: 2rpx;
+}
+.share-cta-desc {
+  font-size: var(--font-size-caption);
+  color: var(--color-lavender);
+  display: block;
+  margin-bottom: var(--spacing-md);
+  letter-spacing: 1rpx;
+  line-height: 1.5;
+}
+.share-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 320rpx;
+  padding: var(--spacing-sm) 56rpx;
+  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
+  color: #1A1A3E;
+  font-size: var(--font-size-body);
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius-pill);
+  letter-spacing: 3rpx;
+  box-shadow: 0 4rpx 28rpx rgba(244, 212, 140, 0.25);
+  transition: all 0.15s ease-out;
+}
+.share-cta-btn::after {
+  border: none;
+}
+.share-cta-btn:active {
+  transform: scale(0.96);
+  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.15);
+}

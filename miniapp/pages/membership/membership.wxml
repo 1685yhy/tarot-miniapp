@@ -64,7 +64,7 @@
           </view>
           <view class="cmp-cell cmp-cell--savings-pro">
             <text class="savings-item">无限次</text>
-            <text class="savings-item-s">日均¥0.46起</text>
+            <text class="savings-item-s">{{pricingYearly.displayDaily}}起</text>
           </view>
         </view>
       </view>
@@ -80,11 +80,11 @@
         <text class="pricing-card-name">年度会员</text>
         <view class="pricing-card-price-row">
           <text class="pricing-card-currency">¥</text>
-          <text class="pricing-card-amount">168</text>
+          <text class="pricing-card-amount">{{pricingYearly.displayPrice}}</text>
           <text class="pricing-card-period">/年</text>
         </view>
-        <text class="pricing-card-daily">日均 ¥0.46</text>
-        <text class="pricing-card-save">相比月度省 30%</text>
+        <text class="pricing-card-daily">日均{{pricingYearly.displayDaily}}</text>
+        <text class="pricing-card-save">{{pricingYearly.displaySavingText}}</text>
         <button class="pricing-card-btn">开通年度</button>
       </view>
 
@@ -93,7 +93,7 @@
         <text class="pricing-card-name">月度会员</text>
         <view class="pricing-card-price-row">
           <text class="pricing-card-currency">¥</text>
-          <text class="pricing-card-amount">19.9</text>
+          <text class="pricing-card-amount">{{pricingMonthly.displayPrice}}</text>
           <text class="pricing-card-period">/月</text>
         </view>
         <button class="pricing-card-btn pricing-card-btn--secondary">开通月度</button>
@@ -107,9 +107,9 @@
           <text class="pricing-card-student-sub">需学生认证</text>
         </view>
         <view class="pricing-card-price-row">
-          <text class="pricing-card-original">¥19.9</text>
+          <text class="pricing-card-original">¥{{pricingStudent.displayOriginalPrice}}</text>
           <text class="pricing-card-currency">¥</text>
-          <text class="pricing-card-amount">9.9</text>
+          <text class="pricing-card-amount">{{pricingStudent.displayPrice}}</text>
           <text class="pricing-card-period">/月</text>
         </view>
         <button class="pricing-card-btn pricing-card-btn--student">认证开通</button>
@@ -130,9 +130,9 @@
         <view class="pack-card-right">
           <view class="pack-card-price-row">
             <text class="pack-card-currency">¥</text>
-            <text class="pack-card-amount">9.90</text>
+            <text class="pack-card-amount">{{pricingPack3.displayPrice}}</text>
           </view>
-          <text class="pack-card-unit">¥3.30/次</text>
+          <text class="pack-card-unit">{{pricingPack3.displayUnitPrice}}</text>
         </view>
         <button class="pack-card-btn" catchtap="onPurchasePack" data-product="{{pricingPack3}}">立即购买</button>
       </view>
@@ -147,9 +147,9 @@
         <view class="pack-card-right">
           <view class="pack-card-price-row">
             <text class="pack-card-currency">¥</text>
-            <text class="pack-card-amount">29.90</text>
+            <text class="pack-card-amount">{{pricingPack10.displayPrice}}</text>
           </view>
-          <text class="pack-card-unit">¥2.99/次 · 省¥69</text>
+          <text class="pack-card-unit">{{pricingPack10.displayUnitPrice}}</text>
         </view>
         <button class="pack-card-btn pack-card-btn--primary" catchtap="onPurchasePack" data-product="{{pricingPack10}}">立即购买</button>
       </view>

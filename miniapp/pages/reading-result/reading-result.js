@@ -81,6 +81,9 @@ Page({
     // Membership / user state
     isMember: false,
 
+    // Share CTA state
+    showShareCTA: false,
+
     // Onboarding Step 3
     showOnboarding: false,
     onboardingStep: 0,
@@ -384,6 +387,12 @@ Page({
           wx.removeStorageSync('onboarding_step');
         }, 5000);
       }
+
+      // ── Share CTA: show for non-members if not dismissed before ──
+      const shareCtaDismissed = wx.getStorageSync('_share_cta_dismissed');
+      if (!this.data.isMember && !shareCtaDismissed) {
+        this.setData({ showShareCTA: true });
+      }
     } else if (this._cachedError) {
       this.setData({ pageLoading: false, pageError: this._cachedError });
     }
@@ -647,6 +656,23 @@ Page({
   },
 
   /* ---------------------------------------------------------------
+     Share CTA — Prompt user to share for rewards
+     --------------------------------------------------------------- */
+
+  /** User tapped the share CTA button */
+  onShareCTA() {
+    // The open-type="share" button triggers onShareAppMessage natively
+    // This handler is for optional analytics; the actual share tracking
+    // happens in onShareAppMessage
+  },
+
+  /** Dismiss the share CTA card permanently */
+  onDismissShareCTA() {
+    this.setData({ showShareCTA: false });
+    wx.setStorageSync('_share_cta_dismissed', true);
+  },
+
+  /* ---------------------------------------------------------------
      Share — WeChat built-in share (personalized)
      --------------------------------------------------------------- */
 
@@ -701,6 +727,12 @@ Page({
         if (res && res.rewarded) {
           wx.showToast({
             title: '分享成功！奖励已发放 ✦',
+            icon: 'success',
+            duration: 2000,
+          });
+        } else {
+          wx.showToast({
+            title: '分享成功 ✦',
             icon: 'success',
             duration: 2000,
           });

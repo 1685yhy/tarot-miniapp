@@ -28,24 +28,30 @@ Page({
       { icon: '🎭', text: '3 位专属塔罗师' },
       { icon: '📊', text: '年度运势报告' },
     ],
-    // 定价卡片数据（固定值，不依赖后端）
+    // 定价卡片数据（固定值，不依赖后端；API返回时会被覆盖）
     pricingMonthly: {
       id: 'membership_monthly',
       name: '月度会员',
       price: 19.9,
       type: 'membership',
+      displayPrice: '19.9',
     },
     pricingYearly: {
       id: 'membership_yearly',
       name: '年度会员',
       price: 168,
       type: 'membership',
+      displayPrice: '168',
+      displayDaily: '¥0.46',
+      displaySavingText: '相比月度省 30%',
     },
     pricingStudent: {
       id: 'membership_student',
       name: '学生会员',
       price: 9.9,
       type: 'membership',
+      displayPrice: '9.9',
+      displayOriginalPrice: '19.9',
     },
     // 补充包（一次性购买，不自动续费）
     pricingPack3: {
@@ -53,12 +59,16 @@ Page({
       name: '3次深度解读包',
       price: 9.9,
       type: 'reading_pack',
+      displayPrice: '9.90',
+      displayUnitPrice: '¥3.30/次',
     },
     pricingPack10: {
       id: 'reading_pack_10',
       name: '10次深度解读包',
       price: 29.9,
       type: 'reading_pack',
+      displayPrice: '29.90',
+      displayUnitPrice: '¥2.99/次 · 省¥69',
     },
   },
 
@@ -73,6 +83,8 @@ Page({
       app.globalData.memberStatus = { free_quota: user.free_quota || {} };
       this._populateComparisonTable(user);
       this._checkTrialStatus();
+      // Fetch dynamic pricing from API (falls back to hardcoded values on failure)
+      await this._fetchProducts();
       this.setData({ pageLoading: false });
     } catch (err) {
       this.setData({ pageLoading: false, pageError: getFriendlyError(err) });
@@ -96,6 +108,89 @@ Page({
         { label: '专属客服', free: '✗', pro: '✓' },
       ],
     });
+  },
+
+  /* ---------------------------------------------------------------
+     Dynamic Pricing — fetch products from API, fall back to hardcoded
+     --------------------------------------------------------------- */
+
+  /** Fetch product list from API and populate pricing cards */
+  async _fetchProducts() {
+    try {
+      const products = await request('/membership/products');
+      if (Array.isArray(products) && products.length > 0) {
+        const pricing = this._mapProductsToPricing(products);
+        this.setData(pricing);
+      }
+    } catch (err) {
+      console.warn('[membership] API fetch failed, using hardcoded pricing:', err.message);
+      // Hardcoded values already in data with displayProps — no action needed
+    }
+  },
+
+  /** Map API product array to pricing card data with computed display properties */
+  _mapProductsToPricing(products) {
+    const map = {};
+    products.forEach(p => { map[p.id] = p; });
+
+    const m   = map['membership_monthly']  || { price: 19.9,  name: '月度会员' };
+    const y   = map['membership_yearly']   || { price: 168,   name: '年度会员' };
+    const s   = map['membership_student']  || { price: 9.9,   name: '学生会员' };
+    const p3  = map['reading_pack_3']       || { price: 9.9,  name: '3次深度解读包' };
+    const p10 = map['reading_pack_10']      || { price: 29.9, name: '10次深度解读包' };
+    const sr  = map['single_reading']       || { price: 9.9,  name: '单次深度占卜' };
+
+    const mp  = m.price;
+    const yp  = y.price;
+    const sp  = s.price;
+    const srp = sr.price;
+
+    // Computed display values
+    const dailyCost       = (yp / 365).toFixed(2);
+    const yearlyVsMonthly = Math.round((1 - yp / (mp * 12)) * 100);
+
+    // Comparison savings (marketing-value multipliers)
+    const monthlyValue = Math.round(mp * 15);
+    const monthlySave  = Math.round(mp * 14);
+    const yearlyValue  = Math.round(yp * 21.5);
+    const yearlySave   = Math.round(yp * 20.5);
+
+    // Pack per-reading costs
+    const p3Unit  = (p3.price / 3).toFixed(2);
+    const p10Unit = (p10.price / 10).toFixed(2);
+    const p10Save = Math.round(srp * 10 - p10.price);
+
+    return {
+      pricingMonthly: {
+        id: 'membership_monthly', name: m.name, price: mp, type: 'membership',
+        displayPrice: mp % 1 === 0 ? String(mp) : mp.toFixed(1),
+      },
+      pricingYearly: {
+        id: 'membership_yearly', name: y.name, price: yp, type: 'membership',
+        displayPrice: String(Math.round(yp)),
+        displayDaily: `¥${dailyCost}`,
+        displaySavingText: `相比月度省 ${yearlyVsMonthly}%`,
+      },
+      pricingStudent: {
+        id: 'membership_student', name: s.name, price: sp, type: 'membership',
+        displayPrice: sp % 1 === 0 ? String(sp) : sp.toFixed(1),
+        displayOriginalPrice: mp % 1 === 0 ? String(mp) : mp.toFixed(1),
+      },
+      pricingPack3: {
+        id: 'reading_pack_3', name: p3.name, price: p3.price, type: 'reading_pack',
+        displayPrice: p3.price.toFixed(2),
+        displayUnitPrice: `¥${p3Unit}/次`,
+      },
+      pricingPack10: {
+        id: 'reading_pack_10', name: p10.name, price: p10.price, type: 'reading_pack',
+        displayPrice: p10.price.toFixed(2),
+        displayUnitPrice: `¥${p10Unit}/次 · 省¥${p10Save}`,
+      },
+      comparisonSavings: {
+        monthly: { value: `¥${monthlyValue}`, save: `¥${monthlySave}` },
+        yearly:  { value: `¥${yearlyValue}`,  save: `¥${yearlySave}` },
+      },
+    };
   },
 
   /** 检查本地试用状态 */
