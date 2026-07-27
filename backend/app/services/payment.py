@@ -219,9 +219,9 @@ def verify_wechat_v3_signature(
 ) -> bool:
     """Verify a WeChat Pay V3 signature using the configured platform cert."""
     expected_serial = getattr(settings, "WECHAT_PLATFORM_CERT_SERIAL", "").strip()
-    if not expected_serial or expected_serial == "your-platform-cert-serial":
-        logger.warning("WECHAT_PLATFORM_CERT_SERIAL not configured; skipping V3 verification")
-        return True
+    if not expected_serial:
+        logger.error("WECHAT_PLATFORM_CERT_SERIAL is not configured — cannot verify payment callback")
+        return False
 
     if serial != expected_serial:
         logger.error(

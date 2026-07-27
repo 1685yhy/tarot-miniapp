@@ -15,6 +15,10 @@ miniapp/images/cards/*.png
 miniapp/images/cards/*.jpg
 miniapp/images/cards/preview.html
 backend/certs/
+*.pem
+*.p12
+*.key
+certs/
 miniapp/images/cards_v3/
 .claude/quality-guardian/
 upload_result.json

@@ -13,6 +13,7 @@ from app.api import auth, cards, chat, diary, membership, orders, readings, repo
 from app.api.ws import router as ws_router
 from app.api.monitor import router as monitor_router
 from app.middleware.metrics import MetricsMiddleware
+from app.middleware.rate_limit import rate_limit_middleware
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +53,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="塔罗占卜 API", version="1.0.0", lifespan=lifespan)
+
+# Rate limiting — must be first so unauthenticated floods are rejected early
+app.middleware("http")(rate_limit_middleware)
 
 app.add_middleware(
     CORSMiddleware,
