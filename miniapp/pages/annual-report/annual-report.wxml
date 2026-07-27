@@ -146,7 +146,7 @@
           <text class="screen-2-label">你最常思考的是</text>
           <view class="screen-2-theme {{showSparkle ? 'screen-2-theme--visible' : ''}}">
             <image wx:if="{{report.top_themes && report.top_themes.length > 0}}"
-              class="screen-2-icon" src="{{themeIcons[report.top_themes[0].theme] || themeIcons.general}}" mode="aspectFit" aria-label="年度主题图标" />
+              class="screen-2-icon" src="{{themeIcons[report.top_themes[0].theme] || themeIcons.general}}" mode="aspectFit" lazy-load aria-label="年度主题图标" />
             <text class="screen-2-theme-text">
               {{report.top_themes && report.top_themes.length > 0 ? report.top_themes[0].label : '综合'}}
             </text>
@@ -182,7 +182,7 @@
                   <text class="screen-3-card-placeholder-emoji">🃏</text>
                 </view>
               </view>
-              <image wx:elif="{{!annualCardImgError}}" class="screen-3-card-image" src="{{annualCardImagePath}}" mode="aspectFit" binderror="onAnnualCardImgError" aria-label="{{annualCardName}} — 年度之牌" />
+              <image wx:elif="{{!annualCardImgError}}" class="screen-3-card-image" src="{{annualCardImagePath}}" mode="aspectFit" lazy-load binderror="onAnnualCardImgError" aria-label="{{annualCardName}} — 年度之牌" />
               <view wx:else class="screen-3-card-placeholder screen-3-card-fallback">
                 <view class="screen-3-card-placeholder-inner">
                   <text class="screen-3-card-placeholder-name">{{annualCardName}}</text>
@@ -309,11 +309,11 @@
           <!-- Share buttons -->
           <view class="screen-7-buttons">
             <button class="screen-7-btn screen-7-btn--moments" open-type="share">
-              <image class="screen-7-btn-icon" src="/images/icons/star_64.png" mode="aspectFit" aria-label="分享给好友" />
+              <image class="screen-7-btn-icon" src="/images/icons/star_64.png" mode="aspectFit" lazy-load aria-label="分享给好友" />
               <text>分享给好友</text>
             </button>
             <button class="screen-7-btn screen-7-btn--save" bindtap="onShareTimeline">
-              <image class="screen-7-btn-icon" src="/images/icons/heart_64.png" mode="aspectFit" aria-label="分享朋友圈" />
+              <image class="screen-7-btn-icon" src="/images/icons/heart_64.png" mode="aspectFit" lazy-load aria-label="分享朋友圈" />
               <text>分享朋友圈</text>
             </button>
           </view>
@@ -337,7 +337,7 @@
           </view>
 
           <button class="screen-7-redo" bindtap="onGenerate">
-            <image class="btn-inline-icon" src="/images/icons/refresh_64.png" mode="aspectFit" aria-label="重新生成" />
+            <image class="btn-inline-icon" src="/images/icons/refresh_64.png" mode="aspectFit" lazy-load aria-label="重新生成" />
             <text>重新生成</text>
           </button>
 

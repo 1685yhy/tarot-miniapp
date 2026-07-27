@@ -1,4 +1,5 @@
 // pages/profile/profile.js
+const perf = require('../../utils/performance');
 const { request, getFriendlyError } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
 const { computeImagePath, findCard } = require('../../utils/cards');
@@ -429,5 +430,10 @@ Page({
     } catch (_err) {
       // Silent degrade
     }
+  },
+
+  onReady() {
+    // Performance monitoring: page ready timestamp
+    perf.markPageReady('profile');
   },
 });

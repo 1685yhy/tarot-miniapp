@@ -91,6 +91,10 @@
     "pages/encyclopedia/encyclopedia": {
       "network": "all",
       "packages": ["pages/card-detail/"]
+    },
+    "pages/reading/reading": {
+      "network": "all",
+      "packages": ["pages/reading-result/"]
     }
   },
   "style": "v2",

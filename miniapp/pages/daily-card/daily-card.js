@@ -63,6 +63,10 @@ Page({
     collectedMajorIds: [],
     MAJOR_ARCANA_TOTAL: MAJOR_ARCANA_TOTAL,
 
+    // Push subscription prompt
+    showPushPrompt: false,
+    pushSubscribed: false,
+
     // Diary
     diaryText: '',
     diarySaving: false,
@@ -278,6 +282,9 @@ Page({
         // Store flipped date so it persists across page revisits
         const today = getTodayStr();
         wx.setStorageSync('daily_card_flipped_date', today);
+
+        // Show push subscription prompt (one-time, gentle)
+        this._showPushPrompt();
       }, 300);
     }, 1500);
   },
@@ -337,12 +344,82 @@ Page({
     }
   },
 
+  // ---- Push subscription ----
+
+  /** Show the push subscription prompt (one-time, not a nag) */
+  _showPushPrompt() {
+    // Only prompt once per user per lifetime
+    const alreadyPrompted = wx.getStorageSync('push_prompted');
+    const alreadySubscribed = wx.getStorageSync('push_daily_subscribed');
+    if (alreadyPrompted || alreadySubscribed) return;
+
+    // Delay slightly to let the teaching area appear first
+    this._pushPromptTimer = setTimeout(() => {
+      this.setData({ showPushPrompt: true });
+      wx.setStorageSync('push_prompted', true);
+    }, 2000);
+  },
+
+  /** User accepted — call wx.requestSubscribeMessage then report to backend */
+  onAcceptPush() {
+    this.setData({ showPushPrompt: false });
+    wx.requestSubscribeMessage({
+      tmplIds: ['TEMPLATE_DAILY_CARD'],
+      success: (res) => {
+        const accepted = res['TEMPLATE_DAILY_CARD'] === 'accept';
+        if (accepted) {
+          wx.setStorageSync('push_daily_subscribed', true);
+          this.setData({ pushSubscribed: true });
+          wx.showToast({ title: '订阅成功，每日推送 ✦', icon: 'none', duration: 2000 });
+          // Report to backend
+          this._reportSubscription(accepted);
+        } else {
+          wx.showToast({ title: '已关闭推送', icon: 'none', duration: 1500 });
+        }
+      },
+      fail: () => {
+        // User dismissed or error — silently degrade
+      },
+    });
+  },
+
+  /** User declined — dismiss prompt, no further action */
+  onDismissPush() {
+    this.setData({ showPushPrompt: false });
+    wx.showToast({ title: '暂不需要，随时可在设置中开启', icon: 'none', duration: 1500 });
+  },
+
+  /** Report subscription status to backend */
+  async _reportSubscription(accepted) {
+    try {
+      const { request } = require('../../utils/api');
+      const app = getApp();
+      const user = app.globalData.user || wx.getStorageSync('user');
+      const openid = user?.openid || '';
+      // We need the openid — get it from the cached user object
+      const resp = await wx.login();
+      // Use the login code to get openid on backend side — for subscription
+      // we just send what we have; the backend stores it from the user record
+      await request('/notify/subscribe', {
+        method: 'POST',
+        data: {
+          openid: openid,
+          template_id: 'TEMPLATE_DAILY_CARD',
+          accept: accepted,
+        },
+      });
+    } catch (err) {
+      // Silent degrade — subscription preference stored locally
+    }
+  },
+
   // ---- Cleanup ----
 
   onUnload() {
     if (this._midFlipTimer) { clearTimeout(this._midFlipTimer); this._midFlipTimer = null; }
     if (this._endFlipTimer) { clearTimeout(this._endFlipTimer); this._endFlipTimer = null; }
     if (this._glowTimer) { clearTimeout(this._glowTimer); this._glowTimer = null; }
+    if (this._pushPromptTimer) { clearTimeout(this._pushPromptTimer); this._pushPromptTimer = null; }
   },
 
   onReady() {
@@ -353,6 +430,7 @@ Page({
     if (this._midFlipTimer) { clearTimeout(this._midFlipTimer); this._midFlipTimer = null; }
     if (this._endFlipTimer) { clearTimeout(this._endFlipTimer); this._endFlipTimer = null; }
     if (this._glowTimer) { clearTimeout(this._glowTimer); this._glowTimer = null; }
+    if (this._pushPromptTimer) { clearTimeout(this._pushPromptTimer); this._pushPromptTimer = null; }
   },
 
   onGoHome() {

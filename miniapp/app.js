@@ -1,5 +1,6 @@
 const { checkLogin } = require('./utils/auth');
 const { BASE_URL } = require('./utils/api');
+const perf = require('./utils/performance');
 
 /** 试用存储键名 */
 const TRIAL_STORAGE_KEY = 'trial_expiry';
@@ -7,6 +8,9 @@ const TRIAL_MEMBER_KEY = 'is_trial_member';
 
 App({
   onLaunch() {
+    // === Performance monitoring: app start ===
+    perf.mark('appLaunch');
+
     // === 上线前配置自检 ===
     if (BASE_URL.includes('your-domain') || BASE_URL.includes('example.com')) {
       console.warn(

@@ -9,7 +9,8 @@ from fastapi.staticfiles import StaticFiles
 
 from app.db.database import create_all
 from app.config import settings
-from app.api import auth, cards, chat, diary, membership, orders, readings, report, share, tasks, community, admin
+from app.api import auth, cards, chat, diary, membership, orders, readings, report, share, tasks, community, admin, notify
+from app.api.ws import router as ws_router
 from app.api.monitor import router as monitor_router
 from app.middleware.metrics import MetricsMiddleware
 
@@ -71,8 +72,10 @@ app.include_router(readings.router)
 app.include_router(report.router)
 app.include_router(share.router)
 app.include_router(community.router)
+app.include_router(notify.router)
 app.include_router(monitor_router)
 app.include_router(admin.router)
+app.include_router(ws_router)
 
 # Admin static files (mount before dev-assets so /static doesn't conflict)
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")

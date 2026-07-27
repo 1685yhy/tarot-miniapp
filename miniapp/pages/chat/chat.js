@@ -1,6 +1,9 @@
 // pages/chat/chat.js
-const { request, getFriendlyError } = require('../../utils/api');
+const { request, getFriendlyError, BASE_URL } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
+
+/** Derive WebSocket base URL from the REST API base URL. */
+const WS_BASE = BASE_URL.replace(/^http/, 'ws').replace(/\/api$/, '');
 
 /** Get free daily chat limit from member status (or fallback) */
 function _getFreeChatsLimit() {
@@ -44,10 +47,22 @@ Page({
     sendFailed: false,     // true when last send failed, shows retry bar
     _pendingRetryText: '', // failed message text to retry
 
+    // WebSocket streaming
+    isStreaming: false,    // true while tokens are being streamed (shows cursor)
+
     // Membership prompt when quota exhausted
     showMembershipPrompt: false,
     membershipPromptText: '',
   },
+
+  /** @type {WebSocketTask|null} */
+  _wsTask: null,
+  /** @type {number|null} */
+  _wsTimeout: null,
+  /** Accumulated streaming text for the current message */
+  _streamBuffer: '',
+  /** True once the first token has been received */
+  _streamStarted: false,
 
   async onLoad(options) {
     this._destroyed = false;
@@ -103,6 +118,7 @@ Page({
 
   onUnload() {
     this._destroyed = true;
+    this._cleanupWebSocket();
     if (this._scrollTimer) {
       clearTimeout(this._scrollTimer);
       this._scrollTimer = null;
@@ -128,14 +144,179 @@ Page({
     this.setData({ inputText: val, canSend: val.trim().length > 0 });
   },
 
+  /** Clean up any active WebSocket connection */
+  _cleanupWebSocket() {
+    if (this._wsTimeout) {
+      clearTimeout(this._wsTimeout);
+      this._wsTimeout = null;
+    }
+    if (this._wsTask) {
+      try { this._wsTask.close(); } catch (_e) { /* ignore */ }
+      this._wsTask = null;
+    }
+    this._streamBuffer = '';
+    this._streamStarted = false;
+  },
+
+  /**
+   * Try WebSocket streaming; fall back to REST if connection fails within 3 s.
+   */
   async onSend() {
     const text = this.data.inputText.trim();
     if (!text || this.data.sending) return;
 
     const messages = [...this.data.messages, { role: 'user', content: text }];
-    this.setData({ messages, inputText: '', canSend: false, sending: true, aiThinking: true,
-      sendFailed: false, _pendingRetryText: '' });
+    this.setData({
+      messages, inputText: '', canSend: false, sending: true,
+      aiThinking: true, sendFailed: false, _pendingRetryText: '',
+      isStreaming: false, showMembershipPrompt: false,
+    });
     this.scrollToBottom();
+
+    // --- Attempt WebSocket ---
+    this._streamBuffer = '';
+    this._streamStarted = false;
+
+    const token = wx.getStorageSync('token');
+    const wsUrl = `${WS_BASE}/ws/chat/${this.data.readingId}?token=${encodeURIComponent(token)}`;
+
+    // 3-second fallback timer: if WS doesn't open in time, use REST
+    this._wsTimeout = setTimeout(() => {
+      if (!this._streamStarted) {
+        // WS hasn't started streaming — fall back to REST
+        this._cleanupWebSocket();
+        this._doRestSend(text, messages);
+      }
+    }, 3000);
+
+    try {
+      // Create the WebSocket task
+      const task = wx.connectSocket({ url: wsUrl, fail: () => {} });
+      this._wsTask = task;
+
+      // Bind event listeners
+      task.onOpen(() => {
+        // Clear the fallback timer — WS connected
+        if (this._wsTimeout) {
+          clearTimeout(this._wsTimeout);
+          this._wsTimeout = null;
+        }
+        // Send the user's message
+        task.send({ data: text });
+      });
+
+      task.onMessage((res) => {
+        const data = res.data;
+
+        if (data === '[DONE]') {
+          // Streaming complete
+          this._streamStarted = true;
+          this.setData({
+            isStreaming: false,
+            aiThinking: false,
+            sending: false,
+          });
+          // Mark last message as complete
+          const msgs = [...this.data.messages];
+          const last = msgs[msgs.length - 1];
+          if (last && last.role === 'assistant') {
+            last.streaming = false;
+            this.setData({ messages: msgs });
+          }
+          this.scrollToBottom();
+          try { wx.vibrateShort({ type: 'light' }); } catch(_e) {}
+          // Clean up
+          this._cleanupWebSocket();
+          return;
+        }
+
+        if (data.startsWith('[ERROR]')) {
+          this._streamStarted = true;
+          this._cleanupWebSocket();
+
+          const errorMsg = data.replace('[ERROR] ', '');
+          // 402 = quota exhausted
+          if (errorMsg.startsWith('402')) {
+            this.setData({
+              sending: false, aiThinking: false, isStreaming: false,
+              showMembershipPrompt: true,
+              membershipPromptText: '今日追问已达上限',
+            });
+            return;
+          }
+
+          // Other errors: show in a failed message
+          const msgs = [...this.data.messages];
+          msgs.push({ role: 'assistant', content: `⚠️ ${errorMsg}`, failed: false });
+          this.setData({
+            messages: msgs, sending: false, aiThinking: false, isStreaming: false,
+            sendFailed: true, _pendingRetryText: text,
+            inputText: text, canSend: true,
+          });
+          this.scrollToBottom();
+          return;
+        }
+
+        // --- Token received ---
+        this._streamBuffer += data;
+
+        if (!this._streamStarted) {
+          // First token — create the assistant message bubble
+          this._streamStarted = true;
+          const msgs = [...this.data.messages];
+          msgs.push({ role: 'assistant', content: this._streamBuffer, streaming: true });
+          this.setData({
+            messages: msgs,
+            aiThinking: false,
+            isStreaming: true,
+          });
+        } else {
+          // Update existing streaming message
+          const msgs = [...this.data.messages];
+          const last = msgs[msgs.length - 1];
+          if (last && last.role === 'assistant') {
+            last.content = this._streamBuffer;
+            this.setData({ messages: msgs });
+          }
+        }
+        this.scrollToBottom();
+      });
+
+      task.onClose(() => {
+        if (!this._streamStarted) {
+          // WS closed before any tokens — treat as connection failure, fall back
+          this._cleanupWebSocket();
+          this._doRestSend(text, messages);
+          return;
+        }
+        // Clean up if not already done
+        this._cleanupWebSocket();
+      });
+
+      task.onError((err) => {
+        if (!this._streamStarted) {
+          this._cleanupWebSocket();
+          this._doRestSend(text, messages);
+        }
+      });
+
+    } catch (err) {
+      // connectSocket threw synchronously — fall back to REST
+      if (this._wsTimeout) {
+        clearTimeout(this._wsTimeout);
+        this._wsTimeout = null;
+      }
+      this._wsTask = null;
+      this._doRestSend(text, messages);
+    }
+  },
+
+  /**
+   * Fallback: send via REST API (existing logic, untouched).
+   */
+  async _doRestSend(text, messages) {
+    if (this._destroyed) return;
+    this.setData({ sending: true, aiThinking: true, isStreaming: false });
 
     try {
       const result = await request(`/readings/${this.data.readingId}/chat`, {
@@ -143,11 +324,12 @@ Page({
         data: { message: text },
       });
       if (this._destroyed) return;
-      messages.push({ role: 'assistant', content: result.reply });
+      messages.push({ role: 'assistant', content: result.reply, streaming: false });
       this.setData({
         messages,
         sending: false,
         aiThinking: false,
+        isStreaming: false,
         remainingFree: result.remaining_free,
       });
       try { wx.vibrateShort({ type: 'light' }); } catch(e) {}
@@ -159,6 +341,7 @@ Page({
         this.setData({
           sending: false,
           aiThinking: false,
+          isStreaming: false,
           showMembershipPrompt: true,
           membershipPromptText: '今日追问已达上限',
         });
@@ -171,6 +354,7 @@ Page({
         messages,
         sending: false,
         aiThinking: false,
+        isStreaming: false,
         sendFailed: true,
         _pendingRetryText: text,
         inputText: text,
@@ -180,9 +364,10 @@ Page({
     }
   },
 
-  /** 重试发送失败的消息 */
+  /** 重试发送失败的消息 (unchanged — REST-only retry) */
   async onRetrySend(e) {
     if (this.data.sending) return;
+    if (this.data.isStreaming) return;
     // Only proceed if this message is actually failed
     const isFailed = e && e.currentTarget && e.currentTarget.dataset.failed;
     if (e && !isFailed) return;
@@ -195,32 +380,8 @@ Page({
     const messages = this.data.messages.filter(m => !m.failed);
     this.setData({ messages, sendFailed: false, _pendingRetryText: '', aiThinking: true, sending: true });
 
-    try {
-      const result = await request(`/readings/${this.data.readingId}/chat`, {
-        method: 'POST',
-        data: { message: text },
-      });
-      if (this._destroyed) return;
-      messages.push({ role: 'assistant', content: result.reply });
-      this.setData({ messages, sending: false, aiThinking: false, remainingFree: result.remaining_free, inputText: '', canSend: false });
-      try { wx.vibrateShort({ type: 'light' }); } catch(e) {}
-      this.scrollToBottom();
-    } catch (err) {
-      if (this._destroyed) return;
-      // 402: quota exhausted — show membership prompt
-      if (err.statusCode === 402) {
-        this.setData({
-          sending: false,
-          aiThinking: false,
-          showMembershipPrompt: true,
-          membershipPromptText: '今日追问已达上限',
-        });
-        return;
-      }
-      messages[messages.length - 1] = { role: 'user', content: text, failed: true };
-      this.setData({ messages, sending: false, aiThinking: false, inputText: text, canSend: true,
-        sendFailed: true, _pendingRetryText: text });
-    }
+    // Retry uses REST fallback directly (WebSocket may still be unstable)
+    await this._doRestSend(text, messages);
   },
 
   scrollToBottom() {
