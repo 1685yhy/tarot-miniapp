@@ -104,6 +104,9 @@ Page({
     tasksCompleted: 0,
     tasksTotal: 3,
     taskStreak: 0,
+    // Checkin entry on homepage
+    checkinStreak: 0,
+    checkedInToday: false,
     // Immersive tarot explainer overlay
     showTarotOverlay: false,
     // Shooting star easter egg
@@ -351,6 +354,8 @@ Page({
         tasksCompleted: status.tasks_completed,
         tasksTotal: status.tasks_total,
         taskStreak: status.streak,
+        checkinStreak: status.streak,
+        checkedInToday: status.checked_in_today,
       });
     } catch (_err) {
       // Silent degrade — task UI just shows defaults (all false, 0/3)

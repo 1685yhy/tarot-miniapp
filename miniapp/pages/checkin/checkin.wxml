@@ -71,6 +71,37 @@
       </view>
     </view>
 
+    <!-- ===== Membership Milestones ===== -->
+    <view class="milestone-section anim-fade-up anim-stagger-5">
+      <text class="section-title">会员里程碑</text>
+      <view class="milestone-list">
+        <view class="milestone-item {{streak >= 7 ? 'milestone-reached' : ''}}">
+          <view class="milestone-icon">👑</view>
+          <view class="milestone-info">
+            <text class="milestone-days">连续 7 天</text>
+            <text class="milestone-reward">+1 天会员体验</text>
+          </view>
+          <view class="milestone-status">{{streak >= 7 ? '已达成' : '未达成'}}</view>
+        </view>
+        <view class="milestone-item {{streak >= 30 ? 'milestone-reached' : ''}}">
+          <view class="milestone-icon">👑</view>
+          <view class="milestone-info">
+            <text class="milestone-days">连续 30 天</text>
+            <text class="milestone-reward">+3 天会员体验</text>
+          </view>
+          <view class="milestone-status">{{streak >= 30 ? '已达成' : '未达成'}}</view>
+        </view>
+        <view class="milestone-item {{streak >= 100 ? 'milestone-reached' : ''}}">
+          <view class="milestone-icon">👑</view>
+          <view class="milestone-info">
+            <text class="milestone-days">连续 100 天</text>
+            <text class="milestone-reward">+7 天会员体验</text>
+          </view>
+          <view class="milestone-status">{{streak >= 100 ? '已达成' : '未达成'}}</view>
+        </view>
+      </view>
+    </view>
+
   </view>
 
   <!-- ===== Reward Animation Overlay ===== -->
@@ -81,7 +112,7 @@
       </view>
     </view>
     <view class="reward-popup">
-      <text class="reward-emoji">🌟</text>
+      <text class="reward-emoji">{{rewardEmoji}}</text>
       <text class="reward-title">签到成功</text>
       <text class="reward-text">{{rewardText}}</text>
     </view>

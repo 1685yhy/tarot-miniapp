@@ -87,6 +87,11 @@ Page({
     // Onboarding Step 3
     showOnboarding: false,
     onboardingStep: 0,
+
+    // Teaching data display
+    showTeaching: false,
+    hasTeachingData: false,
+    teachingCards: [],
   },
 
   onLoad(options) {
@@ -370,7 +375,24 @@ Page({
       analytics.funnel('reading_completed', { spread_type: reading.spread_type });
 
       const tldr = this._extractTLDR(reading.interpretation);
-      this.setData({ reading, personaDisplay, tldr, spreadTypeName, pageLoading: false, showUndo: true, showFullInterpretation: false });
+
+      // Extract teaching data from drawn cards
+      const teachingCards = [];
+      if (reading.drawn_cards) {
+        for (const card of reading.drawn_cards) {
+          if (card.teaching && (card.teaching.symbols?.length > 0 || card.teaching.life_connection)) {
+            teachingCards.push({
+              card_id: card.card_id,
+              card_name: card.card_name,
+              symbols: card.teaching.symbols || [],
+              life_connection: card.teaching.life_connection || '',
+            });
+          }
+        }
+      }
+      const hasTeachingData = teachingCards.length > 0;
+
+      this.setData({ reading, personaDisplay, tldr, teachingCards, hasTeachingData, spreadTypeName, pageLoading: false, showUndo: true, showFullInterpretation: false });
       // Trigger staggered card entrance animation after render
       this._animateCardReveal();
       // Play reveal sound when reading result appears
@@ -594,6 +616,10 @@ Page({
 
   onToggleFull() {
     this.setData({ showFullInterpretation: !this.data.showFullInterpretation });
+  },
+
+  onToggleTeaching() {
+    this.setData({ showTeaching: !this.data.showTeaching });
   },
 
   onRetry() {
