@@ -5,6 +5,7 @@ const { checkLogin } = require('../../utils/auth');
 const { computeImagePath } = require('../../utils/cards');
 const { createAnim, staggeredEntrance } = require('../../utils/animate');
 const { playPageEnterSound, playCardFlipSound, startAmbientSound, stopAmbientSound } = require('../../utils/sound');
+const analytics = require('../../utils/analytics');
 
 /** Get free daily readings limit from member status (or fallback) */
 function _getFreeReadingsLimit() {
@@ -136,6 +137,9 @@ Page({
   },
 
   async onLoad() {
+    // Analytics: page view
+    analytics.pageView('home');
+
     // ── Onboarding: migrate old key ──
     const onboardingCompleted = wx.getStorageSync('onboarding_completed');
     const oldDone = wx.getStorageSync('onboarding_done');
@@ -556,6 +560,7 @@ Page({
 
   navigateToReading(e) {
     const type = e.currentTarget.dataset.type;
+    analytics.trackEvent('reading_start', { type, source: 'home_spread_card' });
     wx.navigateTo({ url: `/pages/reading/reading?type=${type}` });
   },
 
@@ -588,6 +593,7 @@ Page({
 
   /** Navigate to membership page */
   onGoMembership() {
+    analytics.trackEvent('membership_cta', { source: 'home' });
     wx.navigateTo({ url: '/pages/membership/membership' });
   },
 

@@ -28,6 +28,7 @@
 const { request, getFriendlyError } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
 const { playCardDrawSound } = require('../../utils/sound');
+const analytics = require('../../utils/analytics');
 
 /** Get free daily readings limit from member status (or fallback) */
 function _getFreeReadingsLimit() {
@@ -550,6 +551,9 @@ Page({
     });
 
     if (!confirmed) return;
+
+    // Analytics: funnel step
+    analytics.funnel('reading_started', { spread: selectedSpread.key, theme: this.data.theme || 'general' });
 
     // Save pending context for result page
     const pending = {

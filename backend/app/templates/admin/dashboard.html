@@ -36,6 +36,86 @@
     </div>
 </div>
 
+<!-- 转化漏斗 -->
+<div class="chart-section">
+    <h2 class="section-title">转化漏斗（今日）</h2>
+    <div class="funnel-table-wrapper">
+        <table class="funnel-table">
+            <thead>
+                <tr>
+                    <th>步骤</th>
+                    <th>次数</th>
+                    <th>转化率</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>开始解读 <span class="funnel-step-desc">(reading_started)</span></td>
+                    <td>{{ funnel.reading_started }}</td>
+                    <td>—</td>
+                </tr>
+                <tr>
+                    <td>完成解读 <span class="funnel-step-desc">(reading_completed)</span></td>
+                    <td>{{ funnel.reading_completed }}</td>
+                    <td>{{ funnel_rates.start_to_complete }}%</td>
+                </tr>
+                <tr>
+                    <td>查看定价 <span class="funnel-step-desc">(pricing_viewed)</span></td>
+                    <td>{{ funnel.pricing_viewed }}</td>
+                    <td>—</td>
+                </tr>
+                <tr>
+                    <td>发起购买 <span class="funnel-step-desc">(purchase_started)</span></td>
+                    <td>{{ funnel.purchase_started }}</td>
+                    <td>{{ funnel_rates.view_to_purchase }}%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Backup controls -->
+<div class="chart-section">
+    <h2 class="section-title">数据库备份</h2>
+    <div class="backup-controls">
+        <button class="btn btn-primary" onclick="triggerBackup()">立即备份</button>
+        <span class="backup-status" id="backup-status">上次备份：每日 3:00 自动执行</span>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+async function triggerBackup() {
+    const btn = event.target;
+    const status = document.getElementById('backup-status');
+    btn.disabled = true;
+    btn.textContent = '备份中...';
+    status.textContent = '正在执行备份...';
+    status.className = 'backup-status';
+    try {
+        const res = await fetch('/admin/backup', {
+            method: 'POST',
+            headers: { 'X-Admin-User-Id': '{{ admin.id }}' },
+        });
+        const data = await res.json();
+        if (data.ok) {
+            status.textContent = '备份成功：' + (data.output || '完成');
+            status.className = 'backup-status backup-status--success';
+        } else {
+            status.textContent = '备份失败：' + (data.error || '未知错误');
+            status.className = 'backup-status backup-status--error';
+        }
+    } catch (err) {
+        status.textContent = '备份失败：网络错误';
+        status.className = 'backup-status backup-status--error';
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '立即备份';
+    }
+}
+</script>
+{% endblock %}
+
 <!-- 7-day trend chart (simple bar) -->
 <div class="chart-section">
     <h2 class="section-title">近 7 日占卜趋势</h2>

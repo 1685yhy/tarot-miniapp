@@ -3,6 +3,7 @@ const { request, getFriendlyError } = require('../../utils/api');
 const { cardEnter } = require('../../utils/animate');
 const { computeImagePath } = require('../../utils/cards');
 const { playCardRevealSound } = require('../../utils/sound');
+const analytics = require('../../utils/analytics');
 
 // ---- Persona data (must match reading.js PERSONAS) ----
 const PERSONA_DATA = {
@@ -362,6 +363,9 @@ Page({
         }
       }
 
+      // Analytics: funnel — reading completed
+      analytics.funnel('reading_completed', { spread_type: reading.spread_type });
+
       const tldr = this._extractTLDR(reading.interpretation);
       this.setData({ reading, personaDisplay, tldr, spreadTypeName, pageLoading: false, showUndo: true, showFullInterpretation: false });
       // Trigger staggered card entrance animation after render
@@ -649,6 +653,9 @@ Page({
   onShareAppMessage() {
     const reading = this.data.reading;
     if (!reading) return { title: '星光塔罗解读' };
+
+    // Analytics: track share event
+    analytics.trackEvent('share', { type: 'reading', spread_type: reading.spread_type });
 
     // Extract a 15-char key insight from the interpretation
     let keyInsight = '';

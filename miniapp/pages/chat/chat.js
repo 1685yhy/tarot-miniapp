@@ -1,6 +1,7 @@
 // pages/chat/chat.js
 const { request, getFriendlyError, BASE_URL } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
+const analytics = require('../../utils/analytics');
 
 /** Derive WebSocket base URL from the REST API base URL. */
 const WS_BASE = BASE_URL.replace(/^http/, 'ws').replace(/\/api$/, '');
@@ -114,6 +115,9 @@ Page({
         this.setData({ chatFreeTotal: _getFreeChatsLimit() });
       }
     } catch (_e) { /* silent degrade */ }
+
+    // Analytics: funnel — chat started
+    analytics.funnel('chat_started', { readingId: readingId || '' });
   },
 
   onUnload() {
@@ -164,6 +168,9 @@ Page({
   async onSend() {
     const text = this.data.inputText.trim();
     if (!text || this.data.sending) return;
+
+    // Analytics: track each sent message
+    analytics.trackEvent('chat_message', { readingId: this.data.readingId });
 
     const messages = [...this.data.messages, { role: 'user', content: text }];
     this.setData({
