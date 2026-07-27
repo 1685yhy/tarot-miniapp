@@ -56,6 +56,13 @@ Page({
     // Reward animation
     showRewardAnim: false,
     rewardText: '',
+    rewardEmoji: '🌟',
+    // Membership milestones
+    milestones: [
+      { days: 7, reward: 1, claimed: false },
+      { days: 30, reward: 3, claimed: false },
+      { days: 100, reward: 7, claimed: false },
+    ],
     // Particle animation
     particles: [],
   },
@@ -147,8 +154,13 @@ Page({
         checkingIn: false,
       });
 
-      // Show reward animation
-      this._showRewardAnim(result.reward);
+      // Show reward animation (with membership celebration if applicable)
+      if (result.reward_type === 'membership') {
+        const msg = `🎉 连续签到${result.streak}天！获得${result.reward_days}天会员体验 ✦`;
+        this._showRewardAnim(msg, 'membership');
+      } else {
+        this._showRewardAnim(result.reward);
+      }
 
       // Reload level info
       const lv = resolveLevel(result.streak);
@@ -165,7 +177,10 @@ Page({
     }
   },
 
-  _showRewardAnim(rewardText) {
+  _showRewardAnim(rewardText, rewardType) {
+    // Determine emoji based on reward type
+    const rewardEmoji = rewardType === 'membership' ? '👑' : '🌟';
+
     // Generate golden particles
     const particles = [];
     for (let i = 0; i < 12; i++) {
@@ -179,6 +194,7 @@ Page({
     this.setData({
       showRewardAnim: true,
       rewardText,
+      rewardEmoji,
       particles,
     });
 

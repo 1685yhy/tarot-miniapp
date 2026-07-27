@@ -27,6 +27,13 @@ LEVELS = [
     {"name": "银河导师", "min_days": 100, "max_days": 999999, "badge_color": "#FFD700"},
 ]
 
+# ── 签到里程碑定义 ───────────────────────────────────────
+STREAK_MILESTONES: dict[int, int] = {
+    7: 1,
+    30: 3,
+    100: 7,
+}
+
 
 def _resolve_level(streak: int) -> dict:
     for lv in LEVELS:
@@ -91,9 +98,55 @@ async def checkin(user: User = Depends(get_current_user), db: AsyncSession = Dep
 
     # 4. Reward: +1 free reading
     reward = "+1 免费解读"
+    reward_type = ""
+    reward_days = 0
     user.free_readings_today = (user.free_readings_today or 0) + 1
 
-    return CheckInResponse(signed_in=True, streak=new_streak, reward=reward)
+    # 5. Check streak milestones for membership reward
+    if new_streak in STREAK_MILESTONES:
+        milestone_days = STREAK_MILESTONES[new_streak]
+        milestone_str = str(new_streak)
+
+        # Check if this milestone has already been claimed across all user checkins
+        all_checkins = await db.execute(
+            select(CheckIn).where(CheckIn.user_id == user.id)
+        )
+        already_claimed = False
+        for ci in all_checkins.scalars().all():
+            if ci.milestones_claimed:
+                claimed_list = [m.strip() for m in ci.milestones_claimed.split(",") if m.strip()]
+                if milestone_str in claimed_list:
+                    already_claimed = True
+                    break
+
+        if not already_claimed:
+            # Grant membership days
+            now = datetime.now(timezone.utc)
+            if not user.is_member:
+                user.is_member = True
+                user.member_expires_at = now + timedelta(days=milestone_days)
+            else:
+                if user.member_expires_at and user.member_expires_at > now:
+                    user.member_expires_at += timedelta(days=milestone_days)
+                else:
+                    user.member_expires_at = now + timedelta(days=milestone_days)
+
+            # Mark this milestone as claimed on the current checkin record
+            if checkin_record.milestones_claimed:
+                checkin_record.milestones_claimed += f",{milestone_str}"
+            else:
+                checkin_record.milestones_claimed = milestone_str
+
+            reward = f"🎉 连续签到{new_streak}天！获得{milestone_days}天会员体验"
+            reward_type = "membership"
+            reward_days = milestone_days
+
+    await db.flush()
+
+    return CheckInResponse(
+        signed_in=True, streak=new_streak, reward=reward,
+        reward_type=reward_type, reward_days=reward_days,
+    )
 
 
 # ── GET /tasks/status ────────────────────────────────────

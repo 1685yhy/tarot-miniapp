@@ -218,22 +218,38 @@ async def _load_drawn_cards_response(
 ) -> list[dict]:
     """Build the ``DrawnCardResponse``-compatible dict list for a reading."""
     resp = []
+    card_ids = [dc.card_id for dc in drawn_cards]
+
+    # Batch-load teaching info
+    teaching_info: dict[int, dict] = {}
+    if card_ids:
+        t_result = await db.execute(
+            select(CardTeaching).where(CardTeaching.card_id.in_(card_ids))
+        )
+        for teaching_row in t_result.scalars().all():
+            teaching_info[teaching_row.card_id] = {
+                "symbols": json.loads(teaching_row.symbols),
+                "life_connection": teaching_row.life_connection,
+            }
+
     for dc in drawn_cards:
         card = await _load_card_info(db, dc.card_id)
-        resp.append(
-            {
-                "id": dc.id,
-                "card_id": dc.card_id,
-                "card_name": card.name_zh if card else f"卡牌#{dc.card_id}",
-                "name_en": card.name_en if card else "",
-                "arcana": card.arcana if card else "",
-                "suit": card.suit if card else None,
-                "card_number": card.card_number if card else 0,
-                "position": dc.position,
-                "position_name": dc.position_name,
-                "is_reversed": dc.is_reversed,
-            }
-        )
+        entry = {
+            "id": dc.id,
+            "card_id": dc.card_id,
+            "card_name": card.name_zh if card else f"卡牌#{dc.card_id}",
+            "name_en": card.name_en if card else "",
+            "arcana": card.arcana if card else "",
+            "suit": card.suit if card else None,
+            "card_number": card.card_number if card else 0,
+            "position": dc.position,
+            "position_name": dc.position_name,
+            "is_reversed": dc.is_reversed,
+        }
+        # Attach teaching if available
+        if dc.card_id in teaching_info:
+            entry["teaching"] = teaching_info[dc.card_id]
+        resp.append(entry)
     return resp
 
 
@@ -381,20 +397,25 @@ async def create_reading(
             select(TarotCard).where(TarotCard.id == dc.card_id)
         )
         card = result.scalar_one_or_none()
-        drawn_resp.append(
-            {
-                "id": dc.id,
-                "card_id": dc.card_id,
-                "card_name": card.name_zh if card else f"卡牌#{dc.card_id}",
-                "name_en": card.name_en if card else "",
-                "arcana": card.arcana if card else "",
-                "suit": card.suit if card else None,
-                "card_number": card.card_number if card else 0,
-                "position": dc.position,
-                "position_name": dc.position_name,
-                "is_reversed": dc.is_reversed,
+        entry = {
+            "id": dc.id,
+            "card_id": dc.card_id,
+            "card_name": card.name_zh if card else f"卡牌#{dc.card_id}",
+            "name_en": card.name_en if card else "",
+            "arcana": card.arcana if card else "",
+            "suit": card.suit if card else None,
+            "card_number": card.card_number if card else 0,
+            "position": dc.position,
+            "position_name": dc.position_name,
+            "is_reversed": dc.is_reversed,
+        }
+        # Attach teaching if available
+        if dc.card_id in teaching_info:
+            entry["teaching"] = {
+                "symbols": teaching_info[dc.card_id]["symbols"],
+                "life_connection": teaching_info[dc.card_id]["life_connection"],
             }
-        )
+        drawn_resp.append(entry)
 
     return ReadingResponse(
         id=reading.id,

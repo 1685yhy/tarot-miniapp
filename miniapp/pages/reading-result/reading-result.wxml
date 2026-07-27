@@ -150,7 +150,36 @@
       </view>
 
       <!-- ==========================================================
-           4.5 SHARE CTA — Invite user to share for rewards
+           4.5 TEACHING — 牌面深度解析 (collapsible)
+           ========================================================== -->
+      <view class="teaching-section" wx:if="{{hasTeachingData}}">
+        <view class="teaching-toggle" bindtap="onToggleTeaching">
+          <text class="teaching-toggle-icon">🔮</text>
+          <text class="teaching-toggle-text">牌面深度解析</text>
+          <text class="teaching-toggle-arrow">{{showTeaching ? '收起 ▲' : '展开 ▼'}}</text>
+        </view>
+        <view class="teaching-body {{showTeaching ? 'teaching-expanded' : ''}}">
+          <view class="teaching-card" wx:for="{{teachingCards}}" wx:for-item="tc" wx:key="card_id">
+            <view class="teaching-card-header">
+              <text class="teaching-card-name">{{tc.card_name}}</text>
+            </view>
+            <view wx:if="{{tc.symbols && tc.symbols.length > 0}}" class="teaching-symbols">
+              <text class="teaching-label">牌面符号</text>
+              <view class="teaching-symbol-item" wx:for="{{tc.symbols}}" wx:for-item="sym" wx:key="symbol">
+                <text class="teaching-symbol-name">{{sym.symbol}}</text>
+                <text class="teaching-symbol-meaning">— {{sym.meaning}}</text>
+              </view>
+            </view>
+            <view wx:if="{{tc.life_connection}}" class="teaching-connection">
+              <text class="teaching-label">生活启示</text>
+              <text class="teaching-connection-text">{{tc.life_connection}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- ==========================================================
+           4.6 SHARE CTA — Invite user to share for rewards
            ========================================================== -->
       <view class="share-cta-wrap {{showShareCTA ? '' : 'dismissed'}}" wx:if="{{showShareCTA && !isMember}}">
         <view class="share-cta-card">

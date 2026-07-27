@@ -33,6 +33,11 @@ class ActionItem(BaseModel):
     category: str  # love / career / general
 
 
+class TeachingData(BaseModel):
+    symbols: list[dict] = []
+    life_connection: str = ""
+
+
 class DrawnCardResponse(BaseModel):
     id: int
     card_id: int
@@ -44,6 +49,7 @@ class DrawnCardResponse(BaseModel):
     position: int
     position_name: str
     is_reversed: bool
+    teaching: TeachingData | None = None
 
 
 class ReadingResponse(BaseModel):

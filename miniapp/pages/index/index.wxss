@@ -2136,6 +2136,56 @@
 }
 
 /* ============================================================
+   25.5 CHECKIN ENTRY — Compact badge in hero section
+   ============================================================ */
+
+.checkin-entry {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xxs, 8rpx);
+  margin-top: 16rpx;
+  padding: 6rpx 20rpx;
+  background: rgba(244, 212, 140, 0.06);
+  border: 1rpx solid rgba(244, 212, 140, 0.15);
+  border-radius: var(--radius-pill, 999rpx);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all var(--duration-fast) var(--ease-out);
+  position: relative;
+  z-index: 1;
+}
+
+.checkin-entry:active {
+  transform: scale(0.95);
+  background: rgba(244, 212, 140, 0.12);
+  border-color: rgba(244, 212, 140, 0.30);
+}
+
+.checkin-entry-icon {
+  font-size: 22rpx;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.checkin-entry-text {
+  font-size: var(--font-size-xs, 20rpx);
+  color: var(--color-gold, #F4D48C);
+  letter-spacing: 1rpx;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.checkin-entry--done {
+  background: rgba(154, 149, 184, 0.06);
+  border-color: rgba(154, 149, 184, 0.15);
+}
+
+.checkin-entry--done .checkin-entry-text {
+  color: var(--color-lavender, #B8A9E0);
+  font-weight: 400;
+}
+
+/* ============================================================
    26. TIME-OF-DAY GREETING — Gentle fade-in on each page visit
    ============================================================ */
 

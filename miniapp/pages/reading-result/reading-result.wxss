@@ -1184,6 +1184,137 @@
 }
 
 /* ============================================================
+   Teaching Section — Collapsible card-depth analytics
+   ============================================================ */
+.teaching-section {
+  margin: var(--spacing-lg) 0;
+  position: relative;
+  z-index: 1;
+}
+
+.teaching-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs, 12rpx);
+  padding: var(--spacing-sm, 16rpx) var(--spacing-md, 24rpx);
+  background: rgba(244, 212, 140, 0.06);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.15);
+  border-radius: var(--radius-md, 16rpx);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.teaching-toggle:active {
+  background: rgba(244, 212, 140, 0.10);
+  border-color: rgba(244, 212, 140, 0.30);
+}
+
+.teaching-toggle-icon {
+  font-size: 28rpx;
+  flex-shrink: 0;
+}
+
+.teaching-toggle-text {
+  flex: 1;
+  font-size: var(--font-size-caption, 26rpx);
+  font-weight: 600;
+  color: var(--color-gold, #F4D48C);
+  letter-spacing: 2rpx;
+}
+
+.teaching-toggle-arrow {
+  font-size: var(--font-size-xs, 20rpx);
+  color: var(--color-lavender, #B8A9E0);
+  flex-shrink: 0;
+  letter-spacing: 1rpx;
+}
+
+/* Collapsible body */
+.teaching-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-out, opacity 0.3s ease-out;
+  opacity: 0;
+}
+
+.teaching-body.teaching-expanded {
+  max-height: 2000rpx;
+  opacity: 1;
+}
+
+/* Individual teaching card */
+.teaching-card {
+  margin-top: var(--spacing-sm, 16rpx);
+  padding: var(--spacing-md, 24rpx);
+  background: rgba(37, 37, 80, 0.35);
+  border: 1rpx solid rgba(244, 212, 140, 0.10);
+  border-radius: var(--radius-md, 16rpx);
+  border-left: 4rpx solid var(--color-gold, #F4D48C);
+}
+
+.teaching-card-header {
+  margin-bottom: var(--spacing-sm, 16rpx);
+}
+
+.teaching-card-name {
+  font-size: var(--font-size-body, 30rpx);
+  font-weight: 600;
+  color: var(--color-gold, #F4D48C);
+  letter-spacing: 2rpx;
+}
+
+.teaching-label {
+  display: block;
+  font-size: var(--font-size-xs, 20rpx);
+  font-weight: 500;
+  color: var(--color-lavender, #B8A9E0);
+  letter-spacing: 2rpx;
+  margin-bottom: var(--spacing-xs, 12rpx);
+  opacity: 0.8;
+}
+
+.teaching-symbols {
+  margin-bottom: var(--spacing-sm, 16rpx);
+}
+
+.teaching-symbol-item {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-xxs, 8rpx);
+  padding: 6rpx 0;
+}
+
+.teaching-symbol-name {
+  font-size: var(--font-size-caption, 24rpx);
+  font-weight: 500;
+  color: var(--color-text-primary, #F0EDE8);
+  letter-spacing: 1rpx;
+  flex-shrink: 0;
+}
+
+.teaching-symbol-meaning {
+  font-size: var(--font-size-caption, 24rpx);
+  color: var(--color-lavender, #B8A9E0);
+  letter-spacing: 1rpx;
+  line-height: 1.6;
+}
+
+.teaching-connection {
+  padding-top: var(--spacing-xs, 12rpx);
+  border-top: 1rpx solid rgba(244, 212, 140, 0.08);
+}
+
+.teaching-connection-text {
+  display: block;
+  font-size: var(--font-size-caption, 24rpx);
+  color: var(--color-text-primary, #F0EDE8);
+  line-height: 1.7;
+  letter-spacing: 1rpx;
+  opacity: 0.9;
+}
+
+/* ============================================================
    Share CTA — Tasteful share prompt card after interpretation
    ============================================================ */
 .share-cta-wrap {

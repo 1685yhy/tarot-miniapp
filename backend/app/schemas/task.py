@@ -6,6 +6,8 @@ class CheckInResponse(BaseModel):
     signed_in: bool
     streak: int
     reward: str
+    reward_type: str = ""
+    reward_days: int = 0
 
 
 class LevelInfo(BaseModel):

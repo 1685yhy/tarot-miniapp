@@ -461,6 +461,120 @@
   letter-spacing: 2rpx;
 }
 
+/* ============================================================
+   Membership Milestones
+   ============================================================ */
+.milestone-section {
+  padding: var(--spacing-lg, 32rpx) 0;
+  position: relative;
+  z-index: 1;
+}
+
+.milestone-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 16rpx);
+}
+
+.milestone-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 16rpx);
+  padding: var(--spacing-sm, 16rpx) var(--spacing-md, 24rpx);
+  background: var(--color-surface-gradient);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.08);
+  border-radius: var(--radius-md, 16rpx);
+  transition: all 0.3s ease;
+}
+
+.milestone-item.milestone-reached {
+  border-color: rgba(244, 212, 140, 0.35);
+  background: linear-gradient(135deg, rgba(244, 212, 140, 0.10) 0%, rgba(212, 176, 106, 0.05) 100%);
+  box-shadow: 0 0 20rpx rgba(244, 212, 140, 0.08);
+}
+
+.milestone-icon {
+  font-size: 36rpx;
+  flex-shrink: 0;
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(244, 212, 140, 0.08);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.milestone-reached .milestone-icon {
+  background: rgba(244, 212, 140, 0.20);
+  box-shadow: 0 0 16rpx rgba(244, 212, 140, 0.20);
+}
+
+.milestone-info {
+  flex: 1;
+}
+
+.milestone-days {
+  display: block;
+  font-size: var(--font-size-caption, 24rpx);
+  font-weight: 600;
+  color: var(--color-text-primary, #F0EDE8);
+  letter-spacing: 2rpx;
+}
+
+.milestone-reached .milestone-days {
+  color: var(--color-gold, #F4D48C);
+}
+
+.milestone-reward {
+  display: block;
+  font-size: var(--font-size-xs, 20rpx);
+  color: var(--color-text-tertiary, #9A95B8);
+  margin-top: 4rpx;
+  letter-spacing: 1rpx;
+}
+
+.milestone-reached .milestone-reward {
+  color: var(--color-gold, #F4D48C);
+  opacity: 0.85;
+}
+
+.milestone-status {
+  font-size: var(--font-size-xs, 20rpx);
+  color: var(--color-text-tertiary, #9A95B8);
+  background: rgba(244, 212, 140, 0.06);
+  padding: 4rpx 16rpx;
+  border-radius: var(--radius-pill, 999rpx);
+  flex-shrink: 0;
+  letter-spacing: 1rpx;
+  transition: all 0.3s ease;
+}
+
+.milestone-reached .milestone-status {
+  color: var(--color-gold, #F4D48C);
+  background: rgba(244, 212, 140, 0.15);
+  font-weight: 500;
+}
+
+/* ============================================================
+   Animations for staggered entrance (after level section)
+   ============================================================ */
+.anim-fade-up.anim-stagger-5 {
+  animation: section-fade-up 0.5s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94)) 0.60s both;
+}
+
+@keyframes section-fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(24rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Footer spacer for safe area */
 .footer-spacer {
   height: 60rpx;
