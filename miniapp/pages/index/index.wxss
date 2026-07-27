@@ -2579,3 +2579,8 @@
   opacity: 1;
   transform: translateX(4rpx);
 }
+
+/* DEV: 自动化测试入口 */
+.dev-test-entry { text-align: center; padding: 16rpx; margin: 24rpx 32rpx; opacity: 0.3; }
+.dev-test-text { font-size: 22rpx; color: #9A95B8; }
+

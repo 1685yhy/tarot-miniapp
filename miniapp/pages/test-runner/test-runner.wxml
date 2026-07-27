@@ -1,0 +1,53 @@
+<!-- pages/test-runner/test-runner.wxml -->
+<view class="page">
+  <view class="header">
+    <text class="title">🔍 页面遍历测试</text>
+    <text class="sub">共 {{totalPages}} 个页面</text>
+  </view>
+
+  <!-- 控制 -->
+  <view class="controls" wx:if="{{!running && !done}}">
+    <button class="btn-start" bindtap="startTest">开始自动测试</button>
+  </view>
+
+  <!-- 进度 -->
+  <view class="progress" wx:if="{{running}}">
+    <text class="progress-text">测试中: {{current + 1}}/{{totalPages}}</text>
+    <view class="progress-bar">
+      <view class="progress-fill" style="width: {{(current + 1) / totalPages * 100}}%"></view>
+    </view>
+  </view>
+
+  <!-- 汇总 -->
+  <view class="summary" wx:if="{{done}}">
+    <text class="summary-pass">✅ {{passedCount}} 通过</text>
+    <text class="summary-fail" wx:if="{{failedCount > 0}}">❌ {{failedCount}} 失败</text>
+    <button class="btn-retry" bindtap="startTest">重新测试</button>
+  </view>
+
+  <!-- 结果列表 -->
+  <view class="results">
+    <view class="result-item {{item.errors.length === 0 ? 'pass' : 'fail'}}"
+      wx:for="{{results}}" wx:key="path">
+      <view class="result-header">
+        <text class="result-status">{{item.errors.length === 0 ? '✅' : '❌'}}</text>
+        <text class="result-name">{{item.name}}</text>
+        <text class="result-path">{{item.path}}</text>
+      </view>
+      <view class="result-errors" wx:if="{{item.errors.length > 0}}">
+        <text class="error-item" wx:for="{{item.errors}}" wx:key="*this" wx:for-item="err">{{err}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 页面直达 -->
+  <view class="quick-nav">
+    <text class="quick-title">页面直达:</text>
+    <view class="quick-grid">
+      <view class="quick-item" wx:for="{{PAGES}}" wx:key="path"
+        data-index="{{index}}" bindtap="onPageTap">
+        <text>{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+</view>

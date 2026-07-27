@@ -602,6 +602,11 @@ Page({
     wx.navigateTo({ url: '/pages/membership/membership' });
   },
 
+  /** DEV: Navigate to page test runner */
+  onGoTestRunner() {
+    wx.navigateTo({ url: '/pages/test-runner/test-runner' });
+  },
+
   /** Show a brief explainer of what tarot is */
   showTarotExplainer() {
     this.setData({ showTarotOverlay: true });
