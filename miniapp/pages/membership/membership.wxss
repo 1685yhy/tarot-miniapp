@@ -271,6 +271,49 @@ page {
   color: var(--color-gold);
 }
 
+/* ---- Savings Row ---- */
+.cmp-row--savings {
+  background: linear-gradient(90deg, rgba(244, 212, 140, 0.08) 0%, rgba(244, 212, 140, 0.03) 100%);
+  border-top: 1.5rpx solid rgba(244, 212, 140, 0.15);
+  position: relative;
+}
+
+.cmp-row--savings .cmp-cell--label {
+  color: var(--color-gold);
+  font-weight: 700;
+  font-size: var(--font-size-caption);
+}
+
+.cmp-cell--savings,
+.cmp-cell--savings-pro {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  padding: var(--spacing-xs) var(--spacing-xxs);
+}
+
+.savings-item {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.savings-item-s {
+  font-size: 20rpx;
+  color: var(--color-text-tertiary);
+  line-height: 1.4;
+}
+
+.savings-highlight {
+  color: var(--color-gold);
+  font-weight: 700;
+}
+
+.cmp-cell--savings-pro .savings-item {
+  color: var(--color-gold);
+  font-weight: 600;
+}
+
 /* ================================================================
    Pricing Section
    ================================================================ */
@@ -903,4 +946,155 @@ page {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* ============================================================
+   Payment Success Celebration Overlay
+   ============================================================ */
+.celebration-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 10, 30, 0.92);
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  animation: fade-in 0.3s ease-out;
+}
+
+.celebration-card {
+  position: relative;
+  width: 100%;
+  max-width: 540rpx;
+  background: linear-gradient(145deg, #2A2A5A 0%, #353570 100%);
+  border: 2rpx solid rgba(244, 212, 140, 0.30);
+  border-radius: 32rpx;
+  padding: var(--spacing-2xl) var(--spacing-lg) var(--spacing-xl);
+  text-align: center;
+  overflow: hidden;
+  animation: celebration-enter 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes celebration-enter {
+  0% { opacity: 0; transform: scale(0.85) translateY(30rpx); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.celebration-stars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 120rpx;
+  pointer-events: none;
+}
+
+.celebration-star {
+  position: absolute;
+  font-size: 36rpx;
+  color: var(--color-gold);
+  text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.6);
+  animation: star-burst 0.8s ease-out forwards;
+}
+
+.celebration-star-1 { top: 20rpx; left: 20%; animation-delay: 0.1s; }
+.celebration-star-2 { top: 10rpx; left: 50%; animation-delay: 0.2s; }
+.celebration-star-3 { top: 20rpx; right: 20%; animation-delay: 0.3s; }
+
+@keyframes star-burst {
+  0% { opacity: 0; transform: scale(0) rotate(-30deg); }
+  50% { opacity: 1; transform: scale(1.3) rotate(10deg); }
+  100% { opacity: 0.8; transform: scale(1) rotate(0deg); }
+}
+
+.celebration-icon {
+  font-size: 72rpx;
+  display: block;
+  margin-bottom: var(--spacing-sm);
+  animation: celebration-icon-bounce 0.6s ease-out 0.2s both;
+}
+
+@keyframes celebration-icon-bounce {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.celebration-title {
+  font-size: var(--font-size-title);
+  font-weight: 700;
+  color: var(--color-gold);
+  display: block;
+  letter-spacing: 4rpx;
+  margin-bottom: var(--spacing-xxs);
+}
+
+.celebration-sub {
+  font-size: var(--font-size-caption);
+  color: var(--color-lavender);
+  display: block;
+  margin-bottom: var(--spacing-lg);
+  letter-spacing: 2rpx;
+}
+
+.celebration-benefits {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: rgba(244, 212, 140, 0.06);
+  border: 1rpx solid rgba(244, 212, 140, 0.12);
+  border-radius: 20rpx;
+}
+
+.celebration-benefit {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  animation: benefit-slide-in 0.4s ease-out forwards;
+  opacity: 0;
+}
+.celebration-benefit:nth-child(1) { animation-delay: 0.4s; }
+.celebration-benefit:nth-child(2) { animation-delay: 0.5s; }
+.celebration-benefit:nth-child(3) { animation-delay: 0.6s; }
+.celebration-benefit:nth-child(4) { animation-delay: 0.7s; }
+
+@keyframes benefit-slide-in {
+  0% { opacity: 0; transform: translateX(-20rpx); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+.celebration-benefit-icon {
+  font-size: 32rpx;
+  width: 48rpx;
+  text-align: center;
+}
+
+.celebration-benefit-text {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.celebration-hint {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  display: block;
+  letter-spacing: 1rpx;
+  animation: hint-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes hint-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }

@@ -67,6 +67,26 @@ Page({
 
     // Invite / share rewards
     inviteRewards: 0,
+
+    // Push notification settings
+    pushDailyCard: false,
+    pushMemberExpire: false,
+    pushAnnualReport: false,
+
+    // Membership benefits data
+    memberBenefits: [
+      { icon: '✨', text: '已解锁 10 种牌阵' },
+      { icon: '💬', text: '无限 AI 追问' },
+      { icon: '🎭', text: '3 位专属塔罗师' },
+      { icon: '📊', text: '年度运势报告' },
+    ],
+    lockedBenefits: [
+      { icon: '✨', text: '10 种牌阵' },
+      { icon: '💬', text: '无限 AI 追问' },
+      { icon: '🎭', text: '3 位专属塔罗师' },
+      { icon: '📊', text: '年度运势报告' },
+      { icon: '🔮', text: '深度 AI 解读' },
+    ],
   },
 
   // —— History card image loading ——
@@ -94,6 +114,9 @@ Page({
       yearEndReminderEnabled: wx.getStorageSync('year_end_reminder') === true,
       isAnnualReportSeason: false,
     });
+
+    // Load push subscription status from storage
+    this._loadPushSettings();
 
     // Check annual report season (Dec-Jan)
     const month = new Date().getMonth() + 1;
@@ -340,5 +363,71 @@ Page({
         wx.showToast({ title: '已清除', icon: 'success' });
       },
     });
+  },
+
+  // ---- Push notification settings ----
+
+  /** Load push subscription status from local storage */
+  _loadPushSettings() {
+    const pushDailyCard = wx.getStorageSync('push_daily_subscribed') === true;
+    const pushMemberExpire = wx.getStorageSync('push_member_expire') === true;
+    const pushAnnualReport = wx.getStorageSync('push_annual_report') === true;
+    this.setData({
+      pushDailyCard,
+      pushMemberExpire,
+      pushAnnualReport,
+    });
+  },
+
+  /** Subscribe to daily card push */
+  onSubscribeDailyCard() {
+    wx.requestSubscribeMessage({
+      tmplIds: ['TEMPLATE_DAILY_CARD'],
+      success: (res) => {
+        const accepted = res['TEMPLATE_DAILY_CARD'] === 'accept';
+        wx.setStorageSync('push_daily_subscribed', accepted);
+        this.setData({ pushDailyCard: accepted });
+        wx.showToast({
+          title: accepted ? '已开启每日推送 ✦' : '已关闭每日推送',
+          icon: 'none',
+          duration: 1500,
+        });
+        // Report to backend
+        this._reportSubscription('TEMPLATE_DAILY_CARD', accepted);
+      },
+      fail: () => {
+        // Silent degrade
+      },
+    });
+  },
+
+  /** Open WeChat settings page so user can manage notification permissions */
+  onOpenPushSettings() {
+    wx.openSetting({
+      success: (res) => {
+        // Check subscription settings after returning
+        this._loadPushSettings();
+        wx.showToast({ title: '设置已更新', icon: 'none', duration: 1500 });
+      },
+    });
+  },
+
+  /** Report subscription status to backend */
+  async _reportSubscription(templateId, accepted) {
+    try {
+      const user = wx.getStorageSync('user');
+      const openid = user?.openid || '';
+      if (!openid) return;
+      await request('/notify/subscribe', {
+        method: 'POST',
+        data: {
+          openid,
+          template_id: templateId,
+          accept: accepted,
+        },
+      });
+    } catch (_err) {
+      // Silent degrade
+    }
   },
 });

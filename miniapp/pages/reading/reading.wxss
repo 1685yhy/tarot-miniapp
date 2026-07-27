@@ -1142,6 +1142,152 @@ view:has(> .btn-back-spreads) {
   .breathing-circle { animation: none; }
 }
 
+/* ============================================================
+   Exhausted Overlay — Beautiful full-screen membership CTA
+   ============================================================ */
+.exhausted-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 10, 30, 0.92);
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  animation: exhausted-fade-in 0.3s ease-out;
+}
+
+@keyframes exhausted-fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.exhausted-card {
+  position: relative;
+  width: 100%;
+  max-width: 520rpx;
+  background: linear-gradient(145deg, #2A2A5A 0%, #353570 100%);
+  border: 2rpx solid rgba(244, 212, 140, 0.25);
+  border-radius: 32rpx;
+  padding: var(--spacing-2xl) var(--spacing-lg) var(--spacing-lg);
+  text-align: center;
+  overflow: hidden;
+  animation: exhausted-card-enter 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes exhausted-card-enter {
+  0% { opacity: 0; transform: scale(0.88) translateY(40rpx); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.exhausted-stars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100rpx;
+  pointer-events: none;
+}
+
+.exhausted-star {
+  position: absolute;
+  font-size: 28rpx;
+  color: var(--color-gold);
+  text-shadow: 0 0 16rpx rgba(244, 212, 140, 0.5);
+  animation: exhausted-star-burst 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+.exhausted-star-1 { top: 24rpx; left: 18%; animation-delay: 0.15s; }
+.exhausted-star-2 { top: 16rpx; left: 50%; margin-left: -14rpx; animation-delay: 0.25s; }
+.exhausted-star-3 { top: 24rpx; right: 18%; animation-delay: 0.35s; }
+
+@keyframes exhausted-star-burst {
+  0% { opacity: 0; transform: scale(0) rotate(-30deg); }
+  50% { opacity: 1; transform: scale(1.4) rotate(15deg); }
+  100% { opacity: 0.8; transform: scale(1) rotate(0deg); }
+}
+
+.exhausted-icon {
+  font-size: 64rpx;
+  display: block;
+  margin-bottom: var(--spacing-sm);
+}
+
+.exhausted-title {
+  font-size: var(--font-size-title);
+  font-weight: 700;
+  color: var(--color-gold);
+  display: block;
+  letter-spacing: 3rpx;
+  margin-bottom: var(--spacing-xxs);
+}
+
+.exhausted-sub {
+  font-size: var(--font-size-caption);
+  color: var(--color-lavender);
+  display: block;
+  margin-bottom: var(--spacing-md);
+  letter-spacing: 2rpx;
+  opacity: 0.8;
+}
+
+.exhausted-divider {
+  height: 1rpx;
+  background: linear-gradient(90deg, transparent, rgba(244, 212, 140, 0.20), transparent);
+  margin: 0 var(--spacing-lg) var(--spacing-md);
+}
+
+.exhausted-cta-text {
+  font-size: var(--font-size-body);
+  color: var(--color-text-primary);
+  display: block;
+  margin-bottom: var(--spacing-md);
+  letter-spacing: 2rpx;
+  font-weight: 500;
+}
+
+.exhausted-cta-btn {
+  display: block;
+  width: 70%;
+  margin: 0 auto;
+  padding: var(--spacing-sm) 0;
+  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
+  color: #1A1A3E;
+  font-size: var(--font-size-body);
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius-pill);
+  letter-spacing: 3rpx;
+  box-shadow: 0 4rpx 28rpx rgba(244, 212, 140, 0.30);
+}
+
+.exhausted-cta-btn::after {
+  border: none;
+}
+
+.exhausted-cta-btn:active {
+  transform: scale(0.96);
+  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.20);
+}
+
+.exhausted-dismiss {
+  display: inline-block;
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-xs) var(--spacing-lg);
+  font-size: var(--font-size-caption);
+  color: var(--color-text-tertiary);
+  letter-spacing: 2rpx;
+  opacity: 0.6;
+}
+
+.exhausted-dismiss:active {
+  opacity: 1;
+}
+
 /* ==============================
    Persona selection — reader character cards
    ============================== */
