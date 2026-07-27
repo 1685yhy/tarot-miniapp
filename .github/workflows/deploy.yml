@@ -7,9 +7,20 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Check secrets
+        run: |
+          if [ -z "$HOST" ]; then
+            echo "::error::SERVER_HOST secret is empty or missing"
+            exit 1
+          fi
+          echo "::notice::Deploy target: $HOST"
+        env:
+          HOST: ${{ secrets.SERVER_HOST }}
 
       - name: Deploy to server
         uses: appleboy/ssh-action@v1
@@ -17,9 +28,36 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: root
           password: ${{ secrets.SERVER_PASSWORD }}
+          timeout: 30s
+          command_timeout: 120s
           script: |
-            cd /opt/tarot/backend
-            git pull origin master
+            set -e
+
+            echo "=== [Deploy] $(date -Iseconds) ==="
+
+            cd /opt/tarot/backend || {
+              echo "ERROR: /opt/tarot/backend not found"
+              exit 1
+            }
+
+            echo "[1/4] Pulling latest code..."
+            git pull origin master 2>&1
+
+            echo "[2/4] Installing dependencies if needed..."
+            pip install -r requirements.txt -q 2>&1
+
+            echo "[3/4] Restarting service..."
             systemctl restart tarot-api
             sleep 3
-            curl -s localhost:8000/health
+
+            echo "[4/4] Health check..."
+            if curl -sf localhost:8000/health > /dev/null 2>&1; then
+              echo "OK: Health check passed"
+            else
+              echo "WARN: Health check failed — checking service status..."
+              systemctl status tarot-api --no-pager -l 2>&1 || true
+              echo "Recent logs:"
+              journalctl -u tarot-api --no-pager -n 20 2>&1 || true
+            fi
+
+            echo "=== [Deploy] Complete ==="
