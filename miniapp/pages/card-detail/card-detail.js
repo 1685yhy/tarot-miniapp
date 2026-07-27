@@ -18,6 +18,8 @@ const IMAGE_BASE = (() => {
 Page({
   data: {
     card: null,
+    heroImgLoaded: false,
+    heroImgError: false,
     teaching: null,
     activeTab: 'upright', // upright / reversed / teaching
     pageLoading: true,
@@ -110,5 +112,34 @@ Page({
 
   onGoBack() {
     wx.switchTab({ url: '/pages/encyclopedia/encyclopedia' });
+  },
+
+  /** Toggle card favorite (local storage) */
+  onCollect() {
+    const card = this.data.card;
+    if (!card) return;
+    const favs = wx.getStorageSync('favorite_cards') || [];
+    const idx = favs.indexOf(card.id);
+    if (idx >= 0) {
+      favs.splice(idx, 1);
+      wx.showToast({ title: '已取消收藏', icon: 'none' });
+    } else {
+      favs.push(card.id);
+      wx.showToast({ title: '已收藏 ✦', icon: 'none' });
+    }
+    wx.setStorageSync('favorite_cards', favs);
+  },
+
+  /** Share card detail to friend */
+  onShare() {
+    // Handled by onShareAppMessage below
+  },
+
+  onShareAppMessage() {
+    const card = this.data.card;
+    return {
+      title: card ? `${card.name_zh} — 星光映照塔罗` : '星光映照 · 塔罗百科',
+      path: `/pages/card-detail/card-detail?id=${card?.id || ''}`,
+    };
   },
 });
