@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     WECHAT_API_KEY_V3: str = ""
     WECHAT_PRIVATE_KEY_PATH: str = ""
     WECHAT_MCH_CERT_SERIAL: str = ""
-    WECHAT_PLATFORM_CERT_SERIAL: str = ""
+    WECHAT_PLATFORM_CERT_SERIAL: str = ""  # REQUIRED for production. Get from WeChat Pay dashboard.
     WECHAT_PLATFORM_CERT: str = ""
 
     # Auth — JWT_SECRET is required; no default. Set via .env or environment variable.
