@@ -347,9 +347,7 @@ function drawSharePoster(canvasId, opts) {
 
     function _tryDraw() {
       if (drawAttempted) return;
-      if (!cardImageLoaded) return;
-      // QR code is optional — we don't block on it forever
-      // After a 5s timeout, draw without QR code
+      if (!cardImageLoaded || !qrImageLoaded) return;
       drawAttempted = true;
 
       // Card image
@@ -429,12 +427,13 @@ function drawSharePoster(canvasId, opts) {
       },
     });
 
-    // Safety timeout: if QR code hasn't loaded in 5s, draw without it
+    // Safety timeout: if either image hasn't loaded in 5s, draw anyway
     setTimeout(function () {
       if (!cardImageLoaded) {
-        // Card image still not loaded — this shouldn't happen (card has its own onerror),
-        // but just in case:
         cardImageLoaded = true;
+      }
+      if (!qrImageLoaded) {
+        qrImageLoaded = true;
       }
       _tryDraw();
     }, 5000);

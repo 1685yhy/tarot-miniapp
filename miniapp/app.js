@@ -1,6 +1,7 @@
 const { checkLogin } = require('./utils/auth');
 const { BASE_URL } = require('./utils/api');
 const perf = require('./utils/performance');
+const analytics = require('./utils/analytics');
 
 /** 试用存储键名 */
 const TRIAL_STORAGE_KEY = 'trial_expiry';
@@ -8,6 +9,10 @@ const TRIAL_MEMBER_KEY = 'is_trial_member';
 
 App({
   onLaunch() {
+    // === Analytics: app launch ===
+    analytics.pageView('app_launch');
+    analytics.trackEvent('appLaunch');
+
     // === Performance monitoring: app start ===
     perf.mark('appLaunch');
 

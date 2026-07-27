@@ -22,6 +22,60 @@ from app.models.reading import Reading
 from app.models.order import Order
 from app.models.user import User
 
+# ---------------------------------------------------------------------------
+# Analytics helper — query builder for funnel stats
+# ---------------------------------------------------------------------------
+
+async def _funnel_stats(db: AsyncSession):
+    """Return conversion funnel numbers for the dashboard.
+
+    Returns a dict with page_view, reading_started, reading_completed,
+    pricing_viewed, purchase_started counts.  Since `wx.reportAnalytics`
+    data resides in the WeChat MP backend rather than our DB, we derive
+    what we can from local tables.
+    """
+    today = _today_start()
+
+    # Readings started today  (≈ reading_started funnel step)
+    readings_today = await db.execute(
+        select(func.count(Reading.id)).where(Reading.created_at >= today)
+    )
+    started = readings_today.scalar() or 0
+
+    # Readings with an interpretation (≈ reading_completed funnel step)
+    completed_today = await db.execute(
+        select(func.count(Reading.id)).where(
+            Reading.created_at >= today,
+            Reading.interpretation.isnot(None),
+            Reading.interpretation != "",
+        )
+    )
+    completed = completed_today.scalar() or 0
+
+    # Pricing views  (≈ pricing_viewed funnel step) — membership page visits
+    # Use a proxy: unique users who visited membership from orders
+    pricing_views_today = await db.execute(
+        select(func.count(func.distinct(Order.user_id))).where(
+            Order.created_at >= today,
+        )
+    )
+    pricing_views = pricing_views_today.scalar() or 0
+
+    # Purchase started  (≈ purchase_started funnel step)
+    purchases_today = await db.execute(
+        select(func.count(Order.id)).where(
+            Order.created_at >= today,
+        )
+    )
+    purchases = purchases_today.scalar() or 0
+
+    return {
+        "reading_started": started,
+        "reading_completed": completed,
+        "pricing_viewed": pricing_views,
+        "purchase_started": purchases,
+    }
+
 router = APIRouter(prefix="/admin", tags=["管理后台"])
 
 templates = Jinja2Templates(directory="app/templates")
@@ -129,6 +183,25 @@ async def admin_dashboard(
         )
         trend.append(cnt.scalar() or 0)
 
+    # Funnel stats
+    funnel = await _funnel_stats(db)
+
+    # Compute funnel conversion rates
+    funnel_rates = {}
+    if funnel["reading_started"]:
+        funnel_rates["start_to_complete"] = round(
+            (funnel["reading_completed"] / funnel["reading_started"]) * 100, 1
+        )
+    else:
+        funnel_rates["start_to_complete"] = 0.0
+
+    if funnel["pricing_viewed"]:
+        funnel_rates["view_to_purchase"] = round(
+            (funnel["purchase_started"] / funnel["pricing_viewed"]) * 100, 1
+        )
+    else:
+        funnel_rates["view_to_purchase"] = 0.0
+
     return templates.TemplateResponse(
         "admin/dashboard.html",
         {
@@ -142,6 +215,8 @@ async def admin_dashboard(
             "total_orders": total_orders,
             "trend": trend,
             "days": [(_days_ago(6 - i)).strftime("%m/%d") for i in range(7)],
+            "funnel": funnel,
+            "funnel_rates": funnel_rates,
         },
     )
 
@@ -438,3 +513,27 @@ async def admin_update_card(
             setattr(card, field, str(data[field]))
     await db.flush()
     return {"ok": True, "card_id": card_id}
+
+
+# ---------------------------------------------------------------------------
+# POST /admin/backup — Trigger database backup
+# ---------------------------------------------------------------------------
+
+@router.post("/backup")
+async def trigger_backup(
+    admin: User = Depends(require_admin),
+):
+    """Trigger an on-demand database backup by running the backup script."""
+    import subprocess
+
+    result = subprocess.run(
+        ["/opt/tarot/backup-db.sh"],
+        capture_output=True,
+        text=True,
+    )
+    return {
+        "ok": result.returncode == 0,
+        "returncode": result.returncode,
+        "output": result.stdout.strip(),
+        "error": result.stderr.strip() if result.stderr else None,
+    }

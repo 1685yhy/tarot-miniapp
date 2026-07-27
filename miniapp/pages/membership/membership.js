@@ -1,6 +1,7 @@
 // pages/membership/membership.js
 const { request, getFriendlyError } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
+const analytics = require('../../utils/analytics');
 
 const TRIAL_STORAGE_KEY = 'trial_expiry';
 const TRIAL_MEMBER_KEY = 'is_trial_member';
@@ -62,6 +63,10 @@ Page({
   },
 
   async onLoad(options) {
+    // Analytics: page view + pricing funnel
+    analytics.pageView('membership');
+    analytics.funnel('pricing_viewed');
+
     try {
       const user = await checkLogin({ refresh: true });
       const app = getApp();
@@ -159,6 +164,10 @@ Page({
   async onPurchase(e) {
     if (this.data.purchasing) return;
     const product = e.currentTarget.dataset.product;
+
+    // Analytics: funnel — purchase started
+    analytics.funnel('purchase_started', { product: product.id });
+
     this.setData({ purchasing: true });
     try {
       wx.showLoading({ title: '创建订单...' });
