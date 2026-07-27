@@ -407,6 +407,11 @@
     <view class="tarot-explainer-wrap">
       <text class="tarot-explainer-link" bindtap="showTarotExplainer">什么是塔罗？</text>
     </view>
+
+    <!-- DEV: 自动化测试入口 -->
+    <view class="dev-test-entry" bindtap="onGoTestRunner">
+      <text class="dev-test-text">🔍 页面测试</text>
+    </view>
   </view>
 
   <!-- ===== 塔罗简介 — 沉浸式浮层 ===== -->

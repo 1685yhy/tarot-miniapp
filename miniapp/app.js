@@ -31,6 +31,30 @@ App({
 
     // 检查试用是否过期，过期自动撤销
     this._checkTrialExpiry();
+
+    // === DEV: 自动化页面测试入口 ===
+    this._initDevTestEntry();
+  },
+
+  /** 开发环境自动化页面测试 */
+  _initDevTestEntry() {
+    try {
+      const env = wx.getAccountInfoSync().miniProgram.envVersion;
+      if (env === 'develop') {
+        // 在首页添加测试入口
+        const pages = getCurrentPages();
+        if (pages.length === 0) {
+          // App 刚启动，延迟跳转
+          setTimeout(() => {
+            const currentPages = getCurrentPages();
+            if (currentPages.length > 0 && currentPages[0].route === 'pages/index/index') {
+              wx.showToast({ title: 'DEV模式 · 测试页就绪', icon: 'none', duration: 2000 });
+            }
+          }, 3000);
+        }
+        console.log('[DEV] 自动化测试页: /pages/test-runner/test-runner');
+      }
+    } catch (e) { /* silent */ }
   },
 
   /** 检查本地试用缓存是否过期 */

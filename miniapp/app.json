@@ -46,6 +46,10 @@
       "pages": ["community"]
     },
     {
+      "root": "pages/test-runner/",
+      "pages": ["test-runner"]
+    },
+    {
       "root": "pages/share-center/",
       "pages": ["share-center"]
     }
