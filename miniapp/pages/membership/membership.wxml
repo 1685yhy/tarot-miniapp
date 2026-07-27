@@ -55,6 +55,18 @@
           <text class="cmp-cell cmp-cell--free {{item.free === '✗' ? 'cmp-cell--no' : ''}}">{{item.free}}</text>
           <text class="cmp-cell cmp-cell--pro {{item.pro === '✗' ? 'cmp-cell--no' : ''}}">{{item.pro}}</text>
         </view>
+        <!-- 已为你节省 -->
+        <view class="cmp-row cmp-row--savings">
+          <text class="cmp-cell cmp-cell--label">已为你节省</text>
+          <view class="cmp-cell cmp-cell--savings">
+            <text class="savings-item">月度：价值 {{comparisonSavings.monthly.value}}<text class="savings-highlight"> 省 {{comparisonSavings.monthly.save}}</text></text>
+            <text class="savings-item">年度：价值 {{comparisonSavings.yearly.value}}<text class="savings-highlight"> 省 {{comparisonSavings.yearly.save}}</text></text>
+          </view>
+          <view class="cmp-cell cmp-cell--savings-pro">
+            <text class="savings-item">无限次</text>
+            <text class="savings-item-s">日均¥0.46起</text>
+          </view>
+        </view>
       </view>
     </view>
 
@@ -205,6 +217,27 @@
     <!-- 底部保证 -->
     <view class="mem-footer">
       <text class="mem-footer-text">🔒 支付安全 · 随时可查 · 自动续费可关</text>
+    </view>
+
+    <!-- ===== 支付成功庆祝浮层 ===== -->
+    <view wx:if="{{showCelebration}}" class="celebration-overlay">
+      <view class="celebration-card">
+        <view class="celebration-stars">
+          <view class="celebration-star celebration-star-1">✦</view>
+          <view class="celebration-star celebration-star-2">✦</view>
+          <view class="celebration-star celebration-star-3">✦</view>
+        </view>
+        <text class="celebration-icon">✨</text>
+        <text class="celebration-title">支付成功！</text>
+        <text class="celebration-sub">欢迎加入星光会员</text>
+        <view class="celebration-benefits">
+          <view class="celebration-benefit" wx:for="{{unlockedBenefits}}" wx:key="index">
+            <text class="celebration-benefit-icon">{{item.icon}}</text>
+            <text class="celebration-benefit-text">{{item.text}}</text>
+          </view>
+        </view>
+        <text class="celebration-hint">正在跳转解读页面...</text>
+      </view>
     </view>
   </view>
 </view>

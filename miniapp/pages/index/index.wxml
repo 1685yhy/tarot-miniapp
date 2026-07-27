@@ -55,6 +55,13 @@
     <view wx:elif="{{showReminder && !dailyCard}}" class="daily-reminder-badge anim-gentle-pulse">今日运势待开启</view>
   </view>
 
+  <!-- ===== 试用到期提醒横幅 ===== -->
+  <view wx:if="{{showTrialExpiryBanner}}" class="trial-expiry-banner anim-fade-in-up-2" bindtap="onGoMembership">
+    <text class="trial-expiry-icon">✦</text>
+    <text class="trial-expiry-text">试用期即将到期 · 开通会员保留你的解读记录 ✦</text>
+    <text class="trial-expiry-arrow">→</text>
+  </view>
+
   <!-- ===== 3-Step Onboarding Overlay (v2.1) — simplified, all steps visible at once ===== -->
   <view class="onboarding-overlay {{showOnboarding ? 'onboarding-overlay--visible' : ''}}">
     <view class="onboarding-card">
@@ -176,7 +183,7 @@
 
         <!-- Streak badge (only if 2+ consecutive days) -->
         <view wx:if="{{streak >= 2}}" class="streak-badge">
-          <image class="streak-icon" src="/images/icons/star_64.png" mode="aspectFit" aria-label="连续 {{streak}} 天" />
+          <image class="streak-icon" src="/images/icons/star_64.png" mode="aspectFit" lazy-load aria-label="连续 {{streak}} 天" />
           <text class="streak-count">连续 {{streak}} 天</text>
         </view>
 
@@ -254,7 +261,7 @@
     <view class="card card-press pending-reading-card">
       <view class="pending-reading-left">
         <view class="pending-reading-icon-wrap">
-          <image class="pending-reading-icon" src="/images/icons/star_64.png" mode="aspectFit" aria-label="上次未完成的解读" />
+          <image class="pending-reading-icon" src="/images/icons/star_64.png" mode="aspectFit" lazy-load aria-label="上次未完成的解读" />
         </view>
         <view>
           <text class="body-sm pending-reading-label">上次未完成的解读</text>
@@ -269,7 +276,7 @@
   <view class="anim-fade-in-up-2" style="margin-top:30rpx" bindtap="onGoDiary">
     <view class="card card-press diary-entry-card">
       <view class="diary-entry-left">
-        <image class="diary-entry-icon" src="/images/icons/diary_64.png" mode="aspectFit" aria-label="记录今天" />
+        <image class="diary-entry-icon" src="/images/icons/diary_64.png" mode="aspectFit" lazy-load aria-label="记录今天" />
         <view>
           <text class="body-sm diary-entry-label">记录今天</text>
           <text wx:if="{{dailyCard}}" class="body-xs diary-entry-hint">和「{{dailyCard.name_zh}}」说说话</text>
@@ -293,7 +300,7 @@
     <!-- Default card (non-Dec/Jan) -->
     <view wx:else class="card card-press annual-report-card {{isMember ? '' : 'annual-report-card--locked'}}">
       <view class="annual-report-left">
-        <image class="annual-report-icon" src="/images/icons/report_64.png" mode="aspectFit" aria-label="年度运势报告" />
+        <image class="annual-report-icon" src="/images/icons/report_64.png" mode="aspectFit" lazy-load aria-label="年度运势报告" />
         <view>
           <text class="body-sm annual-report-label">年度运势报告</text>
           <text class="body-xs annual-report-hint">{{isMember ? '查看你的星 year ahead ✦' : '开通会员解锁 ✦'}}</text>
@@ -346,26 +353,26 @@
     <view class="spread-grid-2">
       <view class="card card-press spread-card" bindtap="navigateToReading" data-type="three_card" animation="{{spreadAnimData[0]}}" role="button">
         <view class="spread-tag spread-tag-free">免费</view>
-        <image class="spread-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" aria-label="三牌占卜" />
+        <image class="spread-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" lazy-load aria-label="三牌占卜" />
         <text class="body-sm">三牌占卜</text>
         <text class="body-xs">过去·现在·未来</text>
       </view>
       <view class="card card-press spread-card" bindtap="navigateToReading" data-type="triangle" animation="{{spreadAnimData[1]}}" role="button">
         <view class="spread-tag spread-tag-premium">会员</view>
-        <image class="spread-icon" src="/images/icons/theme_love_64.png" mode="aspectFit" aria-label="恋人三角" />
+        <image class="spread-icon" src="/images/icons/theme_love_64.png" mode="aspectFit" lazy-load aria-label="恋人三角" />
         <text class="body-sm">恋人三角</text>
         <text class="body-xs">感情关系深度解读</text>
         <view class="spread-theme-chip spread-theme-chip--love">爱情</view>
       </view>
       <view class="card card-press spread-card" bindtap="navigateToReading" data-type="celtic_cross" animation="{{spreadAnimData[2]}}" role="button">
         <view class="spread-tag spread-tag-premium">会员</view>
-        <image class="spread-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" aria-label="凯尔特十字" />
+        <image class="spread-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" lazy-load aria-label="凯尔特十字" />
         <text class="body-sm">凯尔特十字</text>
         <text class="body-xs">全方位综合解牌</text>
       </view>
       <view class="card card-press spread-card" bindtap="navigateToReading" data-type="career" animation="{{spreadAnimData[3]}}" role="button">
         <view class="spread-tag spread-tag-premium">会员</view>
-        <image class="spread-icon" src="/images/icons/theme_career_64.png" mode="aspectFit" aria-label="事业牌阵" />
+        <image class="spread-icon" src="/images/icons/theme_career_64.png" mode="aspectFit" lazy-load aria-label="事业牌阵" />
         <text class="body-sm">事业牌阵</text>
         <text class="body-xs">职场方向与机遇</text>
         <view class="spread-theme-chip spread-theme-chip--career">事业</view>
@@ -379,7 +386,7 @@
     <!-- 会员解锁全部牌阵入口（仅非会员显示） -->
     <view wx:if="{{!isMember}}" class="card card-press unlock-spreads-card" bindtap="onGoMembership" role="button">
       <view class="unlock-spreads-left">
-        <image class="unlock-spreads-icon" src="/images/icons/lock_64.png" mode="aspectFit" aria-label="解锁全部牌阵" />
+        <image class="unlock-spreads-icon" src="/images/icons/lock_64.png" mode="aspectFit" lazy-load aria-label="解锁全部牌阵" />
       </view>
       <view class="unlock-spreads-content">
         <text class="unlock-spreads-title">解锁全部牌阵</text>

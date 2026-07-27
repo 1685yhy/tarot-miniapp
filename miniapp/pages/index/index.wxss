@@ -2473,3 +2473,59 @@
     transform: scale(1);
   }
 }
+
+/* ============================================================
+   Trial Expiry Banner — Subtle reminder at top
+   ============================================================ */
+.trial-expiry-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  margin: var(--spacing-sm) 0 var(--spacing-lg);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: rgba(244, 212, 140, 0.06);
+  border: 1rpx solid rgba(244, 212, 140, 0.15);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.trial-expiry-banner:active {
+  background: rgba(244, 212, 140, 0.10);
+  transform: scale(0.97);
+}
+
+.trial-expiry-icon {
+  font-size: var(--font-size-caption);
+  color: var(--color-gold);
+  opacity: 0.8;
+  flex-shrink: 0;
+  animation: trial-icon-glow 2s ease-in-out infinite;
+}
+
+@keyframes trial-icon-glow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.trial-expiry-text {
+  font-size: var(--font-size-caption);
+  color: var(--color-gold);
+  font-weight: 500;
+  letter-spacing: 1rpx;
+  flex: 1;
+  text-align: center;
+}
+
+.trial-expiry-arrow {
+  font-size: var(--font-size-caption);
+  color: var(--color-gold);
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.trial-expiry-banner:active .trial-expiry-arrow {
+  opacity: 1;
+  transform: translateX(4rpx);
+}

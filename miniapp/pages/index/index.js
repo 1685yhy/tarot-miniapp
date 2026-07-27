@@ -1,4 +1,5 @@
 // pages/index/index.js
+const perf = require('../../utils/performance');
 const { request, getFriendlyError } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
 const { computeImagePath } = require('../../utils/cards');
@@ -66,6 +67,7 @@ Page({
     hasDrawnToday: false,
     showReflectionPrompt: false,
     showReminder: false,
+    showTrialExpiryBanner: false,
     // Free tier display
     freeReadingsUsed: 0,
     freeReadingsTotal: _getFreeReadingsLimit(),
@@ -141,6 +143,8 @@ Page({
       wx.setStorageSync('onboarding_completed', true);
       wx.removeStorageSync('onboarding_done');
     }
+    // Store onboarding state for onReady usage (avoids re-reading storage)
+    this._onboardingCompleted = !!(onboardingCompleted || oldDone);
 
     // Always load page content (bubble floats on top, not a full-screen block)
     try {
@@ -153,62 +157,15 @@ Page({
     } catch (err) {
       this.setData({ pageLoading: false, pageError: getFriendlyError(err) });
     }
+  },
 
-    // Entrance sound + micro-haptic (once per session)
-    playPageEnterSound();
-    const appEnter = getApp();
-    if (!appEnter.globalData._pageHapticPlayed) {
-      wx.vibrateShort({ type: 'light' }).catch(() => {});
-      appEnter.globalData._pageHapticPlayed = true;
-    }
+  onReady() {
+    // Performance monitoring: first page rendered
+    perf.mark('firstPageReady');
+    perf.report();
 
-    // Start ambient sound if user has it enabled
-    if (wx.getStorageSync('ambient_enabled') === true) {
-      startAmbientSound();
-    }
-
-    // Init shooting star easter egg with random intervals
-    this._initShootingStar();
-
-    // v2.1: Compute time-of-day greeting
-    this._computeGreeting();
-
-    // v2.1: Load stored zodiac sign
-    const storedZodiac = wx.getStorageSync('zodiac_sign') || '';
-    this.setData({ zodiacSign: storedZodiac });
-
-    // Check if it's annual report season (Dec-Jan)
-    const currentMonth = new Date().getMonth() + 1;
-    const currentYear = new Date().getFullYear();
-    if (currentMonth === 12 || currentMonth === 1) {
-      this.setData({
-        isAnnualReportSeason: true,
-        annualReportYear: currentMonth === 1 ? currentYear - 1 : currentYear,
-      });
-    }
-
-    // Onboarding flow — simplified: show all 3 steps, auto-dismiss after 5s
-    const zodiacCompleted = wx.getStorageSync('zodiac_onboarding_done');
-    if (!(onboardingCompleted || oldDone) && !zodiacCompleted) {
-      this.setData({ showOnboarding: true, onboardingStep: 0 });
-      // Auto-dismiss after 5 seconds
-      this._onboardingTimer = setTimeout(() => {
-        if (this.data.showOnboarding) {
-          wx.setStorageSync('onboarding_completed', true);
-          wx.setStorageSync('zodiac_onboarding_done', true);
-          wx.removeStorageSync('onboarding_step');
-          this.setData({ showOnboarding: false, onboardingStep: 0 });
-        }
-      }, 5000);
-    }
-
-    // Check for pending reading to show recovery card
-    this._checkPendingReading();
-
-    // Trigger native staggered entrance for spread cards after render
-    if (this.data.useNativeAnim) {
-      setTimeout(() => { this._triggerSpreadEntrance(); }, 100);
-    }
+    // Defer non-critical UI setup to unblock first paint
+    this._deferredInit();
   },
 
   async onShow() {
@@ -352,6 +309,28 @@ Page({
         console.log('[trial] 试用已过期，自动撤销');
       }
     } catch (e) {
+      // silent
+    }
+  },
+
+  /** Check if trial is expiring within 24h and show reminder banner */
+  _checkTrialExpiryReminder() {
+    try {
+      const expiry = wx.getStorageSync('trial_expiry');
+      const isTrial = wx.getStorageSync('is_trial_member');
+      if (expiry && isTrial) {
+        const now = Date.now();
+        const timeLeft = expiry - now;
+        const twentyFourHours = 24 * 60 * 60 * 1000;
+        if (timeLeft > 0 && timeLeft <= twentyFourHours) {
+          this.setData({ showTrialExpiryBanner: true });
+        } else if (timeLeft <= 0) {
+          // Already expired — clear
+          wx.removeStorageSync('trial_expiry');
+          wx.removeStorageSync('is_trial_member');
+        }
+      }
+    } catch (_e) {
       // silent
     }
   },
@@ -654,6 +633,67 @@ Page({
   /** Navigate to daily-card teaching page */
   onDailyCardTap() {
     wx.navigateTo({ url: '/pages/daily-card/daily-card' });
+  },
+
+  /** Deferred non-critical initialization — called from onReady to unblock first paint */
+  _deferredInit() {
+    // Entrance sound + micro-haptic (once per session)
+    playPageEnterSound();
+    const appEnter = getApp();
+    if (!appEnter.globalData._pageHapticPlayed) {
+      wx.vibrateShort({ type: 'light' }).catch(() => {});
+      appEnter.globalData._pageHapticPlayed = true;
+    }
+
+    // Start ambient sound if user has it enabled
+    if (wx.getStorageSync('ambient_enabled') === true) {
+      startAmbientSound();
+    }
+
+    // Init shooting star easter egg with random intervals
+    this._initShootingStar();
+
+    // v2.1: Compute time-of-day greeting
+    this._computeGreeting();
+
+    // v2.1: Load stored zodiac sign
+    const storedZodiac = wx.getStorageSync('zodiac_sign') || '';
+    this.setData({ zodiacSign: storedZodiac });
+
+    // Check if it's annual report season (Dec-Jan)
+    const currentMonth = new Date().getMonth() + 1;
+    const currentYear = new Date().getFullYear();
+    if (currentMonth === 12 || currentMonth === 1) {
+      this.setData({
+        isAnnualReportSeason: true,
+        annualReportYear: currentMonth === 1 ? currentYear - 1 : currentYear,
+      });
+    }
+
+    // Onboarding flow — simplified: show all 3 steps, auto-dismiss after 5s
+    const zodiacCompleted = wx.getStorageSync('zodiac_onboarding_done');
+    if (!this._onboardingCompleted && !zodiacCompleted) {
+      this.setData({ showOnboarding: true, onboardingStep: 0 });
+      this._onboardingTimer = setTimeout(() => {
+        if (this.data.showOnboarding) {
+          wx.setStorageSync('onboarding_completed', true);
+          wx.setStorageSync('zodiac_onboarding_done', true);
+          wx.removeStorageSync('onboarding_step');
+          this.setData({ showOnboarding: false, onboardingStep: 0 });
+        }
+      }, 5000);
+    }
+
+    // Check for pending reading to show recovery card
+    this._checkPendingReading();
+
+    // Trigger native staggered entrance for spread cards after render
+    if (this.data.useNativeAnim) {
+      setTimeout(() => { this._triggerSpreadEntrance(); }, 100);
+    }
+
+    // Check trial expiry reminder (within 24h)
+    this._checkTrialExpiryReminder();
   },
 
   /** Check if today's daily card has been flipped on the daily-card page */

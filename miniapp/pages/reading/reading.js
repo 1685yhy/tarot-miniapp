@@ -107,6 +107,8 @@ Page({
     // Draw mode: 'quick' (default) or 'immersive'
     drawMode: 'quick',
     quickMode: true,
+    // Exhausted overlay
+    showExhaustedOverlay: false,
     // Quick purchase packs in exhausted state
     packQuick3: {
       id: 'reading_pack_3',
@@ -240,6 +242,7 @@ Page({
           isMember: !!user.is_member,
         });
       }
+      this._showExhaustedIfNeeded();
     } catch (_err) {
       // Silently degrade — counts stay at defaults
     }
@@ -429,6 +432,30 @@ Page({
       drawMode: isQuick ? 'quick' : 'immersive',
     });
     wx.setStorageSync('default_draw_mode', isQuick ? 'quick' : 'immersive');
+  },
+
+  /** Show the exhausted overlay when free readings are 0 and non-member */
+  _showExhaustedIfNeeded() {
+    const { freeReadingsUsed, freeReadingsTotal, isMember } = this.data;
+    if (!isMember && freeReadingsUsed >= freeReadingsTotal) {
+      // Only show if not dismissed this session
+      if (!this._exhaustedDismissed) {
+        this.setData({ showExhaustedOverlay: true });
+      }
+    }
+  },
+
+  onDismissExhausted() {
+    this.setData({ showExhaustedOverlay: false });
+    this._exhaustedDismissed = true;
+  },
+
+  onGoMembership() {
+    wx.navigateTo({ url: '/pages/membership/membership' });
+  },
+
+  preventTouchMove() {
+    // Prevent scroll under overlay
   },
 
   /** 快速购买补充包（从免费次数耗尽状态直接购买） */

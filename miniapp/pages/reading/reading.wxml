@@ -65,6 +65,24 @@
         </view>
       </view>
 
+      <!-- ===== 免费次数耗尽 → 会员引导浮层 ===== -->
+      <view wx:if="{{showExhaustedOverlay}}" class="exhausted-overlay" catchtouchmove="preventTouchMove">
+        <view class="exhausted-card">
+          <view class="exhausted-stars">
+            <view class="exhausted-star exhausted-star-1">✦</view>
+            <view class="exhausted-star exhausted-star-2">✦</view>
+            <view class="exhausted-star exhausted-star-3">✦</view>
+          </view>
+          <text class="exhausted-icon">🌙</text>
+          <text class="exhausted-title">今日星光已用完 ✦</text>
+          <text class="exhausted-sub">明日 0 点重置免费次数</text>
+          <view class="exhausted-divider"></view>
+          <text class="exhausted-cta-text">或立即开通会员，无限解读</text>
+          <button class="exhausted-cta-btn" bindtap="onGoMembership">开通会员 ✦</button>
+          <text class="exhausted-dismiss" bindtap="onDismissExhausted">我知道了</text>
+        </view>
+      </view>
+
       <view class="spread-grid anim-fade-up anim-stagger-2">
         <view
           class="spread-card {{item.premium ? 'premium' : ''}}"
@@ -74,7 +92,7 @@
           bindtap="onSelectSpread"
           role="button"
         >
-          <image class="spread-card-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" aria-label="{{item.name}}" />
+          <image class="spread-card-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" lazy-load aria-label="{{item.name}}" />
           <view class="spread-card-info">
             <view class="spread-card-title-row">
               <text class="heading-4">{{item.name}}</text>
@@ -90,7 +108,7 @@
           <view class="premium-overlay" wx:if="{{item.premium}}">
             <view class="premium-overlay-bg"></view>
             <view class="premium-overlay-content">
-              <image class="premium-overlay-icon" src="/images/icons/lock_64.png" mode="aspectFit" aria-label="会员专属" />
+              <image class="premium-overlay-icon" src="/images/icons/lock_64.png" mode="aspectFit" lazy-load aria-label="会员专属" />
               <text class="premium-overlay-text">会员专属</text>
               <text class="premium-overlay-sub">开通即可使用</text>
             </view>
@@ -170,7 +188,7 @@
           <view wx:for="{{displayThemes}}" wx:key="key"
             class="theme-item {{theme === item.key ? 'theme-active' : ''}}"
             bindtap="onThemeTap" data-theme="{{item.key}}">
-            <image class="theme-icon" src="{{item.icon}}" mode="aspectFit" aria-label="{{item.label}}" />
+            <image class="theme-icon" src="{{item.icon}}" mode="aspectFit" lazy-load aria-label="{{item.label}}" />
             <text class="theme-label">{{item.label}}</text>
           </view>
         </view>

@@ -15,6 +15,18 @@ Page({
     trialExpiryDate: null,
     trialDaysLeft: 0,
     comparisonRows: [], // dynamically populated from API on load
+    comparisonSavings: {
+      monthly: { value: '¥297', save: '¥277' },
+      yearly: { value: '¥3,613', save: '¥3,445' },
+    },
+    paymentSuccess: false,
+    showCelebration: false,
+    unlockedBenefits: [
+      { icon: '✨', text: '已解锁 10 种牌阵' },
+      { icon: '💬', text: '无限 AI 追问' },
+      { icon: '🎭', text: '3 位专属塔罗师' },
+      { icon: '📊', text: '年度运势报告' },
+    ],
     // 定价卡片数据（固定值，不依赖后端）
     pricingMonthly: {
       id: 'membership_monthly',
@@ -183,12 +195,13 @@ Page({
         signType: params.signType || 'HMAC-SHA256',
         paySign: params.paySign,
         success: () => {
-          this.setData({ purchasing: false });
-          wx.showToast({ title: '支付成功！', icon: 'success' });
+          this.setData({ purchasing: false, paymentSuccess: true, showCelebration: true });
+          // Auto-navigate back after 2s celebration
           if (!this._timers) this._timers = [];
           this._timers.push(setTimeout(() => {
+            this.setData({ showCelebration: false });
             wx.redirectTo({ url: '/pages/reading/reading' });
-          }, 1500));
+          }, 2500));
         },
         fail: (err) => {
           this.setData({ purchasing: false });
