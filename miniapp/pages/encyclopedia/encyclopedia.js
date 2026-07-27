@@ -1,4 +1,5 @@
 // pages/encyclopedia/encyclopedia.js
+const perf = require('../../utils/performance');
 const { request, getFriendlyError } = require('../../utils/api');
 const { computeImagePath } = require('../../utils/cards');
 const { SUIT_ZH } = require('../../utils/constants');
@@ -328,7 +329,8 @@ Page({
   },
 
   onReady() {
-    // Analytics & accessibility hook — reserved for future use
+    // Performance monitoring: page ready timestamp
+    perf.markPageReady('encyclopedia');
   },
 
   onHide() {

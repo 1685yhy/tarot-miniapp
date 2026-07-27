@@ -7,6 +7,7 @@ from app.models.diary import DiaryEntry
 from app.models.share_log import ShareLog, Invite
 from app.models.checkin import CheckIn
 from app.models.community import Topic, Post
+from app.models.push_subscription import PushSubscription
 
 __all__ = [
     "User",
@@ -22,4 +23,5 @@ __all__ = [
     "CheckIn",
     "Topic",
     "Post",
+    "PushSubscription",
 ]

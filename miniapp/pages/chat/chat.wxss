@@ -534,6 +534,23 @@ page {
 }
 
 /* ================================================================
+   Blinking cursor for streaming AI output
+   ================================================================ */
+.cursor-blink {
+  display: inline-block;
+  margin-left: 4rpx;
+  animation: blink 1s step-end infinite;
+  color: #C9A84C;
+  font-weight: 300;
+  font-size: 32rpx;
+  line-height: 1;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+/* ================================================================
    Chat membership prompt — quota exhausted CTA
    ================================================================ */
 .chat-membership-prompt {

@@ -139,7 +139,7 @@
       <!-- Section 1: 符号解读 -->
       <view class="teaching-section anim-fade-up anim-stagger-1">
         <view class="teaching-section-header">
-          <image class="teaching-section-icon" src="/images/icons/about_64.png" mode="aspectFit" aria-label="符号解读" />
+          <image class="teaching-section-icon" src="/images/icons/about_64.png" mode="aspectFit" lazy-load aria-label="符号解读" />
           <text class="teaching-section-title">符号解读</text>
         </view>
         <view class="teaching-section-body">
@@ -172,7 +172,7 @@
       <!-- Section 2: 典故故事 -->
       <view class="teaching-section anim-fade-up anim-stagger-2">
         <view class="teaching-section-header">
-          <image class="teaching-section-icon" src="/images/icons/diary_64.png" mode="aspectFit" aria-label="典故故事" />
+          <image class="teaching-section-icon" src="/images/icons/diary_64.png" mode="aspectFit" lazy-load aria-label="典故故事" />
           <text class="teaching-section-title">典故故事</text>
         </view>
         <view class="teaching-section-body">
@@ -183,7 +183,7 @@
       <!-- Section 3: 生活关联 -->
       <view class="teaching-section anim-fade-up anim-stagger-3">
         <view class="teaching-section-header">
-          <image class="teaching-section-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" aria-label="生活关联" />
+          <image class="teaching-section-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" lazy-load aria-label="生活关联" />
           <text class="teaching-section-title">生活关联</text>
         </view>
         <view class="teaching-section-body">
@@ -206,7 +206,7 @@
 
     <view wx:else class="diary-entry-area">
       <view class="diary-entry-header">
-        <image class="diary-entry-icon" src="/images/icons/diary_64.png" mode="aspectFit" aria-label="今日心情" />
+        <image class="diary-entry-icon" src="/images/icons/diary_64.png" mode="aspectFit" lazy-load aria-label="今日心情" />
         <text class="diary-entry-title">今日心情</text>
       </view>
       <textarea
@@ -228,6 +228,21 @@
   </view>
 
   <!-- Back to Home removed — native nav bar provides back button -->
+
+  <!-- ===== Push subscription prompt (one-time, gentle) ===== -->
+  <view class="push-prompt {{showPushPrompt ? 'push-prompt--visible' : ''}}" wx:if="{{showPushPrompt && !pushSubscribed}}">
+    <view class="push-prompt-card">
+      <view class="push-prompt-header">
+        <text class="push-prompt-icon">🔔</text>
+        <text class="push-prompt-title">每日推送提醒</text>
+      </view>
+      <text class="push-prompt-desc">每天自动推送今日塔罗牌，不错过每一份星光指引</text>
+      <view class="push-prompt-actions">
+        <button class="push-prompt-btn push-prompt-btn--accept" bindtap="onAcceptPush">开启推送 ✦</button>
+        <button class="push-prompt-btn push-prompt-btn--dismiss" bindtap="onDismissPush">暂不需要</button>
+      </view>
+    </view>
+  </view>
 
   <!-- Bottom spacer for safe area -->
   <view class="safe-bottom"></view>

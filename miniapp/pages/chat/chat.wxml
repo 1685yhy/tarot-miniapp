@@ -63,6 +63,7 @@
         <text class="role-label role-ai">解读者</text>
         <view class="msg-bubble bubble-ai">
           <text class="msg-text msg-text-ai">{{item.content}}</text>
+          <text class="cursor-blink" wx:if="{{item.streaming}}">|</text>
         </view>
       </view>
     </block>

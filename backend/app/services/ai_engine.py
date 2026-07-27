@@ -10,6 +10,7 @@ so the AI remembers who it's talking to.
 
 import datetime
 import logging
+from typing import AsyncGenerator
 
 from openai import AsyncOpenAI
 
@@ -409,3 +410,35 @@ async def generate_reading(
 
     logger.exception("All %d attempts to generate tarot reading failed", max_attempts)
     return None
+
+
+async def stream_chat_response(
+    messages: list[dict],
+) -> AsyncGenerator[str, None]:
+    """Stream AI response tokens for follow-up chat.
+
+    Args:
+        messages: List of message dicts with 'role' and 'content' keys,
+                 including the system prompt and full conversation history.
+
+    Yields:
+        Content tokens from the AI response, one at a time.
+    """
+    if not settings.DEEPSEEK_API_KEY:
+        return
+
+    client = _get_client()
+    try:
+        response = await client.chat.completions.create(
+            model=settings.DEEPSEEK_MODEL,
+            max_tokens=settings.AI_MAX_TOKENS,
+            messages=messages,
+            stream=True,
+            timeout=60.0,
+        )
+        async for chunk in response:
+            if chunk.choices[0].delta.content:
+                yield chunk.choices[0].delta.content
+    except Exception as exc:
+        logger.exception("stream_chat_response failed: %s", exc)
+        raise
