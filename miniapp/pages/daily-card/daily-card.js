@@ -43,6 +43,8 @@ Page({
 
     // Teaching data
     teaching: null,
+    teachingSymbol: '',
+    teachingLife: '',
 
     // Card flip state
     isFlipped: false,
@@ -129,7 +131,17 @@ Page({
     this.setData({ teachingLoading: true, teachingError: null });
     try {
       const teaching = await request(`/cards/${cardId}/teaching`);
-      this.setData({ teaching, teachingLoading: false });
+      // Extract first symbol name and life_connection for the compact snippet
+      const firstSymbol = teaching.symbols && teaching.symbols.length > 0
+        ? teaching.symbols[0].name || teaching.symbols[0].symbol || ''
+        : '';
+      const lifeConn = teaching.life_connection || '';
+      this.setData({
+        teaching,
+        teachingSymbol: firstSymbol,
+        teachingLife: lifeConn,
+        teachingLoading: false,
+      });
     } catch (err) {
       this.setData({
         teachingLoading: false,

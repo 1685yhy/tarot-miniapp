@@ -107,6 +107,16 @@
     </view>
   </view>
 
+  <!-- ===== Teaching snippet: compact gold-accented card after flip ===== -->
+  <view class="teaching-snippet" wx:if="{{showTeaching && teachingSymbol}}">
+    <view class="ts-header">
+      <text class="ts-icon">✦</text>
+      <text class="ts-title">牌面小知识</text>
+    </view>
+    <text class="ts-symbol">{{teachingSymbol}}</text>
+    <text class="ts-life">{{teachingLife}}</text>
+  </view>
+
   <!-- ===== Streak encouragement banner (from checkin system) ===== -->
   <view class="streak-banner" wx:if="{{dailyStreak >= 0}}">
     <view class="streak-progress-track">

@@ -12,6 +12,13 @@ const PERSONA_DATA = {
   frank_sun:   { name: '率直的太阳', icon: '☀', signature: '— 来自 率直的太阳 ☀ 直面真相，才有改变的力量' },
 };
 
+// ---- Persona info with descriptions for badge (must match ai_personas.py) ----
+const PERSONA_INFO = {
+  gentle_star: { icon: '✦', name: '温和的星', desc: '温暖陪伴 · 适合情感话题' },
+  wise_moon:   { icon: '☽', name: '智慧的月', desc: '理性分析 · 适合事业决策' },
+  frank_sun:   { icon: '☀', name: '率直的太阳', desc: '直击要害 · 敢于面对真相' },
+};
+
 // ---- Spread type key → Chinese name (must match reading.js SPREADS) ----
 const SPREAD_TYPE_NAMES = {
   three_card: '三牌占卜',
@@ -88,8 +95,8 @@ Page({
     showOnboarding: false,
     onboardingStep: 0,
 
-    // Teaching data display
-    showTeaching: false,
+    // Teaching data display — default expanded now
+    showTeaching: true,
     hasTeachingData: false,
     teachingCards: [],
   },
@@ -359,8 +366,14 @@ Page({
       let personaDisplay = null;
       if (reading.persona) {
         const pData = PERSONA_DATA[reading.persona];
+        const pInfo = PERSONA_INFO[reading.persona];
         if (pData) {
-          personaDisplay = { name: pData.name, icon: pData.icon, signature: pData.signature };
+          personaDisplay = {
+            name: pData.name,
+            icon: pData.icon,
+            signature: pData.signature,
+            desc: pInfo ? pInfo.desc : '',
+          };
           // Append signature to the end of interpretation text
           if (reading.interpretation) {
             reading = {

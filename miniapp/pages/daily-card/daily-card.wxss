@@ -425,6 +425,74 @@
 }
 
 /* -----------------------------------------------------------
+   3. TEACHING SNIPPET — Compact gold-accented card after flip
+   ----------------------------------------------------------- */
+
+.teaching-snippet {
+  margin: var(--spacing-sm) 0 var(--spacing-xs);
+  padding: var(--spacing-md);
+  background: linear-gradient(135deg, rgba(244, 212, 140, 0.07) 0%, rgba(244, 212, 140, 0.02) 100%);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.15);
+  border-radius: var(--radius-md);
+  position: relative;
+  overflow: hidden;
+  animation: ts-fade-in 0.5s ease-out;
+}
+
+@keyframes ts-fade-in {
+  0% { opacity: 0; transform: translateY(12rpx); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.teaching-snippet::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2rpx;
+  background: linear-gradient(90deg, transparent, rgba(244, 212, 140, 0.3), transparent);
+}
+
+.ts-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
+}
+
+.ts-icon {
+  font-size: 24rpx;
+  color: var(--color-gold);
+}
+
+.ts-title {
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gold);
+  letter-spacing: 2rpx;
+}
+
+.ts-symbol {
+  display: block;
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-lavender-light);
+  line-height: var(--line-height-tight);
+  margin-bottom: 6rpx;
+  padding-left: calc(24rpx + var(--spacing-xs));
+}
+
+.ts-life {
+  display: block;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  line-height: var(--line-height-base);
+  padding-left: calc(24rpx + var(--spacing-xs));
+  opacity: 0.85;
+}
+
+/* -----------------------------------------------------------
    3. TEACHING AREA — Staggered fade-in sections
    ----------------------------------------------------------- */
 

@@ -50,6 +50,14 @@
       <text class="daily-card-prompt-text">抽取今日卡牌，解锁你的专属卡片</text>
     </view>
 
+    <!-- ===== 今日塔罗故事 — Date-seeded random card teaching ===== -->
+    <view class="daily-story-card anim-fade-up anim-stagger-1" wx:if="{{dailyStoryCard}}" bindtap="onGoCardDetail" data-id="{{dailyStoryCard.id}}">
+      <text class="dsc-label">今日塔罗故事</text>
+      <text class="dsc-title">{{dailyStoryCard.name_zh}}</text>
+      <text class="dsc-story">{{dailyStoryCard.story_preview}}...</text>
+      <text class="dsc-cta">探索这张牌 ✦</text>
+    </view>
+
     <!-- Search bar -->
     <view class="search-bar anim-fade-up anim-stagger-1">
       <image class="search-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" style="width:32rpx;height:32rpx;margin-right:var(--spacing-sm)" aria-label="搜索" />

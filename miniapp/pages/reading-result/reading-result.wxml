@@ -131,8 +131,12 @@
            3.5 PERSONA BADGE — Who is interpreting
            ========================================================== -->
       <view class="persona-badge" wx:if="{{personaDisplay}}">
-        <text class="persona-badge-icon">{{personaDisplay.icon}}</text>
-        <text class="persona-badge-text">{{personaDisplay.name}} 为你解读</text>
+        <text class="pb-icon">{{personaDisplay.icon}}</text>
+        <view class="pb-info">
+          <text class="pb-label">本次解读</text>
+          <text class="pb-name">{{personaDisplay.name}}</text>
+          <text class="pb-desc" wx:if="{{personaDisplay.desc}}">{{personaDisplay.desc}}</text>
+        </view>
       </view>
 
       <!-- ==========================================================

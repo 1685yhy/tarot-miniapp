@@ -72,6 +72,78 @@
   margin-top: var(--spacing-xxs);
 }
 
+/* ============================================================
+   今日塔罗故事 — Date-seeded random card teaching hero card
+   Gold-accented, compact, sits below 今日之牌
+   ============================================================ */
+.daily-story-card {
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, rgba(244, 212, 140, 0.06) 0%, rgba(106, 101, 136, 0.08) 100%);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.15);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  position: relative;
+  overflow: hidden;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+.daily-story-card:active {
+  transform: scale(0.98);
+  border-color: rgba(244, 212, 140, 0.30);
+  background: linear-gradient(135deg, rgba(244, 212, 140, 0.09) 0%, rgba(106, 101, 136, 0.12) 100%);
+}
+.daily-story-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4rpx;
+  height: 100%;
+  background: linear-gradient(180deg, var(--color-gold) 0%, rgba(244, 212, 140, 0.3) 100%);
+  border-radius: 0 2rpx 2rpx 0;
+}
+.daily-story-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1rpx;
+  background: linear-gradient(90deg, rgba(244, 212, 140, 0.2), transparent);
+}
+.dsc-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 3rpx;
+  color: var(--color-gold);
+  margin-bottom: var(--spacing-xs);
+  opacity: 0.8;
+}
+.dsc-title {
+  font-size: var(--font-size-subhead);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  letter-spacing: 1rpx;
+  line-height: var(--line-height-tight);
+  margin-bottom: 4rpx;
+}
+.dsc-story {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-tertiary);
+  line-height: var(--line-height-base);
+  letter-spacing: 1rpx;
+  margin-bottom: var(--spacing-xs);
+}
+.dsc-cta {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gold);
+  letter-spacing: 2rpx;
+  text-align: right;
+  opacity: 0.85;
+}
+
 /* ---- Prompt when no daily card drawn ---- */
 .daily-card-prompt {
   display: flex;
