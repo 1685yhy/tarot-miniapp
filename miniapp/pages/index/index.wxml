@@ -46,6 +46,7 @@
     <view class="hero-glow-rings"></view>
     <text class="title-1" style="text-align:center;display:block">星光映照</text>
     <text class="body-text" style="text-align:center;display:block;margin-top:12rpx">每日一牌，遇见自己</text>
+    <text class="tagline-sub">塔罗是镜子，不是预言。AI是你的陪伴，不是答案。</text>
 
     <!-- v2.1: Time-of-day greeting -->
     <text wx:if="{{greetingText}}" class="greeting-text anim-greeting-fade" key="{{greetingAnimKey}}">{{greetingText}}</text>

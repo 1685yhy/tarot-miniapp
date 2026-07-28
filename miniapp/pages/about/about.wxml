@@ -1,0 +1,34 @@
+<view class="about-page">
+  <view class="cosmic-bg"></view>
+
+  <view class="about-content">
+    <view class="about-header">
+      <view class="about-icon-wrap">
+        <text class="about-icon">✦</text>
+      </view>
+      <text class="about-title">关于星光映照</text>
+    </view>
+
+    <view class="about-section">
+      <text class="about-heading">我们相信</text>
+      <text class="about-text">塔罗不是预测命运的工具，而是一面镜子——帮你看见自己内心已经知道、却未说出口的东西。星光映照是一个安静的陪伴空间，没有套路，没有焦虑营销，只有你与自己的对话。</text>
+    </view>
+
+    <view class="about-section">
+      <text class="about-heading">我们不做</text>
+      <text class="about-text">❌ 不预测未来、不承诺运势改变</text>
+      <text class="about-text">❌ 不诱导消费、不制造焦虑</text>
+      <text class="about-text">❌ 不替代专业心理咨询</text>
+    </view>
+
+    <view class="about-section">
+      <text class="about-heading">AI说明</text>
+      <text class="about-text">本产品使用 DeepSeek V4 Pro 人工智能模型生成解读内容。AI并非真人塔罗师，所有内容仅供自我觉察参考。</text>
+    </view>
+
+    <view class="about-footer">
+      <view class="about-footer-line"></view>
+      <text class="about-footer-text">星光映照 v1.0</text>
+    </view>
+  </view>
+</view>
