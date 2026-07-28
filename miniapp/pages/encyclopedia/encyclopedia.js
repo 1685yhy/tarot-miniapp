@@ -39,6 +39,10 @@ Page({
     dailyCard: null,
     dailyCardImgLoaded: false,
     dailyCardImgError: false,
+
+    // Daily tarot story (date-seeded random card with teaching)
+    dailyStoryCard: null,
+    dailyStoryLoading: false,
   },
 
   async onLoad(options) {
@@ -50,7 +54,11 @@ Page({
 
     await this.loadCards();
 
+    // Load today's tarot story (date-seeded random card teaching)
+    this._loadDailyStory();
+
     // If navigated from profile with favorites filter
+    if (app.globalData && app.globalData.showCardFavorites) {
     if (app.globalData && app.globalData.showCardFavorites) {
       app.globalData.showCardFavorites = false;
       this.setData({ activeTab: 'favorites' });
@@ -321,6 +329,65 @@ Page({
 
   onDailyCardImgError() {
     this.setData({ dailyCardImgError: true });
+  },
+
+  // ---- Daily Tarot Story (date-seeded random card teaching) ----
+
+  /** Pick a deterministic card index based on today's date */
+  _dailyStoryIndex(totalCards) {
+    const d = new Date();
+    const seed = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+    return seed % totalCards;
+  },
+
+  async _loadDailyStory() {
+    if (this._destroyed) return;
+    const cards = this.data.cards;
+    if (!cards || cards.length === 0) return;
+    this.setData({ dailyStoryLoading: true });
+
+    // Pick a card different from the daily card if possible
+    const dailyCardId = this.data.dailyCard && this.data.dailyCard.id;
+    let idx = this._dailyStoryIndex(cards.length);
+    // If the selected card is the same as the daily card, shift by 1
+    if (cards[idx] && cards[idx].id === dailyCardId && cards.length > 1) {
+      idx = (idx + 1) % cards.length;
+    }
+    const storyCard = cards[idx];
+    if (!storyCard) {
+      this.setData({ dailyStoryLoading: false });
+      return;
+    }
+
+    try {
+      const teaching = await request(`/cards/${storyCard.id}/teaching`);
+      if (this._destroyed) return;
+      // Extract a story preview (~60 chars) for the hero card
+      const storyRaw = teaching.story || '';
+      const storyPreview = storyRaw.length > 60 ? storyRaw.slice(0, 60) : storyRaw;
+      this.setData({
+        dailyStoryCard: {
+          id: storyCard.id,
+          name_zh: storyCard.name_zh || storyCard.card_name || '',
+          story_preview: storyPreview,
+        },
+        dailyStoryLoading: false,
+      });
+    } catch (err) {
+      // Teaching data unavailable — silently degrade
+      if (!this._destroyed) {
+        this.setData({ dailyStoryLoading: false });
+      }
+    }
+  },
+
+  onGoCardDetail(e) {
+    const id = e && e.currentTarget && e.currentTarget.dataset
+      ? e.currentTarget.dataset.id
+      : (this.data.dailyStoryCard && this.data.dailyStoryCard.id);
+    if (id) {
+      wx.navigateTo({ url: `/pages/card-detail/card-detail?id=${id}` });
+    }
   },
 
   onUnload() {

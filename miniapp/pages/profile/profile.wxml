@@ -95,6 +95,27 @@
       </view>
     </view>
 
+    <!-- ============ 你的专属塔罗师 ============ -->
+    <view class="persona-usage-card anim-fade-up anim-stagger-4" wx:if="{{personaStats.length > 0}}">
+      <view class="persona-usage-header">
+        <image src="/images/icons/star_64.png" mode="aspectFit" class="persona-usage-header-icon" aria-label="专属塔罗师" />
+        <text class="persona-usage-title">✦ 你的专属塔罗师</text>
+      </view>
+      <text class="persona-usage-sub" wx:if="{{mostUsedPersona}}">
+        你最常使用的是 <text class="persona-usage-highlight">{{mostUsedPersona.icon}} {{mostUsedPersona.name}}</text>，共 {{mostUsedPersonaCount}} 次
+      </text>
+      <view class="persona-usage-list">
+        <view class="persona-usage-item" wx:for="{{personaStats}}" wx:key="key">
+          <text class="persona-usage-icon">{{item.icon}}</text>
+          <view class="persona-usage-info">
+            <text class="persona-usage-name">{{item.name}}</text>
+            <text class="persona-usage-desc" wx:if="{{item.desc}}">{{item.desc}}</text>
+          </view>
+          <text class="persona-usage-count">{{item.count}}次</text>
+        </view>
+      </view>
+    </view>
+
     <!-- ============ Menu items ============ -->
     <view class="menu-section anim-fade-up anim-stagger-3">
       <view class="menu-item anim-slide-up anim-stagger-1" bindtap="onGoDiary">

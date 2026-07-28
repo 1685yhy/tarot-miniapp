@@ -5,6 +5,13 @@ const { checkLogin } = require('../../utils/auth');
 const { computeImagePath, findCard } = require('../../utils/cards');
 const sound = require('../../utils/sound');
 
+// 三位塔罗师信息（与 backend ai_personas.py 保持一致）
+const PERSONA_INFO = {
+  gentle_star: { icon: '✦', name: '温和的星', desc: '温暖陪伴 · 适合情感话题' },
+  wise_moon:   { icon: '☽', name: '智慧的月', desc: '理性分析 · 适合事业决策' },
+  frank_sun:   { icon: '☀', name: '率直的太阳', desc: '直击要害 · 敢于面对真相' },
+};
+
 // 牌阵英文键名到中文显示名的映射
 const SPREAD_TYPE_NAMES = {
   three_card: '三牌占卜',
@@ -88,6 +95,11 @@ Page({
       { icon: '📊', text: '年度运势报告' },
       { icon: '🔮', text: '深度 AI 解读' },
     ],
+
+    // Your Tarot Readers — persona usage stats
+    personaStats: [],
+    mostUsedPersona: null,
+    mostUsedPersonaCount: 0,
   },
 
   // —— History card image loading ——
@@ -163,6 +175,9 @@ Page({
         historyPage: 1,
         hasMore: history.items ? history.items.length >= 20 : false,
       });
+
+      // Compute persona usage stats from history
+      this._computePersonaStats(history.items || []);
     } catch (err) {
       this.setData({ pageLoading: false, pageError: getFriendlyError(err) });
     }
@@ -363,6 +378,29 @@ Page({
         this.setData({ savedReadings: [] });
         wx.showToast({ title: '已清除', icon: 'success' });
       },
+    });
+  },
+
+  /** Compute persona usage stats from reading history items */
+  _computePersonaStats(historyItems) {
+    const personaCount = {};
+    (historyItems || []).forEach(item => {
+      if (item.persona && PERSONA_INFO[item.persona]) {
+        personaCount[item.persona] = (personaCount[item.persona] || 0) + 1;
+      }
+    });
+
+    const stats = Object.entries(personaCount)
+      .filter(([key]) => PERSONA_INFO[key])
+      .map(([key, count]) => ({ key, ...PERSONA_INFO[key], count }))
+      .sort((a, b) => b.count - a.count);
+
+    const mostUsed = stats.length > 0 ? stats[0] : null;
+
+    this.setData({
+      personaStats: stats,
+      mostUsedPersona: mostUsed ? { name: mostUsed.name, icon: mostUsed.icon } : null,
+      mostUsedPersonaCount: mostUsed ? mostUsed.count : 0,
     });
   },
 
