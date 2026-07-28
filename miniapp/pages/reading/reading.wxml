@@ -248,3 +248,21 @@
   </view>
 </view>
 
+<!-- ===== Persona Intro Overlay (first-time selection) ===== -->
+<view class="persona-intro-overlay" wx:if="{{showPersonaIntro && introPersona}}" catchtouchmove="preventTouchMove">
+  <view class="persona-intro-card">
+    <view class="persona-intro-stars">
+      <text class="persona-intro-star persona-intro-star-1">✦</text>
+      <text class="persona-intro-star persona-intro-star-2">✦</text>
+      <text class="persona-intro-star persona-intro-star-3">✦</text>
+    </view>
+    <text class="persona-intro-icon">{{introPersona.icon}}</text>
+    <text class="persona-intro-name">{{introPersona.name}}</text>
+    <text class="persona-intro-desc">{{introPersona.desc}}</text>
+    <view class="persona-intro-divider"></view>
+    <text class="persona-intro-style-label">风格：<text class="persona-intro-style-value">{{introPersona.style}}</text></text>
+    <button class="persona-intro-cta" bindtap="onStartPersonaChat">开始与{{introPersona.name}}对话 ✦</button>
+    <text class="persona-intro-skip" bindtap="onDismissPersonaIntro">暂不选择</text>
+  </view>
+</view>
+

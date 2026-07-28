@@ -245,6 +245,13 @@
         <text class="undo-text">↩ 重新抽牌</text>
       </view>
 
+      <!-- ===== AI Disclaimer ===== -->
+      <view class="ai-disclaimer">
+        <view class="disc-line"></view>
+        <text class="disc-text">✨ AI生成 · 塔罗是镜子而非预言 · 仅供参考</text>
+        <view class="disc-line"></view>
+      </view>
+
     </view>
 
   </scroll-view>

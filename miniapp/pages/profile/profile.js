@@ -310,11 +310,7 @@ Page({
   },
 
   onGoAbout() {
-    wx.showModal({
-      title: '关于我们',
-      content: '星光塔罗 — 用星辰的智慧指引你的前行之路。\n\n版本 1.0.0',
-      showCancel: false,
-    });
+    wx.navigateTo({ url: '/pages/about/about' });
   },
 
   onToggleSound() {
