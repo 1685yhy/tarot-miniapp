@@ -2,7 +2,8 @@
   "pages": [
     "pages/index/index",
     "pages/encyclopedia/encyclopedia",
-    "pages/profile/profile"
+    "pages/profile/profile",
+    "pages/about/about"
   ],
   "subPackages": [
     {

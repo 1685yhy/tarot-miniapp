@@ -1,0 +1,124 @@
+/* ============================================================
+   关于星光映照 — "Mirror, not fortune-telling"
+   Clean, honest, warm. Trust signals without being defensive.
+   ============================================================ */
+
+.about-page {
+  min-height: 100vh;
+  background: var(--color-bg, #1A1A3E);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Subtle cosmic background */
+.cosmic-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 80% 20%, rgba(184, 169, 224, 0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 60% at 20% 80%, rgba(244, 212, 140, 0.03) 0%, transparent 65%);
+}
+
+.about-content {
+  position: relative;
+  z-index: 1;
+  padding: var(--spacing-2xl, 48rpx) var(--spacing-lg, 32rpx) var(--spacing-3xl, 64rpx);
+  max-width: 600rpx;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.about-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: var(--spacing-2xl, 48rpx);
+}
+
+.about-icon-wrap {
+  width: 100rpx;
+  height: 100rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(244, 212, 140, 0.08);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.20);
+  border-radius: 50%;
+  margin-bottom: var(--spacing-md, 24rpx);
+  box-shadow: 0 0 40rpx rgba(244, 212, 140, 0.08);
+}
+
+.about-icon {
+  font-size: 48rpx;
+  color: var(--color-gold, #F4D48C);
+}
+
+.about-title {
+  display: block;
+  font-size: var(--font-size-title, 40rpx);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-gold, #F4D48C);
+  letter-spacing: 4rpx;
+  text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.10);
+}
+
+/* Section cards */
+.about-section {
+  background: linear-gradient(145deg, rgba(37, 37, 90, 0.60) 0%, rgba(42, 42, 94, 0.50) 100%);
+  border: 1rpx solid rgba(244, 212, 140, 0.10);
+  border-radius: var(--radius-lg, 24rpx);
+  padding: var(--spacing-lg, 32rpx);
+  margin-bottom: var(--spacing-md, 24rpx);
+}
+
+.about-heading {
+  display: block;
+  font-size: var(--font-size-subhead, 34rpx);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-gold, #F4D48C);
+  letter-spacing: 3rpx;
+  margin-bottom: var(--spacing-sm, 16rpx);
+}
+
+.about-text {
+  display: block;
+  font-size: var(--font-size-caption, 26rpx);
+  color: var(--color-text-primary, #E8E4F0);
+  line-height: var(--line-height-loose, 1.8);
+  letter-spacing: 1rpx;
+  margin-bottom: 8rpx;
+}
+
+.about-text:last-child {
+  margin-bottom: 0;
+}
+
+/* Footer */
+.about-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: var(--spacing-xl, 48rpx);
+  padding-top: var(--spacing-lg, 32rpx);
+}
+
+.about-footer-line {
+  width: 60rpx;
+  height: 1rpx;
+  background: rgba(184, 169, 224, 0.15);
+  margin-bottom: var(--spacing-sm, 16rpx);
+}
+
+.about-footer-text {
+  font-size: var(--font-size-xs, 20rpx);
+  color: var(--color-text-tertiary, #A098C0);
+  letter-spacing: 2rpx;
+  opacity: 0.50;
+}

@@ -2189,6 +2189,19 @@
    26. TIME-OF-DAY GREETING — Gentle fade-in on each page visit
    ============================================================ */
 
+/* --- Brand tagline — subtle, below main tagline --- */
+.tagline-sub {
+  display: block;
+  text-align: center;
+  font-size: var(--font-size-xs, 20rpx);
+  color: var(--color-text-tertiary, #A098C0);
+  letter-spacing: 2rpx;
+  margin-top: 8rpx;
+  opacity: 0.65;
+  position: relative;
+  z-index: 1;
+}
+
 .greeting-text {
   display: block;
   font-size: var(--font-size-caption, 24rpx);

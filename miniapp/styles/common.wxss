@@ -1916,3 +1916,32 @@ page {
   opacity: 0.4;
   color: var(--color-text-tertiary);
 }
+
+/* ============================================================
+   AI DISCLAIMER — Trust signal across all reading pages
+   Subtle, honest, not defensive
+   ============================================================ */
+.ai-disclaimer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm, 16rpx);
+  padding: var(--spacing-lg, 32rpx) var(--spacing-md, 24rpx);
+  margin-top: var(--spacing-sm, 16rpx);
+}
+
+.disc-line {
+  flex: 1;
+  height: 1rpx;
+  max-width: 60rpx;
+  background: rgba(160, 152, 192, 0.12);
+}
+
+.disc-text {
+  font-size: var(--font-size-xs, 20rpx);
+  color: var(--color-text-tertiary, #A098C0);
+  letter-spacing: 1rpx;
+  opacity: 0.55;
+  text-align: center;
+  line-height: 1.5;
+}
