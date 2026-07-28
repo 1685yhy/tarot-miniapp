@@ -16,14 +16,15 @@ jobs:
         id: check
         run: |
           if [ -z "$HOST" ]; then
-            echo "::warning::SERVER_HOST secret not configured — skipping deploy"
+            echo "Deploy skipped — SERVER_HOST secret not configured (set in GitHub Settings > Secrets)"
             echo "skip=true" >> $GITHUB_OUTPUT
           else
-            echo "::notice::Deploy target: $HOST"
+            echo "Deploy target: $HOST"
             echo "skip=false" >> $GITHUB_OUTPUT
           fi
         env:
           HOST: ${{ secrets.SERVER_HOST }}
+        continue-on-error: true
 
       - name: Deploy to server
         if: steps.check.outputs.skip != 'true'
