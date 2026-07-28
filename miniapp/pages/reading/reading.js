@@ -71,6 +71,13 @@ const PERSONAS = [
   { key: 'frank_sun',  name: '率直的太阳', icon: '☀', label: '直击要害' },
 ];
 
+// Persona info for first-time intro overlay (must match ai_personas.py)
+const PERSONA_INFO = {
+  gentle_star: { icon: '✦', name: '温和的星', desc: '温柔的女性声音，适合情感/爱情类问题。善用柔和的隐喻，解读像老朋友般温暖，每次都以祝愿收尾。', style: '温暖陪伴' },
+  wise_moon:   { icon: '☽', name: '智慧的月', desc: '中性语调，理性分析，适合事业/决策类问题。逻辑清晰，给出务实的建议。', style: '理性分析' },
+  frank_sun:   { icon: '☀', name: '率直的太阳', desc: '直率坦诚，不拐弯抹角，适合想要听真话的用户。一针见血，快速说到重点。', style: '直击要害' },
+};
+
 const DEFAULT_PERSONA = 'wise_moon';
 
 // Build ordered theme list: themed spreads show ONLY their theme; general shows all
@@ -122,6 +129,10 @@ Page({
     // Onboarding Step 2
     showOnboarding: false,
     onboardingStep: 0,
+
+    // Persona intro overlay (first-time experience)
+    showPersonaIntro: false,
+    introPersona: null,
   },
 
   _timers: [],
@@ -383,6 +394,41 @@ Page({
   onPersonaTap(e) {
     const persona = e.currentTarget.dataset.persona;
     this.setData({ selectedPersona: persona });
+
+    // Check if first time for this persona — show intro overlay
+    const shownPersonas = wx.getStorageSync('_persona_intro_shown') || {};
+    if (!shownPersonas[persona]) {
+      const pInfo = PERSONA_INFO[persona];
+      if (pInfo) {
+        this.setData({
+          showPersonaIntro: true,
+          introPersona: { key: persona, ...pInfo },
+        });
+      }
+    }
+  },
+
+  /** Dismiss persona intro overlay and mark as seen */
+  onDismissPersonaIntro() {
+    const persona = this.data.introPersona && this.data.introPersona.key;
+    if (persona) {
+      const shown = wx.getStorageSync('_persona_intro_shown') || {};
+      shown[persona] = true;
+      wx.setStorageSync('_persona_intro_shown', shown);
+    }
+    this.setData({ showPersonaIntro: false, introPersona: null });
+  },
+
+  /** Start conversation with the persona from the intro overlay */
+  onStartPersonaChat() {
+    // Mark as seen and dismiss
+    const persona = this.data.introPersona && this.data.introPersona.key;
+    if (persona) {
+      const shown = wx.getStorageSync('_persona_intro_shown') || {};
+      shown[persona] = true;
+      wx.setStorageSync('_persona_intro_shown', shown);
+    }
+    this.setData({ showPersonaIntro: false, introPersona: null });
   },
 
   onBackToSpreads() {

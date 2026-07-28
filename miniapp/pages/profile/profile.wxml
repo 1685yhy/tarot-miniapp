@@ -247,11 +247,11 @@
       </view>
       <view class="menu-item anim-slide-up anim-stagger-14" bindtap="onGoAbout">
         <view class="menu-icon-wrap">
-          <image src="/images/icons/about_64.png" mode="aspectFit" class="menu-icon-img" aria-label="关于我们"></image>
+          <image src="/images/icons/about_64.png" mode="aspectFit" class="menu-icon-img" aria-label="关于星光映照"></image>
         </view>
         <view class="menu-content">
-          <text class="menu-title">关于我们</text>
-          <text class="menu-desc">了解星光塔罗的故事</text>
+          <text class="menu-title">关于星光映照</text>
+          <text class="menu-desc">塔罗是镜子，不是预言</text>
         </view>
         <text class="menu-arrow">›</text>
       </view>

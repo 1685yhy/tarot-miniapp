@@ -497,6 +497,127 @@
 }
 
 /* ============================================================
+   专属塔罗师 — Persona usage section
+   ============================================================ */
+.persona-usage-card {
+  background: linear-gradient(145deg, rgba(42,42,90,0.6) 0%, rgba(53,53,112,0.4) 100%);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.15);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+}
+
+.persona-usage-card::before {
+  content: '';
+  position: absolute;
+  top: -60rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280rpx;
+  height: 140rpx;
+  background: radial-gradient(circle, rgba(244, 212, 140, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.persona-usage-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+}
+
+.persona-usage-header-icon {
+  width: 32rpx;
+  height: 32rpx;
+  display: block;
+  opacity: 0.8;
+}
+
+.persona-usage-title {
+  font-size: var(--font-size-subhead);
+  font-weight: 700;
+  color: var(--color-gold);
+  letter-spacing: 3rpx;
+}
+
+.persona-usage-sub {
+  display: block;
+  font-size: var(--font-size-caption);
+  color: var(--color-lavender);
+  letter-spacing: 1rpx;
+  margin-bottom: var(--spacing-md);
+  line-height: 1.5;
+  opacity: 0.8;
+}
+
+.persona-usage-highlight {
+  color: var(--color-gold);
+  font-weight: 600;
+}
+
+.persona-usage-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.persona-usage-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: rgba(37, 37, 80, 0.35);
+  border: 1rpx solid rgba(244, 212, 140, 0.08);
+  border-radius: var(--radius-md);
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.persona-usage-item:active {
+  background: rgba(37, 37, 80, 0.55);
+}
+
+.persona-usage-icon {
+  font-size: 36rpx;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 44rpx;
+  text-align: center;
+}
+
+.persona-usage-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2rpx;
+}
+
+.persona-usage-name {
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  letter-spacing: 1rpx;
+}
+
+.persona-usage-desc {
+  font-size: 20rpx;
+  color: var(--color-lavender);
+  letter-spacing: 1rpx;
+  opacity: 0.7;
+}
+
+.persona-usage-count {
+  font-size: var(--font-size-caption);
+  color: var(--color-gold);
+  font-weight: 600;
+  letter-spacing: 1rpx;
+  flex-shrink: 0;
+}
+
+/* ============================================================
    HISTORY SECTION — Card thumbnails on the left
    ============================================================ */
 .history-section {
