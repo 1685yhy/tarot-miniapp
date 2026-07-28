@@ -11,6 +11,7 @@ Page({
     showCreate: false,
     mood: '',
     reflection: '',
+    reflectionPlaceholder: '',
     creating: false,
     page: 1,
     hasMore: true,
@@ -28,6 +29,7 @@ Page({
 
     // Card image error
     diaryCardImgError: false,
+    entryCardImgErrors: {},
   },
 
   onReady() {
@@ -47,13 +49,22 @@ Page({
   async loadEntries() {
     try {
       const data = await request(`/diary/entries?page=${this.data.page}`);
-      const entries = [...this.data.entries, ...(data.entries || [])];
+      const rawEntries = data.entries || [];
+      // Compute card thumbnail paths for each entry
+      const entries = [...this.data.entries, ...rawEntries.map(e => {
+        if (e.card) {
+          e.cardImagePath = computeImagePath(e.card);
+        }
+        return e;
+      })];
       this.setData({
         entries,
-        hasMore: data.entries && data.entries.length === 20,
+        hasMore: rawEntries.length === 20,
         pageLoading: false,
       });
       this._computeRetrospect();
+      // Update placeholder after entries loaded
+      this._updatePlaceholder();
       // Auto-load weekly review if enough entries
       if (entries.length >= 3 && !this.data.weeklyReview && !this.data.reviewLoading) {
         this._loadWeeklyReview();
@@ -139,8 +150,23 @@ Page({
       const card = await request('/cards/daily');
       card.imagePath = computeImagePath(card);
       this.setData({ todayCard: card });
+      this._updatePlaceholder();
     } catch(e) {
       // 静默降级——今日卡牌加载失败不影响记录列表
+    }
+  },
+
+  /** Update textarea placeholder based on today's card context */
+  _updatePlaceholder() {
+    const card = this.data.todayCard;
+    if (card && card.name_zh) {
+      this.setData({
+        reflectionPlaceholder: `这张${card.name_zh}让你想到了什么？你此刻的心情是怎样的？`
+      });
+    } else {
+      this.setData({
+        reflectionPlaceholder: '此刻你的心情是怎样的？'
+      });
     }
   },
 
@@ -178,6 +204,10 @@ Page({
     this.setData({ reviewLoading: true, reviewError: null });
     try {
       const review = await request('/diary/review?period=weekly');
+      // Compute emoji trend curve for mood visualization
+      if (review.mood_trends && review.mood_trends.length > 0) {
+        review.moodTrendCurve = this._computeMoodTrendCurve(review.mood_trends);
+      }
       this.setData({ weeklyReview: review, reviewLoading: false });
     } catch (err) {
       this.setData({ reviewLoading: false, reviewError: getFriendlyError(err) });
@@ -193,6 +223,32 @@ Page({
   /** Get CSS width percentage for mood chart bar */
   _getMoodBarWidth(score) {
     return Math.max(10, (score / 5) * 100);
+  },
+
+  /** Compute emoji mood trend curve from weekly review data */
+  _computeMoodTrendCurve(trends) {
+    const BLOCK_MAP = ['▁', '▁', '▂', '▃', '▅', '▇'];
+    const blocks = trends.map(t => {
+      const score = Math.round(t.mood_score || 3);
+      return BLOCK_MAP[Math.min(Math.max(score, 1), 5)];
+    });
+    return '😔 ' + blocks.join(' ') + ' 😊';
+  },
+
+  /** Handle entry card image load error — hide the broken thumbnail */
+  onEntryCardImageError(e) {
+    const entryId = e.currentTarget.dataset.entryId;
+    if (!entryId) return;
+    const key = `entryCardImgErrors.${entryId}`;
+    this.setData({ [key]: true });
+  },
+
+  /** Floating AI review button tap — scroll to review card */
+  onTapFloatingReview() {
+    wx.pageScrollTo({
+      selector: '.review-card',
+      duration: 300,
+    });
   },
 
   onGoHome() {
