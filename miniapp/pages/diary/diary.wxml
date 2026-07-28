@@ -73,6 +73,15 @@
       <!-- AI 周回顾内容 -->
       <view wx:elif="{{weeklyReview}}" class="review-content">
 
+        <!-- 情绪趋势曲线 (emoji + block chart) -->
+        <view class="mood-trend" wx:if="{{weeklyReview.moodTrendCurve}}">
+          <text class="review-section-label">本周心情</text>
+          <view class="trend-line">
+            <text class="trend-emoji" wx:for="{{weeklyReview.mood_trends}}" wx:key="date">{{item.mood_emoji}}</text>
+          </view>
+          <text class="trend-curve-text">{{weeklyReview.moodTrendCurve}}</text>
+        </view>
+
         <!-- 情绪趋势柱状图 -->
         <view class="chart-section" wx:if="{{weeklyReview.mood_trends && weeklyReview.mood_trends.length > 0}}">
           <text class="review-section-label">情绪趋势</text>
@@ -153,14 +162,28 @@
             </text>
           </view>
 
-          <!-- Card info -->
+          <!-- Card info with thumbnail -->
           <view wx:if="{{entry.card}}" class="entry-card-section">
-            <view class="card-label-line">
-              <image class="card-label-icon" src="/images/icons/card_back_64.png" mode="aspectFit" lazy-load aria-label="今日之牌" />
-              <text class="card-label">今日之牌</text>
+            <view class="entry-card-row">
+              <image
+                wx:if="{{entry.cardImagePath && !entryCardImgErrors[entry.id]}}"
+                class="entry-card-thumb"
+                src="{{entry.cardImagePath}}"
+                mode="aspectFill"
+                lazy-load
+                binderror="onEntryCardImageError"
+                data-entry-id="{{entry.id}}"
+                aria-label="{{entry.card.name_zh}} — 关联卡牌"
+              />
+              <view class="entry-card-info">
+                <view class="card-label-line">
+                  <image class="card-label-icon" src="/images/icons/card_back_64.png" mode="aspectFit" lazy-load aria-label="今日之牌" />
+                  <text class="card-label">今日之牌</text>
+                </view>
+                <text class="card-name">{{entry.card.name_zh}}</text>
+                <text class="card-meaning">{{entry.card.meaning_upright}}</text>
+              </view>
             </view>
-            <text class="card-name">{{entry.card.name_zh}}</text>
-            <text class="card-meaning">{{entry.card.meaning_upright}}</text>
           </view>
 
           <!-- Reflection text -->
@@ -184,6 +207,12 @@
       <text class="hint-sub">翻开每日一牌，记录此刻心情</text>
     </view>
 
+  </view>
+
+  <!-- ===== Floating AI Review Button ===== -->
+  <view class="floating-review-btn" wx:if="{{entries.length >= 3 && weeklyReview}}" bindtap="onTapFloatingReview">
+    <text class="floating-review-icon">📊</text>
+    <text class="floating-review-text">AI周回顾</text>
   </view>
 
   <!-- ============ 创建日记 Modal ============ -->
@@ -259,11 +288,11 @@
         </view>
       </view>
 
-      <!-- Reflection textarea -->
-      <text class="modal-label">今日感悟（可选）</text>
+      <!-- Reflection textarea with AI prompt -->
+      <text class="modal-label">今日感悟</text>
       <textarea
         class="reflection-input"
-        placeholder="记录今天的想法..."
+        placeholder="{{reflectionPlaceholder || '此刻你的心情是怎样的？'}}"
         value="{{reflection}}"
         bindinput="onReflectionInput"
         maxlength="500"
