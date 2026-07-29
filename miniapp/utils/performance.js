@@ -78,7 +78,7 @@ function report() {
   }
 
   wx.request({
-    url: `${BASE_URL}/monitor/performance`,
+    url: `${BASE_URL}/performance`,
     method: 'POST',
     data: {
       metrics: durations,
