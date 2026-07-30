@@ -193,27 +193,27 @@ Page({
   _startStages() {
     this.setData({ loadingStage: 1, loadingDotCount: 0, loadingTimeText: '', showWaitOptions: false });
 
-    // Stage 1: 洗牌中 — 2s (Emphasis: ritual pacing, not motion timing)
+    // Stage 1: 洗牌中 — 500ms (Phase A: total ~1.5s)
     this._stageTimer1 = setTimeout(() => {
       if (this._destroyed) return;
 
-      // Stage 2: 翻牌中 — 2s (Emphasis: ritual pacing)
+      // Stage 2: 翻牌中 — 500ms
       this.setData({ loadingStage: 2 });
       this._stageTimer2 = setTimeout(() => {
         if (this._destroyed) return;
 
-        // Stage 3: 星光解读中 — real waiting with progress feedback
+        // Stage 3: 星光解读中 — transitions to result as soon as API returns
         this.setData({
           loadingStage: 3,
           loadingDotCount: 0,
-          loadingTimeText: '约 15-20 秒',
+          loadingTimeText: '',
           showWaitOptions: false,
         });
         this._startStage3();
         // If the API already returned during stages 1-2, show result now
         this._tryShowResult();
-      }, 2000);
-    }, 2000);
+      }, 500);
+    }, 500);
   },
 
   /* ---------------------------------------------------------------
@@ -221,36 +221,36 @@ Page({
      --------------------------------------------------------------- */
 
   _startStage3() {
-    // Light up one dot every ~5s (3 dots total ≈ 15s) — UX pacing for anticipation
+    // Light up one dot every ~1.5s (3 dots total ≈ 4.5s) — much faster for Phase A
     this._dotTimer = setInterval(() => {
       if (this._destroyed) return;
       const next = Math.min(this.data.loadingDotCount + 1, 3);
       this.setData({ loadingDotCount: next });
-    }, 5000);
+    }, 1500);
 
-    // After 3 seconds: show "AI正在仔细分析你的牌面..." for perceived speed
+    // After 2 seconds: show "AI正在仔细分析你的牌面..."
     this._timeout3 = setTimeout(() => {
       if (this._destroyed) return;
       this.setData({ loadingTimeText: 'AI正在仔细分析你的牌面...' });
-    }, 3000);
+    }, 2000);
 
-    // After 25 seconds: polite nudge
+    // After 8 seconds: polite nudge
     this._timeout25 = setTimeout(() => {
       if (this._destroyed) return;
       this.setData({ loadingTimeText: '仍在努力中，请稍等...' });
-    }, 25000);
+    }, 8000);
 
-    // After 50 seconds: firmer nudge
+    // After 15 seconds: firmer nudge
     this._timeout50 = setTimeout(() => {
       if (this._destroyed) return;
       this.setData({ loadingTimeText: '可能需要更长时间，请耐心等待...' });
-    }, 50000);
+    }, 15000);
 
-    // After 55 seconds: offer a choice
+    // After 18 seconds: offer a choice
     this._timeout55 = setTimeout(() => {
       if (this._destroyed) return;
       this.setData({ loadingTimeText: '', showWaitOptions: true });
-    }, 55000);
+    }, 18000);
   },
 
   /* ---------------------------------------------------------------
@@ -412,7 +412,7 @@ Page({
 
       const readingDepth = reading.depth || 'standard';
       const reflectionQuestion = reading.reflection_question || '';
-      this.setData({ reading, personaDisplay, tldr, teachingCards, hasTeachingData, spreadTypeName, pageLoading: false, showUndo: true, showFullInterpretation: false, readingDepth, reflectionQuestion });
+      this.setData({ reading, personaDisplay, tldr, teachingCards, hasTeachingData, spreadTypeName, pageLoading: false, showUndo: true, showFullInterpretation: true, readingDepth, reflectionQuestion });
       // Trigger staggered card entrance animation after render
       this._animateCardReveal();
       // Play reveal sound when reading result appears
