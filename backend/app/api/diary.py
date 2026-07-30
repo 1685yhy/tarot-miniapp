@@ -438,8 +438,10 @@ async def upload_image(
     upload_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static", "diary_uploads")
     os.makedirs(upload_dir, exist_ok=True)
 
-    # Generate unique filename
-    ext = os.path.splitext(file.filename or "image.jpg")[1] or ".jpg"
+    # Generate unique filename — derive extension from content_type (not client filename)
+    content_type = file.content_type or "image/jpeg"
+    ext_map = {"image/jpeg": ".jpg", "image/png": ".png", "image/webp": ".webp", "image/gif": ".gif"}
+    ext = ext_map.get(content_type, ".jpg")
     filename = f"{user.id}_{uuid.uuid4().hex[:8]}{ext}"
     filepath = os.path.join(upload_dir, filename)
 
