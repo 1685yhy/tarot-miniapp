@@ -14,15 +14,7 @@ function _getFreeReadingsLimit() {
   return quota?.daily_readings || 3;
 }
 
-const IMAGE_BASE = (() => {
-  try {
-    const env = wx.getAccountInfoSync().miniProgram.envVersion;
-    if (env === 'develop' || env === 'trial') {
-      return '/images/cards_thumb';
-    }
-  } catch(e) {}
-  return 'https://xingxiang.chat/images/cards_full';
-})();
+const IMAGE_BASE = 'https://xingxiang.chat/images/cards_full';
 
 function getTodayStr() {
   const d = new Date();

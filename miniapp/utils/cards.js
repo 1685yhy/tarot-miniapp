@@ -96,14 +96,7 @@ const CARD_REGISTRY = {
 
 // ===== 图像路径映射：计算78张卡牌的真实ComfyUI PNG路径 =====
 const IMAGE_BASE = (() => {
-  try {
-    const env = wx.getAccountInfoSync().miniProgram.envVersion;
-    if (env === 'develop' || env === 'trial') {
-      // IDE simulator: use local dev server (images in project directory)
-      return '/images/cards_thumb';
-    }
-  } catch(e) {}
-  // Production: CDN
+  // All environments use CDN — domain is ICP-filed and images are served
   return 'https://xingxiang.chat/images/cards_thumb';
 })();
 
