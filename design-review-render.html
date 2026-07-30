@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>星光映照 — Design Review</title>
+<style>
+:root {
+  --color-bg: #12122A;
+  --color-bg-gradient: linear-gradient(180deg, #12122A 0%, #1A1A3E 50%, #15153A 100%);
+  --color-surface: #1E1E42;
+  --color-surface-gradient: linear-gradient(135deg, rgba(30,30,66,0.95), rgba(26,26,62,0.9));
+  --color-gold: #F4D48C;
+  --color-gold-dark: #D4B06A;
+  --color-lavender: #B8A9E0;
+  --color-text-primary: #F0EDE8;
+  --color-text-secondary: #C4BFD0;
+  --color-text-tertiary: #9A95B8;
+  --color-success: #7ECB9A;
+  --color-error: #E08585;
+  --radius-sm: 8px; --radius-md: 16px; --radius-lg: 24px; --radius-pill: 999px;
+  --spacing-xs: 8px; --spacing-sm: 12px; --spacing-md: 20px; --spacing-lg: 28px; --spacing-xl: 36px;
+  --font-size-xs: 12px; --font-size-caption: 14px; --font-size-body: 16px; --font-size-subhead: 20px; --font-size-title: 26px; --font-size-display: 32px;
+  --shadow-card: 0 2px 16px rgba(0,0,0,0.3);
+  --shadow-gold-button: 0 4px 24px rgba(244,212,140,0.3);
+  --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  background: var(--color-bg);
+  background-image: var(--color-bg-gradient);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+  max-width: 414px;
+  margin: 0 auto;
+  position: relative;
+  overflow-x: hidden;
+}
+/* Stars background */
+body::before {
+  content: '';
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.08), transparent),
+              radial-gradient(1px 1px at 25% 35%, rgba(255,255,255,0.06), transparent),
+              radial-gradient(1.5px 1.5px at 50% 20%, rgba(255,255,255,0.1), transparent),
+              radial-gradient(1px 1px at 70% 45%, rgba(255,255,255,0.05), transparent),
+              radial-gradient(1px 1px at 85% 25%, rgba(255,255,255,0.07), transparent),
+              radial-gradient(1px 1px at 15% 60%, rgba(255,255,255,0.06), transparent),
+              radial-gradient(1.5px 1.5px at 60% 70%, rgba(255,255,255,0.04), transparent),
+              radial-gradient(1px 1px at 90% 65%, rgba(255,255,255,0.05), transparent);
+  pointer-events: none; z-index: 0;
+}
+/* Nebula glows */
+body::after {
+  content: '';
+  position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
+  width: 400px; height: 400px;
+  background: radial-gradient(ellipse, rgba(184,169,224,0.06) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+.page { position: relative; z-index: 1; padding: 0 var(--spacing-md) 40px; }
+
+/* Hero */
+.hero { text-align: center; padding: 40px var(--spacing-md) 24px; position: relative; }
+.hero::before {
+  content: ''; position: absolute; top: 45%; left: 50%;
+  width: 300px; height: 300px; transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(244,212,140,0.12) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+.hero-title { font-size: 32px; font-weight: 700; letter-spacing: 8px; color: #F0EDE8; position: relative; z-index: 1; margin-bottom: 8px; }
+.hero-sub { font-size: 16px; color: #B8A9E0; letter-spacing: 3px; position: relative; z-index: 1; }
+
+/* Card */
+.card {
+  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 40%, #303065 100%);
+  border: 1.5px solid rgba(244,212,140,0.25);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.28), 0 0 50px rgba(244,212,140,0.04);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  position: relative;
+  overflow: hidden;
+}
+.card::after {
+  content: '';
+  position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+  background: radial-gradient(ellipse at 30% 20%, rgba(244,212,140,0.04) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* Daily card */
+.daily-card { text-align: center; margin: 12px 0 24px; padding: 40px var(--spacing-lg); }
+.daily-card-emoji { font-size: 48px; margin-bottom: 16px; }
+.daily-card-cta { font-size: 18px; color: #F0EDE8; font-weight: 600; margin-bottom: 4px; }
+.daily-card-hint { font-size: 13px; color: #9A95B8; }
+
+/* Spread grid */
+.spread-grid { display: flex; flex-wrap: wrap; gap: 12px; }
+.spread-card { flex: 1 1 calc(50% - 6px); min-width: 150px; text-align: center; padding: var(--spacing-md); }
+.spread-tag { display: inline-block; font-size: 10px; padding: 2px 10px; border-radius: 999px; margin-bottom: 8px; }
+.spread-tag-free { background: rgba(126,203,154,0.15); color: #7ECB9A; }
+.spread-tag-premium { background: rgba(244,212,140,0.15); color: #F4D48C; }
+.spread-name { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+.spread-desc { font-size: 12px; color: #9A95B8; }
+
+/* Entry cards */
+.entry-card { display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-md); gap: 12px; }
+.entry-left { display: flex; align-items: center; gap: 12px; flex: 1; }
+.entry-icon { font-size: 28px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(244,212,140,0.1); border-radius: 50%; }
+.entry-label { font-size: 15px; color: #F4D48C; font-weight: 500; }
+.entry-hint { font-size: 12px; color: #9A95B8; margin-top: 2px; }
+.entry-arrow { color: #9A95B8; font-size: 16px; }
+
+/* CTA / Quota */
+.quota-bar { text-align: center; padding: 12px; margin: 16px 0; }
+.quota-text { font-size: 13px; color: #B8A9E0; }
+.quota-text-exhausted { color: #E08585; }
+.membership-cta { text-align: center; margin: 8px 0 20px; }
+.membership-cta a { color: #F4D48C; font-size: 14px; text-decoration: none; font-weight: 500; }
+
+/* Section title */
+.section-title { font-size: 18px; font-weight: 600; color: #F0EDE8; margin: 24px 0 12px; padding-left: 12px; border-left: 3px solid #F4D48C; }
+
+/* Gold button */
+.btn-gold {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 14px 40px; border-radius: 999px; border: none;
+  background: linear-gradient(135deg, #F4D48C 0%, #D4B06A 100%);
+  color: #1A1A3E; font-size: 16px; font-weight: 600; letter-spacing: 2px;
+  box-shadow: 0 4px 24px rgba(244,212,140,0.25);
+  cursor: pointer; margin: 8px 0;
+}
+.btn-gold-secondary {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 10px 28px; border-radius: 999px; border: 1.5px solid rgba(244,212,140,0.3);
+  background: rgba(244,212,140,0.08); color: #F4D48C;
+  font-size: 14px; cursor: pointer;
+}
+
+/* Persona bar */
+.persona-bar { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: rgba(244,212,140,0.08); border-radius: 999px; margin: 8px 0; }
+.persona-icon { font-size: 22px; }
+.persona-name { font-size: 15px; color: #F4D48C; font-weight: 600; }
+.persona-label { font-size: 12px; color: #9A95B8; margin-left: auto; }
+
+/* Reflection card */
+.reflection-card { text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, rgba(184,169,224,0.1), rgba(244,212,140,0.08)); border: 1px solid rgba(244,212,140,0.2); border-radius: var(--radius-lg); margin: 16px 0; }
+.reflection-icon { font-size: 36px; margin-bottom: 8px; }
+.reflection-label { font-size: 14px; color: #F4D48C; font-weight: 600; margin-bottom: 8px; }
+.reflection-question { font-size: 16px; color: #F0EDE8; line-height: 1.6; margin-bottom: 16px; }
+
+h2 { font-size: 18px; color: #F0EDE8; margin: 32px 0 12px; padding: 0 var(--spacing-md); }
+.page-label { font-size: 12px; color: #9A95B8; text-transform: uppercase; letter-spacing: 2px; padding: 0 var(--spacing-md); margin-top: 40px; }
+hr { border: none; border-top: 1px solid rgba(244,212,140,0.1); margin: 24px var(--spacing-md); }
+</style>
+</head>
+<body>
+<div class="page">
+<h2>🏠 首页 — Hero区</h2>
+
+<div class="hero">
+  <div class="hero-title">星光映照</div>
+  <div class="hero-sub">每日一牌，遇见自己</div>
+</div>
+
+<hr>
+<h2>🃏 每日一牌 — 抽牌前</h2>
+
+<div class="card daily-card">
+  <div class="daily-card-emoji">🌟</div>
+  <div class="daily-card-cta">轻触卡片</div>
+  <div class="daily-card-hint">开启今日指引</div>
+</div>
+
+<hr>
+<h2>🃏 每日一牌 — 已抽牌（恶魔）</h2>
+
+<div class="card daily-card" style="text-align:left;">
+  <div style="text-align:center;margin-bottom:16px;">
+    <div style="width:160px;height:240px;background:linear-gradient(180deg,#2a1050,#1a0840);border-radius:12px;margin:0 auto;display:flex;align-items:center;justify-content:center;border:2px solid rgba(244,212,140,0.2);">🃏</div>
+  </div>
+  <div style="font-size:18px;font-weight:700;color:#F0EDE8;text-align:center;margin-bottom:4px;">恶魔</div>
+  <div style="font-size:13px;color:#F4D48C;text-align:center;margin-bottom:12px;">点击学习这张牌 ✦</div>
+  <div style="display:inline-flex;align-items:center;gap:4px;padding:4px 12px;background:rgba(244,212,140,0.1);border-radius:999px;font-size:12px;color:#F4D48C;">🔥 连续 3 天</div>
+</div>
+
+<hr>
+<h2>📝 日记 — 新建弹窗</h2>
+
+<div class="card">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+    <div style="width:48px;height:48px;background:rgba(244,212,140,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;">🃏</div>
+    <div>
+      <div style="font-size:14px;color:#F4D48C;">今日卡牌</div>
+      <div style="font-size:16px;color:#F0EDE8;font-weight:600;">恶魔</div>
+    </div>
+  </div>
+  <div class="reflection-card" style="margin:0 0 16px 0;">
+    <div style="font-size:12px;color:#F4D48C;margin-bottom:4px;">💫 今日反思</div>
+    <div class="reflection-question" style="margin-bottom:0;">哪条"铁链"你明知可以随时取下，却还在习惯性地戴着它？</div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+    <span style="padding:6px 14px;border-radius:999px;font-size:13px;background:rgba(244,212,140,0.1);color:#F4D48C;">😊 开心</span>
+    <span style="padding:6px 14px;border-radius:999px;font-size:13px;background:rgba(154,149,184,0.1);color:#9A95B8;">😌 平静</span>
+    <span style="padding:6px 14px;border-radius:999px;font-size:13px;background:rgba(154,149,184,0.1);color:#9A95B8;">🤩 兴奋</span>
+    <span style="padding:6px 14px;border-radius:999px;font-size:13px;background:rgba(154,149,184,0.1);color:#9A95B8;">😰 焦虑</span>
+    <span style="padding:6px 14px;border-radius:999px;font-size:13px;background:rgba(154,149,184,0.1);color:#9A95B8;">😢 低落</span>
+    <span style="padding:6px 14px;border-radius:999px;font-size:13px;background:rgba(154,149,184,0.1);color:#9A95B8;">🤔 思考</span>
+  </div>
+  <textarea style="width:100%;min-height:120px;background:rgba(255,255,255,0.03);border:1px solid rgba(244,212,140,0.15);border-radius:12px;padding:12px;color:#F0EDE8;font-size:14px;resize:none;font-family:inherit;" placeholder="记录今天的感受..."></textarea>
+  <div style="display:flex;justify-content:flex-end;margin-top:12px;">
+    <button class="btn-gold" style="padding:10px 32px;font-size:14px;">保存记录</button>
+  </div>
+</div>
+
+<hr>
+<h2>🔮 解读结果 — 三牌占卜</h2>
+
+<div style="text-align:center;margin:16px 0;">
+  <div style="display:flex;justify-content:center;gap:8px;margin-bottom:12px;">
+    <div style="width:100px;height:150px;background:linear-gradient(180deg,#2a1050,#1a0840);border-radius:8px;border:1px solid rgba(244,212,140,0.2);display:flex;align-items:center;justify-content:center;">🃏</div>
+    <div style="width:100px;height:150px;background:linear-gradient(180deg,#2a1050,#1a0840);border-radius:8px;border:2px solid rgba(244,212,140,0.4);display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(244,212,140,0.15);">🃏</div>
+    <div style="width:100px;height:150px;background:linear-gradient(180deg,#2a1050,#1a0840);border-radius:8px;border:1px solid rgba(244,212,140,0.2);display:flex;align-items:center;justify-content:center;">🃏</div>
+  </div>
+  <div style="font-size:14px;color:#9A95B8;">三牌占卜 · 过去·现在·未来</div>
+</div>
+
+<hr>
+<h2>👤 AI人格 — 聊天中</h2>
+
+<div class="persona-bar">
+  <span class="persona-icon">✦</span>
+  <span class="persona-name">温和的星</span>
+  <span class="persona-label">正在倾听</span>
+</div>
+<div class="card" style="padding:var(--spacing-md);">
+  <div style="font-size:14px;color:#F0EDE8;line-height:1.7;">亲爱的，让星光温暖你的心。这张牌在提醒你——有时候我们最需要放下的，恰恰是那些我们抓得最紧的东西...</div>
+</div>
+
+<hr>
+<h2>📊 变现触点 — 会员引导（改后：单行文字）</h2>
+
+<div class="membership-cta">
+  <a href="#">升级会员 · 无限解读 ✦</a>
+</div>
+<div class="quota-bar">
+  <span class="quota-text">今日免费解读 2/5 · 明日0点重置</span>
+</div>
+
+<hr>
+<h2>📋 首页下方 — 入口卡片</h2>
+
+<div class="card entry-card" style="margin-bottom:8px;">
+  <div class="entry-left">
+    <div class="entry-icon">🕊️</div>
+    <div>
+      <div class="entry-label">星光树洞 ✦ 今日话题</div>
+      <div class="entry-hint">「今天的塔罗启示：恶魔」</div>
+    </div>
+  </div>
+  <span class="entry-arrow">→</span>
+</div>
+<div class="card entry-card" style="margin-bottom:8px;">
+  <div class="entry-left">
+    <div class="entry-icon">📝</div>
+    <div>
+      <div class="entry-label">记录今天</div>
+      <div class="entry-hint">和「恶魔」说说话</div>
+    </div>
+  </div>
+  <span class="entry-arrow">→</span>
+</div>
+
+<hr>
+<h2>🎴 牌阵选择</h2>
+
+<div class="section-title">选择牌阵</div>
+<div class="spread-grid">
+  <div class="card spread-card">
+    <div class="spread-tag spread-tag-free">免费</div>
+    <div style="font-size:32px;margin:8px 0;">🔮</div>
+    <div class="spread-name">三牌占卜</div>
+    <div class="spread-desc">过去·现在·未来</div>
+  </div>
+  <div class="card spread-card" style="opacity:0.6;">
+    <div class="spread-tag spread-tag-premium">会员</div>
+    <div style="font-size:32px;margin:8px 0;">💕</div>
+    <div class="spread-name">恋人三角</div>
+    <div class="spread-desc">感情关系深度解读</div>
+  </div>
+  <div class="card spread-card" style="opacity:0.6;">
+    <div class="spread-tag spread-tag-premium">会员</div>
+    <div style="font-size:32px;margin:8px 0;">✝️</div>
+    <div class="spread-name">凯尔特十字</div>
+    <div class="spread-desc">全方位综合解牌</div>
+  </div>
+  <div class="card spread-card" style="opacity:0.6;">
+    <div class="spread-tag spread-tag-premium">会员</div>
+    <div style="font-size:32px;margin:8px 0;">💼</div>
+    <div class="spread-name">事业牌阵</div>
+    <div class="spread-desc">职场方向与机遇</div>
+  </div>
+</div>
+
+<hr>
+
+</div>
+<div style="text-align:center;padding:20px;color:#9A95B8;font-size:12px;">
+  星光映照 · 设计评审渲染 · 2026-07-30
+</div>
+</body>
+</html>
