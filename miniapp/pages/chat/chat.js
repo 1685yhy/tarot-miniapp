@@ -6,6 +6,13 @@ const analytics = require('../../utils/analytics');
 /** Derive WebSocket base URL from the REST API base URL. */
 const WS_BASE = BASE_URL.replace(/^http/, 'ws').replace(/\/api$/, '');
 
+// Persona key → display info (must match reading.js)
+const PERSONA_MAP = {
+  gentle_star: { name: '温和的星', icon: '✦' },
+  wise_moon:   { name: '智慧的月', icon: '☽' },
+  frank_sun:   { name: '率直的太阳', icon: '☀' },
+};
+
 /** Get free daily chat limit from member status (or fallback) */
 function _getFreeChatsLimit() {
   const app = getApp();
@@ -35,6 +42,8 @@ const SPREAD_TYPE_NAMES = {
 Page({
   data: {
     readingId: '',
+    personaName: '',
+    personaIcon: '',
     messages: [],
     inputText: '',
     canSend: false,
@@ -101,6 +110,18 @@ Page({
       if (reading.chat_messages && reading.chat_messages.length > 0) {
         this._scrollTimer = setTimeout(() => this.scrollToBottom(), 200);
       }
+
+      // ── Read persona from global data (set by reading-result page) ──
+      try {
+        const app = getApp();
+        const cachedReading = app.globalData?.currentReading;
+        if (cachedReading && cachedReading.persona) {
+          const p = PERSONA_MAP[cachedReading.persona];
+          if (p) {
+            this.setData({ personaName: p.name, personaIcon: p.icon });
+          }
+        }
+      } catch (_e) { /* silent degrade */ }
     } catch (err) {
       if (this._destroyed) return;
       this.setData({ pageLoading: false, pageError: getFriendlyError(err) });

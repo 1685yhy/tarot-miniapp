@@ -30,6 +30,13 @@
     <text wx:if="{{readingContext.question}}" class="ctx-question">{{readingContext.question}}</text>
   </view>
 
+  <!-- ===== Persona identity bar ===== -->
+  <view wx:if="{{readingContext && personaName && !pageLoading && !pageError}}" class="persona-bar">
+    <text class="persona-bar-icon">{{personaIcon}}</text>
+    <text class="persona-bar-name">{{personaName}}</text>
+    <text class="persona-bar-label">正在倾听</text>
+  </view>
+
   <!-- ===== Empty state — warm invitation ===== -->
   <view wx:elif="{{messages.length === 0 && !pageLoading && !pageError}}" class="empty-wrap">
     <view class="empty-inner">

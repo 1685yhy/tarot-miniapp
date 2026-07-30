@@ -116,6 +116,37 @@ page {
 }
 
 /* ================================================================
+   Persona identity bar — shows which AI is listening
+   ================================================================ */
+.persona-bar {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 16rpx var(--spacing-md);
+  margin: 0 var(--spacing-md) 24rpx;
+  background: rgba(244,212,140,0.08);
+  border: 1rpx solid rgba(244,212,140,0.15);
+  border-radius: var(--radius-pill, 999rpx);
+}
+
+.persona-bar-icon {
+  font-size: 28rpx;
+  color: var(--color-gold);
+}
+
+.persona-bar-name {
+  font-size: var(--font-size-caption, 24rpx);
+  color: var(--color-gold);
+  font-weight: 600;
+}
+
+.persona-bar-label {
+  font-size: var(--font-size-xs, 20rpx);
+  color: var(--color-text-tertiary);
+  margin-left: auto;
+}
+
+/* ================================================================
    Empty state — warm invitation
    ================================================================ */
 .empty-wrap {
