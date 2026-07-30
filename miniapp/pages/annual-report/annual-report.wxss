@@ -15,7 +15,7 @@ page {
    ================================================================ */
 .container {
   position: fixed;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   overflow: hidden;
   background: #0B0B1A;
 }
@@ -41,7 +41,7 @@ page {
 
 .wrapped-loading-ring {
   position: absolute;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   border-radius: 50%;
   border: 3rpx solid rgba(244, 212, 140, 0.15);
   border-top-color: #F4D48C;
@@ -140,7 +140,7 @@ page {
 .wrapped-gen-ring-2,
 .wrapped-gen-ring-3 {
   position: absolute;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   border-radius: 50%;
   border: 2rpx solid transparent;
 }
@@ -152,14 +152,14 @@ page {
 }
 
 .wrapped-gen-ring-2 {
-  inset: 20rpx;
+  top: 20rpx; right: 20rpx; bottom: 20rpx; left: 20rpx;
   border-left-color: rgba(244, 212, 140, 0.2);
   border-right-color: rgba(184, 169, 224, 0.3);
   animation: wr-spin 1.5s linear infinite reverse;
 }
 
 .wrapped-gen-ring-3 {
-  inset: 40rpx;
+  top: 40rpx; right: 40rpx; bottom: 40rpx; left: 40rpx;
   border-top-color: rgba(244, 212, 140, 0.15);
   animation: wr-spin 1s linear infinite;
 }
@@ -187,7 +187,7 @@ page {
 
 .wrapped-gen-particles {
   position: absolute;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   pointer-events: none;
 }
 
@@ -241,7 +241,7 @@ page {
 
 .pre-stars {
   position: absolute;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   pointer-events: none;
 }
 
@@ -338,7 +338,7 @@ page {
    ================================================================ */
 .wrapped-stage {
   position: fixed;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background: #0B0B1A;
 }
 
@@ -369,7 +369,7 @@ page {
    ================================================================ */
 .wrapped-screen {
   position: fixed;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -390,7 +390,7 @@ page {
    ================================================================ */
 .screen-cosmic-bg {
   position: absolute;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -428,7 +428,7 @@ page {
 
 .screen-star-particles {
   position: absolute;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   pointer-events: none;
 }
 
@@ -1130,14 +1130,14 @@ page {
    ================================================================ */
 .screen-blessing-bg {
   position: absolute;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background: radial-gradient(ellipse at 50% 30%, rgba(244, 212, 140, 0.03) 0%, transparent 60%);
   overflow: hidden;
 }
 
 .blessing-star-field {
   position: absolute;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   pointer-events: none;
 }
 
@@ -1369,7 +1369,7 @@ page {
    ================================================================ */
 .poster-overlay {
   position: fixed;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(0, 0, 0, 0.7);
   z-index: 1000;
   opacity: 0;

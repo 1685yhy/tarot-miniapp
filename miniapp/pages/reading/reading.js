@@ -34,7 +34,7 @@ const analytics = require('../../utils/analytics');
 function _getFreeReadingsLimit() {
   const app = getApp();
   const quota = app.globalData.memberStatus?.free_quota;
-  return quota?.daily_readings || 3;
+  return quota?.daily_readings || 5;
 }
 
 const SPREADS = [
@@ -136,9 +136,8 @@ Page({
     introPersona: null,
   },
 
-  _timers: [],
-
   onLoad(options) {
+    this._timers = [];
     // Load draw mode preference from profile settings
     const savedDrawMode = wx.getStorageSync('default_draw_mode') || 'quick';
     this.setData({
@@ -190,15 +189,16 @@ Page({
           question: restoredQuestion,
           selectedPersona: restoredPersona || DEFAULT_PERSONA,
           showQuestionInput: !spread.premium,
-          pageLoading: false,
+          // Flash fix: keep pageLoading true for premium spreads until membership check
+          pageLoading: !!spread.premium,
         });
         // 会员牌阵需要登录检查
         if (spread.premium) {
           checkLogin({ refresh: true }).then(user => {
             if (user && user.is_member) {
-              this.setData({ showQuestionInput: true });
+              this.setData({ showQuestionInput: true, pageLoading: false });
             } else {
-              this.setData({ showQuestionInput: false });
+              this.setData({ showQuestionInput: false, pageLoading: false });
               wx.showModal({
                 title: '会员专属牌阵',
                 content: `「${spread.name}」仅限会员使用 ✦ 开通会员即可解锁全部 10 种牌阵，享无限次解读`,
@@ -210,13 +210,16 @@ Page({
               });
             }
           }).catch(() => {
+            this.setData({ pageLoading: false });
             wx.showToast({ title: '请先登录', icon: 'none' });
           });
         }
       }
     }
-    // 清除骨架屏（pageLoading 初始为 true，确保首次渲染骨架）
-    this.setData({ pageLoading: false });
+    // 非预加载场景（无type参数）清除骨架屏
+    if (!type) {
+      this.setData({ pageLoading: false });
+    }
 
     // ── Onboarding Step 2: show bubble when entering with a spread type ──
     const onboardingCompleted = wx.getStorageSync('onboarding_completed');

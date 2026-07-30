@@ -353,7 +353,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  min-height: 100vh;
   padding: 0 var(--spacing-xl);
 }
 
@@ -725,17 +725,15 @@
   );
 }
 
-/* Collapsed: show first portion */
-.letter-body.collapsed {
+/* Collapsed / expanded — commented out: unused in current WXML */
+/* .letter-body.collapsed {
   max-height: 800rpx;
   overflow: hidden;
-}
-
-/* Expanded: full height */
-.letter-body.expanded {
+} */
+/* .letter-body.expanded {
   max-height: none;
   overflow: visible;
-}
+} */
 
 /* ---- Letter Text ---- */
 .letter-text {
@@ -753,6 +751,10 @@
   0% { opacity: 0; transform: translateY(12rpx); }
   100% { opacity: 1; transform: translateY(0); }
 }
+/* nth-child animations on .letter-text are non-functional in WXSS
+   (WXSS does not support animation-delay on <text> with nth-child).
+   Kept as reference for possible future JS-based stagger implementation. */
+/*
 .letter-text {
   animation: textFadeIn 0.4s ease-out both;
 }
@@ -766,7 +768,7 @@
 .letter-text:nth-child(8) { animation-delay: 0.4s; }
 .letter-text:nth-child(9) { animation-delay: 0.45s; }
 .letter-text:nth-child(10) { animation-delay: 0.5s; }
-
+*/
 /* ---- Toggle ---- */
 .letter-toggle {
   display: flex;

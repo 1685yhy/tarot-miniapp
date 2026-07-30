@@ -176,7 +176,7 @@ page {
 .spread-card::before {
   content: '';
   position: absolute;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   border-radius: 24rpx;
   background: linear-gradient(135deg, transparent 50%, rgba(244,212,140,0.04));
   pointer-events: none;
@@ -982,7 +982,7 @@ page {
    ============================== */
 .premium-overlay {
   position: absolute;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -992,10 +992,11 @@ page {
 
 .premium-overlay-bg {
   position: absolute;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   border-radius: 24rpx;
   background: linear-gradient(135deg, rgba(80, 60, 140, 0.50) 0%, rgba(60, 40, 120, 0.35) 100%);
   backdrop-filter: blur(2rpx);
+  -webkit-backdrop-filter: blur(2rpx);
 }
 
 .premium-overlay-content {
@@ -1093,8 +1094,9 @@ page {
 }
 
 /* Center wrapper for back button */
-.spread-grid + view:has(.btn-back-spreads),
-view:has(> .btn-back-spreads) {
+/* WXSS does not support :has() — replaced with a direct class on the parent */
+.spread-grid + .btn-back-spreads-wrap,
+.btn-back-spreads-wrap {
   text-align: center;
 }
 
@@ -1110,7 +1112,7 @@ view:has(> .btn-back-spreads) {
    Drawing overlay — full screen loading while AI works
    ================================================================ */
 .drawing-overlay {
-  position: fixed; inset: 0; z-index: 100;
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 100;
   background: rgba(10, 10, 30, 0.95);
   display: flex; align-items: center; justify-content: center;
   opacity: 0; pointer-events: none;
@@ -1127,7 +1129,7 @@ view:has(> .btn-back-spreads) {
 @keyframes sm2 { 0%,100% { transform: rotate(2deg) translateX(0); } 50% { transform: rotate(-6deg) translateX(-25rpx); } }
 @keyframes sm3 { 0%,100% { transform: rotate(-3deg) translateY(0); } 50% { transform: rotate(8deg) translateY(-20rpx); } }
 .drawing-orb { position: relative; width: 160rpx; height: 160rpx; margin-bottom: 48rpx; }
-.drawing-ring { position: absolute; inset: 0; border-radius: 50%; border: 4rpx solid rgba(244,212,140,0.1); border-top-color: var(--color-gold); animation: dspin 1.2s linear infinite; }
+.drawing-ring { position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 50%; border: 4rpx solid rgba(244,212,140,0.1); border-top-color: var(--color-gold); animation: dspin 1.2s linear infinite; }
 @keyframes dspin { to { transform: rotate(360deg); } }
 .drawing-orb-icon { font-size: 64rpx; line-height: 160rpx; text-align: center; display: block; }
 .drawing-title { font-size: var(--font-size-title); font-weight: 700; color: var(--color-gold); letter-spacing: 3rpx; }

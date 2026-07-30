@@ -57,16 +57,16 @@
   ],
   "window": {
     "backgroundTextStyle": "dark",
-    "navigationBarBackgroundColor": "#F8F6F2",
+    "navigationBarBackgroundColor": "#1A1A3E",
     "navigationBarTitleText": "星光映照",
-    "navigationBarTextStyle": "black",
+    "navigationBarTextStyle": "white",
     "backgroundColor": "#0f0f23"
   },
   "tabBar": {
     "color": "#9A95B8",
     "selectedColor": "#F4D48C",
     "backgroundColor": "#1A1A3E",
-    "borderStyle": "black",
+    "borderStyle": "white",
     "list": [
       {
         "pagePath": "pages/index/index",
