@@ -257,18 +257,26 @@ Page({
   /** Load AI-generated reflection prompt based on today's card */
   _loadReflectionPrompt() {
     const app = getApp();
-    const dailyCard = app.globalData?.dailyCard;
+    // C1: Check diaryCardHint first (set when navigating from reading-result)
+    let dailyCard = null;
+    if (app.globalData?.diaryCardHint) {
+      dailyCard = app.globalData.diaryCardHint;
+      // Clear hint after consuming so next visit uses the real daily card
+      delete app.globalData.diaryCardHint;
+    } else {
+      dailyCard = app.globalData?.dailyCard;
+    }
     if (!dailyCard || !dailyCard.id) return;
 
     this.setData({
       todayCardId: dailyCard.id,
-      todayCardName: dailyCard.name_zh || '',
+      todayCardName: dailyCard.card_name || dailyCard.name_zh || '',
       reflectionPromptLoading: true,
     });
 
     request('/diary/reflection-prompt', 'POST', {
       card_id: dailyCard.id,
-      card_name: dailyCard.name_zh || '',
+      card_name: dailyCard.card_name || dailyCard.name_zh || '',
     }).then(res => {
       this.setData({
         reflectionPrompt: res.question || '',

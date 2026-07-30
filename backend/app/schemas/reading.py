@@ -83,6 +83,8 @@ class ReadingHistoryItem(BaseModel):
     # First card summary so the list view has something to show
     first_card_name: str | None = None
     first_card_is_reversed: bool | None = None
+    depth: str | None = None
+    reflection_question: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
 

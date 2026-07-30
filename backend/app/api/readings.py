@@ -504,6 +504,8 @@ async def list_readings(
                 created_at=r.created_at,
                 first_card_name=first_card_name,
                 first_card_is_reversed=first_card_reversed,
+                depth=r.depth or "standard",
+                reflection_question=r.reflection_question,
             )
         )
 
@@ -633,9 +635,8 @@ async def reinterpret_reading(
         interpretation = interpretation[:200] + truncation_note
         reading.interpretation = interpretation
 
-    # ── Generate reflection question ──
-    reading.reflection_question = None
-    if cards_info and interpretation:
+    # ── Generate reflection question (preserve existing if one already exists) ──
+    if not reading.reflection_question and cards_info and interpretation:
         first_card_name = cards_info[0].get("name_zh", "")
         reading.reflection_question = await generate_reflection_question(
             reading.question, first_card_name, interpretation,
