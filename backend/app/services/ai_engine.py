@@ -442,3 +442,57 @@ async def stream_chat_response(
     except Exception as exc:
         logger.exception("stream_chat_response failed: %s", exc)
         raise
+
+
+async def generate_reflection_question(
+    question: str | None,
+    first_card_name: str,
+    interpretation: str | None,
+) -> str:
+    """Generate a reflection question to guide the user to journaling.
+
+    Uses the first card drawn and a summary of the interpretation to
+    produce a warm, concise reflection prompt (60 chars max).
+
+    Args:
+        question:        The user's original question, or None.
+        first_card_name: Chinese name of the first drawn card (e.g. "星星").
+        interpretation:  The full AI interpretation text, or None.
+
+    Returns:
+        A reflection question string, or a fallback message on failure.
+    """
+    if not settings.DEEPSEEK_API_KEY:
+        return f"「{first_card_name}」在今天的生活中想告诉你什么？"
+
+    client = _get_client()
+    try:
+        resp = await client.chat.completions.create(
+            model=settings.DEEPSEEK_MODEL,
+            max_tokens=120,
+            messages=[{
+                "role": "system",
+                "content": (
+                    "你是一位温暖的塔罗伙伴。用户刚完成了一次塔罗解读，"
+                    "请生成一个引人深思的反思问题，引导用户将解读智慧应用到生活中。"
+                    "60字以内，温暖而具体，像朋友在轻声提醒。只返回问题本身，不要加引号或前缀。"
+                ),
+            }, {
+                "role": "user",
+                "content": (
+                    f"用户问题: {question or '未指定'}\n"
+                    f"关键卡牌: {first_card_name}\n"
+                    f"解读摘要: {(interpretation or '')[:300]}"
+                ),
+            }],
+            timeout=20.0,
+        )
+        raw = resp.choices[0].message.content.strip()
+        # Clean up quotes if the AI wrapped the question
+        raw = raw.strip('"').strip("'").strip('「').strip('」').strip()
+        if len(raw) > 60:
+            raw = raw[:57] + "..."
+        return raw or f"「{first_card_name}」的启示对你意味着什么？"
+    except Exception:
+        logger.exception("generate_reflection_question failed")
+        return f"「{first_card_name}」的启示对你意味着什么？"

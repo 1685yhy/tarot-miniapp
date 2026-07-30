@@ -1441,3 +1441,124 @@
   transform: scale(0.96);
   box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.15);
 }
+
+/* ============================================================
+   REFLECTION CARD — Diary journaling prompt card
+   ============================================================ */
+.reflection-card {
+  position: relative;
+  margin: var(--spacing-lg) var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: linear-gradient(135deg, rgba(180,140,200,0.10) 0%, rgba(244,212,140,0.08) 100%);
+  border: 1.5rpx solid rgba(244,212,140,0.20);
+  border-radius: var(--radius-lg, 24rpx);
+  text-align: center;
+  overflow: hidden;
+}
+
+.reflection-card-glow {
+  position: absolute;
+  top: -40rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200rpx;
+  height: 80rpx;
+  background: radial-gradient(ellipse, rgba(244,212,140,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.reflection-card-icon {
+  display: block;
+  font-size: 48rpx;
+  margin-bottom: 12rpx;
+}
+
+.reflection-card-label {
+  display: block;
+  font-size: var(--font-size-caption, 24rpx);
+  color: var(--color-gold);
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  margin-bottom: 12rpx;
+}
+
+.reflection-card-question {
+  display: block;
+  font-size: var(--font-size-body, 30rpx);
+  color: var(--color-text-primary);
+  line-height: 1.7;
+  margin-bottom: 24rpx;
+  font-weight: 400;
+}
+
+.reflection-card-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16rpx 48rpx;
+  background: linear-gradient(135deg, #F4D48C 0%, #D4B06A 100%);
+  border-radius: var(--radius-pill, 999rpx);
+  color: #1A1A3E;
+  font-size: var(--font-size-body, 30rpx);
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  border: none;
+}
+
+.reflection-card-btn::after {
+  border: none;
+}
+
+/* ============================================================
+   DEPTH UNLOCK CARD — Membership upsell for deeper reading
+   ============================================================ */
+.depth-unlock-card {
+  margin: var(--spacing-lg) var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: linear-gradient(135deg, rgba(244,212,140,0.08) 0%, rgba(180,140,200,0.06) 100%);
+  border: 1.5rpx solid rgba(244,212,140,0.18);
+  border-radius: var(--radius-lg, 24rpx);
+  text-align: center;
+}
+
+.depth-unlock-icon {
+  display: block;
+  font-size: 52rpx;
+  margin-bottom: 12rpx;
+}
+
+.depth-unlock-title {
+  display: block;
+  font-size: var(--font-size-subhead, 32rpx);
+  color: var(--color-gold);
+  font-weight: 600;
+  margin-bottom: 8rpx;
+  letter-spacing: 2rpx;
+}
+
+.depth-unlock-desc {
+  display: block;
+  font-size: var(--font-size-caption, 24rpx);
+  color: var(--color-text-tertiary);
+  line-height: 1.6;
+  margin-bottom: 24rpx;
+  letter-spacing: 1rpx;
+}
+
+.depth-unlock-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16rpx 48rpx;
+  background: linear-gradient(135deg, #F4D48C 0%, #D4B06A 100%);
+  border-radius: var(--radius-pill, 999rpx);
+  color: #1A1A3E;
+  font-size: var(--font-size-body, 30rpx);
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  border: none;
+}
+
+.depth-unlock-btn::after {
+  border: none;
+}
