@@ -144,22 +144,27 @@
         <view
           class="entry-card"
           wx:for="{{entries}}" wx:for-item="entry" wx:key="id"
+          bindlongpress="onLongPressEntry"
+          data-id="{{entry.id}}"
         >
-          <!-- Card header: date + mood -->
+          <!-- Card header: date + mood + actions -->
           <view class="entry-header">
             <view class="entry-date-line">
               <text class="entry-date-icon">✦</text>
               <text class="entry-date">{{entry.date}}</text>
             </view>
-            <text class="entry-mood">
-              <text wx:if="{{entry.mood === 'happy'}}">😊</text>
-              <text wx:elif="{{entry.mood === 'sad'}}">😢</text>
-              <text wx:elif="{{entry.mood === 'anxious'}}">😰</text>
-              <text wx:elif="{{entry.mood === 'calm'}}">😌</text>
-              <text wx:elif="{{entry.mood === 'excited'}}">🤩</text>
-              <text wx:elif="{{entry.mood === 'thoughtful'}}">🤔</text>
-              <text wx:else>🤔</text>
-            </text>
+            <view class="entry-header-right">
+              <text class="entry-share-btn" bindtap="onShareEntry" data-id="{{entry.id}}">分享</text>
+              <text class="entry-mood">
+                <text wx:if="{{entry.mood === 'happy'}}">😊</text>
+                <text wx:elif="{{entry.mood === 'sad'}}">😢</text>
+                <text wx:elif="{{entry.mood === 'anxious'}}">😰</text>
+                <text wx:elif="{{entry.mood === 'calm'}}">😌</text>
+                <text wx:elif="{{entry.mood === 'excited'}}">🤩</text>
+                <text wx:elif="{{entry.mood === 'thoughtful'}}">🤔</text>
+                <text wx:else>🤔</text>
+              </text>
+            </view>
           </view>
 
           <!-- Card info with thumbnail -->
@@ -188,6 +193,16 @@
 
           <!-- Reflection text -->
           <text wx:if="{{entry.reflection}}" class="entry-reflection">{{entry.reflection}}</text>
+
+          <!-- Diary image -->
+          <image
+            wx:if="{{entry.image_url}}"
+            class="entry-image"
+            src="{{entry.image_url}}"
+            mode="widthFix"
+            lazy-load
+            show-menu-by-longpress
+          />
         </view>
       </view>
 
@@ -311,6 +326,18 @@
       />
       <text class="char-count">{{reflection.length}}/500</text>
 
+      <!-- Image picker -->
+      <view class="image-picker-wrap">
+        <view wx:if="{{!selectedImage}}" class="image-picker-btn" bindtap="onChooseImage">
+          <text class="image-picker-icon">+</text>
+          <text class="image-picker-label">添加图片</text>
+        </view>
+        <view wx:else class="image-preview-wrap">
+          <image class="image-preview" src="{{selectedImage}}" mode="aspectFill" />
+          <text class="image-remove-btn" bindtap="onRemoveImage">✕</text>
+        </view>
+      </view>
+
       <!-- Submit -->
       <button
         class="btn-submit"
@@ -321,5 +348,8 @@
       </button>
     </view>
   </view>
+
+  <!-- ===== Hidden canvas for share card generation ===== -->
+  <canvas type="2d" id="diary-share-canvas" style="width: 375px; height: 600px; position: fixed; left: -9999px; top: 0; pointer-events: none;"></canvas>
 
 </view>

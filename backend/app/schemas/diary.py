@@ -5,7 +5,8 @@ from pydantic import BaseModel, ConfigDict
 class DiaryCreate(BaseModel):
     mood: str | None = None
     reflection: str | None = None
-    card_id: int | None = None  # NEW: allow frontend to specify associated card
+    card_id: int | None = None  # allow frontend to specify associated card
+    image_url: str | None = None  # uploaded image URL for this entry
 
 
 class DiaryCardBrief(BaseModel):
@@ -22,6 +23,7 @@ class DiaryEntryResponse(BaseModel):
     mood: str | None
     card: DiaryCardBrief | None = None
     reflection: str | None
+    image_url: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -32,6 +34,7 @@ class DiaryEntryBrief(BaseModel):
     mood: str | None
     card: DiaryCardBrief | None = None
     reflection: str | None
+    image_url: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
 

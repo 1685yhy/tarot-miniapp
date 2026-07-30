@@ -4,6 +4,7 @@ const { computeImagePath } = require('../../utils/cards');
 
 // Mood score map for trend analysis
 const MOOD_SCORE_MAP = { happy: 4.5, calm: 3.5, excited: 5, anxious: 2, sad: 1, thoughtful: 3 };
+const BASE_URL = require('../../utils/api').BASE_URL;
 
 Page({
   data: {
@@ -36,6 +37,13 @@ Page({
     reflectionPromptLoading: false,
     todayCardId: null,
     todayCardName: '',
+
+    // Image upload
+    selectedImage: '',
+    uploadingImage: false,
+
+    // Edit state
+    editingEntryId: null,
   },
 
   onReady() {
@@ -89,11 +97,24 @@ Page({
   },
 
   showCreateModal() {
-    this.setData({ showCreate: true, diaryCardImgError: false });
+    this.setData({
+      showCreate: true,
+      editingEntryId: null,
+      selectedImage: '',
+      mood: '',
+      reflection: '',
+      diaryCardImgError: false,
+    });
   },
 
   hideCreateModal() {
-    this.setData({ showCreate: false, mood: '', reflection: '' });
+    this.setData({
+      showCreate: false,
+      editingEntryId: null,
+      mood: '',
+      reflection: '',
+      selectedImage: '',
+    });
   },
 
   preventClose() {
@@ -120,32 +141,78 @@ Page({
       return;
     }
     this.setData({ creating: true });
-    try {
-      const entry = await request('/diary/entries', {
-        method: 'POST',
-        data: {
-          mood: this.data.mood,
-          reflection: this.data.reflection,
-          card_id: this.data.todayCardId || undefined,
-        },
-      });
-      if (!entry) {
-        throw new Error("创建日记失败");
+
+    // Upload image first if selected
+    let imageUrl = '';
+    if (this.data.selectedImage) {
+      try {
+        imageUrl = await this._uploadImage(this.data.selectedImage);
+      } catch (err) {
+        wx.showToast({ title: '图片上传失败', icon: 'none' });
+        this.setData({ creating: false });
+        return;
       }
-      this.setData({
-        entries: [entry, ...this.data.entries],
-        showCreate: false,
-        mood: '',
-        reflection: '',
-        creating: false,
-      });
-      wx.showToast({ title: '记录成功 ✨', icon: 'success' });
+    }
+
+    const editingEntryId = this.data.editingEntryId;
+    try {
+      if (editingEntryId) {
+        // Edit existing entry
+        const entry = await request(`/diary/entries/${editingEntryId}`, {
+          method: 'PUT',
+          data: {
+            mood: this.data.mood,
+            reflection: this.data.reflection,
+            image_url: imageUrl || undefined,
+          },
+        });
+        if (!entry) {
+          throw new Error('更新日记失败');
+        }
+        // Update entry in list
+        const updatedEntries = this.data.entries.map(e =>
+          e.id === editingEntryId ? entry : e
+        );
+        this.setData({
+          entries: updatedEntries,
+          showCreate: false,
+          editingEntryId: null,
+          mood: '',
+          reflection: '',
+          selectedImage: '',
+          creating: false,
+        });
+        wx.showToast({ title: '更新成功 ✨', icon: 'success' });
+      } else {
+        // Create new entry
+        const entry = await request('/diary/entries', {
+          method: 'POST',
+          data: {
+            mood: this.data.mood,
+            reflection: this.data.reflection,
+            card_id: this.data.todayCardId || undefined,
+            image_url: imageUrl || undefined,
+          },
+        });
+        if (!entry) {
+          throw new Error('创建日记失败');
+        }
+        this.setData({
+          entries: [entry, ...this.data.entries],
+          showCreate: false,
+          mood: '',
+          reflection: '',
+          selectedImage: '',
+          creating: false,
+        });
+        wx.showToast({ title: '记录成功 ✨', icon: 'success' });
+      }
       // Refresh weekly review after new entry
       if (this.data.entries.length >= 3) {
         this._loadWeeklyReview();
       }
     } catch (err) {
-      wx.showToast({ title: '记录失败', icon: 'none' });
+      wx.showToast({ title: editingEntryId ? '更新失败' : '记录失败', icon: 'none' });
       this.setData({ creating: false });
     }
   },
@@ -294,6 +361,130 @@ Page({
     wx.pageScrollTo({
       selector: '.review-card',
       duration: 300,
+    });
+  },
+
+  // ============================================================
+  // Image Selection & Upload
+  // ============================================================
+
+  /** Choose an image from album or camera */
+  onChooseImage() {
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['compressed'],
+      sourceType: ['album', 'camera'],
+      success: (res) => {
+        this.setData({ selectedImage: res.tempFilePaths[0] });
+      },
+    });
+  },
+
+  /** Remove the selected image */
+  onRemoveImage() {
+    this.setData({ selectedImage: '' });
+  },
+
+  /** Upload an image file to the server and return the URL */
+  _uploadImage(filePath) {
+    return new Promise((resolve, reject) => {
+      const token = wx.getStorageSync('token');
+      wx.uploadFile({
+        url: `${BASE_URL}/diary/upload-image`,
+        filePath: filePath,
+        name: 'file',
+        header: {
+          'Authorization': token ? `Bearer ${token}` : '',
+        },
+        success: (res) => {
+          try {
+            const data = JSON.parse(res.data);
+            if (res.statusCode >= 200 && res.statusCode < 300 && data.url) {
+              resolve(data.url);
+            } else {
+              reject(new Error(data.detail || '上传失败'));
+            }
+          } catch (e) {
+            reject(new Error('上传响应解析失败'));
+          }
+        },
+        fail: (err) => {
+          reject(err);
+        },
+      });
+    });
+  },
+
+  // ============================================================
+  // Long-press: Edit & Delete
+  // ============================================================
+
+  /** Long-press on an entry shows action sheet */
+  onLongPressEntry(e) {
+    const id = e.currentTarget.dataset.id;
+    wx.showActionSheet({
+      itemList: ['编辑', '删除'],
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          this._editEntry(id);
+        } else if (res.tapIndex === 1) {
+          this._deleteEntry(id);
+        }
+      },
+    });
+  },
+
+  /** Populate the composer with an existing entry for editing */
+  _editEntry(id) {
+    const entry = this.data.entries.find(e => e.id === id);
+    if (!entry) return;
+    this.setData({
+      showCreate: true,
+      editingEntryId: id,
+      mood: entry.mood || '',
+      reflection: entry.reflection || '',
+      selectedImage: entry.image_url || '',
+    });
+  },
+
+  /** Confirm and delete a diary entry */
+  _deleteEntry(id) {
+    wx.showModal({
+      title: '删除日记',
+      content: '确定要删除这条日记吗？删除后无法恢复。',
+      success: (res) => {
+        if (res.confirm) {
+          request(`/diary/entries/${id}`, { method: 'DELETE' }).then(() => {
+            const remaining = this.data.entries.filter(e => e.id !== id);
+            this.setData({ entries: remaining });
+            wx.showToast({ title: '已删除', icon: 'success' });
+          }).catch(() => {
+            wx.showToast({ title: '删除失败', icon: 'none' });
+          });
+        }
+      },
+    });
+  },
+
+  // ============================================================
+  // Share Diary Entry as Image Card
+  // ============================================================
+
+  /** Generate and preview a share image for a diary entry */
+  onShareEntry(e) {
+    const id = e.currentTarget.dataset.id;
+    const entry = this.data.entries.find(e => e.id === id);
+    if (!entry) return;
+
+    wx.showLoading({ title: '生成分享图...' });
+
+    const { generateDiaryCard } = require('../../utils/canvas-poster');
+    generateDiaryCard(entry, this).then((imagePath) => {
+      wx.hideLoading();
+      wx.previewImage({ urls: [imagePath] });
+    }).catch((err) => {
+      wx.hideLoading();
+      wx.showToast({ title: '生成失败', icon: 'none' });
     });
   },
 
