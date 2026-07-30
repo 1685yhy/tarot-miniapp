@@ -288,6 +288,18 @@
         </view>
       </view>
 
+      <!-- 反思引导卡片 -->
+      <view wx:if="{{reflectionPrompt}}" class="reflection-prompt-card">
+        <view class="reflection-prompt-header">
+          <text class="reflection-prompt-icon">💫</text>
+          <text class="reflection-prompt-label">今日反思</text>
+        </view>
+        <text class="reflection-prompt-question">{{reflectionPrompt}}</text>
+        <view wx:if="{{todayCardName}}" class="reflection-prompt-card-tag">
+          <text>🃏 {{todayCardName}}</text>
+        </view>
+      </view>
+
       <!-- Reflection textarea with AI prompt -->
       <text class="modal-label">今日感悟</text>
       <textarea

@@ -30,6 +30,12 @@ Page({
     // Card image error
     diaryCardImgError: false,
     entryCardImgErrors: {},
+
+    // Reflection prompt
+    reflectionPrompt: '',
+    reflectionPromptLoading: false,
+    todayCardId: null,
+    todayCardName: '',
   },
 
   onReady() {
@@ -43,7 +49,8 @@ Page({
   async onShow() {
     this.setData({ page: 1, entries: [], pageLoading: true, weeklyReview: null });
     await this.loadEntries();
-    this._loadTodayCard();
+    await this._loadTodayCard();
+    this._loadReflectionPrompt();
   },
 
   async loadEntries() {
@@ -116,7 +123,11 @@ Page({
     try {
       const entry = await request('/diary/entries', {
         method: 'POST',
-        data: { mood: this.data.mood, reflection: this.data.reflection },
+        data: {
+          mood: this.data.mood,
+          reflection: this.data.reflection,
+          card_id: this.data.todayCardId || undefined,
+        },
       });
       if (!entry) {
         throw new Error("创建日记失败");
@@ -150,6 +161,12 @@ Page({
       const card = await request('/cards/daily');
       card.imagePath = computeImagePath(card);
       this.setData({ todayCard: card });
+      // Also store in globalData for reflection prompt consumption
+      const app = getApp();
+      if (app) {
+        app.globalData = app.globalData || {};
+        app.globalData.dailyCard = card;
+      }
       this._updatePlaceholder();
     } catch(e) {
       // 静默降级——今日卡牌加载失败不影响记录列表
@@ -168,6 +185,35 @@ Page({
         reflectionPlaceholder: '此刻你的心情是怎样的？'
       });
     }
+  },
+
+  /** Load AI-generated reflection prompt based on today's card */
+  _loadReflectionPrompt() {
+    const app = getApp();
+    const dailyCard = app.globalData?.dailyCard;
+    if (!dailyCard || !dailyCard.id) return;
+
+    this.setData({
+      todayCardId: dailyCard.id,
+      todayCardName: dailyCard.name_zh || '',
+      reflectionPromptLoading: true,
+    });
+
+    request('/diary/reflection-prompt', 'POST', {
+      card_id: dailyCard.id,
+      card_name: dailyCard.name_zh || '',
+    }).then(res => {
+      this.setData({
+        reflectionPrompt: res.question || '',
+        reflectionPromptLoading: false,
+      });
+    }).catch(() => {
+      // 降级: 使用本地默认问题
+      this.setData({
+        reflectionPrompt: `今天的「${this.data.todayCardName}」给你带来了什么感受？`,
+        reflectionPromptLoading: false,
+      });
+    });
   },
 
   /** Compute local fallback retrospect data (kept for backward compat) */
