@@ -304,8 +304,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(135deg, rgba(244,212,140,0.08) 0%, rgba(180,140,200,0.06) 100%);
-  border-color: rgba(244,212,140,0.15);
+  background: linear-gradient(135deg, rgba(244,212,140,0.14) 0%, rgba(180,140,200,0.10) 100%);
+  border-color: rgba(244,212,140,0.30);
 }
 
 .diary-entry-left {
@@ -347,8 +347,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(135deg, rgba(244,212,140,0.08) 0%, rgba(180,140,200,0.06) 100%);
-  border-color: rgba(244,212,140,0.15);
+  background: linear-gradient(135deg, rgba(244,212,140,0.14) 0%, rgba(180,140,200,0.10) 100%);
+  border-color: rgba(244,212,140,0.30);
 }
 
 .community-entry-icon {
