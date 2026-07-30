@@ -1,7 +1,10 @@
+import os
+import uuid
 import random
 import logging
 from datetime import date, timedelta
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel as PydanticBaseModel
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -85,6 +88,7 @@ async def create_entry(
             mood=existing.mood,
             card={"id": card.id, "name_zh": card.name_zh, "meaning_upright": card.meaning_upright[:200]} if card else None,
             reflection=existing.reflection,
+            image_url=existing.image_url,
         )
 
     # ── Create new entry ──
@@ -110,6 +114,7 @@ async def create_entry(
         mood=body.mood,
         card_id=card.id,
         reflection=body.reflection,
+        image_url=body.image_url,
     )
     db.add(entry)
     await db.flush()
@@ -120,6 +125,7 @@ async def create_entry(
         mood=entry.mood,
         card={"id": card.id, "name_zh": card.name_zh, "meaning_upright": card.meaning_upright[:200]},
         reflection=entry.reflection,
+        image_url=entry.image_url,
     )
 
 
@@ -162,6 +168,7 @@ async def list_entries(
                     "meaning_upright": cards_map[e.card_id].meaning_upright[:200],
                 } if e.card_id and e.card_id in cards_map else None,
                 "reflection": e.reflection,
+                "image_url": e.image_url,
             }
             for e in entries
         ],
@@ -348,6 +355,104 @@ async def weekly_review(
         next_week_guidance=next_week_guidance,
         emotional_trend_summary=emotional_trend_summary,
     )
+
+
+@router.delete("/entries/{entry_id}")
+async def delete_entry(
+    entry_id: str,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Delete a diary entry (only the owner can delete)."""
+    result = await db.execute(
+        select(DiaryEntry).where(
+            DiaryEntry.id == entry_id,
+            DiaryEntry.user_id == user.id,
+        )
+    )
+    entry = result.scalar_one_or_none()
+    if not entry:
+        raise HTTPException(status_code=404, detail="日记不存在")
+    await db.delete(entry)
+    return {"ok": True}
+
+
+@router.put("/entries/{entry_id}", response_model=DiaryEntryResponse)
+async def update_entry(
+    entry_id: str,
+    body: DiaryCreate,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Update a diary entry (partial update)."""
+    result = await db.execute(
+        select(DiaryEntry).where(
+            DiaryEntry.id == entry_id,
+            DiaryEntry.user_id == user.id,
+        )
+    )
+    entry = result.scalar_one_or_none()
+    if not entry:
+        raise HTTPException(status_code=404, detail="日记不存在")
+    if body.mood is not None:
+        entry.mood = body.mood
+    if body.reflection is not None:
+        entry.reflection = body.reflection
+    if body.image_url is not None:
+        entry.image_url = body.image_url
+    await db.flush()
+
+    # Load card for response
+    card = None
+    if entry.card_id:
+        card_result = await db.execute(
+            select(TarotCard).where(TarotCard.id == entry.card_id)
+        )
+        card = card_result.scalar_one_or_none()
+
+    return DiaryEntryResponse(
+        id=entry.id,
+        date=str(entry.entry_date),
+        mood=entry.mood,
+        card={"id": card.id, "name_zh": card.name_zh, "meaning_upright": card.meaning_upright[:200]} if card else None,
+        reflection=entry.reflection,
+        image_url=entry.image_url,
+    )
+
+
+@router.post("/upload-image")
+async def upload_image(
+    file: UploadFile = File(...),
+    user: User = Depends(get_current_user),
+):
+    """
+    Upload an image for a diary entry.
+    Saves to static/diary_uploads/ and returns the URL.
+    """
+    # Validate file type
+    allowed_types = {"image/jpeg", "image/png", "image/webp", "image/gif"}
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="仅支持 JPG/PNG/WebP/GIF 格式的图片")
+
+    # Determine upload directory
+    upload_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static", "diary_uploads")
+    os.makedirs(upload_dir, exist_ok=True)
+
+    # Generate unique filename
+    ext = os.path.splitext(file.filename or "image.jpg")[1] or ".jpg"
+    filename = f"{user.id}_{uuid.uuid4().hex[:8]}{ext}"
+    filepath = os.path.join(upload_dir, filename)
+
+    # Save file
+    content = await file.read()
+    if len(content) > 5 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="图片大小不能超过 5MB")
+    with open(filepath, "wb") as f:
+        f.write(content)
+
+    # Return accessible URL
+    url = f"/static/diary_uploads/{filename}"
+    return {"url": url}
 
 
 class ReflectionPromptRequest(PydanticBaseModel):

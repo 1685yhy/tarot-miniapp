@@ -15,6 +15,7 @@ class DiaryEntry(Base):
     mood: Mapped[str | None] = mapped_column(String(16), nullable=True)
     card_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("tarot_cards.id"), nullable=True)
     reflection: Mapped[str | None] = mapped_column(Text, nullable=True)
+    image_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     user: Mapped["User"] = relationship(back_populates="diary_entries")
