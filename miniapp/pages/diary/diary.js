@@ -80,10 +80,7 @@ Page({
       this._computeRetrospect();
       // Update placeholder after entries loaded
       this._updatePlaceholder();
-      // Auto-load weekly review if enough entries
-      if (entries.length >= 3 && !this.data.weeklyReview && !this.data.reviewLoading) {
-        this._loadWeeklyReview();
-      }
+      // Weekly review is now user-triggered via the "生成回顾" button
     } catch (err) {
       this.setData({ pageLoading: false, pageError: getFriendlyError(err) });
     }

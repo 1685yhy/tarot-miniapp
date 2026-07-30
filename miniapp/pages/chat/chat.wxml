@@ -30,11 +30,13 @@
     <text wx:if="{{readingContext.question}}" class="ctx-question">{{readingContext.question}}</text>
   </view>
 
-  <!-- ===== Persona identity bar ===== -->
-  <view wx:if="{{readingContext && personaName && !pageLoading && !pageError}}" class="persona-bar">
+  <!-- ===== Persona identity bar — prominent ===== -->
+  <view wx:if="{{readingContext && personaName && !pageLoading && !pageError}}" class="persona-bar" role="region" aria-label="解读者信息">
     <text class="persona-bar-icon">{{personaIcon}}</text>
-    <text class="persona-bar-name">{{personaName}}</text>
-    <text class="persona-bar-label">正在倾听</text>
+    <view class="persona-bar-info">
+      <text class="persona-bar-name">{{personaName}}</text>
+      <text class="persona-bar-desc">你的专属解读者 · 正在倾听</text>
+    </view>
   </view>
 
   <!-- ===== Empty state — warm invitation ===== -->
@@ -60,7 +62,7 @@
       <!-- User message -->
       <view wx:if="{{item.role === 'user'}}" class="msg-wrap msg-user msg-enter">
         <text class="role-label role-user">你</text>
-        <view class="msg-bubble bubble-user {{item.failed ? 'bubble-failed' : ''}}" data-failed="{{item.failed}}" bindtap="onRetrySend">
+        <view class="msg-bubble bubble-user {{item.failed ? 'bubble-failed' : ''}}" data-failed="{{item.failed}}" bindtap="onRetrySend" role="button" aria-label="重试发送">
           <text class="msg-text msg-text-user">{{item.content}}</text>
           <text wx:if="{{item.failed}}" class="msg-failed-hint">发送失败 · 点击重试</text>
         </view>
@@ -88,24 +90,14 @@
     <view id="chat-bottom"></view>
 
     <!-- ===== 发送失败重试 ===== -->
-    <view wx:if="{{sendFailed}}" class="retry-bar" bindtap="onRetrySend">
+    <view wx:if="{{sendFailed}}" class="retry-bar" bindtap="onRetrySend" role="button" aria-label="重试发送">
       <image class="retry-icon" src="/images/icons/warning_64.png" mode="aspectFit" aria-label="发送失败" />
       <text class="retry-text">发送失败，点击重试</text>
     </view>
 
-    <!-- ===== 追问额度耗尽会员引导 ===== -->
-    <view class="chat-membership-prompt" wx:if="{{showMembershipPrompt}}">
-      <text class="cmp-icon">💫</text>
-      <text class="cmp-text">今日追问次数已用完</text>
-      <text class="cmp-sub">会员无限追问 · AI 深度陪伴</text>
-      <button class="cmp-btn" bindtap="onGoMembership">了解会员</button>
-    </view>
-
-    <!-- ===== AI Disclaimer ===== -->
-    <view class="ai-disclaimer">
-      <view class="disc-line"></view>
-      <text class="disc-text">✨ AI生成 · 塔罗是镜子而非预言 · 仅供参考</text>
-      <view class="disc-line"></view>
+    <!-- ===== 追问次数耗尽 — 简洁文字提示 ===== -->
+    <view class="quota-exhausted" wx:if="{{showMembershipPrompt}}">
+      <text class="quota-exhausted-text">今日追问次数已用完</text>
     </view>
   </view>
 
@@ -132,11 +124,9 @@
   </view>
 </view>
 
-<view class="free-quota-bar" wx:if="{{remainingFree > 0}}">
-  <view class="quota-progress-wrap">
-    <view class="quota-progress" style="width: {{remainingFree / chatFreeTotal * 100}}%"></view>
-  </view>
-  <text class="quota-text">今日免费追问 {{chatFreeTotal - remainingFree}}/{{chatFreeTotal}} · 明日0点重置</text>
+<view class="free-quota-bar" wx:if="{{remainingFree <= 1}}">
+  <text class="quota-text" wx:if="{{remainingFree > 0}}">剩余 {{remainingFree}} 次追问</text>
+  <text class="quota-text quota-text--exhausted" wx:else>今日可用追问已用完</text>
 </view>
 
 <!-- Back to Home removed — native nav bar provides back button -->
