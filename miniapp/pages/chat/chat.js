@@ -111,12 +111,13 @@ Page({
         this._scrollTimer = setTimeout(() => this.scrollToBottom(), 200);
       }
 
-      // ── Read persona from global data (set by reading-result page) ──
+      // ── Read persona from globalData first, fallback to API response ──
       try {
         const app = getApp();
         const cachedReading = app.globalData?.currentReading;
-        if (cachedReading && cachedReading.persona) {
-          const p = PERSONA_MAP[cachedReading.persona];
+        const personaKey = (cachedReading && cachedReading.persona) || reading.persona;
+        if (personaKey) {
+          const p = PERSONA_MAP[personaKey];
           if (p) {
             this.setData({ personaName: p.name, personaIcon: p.icon });
           }
