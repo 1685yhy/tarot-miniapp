@@ -274,9 +274,12 @@ Page({
       reflectionPromptLoading: true,
     });
 
-    request('/diary/reflection-prompt', 'POST', {
-      card_id: dailyCard.id,
-      card_name: dailyCard.card_name || dailyCard.name_zh || '',
+    request('/diary/reflection-prompt', {
+      method: 'POST',
+      data: {
+        card_id: dailyCard.id,
+        card_name: dailyCard.card_name || dailyCard.name_zh || '',
+      },
     }).then(res => {
       this.setData({
         reflectionPrompt: res.question || '',
