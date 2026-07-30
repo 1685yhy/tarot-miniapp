@@ -16,6 +16,8 @@ class Reading(Base):
     theme: Mapped[str | None] = mapped_column(String(16), nullable=True)  # love/career/finance/general
     interpretation: Mapped[str | None] = mapped_column(Text, nullable=True)
     persona: Mapped[str | None] = mapped_column(String(32), nullable=True)  # gentle_star / wise_moon / frank_sun
+    depth: Mapped[str | None] = mapped_column(String(16), nullable=True, default="standard")
+    reflection_question: Mapped[str | None] = mapped_column(Text, nullable=True)
     is_paid: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
 
