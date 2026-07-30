@@ -1019,3 +1019,54 @@ page {
   display: block;
   line-height: 1.6;
 }
+
+
+/* ============================================================
+   Reflection Prompt Card — AI-powered guided writing
+   ============================================================ */
+.reflection-prompt-card {
+  margin: 0 var(--spacing-md) var(--spacing-md);
+  padding: var(--spacing-md);
+  background: linear-gradient(135deg, rgba(244,212,140,0.12) 0%, rgba(180,140,200,0.08) 100%);
+  border: 1.5rpx solid rgba(244,212,140,0.25);
+  border-radius: var(--radius-md, 16rpx);
+}
+
+.reflection-prompt-header {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-bottom: 12rpx;
+}
+
+.reflection-prompt-icon {
+  font-size: 28rpx;
+}
+
+.reflection-prompt-label {
+  font-size: var(--font-size-caption, 24rpx);
+  color: var(--color-gold);
+  font-weight: 600;
+  letter-spacing: 2rpx;
+}
+
+.reflection-prompt-question {
+  display: block;
+  font-size: var(--font-size-body, 30rpx);
+  color: var(--color-text-primary, #F0EDE8);
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+.reflection-prompt-card-tag {
+  margin-top: 12rpx;
+  display: inline-flex;
+  padding: 4rpx 16rpx;
+  background: rgba(244,212,140,0.10);
+  border-radius: var(--radius-pill, 999rpx);
+}
+
+.reflection-prompt-card-tag text {
+  font-size: var(--font-size-xs, 20rpx);
+  color: var(--color-gold);
+}
