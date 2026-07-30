@@ -32,7 +32,7 @@ from app.schemas.reading import (
     ReadingHistoryResponse,
     ReadingResponse,
 )
-from app.services.ai_engine import generate_reading, _build_user_context
+from app.services.ai_engine import generate_reading, generate_reflection_question, _build_user_context
 from app.services.ai_personas import get_persona
 from app.services.tarot import draw_cards
 from app.utils.auth import get_current_user
@@ -381,6 +381,22 @@ async def create_reading(
     if uses_paid_credit:
         user.paid_readings_balance -= 1
 
+    # ── Resolve depth level ──
+    # basic:   TL;DR only (~200 chars) — free
+    # standard: Full interpretation (current) — free
+    # deep:    Full + extra depth analysis — member only
+    reading_depth = req.depth or "standard"
+    if reading_depth == "deep" and not user.is_member:
+        reading_depth = "standard"
+
+    # ── Generate reflection question ──
+    reflection_question = None
+    if cards_info and interpretation:
+        first_card_name = cards_info[0].get("name_zh", "")
+        reflection_question = await generate_reflection_question(
+            req.question, first_card_name, interpretation,
+        )
+
     # ── Update user state ──
     if not user.is_member:
         user.free_readings_today += 1
@@ -428,6 +444,8 @@ async def create_reading(
         created_at=reading.created_at,
         drawn_cards=[DrawnCardResponse(**d) for d in drawn_resp],
         action_items=[ActionItem(**a) for a in action_items],
+        reflection_question=reflection_question,
+        depth=reading_depth,
     )
 
 
@@ -506,6 +524,14 @@ async def get_reading(
     drawn_resp = await _load_drawn_cards_response(db, reading.drawn_cards)
     action_items = parse_action_items(reading.interpretation)
 
+    # Generate reflection question for existing readings on retrieval
+    reflection_question = None
+    if drawn_resp and reading.interpretation:
+        first_card_name = drawn_resp[0].get("card_name", "")
+        reflection_question = await generate_reflection_question(
+            reading.question, first_card_name, reading.interpretation,
+        )
+
     return ReadingResponse(
         id=reading.id,
         spread_type=reading.spread_type,
@@ -518,6 +544,8 @@ async def get_reading(
         drawn_cards=[DrawnCardResponse(**d) for d in drawn_resp],
         action_items=[ActionItem(**a) for a in action_items],
         chat_messages=[ChatMessageResponse.model_validate(m) for m in reading.chat_messages],
+        reflection_question=reflection_question,
+        depth="standard",
     )
 
 
@@ -602,6 +630,15 @@ async def reinterpret_reading(
     await db.refresh(reading, ["drawn_cards"])
 
     drawn_resp = await _load_drawn_cards_response(db, reading.drawn_cards)
+
+    # Generate reflection question
+    reflection_question = None
+    if drawn_resp and interpretation:
+        first_card_name = drawn_resp[0].get("card_name", "")
+        reflection_question = await generate_reflection_question(
+            reading.question, first_card_name, interpretation,
+        )
+
     return ReadingResponse(
         id=reading.id,
         spread_type=reading.spread_type,
@@ -613,6 +650,8 @@ async def reinterpret_reading(
         created_at=reading.created_at,
         drawn_cards=[DrawnCardResponse(**d) for d in drawn_resp],
         action_items=[ActionItem(**a) for a in action_items],
+        reflection_question=reflection_question,
+        depth="standard",
     )
 
 

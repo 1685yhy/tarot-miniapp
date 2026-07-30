@@ -20,6 +20,7 @@ class CreateReadingRequest(BaseModel):
     theme: str | None = None  # love / career / finance / general
     persona: str | None = None  # gentle_star / wise_moon / frank_sun
     zodiac: str | None = None  # aries / taurus / gemini / cancer / leo / virgo / libra / scorpio / sagittarius / capricorn / aquarius / pisces
+    depth: str | None = "standard"  # NEW: "basic" | "standard" | "deep"
 
 
 # ── Response ─────────────────────────────────────────────────────────
@@ -64,6 +65,8 @@ class ReadingResponse(BaseModel):
     drawn_cards: list[DrawnCardResponse]
     action_items: list[ActionItem] = []
     chat_messages: list[ChatMessageResponse] = []
+    reflection_question: str | None = None  # NEW: AI-generated reflection question
+    depth: str | None = "standard"  # NEW: reading depth (basic / standard / deep)
 
     model_config = ConfigDict(from_attributes=True)
 

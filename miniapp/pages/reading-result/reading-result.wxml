@@ -198,6 +198,31 @@
       </view>
 
       <!-- ==========================================================
+           4.7 REFLECTION CARD — Guide user to diary journaling
+           ========================================================== -->
+      <view wx:if="{{reflectionQuestion}}" class="reflection-card">
+        <view class="reflection-card-glow"></view>
+        <text class="reflection-card-icon">📝</text>
+        <text class="reflection-card-label">将这份启示写进日记</text>
+        <text class="reflection-card-question">{{reflectionQuestion}}</text>
+        <button class="reflection-card-btn" bindtap="onGoDiaryFromReading">
+          <text>记录今日感悟 ✦</text>
+        </button>
+      </view>
+
+      <!-- ==========================================================
+           4.8 DEPTH UNLOCK CARD — Member-only deep reading upsell
+           ========================================================== -->
+      <view wx:if="{{!isMember && readingDepth !== 'deep'}}" class="depth-unlock-card">
+        <text class="depth-unlock-icon">🔮</text>
+        <text class="depth-unlock-title">想获得更深入的解读？</text>
+        <text class="depth-unlock-desc">会员解锁：情感分析 + 详细行动方案 + 牌阵关系图</text>
+        <button class="depth-unlock-btn" bindtap="onGoMembership">
+          <text>开通会员 · 解锁深度解读 ✦</text>
+        </button>
+      </view>
+
+      <!-- ==========================================================
            5. ACTION SUGGESTIONS — Actionable checklist cards
            ========================================================== -->
       <action-cards

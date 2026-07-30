@@ -99,6 +99,10 @@ Page({
     showTeaching: true,
     hasTeachingData: false,
     teachingCards: [],
+
+    // Task 4: Reflection question & reading depth
+    reflectionQuestion: '',
+    readingDepth: 'standard',
   },
 
   onLoad(options) {
@@ -164,6 +168,7 @@ Page({
       theme: (pending && pending.theme) || 'general',
       persona: (pending && pending.persona) || null,
       zodiac: (pending && pending.zodiac) || '',
+      depth: (pending && pending.depth) || 'standard',
     };
     try {
       const result = await request(`/readings/spread/${this._pendingSpread}`, {
@@ -405,7 +410,9 @@ Page({
       }
       const hasTeachingData = teachingCards.length > 0;
 
-      this.setData({ reading, personaDisplay, tldr, teachingCards, hasTeachingData, spreadTypeName, pageLoading: false, showUndo: true, showFullInterpretation: false });
+      const readingDepth = reading.depth || 'standard';
+      const reflectionQuestion = reading.reflection_question || '';
+      this.setData({ reading, personaDisplay, tldr, teachingCards, hasTeachingData, spreadTypeName, pageLoading: false, showUndo: true, showFullInterpretation: false, readingDepth, reflectionQuestion });
       // Trigger staggered card entrance animation after render
       this._animateCardReveal();
       // Play reveal sound when reading result appears
@@ -680,6 +687,19 @@ Page({
   /** Navigate to membership page */
   onGoMembership() {
     wx.navigateTo({ url: '/pages/membership/membership' });
+  },
+
+  /** Navigate to diary page with the first card as reflection prompt */
+  onGoDiaryFromReading() {
+    const app = getApp();
+    const cards = this.data.reading && this.data.reading.drawn_cards || [];
+    if (cards.length > 0) {
+      app.globalData.diaryCardHint = {
+        card_id: cards[0].card_id,
+        card_name: cards[0].card_name || cards[0].name_zh || '',
+      };
+    }
+    wx.navigateTo({ url: '/pages/diary/diary' });
   },
 
   /* ---------------------------------------------------------------
