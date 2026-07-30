@@ -59,7 +59,6 @@ Page({
 
     // If navigated from profile with favorites filter
     if (app.globalData && app.globalData.showCardFavorites) {
-    if (app.globalData && app.globalData.showCardFavorites) {
       app.globalData.showCardFavorites = false;
       this.setData({ activeTab: 'favorites' });
       this.filterCards('favorites', this.data.searchKeyword);
