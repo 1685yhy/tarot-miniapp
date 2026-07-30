@@ -15,8 +15,8 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: var(--spacing-4xl) var(--spacing-md) var(--spacing-3xl);
-  min-height: 420rpx;
+  padding: 60rpx var(--spacing-md) 40rpx;
+  min-height: auto;
   overflow: hidden;
   z-index: var(--z-base);
 }
