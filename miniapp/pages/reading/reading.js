@@ -99,6 +99,7 @@ Page({
     theme: '',
     themeHint: '',
     showQuestionInput: false,
+    showPersonaFirst: false,   // persona picker before question input
     ritualStage: null,   // null = not in ritual, 0 = meditation, 1 = shuffle
     ritualEnabled: false,
     isDrawing: false,
@@ -345,7 +346,7 @@ Page({
       : '';
     const displayThemes = buildDisplayThemes(defaultTheme);
 
-    // Skip ritual by default — show question input directly
+    // Persona-first flow: show persona picker before question input
     this.setData({
       selectedSpread: spread,
       spreadDefaultTheme: defaultTheme,
@@ -354,7 +355,8 @@ Page({
       themeHint: themeHint,
       displayThemes: displayThemes,
       selectedPersona: DEFAULT_PERSONA,
-      showQuestionInput: true,
+      showQuestionInput: false,
+      showPersonaFirst: true,
     });
   },
 
@@ -431,12 +433,18 @@ Page({
     this.setData({ showPersonaIntro: false, introPersona: null });
   },
 
+  /** Proceed from persona-first screen to question input */
+  onProceedFromPersona() {
+    this.setData({ showPersonaFirst: false, showQuestionInput: true });
+  },
+
   onBackToSpreads() {
     this._clearTimers();
     this.setData({
       selectedSpread: null,
       spreadDefaultTheme: null,
       showQuestionInput: false,
+      showPersonaFirst: false,
       ritualStage: null,
       ritualEnabled: false,
       question: '',
@@ -461,6 +469,7 @@ Page({
         selectedSpread: null,
         spreadDefaultTheme: null,
         showQuestionInput: false,
+        showPersonaFirst: false,
         ritualStage: null,
         ritualEnabled: false,
         theme: '',

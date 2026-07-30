@@ -49,7 +49,7 @@
         <text class="wait-hint">可能网络不稳定，是否继续等待？</text>
         <view class="wait-btns">
           <button class="btn-wait-yes" bindtap="onContinueWaiting">继续等待</button>
-          <text class="btn-wait-no" bindtap="onCheckLater">稍后查看</text>
+          <text class="btn-wait-no" bindtap="onCheckLater" role="button" aria-label="稍后查看">稍后查看</text>
         </view>
       </view>
     </view>
@@ -82,7 +82,7 @@
 
         <!-- Three overlapping cards with images -->
         <view class="card-row">
-          <view class="card-item {{enlargedCardIndex >= 0 && enlargedCardIndex !== index ? 'dimmed' : ''}} {{enlargedCardIndex === index ? 'card-active' : ''}}" wx:for="{{reading.drawn_cards}}" wx:for-item="card" wx:key="id" animation="{{cardAnimData[index]}}" data-index="{{index}}" bindtap="onCardTap">
+          <view class="card-item {{enlargedCardIndex >= 0 && enlargedCardIndex !== index ? 'dimmed' : ''}} {{enlargedCardIndex === index ? 'card-active' : ''}}" wx:for="{{reading.drawn_cards}}" wx:for-item="card" wx:key="id" animation="{{cardAnimData[index]}}" data-index="{{index}}" bindtap="onCardTap" role="button" aria-label="点击放大查看卡牌 {{card.card_name}}">
             <tarot-card
               nameZh="{{card.card_name}}"
               positionName="{{card.position_name}}"
@@ -109,26 +109,7 @@
       </view>
 
       <!-- ==========================================================
-           3. TL;DR — 三行结论卡片（默认展开，折叠详细解读）
-           ========================================================== -->
-      <view wx:if="{{tldr && tldr.length >= 1 && !showFullInterpretation}}">
-        <view class="tldr-card">
-          <view class="tldr-item" wx:for="{{tldr}}" wx:key="index">
-            <view class="tldr-dot"></view>
-            <text class="tldr-text">{{item}}</text>
-          </view>
-          <view class="tldr-expand" bindtap="onToggleFull">
-            <text>展开详细解读 ↓</text>
-          </view>
-        </view>
-        <!-- Divider between TL;DR and letter -->
-        <view class="divider">
-          <view class="divider-line"></view>
-        </view>
-      </view>
-
-      <!-- ==========================================================
-           3.5 PERSONA BADGE — Who is interpreting
+           3. PERSONA BADGE — Who is interpreting (prominent)
            ========================================================== -->
       <view class="persona-badge" wx:if="{{personaDisplay}}">
         <text class="pb-icon">{{personaDisplay.icon}}</text>
@@ -140,24 +121,34 @@
       </view>
 
       <!-- ==========================================================
-           4. LETTER — The interpretation as personal prose
+           4. LETTER — The interpretation as personal prose (always expanded)
            ========================================================== -->
       <view class="letter-section">
-        <view class="letter-body {{showFullInterpretation ? 'expanded' : 'collapsed'}}">
+        <view class="letter-body">
           <text class="letter-text">{{reading.interpretation}}</text>
-        </view>
-        <view class="letter-toggle" wx:if="{{reading.interpretation && reading.interpretation.length > 300}}">
-          <text class="toggle-btn" bindtap="onToggleFull">
-            {{showFullInterpretation ? '收起' : '展开全部'}}
-          </text>
         </view>
       </view>
 
       <!-- ==========================================================
-           4.5 TEACHING — 牌面深度解析 (collapsible)
+           5. ACTION SUGGESTIONS — Actionable checklist cards
+           ========================================================== -->
+      <action-cards
+        wx:if="{{reading.action_items && reading.action_items.length > 0}}"
+        items="{{reading.action_items}}"
+        readingId="{{reading.id}}"
+        bind:allchecked="onAllActionsChecked"
+      />
+
+      <!-- ===== Step 3 guidance hint ===== -->
+      <view class="onboarding-hint {{showOnboarding && onboardingStep === 3 ? 'hint-visible' : ''}}">
+        <text class="hint-text">✓ 勾选完成行动建议，星光会记住你的进步</text>
+      </view>
+
+      <!-- ==========================================================
+           6. TEACHING — Card depth analysis (collapsible)
            ========================================================== -->
       <view class="teaching-section" wx:if="{{hasTeachingData}}">
-        <view class="teaching-toggle" bindtap="onToggleTeaching">
+        <view class="teaching-toggle" bindtap="onToggleTeaching" role="button" aria-label="切换牌面深度解析">
           <text class="teaching-toggle-icon">🔮</text>
           <text class="teaching-toggle-text">牌面深度解析</text>
           <text class="teaching-toggle-arrow">{{showTeaching ? '收起 ▲' : '展开 ▼'}}</text>
@@ -183,22 +174,7 @@
       </view>
 
       <!-- ==========================================================
-           4.6 SHARE CTA — Invite user to share for rewards
-           ========================================================== -->
-      <view class="share-cta-wrap {{showShareCTA ? '' : 'dismissed'}}" wx:if="{{showShareCTA && !isMember}}">
-        <view class="share-cta-card">
-          <view class="share-cta-close" bindtap="onDismissShareCTA" aria-label="关闭">
-            <text>✕</text>
-          </view>
-          <text class="share-cta-icon">✦</text>
-          <text class="share-cta-title">喜欢这次解读？</text>
-          <text class="share-cta-desc">分享给朋友，你们各得 3 次免费追问 ✦</text>
-          <button class="share-cta-btn" open-type="share" bindtap="onShareCTA">分享给好友</button>
-        </view>
-      </view>
-
-      <!-- ==========================================================
-           4.7 REFLECTION CARD — Guide user to diary journaling
+           7. REFLECTION CARD — Guide user to diary journaling
            ========================================================== -->
       <view wx:if="{{reflectionQuestion}}" class="reflection-card">
         <view class="reflection-card-glow"></view>
@@ -211,63 +187,12 @@
       </view>
 
       <!-- ==========================================================
-           4.8 DEPTH UNLOCK CARD — Member-only deep reading upsell
+           8. BOTTOM BAR — Share + Diary + Back in a row
            ========================================================== -->
-      <view wx:if="{{!isMember && readingDepth !== 'deep'}}" class="depth-unlock-card">
-        <text class="depth-unlock-icon">🔮</text>
-        <text class="depth-unlock-title">想获得更深入的解读？</text>
-        <text class="depth-unlock-desc">会员解锁：情感分析 + 详细行动方案 + 牌阵关系图</text>
-        <button class="depth-unlock-btn" bindtap="onGoMembership">
-          <text>开通会员 · 解锁深度解读 ✦</text>
-        </button>
-      </view>
-
-      <!-- ==========================================================
-           5. ACTION SUGGESTIONS — Actionable checklist cards
-           ========================================================== -->
-      <action-cards
-        wx:if="{{reading.action_items && reading.action_items.length > 0}}"
-        items="{{reading.action_items}}"
-        readingId="{{reading.id}}"
-        bind:allchecked="onAllActionsChecked"
-      />
-
-      <!-- ===== Step 3 引导提示 ===== -->
-      <view class="onboarding-hint {{showOnboarding && onboardingStep === 3 ? 'hint-visible' : ''}}">
-        <text class="hint-text">✓ 勾选完成行动建议，星光会记住你的进步</text>
-      </view>
-
-      <!-- ==========================================================
-           6. ACTIONS — Warm, minimal, intentional
-           ========================================================== -->
-      <view class="actions-section">
-        <button class="btn-ask" bindtap="onAskMore">追问更多</button>
-        <button class="btn-share" bindtap="onOpenSharePoster">分享海报</button>
-        <button class="btn-redo" bindtap="onNewReading">再来一次</button>
-        <text class="btn-back" bindtap="onBackHome">回到首页</text>
-
-        <!-- Save reading — small lavender link -->
-        <view class="save-reading-wrap">
-          <text class="btn-save" wx:if="{{!isSaved}}" bindtap="onSaveReading">✦ 收藏本次解读</text>
-          <text class="btn-saved" wx:else bindtap="onUnsaveReading">✦ 已收藏</text>
-        </view>
-      </view>
-
-      <!-- 非会员：解读结束后的柔和引导 -->
-      <view class="unlock-cta" wx:if="{{!isMember}}">
-        <view class="unlock-divider">
-          <text class="unlock-divider-line"></text>
-          <text class="unlock-divider-star">✦</text>
-          <text class="unlock-divider-line"></text>
-        </view>
-        <text class="unlock-title">喜欢这次解读吗？</text>
-        <text class="unlock-desc">开通会员，解锁全部 10 种牌阵 · AI 无限追问</text>
-        <button class="unlock-btn" bindtap="onGoMembership">解锁无限星光</button>
-      </view>
-
-      <!-- Undo bar — allow user to retract and re-draw -->
-      <view class="undo-bar" wx:if="{{showUndo && !pageLoading}}" bindtap="onUndoReading">
-        <text class="undo-text">↩ 重新抽牌</text>
+      <view class="bottom-bar">
+        <button class="bottom-bar-btn" bindtap="onOpenSharePoster">分享海报</button>
+        <button class="bottom-bar-btn" bindtap="onGoDiaryFromReading">写日记</button>
+        <button class="bottom-bar-btn" bindtap="onBackHome">回到首页</button>
       </view>
 
       <!-- ===== AI Disclaimer ===== -->
@@ -286,11 +211,12 @@
     bindtouchstart="onOverlayTouchStart"
     bindtouchmove="onOverlayTouchMove"
     bindtouchend="onOverlayTouchEnd"
-    catchtap="onOverlayTap">
+    catchtap="onOverlayTap"
+    role="button" aria-label="关闭放大视图">
 
     <!-- Enlarged card container -->
     <view class="enlarged-card-wrap {{isAnimatingExit ? 'exit' : 'enter'}}">
-      <view class="enlarged-card {{flipState}}" catchtap="onEnlargedCardTap">
+      <view class="enlarged-card {{flipState}}" catchtap="onEnlargedCardTap" role="button" aria-label="翻转查看卡牌详情">
 
         <!-- Front: card image -->
         <view class="enlarged-front" wx:if="{{!isFlipped}}">
