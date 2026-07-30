@@ -349,7 +349,7 @@ Page({
       : '';
     const displayThemes = buildDisplayThemes(defaultTheme);
 
-    // Persona-first flow: show persona picker before question input
+    // Go directly to question input (persona auto-matched by backend)
     this.setData({
       selectedSpread: spread,
       spreadDefaultTheme: defaultTheme,
@@ -358,8 +358,8 @@ Page({
       themeHint: themeHint,
       displayThemes: displayThemes,
       selectedPersona: DEFAULT_PERSONA,
-      showQuestionInput: false,
-      showPersonaFirst: true,
+      showQuestionInput: true,
+      showPersonaFirst: false,
     });
   },
 

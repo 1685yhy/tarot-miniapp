@@ -109,19 +109,7 @@
       </view>
 
       <!-- ==========================================================
-           3. PERSONA BADGE — Who is interpreting (prominent)
-           ========================================================== -->
-      <view class="persona-badge" wx:if="{{personaDisplay}}">
-        <text class="pb-icon">{{personaDisplay.icon}}</text>
-        <view class="pb-info">
-          <text class="pb-label">本次解读</text>
-          <text class="pb-name">{{personaDisplay.name}}</text>
-          <text class="pb-desc" wx:if="{{personaDisplay.desc}}">{{personaDisplay.desc}}</text>
-        </view>
-      </view>
-
-      <!-- ==========================================================
-           4. LETTER — The interpretation as personal prose (always expanded)
+           3. LETTER — The interpretation as personal prose (always expanded)
            ========================================================== -->
       <view class="letter-section">
         <view class="letter-body">

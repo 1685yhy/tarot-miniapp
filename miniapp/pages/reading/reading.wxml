@@ -46,7 +46,7 @@
   <!-- ===== 主内容 ===== -->
   <view wx:else>
     <!-- ========== Spread selection ========== -->
-    <view wx:if="{{ritualStage === null && !showQuestionInput && !showPersonaFirst}}">
+    <view wx:if="{{ritualStage === null && !showQuestionInput}}">
       <text class="heading-2 section-title-center anim-fade-up anim-stagger-1">选择牌阵</text>
       <text class="text-secondary text-center mb-xxl anim-fade-up anim-stagger-1">不同问题，用不同牌阵</text>
 
@@ -113,37 +113,6 @@
               <text class="premium-overlay-sub">开通即可使用</text>
             </view>
           </view>
-        </view>
-      </view>
-    </view>
-
-    <!-- ========== Persona selection (first) ========== -->
-    <view wx:elif="{{showPersonaFirst}}">
-      <view class="persona-first-section anim-fade-up anim-stagger-1">
-        <view class="selected-info">
-          <text class="selected-spread-icon">{{selectedSpread.icon}}</text>
-          <text class="heading-2 mt-sm">{{selectedSpread.name}}</text>
-          <text class="text-dim mt-xs">{{selectedSpread.desc}}</text>
-        </view>
-        <view class="divider-persona">
-          <view class="divider-persona-line"></view>
-        </view>
-        <text class="persona-first-label">选择你的解读师</text>
-        <text class="persona-first-sub">不同解读师给你不一样的洞见</text>
-        <view class="persona-options">
-          <view wx:for="{{personas}}" wx:key="key"
-            class="persona-card {{selectedPersona === item.key ? 'persona-active' : ''}}"
-            bindtap="onPersonaTap" data-persona="{{item.key}}">
-            <text class="persona-icon">{{item.icon}}</text>
-            <view class="persona-text-wrap">
-              <text class="persona-name">{{item.name}}</text>
-              <text class="persona-label">{{item.label}}</text>
-            </view>
-          </view>
-        </view>
-        <view class="persona-first-actions">
-          <button class="btn-primary btn--full" bindtap="onProceedFromPersona">继续</button>
-          <text class="btn-text btn-back-spreads" bindtap="onBackToSpreads">← 重新选择牌阵</text>
         </view>
       </view>
     </view>

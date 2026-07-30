@@ -30,15 +30,6 @@
     <text wx:if="{{readingContext.question}}" class="ctx-question">{{readingContext.question}}</text>
   </view>
 
-  <!-- ===== Persona identity bar — prominent ===== -->
-  <view wx:if="{{readingContext && personaName && !pageLoading && !pageError}}" class="persona-bar" role="region" aria-label="解读者信息">
-    <text class="persona-bar-icon">{{personaIcon}}</text>
-    <view class="persona-bar-info">
-      <text class="persona-bar-name">{{personaName}}</text>
-      <text class="persona-bar-desc">你的专属解读者 · 正在倾听</text>
-    </view>
-  </view>
-
   <!-- ===== Empty state — warm invitation ===== -->
   <view wx:elif="{{messages.length === 0 && !pageLoading && !pageError}}" class="empty-wrap">
     <view class="empty-inner">
