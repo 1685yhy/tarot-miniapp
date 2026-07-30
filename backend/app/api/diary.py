@@ -2,6 +2,7 @@ import random
 import logging
 from datetime import date, timedelta
 from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel as PydanticBaseModel
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from openai import AsyncOpenAI
@@ -87,12 +88,21 @@ async def create_entry(
         )
 
     # ── Create new entry ──
-    card_result = await db.execute(
-        select(TarotCard).order_by(func.random()).limit(1)
-    )
-    card = card_result.scalar_one_or_none()
-    if card is None:
-        raise HTTPException(status_code=500, detail="卡牌数据为空")
+    # Use client-provided card_id or fallback to random
+    if body.card_id is not None:
+        card_result = await db.execute(
+            select(TarotCard).where(TarotCard.id == body.card_id)
+        )
+        card = card_result.scalar_one_or_none()
+        if card is None:
+            raise HTTPException(status_code=404, detail="卡牌不存在")
+    else:
+        card_result = await db.execute(
+            select(TarotCard).order_by(func.random()).limit(1)
+        )
+        card = card_result.scalar_one_or_none()
+        if card is None:
+            raise HTTPException(status_code=500, detail="卡牌数据为空")
 
     entry = DiaryEntry(
         user_id=user.id,
@@ -338,3 +348,77 @@ async def weekly_review(
         next_week_guidance=next_week_guidance,
         emotional_trend_summary=emotional_trend_summary,
     )
+
+
+class ReflectionPromptRequest(PydanticBaseModel):
+    card_id: int
+    card_name: str
+
+
+@router.post("/reflection-prompt")
+async def get_reflection_prompt(
+    body: ReflectionPromptRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Generate a personalized reflection question based on today's card.
+    Uses the card teaching database + AI to create a unique, thought-provoking prompt.
+    """
+    # ── Fetch card teaching data ──
+    from app.models.card_teaching import CardTeaching
+
+    result = await db.execute(
+        select(CardTeaching).where(CardTeaching.card_id == body.card_id)
+    )
+    teaching = result.scalar_one_or_none()
+
+    teaching_context = ""
+    if teaching:
+        teaching_context = (
+            f"卡牌符号: {teaching.symbols or '无'}\n"
+            f"生活关联: {teaching.life_connection or '无'}\n"
+            f"反思提示: {getattr(teaching, 'reflection_prompt', '无')}"
+        )
+
+    # ── Call AI to generate reflection question ──
+    client = _get_ai_client()
+    if not client:
+        # Fallback without AI
+        return {"question": f"今天的「{body.card_name}」给你带来了什么感受？它在哪些方面触动了你？"}
+
+    try:
+        response = await client.chat.completions.create(
+            model=settings.DEEPSEEK_MODEL,
+            max_tokens=200,
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "你是星光映照的塔罗日记引导师。用户今天抽到了一张塔罗牌，"
+                        "你需要生成一个引人深思的反思问题，帮助用户将卡牌的智慧融入当天生活。\n\n"
+                        "要求:\n"
+                        "1. 问题要具体、个人化，不要泛泛的「今天感觉怎么样」\n"
+                        "2. 关联卡牌的符号和寓意，但用日常语言表达\n"
+                        "3. 问题应该让用户想立刻开始写\n"
+                        "4. 温暖而有深度，像朋友的关心\n"
+                        "5. 50字以内\n"
+                        "6. 只返回问题本身，不要任何前缀或解释"
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": (
+                        f"卡牌: {body.card_name}\n"
+                        f"{teaching_context}\n"
+                        f"请为这位用户生成一个今天的反思问题。"
+                    ),
+                },
+            ],
+            timeout=30.0,
+        )
+        question = response.choices[0].message.content.strip()
+        return {"question": question}
+    except Exception as exc:
+        logger.warning("Failed to generate reflection prompt: %s", exc)
+        return {"question": f"今天的「{body.card_name}」想告诉你什么？花几分钟写下你的感受吧。"}

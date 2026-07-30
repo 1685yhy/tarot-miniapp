@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict
 class DiaryCreate(BaseModel):
     mood: str | None = None
     reflection: str | None = None
+    card_id: int | None = None  # NEW: allow frontend to specify associated card
 
 
 class DiaryCardBrief(BaseModel):
