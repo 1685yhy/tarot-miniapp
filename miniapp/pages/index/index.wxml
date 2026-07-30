@@ -37,16 +37,11 @@
   <view class="nebula nebula-lavender"></view>
   <view class="nebula nebula-gold"></view>
 
-  <!-- Shooting star (rare easter egg) -->
-  <view class="shooting-star {{shootingStarActive ? 'shooting-star--active' : ''}}"></view>
 
   <!-- Hero -->
   <view class="hero anim-fade-in-up-1">
-    <!-- Concentric glow rings -->
-    <view class="hero-glow-rings"></view>
     <text class="title-1" style="text-align:center;display:block">星光映照</text>
     <text class="body-text" style="text-align:center;display:block;margin-top:12rpx">每日一牌，遇见自己</text>
-    <text class="tagline-sub">塔罗是镜子，不是预言。AI是你的陪伴，不是答案。</text>
 
     <!-- v2.1: Time-of-day greeting -->
     <text wx:if="{{greetingText}}" class="greeting-text anim-greeting-fade" key="{{greetingAnimKey}}">{{greetingText}}</text>
@@ -56,62 +51,6 @@
     <view wx:elif="{{showReminder && !dailyCard}}" class="daily-reminder-badge anim-gentle-pulse">今日运势待开启</view>
   </view>
 
-  <!-- ===== 试用到期提醒横幅 ===== -->
-  <view wx:if="{{showTrialExpiryBanner}}" class="trial-expiry-banner anim-fade-in-up-2" bindtap="onGoMembership">
-    <text class="trial-expiry-icon">✦</text>
-    <text class="trial-expiry-text">试用期即将到期 · 开通会员保留你的解读记录 ✦</text>
-    <text class="trial-expiry-arrow">→</text>
-  </view>
-
-  <!-- ===== 3-Step Onboarding Overlay (v2.1) — simplified, all steps visible at once ===== -->
-  <view class="onboarding-overlay {{showOnboarding ? 'onboarding-overlay--visible' : ''}}">
-    <view class="onboarding-card">
-
-      <!-- All 3 info steps shown together -->
-      <view class="onboarding-all-steps">
-        <view class="onboarding-step-mini">
-          <view class="onboarding-emoji-wrap"><text class="onboarding-emoji">✨</text></view>
-          <view class="onboarding-step-mini-text">
-            <text class="onboarding-step-mini-title">每日一牌</text>
-            <text class="onboarding-step-mini-desc">轻触卡片，获得今日专属指引</text>
-          </view>
-        </view>
-        <view class="onboarding-step-mini">
-          <view class="onboarding-emoji-wrap"><text class="onboarding-emoji">🔮</text></view>
-          <view class="onboarding-step-mini-text">
-            <text class="onboarding-step-mini-title">牌阵解读</text>
-            <text class="onboarding-step-mini-desc">选择牌阵，AI为您深度解读</text>
-          </view>
-        </view>
-        <view class="onboarding-step-mini">
-          <view class="onboarding-emoji-wrap"><text class="onboarding-emoji">🌟</text></view>
-          <view class="onboarding-step-mini-text">
-            <text class="onboarding-step-mini-title">选择你的星座</text>
-            <text class="onboarding-step-mini-desc">选填 — 让每日运势更贴合你的星象</text>
-          </view>
-        </view>
-      </view>
-
-      <!-- Zodiac grid -->
-      <view class="zodiac-grid">
-        <view
-          class="zodiac-item"
-          wx:for="{{zodiacList}}"
-          wx:key="key"
-          wx:for-item="z"
-          bindtap="onSelectZodiac"
-          data-sign="{{z.name}}"
-        >
-          <text class="zodiac-item-emoji">{{z.emoji}}</text>
-          <text class="zodiac-item-name">{{z.name}}</text>
-        </view>
-      </view>
-
-      <view class="zodiac-skip" bindtap="onSkipZodiac">
-        <text class="zodiac-skip-text">跳过，开始使用</text>
-      </view>
-    </view>
-  </view>
 
   <!-- 每日一牌 — 教学入口 (v2.0) -->
   <view class="anim-fade-in-up-2" style="margin:24rpx 0">
@@ -119,10 +58,6 @@
     <!-- BEFORE DRAW — card awaiting tap with shimmer, sparkles, float -->
     <view class="daily-card-wrap {{!hasDrawnToday && !dailyCard ? 'card-ready' : ''}}" wx:if="{{!dailyCard && !dailyCardRestoring}}" bindtap="drawDailyCard" animation="{{cardAnimData}}" role="button">
       <view class="card card-warm card-float">
-        <!-- Shimmer sweep — light glint across surface -->
-        <view class="card-shimmer"></view>
-        <!-- Orbiting sparkle dots -->
-        <view class="card-sparkles"></view>
         <!-- Ripple effect container (triggers via rippleActive state) -->
         <view class="ripple-box">
           <view class="ripple-circle {{rippleActive?'ripple-run':''}}"></view>
@@ -146,7 +81,7 @@
     </view>
 
     <!-- AFTER DRAW — teaching entry card -->
-    <view class="daily-card-wrap daily-card-teaching {{dailyCardFlipped ? 'daily-card--flipped' : ''}}" wx:else bindtap="onDailyCardTap" data-today-flipped="{{dailyCardFlipped}}">
+    <view class="daily-card-wrap daily-card-teaching {{dailyCardFlipped ? 'daily-card--flipped' : ''}}" wx:else bindtap="onDailyCardTap" data-today-flipped="{{dailyCardFlipped}}" role="button" aria-label="查看今日卡牌详解">
       <view class="card card--teaching card-rise">
         <!-- Breathing glow overlay (only when not flipped) -->
         <view wx:if="{{!dailyCardFlipped}}" class="daily-card-glow-overlay"></view>
@@ -188,22 +123,20 @@
           <text class="streak-count">连续 {{streak}} 天</text>
         </view>
 
-        <!-- Collection progress ring -->
-        <view class="collect-progress-wrap" wx:if="{{collectedCount > 0}}">
-          <view class="collect-progress-ring">
-            <view class="ring-bg"></view>
-            <view class="ring-fill" style="--progress: {{collectedCount / 22}}"></view>
-            <text class="ring-text">{{collectedCount}}/22</text>
-          </view>
-          <text class="ring-label">大牌收集</text>
-        </view>
       </view>
     </view>
 
   </view>
 
+  <!-- 9.9新人专享CTA（在每日一牌流程之后展示） -->
+  <view class="hero-cta anim-fade-in-up-3" bindtap="onStartFirstReading" wx:if="{{!isMember && freeReadingsUsed === 0}}" role="button" aria-label="9.9元首次AI深度解读">
+    <view class="hero-cta-glow"></view>
+    <text class="hero-cta-title">9.9元 · 首次AI深度解读</text>
+    <text class="hero-cta-sub">新人专享 · 三牌占卜 · 行动建议</text>
+  </view>
+
   <!-- 星光树洞入口 -->
-  <view class="anim-fade-in-up-2" style="margin-top:30rpx" bindtap="onGoCommunity">
+  <view class="anim-fade-in-up-2" style="margin-top:30rpx" bindtap="onGoCommunity" role="button" aria-label="进入星光树洞">
     <view class="card card-press community-entry-card">
       <view class="diary-entry-left">
         <view class="community-entry-icon">
@@ -220,7 +153,7 @@
   </view>
 
   <!-- 未完成解读恢复入口 -->
-  <view wx:if="{{pendingReading}}" class="anim-fade-in-up-2" style="margin-top:30rpx" bindtap="onContinueReading">
+  <view wx:if="{{pendingReading}}" class="anim-fade-in-up-2" style="margin-top:30rpx" bindtap="onContinueReading" role="button" aria-label="继续上次未完成的解读">
     <view class="card card-press pending-reading-card">
       <view class="pending-reading-left">
         <view class="pending-reading-icon-wrap">
@@ -236,7 +169,7 @@
   </view>
 
   <!-- 今日记录入口 -->
-  <view class="anim-fade-in-up-2" style="margin-top:30rpx" bindtap="onGoDiary">
+  <view class="anim-fade-in-up-2" style="margin-top:30rpx" bindtap="onGoDiary" role="button" aria-label="记录今天">
     <view class="card card-press diary-entry-card">
       <view class="diary-entry-left">
         <image class="diary-entry-icon" src="/images/icons/diary_64.png" mode="aspectFit" lazy-load aria-label="记录今天" />
@@ -249,66 +182,18 @@
     </view>
   </view>
 
-  <!-- 年度报告入口（带季节性横幅） -->
-  <view class="anim-fade-in-up-2" style="margin-top:30rpx" bindtap="{{isMember ? 'onGoAnnualReport' : 'onGoMembership'}}" role="button">
-    <!-- Seasonal banner (Dec-Jan only) -->
-    <view wx:if="{{isAnnualReportSeason}}" class="annual-report-season-banner">
-      <view class="season-banner-glow"></view>
-      <view class="season-banner-stars">
-        <view wx:for="{{[1,2,3]}}" wx:key="*this" class="season-banner-star" style="--i: {{item}}"></view>
-      </view>
-      <text class="season-banner-label">{{annualReportYear}} 年度报告已上线</text>
-      <text class="season-banner-cta">{{isMember ? '查看你的星光旅程 ✦' : '开通会员查看 ✦'}}</text>
-    </view>
-    <!-- Default card (non-Dec/Jan) -->
-    <view wx:else class="card card-press annual-report-card {{isMember ? '' : 'annual-report-card--locked'}}">
-      <view class="annual-report-left">
-        <image class="annual-report-icon" src="/images/icons/report_64.png" mode="aspectFit" lazy-load aria-label="年度运势报告" />
-        <view>
-          <text class="body-sm annual-report-label">年度运势报告</text>
-          <text class="body-xs annual-report-hint">{{isMember ? '查看你的星 year ahead ✦' : '开通会员解锁 ✦'}}</text>
-        </view>
-      </view>
-    </view>
-  </view>
 
-  <!-- 免费次数提示（进度条） — 点击跳转会员页 -->
-  <view class="free-quota-bar anim-fade-in-up-3" wx:if="{{!isMember}}" bindtap="onGoMembership" role="button">
-    <view class="quota-progress-wrap">
-      <view class="quota-progress" style="width: {{(freeReadingsTotal - freeReadingsUsed) / freeReadingsTotal * 100}}%"></view>
-    </view>
+  <!-- 免费次数提示（纯文字，无进度条） — 点击跳转会员页 -->
+  <view class="free-quota-bar anim-fade-in-up-3" wx:if="{{!isMember}}" bindtap="onGoMembership" role="button" aria-label="查看免费解读次数，升级会员">
     <text class="quota-text" wx:if="{{freeReadingsUsed < freeReadingsTotal}}">今日免费解读 {{freeReadingsUsed}}/{{freeReadingsTotal}} · 明日0点重置</text>
-    <view class="quota-cta" wx:elif="{{freeReadingsUsed >= freeReadingsTotal}}">
-      <text class="quota-text quota-text--exhausted">今日免费 {{freeReadingsTotal}}/{{freeReadingsTotal}} 次已用完</text>
-      <text class="quota-cta-btn">升级会员无限解读 →</text>
-    </view>
+    <text class="quota-text quota-text--exhausted" wx:elif="{{freeReadingsUsed >= freeReadingsTotal}}">今日免费次数已用完 · 升级会员无限解读</text>
   </view>
 
-  <!-- 会员引导卡片 — 仅在触发条件满足时展示 -->
-  <view class="membership-prompt {{showMembershipPrompt ? 'membership-prompt--visible' : ''}}"
-    wx:if="{{showMembershipPrompt && !isMember}}">
-    <view class="mp-card">
-      <view class="mp-stars">
-        <view class="mp-star mp-star-1"></view>
-        <view class="mp-star mp-star-2"></view>
-        <view class="mp-star mp-star-3"></view>
-      </view>
-      <text class="mp-icon">✨</text>
-      <text class="mp-title">{{membershipPromptReason === 'quota_exhausted' ? '今日星光已用完' : '今日星光即将用完'}}</text>
-      <text class="mp-desc">开通会员 · 无限解读 · 每日低至 ¥0.46</text>
-      <button class="mp-btn" bindtap="onGoMembership">
-        <text>解锁无限星光 ✦</text>
-      </button>
-      <text class="mp-dismiss" bindtap="onDismissMembership">暂不需要</text>
-    </view>
+  <!-- 会员引导 — 简约文字CTA -->
+  <view class="membership-cta-text" wx:if="{{showMembershipPrompt && !isMember}}">
+    <text class="quota-text" bindtap="onGoMembership" role="button" aria-label="升级会员无限解读">升级会员 · 无限解读 ✦</text>
   </view>
 
-  <!-- 9.9新人专享CTA -->
-  <view class="hero-cta anim-fade-in-up-3" bindtap="onStartFirstReading" wx:if="{{!isMember && freeReadingsUsed === 0}}">
-    <view class="hero-cta-glow"></view>
-    <text class="hero-cta-title">9.9元 · 首次AI深度解读</text>
-    <text class="hero-cta-sub">新人专享 · 三牌占卜 · 行动建议</text>
-  </view>
 
   <!-- 牌阵 -->
   <view class="section anim-fade-in-up-3">
@@ -341,7 +226,7 @@
         <view class="spread-theme-chip spread-theme-chip--career">事业</view>
       </view>
     </view>
-    <view class="card card-press more-spreads" bindtap="goToAllSpreads" animation="{{spreadAnimData[4]}}">
+    <view class="card card-press more-spreads" bindtap="goToAllSpreads" animation="{{spreadAnimData[4]}}" role="button" aria-label="查看更多牌阵">
       <text class="more-text anim-gentle-pulse">查看更多 · 共10种牌阵</text>
       <text class="more-arrow">→</text>
     </view>
@@ -358,14 +243,61 @@
       <text class="unlock-spreads-arrow">→</text>
     </view>
 
-    <!-- 塔罗简介 -->
-    <view class="tarot-explainer-wrap">
-      <text class="tarot-explainer-link" bindtap="showTarotExplainer">什么是塔罗？</text>
-    </view>
-
     <!-- DEV: 自动化测试入口 -->
-    <view class="dev-test-entry" bindtap="onGoTestRunner">
+    <view class="dev-test-entry" bindtap="onGoTestRunner" role="button" aria-label="页面测试">
       <text class="dev-test-text">🔍 页面测试</text>
+    </view>
+  </view>
+
+  <!-- ===== 3-Step Onboarding Overlay (v2.1) — simplified, all steps visible at once ===== -->
+  <view class="onboarding-overlay {{showOnboarding ? 'onboarding-overlay--visible' : ''}}">
+    <view class="onboarding-card">
+
+      <!-- All 3 info steps shown together -->
+      <view class="onboarding-all-steps">
+        <view class="onboarding-step-mini">
+          <view class="onboarding-emoji-wrap"><text class="onboarding-emoji">✨</text></view>
+          <view class="onboarding-step-mini-text">
+            <text class="onboarding-step-mini-title">每日一牌</text>
+            <text class="onboarding-step-mini-desc">轻触卡片，获得今日专属指引</text>
+          </view>
+        </view>
+        <view class="onboarding-step-mini">
+          <view class="onboarding-emoji-wrap"><text class="onboarding-emoji">🔮</text></view>
+          <view class="onboarding-step-mini-text">
+            <text class="onboarding-step-mini-title">牌阵解读</text>
+            <text class="onboarding-step-mini-desc">选择牌阵，AI为您深度解读</text>
+          </view>
+        </view>
+        <view class="onboarding-step-mini">
+          <view class="onboarding-emoji-wrap"><text class="onboarding-emoji">🌟</text></view>
+          <view class="onboarding-step-mini-text">
+            <text class="onboarding-step-mini-title">选择你的星座</text>
+            <text class="onboarding-step-mini-desc">选填 — 让每日运势更贴合你的星象</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- Zodiac grid -->
+      <view class="zodiac-grid">
+        <view
+          class="zodiac-item"
+          wx:for="{{zodiacList}}"
+          wx:key="key"
+          wx:for-item="z"
+          bindtap="onSelectZodiac"
+          data-sign="{{z.name}}"
+          role="button"
+          aria-label="选择星座 {{z.name}}"
+        >
+          <text class="zodiac-item-emoji">{{z.emoji}}</text>
+          <text class="zodiac-item-name">{{z.name}}</text>
+        </view>
+      </view>
+
+      <view class="zodiac-skip" bindtap="onSkipZodiac" role="button" aria-label="跳过星座选择">
+        <text class="zodiac-skip-text">跳过，开始使用</text>
+      </view>
     </view>
   </view>
 
@@ -396,7 +328,7 @@
       <text class="tarot-overlay-body">塔罗不是预测命运的工具，而是一面镜子——帮你看见自己内心已经知道、却未说出口的东西。每张牌都是一扇窗，照见你此刻的心境、困惑与可能。星光映照，陪你遇见自己。</text>
 
       <!-- Button -->
-      <view class="tarot-overlay-btn" bindtap="closeTarotOverlay">
+      <view class="tarot-overlay-btn" bindtap="closeTarotOverlay" role="button" aria-label="关闭塔罗简介">
         <text>开始探索 ✦</text>
       </view>
     </view>

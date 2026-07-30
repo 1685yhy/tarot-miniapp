@@ -381,139 +381,6 @@
   max-width: 380rpx;
 }
 
-/* ============================================================
-   4e. ANNUAL REPORT ENTRY CARD — home page entry point
-   ============================================================ */
-.annual-report-card {
-  padding: var(--spacing-md) var(--spacing-md);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(135deg, rgba(244,212,140,0.08) 0%, rgba(180,140,200,0.06) 100%);
-  border-color: rgba(244,212,140,0.15);
-}
-
-.annual-report-card--locked {
-  background: linear-gradient(135deg, rgba(100,100,140,0.06) 0%, rgba(80,80,120,0.04) 100%);
-  border-color: rgba(160,155,180,0.12);
-  opacity: 0.85;
-}
-
-.annual-report-left {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
-
-.annual-report-icon {
-  width: 48rpx;
-  height: 48rpx;
-}
-
-.unlock-spreads-icon {
-  width: 48rpx;
-  height: 48rpx;
-  display: block;
-}
-
-.annual-report-label {
-  display: block;
-  font-weight: 500;
-  color: var(--color-gold);
-}
-
-.annual-report-card--locked .annual-report-label {
-  color: var(--color-text-tertiary);
-}
-
-.annual-report-hint {
-  display: block;
-  margin-top: 4rpx;
-}
-
-/* ============================================================
-   4f. SEASONAL ANNUAL REPORT BANNER — Dec-Jan splash
-   ============================================================ */
-.annual-report-season-banner {
-  position: relative;
-  padding: 40rpx 32rpx;
-  border-radius: 24rpx;
-  background: linear-gradient(135deg, rgba(244,212,140,0.10) 0%, rgba(184,169,224,0.06) 100%);
-  border: 1rpx solid rgba(244,212,140,0.15);
-  overflow: hidden;
-  text-align: center;
-  cursor: pointer;
-  transition: all var(--duration-fast) var(--ease-out);
-}
-
-.annual-report-season-banner:active {
-  transform: scale(0.97);
-  border-color: rgba(244,212,140,0.30);
-}
-
-.season-banner-glow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 400rpx;
-  height: 400rpx;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgba(244,212,140,0.08) 0%, transparent 60%);
-  pointer-events: none;
-  animation: season-glow 3s ease-in-out infinite;
-}
-
-@keyframes season-glow {
-  0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
-  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
-}
-
-.season-banner-stars {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.season-banner-star {
-  position: absolute;
-  width: 4rpx;
-  height: 4rpx;
-  background: #F4D48C;
-  border-radius: 50%;
-  opacity: 0;
-  animation: season-star 2s ease-in-out infinite;
-  animation-delay: calc(var(--i) * 0.5s);
-}
-
-.season-banner-star:nth-child(1) { top: 15%; left: 20%; }
-.season-banner-star:nth-child(2) { top: 25%; right: 15%; }
-.season-banner-star:nth-child(3) { bottom: 30%; left: 30%; }
-
-@keyframes season-star {
-  0%, 100% { opacity: 0; transform: scale(0.5); }
-  50% { opacity: 0.8; transform: scale(1.5); }
-}
-
-.season-banner-label {
-  display: block;
-  font-size: 32rpx;
-  font-weight: 700;
-  color: #F4D48C;
-  letter-spacing: 3rpx;
-  margin-bottom: 8rpx;
-  position: relative;
-  z-index: 1;
-}
-
-.season-banner-cta {
-  display: block;
-  font-size: 24rpx;
-  color: rgba(176,169,224,0.6);
-  letter-spacing: 2rpx;
-  position: relative;
-  z-index: 1;
-}
-
 /* -----------------------------------------------------------
    4b. AFTER-DRAW — Card Reveal & Particles
    ----------------------------------------------------------- */
@@ -1149,126 +1016,6 @@
 }
 
 /* ============================================================
-   15. SHOOTING STAR — Rare easter egg (~every 30s)
-   ============================================================ */
-
-.shooting-star {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1;
-  overflow: hidden;
-}
-
-.shooting-star::after {
-  content: '';
-  position: absolute;
-  width: 6rpx;
-  height: 6rpx;
-  top: 12%;
-  left: 105%;
-  background: #F4D48C;
-  border-radius: 50%;
-  box-shadow:
-    0 0 12rpx 4rpx rgba(244,212,140,0.30),
-    -30rpx 10rpx 3rpx -1rpx rgba(244,212,140,0.25),
-    -60rpx 20rpx 4rpx -2rpx rgba(244,212,140,0.12),
-    -90rpx 30rpx 5rpx -3rpx rgba(244,212,140,0.06);
-  animation: none;
-}
-
-.shooting-star.shooting-star--active::after {
-  animation: shooting-star-fly 4.5s ease-in-out 1 both;
-}
-
-@keyframes shooting-star-fly {
-  0% {
-    transform: translate(0, 0);
-    opacity: 0;
-  }
-  1% {
-    opacity: 1;
-  }
-  3.5% {
-    transform: translate(-800rpx, 210rpx);
-    opacity: 1;
-  }
-  4.5% {
-    opacity: 0;
-    transform: translate(-850rpx, 230rpx);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-850rpx, 230rpx);
-  }
-}
-
-/* ============================================================
-   16. HERO GLOW — Concentric rings emanating outward
-   ============================================================ */
-
-.hero-glow-rings {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 400rpx;
-  height: 400rpx;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.hero-glow-rings::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 70%;
-  height: 70%;
-  transform: translate(-50%, -50%);
-  border: 1rpx solid rgba(244, 212, 140, 0.10);
-  border-radius: 50%;
-  animation: ring-expand 6s ease-out infinite;
-}
-
-.hero-glow-rings::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 70%;
-  height: 70%;
-  transform: translate(-50%, -50%);
-  border: 1rpx solid rgba(244, 212, 140, 0.06);
-  border-radius: 50%;
-  animation: ring-expand 6s ease-out infinite 3s;
-}
-
-@keyframes ring-expand {
-  0% {
-    width: 50%;
-    height: 50%;
-    opacity: 0.7;
-    border-color: rgba(244,212,140,0.12);
-  }
-  50% {
-    width: 120%;
-    height: 120%;
-    opacity: 0.25;
-    border-color: rgba(244,212,140,0.04);
-  }
-  100% {
-    width: 180%;
-    height: 180%;
-    opacity: 0;
-    border-color: rgba(244,212,140,0.01);
-  }
-}
-
-/* ============================================================
    17. CARD GLOW — Breathing golden aura + warm breathe
    ============================================================ */
 
@@ -1355,10 +1102,6 @@
   }
 }
 
-/* ============================================================
-   19. DAILY HABIT LOOP — Streak, Reflection, Reminder
-   ============================================================ */
-
 /* --- Reminder badges --- */
 .daily-updated-badge {
   display: inline-block;
@@ -1386,56 +1129,6 @@
   letter-spacing: 1rpx;
 }
 
-/* --- Collection progress ring --- */
-.collect-progress-wrap {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  margin-top: var(--spacing-md);
-  position: relative;
-  z-index: 1;
-}
-.collect-progress-ring {
-  position: relative;
-  width: 56rpx;
-  height: 56rpx;
-  flex-shrink: 0;
-}
-.ring-bg {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 4rpx solid rgba(244, 212, 140, 0.12);
-}
-.ring-fill {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 4rpx solid var(--color-gold);
-  /*
-     WXSS does not support conic-gradient or CSS mask.
-     A full gold ring is shown here; the count text (e.g. "8/22")
-     inside the ring communicates the precise progress.
-  */
-}
-.ring-text {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-gold);
-  line-height: 1;
-}
-.ring-label {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-tertiary);
-  letter-spacing: 1rpx;
-}
-
-/* --- Card ready pulse (FOMO-inducing) --- */
 .card-ready .card-warm {
   animation:
     card-warm-breathe 5s ease-in-out infinite,
@@ -1522,28 +1215,12 @@
 }
 
 /* -----------------------------------------------------------
-   11. FREE TIER — Progress bar style
+   11. FREE TIER — Text-only quota display (no progress bar)
    ----------------------------------------------------------- */
 .free-quota-bar {
   margin: var(--spacing-lg) 0 var(--spacing-sm);
   text-align: center;
   padding: var(--spacing-sm) var(--spacing-lg);
-}
-
-.quota-progress-wrap {
-  width: 240rpx;
-  height: 8rpx;
-  background: rgba(184, 169, 224, 0.12);
-  border-radius: 999rpx;
-  margin: 0 auto var(--spacing-xs);
-  overflow: hidden;
-}
-
-.quota-progress {
-  height: 100%;
-  background: linear-gradient(90deg, #F4D48C, #D4B06A);
-  border-radius: 999rpx;
-  transition: width 0.4s ease-out;
 }
 
 .quota-text {
@@ -1632,29 +1309,6 @@
 @keyframes hero-cta-glow-pulse {
   0%, 100% { opacity: 0.4; transform: scale(1); }
   50% { opacity: 0.8; transform: scale(1.05); }
-}
-
-/* ============================================================
-   20. TAROT EXPLAINER — Subtle link at bottom of home
-   ============================================================ */
-.tarot-explainer-wrap {
-  text-align: center;
-  margin-top: 32rpx;
-  padding-bottom: 40rpx;
-}
-
-.tarot-explainer-link {
-  font-size: var(--font-size-caption);
-  color: var(--color-text-tertiary, #A098C0);
-  opacity: 0.55;
-  letter-spacing: 2rpx;
-  padding: var(--spacing-xs) var(--spacing-md);
-  display: inline-block;
-  transition: opacity var(--duration-fast) var(--ease-out);
-}
-
-.tarot-explainer-link:active {
-  opacity: 0.9;
 }
 
 /* ============================================================
@@ -1952,11 +1606,8 @@
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
   .hero::before,
-  .hero-glow-rings::before,
-  .hero-glow-rings::after,
   .stars-layer::after,
   .nebula,
-  .shooting-star::after,
   .card-warm,
   .card--teaching,
   .daily-card-glow-overlay,
@@ -1969,7 +1620,6 @@
   .daily-card-glow-overlay { opacity: 0.6; border-color: rgba(244,212,140,0.30); }
   .to-star { animation: none !important; opacity: 0.08; }
   .tarot-overlay-content { animation: none; }
-  .mp-star { animation: none; }
 }
 
 /* ============================================================
@@ -2449,148 +2099,23 @@
 }
 
 /* ============================================================
-   Membership prompt card — emotional, tasteful CTA
+   Membership CTA — Simple one-line text link
    ============================================================ */
 
-.membership-prompt {
-  height: 0;
-  opacity: 0;
-  overflow: hidden;
-  transition: all 0.4s ease;
+.membership-cta-text {
+  text-align: center;
+  padding: var(--spacing-md) var(--spacing-lg) var(--spacing-xl);
   margin: 0 32rpx;
 }
 
-.membership-prompt--visible {
-  height: auto;
-  opacity: 1;
-  margin: 40rpx 32rpx;
-}
-
-.mp-card {
-  position: relative;
-  background: linear-gradient(135deg, rgba(26,26,46,0.95) 0%, rgba(30,30,60,0.9) 100%);
-  border: 1rpx solid rgba(201,168,76,0.2);
-  border-radius: 24rpx;
-  padding: 48rpx 32rpx 32rpx;
-  text-align: center;
-  overflow: hidden;
-}
-
-/* Tiny star particles in background */
-.mp-stars { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
-.mp-star {
-  position: absolute;
-  width: 4rpx; height: 4rpx;
-  background: rgba(244,212,140,0.4);
-  border-radius: 50%;
-}
-.mp-star-1 { top: 20%; left: 15%; animation: mp-twinkle 3s ease-in-out infinite; }
-.mp-star-2 { top: 60%; left: 80%; animation: mp-twinkle 4s ease-in-out 1s infinite; }
-.mp-star-3 { top: 30%; left: 60%; animation: mp-twinkle 3.5s ease-in-out 2s infinite; }
-@keyframes mp-twinkle {
-  0%, 100% { opacity: 0.2; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.5); }
-}
-
-.mp-icon { font-size: 56rpx; display: block; margin-bottom: 16rpx; position: relative; }
-.mp-title {
-  display: block;
-  font-size: 34rpx;
-  color: #F4D48C;
-  font-weight: 600;
-  margin-bottom: 12rpx;
-  position: relative;
-}
-.mp-desc {
-  display: block;
-  font-size: 26rpx;
-  color: rgba(255,255,255,0.55);
-  margin-bottom: 32rpx;
-  position: relative;
-}
-.mp-btn {
-  background: linear-gradient(135deg, #C9A84C, #E0C878);
-  color: #1a1a2e;
-  font-size: 30rpx;
-  font-weight: 600;
-  border-radius: 48rpx;
-  padding: 20rpx 64rpx;
-  border: none;
-  position: relative;
-}
-.mp-dismiss {
-  display: inline-block;
-  margin-top: 20rpx;
-  font-size: 24rpx;
-  color: rgba(255,255,255,0.3);
-  position: relative;
-}
-
-@keyframes overlay-enter {
-  0% {
-    opacity: 0;
-    transform: scale(0.92);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* ============================================================
-   Trial Expiry Banner — Subtle reminder at top
-   ============================================================ */
-.trial-expiry-banner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-xs);
-  margin: var(--spacing-sm) 0 var(--spacing-lg);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: rgba(244, 212, 140, 0.06);
-  border: 1rpx solid rgba(244, 212, 140, 0.15);
-  border-radius: var(--radius-pill);
+.membership-cta-text .quota-text {
   cursor: pointer;
-  transition: all var(--duration-fast) var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity var(--duration-fast) var(--ease-out);
 }
 
-.trial-expiry-banner:active {
-  background: rgba(244, 212, 140, 0.10);
-  transform: scale(0.97);
-}
-
-.trial-expiry-icon {
-  font-size: var(--font-size-caption);
-  color: var(--color-gold);
-  opacity: 0.8;
-  flex-shrink: 0;
-  animation: trial-icon-glow 2s ease-in-out infinite;
-}
-
-@keyframes trial-icon-glow {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
-}
-
-.trial-expiry-text {
-  font-size: var(--font-size-caption);
-  color: var(--color-gold);
-  font-weight: 500;
-  letter-spacing: 1rpx;
-  flex: 1;
-  text-align: center;
-}
-
-.trial-expiry-arrow {
-  font-size: var(--font-size-caption);
-  color: var(--color-gold);
-  opacity: 0.5;
-  flex-shrink: 0;
-}
-
-.trial-expiry-banner:active .trial-expiry-arrow {
-  opacity: 1;
-  transform: translateX(4rpx);
+.membership-cta-text .quota-text:active {
+  opacity: 0.6;
 }
 
 /* DEV: 自动化测试入口 */

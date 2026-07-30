@@ -49,9 +49,10 @@
           <text class="review-title">本周回顾</text>
         </view>
         <view class="review-header-actions">
-          <text class="review-refresh-btn" bindtap="onRefreshReview">
+          <text class="review-refresh-btn" bindtap="onRefreshReview" role="button" aria-label="生成周回顾">
             <text wx:if="{{reviewLoading}}">加载中...</text>
-            <text wx:else>⟳ 刷新</text>
+            <text wx:elif="{{weeklyReview}}">⟳ 刷新</text>
+            <text wx:else>生成回顾</text>
           </text>
         </view>
       </view>
@@ -68,6 +69,13 @@
           最常出现的牌是「{{topCard}}」，
           你的心情趋势是{{moodTrend}}。
         </text>
+      </view>
+
+      <!-- 初始状态 — 主动生成回顾 -->
+      <view wx:elif="{{!reviewLoading && !reviewError && !weeklyReview}}" class="review-generate">
+        <text class="review-generate-icon">📊</text>
+        <text class="review-generate-text">本周已有 {{entries.length}} 条日记记录</text>
+        <button class="review-generate-btn" bindtap="onRefreshReview">生成 AI 周回顾 ✦</button>
       </view>
 
       <!-- AI 周回顾内容 -->
@@ -146,6 +154,8 @@
           wx:for="{{entries}}" wx:for-item="entry" wx:key="id"
           bindlongpress="onLongPressEntry"
           data-id="{{entry.id}}"
+          role="button"
+          aria-label="日记条目，长按可编辑或删除"
         >
           <!-- Card header: date + mood + actions -->
           <view class="entry-header">
@@ -154,7 +164,7 @@
               <text class="entry-date">{{entry.date}}</text>
             </view>
             <view class="entry-header-right">
-              <text class="entry-share-btn" bindtap="onShareEntry" data-id="{{entry.id}}">分享</text>
+              <text class="entry-share-btn" bindtap="onShareEntry" data-id="{{entry.id}}" role="button" aria-label="分享日记">分享</text>
               <text class="entry-mood">
                 <text wx:if="{{entry.mood === 'happy'}}">😊</text>
                 <text wx:elif="{{entry.mood === 'sad'}}">😢</text>
@@ -216,18 +226,12 @@
     </scroll-view>
 
     <!-- ===== 空状态 ===== -->
-    <view class="empty-date-hint" wx:if="{{entries.length === 0}}" bindtap="showCreateModal">
+    <view class="empty-date-hint" wx:if="{{entries.length === 0}}" bindtap="showCreateModal" role="button" aria-label="创建日记">
       <text class="hint-icon">🃏</text>
       <text class="hint-text">今天抽到了什么牌？</text>
       <text class="hint-sub">翻开每日一牌，记录此刻心情</text>
     </view>
 
-  </view>
-
-  <!-- ===== Floating AI Review Button ===== -->
-  <view class="floating-review-btn" wx:if="{{entries.length >= 3 && weeklyReview}}" bindtap="onTapFloatingReview">
-    <text class="floating-review-icon">📊</text>
-    <text class="floating-review-text">AI周回顾</text>
   </view>
 
   <!-- ============ 创建日记 Modal ============ -->
@@ -257,6 +261,8 @@
           class="mood-item {{mood === 'happy' ? 'mood-selected' : ''}}"
           data-mood="happy"
           bindtap="onMoodSelect"
+          role="button"
+          aria-label="选择心情：开心"
         >
           <text class="mood-emoji">😊</text>
           <text class="mood-label">开心</text>
@@ -265,6 +271,8 @@
           class="mood-item {{mood === 'calm' ? 'mood-selected' : ''}}"
           data-mood="calm"
           bindtap="onMoodSelect"
+          role="button"
+          aria-label="选择心情：平静"
         >
           <text class="mood-emoji">😌</text>
           <text class="mood-label">平静</text>
@@ -273,6 +281,8 @@
           class="mood-item {{mood === 'excited' ? 'mood-selected' : ''}}"
           data-mood="excited"
           bindtap="onMoodSelect"
+          role="button"
+          aria-label="选择心情：兴奋"
         >
           <text class="mood-emoji">🤩</text>
           <text class="mood-label">兴奋</text>
@@ -281,6 +291,8 @@
           class="mood-item {{mood === 'anxious' ? 'mood-selected' : ''}}"
           data-mood="anxious"
           bindtap="onMoodSelect"
+          role="button"
+          aria-label="选择心情：焦虑"
         >
           <text class="mood-emoji">😰</text>
           <text class="mood-label">焦虑</text>
@@ -289,6 +301,8 @@
           class="mood-item {{mood === 'sad' ? 'mood-selected' : ''}}"
           data-mood="sad"
           bindtap="onMoodSelect"
+          role="button"
+          aria-label="选择心情：低落"
         >
           <text class="mood-emoji">😢</text>
           <text class="mood-label">低落</text>
@@ -297,6 +311,8 @@
           class="mood-item {{mood === 'thoughtful' ? 'mood-selected' : ''}}"
           data-mood="thoughtful"
           bindtap="onMoodSelect"
+          role="button"
+          aria-label="选择心情：思考"
         >
           <text class="mood-emoji">🤔</text>
           <text class="mood-label">思考</text>
@@ -328,13 +344,13 @@
 
       <!-- Image picker -->
       <view class="image-picker-wrap">
-        <view wx:if="{{!selectedImage}}" class="image-picker-btn" bindtap="onChooseImage">
+        <view wx:if="{{!selectedImage}}" class="image-picker-btn" bindtap="onChooseImage" role="button" aria-label="添加图片">
           <text class="image-picker-icon">+</text>
           <text class="image-picker-label">添加图片</text>
         </view>
         <view wx:else class="image-preview-wrap">
           <image class="image-preview" src="{{selectedImage}}" mode="aspectFill" />
-          <text class="image-remove-btn" bindtap="onRemoveImage">✕</text>
+          <text class="image-remove-btn" bindtap="onRemoveImage" role="button" aria-label="移除图片">✕</text>
         </view>
       </view>
 

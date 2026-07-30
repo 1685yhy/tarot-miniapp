@@ -101,8 +101,6 @@ Page({
     checkedInToday: false,
     // Immersive tarot explainer overlay
     showTarotOverlay: false,
-    // Shooting star easter egg
-    shootingStarActive: false,
 
     // v2.1: Time-of-day greeting
     greetingText: '',
@@ -176,8 +174,6 @@ Page({
     this._checkTrialExpiry();
     // Load collection progress
     this._loadCollectionProgress();
-    // Re-init shooting star timer if page was hidden
-    this._initShootingStar();
     // v2.1: Recompute greeting (in case hour changed)
     this._computeGreeting();
     // v2.1: Refresh zodiac from storage (user might update elsewhere)
@@ -658,9 +654,6 @@ Page({
       startAmbientSound();
     }
 
-    // Init shooting star easter egg with random intervals
-    this._initShootingStar();
-
     // v2.1: Compute time-of-day greeting
     this._computeGreeting();
 
@@ -732,45 +725,6 @@ Page({
     }
   },
 
-  // ===================== Shooting star easter egg =====================
-
-  /** Init the shooting star scheduler (guarded — won't double-init) */
-  _initShootingStar() {
-    if (this._shootingStarReady) return;
-    this._shootingStarReady = true;
-    this._scheduleShootingStar();
-  },
-
-  /** Schedule next shooting star appearance at random 20-45s */
-  _scheduleShootingStar() {
-    const delay = 20000 + Math.random() * 25000; // 20-45 seconds
-    this._pushTimer(setTimeout(() => {
-      this._triggerShootingStar();
-    }, delay));
-  },
-
-  /** Fire the shooting star: toggle class, play sound, haptic */
-  _triggerShootingStar() {
-    // Reset first to guarantee CSS animation re-triggers
-    this.setData({ shootingStarActive: false });
-    // Re-add class after a micro delay to restart the animation
-    this._pushTimer(setTimeout(() => {
-      this.setData({ shootingStarActive: true });
-    }, 30));
-
-    // Magical swoosh sound
-    playCardFlipSound();
-
-    // Light haptic for the magical moment
-    wx.vibrateShort({ type: 'light' }).catch(() => {});
-
-    // Reset class after animation completes, then schedule next
-    this._pushTimer(setTimeout(() => {
-      this.setData({ shootingStarActive: false });
-      this._scheduleShootingStar();
-    }, 5000));
-  },
-
   onUnload() {
     if (this._onboardingTimer) clearTimeout(this._onboardingTimer);
     this._clearTimers();
@@ -779,7 +733,6 @@ Page({
   onHide() {
     if (this._onboardingTimer) clearTimeout(this._onboardingTimer);
     this._clearTimers();
-    this._shootingStarReady = false;
     // Stop ambient sound when page hidden (will resume on show)
     stopAmbientSound();
   },
