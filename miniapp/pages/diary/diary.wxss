@@ -67,7 +67,19 @@ page {
     0 4rpx 20rpx rgba(244, 212, 140, 0.25),
     0 0 60rpx rgba(244, 212, 140, 0.08);
   letter-spacing: 2rpx;
-  animation: create-glow 3s ease-in-out infinite;
+  animation: create-glow 3s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+.btn-create::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at center, rgba(244, 212, 140, 0.10) 0%, transparent 70%);
+  pointer-events: none;
+  animation: create-glow 3s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
 .btn-create:active {
@@ -83,8 +95,8 @@ page {
 }
 
 @keyframes create-glow {
-  0%, 100% { box-shadow: 0 4rpx 20rpx rgba(244, 212, 140, 0.25), 0 0 60rpx rgba(244, 212, 140, 0.08); }
-  50% { box-shadow: 0 4rpx 28rpx rgba(244, 212, 140, 0.35), 0 0 80rpx rgba(244, 212, 140, 0.15); }
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
 }
 
 
@@ -124,7 +136,7 @@ page {
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.20);
   position: relative;
   overflow: hidden;
-  transition: all 0.15s ease-out;
+  transition: transform 0.15s ease-out, border-color 0.15s ease-out, box-shadow 0.15s ease-out;
 }
 
 /* Gold corner glow */
@@ -293,7 +305,7 @@ page {
   border: 1rpx solid rgba(244, 212, 140, 0.20);
   border-radius: var(--radius-pill);
   padding: var(--spacing-sm) var(--spacing-xl);
-  transition: all 0.2s;
+  transition: background 0.2s;
 }
 
 .btn-retry:active {
@@ -452,7 +464,7 @@ page {
   border-radius: var(--radius-pill);
   background: rgba(244, 212, 140, 0.06);
   border: 1rpx solid rgba(244, 212, 140, 0.10);
-  transition: all 0.15s ease-out;
+  transition: transform 0.15s ease-out, border-color 0.15s ease-out, background 0.15s ease-out;
 }
 
 .mood-item:active {
@@ -530,7 +542,7 @@ page {
   margin-top: var(--spacing-xl);
   box-shadow: 0 4rpx 20rpx rgba(244, 212, 140, 0.25);
   letter-spacing: 2rpx;
-  transition: all 0.15s ease-out;
+  transition: transform 0.15s ease-out, opacity 0.15s ease-out;
 }
 
 .btn-submit:active {
@@ -749,7 +761,7 @@ page {
   opacity: 0.75;
   padding: 4rpx 12rpx;
   border-radius: var(--radius-sm);
-  transition: all 0.15s ease;
+  transition: opacity 0.15s ease, background 0.15s ease;
 }
 
 .review-refresh-btn:active {
@@ -893,6 +905,7 @@ page {
   transition: height 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   min-height: 8rpx;
   box-shadow: 0 0 12rpx rgba(244, 212, 140, 0.15);
+  transform-origin: bottom;
 }
 
 .chart-bar-label {
@@ -1000,7 +1013,7 @@ page {
   padding: 4rpx 12rpx;
   border: 1rpx solid rgba(244, 212, 140, 0.2);
   border-radius: var(--radius-pill, 999rpx);
-  transition: all 0.15s ease;
+  transition: opacity 0.15s ease, background 0.15s ease;
 }
 
 .entry-share-btn:active {
@@ -1027,7 +1040,7 @@ page {
   border: 1.5rpx dashed rgba(244, 212, 140, 0.25);
   border-radius: var(--radius-md, 16rpx);
   background: rgba(244, 212, 140, 0.04);
-  transition: all 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .image-picker-btn:active {
@@ -1088,7 +1101,7 @@ page {
 .empty-date-hint:active {
   opacity: 0.75;
   transform: scale(0.98);
-  transition: all 0.15s ease-out;
+  transition: opacity 0.15s ease-out, transform 0.15s ease-out;
 }
 
 .hint-icon {
@@ -1162,4 +1175,12 @@ page {
 .reflection-prompt-card-tag text {
   font-size: var(--font-size-xs, 20rpx);
   color: var(--color-gold);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

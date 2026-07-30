@@ -20,7 +20,8 @@
   padding: var(--spacing-lg) var(--spacing-xl);
   margin-bottom: var(--spacing-xl);
   box-shadow: 0 0 30rpx rgba(244, 212, 140, 0.10);
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out);
 }
 .daily-card:active {
   transform: scale(0.98);
@@ -86,7 +87,9 @@
   margin-bottom: var(--spacing-lg);
   position: relative;
   overflow: hidden;
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out);
 }
 .daily-story-card:active {
   transform: scale(0.98);
@@ -155,7 +158,8 @@
   border-radius: var(--radius-lg);
   background: var(--color-surface);
   border: 1.5rpx dashed rgba(184, 169, 224, 0.20);
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: background var(--duration-fast) var(--ease-out),
+              transform var(--duration-fast) var(--ease-out);
 }
 .daily-card-prompt:active {
   background: var(--color-surface-hover);
@@ -222,7 +226,11 @@
   color: var(--color-text-primary);
   background: var(--color-surface);
   border: 1rpx solid rgba(184, 169, 224, 0.12);
-  transition: all var(--duration-fast) var(--ease-soft);
+  transition: transform var(--duration-fast) var(--ease-soft),
+              background var(--duration-fast) var(--ease-soft),
+              color var(--duration-fast) var(--ease-soft),
+              border-color var(--duration-fast) var(--ease-soft),
+              box-shadow var(--duration-fast) var(--ease-soft);
   letter-spacing: 1rpx;
 }
 
@@ -257,7 +265,9 @@
   padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-xl);
   box-sizing: border-box;
   box-shadow: var(--shadow-card);
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -284,7 +294,8 @@
   justify-content: center;
   background: rgba(26, 26, 62, 0.70);
   border-radius: 50%;
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out);
 }
 .card-favorite:active {
   transform: scale(1.20);

@@ -171,14 +171,14 @@
 }
 
 @keyframes suit-sparkle {
-  0%   { opacity: 0; transform: scale(0); }
+  0%   { opacity: 0; transform: scale(0.05); }
   12%  { opacity: 1; transform: scale(2); }
   28%  { opacity: 0.9; transform: scale(1); }
   100% { opacity: 0.9; transform: scale(1); }
 }
 
 @keyframes suit-sparkle-major {
-  0%   { opacity: 0; transform: scale(0) rotate(45deg); }
+  0%   { opacity: 0; transform: scale(0.05) rotate(45deg); }
   12%  { opacity: 1; transform: scale(2) rotate(45deg); }
   28%  { opacity: 0.9; transform: scale(1) rotate(45deg); }
   100% { opacity: 0.9; transform: scale(1) rotate(45deg); }
@@ -227,7 +227,7 @@
 }
 
 @keyframes card-flip {
-  0%   { transform: scaleX(0); }
+  0%   { transform: scaleX(0.05); }
   50%  { transform: scaleX(0.08); }
   100% { transform: scaleX(1); }
 }

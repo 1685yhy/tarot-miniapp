@@ -62,19 +62,16 @@
   border-radius: var(--radius-pill);
   transition: width var(--duration-slow) var(--ease-out);
   box-shadow: 0 0 10rpx rgba(244, 212, 140, 0.15);
+  transform-origin: left;
 }
 
 .collect-progress-fill--animated {
-  animation: progress-glow-pulse 2s ease-in-out infinite;
+  animation: progress-glow-pulse 2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
 @keyframes progress-glow-pulse {
-  0%, 100% {
-    box-shadow: 0 0 10rpx rgba(244, 212, 140, 0.15);
-  }
-  50% {
-    box-shadow: 0 0 20rpx rgba(244, 212, 140, 0.35), 0 0 40rpx rgba(244, 212, 140, 0.10);
-  }
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
 }
 
 /* -----------------------------------------------------------
@@ -500,7 +497,7 @@
   opacity: 0;
   max-height: 0;
   overflow: hidden;
-  transition: opacity 0.6s ease-out, max-height 0.6s ease-out;
+  transition: opacity 0.6s ease-out;
 }
 
 .teaching-area--visible {
@@ -703,7 +700,7 @@
   opacity: 0;
   max-height: 0;
   overflow: hidden;
-  transition: opacity 0.5s ease-out 0.3s, max-height 0.5s ease-out 0.3s;
+  transition: opacity 0.5s ease-out 0.3s;
   padding-bottom: var(--spacing-xl);
 }
 
@@ -930,4 +927,12 @@
 .safe-bottom {
   padding-bottom: var(--safe-area-bottom);
   height: var(--spacing-xl);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -32,7 +32,8 @@
   border: 1rpx solid rgba(244, 212, 140, 0.12);
   margin-right: var(--spacing-sm);
   flex-shrink: 0;
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: background var(--duration-fast) var(--ease-out),
+              transform var(--duration-fast) var(--ease-out);
 }
 
 .community-header-back:active {
@@ -261,7 +262,9 @@
   padding: var(--spacing-md);
   position: relative;
   overflow: hidden;
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out);
 }
 
 .post-card::before {
@@ -366,7 +369,8 @@
   align-items: center;
   justify-content: center;
   z-index: var(--z-card);
-  transition: all var(--duration-fast) var(--ease-soft);
+  transition: transform var(--duration-fast) var(--ease-soft),
+              box-shadow var(--duration-fast) var(--ease-soft);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
@@ -498,7 +502,8 @@
   background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
   color: var(--color-text-inverse);
   box-shadow: var(--shadow-gold-button);
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-out),
+              opacity var(--duration-fast) var(--ease-out);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }

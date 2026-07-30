@@ -96,7 +96,8 @@
   justify-content: center;
   flex-shrink: 0;
   margin-top: 2rpx;
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: border-color var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out);
   box-sizing: border-box;
 }
 
@@ -237,7 +238,7 @@
   color: var(--color-gold);
   text-shadow: 0 0 16rpx rgba(244, 212, 140, 0.4);
   opacity: 0;
-  transform: scale(0);
+  transform: scale(0.05);
 }
 
 /* Staggered star entrance animation */
@@ -256,7 +257,7 @@
 @keyframes ac-star-enter {
   0% {
     opacity: 0;
-    transform: scale(0);
+    transform: scale(0.05);
   }
   60% {
     opacity: 1;
