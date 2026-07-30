@@ -274,7 +274,9 @@
         </view>
       </view>
 
-      <text class="btn-text btn-back-spreads" bindtap="onBackToSpreads">← 重新选择牌阵</text>
+      <view class="btn-back-spreads-wrap">
+        <text class="btn-text btn-back-spreads" bindtap="onBackToSpreads">← 重新选择牌阵</text>
+      </view>
     </view>
   </view>
 </view>

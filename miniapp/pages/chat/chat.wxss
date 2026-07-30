@@ -413,20 +413,6 @@ page {
   display: flex;
 }
 
-.chat-input {
-  width: 100%;
-  height: 72rpx;
-  background: rgba(30, 26, 56, 0.85);
-  border-radius: var(--radius-pill);
-  padding: 0 32rpx;
-  font-size: var(--font-size-body);
-  color: var(--color-text-primary);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
-  transition: border-color 0.2s, box-shadow 0.2s;
-  caret-color: var(--color-gold);
-  box-sizing: border-box;
-}
-
 .chat-input:focus {
   border-color: var(--color-gold);
   box-shadow: 0 0 0 4rpx rgba(244, 212, 140, 0.10);
@@ -556,7 +542,7 @@ page {
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--radius-pill);
   background: var(--color-surface);
-  border: 2rpx solid transparent;
+  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
   color: var(--color-text-primary);
   font-size: var(--font-size-body);
   line-height: 1.5;

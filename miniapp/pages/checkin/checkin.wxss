@@ -101,7 +101,7 @@
 
 .streak-glow {
   position: absolute;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(244, 212, 140, 0.12) 0%, transparent 70%);
   animation: glow-pulse 3s ease-in-out infinite;
@@ -115,7 +115,7 @@
 .streak-circle::before {
   content: '';
   position: absolute;
-  inset: 4rpx;
+  top: 4rpx; right: 4rpx; bottom: 4rpx; left: 4rpx;
   border-radius: 50%;
   border: 4rpx solid rgba(244, 212, 140, 0.25);
 }
@@ -374,7 +374,7 @@
    ============================================================ */
 .reward-overlay {
   position: fixed;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -393,7 +393,7 @@
 
 .reward-particles {
   position: absolute;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   pointer-events: none;
   overflow: hidden;
 }

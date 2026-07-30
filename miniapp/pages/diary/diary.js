@@ -336,6 +336,7 @@ Page({
   },
 
   /** User tap to refresh weekly review */
+  // Note: `moodTrendCurve` is camelCase locally, converted from API snake_case `mood_trends`
   onRefreshReview() {
     this._loadWeeklyReview();
     wx.vibrateShort({ type: 'light' }).catch(() => {});

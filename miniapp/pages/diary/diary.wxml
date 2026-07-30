@@ -164,7 +164,7 @@
               <text class="entry-date">{{entry.date}}</text>
             </view>
             <view class="entry-header-right">
-              <text class="entry-share-btn" bindtap="onShareEntry" data-id="{{entry.id}}" role="button" aria-label="分享日记">分享</text>
+              <text class="entry-share-btn" style="padding:8rpx 20rpx;font-size:24rpx;" bindtap="onShareEntry" data-id="{{entry.id}}" role="button" aria-label="分享日记">分享</text>
               <text class="entry-mood">
                 <text wx:if="{{entry.mood === 'happy'}}">😊</text>
                 <text wx:elif="{{entry.mood === 'sad'}}">😢</text>
@@ -226,10 +226,11 @@
     </scroll-view>
 
     <!-- ===== 空状态 ===== -->
-    <view class="empty-date-hint" wx:if="{{entries.length === 0}}" bindtap="showCreateModal" role="button" aria-label="创建日记">
+    <view class="empty-date-hint" wx:if="{{entries.length === 0}}" role="button" aria-label="创建日记">
       <text class="hint-icon">🃏</text>
-      <text class="hint-text">今天抽到了什么牌？</text>
+      <text class="hint-text">今天还没有记录</text>
       <text class="hint-sub">翻开每日一牌，记录此刻心情</text>
+      <button class="btn-primary btn--full" style="margin-top:24rpx;" bindtap="showCreateModal">记录今天</button>
     </view>
 
   </view>

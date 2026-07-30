@@ -81,6 +81,7 @@ Page({
     flipState: '',           // '' | 'flip-out' | 'flip-in'
     isAnimatingExit: false,  // true during exit animation before reset
     enlargedImgError: false, // true if the enlarged card image failed to load
+    enlargedImgLoaded: false, // true once enlarged card image has loaded
 
     // TL;DR summary
     tldr: [],
@@ -111,9 +112,10 @@ Page({
     const spread = options && options.spread;
     const isQuick = options && options.quick === '1';
 
-    // Load member status
-    const user = wx.getStorageSync('user') || {};
-    this.setData({ isMember: !!user.is_member });
+    // Load member status: check app.globalData first, fall back to storage
+    const app = getApp();
+    const isMember = app.globalData?.isMember || wx.getStorageSync('user')?.is_member || false;
+    this.setData({ isMember });
 
     if (!id && !isPending) {
       wx.showToast({ title: '参数错误', icon: 'none' });
@@ -278,7 +280,7 @@ Page({
       if (reading && reading.drawn_cards) {
         reading.drawn_cards = reading.drawn_cards.map(card => ({
           ...card,
-          imagePath: computeImagePath(card),
+          imagePath: computeImagePath(card, card.imageBase),
         }));
       }
 
@@ -411,7 +413,7 @@ Page({
       const hasTeachingData = teachingCards.length > 0;
 
       const readingDepth = reading.depth || 'standard';
-      const reflectionQuestion = reading.reflection_question || '';
+      const reflectionQuestion = reading.reflection_question || '今天的解读对你意味着什么？';
       this.setData({ reading, personaDisplay, tldr, teachingCards, hasTeachingData, spreadTypeName, pageLoading: false, showUndo: true, showFullInterpretation: true, readingDepth, reflectionQuestion });
       // Trigger staggered card entrance animation after render
       this._animateCardReveal();
@@ -634,9 +636,10 @@ Page({
     this._touchStartY = 0;
   },
 
-  onToggleFull() {
-    this.setData({ showFullInterpretation: !this.data.showFullInterpretation });
-  },
+  /** @deprecated — unused, kept for future use */
+  // onToggleFull() {
+  //   this.setData({ showFullInterpretation: !this.data.showFullInterpretation });
+  // },
 
   onToggleTeaching() {
     this.setData({ showTeaching: !this.data.showTeaching });
@@ -663,22 +666,22 @@ Page({
     wx.navigateBack();
   },
 
-  /** Undo the current reading — allows user to re-draw cards */
-  onUndoReading() {
-    const reading = this.data.reading;
-    wx.showModal({
-      title: '重新抽牌',
-      content: '确定要放弃本次解读，重新抽牌吗？',
-      success: (res) => {
-        if (res.confirm) {
-          wx.removeStorageSync('pending_reading');
-          wx.redirectTo({
-            url: '/pages/reading/reading?type=' + (reading?.spread_type || 'three_card'),
-          });
-        }
-      },
-    });
-  },
+  /** @deprecated — unused, kept for future use */
+  // onUndoReading() {
+  //   const reading = this.data.reading;
+  //   wx.showModal({
+  //     title: '重新抽牌',
+  //     content: '确定要放弃本次解读，重新抽牌吗？',
+  //     success: (res) => {
+  //       if (res.confirm) {
+  //         wx.removeStorageSync('pending_reading');
+  //         wx.redirectTo({
+  //           url: '/pages/reading/reading?type=' + (reading?.spread_type || 'three_card'),
+  //         });
+  //       }
+  //     },
+  //   });
+  // },
 
   onBackHome() {
     wx.switchTab({ url: '/pages/index/index' });

@@ -248,7 +248,7 @@
 .card-img-wrap::before {
   content: '';
   position: absolute;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background: linear-gradient(
     90deg,
     transparent 0%,
@@ -289,7 +289,7 @@
 
 .card-img-fallback {
   position: absolute;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -311,7 +311,7 @@
 /* Card name fallback when image fails to load in daily-card page */
 .card-img-fallback-text {
   position: absolute;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
