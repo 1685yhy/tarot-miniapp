@@ -8,6 +8,8 @@ import logging
 
 from openai import AsyncOpenAI
 from fastapi import APIRouter, Depends, HTTPException
+
+from app.services.ai_personas import get_persona
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -60,19 +62,26 @@ async def chat_followup(
     db.add(user_msg)
     await db.flush()  # ensure the message is visible in history below
 
+    # ── Resolve persona ──
+    persona = get_persona(getattr(reading, 'persona', None) or None)
+    persona_prompt = persona.get("prompt_suffix", "")
+    persona_name = persona.get("name", "解读者")
+
     # ── Build conversation history for DeepSeek ──
     messages: list[dict] = [
         {
             "role": "system",
             "content": (
-                f"你是一个温柔睿智的塔罗导师。用户刚才的解读结果是：\n"
+                f"你是「{persona_name}」，星光映照的AI塔罗师。\n"
+                f"用户刚才的解读结果是：\n"
                 f"{(reading.interpretation or '')[:500]}\n\n"
-                f"请基于这个解读，继续和用户深入探讨他们的问题。保持连续性和一致性。\n\n"
+                f"请以「{persona_name}」的身份，基于这个解读，继续和用户深入探讨。\n"
+                f"保持连续性和一致性，体现你的独特风格。\n"
+                f"{persona_prompt}\n\n"
                 f"【行动建议】\n"
                 f"在回答的最后，如果合适的话，请给出 1-3 条具体的行动建议，"
                 f"使用 [ACTION]建议内容[/ACTION] 格式。\n"
-                f"例如：[ACTION]每天晚上写一篇日记，记录今天的感受[/ACTION]\n"
-                f"每条建议请使用第二人称「你」，语气鼓励、温暖。"
+                f"每条建议请使用第二人称「你」。"
             ),
         }
     ]

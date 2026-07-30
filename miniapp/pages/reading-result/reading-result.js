@@ -647,6 +647,8 @@ Page({
   onAskMore() {
     const reading = this.data.reading;
     if (!reading) return;
+    const app = getApp();
+    app.globalData.currentReading = reading;
     wx.navigateTo({ url: '/pages/chat/chat?readingId=' + reading.id });
   },
 
