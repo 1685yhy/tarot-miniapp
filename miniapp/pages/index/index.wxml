@@ -51,14 +51,6 @@
     <!-- v2.1: Time-of-day greeting -->
     <text wx:if="{{greetingText}}" class="greeting-text anim-greeting-fade" key="{{greetingAnimKey}}">{{greetingText}}</text>
 
-    <!-- Checkin entry -->
-    <view class="checkin-entry {{checkedInToday ? 'checkin-entry--done' : ''}}" bindtap="onGoCheckin">
-      <view class="checkin-entry-icon">{{checkedInToday ? '🔥' : '✦'}}</view>
-      <text class="checkin-entry-text">
-        {{checkedInToday ? '已签到 · 连续 ' + checkinStreak + ' 天' : checkinStreak > 0 ? '🔥 连续 ' + checkinStreak + ' 天' : '✦ 今日签到'}}
-      </text>
-    </view>
-
     <!-- Daily reminder badge -->
     <view wx:if="{{hasDrawnToday}}" class="daily-updated-badge anim-slide-up">✓ 今日运势已更新</view>
     <view wx:elif="{{showReminder && !dailyCard}}" class="daily-reminder-badge anim-gentle-pulse">今日运势待开启</view>
@@ -122,7 +114,7 @@
   </view>
 
   <!-- 每日一牌 — 教学入口 (v2.0) -->
-  <view class="anim-fade-in-up-2" style="margin:60rpx 0">
+  <view class="anim-fade-in-up-2" style="margin:24rpx 0">
 
     <!-- BEFORE DRAW — card awaiting tap with shimmer, sparkles, float -->
     <view class="daily-card-wrap {{!hasDrawnToday && !dailyCard ? 'card-ready' : ''}}" wx:if="{{!dailyCard && !dailyCardRestoring}}" bindtap="drawDailyCard" animation="{{cardAnimData}}" role="button">
@@ -208,44 +200,6 @@
       </view>
     </view>
 
-  </view>
-
-  <!-- ===== 今日任务卡片 ===== -->
-  <view class="anim-fade-in-up-2" style="margin-top:30rpx">
-    <view class="card tasks-card" bindtap="onGoCheckin">
-      <view class="tasks-card-header">
-        <text class="tasks-card-title">今日任务</text>
-        <view class="tasks-card-stats">
-          <text class="tasks-card-progress">{{tasksCompleted}}/{{tasksTotal}} 完成</text>
-          <view class="tasks-progress-bar">
-            <view class="tasks-progress-fill" style="width: {{tasksTotal > 0 ? (tasksCompleted / tasksTotal * 100) : 0}}%"></view>
-          </view>
-        </view>
-      </view>
-      <view class="tasks-list">
-        <view class="task-item {{tasksDailyCardDrawn ? 'task-item--done' : ''}}">
-          <view class="task-check {{tasksDailyCardDrawn ? 'task-check--checked' : ''}}">
-            <text wx:if="{{tasksDailyCardDrawn}}" class="task-check-icon">✓</text>
-          </view>
-          <text class="task-name">抽一张每日牌</text>
-        </view>
-        <view class="task-item {{tasksReadingDone ? 'task-item--done' : ''}}">
-          <view class="task-check {{tasksReadingDone ? 'task-check--checked' : ''}}">
-            <text wx:if="{{tasksReadingDone}}" class="task-check-icon">✓</text>
-          </view>
-          <text class="task-name">完成一次解读</text>
-        </view>
-        <view class="task-item {{tasksShared ? 'task-item--done' : ''}}">
-          <view class="task-check {{tasksShared ? 'task-check--checked' : ''}}">
-            <text wx:if="{{tasksShared}}" class="task-check-icon">✓</text>
-          </view>
-          <text class="task-name">分享你的解读</text>
-        </view>
-      </view>
-      <view class="tasks-card-footer">
-        <text class="tasks-card-reward">每完成一项任务 +1 免费解读次数</text>
-      </view>
-    </view>
   </view>
 
   <!-- 星光树洞入口 -->

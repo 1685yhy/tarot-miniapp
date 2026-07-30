@@ -391,9 +391,9 @@ Page({
     }
   },
 
-  /** Navigate to checkin page */
+  /** Navigate to checkin page (temporarily disabled) */
   onGoCheckin() {
-    wx.navigateTo({ url: '/pages/checkin/checkin' });
+    // wx.navigateTo({ url: '/pages/checkin/checkin' });
   },
 
   /** Initialize daily streak and reminder state from storage */
