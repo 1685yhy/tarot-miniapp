@@ -167,7 +167,7 @@ page {
   border-left: 4rpx solid var(--color-gold-glow);
   border-radius: 24rpx;
   box-shadow: var(--shadow-card);
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out);
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -319,7 +319,7 @@ page {
   border: 1.5rpx solid rgba(244,212,140,0.20);
   border-radius: var(--radius-pill);
   cursor: pointer;
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
   width: fit-content;
 }
 
@@ -518,7 +518,7 @@ page {
   background: var(--color-surface);
   border: 1.5rpx solid rgba(244,212,140,0.12);
   border-radius: 16rpx;
-  transition: all 0.2s ease-out;
+  transition: transform 0.2s ease-out, border-color 0.2s ease-out, background 0.2s ease-out;
   cursor: pointer;
   box-sizing: border-box;
   min-height: 120rpx;
@@ -590,12 +590,23 @@ page {
 .btn-drawing {
   opacity: 0.8;
   background: linear-gradient(135deg, var(--color-gold-dark), var(--color-gold-dark));
-  animation: pulseGlow 1.6s ease-in-out infinite;
+  position: relative;
+}
+
+.btn-drawing::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: inherit;
+  background: radial-gradient(ellipse at center, var(--color-gold-glow) 0%, transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  animation: pulseGlow 1.6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
 @keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 30rpx var(--color-gold-glow); }
-  50% { box-shadow: 0 0 60rpx var(--color-gold-glow); }
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
 }
 
 /* ==============================
@@ -834,7 +845,7 @@ page {
   border: 1.5rpx solid rgba(244, 212, 140, 0.12);
   border-radius: 20rpx;
   cursor: pointer;
-  transition: all 0.2s ease-out;
+  transition: transform 0.2s ease-out, border-color 0.2s ease-out, background 0.2s ease-out;
   box-sizing: border-box;
 }
 
@@ -916,6 +927,7 @@ page {
   background: linear-gradient(90deg, #F4D48C, #D4B06A);
   border-radius: 999rpx;
   transition: width 0.4s ease-out;
+  transform-origin: left;
 }
 
 .quota-text {
@@ -951,7 +963,7 @@ page {
   color: var(--color-gold);
   background: transparent;
   letter-spacing: 1rpx;
-  transition: all 0.15s;
+  transition: transform 0.15s, background 0.15s;
   line-height: 1.4;
 }
 
@@ -1208,7 +1220,7 @@ page {
 .exhausted-star-3 { top: 24rpx; right: 18%; animation-delay: 0.35s; }
 
 @keyframes exhausted-star-burst {
-  0% { opacity: 0; transform: scale(0) rotate(-30deg); }
+  0% { opacity: 0; transform: scale(0.05) rotate(-30deg); }
   50% { opacity: 1; transform: scale(1.4) rotate(15deg); }
   100% { opacity: 0.8; transform: scale(1) rotate(0deg); }
 }
@@ -1325,7 +1337,7 @@ page {
   background: var(--color-surface);
   border: 1.5rpx solid rgba(244,212,140,0.12);
   border-radius: 16rpx;
-  transition: all 0.2s ease-out;
+  transition: transform 0.2s ease-out, border-color 0.2s ease-out, background 0.2s ease-out, box-shadow 0.2s ease-out;
   cursor: pointer;
   box-sizing: border-box;
   min-height: 140rpx;
@@ -1494,7 +1506,7 @@ page {
 .persona-intro-star-3 { top: 20rpx; right: 18%; animation-delay: 0.35s; }
 
 @keyframes persona-intro-star-burst {
-  0% { opacity: 0; transform: scale(0) rotate(-30deg); }
+  0% { opacity: 0; transform: scale(0.05) rotate(-30deg); }
   50% { opacity: 1; transform: scale(1.4) rotate(15deg); }
   100% { opacity: 0.8; transform: scale(1) rotate(0deg); }
 }

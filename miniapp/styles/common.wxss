@@ -399,7 +399,7 @@ page {
   line-height: var(--line-height-tight);
   border-radius: var(--radius-pill);
   padding: 24rpx 48rpx;
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out), opacity var(--duration-fast) var(--ease-out);
   position: relative;
   overflow: hidden;
 }
@@ -509,7 +509,7 @@ page {
   border-radius: var(--radius-md);
   padding: var(--spacing-md);
   box-shadow: var(--shadow-card);
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out);
   position: relative;
   overflow: hidden;
 }
@@ -615,7 +615,7 @@ page {
   font-size: var(--font-size-body);
   color: var(--color-text-primary);
   line-height: var(--line-height-tight);
-  transition: all var(--duration-fast) var(--ease-soft);
+  transition: border-color var(--duration-fast) var(--ease-soft), box-shadow var(--duration-fast) var(--ease-soft);
   box-sizing: border-box;
 }
 
@@ -681,7 +681,7 @@ page {
   font-size: var(--font-size-body);
   color: var(--color-text-primary);
   line-height: 88rpx;
-  transition: all var(--duration-fast) var(--ease-soft);
+  transition: border-color var(--duration-fast) var(--ease-soft);
   box-sizing: border-box;
   position: relative;
 }
@@ -712,7 +712,7 @@ page {
   border-radius: var(--radius-pill);
   font-size: var(--font-size-caption);
   color: var(--color-text-secondary);
-  transition: all var(--duration-fast) var(--ease-soft);
+  transition: border-color var(--duration-fast) var(--ease-soft), color var(--duration-fast) var(--ease-soft);
 }
 
 .check-item:active {
@@ -923,14 +923,14 @@ page {
   height: 44rpx;
   margin-bottom: 8rpx;
   opacity: 0.45;
-  transition: all var(--duration-fast) var(--ease-soft);
+  transition: opacity var(--duration-fast) var(--ease-soft);
 }
 
 .tab-item__label {
   font-size: var(--font-size-caption);
   color: var(--color-text-tertiary);
   line-height: 1.2;
-  transition: all var(--duration-fast) var(--ease-soft);
+  transition: color var(--duration-fast) var(--ease-soft);
 }
 
 .tab-item--active .tab-item__icon {
@@ -1095,7 +1095,7 @@ page {
   background: var(--color-surface-gradient);
   border: 1.5rpx solid rgba(244, 212, 140, 0.12);
   border-radius: var(--radius-md);
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out);
 }
 
 .list-item:active {
@@ -1619,7 +1619,7 @@ page {
   align-items: center;
   justify-content: center;
   z-index: var(--z-card);
-  transition: all var(--duration-fast) var(--ease-soft);
+  transition: transform var(--duration-fast) var(--ease-soft), box-shadow var(--duration-fast) var(--ease-soft);
 }
 
 .fab:active {

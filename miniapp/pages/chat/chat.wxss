@@ -255,7 +255,7 @@ page {
   color: var(--color-bg);
   background: linear-gradient(135deg, var(--color-gold-light), var(--color-gold));
   box-shadow: 0 4rpx 20rpx var(--color-gold-glow-strong);
-  transition: all 0.15s ease-out;
+  transition: transform 0.15s ease-out;
 }
 
 .retry-btn::after { border: none; }

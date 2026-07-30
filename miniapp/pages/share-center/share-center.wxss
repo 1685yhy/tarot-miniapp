@@ -267,7 +267,7 @@
   padding: var(--spacing-md) 0;
   border-bottom: 1rpx solid rgba(244, 212, 140, 0.05);
   opacity: 0.60;
-  transition: all var(--duration-fast) var(--ease-soft);
+  transition: opacity var(--duration-fast) var(--ease-soft);
 }
 
 .reward-tier:last-of-type {

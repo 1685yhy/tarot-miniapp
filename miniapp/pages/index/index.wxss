@@ -135,7 +135,22 @@
     0 0 50rpx rgba(244, 212, 140, 0.04);
   position: relative;
   overflow: hidden;
-  animation: card-warm-breathe 5s ease-in-out infinite;
+  animation: card-warm-breathe 5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+/* Glow pseudo-element — animated opacity instead of box-shadow */
+.card-warm::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, rgba(244, 212, 140, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+  opacity: 0.3;
+  animation: card-warm-breathe 5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  z-index: 0;
 }
 
 /* Subtle warm gradient overlay */
@@ -180,7 +195,7 @@
   margin: -8rpx 0 0 -8rpx;
   background: rgba(244, 212, 140, 0.30);
   border-radius: 50%;
-  transform: scale(0);
+  transform: scale(0.05);
   opacity: 0;
 }
 
@@ -190,7 +205,7 @@
 
 @keyframes ripple-expand {
   0% {
-    transform: scale(0);
+    transform: scale(0.05);
     opacity: 1;
   }
   100% {
@@ -235,7 +250,7 @@
 
 /* --- Pressable interaction --- */
 .card-press {
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
@@ -397,11 +412,26 @@
     0 0 80rpx rgba(244, 212, 140, 0.03);
 }
 
+/* Glow pseudo-element for card-glow-breathe */
+.card.card--revealed::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, rgba(244, 212, 140, 0.10) 0%, transparent 70%);
+  pointer-events: none;
+  opacity: 0.3;
+  animation: card-glow-breathe 4s cubic-bezier(0.45, 0, 0.55, 1) 0.5s infinite;
+  z-index: 0;
+}
+
 /* --- Card rise reveal (dramatic entrance) --- */
 .card-rise {
   animation:
     card-rise-reveal 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s both,
-    card-glow-breathe 4s ease-in-out 0.5s infinite;
+    card-glow-breathe 4s cubic-bezier(0.45, 0, 0.55, 1) 0.5s infinite;
 }
 
 @keyframes card-rise-reveal {
@@ -570,7 +600,7 @@
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow-card);
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
 }
 
 .section .card-press:active {
@@ -702,7 +732,7 @@
   border: 1.5rpx solid rgba(244, 212, 140, 0.12);
   border-radius: var(--radius-lg, 24rpx);
   box-shadow: var(--shadow-card);
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
@@ -1003,51 +1033,18 @@
   animation: none;
 }
 
-@keyframes nebula-rotate {
-  0%   { transform: rotate(0deg) scale(1); }
-  50%  { transform: rotate(4deg) scale(1.06); }
-  100% { transform: rotate(0deg) scale(1); }
-}
-
-@keyframes nebula-rotate-reverse {
-  0%   { transform: rotate(0deg) scale(1); }
-  50%  { transform: rotate(-4deg) scale(1.06); }
-  100% { transform: rotate(0deg) scale(1); }
-}
-
 /* ============================================================
    17. CARD GLOW — Breathing golden aura + warm breathe
    ============================================================ */
 
 @keyframes card-warm-breathe {
-  0%, 100% {
-    box-shadow:
-      0 4rpx 24rpx rgba(0,0,0,0.28),
-      0 0 50rpx rgba(244,212,140,0.06);
-  }
-  50% {
-    box-shadow:
-      0 4rpx 24rpx rgba(0,0,0,0.28),
-      0 0 80rpx rgba(244,212,140,0.15),
-      0 0 150rpx rgba(244,212,140,0.08),
-      0 0 200rpx rgba(244,212,140,0.03);
-  }
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
 }
 
 @keyframes card-glow-breathe {
-  0%, 100% {
-    box-shadow:
-      0 4rpx 24rpx rgba(0,0,0,0.28),
-      0 0 40rpx rgba(244,212,140,0.06),
-      0 0 80rpx rgba(244,212,140,0.03);
-  }
-  50% {
-    box-shadow:
-      0 4rpx 24rpx rgba(0,0,0,0.28),
-      0 0 50rpx rgba(244,212,140,0.12),
-      0 0 100rpx rgba(244,212,140,0.06),
-      0 0 160rpx rgba(244,212,140,0.02);
-  }
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
 }
 
 /* ============================================================
@@ -1131,24 +1128,13 @@
 
 .card-ready .card-warm {
   animation:
-    card-warm-breathe 5s ease-in-out infinite,
-    card-ready-pulse 2s ease-in-out infinite !important;
+    card-warm-breathe 5s cubic-bezier(0.45, 0, 0.55, 1) infinite,
+    card-ready-pulse 2s cubic-bezier(0.45, 0, 0.55, 1) infinite !important;
 }
 
 @keyframes card-ready-pulse {
-  0%, 100% {
-    border-color: rgba(244, 212, 140, 0.40);
-    box-shadow:
-      0 4rpx 24rpx rgba(0, 0, 0, 0.28),
-      0 0 50rpx rgba(244, 212, 140, 0.12);
-  }
-  50% {
-    border-color: rgba(244, 212, 140, 0.70);
-    box-shadow:
-      0 4rpx 24rpx rgba(0, 0, 0, 0.28),
-      0 0 80rpx rgba(244, 212, 140, 0.25),
-      0 0 150rpx rgba(244, 212, 140, 0.10);
-  }
+  0%, 100% { border-color: rgba(244, 212, 140, 0.40); opacity: 0.4; }
+  50% { border-color: rgba(244, 212, 140, 0.70); opacity: 0.9; }
 }
 
 /* --- Streak badge (gold, inline) --- */
@@ -1206,7 +1192,7 @@
   letter-spacing: 1rpx;
   padding: 6rpx var(--spacing-sm);
   border-bottom: 1rpx dashed rgba(244, 212, 140, 0.25);
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: opacity var(--duration-fast) var(--ease-out), border-bottom-color var(--duration-fast) var(--ease-out);
 }
 
 .reflection-link:active {
@@ -1252,7 +1238,21 @@
   overflow: hidden;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  animation: hero-cta-breathe 2.5s ease-in-out infinite;
+  animation: hero-cta-breathe 2.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+.hero-cta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, rgba(244, 212, 140, 0.10) 0%, transparent 70%);
+  pointer-events: none;
+  opacity: 0.4;
+  animation: hero-cta-breathe 2.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  z-index: 0;
 }
 
 .hero-cta:active {
@@ -1272,7 +1272,7 @@
     transparent 60%
   );
   pointer-events: none;
-  animation: hero-cta-glow-pulse 3s ease-in-out infinite;
+  animation: hero-cta-glow-pulse 3s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
 .hero-cta-title {
@@ -1296,14 +1296,8 @@
 }
 
 @keyframes hero-cta-breathe {
-  0%, 100% {
-    border-color: rgba(244,212,140,0.35);
-    box-shadow: 0 0 20rpx rgba(244,212,140,0.08);
-  }
-  50% {
-    border-color: rgba(244,212,140,0.70);
-    box-shadow: 0 0 40rpx rgba(244,212,140,0.20), 0 0 80rpx rgba(244,212,140,0.10);
-  }
+  0%, 100% { border-color: rgba(244,212,140,0.35); opacity: 0.4; }
+  50% { border-color: rgba(244,212,140,0.70); opacity: 0.8; }
 }
 
 @keyframes hero-cta-glow-pulse {
@@ -1457,20 +1451,27 @@
   border-radius: inherit;
   pointer-events: none;
   border: 2rpx solid rgba(244, 212, 140, 0.40);
-  animation: daily-glow-breathe 2s ease-in-out infinite;
+  animation: daily-glow-breathe 2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+.daily-card-glow-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, rgba(244, 212, 140, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+  opacity: 0.4;
+  animation: daily-glow-breathe 2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  z-index: 0;
+  border-radius: inherit;
 }
 
 @keyframes daily-glow-breathe {
-  0%, 100% {
-    opacity: 0.6;
-    border-color: rgba(244, 212, 140, 0.40);
-    box-shadow: 0 0 30rpx rgba(244, 212, 140, 0.12);
-  }
-  50% {
-    opacity: 1.0;
-    border-color: rgba(244, 212, 140, 0.80);
-    box-shadow: 0 0 60rpx rgba(244, 212, 140, 0.25), 0 0 120rpx rgba(244, 212, 140, 0.12), 0 0 180rpx rgba(244, 212, 140, 0.05);
-  }
+  0%, 100% { border-color: rgba(244, 212, 140, 0.40); opacity: 0.4; }
+  50% { border-color: rgba(244, 212, 140, 0.80); opacity: 0.8; }
 }
 
 /* ============================================================
@@ -1484,7 +1485,7 @@
   border-radius: var(--radius-lg, 24rpx);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
 }
 
 .tasks-card:active {
@@ -1562,7 +1563,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 .task-check--checked {
@@ -1605,16 +1606,10 @@
    ACCESSIBILITY: Reduced Motion
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
-  .hero::before,
-  .stars-layer::after,
-  .nebula,
-  .card-warm,
-  .card--teaching,
-  .daily-card-glow-overlay,
-  .sparkle-field .sparkle,
-  .hero-cta,
-  .hero-cta-glow {
-    animation: none !important;
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
   .sparkle-field .sparkle { opacity: 0; }
   .daily-card-glow-overlay { opacity: 0.6; border-color: rgba(244,212,140,0.30); }
@@ -1779,7 +1774,7 @@
   box-shadow: var(--shadow-gold-button);
   position: relative;
   z-index: 1;
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-out);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   max-width: 320rpx;
@@ -1800,7 +1795,7 @@
   border-radius: var(--radius-pill, 999rpx);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
   position: relative;
   z-index: 1;
 }
@@ -1923,7 +1918,7 @@
   height: 12rpx;
   border-radius: 50%;
   background: rgba(244, 212, 140, 0.15);
-  transition: all 0.3s ease;
+  transition: background 0.3s ease, box-shadow 0.3s ease, width 0.3s ease, border-radius 0.3s ease;
 }
 
 .onboarding-dot--active {
@@ -2001,7 +1996,7 @@
   background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
   border-radius: var(--radius-pill, 999rpx);
   box-shadow: var(--shadow-gold-button);
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-out), opacity var(--duration-fast) var(--ease-out);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
@@ -2044,7 +2039,7 @@
   border-radius: var(--radius-md, 16rpx);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
   box-sizing: border-box;
 }
 

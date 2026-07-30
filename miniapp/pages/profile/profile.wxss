@@ -293,7 +293,8 @@
   display: flex;
   align-items: center;
   padding: var(--spacing-md) var(--spacing-xl);
-  transition: all var(--duration-fast) var(--ease-soft);
+  transition: background var(--duration-fast) var(--ease-soft),
+              transform var(--duration-fast) var(--ease-soft);
   position: relative;
   min-height: 88rpx;
   height: 100rpx;
@@ -436,7 +437,9 @@
   padding: var(--spacing-lg) var(--spacing-xl);
   margin: var(--spacing-sm) var(--spacing-lg);
   box-shadow: var(--shadow-card);
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out);
   position: relative;
   border-left: 4rpx solid var(--color-gold);
 }
@@ -675,7 +678,8 @@
   border: none;
   padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: var(--radius-sm);
-  transition: all var(--duration-fast) var(--ease-out);
+  transition: color var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out);
 }
 
 .clear-btn:active {

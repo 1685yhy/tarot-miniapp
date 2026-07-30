@@ -207,7 +207,7 @@ page {
   0% { opacity: 0; transform: translateY(0) scale(1); }
   20% { opacity: 0.6; }
   80% { opacity: 0.6; }
-  100% { opacity: 0; transform: translateY(-300rpx) scale(0); }
+  100% { opacity: 0; transform: translateY(-300rpx) scale(0.05); }
 }
 
 /* ================================================================
@@ -456,7 +456,8 @@ page {
   z-index: 10;
   opacity: 0;
   transform: translateY(40rpx);
-  transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 1s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .screen-0-content--visible {
@@ -578,7 +579,8 @@ page {
   letter-spacing: 4rpx;
   opacity: 0;
   transform: scale(0.3);
-  transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: opacity 1s cubic-bezier(0.34, 1.56, 0.64, 1),
+              transform 1s cubic-bezier(0.34, 1.56, 0.64, 1);
   text-shadow: 0 0 80rpx rgba(244, 212, 140, 0.2);
 }
 
@@ -663,7 +665,8 @@ page {
   gap: 20rpx;
   opacity: 0;
   transform: scale(0.8);
-  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: opacity 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+              transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   margin-bottom: 60rpx;
 }
 
@@ -766,7 +769,8 @@ page {
   margin: 0 auto 32rpx;
   opacity: 0;
   transform: scaleX(0.1);
-  transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: opacity 0.8s cubic-bezier(0.34, 1.56, 0.64, 1),
+              transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .screen-3-card-wrap--reveal {
@@ -890,7 +894,8 @@ page {
   z-index: 10;
   opacity: 0;
   transform: translateY(30rpx);
-  transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .screen-4-content--visible {
@@ -1107,7 +1112,8 @@ page {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.05);
   opacity: 0;
-  transition: all 0.3s ease;
+  transition: opacity 0.3s ease,
+              background 0.3s ease;
 }
 
 .screen-5-mood-dot--show {
@@ -1116,7 +1122,7 @@ page {
 }
 
 @keyframes mood-dot-pop {
-  0% { transform: scale(0); }
+  0% { transform: scale(0.05); }
   100% { transform: scale(1); }
 }
 
@@ -1163,7 +1169,8 @@ page {
   z-index: 10;
   opacity: 0;
   transform: translateY(40rpx);
-  transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 1s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .screen-6-content--visible {
@@ -1223,7 +1230,8 @@ page {
   gap: 24rpx;
   opacity: 0;
   transform: translateY(30rpx);
-  transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .screen-7-content--visible {
@@ -1254,7 +1262,8 @@ page {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease,
+              border-color 0.3s ease;
 }
 
 .screen-7-poster-preview:active {
