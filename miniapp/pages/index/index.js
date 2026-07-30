@@ -11,7 +11,7 @@ const analytics = require('../../utils/analytics');
 function _getFreeReadingsLimit() {
   const app = getApp();
   const quota = app.globalData.memberStatus?.free_quota;
-  return quota?.daily_readings || 3;
+  return quota?.daily_readings || 5;
 }
 
 const IMAGE_BASE = 'https://xingxiang.chat/images/cards_full';

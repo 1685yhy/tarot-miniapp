@@ -37,7 +37,7 @@ class Settings(BaseSettings):
     ENABLE_DEV_LOGIN: bool = False
 
     # Limits
-    FREE_DAILY_READINGS: int = 3
+    FREE_DAILY_READINGS: int = 5
     FREE_CHAT_MESSAGES: int = 3
 
     model_config = SettingsConfigDict(env_file=".env")
