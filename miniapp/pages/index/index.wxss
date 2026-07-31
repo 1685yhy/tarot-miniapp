@@ -412,7 +412,7 @@
     0 0 80rpx rgba(244, 212, 140, 0.03);
 }
 
-/* Glow pseudo-element for card-glow-breathe */
+/* Glow pseudo-element — static opacity (breathe animation removed) */
 .card.card--revealed::before {
   content: '';
   position: absolute;
@@ -423,15 +423,13 @@
   background: radial-gradient(ellipse at center, rgba(244, 212, 140, 0.10) 0%, transparent 70%);
   pointer-events: none;
   opacity: 0.3;
-  animation: card-glow-breathe 4s cubic-bezier(0.45, 0, 0.55, 1) 0.5s infinite;
   z-index: 0;
 }
 
 /* --- Card rise reveal (dramatic entrance) --- */
+/* NOTE: card-glow-breathe (infinite) removed from .card-rise — glow now static only */
 .card-rise {
-  animation:
-    card-rise-reveal 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s both,
-    card-glow-breathe 4s cubic-bezier(0.45, 0, 0.55, 1) 0.5s infinite;
+  animation: card-rise-reveal 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s both;
 }
 
 @keyframes card-rise-reveal {
@@ -919,7 +917,6 @@
     570rpx 860rpx rgba(255,255,255,0.08),
     660rpx 920rpx rgba(255,255,255,0.06),
     730rpx 780rpx rgba(255,255,255,0.08);
-  animation: stars-drift-slow 60s ease-in-out infinite;
 }
 
 /* --- Layer 2 — Mid: 18 gold-tinted dots, medium drift --- */
@@ -951,7 +948,6 @@
     390rpx 660rpx rgba(244,212,140,0.05),
     530rpx 790rpx rgba(244,212,140,0.08),
     650rpx 700rpx rgba(244,212,140,0.06);
-  animation: stars-drift-mid 40s ease-in-out infinite;
 }
 
 /* --- Layer 3 — Close: 7 bright gold dots, fast drift with glow --- */
@@ -979,26 +975,6 @@
     680rpx 350rpx 8rpx 2rpx rgba(232,200,120,0.05),
     300rpx 800rpx rgba(244,212,140,0.30),
     300rpx 800rpx 8rpx 2rpx rgba(244,212,140,0.06);
-  animation: stars-drift-close 24s ease-in-out infinite;
-}
-
-@keyframes stars-drift-slow {
-  0%   { transform: translate(0, 0); }
-  50%  { transform: translate(18rpx, -8rpx); }
-  100% { transform: translate(0, 0); }
-}
-
-@keyframes stars-drift-mid {
-  0%   { transform: translate(0, 0); }
-  50%  { transform: translate(-24rpx, 12rpx); }
-  100% { transform: translate(0, 0); }
-}
-
-@keyframes stars-drift-close {
-  0%   { transform: translate(0, 0); }
-  33%  { transform: translate(32rpx, -16rpx); }
-  66%  { transform: translate(-14rpx, 20rpx); }
-  100% { transform: translate(0, 0); }
 }
 
 /* ============================================================
@@ -1076,9 +1052,6 @@
 .s1 { top: 15%; left: 8%;  animation: sparkle-float 3.2s ease-in-out 0.3s infinite; }
 .s2 { top: 22%; left: 88%; animation: sparkle-float 3.8s ease-in-out 0.9s infinite; }
 .s3 { top: 70%; left: 10%; animation: sparkle-float 2.8s ease-in-out 0.1s infinite; }
-.s4 { top: 65%; left: 85%; animation: sparkle-float 3.5s ease-in-out 1.6s infinite; }
-.s5 { top: 40%; left: 48%; animation: sparkle-float 4.2s ease-in-out 2.2s infinite; }
-.s6 { top: 82%; left: 42%; animation: sparkle-float 2.6s ease-in-out 0.7s infinite; }
 
 @keyframes sparkle-float {
   0%, 100% {
@@ -1441,38 +1414,8 @@
   margin-bottom: 12rpx;
 }
 
-/* Breathing glow border animation (unflipped state) */
-.daily-card-glow-overlay {
-  position: absolute;
-  top: -4rpx;
-  left: -4rpx;
-  right: -4rpx;
-  bottom: -4rpx;
-  border-radius: inherit;
-  pointer-events: none;
-  border: 2rpx solid rgba(244, 212, 140, 0.40);
-  animation: daily-glow-breathe 2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
-}
-
-.daily-card-glow-overlay::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(ellipse at center, rgba(244, 212, 140, 0.12) 0%, transparent 70%);
-  pointer-events: none;
-  opacity: 0.4;
-  animation: daily-glow-breathe 2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
-  z-index: 0;
-  border-radius: inherit;
-}
-
-@keyframes daily-glow-breathe {
-  0%, 100% { border-color: rgba(244, 212, 140, 0.40); opacity: 0.4; }
-  50% { border-color: rgba(244, 212, 140, 0.80); opacity: 0.8; }
-}
+/* NOTE: daily-card-glow-overlay (breathing glow) removed — card keeps its
+   static box-shadow border glow from .card--teaching (no animation) */
 
 /* ============================================================
    24. TASKS CARD — "今日任务" widget on homepage
@@ -1607,12 +1550,11 @@
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    transition-duration: 0s !important;
   }
   .sparkle-field .sparkle { opacity: 0; }
-  .daily-card-glow-overlay { opacity: 0.6; border-color: rgba(244,212,140,0.30); }
   .to-star { animation: none !important; opacity: 0.08; }
   .tarot-overlay-content { animation: none; }
 }
