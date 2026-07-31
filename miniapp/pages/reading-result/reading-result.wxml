@@ -54,7 +54,18 @@
     <view class="inner-wrap">
 
       <!-- ==========================================================
-           1. CARD REVEAL — Three-card spread on a table
+           1. PERSONA — Interpreter identity bar (top, prominent)
+           ========================================================== -->
+      <view class="persona-badge" wx:if="{{personaDisplay}}">
+        <text class="pb-icon">{{personaDisplay.icon}}</text>
+        <view class="pb-info">
+          <text class="pb-label">正在为你解读</text>
+          <text class="pb-name">{{personaDisplay.name}}</text>
+        </view>
+      </view>
+
+      <!-- ==========================================================
+           2. CARD REVEAL — Three-card spread on a table
            ========================================================== -->
       <view class="card-default">
 
@@ -83,14 +94,24 @@
       </view>
 
       <!-- ==========================================================
-           2. DIVIDER — Quiet breathing room
+           3. DIVIDER — Quiet breathing room
            ========================================================== -->
       <view class="divider">
         <view class="divider-line"></view>
       </view>
 
       <!-- ==========================================================
-           3. LETTER — The interpretation as personal prose (always expanded)
+           4. TL;DR — Key insight summary (before the full letter)
+           ========================================================== -->
+      <view class="tldr-card" wx:if="{{tldr && tldr.length > 0}}">
+        <view class="tldr-item" wx:for="{{tldr}}" wx:for-item="line" wx:key="*this">
+          <view class="tldr-dot"></view>
+          <text class="tldr-text">{{line}}</text>
+        </view>
+      </view>
+
+      <!-- ==========================================================
+           5. LETTER — The interpretation as personal prose (hero)
            ========================================================== -->
       <view class="letter-section">
         <view class="letter-body">
@@ -99,7 +120,7 @@
       </view>
 
       <!-- ==========================================================
-           5. ACTION SUGGESTIONS — Actionable checklist cards
+           6. ACTION SUGGESTIONS — Actionable checklist cards
            ========================================================== -->
       <action-cards
         wx:if="{{reading.action_items && reading.action_items.length > 0}}"
@@ -114,7 +135,7 @@
       </view>
 
       <!-- ==========================================================
-           6. TEACHING — Card depth analysis (collapsible)
+           7. TEACHING — Card depth analysis (collapsible)
            ========================================================== -->
       <view class="teaching-section" wx:if="{{hasTeachingData}}">
         <view class="teaching-toggle" bindtap="onToggleTeaching" role="button" aria-label="切换牌面深度解析">
@@ -143,7 +164,7 @@
       </view>
 
       <!-- ==========================================================
-           7. REFLECTION CARD — Guide user to diary journaling
+           8. REFLECTION CARD — Guide user to diary journaling
            ========================================================== -->
       <view wx:if="{{reflectionQuestion}}" class="reflection-card">
         <view class="reflection-card-glow"></view>
@@ -156,13 +177,18 @@
       </view>
 
       <!-- ==========================================================
-           8. BOTTOM BAR — Gift a card + Share + Diary + Back
+           9. BOTTOM BAR — Share + Save + Diary in a row (evenly spaced)
            ========================================================== -->
       <view class="bottom-bar">
         <button class="bottom-bar-btn" bindtap="onSendCardToFriend" aria-label="送好友一张牌，好友扫码后双方各得一次免费深度解读">送好友一张牌 ✦</button>
         <button class="bottom-bar-btn" bindtap="onOpenSharePoster" aria-label="分享解读海报">分享海报</button>
+        <button class="bottom-bar-btn" bindtap="{{isSaved ? 'onUnsaveReading' : 'onSaveReading'}}" aria-label="{{isSaved ? '取消保存解读' : '保存解读到收藏'}}">{{isSaved ? '已保存' : '保存解读'}}</button>
         <button class="bottom-bar-btn" bindtap="onGoDiaryFromReading" aria-label="写日记记录感悟">写日记</button>
-        <button class="bottom-bar-btn" bindtap="onBackHome" aria-label="回到首页">回到首页</button>
+      </view>
+
+      <!-- Secondary exit link -->
+      <view class="bottom-back">
+        <text class="bottom-back-link" bindtap="onBackHome" role="button" aria-label="回到首页">回到首页</text>
       </view>
 
       <!-- ===== AI Disclaimer ===== -->
