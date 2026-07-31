@@ -156,12 +156,13 @@
       </view>
 
       <!-- ==========================================================
-           8. BOTTOM BAR — Share + Diary + Back in a row
+           8. BOTTOM BAR — Gift a card + Share + Diary + Back
            ========================================================== -->
       <view class="bottom-bar">
-        <button class="bottom-bar-btn" bindtap="onOpenSharePoster">分享海报</button>
-        <button class="bottom-bar-btn" bindtap="onGoDiaryFromReading">写日记</button>
-        <button class="bottom-bar-btn" bindtap="onBackHome">回到首页</button>
+        <button class="bottom-bar-btn" bindtap="onSendCardToFriend" aria-label="送好友一张牌，好友扫码后双方各得一次免费深度解读">送好友一张牌 ✦</button>
+        <button class="bottom-bar-btn" bindtap="onOpenSharePoster" aria-label="分享解读海报">分享海报</button>
+        <button class="bottom-bar-btn" bindtap="onGoDiaryFromReading" aria-label="写日记记录感悟">写日记</button>
+        <button class="bottom-bar-btn" bindtap="onBackHome" aria-label="回到首页">回到首页</button>
       </view>
 
       <!-- ===== AI Disclaimer ===== -->
@@ -224,6 +225,20 @@
   keyInsight="{{shareKeyInsight}}"
   nickname="{{userNickname}}"
   bind:close="onCloseSharePoster"
+  bind:share="onSharePosterToFriend"
+/>
+
+<!-- ===== INVITE POSTER — "送好友一张牌": QR carries the inviter's code ===== -->
+<share-poster
+  wx:if="{{reading}}"
+  mode="invite"
+  visible="{{showInvitePoster}}"
+  inviteCode="{{inviteCode}}"
+  cardImagePath="{{shareCardImage}}"
+  cardName="{{shareCardName}}"
+  keyInsight="{{shareKeyInsight}}"
+  nickname="{{userNickname}}"
+  bind:close="onCloseInvitePoster"
   bind:share="onSharePosterToFriend"
 />
 

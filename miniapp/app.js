@@ -1,5 +1,5 @@
 const { checkLogin } = require('./utils/auth');
-const { BASE_URL } = require('./utils/api');
+const { BASE_URL, request } = require('./utils/api');
 const perf = require('./utils/performance');
 const analytics = require('./utils/analytics');
 
@@ -7,8 +7,14 @@ const analytics = require('./utils/analytics');
 const TRIAL_STORAGE_KEY = 'trial_expiry';
 const TRIAL_MEMBER_KEY = 'is_trial_member';
 
+/** 裂变：已处理的邀请码存储键（同一邀请码只处理一次） */
+const INVITE_PROCESSED_KEY = '_invite_processed_code';
+
 App({
-  onLaunch() {
+  onLaunch(options) {
+    // === 裂变：好友送牌 —— 收到邀请码则登录后兑换 ===
+    this._handleInvite(options);
+
     // === Analytics: app launch ===
     analytics.pageView('app_launch');
     analytics.trackEvent('appLaunch');
@@ -25,9 +31,11 @@ App({
       );
     }
 
-    checkLogin().catch(() => {
-      console.log('登录将在首次API请求时触发');
-    });
+    checkLogin()
+      .catch(() => {
+        console.log('登录将在首次API请求时触发');
+      })
+      .then(() => this._processPendingInvite());
 
     // 检查试用是否过期，过期自动撤销
     this._checkTrialExpiry();
@@ -55,6 +63,56 @@ App({
         console.log('[DEV] 自动化测试页: /pages/test-runner/test-runner');
       }
     } catch (e) { /* silent */ }
+  },
+
+  /* ---------------------------------------------------------------
+     裂变：好友送牌 —— 处理进入小程序的邀请码
+     - 扫码进入：wxacode 的 scene 形如 "invite_code=STAR-XXXX"
+     - 普通链接：?invite_code=STAR-XXXX 或 ?invite=STAR-XXXX（兼容旧版分享）
+     成功兑换后双方各得 +1 次免费深度解读（不是会员、不是现金）
+     --------------------------------------------------------------- */
+
+  /** 解析启动参数中的邀请码并暂存（登录完成后兑换） */
+  _handleInvite(options) {
+    const query = (options && options.query) || {};
+    let code = query.invite_code || query.invite || '';
+    if (!code && query.scene) {
+      // 小程序码（wxacode.getUnlimited）扫码进入：scene 直接出现在 query 中
+      const match = /invite_code=([A-Z0-9-]+)/i.exec(String(query.scene));
+      if (match) code = match[1];
+    }
+    if (!code) return;
+    this._pendingInviteCode = String(code).trim().toUpperCase();
+  },
+
+  /** 兑换邀请码：成功后 toast 提示；每个邀请码只处理一次 */
+  async _processPendingInvite() {
+    const code = this._pendingInviteCode;
+    if (!code || this._inviteProcessing) return;
+    this._pendingInviteCode = null;
+    this._inviteProcessing = true;
+
+    try {
+      // 同一邀请码只兑换一次（本地去重，服务端另有唯一约束兜底）
+      if (wx.getStorageSync(INVITE_PROCESSED_KEY) === code) return;
+
+      await request('/share/invite', {
+        method: 'POST',
+        data: { invite_code: code },
+      });
+
+      wx.setStorageSync(INVITE_PROCESSED_KEY, code);
+      wx.showToast({
+        title: '好友送你一张牌！获得一次免费深度解读 ✦',
+        icon: 'none',
+        duration: 2500,
+      });
+    } catch (err) {
+      // 静默失败：邀请码无效 / 已领取过 / 不能邀请自己
+      console.warn('[invite] 邀请码处理失败:', err.message);
+    } finally {
+      this._inviteProcessing = false;
+    }
   },
 
   /** 检查本地试用缓存是否过期 */

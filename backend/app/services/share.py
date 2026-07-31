@@ -131,7 +131,7 @@ async def process_invite(
     invitee_user: User,
 ) -> dict:
     """
-    Process an invite: reward both inviter and invitee with +3 deep readings.
+    Process an invite: reward both inviter and invitee with +1 free deep reading.
 
     Returns a dict with details about what happened.
     """
@@ -160,14 +160,14 @@ async def process_invite(
     )
     db.add(invite)
 
-    # Reward: +3 free deep readings for BOTH inviter and invitee
-    inviter.free_deep_readings = (inviter.free_deep_readings or 0) + 3
-    invitee_user.free_deep_readings = (invitee_user.free_deep_readings or 0) + 3
+    # Reward: +1 free deep reading for BOTH inviter and invitee
+    inviter.free_deep_readings = (inviter.free_deep_readings or 0) + 1
+    invitee_user.free_deep_readings = (invitee_user.free_deep_readings or 0) + 1
 
     return {
         "success": True,
-        "inviter_reward": 3,
-        "invitee_reward": 3,
+        "inviter_reward": 1,
+        "invitee_reward": 1,
         "inviter_name": inviter.nickname or "一位星光旅人",
     }
 
