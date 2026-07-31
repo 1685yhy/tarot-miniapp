@@ -223,8 +223,10 @@ function _drawKeyInsight(ctx, W, Y, insight) {
 /**
  * Draw the QR code image and its call-to-action.
  * Returns the Y coordinate just below the QR area.
+ *
+ * @param {string} [ctaText] - Optional call-to-action text (defaults to reading-mode copy)
  */
-function _drawQRCode(ctx, W, Y, qrImg) {
+function _drawQRCode(ctx, W, Y, qrImg, ctaText) {
   const qrSize = Math.round(W * QR_SIZE_RATIO);
   const qrX = Math.round((W - qrSize) / 2);
   const gap = Math.round(W * 0.024);
@@ -259,7 +261,7 @@ function _drawQRCode(ctx, W, Y, qrImg) {
   ctx.font = `${Math.round(W * 0.028)}px "PingFang SC", "Helvetica Neue", sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
-  ctx.fillText('扫码探索你的命运', W / 2, ctaY);
+  ctx.fillText(ctaText || '扫码探索你的命运', W / 2, ctaY);
   ctx.restore();
 
   return ctaY + Math.round(W * 0.042);
@@ -279,6 +281,104 @@ function _drawFooter(ctx, W, Y) {
   ctx.restore();
 }
 
+/**
+ * Draw the "daily card check-in" poster layout.
+ *
+ * Layout (3:4 portrait):
+ *   - Top 60% of the canvas: today's card image (centered, rounded
+ *     corners, golden border, soft gold glow)
+ *   - Middle: card name + date + "连续第N天 ✦" (date only when no streak)
+ *   - Bottom: mini-program code + brand footer
+ *
+ * Background is a dark indigo gradient #1A1A3E → #12122E.
+ *
+ * @param {Object} data - { cardImg, qrImg, cardName, dateText, streak }
+ */
+function _drawDailyLayout(ctx, W, H, data) {
+  const { cardImg, qrImg, cardName, dateText, streak } = data;
+
+  // ── Top 60%: card image, centered with gold border + soft glow ──
+  const topAreaH = Math.round(H * 0.60);
+  const cardW = Math.round(W * 0.52);
+  const cardH = Math.round(cardW * CARD_ASPECT);
+  const cardX = Math.round((W - cardW) / 2);
+  const cardY = Math.round((topAreaH - cardH) / 2) + Math.round(W * 0.004); // keep glow fully inside
+  const r = Math.round(cardW * 0.02);
+
+  // Soft golden glow behind the card
+  const glowPad = Math.round(W * 0.014);
+  ctx.save();
+  ctx.fillStyle = 'rgba(244, 212, 140, 0.10)';
+  _roundRect(ctx, cardX - glowPad, cardY - glowPad, cardW + glowPad * 2, cardH + glowPad * 2, r + glowPad);
+  ctx.fill();
+  ctx.restore();
+
+  // Card image (clipped to rounded rect) + gold border
+  ctx.save();
+  _roundRect(ctx, cardX, cardY, cardW, cardH, r);
+  ctx.clip();
+  if (cardImg) {
+    ctx.drawImage(cardImg, cardX, cardY, cardW, cardH);
+  } else {
+    ctx.fillStyle = '#252550';
+    ctx.fillRect(cardX, cardY, cardW, cardH);
+  }
+  ctx.restore();
+
+  ctx.save();
+  _roundRect(ctx, cardX, cardY, cardW, cardH, r);
+  ctx.strokeStyle = C_GOLD;
+  ctx.lineWidth = 1.5;
+  ctx.globalAlpha = 0.75;
+  ctx.stroke();
+  ctx.restore();
+
+  // ── Middle: card name + date + streak ──
+  let y = cardY + cardH + Math.round(W * 0.038);
+
+  // Card name (gold, bold)
+  ctx.save();
+  ctx.fillStyle = C_GOLD;
+  ctx.font = `bold ${Math.round(W * 0.046)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  if (cardName) {
+    ctx.fillText(cardName, W / 2, y);
+    y += Math.round(W * 0.064);
+  }
+  ctx.restore();
+
+  // Date (lavender, subtle)
+  if (dateText) {
+    ctx.save();
+    ctx.fillStyle = C_MUTED;
+    ctx.globalAlpha = 0.85;
+    ctx.font = `${Math.round(W * 0.030)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(dateText, W / 2, y);
+    ctx.restore();
+    y += Math.round(W * 0.048);
+  }
+
+  // Streak line — "连续第N天 ✦" (only when 2+ consecutive days)
+  if (streak >= 2) {
+    ctx.save();
+    ctx.fillStyle = C_GOLD;
+    ctx.font = `${Math.round(W * 0.032)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(`连续第${streak}天 ✦`, W / 2, y);
+    ctx.restore();
+  }
+
+  // ── Bottom: mini-program code + brand footer ──
+  // Anchor the QR area so its CTA text clears the footer
+  const qrAreaY = H - Math.round(W * 0.26);
+  _drawQRCode(ctx, W, qrAreaY, qrImg, '扫码 · 每日一牌');
+  _drawFooter(ctx, W, H - Math.round(W * 0.040));
+}
+
 // =====================================================================
 //  Main entry — drawSharePoster
 // =====================================================================
@@ -289,15 +389,18 @@ function _drawFooter(ctx, W, Y) {
  * @param {string}   canvasId          - Canvas element ID
  * @param {Object}   opts              - Options object
  * @param {Object}   opts.context      - Component/page `this` (for SelectorQuery)
+ * @param {string}   opts.mode         - 'reading' (default) | 'daily'
  * @param {string}   opts.cardImagePath - Tarot card image URL
  * @param {string}   opts.cardName     - Card display name (e.g. "愚者 · The Fool")
  * @param {string}   opts.keyInsight   - Short excerpt from the interpretation
  * @param {string}   opts.nickname     - User's display name
+ * @param {string}   opts.dateText     - Formatted date for daily mode (e.g. "2026.07.31")
+ * @param {number}   opts.streak       - Consecutive draw days for daily mode
  * @param {Function} opts.onSuccess    - Callback (tempFilePath)
  * @param {Function} opts.onError      - Callback (Error)
  */
 function drawSharePoster(canvasId, opts) {
-  const { context, cardImagePath, cardName, keyInsight, nickname, onSuccess, onError } = opts || {};
+  const { context, mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak, onSuccess, onError } = opts || {};
 
   if (!context || !canvasId) {
     if (onError) onError(new Error('Missing required params: context / canvasId'));
@@ -350,21 +453,33 @@ function drawSharePoster(canvasId, opts) {
       if (!cardImageLoaded || !qrImageLoaded) return;
       drawAttempted = true;
 
-      // Card image
-      const cardBottom = _drawCardImage(ctx, W, headerBottom, cardImg);
+      if (mode === 'daily') {
+        // ── Daily card check-in poster ──
+        _drawDailyLayout(ctx, W, H, {
+          cardImg: cardImg,
+          qrImg: qrImg,
+          cardName: cardName,
+          dateText: dateText,
+          streak: streak || 0,
+        });
+      } else {
+        // ── Reading result poster ──
+        // Card image
+        const cardBottom = _drawCardImage(ctx, W, headerBottom, cardImg);
 
-      // Card name
-      const nameBottom = _drawCardName(ctx, W, cardBottom, cardName);
+        // Card name
+        const nameBottom = _drawCardName(ctx, W, cardBottom, cardName);
 
-      // Key insight
-      const insightBottom = _drawKeyInsight(ctx, W, nameBottom, keyInsight);
+        // Key insight
+        const insightBottom = _drawKeyInsight(ctx, W, nameBottom, keyInsight);
 
-      // QR code (if loaded)
-      const qrY = Math.min(insightBottom, H - Math.round(W * 0.22));
-      _drawQRCode(ctx, W, qrY, qrImg);
+        // QR code (if loaded)
+        const qrY = Math.min(insightBottom, H - Math.round(W * 0.22));
+        _drawQRCode(ctx, W, qrY, qrImg);
 
-      // Footer
-      _drawFooter(ctx, W, H - Math.round(W * 0.040));
+        // Footer
+        _drawFooter(ctx, W, H - Math.round(W * 0.040));
+      }
 
       // Export
       wx.canvasToTempFilePath({

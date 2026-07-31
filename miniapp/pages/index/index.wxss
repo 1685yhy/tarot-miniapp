@@ -2073,3 +2073,32 @@
   margin: 24rpx 0; /* preserves previous wrapper spacing */
 }
 
+
+/* --- Daily card check-in share link ("保存今日卡牌") --- */
+.daily-share-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-xs) 0;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.daily-share-link text {
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gold);
+  letter-spacing: 2rpx;
+  opacity: 0.72;
+  padding: 6rpx 24rpx;
+  border-bottom: 1rpx dashed rgba(244, 212, 140, 0.28);
+  transition: opacity var(--duration-fast) var(--ease-out), border-bottom-color var(--duration-fast) var(--ease-out);
+}
+
+.daily-share-link:active text {
+  opacity: 1;
+  border-bottom-color: rgba(244, 212, 140, 0.55);
+}

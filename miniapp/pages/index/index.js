@@ -82,6 +82,12 @@ Page({
     dailyCardFlipped: false,
     dailyCardRestoring: false,
 
+    // v2.2: Daily card check-in poster (保存今日卡牌)
+    showDailySharePoster: false,
+    dailyShareCardImage: '',
+    dailyShareCardName: '',
+    dailyShareCardDate: '',
+
     // Annual report season flag (Dec-Jan)
     isAnnualReportSeason: false,
     annualReportYear: new Date().getFullYear(),
@@ -637,6 +643,49 @@ Page({
   /** Navigate to daily-card teaching page */
   onDailyCardTap() {
     wx.navigateTo({ url: '/pages/daily-card/daily-card' });
+  },
+
+  /* ---------------------------------------------------------------
+     Daily card check-in poster — "保存今日卡牌" (v2.2)
+     --------------------------------------------------------------- */
+
+  /** Open the daily card check-in poster modal */
+  onShareDailyCard() {
+    const card = this.data.dailyCard;
+    if (!card) return;
+    const d = new Date();
+    const dateText = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+    this.setData({
+      showDailySharePoster: true,
+      dailyShareCardImage: card.imagePath || card.image_url || '',
+      dailyShareCardName: card.name_zh || card.name_cn || '',
+      dailyShareCardDate: dateText,
+    });
+    analytics.trackEvent('daily_card_save_poster', { card: this.data.dailyShareCardName });
+  },
+
+  /** Close the daily card check-in poster modal */
+  onCloseDailySharePoster() {
+    this.setData({ showDailySharePoster: false });
+  },
+
+  /** Share the daily poster to a friend (opt-in only — no rewards attached) */
+  onShareDailyPosterToFriend(e) {
+    const imagePath = e.detail && e.detail.imagePath;
+    if (!imagePath) return;
+    try {
+      wx.shareAppMessage({
+        imageUrl: imagePath,
+        title: '星光映照 · 我的今日塔罗',
+      });
+    } catch (err) {
+      // Fallback: guide the user to save first
+      wx.showToast({
+        title: '请先保存海报，再从相册分享',
+        icon: 'none',
+        duration: 2000,
+      });
+    }
   },
 
   /** Deferred non-critical initialization — called from onReady to unblock first paint */

@@ -2,7 +2,7 @@
  * Share Poster Component
  * Canvas-based poster generator combining card image, quote, and QR code.
  *
- * Usage:
+ * Usage (reading-result poster):
  *   <share-poster
  *     visible="{{showSharePoster}}"
  *     cardImagePath="{{shareCardImage}}"
@@ -10,6 +10,17 @@
  *     keyInsight="{{shareKeyInsight}}"
  *     nickname="{{userNickname}}"
  *     bind:close="onCloseSharePoster"
+ *   />
+ *
+ * Usage (daily card check-in poster — mode="daily"):
+ *   <share-poster
+ *     mode="daily"
+ *     visible="{{showDailySharePoster}}"
+ *     cardImagePath="{{dailyShareCardImage}}"
+ *     cardName="{{dailyShareCardName}}"
+ *     dateText="{{dailyShareCardDate}}"
+ *     streak="{{streak}}"
+ *     bind:close="onCloseDailySharePoster"
  *   />
  */
 const { drawSharePoster } = require('../../utils/canvas-poster');
@@ -20,6 +31,10 @@ Component({
       type: Boolean,
       value: false,
       observer: '_onVisibleChange',
+    },
+    mode: {
+      type: String,
+      value: 'reading', // 'reading' | 'daily'
     },
     cardImagePath: {
       type: String,
@@ -36,6 +51,14 @@ Component({
     nickname: {
       type: String,
       value: '',
+    },
+    dateText: {
+      type: String,
+      value: '', // daily mode: formatted date, e.g. "2026.07.31"
+    },
+    streak: {
+      type: Number,
+      value: 0, // daily mode: consecutive draw days
     },
   },
 
@@ -84,7 +107,7 @@ Component({
        Draw the poster on canvas using the utility
        --------------------------------------------------------------- */
     _drawPoster() {
-      const { cardImagePath, cardName, keyInsight, nickname } = this.properties;
+      const { mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak } = this.properties;
 
       // Use the first card image; if cardImagePath is empty, skip
       if (!cardImagePath && !cardName) {
@@ -96,10 +119,13 @@ Component({
 
       drawSharePoster('shareCanvas', {
         context: this,
+        mode: mode || 'reading',
         cardImagePath: cardImagePath || '',
         cardName: cardName || '',
         keyInsight: keyInsight || '',
         nickname: nickname || '',
+        dateText: dateText || '',
+        streak: streak || 0,
         onSuccess: (tempFilePath) => {
           this.setData({
             previewPath: tempFilePath,
