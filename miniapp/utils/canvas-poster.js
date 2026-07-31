@@ -224,9 +224,10 @@ function _drawKeyInsight(ctx, W, Y, insight) {
  * Draw the QR code image and its call-to-action.
  * Returns the Y coordinate just below the QR area.
  *
- * @param {string} [ctaText] - Optional call-to-action text (defaults to reading-mode copy)
+ * @param {string} [ctaText]    - Optional call-to-action text (defaults to reading-mode copy)
+ * @param {string} [inviteCode] - Invite mode: draws "邀请码 STAR-XXXX" under the CTA
  */
-function _drawQRCode(ctx, W, Y, qrImg, ctaText) {
+function _drawQRCode(ctx, W, Y, qrImg, ctaText, inviteCode) {
   const qrSize = Math.round(W * QR_SIZE_RATIO);
   const qrX = Math.round((W - qrSize) / 2);
   const gap = Math.round(W * 0.024);
@@ -263,6 +264,21 @@ function _drawQRCode(ctx, W, Y, qrImg, ctaText) {
   ctx.textBaseline = 'top';
   ctx.fillText(ctaText || '扫码探索你的命运', W / 2, ctaY);
   ctx.restore();
+
+  // Invite mode: invite code line under the CTA (gold, so friends can also
+  // type it in manually — "送好友一张牌" flow, no points / cash reward)
+  if (inviteCode) {
+    const codeY = ctaY + Math.round(W * 0.032);
+    ctx.save();
+    ctx.fillStyle = C_GOLD;
+    ctx.globalAlpha = 0.9;
+    ctx.font = `${Math.round(W * 0.030)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(`邀请码 ${inviteCode}`, W / 2, codeY);
+    ctx.restore();
+    return codeY + Math.round(W * 0.044);
+  }
 
   return ctaY + Math.round(W * 0.042);
 }
@@ -379,6 +395,129 @@ function _drawDailyLayout(ctx, W, H, data) {
   _drawFooter(ctx, W, H - Math.round(W * 0.040));
 }
 
+/**
+ * Draw the "zodiac match" poster layout (relationship tarot card).
+ *
+ * Layout (3:4 portrait):
+ *   - Top: brand header + title "你们的塔罗关系牌"
+ *   - Zodiac pairing as the hero ("♈ + ♉")
+ *   - The drawn relationship card (centered, gold glow)
+ *   - Compatibility blurb (white, wrapped, capped at 4 lines)
+ *   - Bottom: mini-program code with CTA "看看你和谁的星座最契合"
+ *             + brand footer
+ *
+ * Tone: fun and light — the poster never says "destiny".
+ *
+ * @param {Object} data - { cardImg, qrImg, cardName, keyInsight, zodiacSigns }
+ */
+function _drawZodiacLayout(ctx, W, H, data) {
+  const { cardImg, qrImg, cardName, keyInsight, zodiacSigns } = data;
+
+  // ── Top: brand header (no nickname) + title ──
+  let y = _drawHeader(ctx, W, '');
+  y += Math.round(W * 0.012);
+
+  ctx.save();
+  ctx.fillStyle = C_GOLD;
+  ctx.font = `bold ${Math.round(W * 0.042)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillText('你们的塔罗关系牌', W / 2, y);
+  ctx.restore();
+  y += Math.round(W * 0.058);
+
+  // Zodiac pairing — the hero of the poster
+  if (zodiacSigns) {
+    ctx.save();
+    ctx.fillStyle = C_WHITE;
+    ctx.font = `${Math.round(W * 0.058)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(zodiacSigns, W / 2, y);
+    ctx.restore();
+    y += Math.round(W * 0.056);
+  }
+
+  // Relationship card name (lavender, subtle)
+  if (cardName) {
+    ctx.save();
+    ctx.fillStyle = C_MUTED;
+    ctx.font = `${Math.round(W * 0.031)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(`塔罗关系牌 · ${cardName}`, W / 2, y);
+    ctx.restore();
+    y += Math.round(W * 0.028);
+  }
+
+  // ── Relationship card image (centered, gold glow) ──
+  const cardW = Math.round(W * 0.30);
+  const cardH = Math.round(cardW * CARD_ASPECT);
+  const cardX = Math.round((W - cardW) / 2);
+  const r = Math.round(cardW * 0.02);
+
+  // Soft golden glow behind the card
+  const glowPad = Math.round(W * 0.012);
+  ctx.save();
+  ctx.fillStyle = 'rgba(244, 212, 140, 0.10)';
+  _roundRect(ctx, cardX - glowPad, y - glowPad, cardW + glowPad * 2, cardH + glowPad * 2, r + glowPad);
+  ctx.fill();
+  ctx.restore();
+
+  // Card image (clipped to rounded rect) + gold border
+  ctx.save();
+  _roundRect(ctx, cardX, y, cardW, cardH, r);
+  ctx.clip();
+  if (cardImg) {
+    ctx.drawImage(cardImg, cardX, y, cardW, cardH);
+  } else {
+    ctx.fillStyle = '#252550';
+    ctx.fillRect(cardX, y, cardW, cardH);
+  }
+  ctx.restore();
+
+  ctx.save();
+  _roundRect(ctx, cardX, y, cardW, cardH, r);
+  ctx.strokeStyle = C_GOLD;
+  ctx.lineWidth = 1.5;
+  ctx.globalAlpha = 0.75;
+  ctx.stroke();
+  ctx.restore();
+
+  // ── Compatibility blurb (wrapped, capped by the QR area above) ──
+  let textBottom = y + cardH + Math.round(W * 0.026);
+
+  if (keyInsight) {
+    const maxW = Math.round(W * 0.78);
+    const x = Math.round((W - maxW) / 2);
+    const fontSize = Math.round(W * 0.031);
+    const lineH = Math.round(fontSize * 1.55);
+    // Never overlap the QR zone: cap lines by available space (max 4)
+    const qrAreaY = H - Math.round(W * 0.25);
+    const textMaxBottom = qrAreaY - Math.round(W * 0.008);
+    const maxLines = Math.min(4, Math.max(1, Math.floor((textMaxBottom - textBottom) / lineH)));
+
+    ctx.save();
+    ctx.fillStyle = C_WHITE;
+    ctx.font = `${fontSize}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+
+    const lines = _wrapText(ctx, keyInsight, maxW);
+    for (let i = 0; i < Math.min(lines.length, maxLines); i++) {
+      ctx.fillText(lines[i], x, textBottom);
+      textBottom += lineH;
+    }
+    ctx.restore();
+    textBottom += Math.round(W * 0.010);
+  }
+
+  // ── Bottom: QR code with the "看看你和谁的星座最契合" CTA + footer ──
+  const qrY = Math.min(textBottom, H - Math.round(W * 0.25));
+  _drawQRCode(ctx, W, qrY, qrImg, '看看你和谁的星座最契合');
+  _drawFooter(ctx, W, H - Math.round(W * 0.040));
+}
+
 // =====================================================================
 //  Main entry — drawSharePoster
 // =====================================================================
@@ -389,18 +528,23 @@ function _drawDailyLayout(ctx, W, H, data) {
  * @param {string}   canvasId          - Canvas element ID
  * @param {Object}   opts              - Options object
  * @param {Object}   opts.context      - Component/page `this` (for SelectorQuery)
- * @param {string}   opts.mode         - 'reading' (default) | 'daily'
+ * @param {string}   opts.mode         - 'reading' (default) | 'daily' | 'invite' | 'zodiac'
  * @param {string}   opts.cardImagePath - Tarot card image URL
  * @param {string}   opts.cardName     - Card display name (e.g. "愚者 · The Fool")
  * @param {string}   opts.keyInsight   - Short excerpt from the interpretation
  * @param {string}   opts.nickname     - User's display name
  * @param {string}   opts.dateText     - Formatted date for daily mode (e.g. "2026.07.31")
  * @param {number}   opts.streak       - Consecutive draw days for daily mode
+ * @param {string}   opts.inviteCode   - Invite mode ("送好友一张牌"): QR carries
+ *                                      `scene=invite_code=CODE`, CTA + code shown
+ * @param {string}   opts.zodiacSigns  - Zodiac mode: pairing text (e.g. "♈ + ♉"),
+ *                                      drawn as the poster hero
  * @param {Function} opts.onSuccess    - Callback (tempFilePath)
  * @param {Function} opts.onError      - Callback (Error)
  */
 function drawSharePoster(canvasId, opts) {
-  const { context, mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak, onSuccess, onError } = opts || {};
+  const { context, mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak, inviteCode, zodiacSigns, onSuccess, onError } = opts || {};
+  const isInviteMode = !!(mode === 'invite' && inviteCode);
 
   if (!context || !canvasId) {
     if (onError) onError(new Error('Missing required params: context / canvasId'));
@@ -462,8 +606,17 @@ function drawSharePoster(canvasId, opts) {
           dateText: dateText,
           streak: streak || 0,
         });
+      } else if (mode === 'zodiac') {
+        // ── Zodiac match poster (relationship tarot card) ──
+        _drawZodiacLayout(ctx, W, H, {
+          cardImg: cardImg,
+          qrImg: qrImg,
+          cardName: cardName,
+          keyInsight: keyInsight,
+          zodiacSigns: zodiacSigns || '',
+        });
       } else {
-        // ── Reading result poster ──
+        // ── Reading result poster (also invite mode: same layout + invite QR) ──
         // Card image
         const cardBottom = _drawCardImage(ctx, W, headerBottom, cardImg);
 
@@ -473,9 +626,9 @@ function drawSharePoster(canvasId, opts) {
         // Key insight
         const insightBottom = _drawKeyInsight(ctx, W, nameBottom, keyInsight);
 
-        // QR code (if loaded)
-        const qrY = Math.min(insightBottom, H - Math.round(W * 0.22));
-        _drawQRCode(ctx, W, qrY, qrImg);
+        // QR code — invite mode reserves extra bottom room for the code line
+        const qrY = Math.min(insightBottom, H - Math.round(W * (isInviteMode ? 0.28 : 0.22)));
+        _drawQRCode(ctx, W, qrY, qrImg, isInviteMode ? '扫码 · 送你一张牌' : undefined, inviteCode);
 
         // Footer
         _drawFooter(ctx, W, H - Math.round(W * 0.040));
@@ -512,8 +665,14 @@ function drawSharePoster(canvasId, opts) {
     }
 
     // Load QR code from backend
-    // We use wx.downloadFile for broad domain compatibility
-    const qrUrl = BASE_URL + '/share/wxa-code?path=' + encodeURIComponent('pages/index/index') + '&width=280';
+    // We use wx.downloadFile for broad domain compatibility.
+    // Invite mode: the QR carries the invite code in its scene string
+    // (scene ≤ 32 chars: "invite_code=STAR-XXXX") — when a friend scans it,
+    // the mini-program launches with options.query.scene = "invite_code=STAR-XXXX".
+    let qrUrl = BASE_URL + '/share/wxa-code?path=' + encodeURIComponent('pages/index/index') + '&width=280';
+    if (isInviteMode) {
+      qrUrl += '&scene=' + encodeURIComponent('invite_code=' + inviteCode);
+    }
     wx.downloadFile({
       url: qrUrl,
       success: function (dlRes) {

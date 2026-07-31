@@ -496,3 +496,65 @@ async def generate_reflection_question(
     except Exception:
         logger.exception("generate_reflection_question failed")
         return f"「{first_card_name}」的启示对你意味着什么？"
+
+
+async def generate_zodiac_match(sign1: str, sign2: str, card_name: str | None = None) -> str | None:
+    """
+    Generate a brief, fun "relationship tarot card" blurb for a zodiac pairing.
+
+    Tone rules (strict):
+    - Playful, warm, chat-like — the card is a fun lens on the pairing,
+      never a verdict on two people.
+    - Forbidden: "命运 / 天生一对 / 灵魂伴侣 / 命中注定" style language.
+    - No anxiety, no judgment of either sign.
+    - Output is one short paragraph (about 60–100 Chinese chars).
+
+    Args:
+        sign1:      Zodiac key of the first sign (e.g. "aries").
+        sign2:      Zodiac key of the second sign (e.g. "taurus").
+        card_name:  Chinese name of the randomly drawn "relationship card".
+
+    Returns:
+        The blurb text, or ``None`` if the API call fails
+        (caller falls back to a local template).
+    """
+    if not settings.DEEPSEEK_API_KEY:
+        return None
+
+    cn1 = ZODIAC_CN.get(sign1.lower(), sign1)
+    cn2 = ZODIAC_CN.get(sign2.lower(), sign2)
+
+    client = _get_client()
+    try:
+        resp = await client.chat.completions.create(
+            model=settings.DEEPSEEK_MODEL,
+            max_tokens=200,
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "你是一位轻松的塔罗伙伴。用户选了两个星座，想看看属于这对组合的"
+                        "「塔罗关系牌」。请用轻松、有趣、温暖的口吻，写一段 60~100 字的简短解读。\n\n"
+                        "风格要求：\n"
+                        "- 把这对星座组合比作一段有趣的关系小剧本，比如「一个负责点火，一个负责熄火」\n"
+                        "- 提到抽到的塔罗牌，把它形容为这段关系的「主题曲」\n"
+                        "- 语气像朋友聊天，带一点幽默，不故弄玄虚\n\n"
+                        "禁忌：\n"
+                        "- 绝对不要使用「命运」「天生一对」「灵魂伴侣」「命中注定」「完美契合」等绝对化语言\n"
+                        "- 不要评判星座优劣，不要制造焦虑\n"
+                        "- 不要超过 100 字，不要使用 markdown 格式\n"
+                        "- 只返回解读正文，不要加标题、引号或前缀"
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": f"星座组合：{cn1} + {cn2}\n抽到的塔罗关系牌：{card_name or '恋人'}",
+                },
+            ],
+            timeout=30.0,
+        )
+        raw = (resp.choices[0].message.content or "").strip().strip('"').strip("'")
+        return raw or None
+    except Exception as exc:
+        logger.warning("generate_zodiac_match failed for %s+%s: %s", sign1, sign2, exc)
+        return None

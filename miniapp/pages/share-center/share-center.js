@@ -1,5 +1,22 @@
 // pages/share-center/share-center.js
 const { request, getFriendlyError } = require('../../utils/api');
+const { computeImagePath } = require('../../utils/cards');
+
+// Same zodiac list as onboarding (pages/index/index.js zodiacList)
+const ZODIAC_LIST = [
+  { key: 'aries', name: '白羊座', emoji: '♈' },
+  { key: 'taurus', name: '金牛座', emoji: '♉' },
+  { key: 'gemini', name: '双子座', emoji: '♊' },
+  { key: 'cancer', name: '巨蟹座', emoji: '♋' },
+  { key: 'leo', name: '狮子座', emoji: '♌' },
+  { key: 'virgo', name: '处女座', emoji: '♍' },
+  { key: 'libra', name: '天秤座', emoji: '♎' },
+  { key: 'scorpio', name: '天蝎座', emoji: '♏' },
+  { key: 'sagittarius', name: '射手座', emoji: '♐' },
+  { key: 'capricorn', name: '摩羯座', emoji: '♑' },
+  { key: 'aquarius', name: '水瓶座', emoji: '♒' },
+  { key: 'pisces', name: '双鱼座', emoji: '♓' },
+];
 
 Page({
   data: {
@@ -10,6 +27,23 @@ Page({
     stats: {},
     shareHistory: [],
     rewardProgressPercent: 0,
+
+    // Zodiac match (fun sharing — "你们的塔罗关系牌")
+    zodiacList: ZODIAC_LIST,
+    sign1Key: 'aries',
+    sign1Name: '白羊座',
+    sign1Emoji: '♈',
+    sign2Key: 'taurus',
+    sign2Name: '金牛座',
+    sign2Emoji: '♉',
+    pickerFor: '', // '' | 'sign1' | 'sign2' — which picker grid is open
+    matchLoading: false,
+    matchResult: null,
+    showMatchPoster: false,
+    matchCardImage: '',
+    matchCardName: '',
+    matchCompatText: '',
+    matchSignsText: '',
   },
 
   async onLoad() {
@@ -133,6 +167,107 @@ Page({
 
   onRetry() {
     this._loadAll();
+  },
+
+  /* ---------------------------------------------------------------
+     Zodiac match — "星座契合 · 塔罗关系牌" (fun, light, no rewards)
+     --------------------------------------------------------------- */
+
+  onSelectSign1() {
+    this.setData({ pickerFor: 'sign1' });
+  },
+
+  onSelectSign2() {
+    this.setData({ pickerFor: 'sign2' });
+  },
+
+  onPickSign(e) {
+    const key = e.currentTarget.dataset && e.currentTarget.dataset.key;
+    const which = this.data.pickerFor;
+    if (!which || !key) return;
+
+    const sign = this.data.zodiacList.find(s => s.key === key);
+    if (!sign) return;
+
+    const patch = { pickerFor: '' };
+    patch[`${which}Key`] = sign.key;
+    patch[`${which}Name`] = sign.name;
+    patch[`${which}Emoji`] = sign.emoji;
+    this.setData(patch);
+  },
+
+  onClosePicker() {
+    this.setData({ pickerFor: '' });
+  },
+
+  noop() {},
+
+  /** Fetch the relationship tarot card for the two selected signs */
+  async onCheckMatch() {
+    const { sign1Key, sign2Key, matchLoading } = this.data;
+    if (matchLoading) return;
+    if (!sign1Key || !sign2Key) {
+      wx.showToast({ title: '请先选择两个星座', icon: 'none' });
+      return;
+    }
+
+    this.setData({ matchLoading: true });
+    try {
+      const result = await request(`/share/zodiac-match?sign1=${sign1Key}&sign2=${sign2Key}`);
+
+      // Compute the card image path from the card metadata the API returns
+      const cardImage = computeImagePath({
+        name_en: result.name_en || '',
+        arcana: result.arcana,
+        card_number: result.card_number,
+        suit: result.suit,
+      }) || '';
+
+      this.setData({
+        matchResult: result,
+        matchLoading: false,
+        matchCardImage: cardImage,
+        matchCardName: result.card_name || '',
+        matchCompatText: result.compatibility_text || '',
+        matchSignsText: `${this.data.sign1Emoji} + ${this.data.sign2Emoji}`,
+      });
+    } catch (err) {
+      this.setData({ matchLoading: false });
+      wx.showToast({ title: getFriendlyError(err), icon: 'none' });
+    }
+  },
+
+  /** Open the zodiac match poster modal */
+  onShowMatchPoster() {
+    if (!this.data.matchResult) return;
+    this.setData({ showMatchPoster: true });
+  },
+
+  onCloseMatchPoster() {
+    this.setData({ showMatchPoster: false });
+  },
+
+  /** Share the zodiac poster to a friend (voluntary — no rewards attached) */
+  onShareMatchPoster(e) {
+    const imagePath = e.detail && e.detail.imagePath;
+    if (!imagePath) return;
+
+    const shareText = (this.data.matchResult && this.data.matchResult.share_text)
+      || '看看你和谁的星座最契合 ✦';
+
+    try {
+      wx.shareAppMessage({
+        imageUrl: imagePath,
+        title: shareText,
+      });
+    } catch (_err) {
+      // Fallback: guide the user to save first
+      wx.showToast({
+        title: '请先保存海报，再从相册分享',
+        icon: 'none',
+        duration: 2000,
+      });
+    }
   },
 
   onUnload() {
