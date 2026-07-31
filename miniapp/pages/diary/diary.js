@@ -1,6 +1,6 @@
 // pages/diary/diary.js
 const { request, getFriendlyError } = require('../../utils/api');
-const { computeImagePath, pngFallbackPath } = require('../../utils/cards');
+const { computeImagePath, findCard, pngFallbackPath } = require('../../utils/cards');
 const analytics = require('../../utils/analytics');
 
 // Mood score map for trend analysis
@@ -75,7 +75,9 @@ Page({
       // Compute card thumbnail paths for each entry
       const entries = [...this.data.entries, ...rawEntries.map(e => {
         if (e.card) {
-          e.cardImagePath = computeImagePath(e.card);
+          // Backend card is a brief {id, name_zh, meaning_upright} — resolve full card before computeImagePath
+          const fullCard = findCard(e.card.name_zh);
+          e.cardImagePath = fullCard ? computeImagePath(fullCard) : '';
         }
         return e;
       })];
@@ -529,11 +531,14 @@ Page({
     try {
       // Backend returns only share-safe fields — no nickname, no user_id
       const preview = await request(`/diary/entries/${id}/share-preview`);
+      // Backend card is a brief {id, name_zh, meaning_upright} — resolve full card before computeImagePath
+      const fullCard = preview.card ? findCard(preview.card.name_zh) : null;
+      const cardImagePath = fullCard ? computeImagePath(fullCard) : (entry.cardImagePath || '');
       const diaryShareData = {
         moodEmoji: preview.mood_emoji || MOOD_EMOJI_MAP[entry.mood] || '🤔',
         date: preview.date || entry.date,
         excerpt: preview.excerpt || '',
-        cardImagePath: preview.card ? computeImagePath(preview.card) : (entry.cardImagePath || ''),
+        cardImagePath,
         cardName: preview.card ? preview.card.name_zh : (entry.card ? entry.card.name_zh : ''),
       };
       this.setData({ diaryShareData, showDiarySharePoster: true });
