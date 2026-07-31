@@ -4,6 +4,7 @@ const { cardEnter } = require('../../utils/animate');
 const { computeImagePath, pngFallbackPath } = require('../../utils/cards');
 const { playCardRevealSound } = require('../../utils/sound');
 const analytics = require('../../utils/analytics');
+const { checkLogin } = require('../../utils/auth');
 
 // ---- Persona data (must match reading.js PERSONAS) ----
 const PERSONA_DATA = {
@@ -108,9 +109,23 @@ Page({
 
     // Task 4: Reflection question
     reflectionQuestion: '',
+
+    // Task 2.7: A/B test — first-paid deep reading price
+    priceTestBucket: '9.9',   // '9.9' | '19.9' — set in onLoad from openid hash
+    purchasingDeep: false,    // guard double-tap on the paywall CTA
   },
 
   onLoad(options) {
+    // ── Task 2.7: A/B test — first-paid deep reading price (¥9.9 vs ¥19.9) ──
+    // Deterministic 50/50 split by openid char-code hash: each user always
+    // sees the same price bucket, so conversion can be compared per bucket.
+    const user = wx.getStorageSync('user') || {};
+    const bucket = (user.openid || '').split('').reduce((a, c) => a + c.charCodeAt(0), 0) % 2;
+    const priceTestBucket = bucket === 0 ? '9.9' : '19.9';
+    this.setData({ priceTestBucket });
+    // Persist so purchase events fired from other pages can attach the bucket
+    wx.setStorageSync('price_test_bucket', priceTestBucket);
+
     const id = options && options.id;
     const isPending = options && options.pending === '1';
     const spread = options && options.spread;
@@ -610,6 +625,78 @@ Page({
     const app = getApp();
     app.globalData.currentReading = reading;
     wx.navigateTo({ url: '/pages/chat/chat?readingId=' + reading.id });
+  },
+
+  /* ---------------------------------------------------------------
+     Deep Reading Paywall — A/B test price (Task 2.7)
+     Buys the "single deep reading" product (single_reading, grants
+     +1 paid reading credit). The A/B bucket varies the CTA price
+     shown and is attached to every purchase analytics event.
+     Note: the actual charged amount still comes from the backend
+     product catalog — this test measures which CTA price converts.
+     --------------------------------------------------------------- */
+  async onUnlockDeepReading() {
+    if (this.data.purchasingDeep) return;
+    const bucket = this.data.priceTestBucket || '9.9';
+
+    try {
+      await checkLogin();
+    } catch (err) {
+      wx.showToast({ title: '请先登录', icon: 'none' });
+      return;
+    }
+
+    const product = { id: 'single_reading', price: Number(bucket) };
+
+    // Analytics: CTA click + purchase intent — attach A/B bucket
+    analytics.trackEvent('deep_reading_unlock_cta', { priceTestBucket: bucket });
+    analytics.trackPurchaseStart(product, { priceTestBucket: bucket });
+
+    this.setData({ purchasingDeep: true });
+    wx.showLoading({ title: '创建订单...', mask: true });
+    try {
+      const order = await request('/orders', {
+        method: 'POST',
+        data: { product_type: product.id },
+      });
+      wx.hideLoading();
+
+      if (!order.payment_params) {
+        this.setData({ purchasingDeep: false });
+        wx.showModal({
+          title: '支付未配置',
+          content: '微信支付商户尚未配置完成，请先在服务器 .env 中配置微信支付参数。',
+          showCancel: false,
+        });
+        return;
+      }
+
+      wx.requestPayment({
+        timeStamp: order.payment_params.timeStamp,
+        nonceStr: order.payment_params.nonceStr,
+        package: order.payment_params.package,
+        signType: order.payment_params.signType || 'HMAC-SHA256',
+        paySign: order.payment_params.paySign,
+        success: () => {
+          // Analytics: purchase completed — attach A/B bucket
+          analytics.trackPurchaseComplete(product, Number(bucket), { priceTestBucket: bucket });
+          this.setData({ purchasingDeep: false });
+          wx.showToast({ title: '解锁成功 ✦', icon: 'success' });
+        },
+        fail: (err) => {
+          this.setData({ purchasingDeep: false });
+          if (err.errMsg && err.errMsg.includes('cancel')) {
+            wx.showToast({ title: '支付已取消', icon: 'none' });
+          } else {
+            wx.showToast({ title: '支付失败，请重试', icon: 'none' });
+          }
+        },
+      });
+    } catch (err) {
+      this.setData({ purchasingDeep: false });
+      wx.hideLoading();
+      wx.showToast({ title: '下单失败', icon: 'none' });
+    }
   },
 
   onNewReading() {
