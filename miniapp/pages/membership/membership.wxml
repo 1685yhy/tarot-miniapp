@@ -159,61 +159,6 @@
       </view>
     </view>
 
-    <!-- ===== 星光好物（电商引流） ===== -->
-    <view class="shop-section">
-      <view class="shop-section-header">
-        <text class="pricing-section-title">星光好物</text>
-        <text class="shop-section-badge">即将上线</text>
-      </view>
-      <text class="shop-section-sub">把星光带回家 ✦ 实体周边陆续上架</text>
-
-      <view class="shop-grid">
-        <!-- 塔罗牌 -->
-        <view class="shop-card" bindtap="onShopComingSoon" role="button" aria-label="查看实体塔罗牌，即将上线">
-          <view class="shop-card-img">
-            <text class="shop-card-img-icon">🃏</text>
-          </view>
-          <text class="shop-card-name">实体塔罗牌</text>
-          <text class="shop-card-desc">78张AI原创限量版</text>
-          <view class="shop-card-bottom">
-            <text class="shop-card-price">¥88-168</text>
-            <text class="shop-card-badge-item">即将上线</text>
-          </view>
-        </view>
-
-        <!-- 水晶手串 -->
-        <view class="shop-card" bindtap="onShopComingSoon" role="button" aria-label="查看星座水晶手串，即将上线">
-          <view class="shop-card-img">
-            <text class="shop-card-img-icon">📿</text>
-          </view>
-          <text class="shop-card-name">星座水晶手串</text>
-          <text class="shop-card-desc">专属能量 · 十二星座</text>
-          <view class="shop-card-bottom">
-            <text class="shop-card-price">¥68-128</text>
-            <text class="shop-card-badge-item">即将上线</text>
-          </view>
-        </view>
-
-        <!-- 香薰蜡烛 -->
-        <view class="shop-card" bindtap="onShopComingSoon" role="button" aria-label="查看塔罗香薰蜡烛，即将上线">
-          <view class="shop-card-img">
-            <text class="shop-card-img-icon">🕯️</text>
-          </view>
-          <text class="shop-card-name">塔罗香薰蜡烛</text>
-          <text class="shop-card-desc">四元素系列 · 占卜仪式感</text>
-          <view class="shop-card-bottom">
-            <text class="shop-card-price">¥48-88</text>
-            <text class="shop-card-badge-item">即将上线</text>
-          </view>
-        </view>
-      </view>
-
-      <view class="shop-reserve-area">
-        <text class="shop-reserve-text">关注公众号「星光映照」获取上线通知</text>
-        <button class="shop-reserve-btn" bindtap="onShopComingSoon">立即预约</button>
-      </view>
-    </view>
-
     <!-- 底部保证 -->
     <view class="mem-footer">
       <text class="mem-footer-text">🔒 支付安全 · 随时可查 · 自动续费可关</text>
