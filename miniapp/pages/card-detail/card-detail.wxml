@@ -94,19 +94,17 @@
       <view
         class="tab-item {{activeTab === 'upright' ? 'tab-active' : ''}}"
         data-tab="upright"
-        bindtap="onTabTap"
-        role="text"
+        bindtap="onTabTap" role="button" aria-label="查看正位解读"
       >正位</view>
       <view
         class="tab-item {{activeTab === 'reversed' ? 'tab-active' : ''}}"
         data-tab="reversed"
-        bindtap="onTabTap"
-        role="text"
+        bindtap="onTabTap" role="button" aria-label="查看逆位解读"
       >逆位</view>
       <view
         class="tab-item {{activeTab === 'teaching' ? 'tab-active' : ''}}"
         data-tab="teaching"
-        bindtap="onTabTap"
+        bindtap="onTabTap" role="button" aria-label="查看深度解析"
       >深度解析</view>
     </view>
 

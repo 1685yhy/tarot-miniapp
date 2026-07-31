@@ -64,7 +64,7 @@
       </view>
 
       <!-- Card front (face-up: actual card image) -->
-      <view class="card-face card-front {{frontVisible ? 'card-face--visible' : ''}}" bindtap="onCardTap" role="button">
+      <view class="card-face card-front {{frontVisible ? 'card-face--visible' : ''}}" bindtap="onCardTap" role="button" aria-label="翻开今日塔罗牌">
         <view class="card-img-wrap {{cardImgLoaded ? 'card-img-wrap--loaded' : ''}} {{cardImgError ? 'card-img-wrap--error' : ''}}">
           <image
             wx:if="{{!cardImgError}}"
@@ -227,10 +227,9 @@
         maxlength="500"
       />
       <text class="diary-char-count">{{diaryText.length}}/500</text>
-      <button
+      <button bindtap="onDiarySave"
         class="btn btn-primary btn--full btn--sm"
         disabled="{{diarySaving || !diaryText.trim()}}"
-        bindtap="onDiarySave"
       >
         {{diarySaving ? '保存中...' : '保存心情'}}
       </button>

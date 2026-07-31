@@ -32,7 +32,7 @@
       wx:for-item="item"
       wx:key="id"
       data-id="{{item.id}}"
-      bindtap="onToggle"
+      bindtap="onToggle" role="button" aria-label="切换行动建议完成状态"
     >
       <!-- Checkbox -->
       <view class="ac-checkbox {{checkedItems[item.id] ? 'ac-checkbox--checked' : ''}}">

@@ -25,7 +25,7 @@
 
   <!-- ===== Header ===== -->
   <view class="community-header">
-    <view class="community-header-back" bindtap="goBack">
+    <view class="community-header-back" bindtap="goBack" role="button" aria-label="返回上一页">
       <text class="community-back-arrow">←</text>
     </view>
     <view class="community-header-title">
@@ -101,7 +101,7 @@
     </scroll-view>
 
     <!-- Empty state -->
-    <view wx:elif="{{!pageLoading}}" class="empty-posts" bindtap="openComposer">
+    <view wx:elif="{{!pageLoading}}" class="empty-posts" bindtap="openComposer" role="button" aria-label="写第一篇倾诉">
       <text class="empty-posts-icon">🕊️</text>
       <text class="empty-posts-title">还没有人倾诉</text>
       <text class="empty-posts-sub">成为第一个匿名发声的人</text>
@@ -109,12 +109,12 @@
   </view>
 
   <!-- ===== 浮动按钮 — 写倾诉 ===== -->
-  <view class="fab fab-write" bindtap="openComposer">
+  <view class="fab fab-write" bindtap="openComposer" role="button" aria-label="写倾诉">
     <text class="fab-write-icon">✎</text>
   </view>
 
   <!-- ===== 倾诉编辑器浮层 ===== -->
-  <view class="composer-overlay {{showComposer ? 'composer-overlay--visible' : ''}}" bindtap="closeComposer">
+  <view class="composer-overlay {{showComposer ? 'composer-overlay--visible' : ''}}" bindtap="closeComposer" role="button" aria-label="关闭倾诉编辑器">
     <view class="composer-sheet {{showComposer ? 'composer-sheet--show' : ''}}" catchtap="preventClose">
       <!-- Handle -->
       <view class="composer-handle"></view>
@@ -133,10 +133,9 @@
       />
       <text class="composer-char-count">{{composerContent.length}}/500</text>
 
-      <button
+      <button bindtap="onSubmitPost"
         class="btn-submit btn-primary"
         disabled="{{submitting || composerContent.length === 0}}"
-        bindtap="onSubmitPost"
       >
         {{submitting ? '倾诉中...' : '匿名倾诉 ✦'}}
       </button>

@@ -87,7 +87,7 @@
       <!-- ============================================================
         SCREEN 0: INTRO — Cosmic splash
       ============================================================ -->
-      <view class="wrapped-screen {{currentScreen === 0 ? 'wrapped-screen--active' : ''}}" catchtap="onScreenTap" data-screen="0">
+      <view class="wrapped-screen {{currentScreen === 0 ? 'wrapped-screen--active' : ''}}" catchtap="onScreenTap" data-screen="0" role="button" aria-label="年度报告首页，轻触进入下一页">
         <view class="screen-cosmic-bg">
           <view class="cosmic-ring cosmic-ring-1"></view>
           <view class="cosmic-ring cosmic-ring-2"></view>
@@ -120,7 +120,7 @@
       <!-- ============================================================
         SCREEN 1: TOTAL READINGS — Big number reveal
       ============================================================ -->
-      <view class="wrapped-screen {{currentScreen === 1 ? 'wrapped-screen--active' : ''}}" catchtap="onScreenTap" data-screen="1">
+      <view class="wrapped-screen {{currentScreen === 1 ? 'wrapped-screen--active' : ''}}" catchtap="onScreenTap" data-screen="1" role="button" aria-label="年度占卜次数统计，轻触进入下一页">
         <view class="screen-bg-glow"></view>
         <view class="screen-1-content">
           <text class="screen-1-label">这一年，你一共占卜了</text>
@@ -140,7 +140,7 @@
       <!-- ============================================================
         SCREEN 2: TOP THEME — "你最常思考的是"
       ============================================================ -->
-      <view class="wrapped-screen {{currentScreen === 2 ? 'wrapped-screen--active' : ''}}" catchtap="onScreenTap" data-screen="2">
+      <view class="wrapped-screen {{currentScreen === 2 ? 'wrapped-screen--active' : ''}}" catchtap="onScreenTap" data-screen="2" role="button" aria-label="年度思考主题，轻触进入下一页">
         <view class="screen-bg-glow"></view>
         <view class="screen-2-content">
           <text class="screen-2-label">你最常思考的是</text>
@@ -169,7 +169,7 @@
       <!-- ============================================================
         SCREEN 3: ANNUAL CARD — Large card reveal
       ============================================================ -->
-      <view class="wrapped-screen {{currentScreen === 3 ? 'wrapped-screen--active' : ''}}" catchtap="onScreenTap" data-screen="3">
+      <view class="wrapped-screen {{currentScreen === 3 ? 'wrapped-screen--active' : ''}}" catchtap="onScreenTap" data-screen="3" role="button" aria-label="你的年度之牌，轻触进入下一页">
         <view class="screen-bg-card-glow"></view>
         <view class="screen-3-content">
           <text class="screen-3-label">你的年度之牌</text>
@@ -203,7 +203,7 @@
       <!-- ============================================================
         SCREEN 4: TAROT PERSONALITY
       ============================================================ -->
-      <view class="wrapped-screen {{currentScreen === 4 ? 'wrapped-screen--active' : ''}}" catchtap="onScreenTap" data-screen="4">
+      <view class="wrapped-screen {{currentScreen === 4 ? 'wrapped-screen--active' : ''}}" catchtap="onScreenTap" data-screen="4" role="button" aria-label="你的塔罗人格，轻触进入下一页">
         <view class="screen-bg-glow"></view>
         <view class="screen-4-content {{screenVisible ? 'screen-4-content--visible' : ''}}">
           <text class="screen-4-label">你的塔罗人格</text>
@@ -233,7 +233,7 @@
       <!-- ============================================================
         SCREEN 5: MONTHLY CHART — CSS bar chart
       ============================================================ -->
-      <view class="wrapped-screen {{currentScreen === 5 ? 'wrapped-screen--active' : ''}}" catchtap="onScreenTap" data-screen="5">
+      <view class="wrapped-screen {{currentScreen === 5 ? 'wrapped-screen--active' : ''}}" catchtap="onScreenTap" data-screen="5" role="button" aria-label="月度运势曲线，轻触进入下一页">
         <view class="screen-5-content">
           <text class="screen-5-label">月度运势曲线</text>
           <text class="screen-5-sub">你每个月的占卜活跃度</text>
@@ -271,7 +271,7 @@
       <!-- ============================================================
         SCREEN 6: NEW YEAR BLESSING
       ============================================================ -->
-      <view class="wrapped-screen {{currentScreen === 6 ? 'wrapped-screen--active' : ''}}" catchtap="onScreenTap" data-screen="6">
+      <view class="wrapped-screen {{currentScreen === 6 ? 'wrapped-screen--active' : ''}}" catchtap="onScreenTap" data-screen="6" role="button" aria-label="新年寄语，轻触进入下一页">
         <view class="screen-blessing-bg">
           <view class="blessing-star-field">
             <view wx:for="{{[1,2,3,4,5,6,7,8]}}" wx:key="*this"
@@ -293,13 +293,13 @@
       <!-- ============================================================
         SCREEN 7: SHARE — Poster + share buttons
       ============================================================ -->
-      <view class="wrapped-screen {{currentScreen === 7 ? 'wrapped-screen--active' : ''}}" catchtap="onScreenTap" data-screen="7">
+      <view class="wrapped-screen {{currentScreen === 7 ? 'wrapped-screen--active' : ''}}" catchtap="onScreenTap" data-screen="7" role="button" aria-label="分享你的年度报告，轻触查看">
         <view class="screen-7-content {{screenVisible ? 'screen-7-content--visible' : ''}}">
           <text class="screen-7-title">分享你的年度报告</text>
           <text class="screen-7-desc">让好友也看看你的星光旅程</text>
 
           <!-- Share poster preview -->
-          <view class="screen-7-poster-preview" bindtap="onShowSharePoster">
+          <view class="screen-7-poster-preview" bindtap="onShowSharePoster" role="button" aria-label="生成分享海报">
             <view class="screen-7-poster-placeholder">
               <text class="screen-7-poster-icon">✨</text>
               <text class="screen-7-poster-text">生成分享海报</text>
@@ -352,7 +352,7 @@
     <view class="poster-modal">
       <view class="poster-header">
         <text class="poster-title">分享海报</text>
-        <view class="poster-close" bindtap="onCloseSharePoster">
+        <view class="poster-close" bindtap="onCloseSharePoster" role="button" aria-label="关闭海报">
           <text class="poster-close-icon">✕</text>
         </view>
       </view>

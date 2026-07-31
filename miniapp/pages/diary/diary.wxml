@@ -212,6 +212,7 @@
             mode="widthFix"
             lazy-load
             show-menu-by-longpress
+            aria-label="日记配图"
           />
         </view>
       </view>
@@ -236,7 +237,7 @@
   </view>
 
   <!-- ============ 创建日记 Modal ============ -->
-  <view class="modal-mask" wx:if="{{showCreate}}" bindtap="hideCreateModal">
+  <view class="modal-mask" wx:if="{{showCreate}}" bindtap="hideCreateModal" role="button" aria-label="关闭日记编辑窗口">
     <view class="modal-sheet" catchtap="preventClose">
       <!-- Handle -->
       <view class="modal-handle"></view>
@@ -261,9 +262,7 @@
         <view
           class="mood-item {{mood === 'happy' ? 'mood-selected' : ''}}"
           data-mood="happy"
-          bindtap="onMoodSelect"
-          role="button"
-          aria-label="选择心情：开心"
+          bindtap="onMoodSelect" role="button" aria-label="选择心情：开心"
         >
           <text class="mood-emoji">😊</text>
           <text class="mood-label">开心</text>
@@ -271,9 +270,7 @@
         <view
           class="mood-item {{mood === 'calm' ? 'mood-selected' : ''}}"
           data-mood="calm"
-          bindtap="onMoodSelect"
-          role="button"
-          aria-label="选择心情：平静"
+          bindtap="onMoodSelect" role="button" aria-label="选择心情：平静"
         >
           <text class="mood-emoji">😌</text>
           <text class="mood-label">平静</text>
@@ -281,9 +278,7 @@
         <view
           class="mood-item {{mood === 'excited' ? 'mood-selected' : ''}}"
           data-mood="excited"
-          bindtap="onMoodSelect"
-          role="button"
-          aria-label="选择心情：兴奋"
+          bindtap="onMoodSelect" role="button" aria-label="选择心情：兴奋"
         >
           <text class="mood-emoji">🤩</text>
           <text class="mood-label">兴奋</text>
@@ -291,9 +286,7 @@
         <view
           class="mood-item {{mood === 'anxious' ? 'mood-selected' : ''}}"
           data-mood="anxious"
-          bindtap="onMoodSelect"
-          role="button"
-          aria-label="选择心情：焦虑"
+          bindtap="onMoodSelect" role="button" aria-label="选择心情：焦虑"
         >
           <text class="mood-emoji">😰</text>
           <text class="mood-label">焦虑</text>
@@ -301,9 +294,7 @@
         <view
           class="mood-item {{mood === 'sad' ? 'mood-selected' : ''}}"
           data-mood="sad"
-          bindtap="onMoodSelect"
-          role="button"
-          aria-label="选择心情：低落"
+          bindtap="onMoodSelect" role="button" aria-label="选择心情：低落"
         >
           <text class="mood-emoji">😢</text>
           <text class="mood-label">低落</text>
@@ -311,9 +302,7 @@
         <view
           class="mood-item {{mood === 'thoughtful' ? 'mood-selected' : ''}}"
           data-mood="thoughtful"
-          bindtap="onMoodSelect"
-          role="button"
-          aria-label="选择心情：思考"
+          bindtap="onMoodSelect" role="button" aria-label="选择心情：思考"
         >
           <text class="mood-emoji">🤔</text>
           <text class="mood-label">思考</text>
@@ -350,16 +339,15 @@
           <text class="image-picker-label">添加图片</text>
         </view>
         <view wx:else class="image-preview-wrap">
-          <image class="image-preview" src="{{selectedImage}}" mode="aspectFill" />
+          <image class="image-preview" src="{{selectedImage}}" mode="aspectFill" aria-label="已选图片预览" />
           <text class="image-remove-btn" bindtap="onRemoveImage" role="button" aria-label="移除图片">✕</text>
         </view>
       </view>
 
       <!-- Submit -->
-      <button
+      <button bindtap="onCreateEntry"
         class="btn-submit"
         disabled="{{creating}}"
-        bindtap="onCreateEntry"
       >
         {{creating ? '记录中...' : '保存日记'}}
       </button>

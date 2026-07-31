@@ -108,9 +108,7 @@
     />
   </label>
   <view class="send-btn {{sending || !canSend ? 'send-btn--disabled' : ''}}"
-    bindtap="onSend"
-    aria-label="发送"
-    role="button"
+    bindtap="onSend" aria-label="发送" role="button"
   >
     <text class="send-text">发送</text>
   </view>

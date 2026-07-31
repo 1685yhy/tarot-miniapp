@@ -51,7 +51,7 @@
   <view class="quick-nav">
     <text class="section-title">页面直达</text>
     <view class="quick-grid">
-      <view class="quick-item" wx:for="{{PAGES}}" wx:key="path" data-index="{{index}}" bindtap="onPageTap">{{item.name}}</view>
+      <view class="quick-item" wx:for="{{PAGES}}" wx:key="path" data-index="{{index}}" bindtap="onPageTap" role="button" aria-label="跳转到{{item.name}}页面">{{item.name}}</view>
     </view>
   </view>
 </view>
