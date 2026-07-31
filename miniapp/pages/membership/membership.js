@@ -347,22 +347,4 @@ Page({
     });
   },
 
-  /** 预约商品 → 敬请期待弹窗 + 引导关注公众号 */
-  onShopComingSoon() {
-    wx.showModal({
-      title: '敬请期待 ✦',
-      content: '星光好物正在筹备中，将陆续上架实体塔罗牌、水晶手串等周边商品。\n\n关注公众号「星光映照」第一时间获取上线通知！',
-      confirmText: '我知道了',
-      showCancel: false,
-      success: () => {
-        // 复制公众号名称到剪贴板，方便用户搜索关注
-        wx.setClipboardData({
-          data: '星光映照',
-          success: () => {
-            wx.showToast({ title: '已复制公众号名称', icon: 'none' });
-          },
-        });
-      },
-    });
-  },
 });
