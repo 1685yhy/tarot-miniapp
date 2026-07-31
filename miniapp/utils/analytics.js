@@ -109,6 +109,24 @@ const analytics = {
   trackPaywallView(source) {
     this._track('paywall_view', { source: source || 'unknown' });
   },
+
+  /** Paywall CTA clicked — user tapped the unlock/subscribe button */
+  trackPaywallClick(source) {
+    this._track('paywall_click', { source: source || 'unknown' });
+  },
+
+  /** Purchase attempt failed — reason: user_cancel | payment_failed | payment_not_configured | invalid_payment_params | order_failed */
+  trackPurchaseFail(product, reason) {
+    this._track('purchase_fail', {
+      product: (product && product.id) || (typeof product === 'string' ? product : 'unknown'),
+      reason: reason || 'unknown',
+    });
+  },
+
+  /** Trial period ended without conversion */
+  trackTrialExpire() {
+    this._track('trial_expire', {});
+  },
 };
 
 module.exports = analytics;

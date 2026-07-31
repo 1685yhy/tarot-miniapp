@@ -210,6 +210,8 @@ Page({
         });
       } else {
         // 试用已过期，清除状态
+        // Analytics: trial ended without conversion (Task 2.4)
+        analytics.trackTrialExpire();
         wx.removeStorageSync(TRIAL_STORAGE_KEY);
         wx.removeStorageSync(TRIAL_MEMBER_KEY);
       }
@@ -286,6 +288,7 @@ Page({
       // Check if payment is configured
       if (!order.payment_params) {
         this.setData({ purchasing: false });
+        analytics.trackPurchaseFail(product, 'payment_not_configured');
         wx.showModal({
           title: '支付未配置',
           content: '微信支付商户尚未配置完成。请先在服务器 .env 中配置 WECHAT_MCH_ID 和 WECHAT_API_KEY_V3。',
@@ -298,6 +301,7 @@ Page({
       const params = order.payment_params;
       if (!params) {
         this.setData({ purchasing: false });
+        analytics.trackPurchaseFail(product, 'invalid_payment_params');
         wx.showToast({ title: '支付参数错误', icon: 'none' });
         return;
       }
@@ -323,8 +327,10 @@ Page({
         fail: (err) => {
           this.setData({ purchasing: false });
           if (err.errMsg && err.errMsg.includes('cancel')) {
+            analytics.trackPurchaseFail(product, 'user_cancel');
             wx.showToast({ title: '支付已取消', icon: 'none' });
           } else {
+            analytics.trackPurchaseFail(product, 'payment_failed');
             wx.showToast({ title: '支付失败，请重试', icon: 'none' });
           }
         },
@@ -332,6 +338,7 @@ Page({
     } catch (err) {
       this.setData({ purchasing: false });
       wx.hideLoading();
+      analytics.trackPurchaseFail(product, 'order_failed');
       wx.showToast({ title: '下单失败', icon: 'none' });
     }
   },
