@@ -76,6 +76,10 @@ Page({
     shareKeyInsight: '',
     userNickname: '',
 
+    // Friend invite poster — "送好友一张牌" (both get +1 free deep reading)
+    showInvitePoster: false,
+    inviteCode: '',
+
     // Interactive card enlargement
     enlargedCardIndex: -1,   // -1 = none; 0/1/2 = which card is enlarged
     isFlipped: false,        // front (false) or back (true)
@@ -740,11 +744,11 @@ Page({
      Share Poster — Open / Close
      --------------------------------------------------------------- */
 
-  onOpenSharePoster() {
+  /** Build the poster data (first card + key insight + nickname). */
+  _buildPosterData() {
     const reading = this.data.reading;
     if (!reading || !reading.drawn_cards || reading.drawn_cards.length === 0) {
-      wx.showToast({ title: '暂无牌面可生成海报', icon: 'none' });
-      return;
+      return null;
     }
 
     // Use the first drawn card for the poster
@@ -768,17 +772,69 @@ Page({
     const user = wx.getStorageSync('user') || {};
     const nickname = user.nickname || user.nickName || '';
 
+    return { cardImage, cardName, keyInsight, nickname };
+  },
+
+  onOpenSharePoster() {
+    const poster = this._buildPosterData();
+    if (!poster) {
+      wx.showToast({ title: '暂无牌面可生成海报', icon: 'none' });
+      return;
+    }
+
     this.setData({
       showSharePoster: true,
-      shareCardImage: cardImage,
-      shareCardName: cardName,
-      shareKeyInsight: keyInsight,
-      userNickname: nickname,
+      shareCardImage: poster.cardImage,
+      shareCardName: poster.cardName,
+      shareKeyInsight: poster.keyInsight,
+      userNickname: poster.nickname,
     });
   },
 
   onCloseSharePoster() {
     this.setData({ showSharePoster: false });
+  },
+
+  /* ---------------------------------------------------------------
+     Friend Invite — "送好友一张牌 ✦"
+     Opens the invite poster whose QR code carries the user's invite
+     code. When a friend scans it, both sides get +1 free deep reading.
+     (NOT 诱导分享 — no points, no cash, no "share to moments for reward".)
+     --------------------------------------------------------------- */
+
+  async onSendCardToFriend() {
+    const poster = this._buildPosterData();
+    if (!poster) {
+      wx.showToast({ title: '暂无牌面可送', icon: 'none' });
+      return;
+    }
+
+    wx.showLoading({ title: '生成邀请卡...', mask: true });
+    try {
+      const res = await request('/share/invite-code');
+      wx.hideLoading();
+      const inviteCode = (res && res.invite_code) || '';
+      if (!inviteCode) {
+        wx.showToast({ title: '邀请码获取失败', icon: 'none' });
+        return;
+      }
+
+      this.setData({
+        showInvitePoster: true,
+        inviteCode: inviteCode,
+        shareCardImage: poster.cardImage,
+        shareCardName: poster.cardName,
+        shareKeyInsight: poster.keyInsight,
+        userNickname: poster.nickname,
+      });
+    } catch (err) {
+      wx.hideLoading();
+      wx.showToast({ title: getFriendlyError(err), icon: 'none' });
+    }
+  },
+
+  onCloseInvitePoster() {
+    this.setData({ showInvitePoster: false });
   },
 
   onSharePosterToFriend(e) {

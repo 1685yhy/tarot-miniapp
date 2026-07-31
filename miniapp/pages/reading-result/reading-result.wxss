@@ -1306,7 +1306,7 @@
 }
 
 /* ============================================================
-   BOTTOM BAR — Share + Diary + Back in a row
+   BOTTOM BAR — Gift a card + Share + Diary + Back in a row
    ============================================================ */
 .bottom-bar {
   display: flex;
@@ -1315,17 +1315,18 @@
   padding: var(--spacing-md, 24rpx) 0 var(--spacing-lg, 32rpx);
 }
 
+/* 4 buttons in a row — slightly tighter than the original 3-button row */
 .bottom-bar-btn {
   flex: 1;
-  max-width: 220rpx;
+  max-width: 176rpx;
   background: transparent;
   color: var(--color-gold, #F4D48C);
-  font-size: var(--font-size-caption, 24rpx);
+  font-size: 22rpx;
   font-weight: 500;
   border-radius: var(--radius-pill, 999rpx);
   padding: var(--spacing-md, 24rpx) 0;
   border: 1.5rpx solid rgba(244, 212, 140, 0.3);
-  letter-spacing: 2rpx;
+  letter-spacing: 1rpx;
   text-align: center;
   transition: border-color 0.2s, background 0.2s;
   min-height: 88rpx;
