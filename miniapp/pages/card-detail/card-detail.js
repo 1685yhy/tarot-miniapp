@@ -1,6 +1,6 @@
 // pages/card-detail/card-detail.js
 const { request, getFriendlyError } = require('../../utils/api');
-const { computeImagePath } = require('../../utils/cards');
+const { computeImagePath, pngFallbackPath } = require('../../utils/cards');
 
 // Full-size card images served via CDN (xingxiang.chat/images/cards_full/)
 const IMAGE_BASE = 'https://xingxiang.chat/images/cards_full';
@@ -33,6 +33,12 @@ Page({
   },
 
   onHeroImgError() {
+    // Retry once with PNG fallback before giving up on the hero image
+    const current = this.data.card && this.data.card.imagePath;
+    if (current && current.endsWith('.webp') && !this.data.webpFallbackTried) {
+      this.setData({ webpFallbackTried: true, 'card.imagePath': pngFallbackPath(current) });
+      return;
+    }
     this.setData({ heroImgError: true });
   },
 

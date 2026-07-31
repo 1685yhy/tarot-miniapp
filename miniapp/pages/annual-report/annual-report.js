@@ -17,7 +17,7 @@
 
 const { request, getFriendlyError } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
-const { computeImagePath, findCard } = require('../../utils/cards');
+const { computeImagePath, findCard, pngFallbackPath } = require('../../utils/cards');
 const { drawSharePoster } = require('../../utils/canvas-poster');
 const { playCardRevealSound, playMilestoneSound } = require('../../utils/sound');
 
@@ -207,6 +207,12 @@ Page({
   },
 
   onAnnualCardImgError() {
+    // Retry once with PNG fallback before hiding the annual card image
+    const current = this.data.annualCardImagePath;
+    if (current && current.endsWith('.webp') && !this.data.webpFallbackTried) {
+      this.setData({ webpFallbackTried: true, annualCardImagePath: pngFallbackPath(current) });
+      return;
+    }
     this.setData({ annualCardImgError: true });
   },
 

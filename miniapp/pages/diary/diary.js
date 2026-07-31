@@ -1,6 +1,6 @@
 // pages/diary/diary.js
 const { request, getFriendlyError } = require('../../utils/api');
-const { computeImagePath } = require('../../utils/cards');
+const { computeImagePath, pngFallbackPath } = require('../../utils/cards');
 
 // Mood score map for trend analysis
 const MOOD_SCORE_MAP = { happy: 4.5, calm: 3.5, excited: 5, anxious: 2, sad: 1, thoughtful: 3 };
@@ -118,8 +118,13 @@ Page({
     // 阻止事件冒泡——防止点击 modal 内部元素时关闭弹窗
   },
 
-  /** Handle card thumbnail load error in diary create modal */
+  /** Handle card thumbnail load error in diary create modal — retry once with PNG fallback */
   onDiaryCardImgError() {
+    const current = this.data.todayCard && this.data.todayCard.imagePath;
+    if (current && current.endsWith('.webp') && !this.data.webpFallbackTried) {
+      this.setData({ webpFallbackTried: true, 'todayCard.imagePath': pngFallbackPath(current) });
+      return;
+    }
     this.setData({ diaryCardImgError: true });
   },
 
@@ -357,10 +362,19 @@ Page({
     return '😔 ' + blocks.join(' ') + ' 😊';
   },
 
-  /** Handle entry card image load error — hide the broken thumbnail */
+  /** Handle entry card image load error — retry once with PNG fallback, then hide the thumbnail */
   onEntryCardImageError(e) {
     const entryId = e.currentTarget.dataset.entryId;
     if (!entryId) return;
+    const idx = this.data.entries.findIndex(en => String(en.id) === String(entryId));
+    const entry = idx >= 0 ? this.data.entries[idx] : null;
+    if (entry && entry.cardImagePath && entry.cardImagePath.endsWith('.webp') && !entry._webpFallbackTried) {
+      this.setData({
+        [`entries[${idx}]._webpFallbackTried`]: true,
+        [`entries[${idx}].cardImagePath`]: pngFallbackPath(entry.cardImagePath),
+      });
+      return;
+    }
     const key = `entryCardImgErrors.${entryId}`;
     this.setData({ [key]: true });
   },

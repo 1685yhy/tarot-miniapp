@@ -10,7 +10,7 @@
  *   cardType     - 卡牌类型标识（可选，自动从nameZh映射）
  */
 
-const { CARD_REGISTRY, findCard, MAJOR_TYPES } = require('../../utils/cards');
+const { CARD_REGISTRY, findCard, MAJOR_TYPES, pngFallbackPath } = require('../../utils/cards');
 
 Component({
   properties: {
@@ -61,7 +61,7 @@ Component({
       const hasExternalImage = !!imagePath;
 
       // Reset card image error state when resolving a new card
-      this.setData({ cardImgError: false });
+      this.setData({ cardImgError: false, webpFallbackTried: false });
 
       // 如果显式传了cardType，优先使用
       if (cardType) {
@@ -99,8 +99,13 @@ Component({
       }
     },
 
-    /** Handle card image load error — show CSS fallback instead */
+    /** Handle card image load error — retry once with PNG fallback, then show CSS fallback */
     onCardImgError() {
+      const current = this.data.imagePath || '';
+      if (current.endsWith('.webp') && !this.data.webpFallbackTried) {
+        this.setData({ webpFallbackTried: true, imagePath: pngFallbackPath(current) });
+        return;
+      }
       this.setData({ cardImgError: true });
     },
 

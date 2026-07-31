@@ -1,7 +1,7 @@
 // pages/daily-card/daily-card.js
 // 每日一牌 — 卡牌翻转动画 + 牌意教学 + 收集进度 + 日记入口
 const { request, getFriendlyError } = require('../../utils/api');
-const { computeImagePath } = require('../../utils/cards');
+const { computeImagePath, pngFallbackPath } = require('../../utils/cards');
 const { playCardRevealSound } = require('../../utils/sound');
 
 const IMAGE_BASE = 'https://xingxiang.chat/images/cards_full';
@@ -328,6 +328,12 @@ Page({
   },
 
   onCardImgError() {
+    // Retry once with PNG fallback before giving up on the daily card image
+    const current = this.data.dailyCard && this.data.dailyCard.imagePath;
+    if (current && current.endsWith('.webp') && !this.data.webpFallbackTried) {
+      this.setData({ webpFallbackTried: true, 'dailyCard.imagePath': pngFallbackPath(current) });
+      return;
+    }
     this.setData({ cardImgError: true });
   },
 

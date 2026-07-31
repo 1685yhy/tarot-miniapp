@@ -2,7 +2,7 @@
 const perf = require('../../utils/performance');
 const { request, getFriendlyError } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
-const { computeImagePath } = require('../../utils/cards');
+const { computeImagePath, pngFallbackPath } = require('../../utils/cards');
 const { createAnim, staggeredEntrance } = require('../../utils/animate');
 const { playPageEnterSound, playCardFlipSound, startAmbientSound, stopAmbientSound } = require('../../utils/sound');
 const analytics = require('../../utils/analytics');
@@ -552,8 +552,13 @@ Page({
     }
   },
 
-  /** Handle daily card thumbnail image load error */
+  /** Handle daily card thumbnail image load error — retry once with PNG fallback */
   onDailyCardImgError() {
+    const current = this.data.dailyCard && this.data.dailyCard.imagePath;
+    if (current && current.endsWith('.webp') && !this.data.webpFallbackTried) {
+      this.setData({ webpFallbackTried: true, 'dailyCard.imagePath': pngFallbackPath(current) });
+      return;
+    }
     this.setData({ dailyCardImgError: true });
   },
 
