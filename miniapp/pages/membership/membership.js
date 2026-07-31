@@ -264,10 +264,15 @@ Page({
     if (this.data.purchasing) return;
     const product = e.currentTarget.dataset.product;
 
+    // Task 2.7: A/B price bucket — set by reading-result onLoad, attach to
+    // every purchase event so conversion can be compared per bucket
+    const abBucket = wx.getStorageSync('price_test_bucket');
+    const abExtra = abBucket ? { priceTestBucket: abBucket } : {};
+
     // Analytics: funnel — purchase started
-    analytics.funnel('purchase_started', { product: product.id });
+    analytics.funnel('purchase_started', { product: product.id, ...abExtra });
     // Analytics: purchase intent
-    analytics.trackPurchaseStart(product);
+    analytics.trackPurchaseStart(product, abExtra);
 
     this.setData({ purchasing: true });
     try {
@@ -306,7 +311,7 @@ Page({
         paySign: params.paySign,
         success: () => {
           // Analytics: purchase completed
-          analytics.trackPurchaseComplete(product, product.price);
+          analytics.trackPurchaseComplete(product, product.price, abExtra);
           this.setData({ purchasing: false, paymentSuccess: true, showCelebration: true });
           // Auto-navigate back after 2s celebration
           if (!this._timers) this._timers = [];

@@ -600,6 +600,77 @@
    Kept as reference for possible future JS-based stagger implementation. */
 
 /* ================================================================
+   3b. DEEP READING PAYWALL — first-paid upgrade (A/B test price)
+   ================================================================ */
+.deep-paywall {
+  margin-top: var(--spacing-md, 24rpx);
+}
+
+.deep-paywall-card {
+  position: relative;
+  margin: var(--spacing-lg) var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: linear-gradient(135deg, rgba(180,140,200,0.10) 0%, rgba(244,212,140,0.08) 100%);
+  border: 1.5rpx solid rgba(244,212,140,0.20);
+  border-radius: var(--radius-lg, 24rpx);
+  text-align: center;
+  overflow: hidden;
+}
+
+.dpw-icon {
+  display: block;
+  font-size: 52rpx;
+  margin-bottom: 12rpx;
+}
+
+.dpw-label {
+  display: block;
+  font-size: var(--font-size-caption, 24rpx);
+  color: var(--color-lavender, #B8A9E0);
+  letter-spacing: 2rpx;
+  margin-bottom: 10rpx;
+}
+
+.dpw-title {
+  display: block;
+  font-size: var(--font-size-subhead, 36rpx);
+  color: var(--color-gold, #F4D48C);
+  font-weight: 700;
+  letter-spacing: 2rpx;
+  margin-bottom: 12rpx;
+}
+
+.dpw-desc {
+  display: block;
+  font-size: var(--font-size-caption, 24rpx);
+  color: var(--color-text-secondary, rgba(255,255,255,0.6));
+  line-height: 1.6;
+  margin-bottom: 28rpx;
+}
+
+.dpw-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16rpx 56rpx;
+  background: linear-gradient(135deg, #F4D48C 0%, #D4B06A 100%);
+  border-radius: var(--radius-pill, 999rpx);
+  color: #1A1A3E;
+  font-size: var(--font-size-body, 30rpx);
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  border: none;
+}
+
+.dpw-btn::after {
+  border: none;
+}
+
+.dpw-btn[disabled] {
+  opacity: 0.6;
+}
+
+/* ================================================================
    4. ACTIONS
    ================================================================ */
 .actions-section {

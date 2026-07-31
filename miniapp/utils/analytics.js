@@ -91,17 +91,18 @@ const analytics = {
   },
 
   /** Purchase intent */
-  trackPurchaseStart(product) {
+  trackPurchaseStart(product, extra = {}) {
     this._track('purchase_start', {
       product: (product && product.id) || (typeof product === 'string' ? product : 'unknown'),
+      ...extra,
     });
   },
 
   /** Completed purchase */
-  trackPurchaseComplete(product, amount) {
+  trackPurchaseComplete(product, amount, extra = {}) {
     const productId = (product && product.id) || (typeof product === 'string' ? product : 'unknown');
     const price = typeof amount === 'number' ? amount : ((product && product.price) || 0);
-    this._track('purchase_complete', { product: productId, amount: price });
+    this._track('purchase_complete', { product: productId, amount: price, ...extra });
   },
 
   /** Paywall impression */

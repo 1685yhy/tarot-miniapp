@@ -120,6 +120,23 @@
       </view>
 
       <!-- ==========================================================
+           5b. DEEP READING PAYWALL — first-paid upgrade (A/B test)
+           Price varies by user bucket: ¥9.9 vs ¥19.9 (Task 2.7)
+           ========================================================== -->
+      <view class="deep-paywall" wx:if="{{!isMember}}">
+        <view class="divider">
+          <view class="divider-line"></view>
+        </view>
+        <view class="deep-paywall-card">
+          <text class="dpw-icon">🔮</text>
+          <text class="dpw-label">想要更深层的指引？</text>
+          <text class="dpw-title">解锁深度解读 ¥{{priceTestBucket}}</text>
+          <text class="dpw-desc">专属塔罗师解读 · 无限追问 · 更深入的牌面剖析</text>
+          <button class="dpw-btn" bindtap="onUnlockDeepReading" disabled="{{purchasingDeep}}" aria-label="解锁深度解读，价格{{priceTestBucket}}元">{{purchasingDeep ? '解锁中...' : '立即解锁'}}</button>
+        </view>
+      </view>
+
+      <!-- ==========================================================
            6. ACTION SUGGESTIONS — Actionable checklist cards
            ========================================================== -->
       <action-cards
