@@ -40,7 +40,8 @@ Page({
     canSend: false,
     sending: false,
     aiThinking: false,
-    remainingFree: 0,
+    // -1 = 未知/无限（不展示配额信息）；仅当 0 或 1 时展示配额文字
+    remainingFree: -1,
     chatFreeTotal: _getFreeChatsLimit(),
     pageLoading: false,
     pageError: null,
@@ -51,9 +52,8 @@ Page({
     // WebSocket streaming
     isStreaming: false,    // true while tokens are being streamed (shows cursor)
 
-    // Membership prompt when quota exhausted
-    showMembershipPrompt: false,
-    membershipPromptText: '',
+    // Quota exhausted — shows single "升级会员 →" text link (no banner/card)
+    quotaExhausted: false,
   },
 
   /** @type {WebSocketTask|null} */
@@ -177,7 +177,7 @@ Page({
     this.setData({
       messages, inputText: '', canSend: false, sending: true,
       aiThinking: true, sendFailed: false, _pendingRetryText: '',
-      isStreaming: false, showMembershipPrompt: false,
+      isStreaming: false, quotaExhausted: false,
     });
     this.scrollToBottom();
 
@@ -247,8 +247,7 @@ Page({
           if (errorMsg.startsWith('402')) {
             this.setData({
               sending: false, aiThinking: false, isStreaming: false,
-              showMembershipPrompt: true,
-              membershipPromptText: '今日追问已达上限',
+              quotaExhausted: true, remainingFree: 0,
             });
             return;
           }
@@ -344,14 +343,14 @@ Page({
       this.scrollToBottom();
     } catch (err) {
       if (this._destroyed) return;
-      // 402: quota exhausted — show membership prompt instead of retry
+      // 402: quota exhausted — show the single "升级会员 →" text link instead of retry
       if (err.statusCode === 402) {
         this.setData({
           sending: false,
           aiThinking: false,
           isStreaming: false,
-          showMembershipPrompt: true,
-          membershipPromptText: '今日追问已达上限',
+          quotaExhausted: true,
+          remainingFree: 0,
         });
         return;
       }

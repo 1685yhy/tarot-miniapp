@@ -1121,88 +1121,8 @@
 }
 
 /* -----------------------------------------------------------
-   11b. 9.9新人专享 CTA
+   11b. (removed) 9.9新人专享 CTA — paywalls moved to post-reading only
    ----------------------------------------------------------- */
-.hero-cta {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-lg) var(--spacing-md);
-  margin: var(--spacing-sm) 0 var(--spacing-lg);
-  background: linear-gradient(135deg, rgba(244,212,140,0.12) 0%, rgba(180,140,200,0.08) 100%);
-  border: 2rpx solid rgba(244,212,140,0.40);
-  border-radius: var(--radius-lg, 24rpx);
-  overflow: hidden;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  animation: hero-cta-breathe 2.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
-}
-
-.hero-cta::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(ellipse at center, rgba(244, 212, 140, 0.10) 0%, transparent 70%);
-  pointer-events: none;
-  opacity: 0.4;
-  animation: hero-cta-breathe 2.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
-  z-index: 0;
-}
-
-.hero-cta:active {
-  transform: scale(0.97);
-  border-color: rgba(244,212,140,0.70);
-}
-
-.hero-cta-glow {
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(244, 212, 140, 0.06) 0%,
-    transparent 60%
-  );
-  pointer-events: none;
-  animation: hero-cta-glow-pulse 3s cubic-bezier(0.45, 0, 0.55, 1) infinite;
-}
-
-.hero-cta-title {
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-bold, 700);
-  color: var(--color-gold, #F4D48C);
-  letter-spacing: 3rpx;
-  position: relative;
-  z-index: 1;
-  text-shadow: 0 0 20rpx rgba(244,212,140,0.15);
-}
-
-.hero-cta-sub {
-  font-size: var(--font-size-caption);
-  color: var(--color-lavender, #B8A9E0);
-  margin-top: 8rpx;
-  letter-spacing: 2rpx;
-  position: relative;
-  z-index: 1;
-  opacity: 0.85;
-}
-
-@keyframes hero-cta-breathe {
-  0%, 100% { border-color: rgba(244,212,140,0.35); opacity: 0.4; }
-  50% { border-color: rgba(244,212,140,0.70); opacity: 0.8; }
-}
-
-@keyframes hero-cta-glow-pulse {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.05); }
-}
 
 /* ============================================================
    20b. FLEXBOX GRID — WXSS-compatible replacements for CSS Grid
@@ -1952,24 +1872,8 @@
 }
 
 /* ============================================================
-   Membership CTA — Simple one-line text link
+   (removed) Membership CTA text link — paywalls moved to post-reading only
    ============================================================ */
-
-.membership-cta-text {
-  text-align: center;
-  padding: var(--spacing-md) var(--spacing-lg) var(--spacing-xl);
-  margin: 0 32rpx;
-}
-
-.membership-cta-text .quota-text {
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: opacity var(--duration-fast) var(--ease-out);
-}
-
-.membership-cta-text .quota-text:active {
-  opacity: 0.6;
-}
 
 /* DEV: 自动化测试入口 */
 .dev-test-entry { text-align: center; padding: 16rpx; margin: 24rpx 32rpx; opacity: 0.3; }

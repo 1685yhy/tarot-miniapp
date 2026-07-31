@@ -127,13 +127,6 @@
   </view>
   <!-- ===== Zone 2: 滚动区 ===== -->
 
-  <!-- 9.9新人专享CTA（在每日一牌流程之后展示） -->
-  <view class="hero-cta anim-fade-in-up-3" bindtap="onStartFirstReading" wx:if="{{!isMember && freeReadingsUsed === 0}}" role="button" aria-label="9.9元首次AI深度解读">
-    <view class="hero-cta-glow"></view>
-    <text class="hero-cta-title">9.9元 · 首次AI深度解读</text>
-    <text class="hero-cta-sub">新人专享 · 三牌占卜 · 行动建议</text>
-  </view>
-
   <!-- 星光树洞入口 -->
   <view class="anim-fade-in-up-2" style="margin-top:30rpx" bindtap="onGoCommunity" role="button" aria-label="进入星光树洞">
     <view class="card card-interactive community-entry-card">
@@ -182,15 +175,10 @@
   </view>
 
 
-  <!-- 免费次数提示（纯文字，无进度条） — 点击跳转会员页 -->
-  <view class="free-quota-bar anim-fade-in-up-3" wx:if="{{!isMember}}" bindtap="onGoMembership" role="button" aria-label="查看免费解读次数，升级会员">
+  <!-- 免费次数提示（纯文字信息，无 CTA，付费入口只在解读完成后展示） -->
+  <view class="free-quota-bar anim-fade-in-up-3" wx:if="{{!isMember}}">
     <text class="quota-text" wx:if="{{freeReadingsUsed < freeReadingsTotal}}">今日免费解读 {{freeReadingsUsed}}/{{freeReadingsTotal}} · 明日0点重置</text>
-    <text class="quota-text quota-text--exhausted" wx:elif="{{freeReadingsUsed >= freeReadingsTotal}}">今日免费次数已用完 · 升级会员无限解读</text>
-  </view>
-
-  <!-- 会员引导 — 简约文字CTA -->
-  <view class="membership-cta-text" wx:if="{{showMembershipPrompt && !isMember}}">
-    <text class="quota-text" bindtap="onGoMembership" role="button" aria-label="升级会员无限解读">升级会员 · 无限解读 ✦</text>
+    <text class="quota-text quota-text--exhausted" wx:elif="{{freeReadingsUsed >= freeReadingsTotal}}">今日免费次数已用完 · 明日0点重置</text>
   </view>
 
 
@@ -228,18 +216,6 @@
     <view class="card card-interactive more-spreads" bindtap="goToAllSpreads" animation="{{spreadAnimData[4]}}" role="button" aria-label="查看更多牌阵">
       <text class="more-text anim-gentle-pulse">查看更多 · 共10种牌阵</text>
       <text class="more-arrow">→</text>
-    </view>
-
-    <!-- 会员解锁全部牌阵入口（仅非会员显示） -->
-    <view wx:if="{{!isMember}}" class="card card-interactive unlock-spreads-card" bindtap="onGoMembership" role="button" aria-label="升级星光会员解锁全部牌阵">
-      <view class="unlock-spreads-left">
-        <image class="unlock-spreads-icon" src="/images/icons/lock_64.png" mode="aspectFit" lazy-load aria-label="解锁全部牌阵" />
-      </view>
-      <view class="unlock-spreads-content">
-        <text class="unlock-spreads-title">解锁全部牌阵</text>
-        <text class="unlock-spreads-sub">会员专享 10 种牌阵 + 无限次解读</text>
-      </view>
-      <text class="unlock-spreads-arrow">→</text>
     </view>
 
     <!-- DEV: 自动化测试入口 -->
