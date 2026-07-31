@@ -59,7 +59,7 @@
   <view class="daily-card-area anim-fade-in-up-2">
 
     <!-- BEFORE DRAW — card awaiting tap -->
-    <view class="daily-card-wrap {{!hasDrawnToday && !dailyCard ? 'card-ready' : ''}}" wx:if="{{!dailyCard && !dailyCardRestoring}}" bindtap="drawDailyCard" animation="{{cardAnimData}}" role="button">
+    <view class="daily-card-wrap {{!hasDrawnToday && !dailyCard ? 'card-ready' : ''}}" wx:if="{{!dailyCard && !dailyCardRestoring}}" bindtap="drawDailyCard" animation="{{cardAnimData}}" role="button" aria-label="翻开今日之牌">
       <view class="card card-warm card-float">
         <!-- Ripple effect container (triggers via rippleActive state) -->
         <view class="ripple-box">
@@ -121,6 +121,11 @@
         </view>
 
       </view>
+    </view>
+
+    <!-- 每日一牌打卡 — 保存今日卡牌 -->
+    <view wx:if="{{dailyCard && dailyCardFlipped}}" class="daily-share-link" bindtap="onShareDailyCard" role="button" aria-label="保存今日卡牌">
+      <text>保存今日卡牌 ✦</text>
     </view>
 
   </view>
@@ -199,26 +204,26 @@
   <view class="section anim-fade-in-up-3">
     <text class="section-title">选择牌阵</text>
     <view class="spread-grid-2">
-      <view class="card card-press spread-card" bindtap="navigateToReading" data-type="three_card" animation="{{spreadAnimData[0]}}" role="button">
+      <view class="card card-press spread-card" bindtap="navigateToReading" data-type="three_card" animation="{{spreadAnimData[0]}}" role="button" aria-label="选择三牌占卜牌阵">
         <view class="spread-tag spread-tag-free">免费</view>
         <image class="spread-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" lazy-load aria-label="三牌占卜" />
         <text class="body-sm">三牌占卜</text>
         <text class="body-xs">过去·现在·未来</text>
       </view>
-      <view class="card card-press spread-card" bindtap="navigateToReading" data-type="triangle" animation="{{spreadAnimData[1]}}" role="button">
+      <view class="card card-press spread-card" bindtap="navigateToReading" data-type="triangle" animation="{{spreadAnimData[1]}}" role="button" aria-label="选择恋人三角牌阵">
         <view class="spread-tag spread-tag-premium">会员</view>
         <image class="spread-icon" src="/images/icons/theme_love_64.png" mode="aspectFit" lazy-load aria-label="恋人三角" />
         <text class="body-sm">恋人三角</text>
         <text class="body-xs">感情关系深度解读</text>
         <view class="spread-theme-chip spread-theme-chip--love">爱情</view>
       </view>
-      <view class="card card-press spread-card" bindtap="navigateToReading" data-type="celtic_cross" animation="{{spreadAnimData[2]}}" role="button">
+      <view class="card card-press spread-card" bindtap="navigateToReading" data-type="celtic_cross" animation="{{spreadAnimData[2]}}" role="button" aria-label="选择凯尔特十字牌阵">
         <view class="spread-tag spread-tag-premium">会员</view>
         <image class="spread-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" lazy-load aria-label="凯尔特十字" />
         <text class="body-sm">凯尔特十字</text>
         <text class="body-xs">全方位综合解牌</text>
       </view>
-      <view class="card card-press spread-card" bindtap="navigateToReading" data-type="career" animation="{{spreadAnimData[3]}}" role="button">
+      <view class="card card-press spread-card" bindtap="navigateToReading" data-type="career" animation="{{spreadAnimData[3]}}" role="button" aria-label="选择事业牌阵">
         <view class="spread-tag spread-tag-premium">会员</view>
         <image class="spread-icon" src="/images/icons/theme_career_64.png" mode="aspectFit" lazy-load aria-label="事业牌阵" />
         <text class="body-sm">事业牌阵</text>
@@ -232,7 +237,7 @@
     </view>
 
     <!-- 会员解锁全部牌阵入口（仅非会员显示） -->
-    <view wx:if="{{!isMember}}" class="card card-press unlock-spreads-card" bindtap="onGoMembership" role="button">
+    <view wx:if="{{!isMember}}" class="card card-press unlock-spreads-card" bindtap="onGoMembership" role="button" aria-label="升级星光会员解锁全部牌阵">
       <view class="unlock-spreads-left">
         <image class="unlock-spreads-icon" src="/images/icons/lock_64.png" mode="aspectFit" lazy-load aria-label="解锁全部牌阵" />
       </view>
@@ -287,10 +292,8 @@
           wx:for="{{zodiacList}}"
           wx:key="key"
           wx:for-item="z"
-          bindtap="onSelectZodiac"
+          bindtap="onSelectZodiac" role="button" aria-label="选择星座 {{z.name}}"
           data-sign="{{z.name}}"
-          role="button"
-          aria-label="选择星座 {{z.name}}"
         >
           <text class="zodiac-item-emoji">{{z.emoji}}</text>
           <text class="zodiac-item-name">{{z.name}}</text>
@@ -304,7 +307,7 @@
   </view>
 
   <!-- ===== 塔罗简介 — 沉浸式浮层 ===== -->
-  <view class="tarot-overlay {{showTarotOverlay ? 'tarot-overlay--visible' : ''}}" bindtap="closeTarotOverlay">
+  <view class="tarot-overlay {{showTarotOverlay ? 'tarot-overlay--visible' : ''}}" bindtap="closeTarotOverlay" role="button" aria-label="关闭塔罗简介">
     <view class="tarot-overlay-content" catchtap="">
       <!-- Star particles inside the card -->
       <view class="tarot-overlay-stars">
@@ -335,4 +338,17 @@
       </view>
     </view>
   </view>
+
+  <!-- ===== 每日一牌打卡海报 ===== -->
+  <share-poster
+    wx:if="{{dailyCard}}"
+    mode="daily"
+    visible="{{showDailySharePoster}}"
+    cardImagePath="{{dailyShareCardImage}}"
+    cardName="{{dailyShareCardName}}"
+    dateText="{{dailyShareCardDate}}"
+    streak="{{streak}}"
+    bind:close="onCloseDailySharePoster"
+    bind:share="onShareDailyPosterToFriend"
+  />
 </view>
