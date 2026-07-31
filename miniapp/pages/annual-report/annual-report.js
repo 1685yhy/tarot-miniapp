@@ -20,6 +20,7 @@ const { checkLogin } = require('../../utils/auth');
 const { computeImagePath, findCard, pngFallbackPath } = require('../../utils/cards');
 const { drawSharePoster } = require('../../utils/canvas-poster');
 const { playCardRevealSound, playMilestoneSound } = require('../../utils/sound');
+const analytics = require('../../utils/analytics');
 
 const TOTAL_SCREENS = 8;
 const AUTO_ADVANCE_DELAY = 6000; // ms per screen in auto mode
@@ -382,6 +383,8 @@ Page({
     wx.saveImageToPhotosAlbum({
       filePath: path,
       success: () => {
+        // Analytics: poster saved to album
+        analytics.trackShare('album', 'annual_report_poster');
         wx.showToast({ title: '已保存到相册', icon: 'success' });
       },
       fail: (err) => {
@@ -407,6 +410,8 @@ Page({
   },
 
   onShareAppMessage() {
+    // Analytics: annual report share
+    analytics.trackShare('wechat_friend', 'annual_report');
     const report = this.data.report;
     const cardName = report?.annual_theme_card?.name || '年度之牌';
     const count = report?.total_readings || 0;

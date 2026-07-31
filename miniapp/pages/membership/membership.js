@@ -76,6 +76,8 @@ Page({
     // Analytics: page view + pricing funnel
     analytics.pageView('membership');
     analytics.funnel('pricing_viewed');
+    // Analytics: paywall impression
+    analytics.trackPaywallView('membership_page');
 
     try {
       const user = await checkLogin({ refresh: true });
@@ -240,6 +242,8 @@ Page({
 
   /** 开启 3 天免费试用 */
   onStartTrial() {
+    // Analytics: free trial started
+    analytics.trackTrialStart();
     const trialExpiry = Date.now() + TRIAL_DURATION_MS;
     wx.setStorageSync(TRIAL_STORAGE_KEY, trialExpiry);
     wx.setStorageSync(TRIAL_MEMBER_KEY, true);
@@ -262,6 +266,8 @@ Page({
 
     // Analytics: funnel — purchase started
     analytics.funnel('purchase_started', { product: product.id });
+    // Analytics: purchase intent
+    analytics.trackPurchaseStart(product);
 
     this.setData({ purchasing: true });
     try {
@@ -299,6 +305,8 @@ Page({
         signType: params.signType || 'HMAC-SHA256',
         paySign: params.paySign,
         success: () => {
+          // Analytics: purchase completed
+          analytics.trackPurchaseComplete(product, product.price);
           this.setData({ purchasing: false, paymentSuccess: true, showCelebration: true });
           // Auto-navigate back after 2s celebration
           if (!this._timers) this._timers = [];

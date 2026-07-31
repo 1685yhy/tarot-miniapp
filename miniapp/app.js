@@ -15,9 +15,8 @@ App({
     // === 裂变：好友送牌 —— 收到邀请码则登录后兑换 ===
     this._handleInvite(options);
 
-    // === Analytics: app launch ===
-    analytics.pageView('app_launch');
-    analytics.trackEvent('appLaunch');
+    // === Analytics: app launch (scene + query params) ===
+    analytics.trackAppLaunch(options);
 
     // === Performance monitoring: app start ===
     perf.mark('appLaunch');

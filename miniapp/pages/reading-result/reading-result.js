@@ -127,6 +127,9 @@ Page({
       return;
     }
 
+    // Analytics: completed reading displayed
+    analytics.trackReadingComplete(spread);
+
     if (isPending) {
       // New reading — create via API with full loading animation
       this._pendingSpread = spread || 'three_card';
@@ -671,6 +674,7 @@ Page({
 
     // Analytics: track share event
     analytics.trackEvent('share', { type: 'reading', spread_type: reading.spread_type });
+    analytics.trackShare('wechat_friend', 'reading');
 
     // Extract a 15-char key insight from the interpretation
     let keyInsight = '';
@@ -844,6 +848,9 @@ Page({
     // or fall back to letting the user save + share manually
     const imagePath = e.detail && e.detail.imagePath;
     if (imagePath) {
+      // Analytics: poster share — distinguish invite poster from reading poster
+      const shareType = this.data.showInvitePoster ? 'invite_poster' : 'reading_poster';
+      analytics.trackShare('wechat_friend', shareType);
       // Attempt to use WeChat's share with image
       // Note: wx.shareAppMessage is only available in some WeChat versions
       try {

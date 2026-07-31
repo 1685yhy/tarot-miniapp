@@ -540,6 +540,8 @@ Page({
       wx.hideLoading();
       // 保存到globalData供详情页使用
       getApp().globalData.dailyCard = card;
+      // Analytics: daily card draw completed
+      analytics.trackDailyDraw();
       // Daily habit loop: update streak + show reflection prompt
       this._updateStreak();
       this.setData({ showReflectionPrompt: true });
@@ -678,6 +680,8 @@ Page({
   onShareDailyPosterToFriend(e) {
     const imagePath = e.detail && e.detail.imagePath;
     if (!imagePath) return;
+    // Analytics: daily card poster share
+    analytics.trackShare('wechat_friend', 'daily_card_poster');
     try {
       wx.shareAppMessage({
         imageUrl: imagePath,

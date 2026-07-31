@@ -1,6 +1,7 @@
 // pages/share-center/share-center.js
 const { request, getFriendlyError } = require('../../utils/api');
 const { computeImagePath } = require('../../utils/cards');
+const analytics = require('../../utils/analytics');
 
 // Same zodiac list as onboarding (pages/index/index.js zodiacList)
 const ZODIAC_LIST = [
@@ -141,6 +142,8 @@ Page({
     }
 
     try {
+      // Analytics: invite share
+      analytics.trackShare('wechat_friend', 'invite');
       // Trigger WeChat share with the invite card
       wx.shareAppMessage({
         title: '来星光塔罗一起探索命运吧 ✦',
@@ -255,6 +258,8 @@ Page({
     const shareText = (this.data.matchResult && this.data.matchResult.share_text)
       || '看看你和谁的星座最契合 ✦';
 
+    // Analytics: zodiac match poster share
+    analytics.trackShare('wechat_friend', 'zodiac_match_poster');
     try {
       wx.shareAppMessage({
         imageUrl: imagePath,

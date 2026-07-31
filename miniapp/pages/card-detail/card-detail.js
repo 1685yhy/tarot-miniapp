@@ -1,6 +1,7 @@
 // pages/card-detail/card-detail.js
 const { request, getFriendlyError } = require('../../utils/api');
 const { computeImagePath, pngFallbackPath } = require('../../utils/cards');
+const analytics = require('../../utils/analytics');
 
 // Full-size card images served via CDN (xingxiang.chat/images/cards_full/)
 const IMAGE_BASE = 'https://xingxiang.chat/images/cards_full';
@@ -132,6 +133,8 @@ Page({
   },
 
   onShareAppMessage() {
+    // Analytics: card detail share
+    analytics.trackShare('wechat_friend', 'card_detail');
     const card = this.data.card;
     return {
       title: card ? `${card.name_zh} — 星光映照塔罗` : '星光映照 · 塔罗百科',
