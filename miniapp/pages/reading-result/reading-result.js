@@ -639,6 +639,9 @@ Page({
     if (this.data.purchasingDeep) return;
     const bucket = this.data.priceTestBucket || '9.9';
 
+    // Analytics: paywall CTA clicked — funnel step (Task 2.4)
+    analytics.trackPaywallClick('reading_complete');
+
     try {
       await checkLogin();
     } catch (err) {
