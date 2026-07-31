@@ -1,7 +1,7 @@
 // pages/encyclopedia/encyclopedia.js
 const perf = require('../../utils/performance');
 const { request, getFriendlyError } = require('../../utils/api');
-const { computeImagePath } = require('../../utils/cards');
+const { computeImagePath, pngFallbackPath } = require('../../utils/cards');
 const { SUIT_ZH } = require('../../utils/constants');
 const { playPageEnterSound } = require('../../utils/sound');
 
@@ -317,9 +317,17 @@ Page({
 
   onCardImgError(e) {
     const idx = e.currentTarget.dataset.index;
-    if (idx !== undefined && idx !== '') {
-      this.setData({ [`filteredCards[${idx}]._imgError`]: true });
+    if (idx === undefined || idx === '') return;
+    // Retry once with PNG fallback before hiding the card image
+    const card = this.data.filteredCards[idx];
+    if (card && card.imagePath && card.imagePath.endsWith('.webp') && !card._webpFallbackTried) {
+      this.setData({
+        [`filteredCards[${idx}]._webpFallbackTried`]: true,
+        [`filteredCards[${idx}].imagePath`]: pngFallbackPath(card.imagePath),
+      });
+      return;
     }
+    this.setData({ [`filteredCards[${idx}]._imgError`]: true });
   },
 
   onDailyCardImgLoad() {
@@ -327,6 +335,12 @@ Page({
   },
 
   onDailyCardImgError() {
+    // Retry once with PNG fallback before hiding the daily card image
+    const current = this.data.dailyCard && this.data.dailyCard.imagePath;
+    if (current && current.endsWith('.webp') && !this.data.webpFallbackTried) {
+      this.setData({ webpFallbackTried: true, 'dailyCard.imagePath': pngFallbackPath(current) });
+      return;
+    }
     this.setData({ dailyCardImgError: true });
   },
 

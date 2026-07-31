@@ -1,7 +1,7 @@
 // pages/reading-result/reading-result.js
 const { request, getFriendlyError } = require('../../utils/api');
 const { cardEnter } = require('../../utils/animate');
-const { computeImagePath } = require('../../utils/cards');
+const { computeImagePath, pngFallbackPath } = require('../../utils/cards');
 const { playCardRevealSound } = require('../../utils/sound');
 const analytics = require('../../utils/analytics');
 
@@ -457,6 +457,17 @@ Page({
   },
 
   onEnlargedImgError() {
+    // Retry once with PNG fallback before hiding the enlarged card image
+    const idx = this.data.enlargedCardIndex;
+    const cards = this.data.reading && this.data.reading.drawn_cards;
+    const card = cards && idx >= 0 ? cards[idx] : null;
+    if (card && card.imagePath && card.imagePath.endsWith('.webp') && !card._webpFallbackTried) {
+      this.setData({
+        [`reading.drawn_cards[${idx}]._webpFallbackTried`]: true,
+        [`reading.drawn_cards[${idx}].imagePath`]: pngFallbackPath(card.imagePath),
+      });
+      return;
+    }
     this.setData({ enlargedImgError: true, enlargedImgLoaded: false });
   },
 

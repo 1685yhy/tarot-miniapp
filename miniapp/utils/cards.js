@@ -94,11 +94,15 @@ const CARD_REGISTRY = {
   '星币国王':  { type: 'king-pentacles', number: 'K', en: 'King of Pentacles', arcana: 'minor', suit: 'pentacles' },
 };
 
-// ===== 图像路径映射：计算78张卡牌的真实ComfyUI PNG路径 =====
+// ===== 图像路径映射：计算78张卡牌的真实ComfyUI图片路径 =====
 const IMAGE_BASE = (() => {
   // All environments use CDN — domain is ICP-filed and images are served
   return 'https://xingxiang.chat/images/cards_thumb';
 })();
+
+// 卡牌图片优先使用 WebP（WeChat 全版本支持，体积更小）
+// 若 WebP 加载失败，页面可通过 pngFallbackPath() 回退到同名的 PNG
+const IMAGE_EXT = '.webp';
 
 const ROMAN_MAP = {
   '0': 0, 'I': 1, 'II': 2, 'III': 3, 'IV': 4, 'V': 5,
@@ -114,10 +118,10 @@ const ROMAN_MAP = {
     const enSnake = card.en.toLowerCase().replace(/\s+/g, '_');
     if (card.arcana === 'major') {
       const idx = ROMAN_MAP[card.number] !== undefined ? ROMAN_MAP[card.number] : 0;
-      card.image = `${IMAGE_BASE}/major_${String(idx).padStart(2, '0')}_${enSnake}.png`;
+      card.image = `${IMAGE_BASE}/major_${String(idx).padStart(2, '0')}_${enSnake}${IMAGE_EXT}`;
     } else if (card.suit && suitCounters[card.suit] !== undefined) {
       const idx = suitCounters[card.suit]++;
-      card.image = `${IMAGE_BASE}/${card.suit}_${String(idx).padStart(2, '0')}_${enSnake}.png`;
+      card.image = `${IMAGE_BASE}/${card.suit}_${String(idx).padStart(2, '0')}_${enSnake}${IMAGE_EXT}`;
     }
   });
 })();
@@ -157,16 +161,28 @@ function computeImagePath(cardData, imageBase) {
     } else {
       return '';
     }
-    return `${base}/major_${idx}_${enSnake}.png`;
+    return `${base}/major_${idx}_${enSnake}${IMAGE_EXT}`;
   }
 
   if (cardData.suit) {
     const firstWord = enSnake.split('_')[0];
     const rankIdx = RANK_MAP[firstWord] !== undefined ? RANK_MAP[firstWord] : 0;
-    return `${base}/${cardData.suit}_${String(rankIdx).padStart(2, '0')}_${enSnake}.png`;
+    return `${base}/${cardData.suit}_${String(rankIdx).padStart(2, '0')}_${enSnake}${IMAGE_EXT}`;
   }
 
   return '';
+}
+
+/**
+ * WebP 加载失败时的 PNG 兜底路径
+ * 例如: .../major_00_the_fool.webp → .../major_00_the_fool.png
+ * 已存在同名 PNG（CDN 未同步 WebP 时，图片仍可正常显示）
+ * @param {string} path - 卡牌图片路径
+ * @returns {string} 同名 PNG 路径（非 .webp 路径原样返回）
+ */
+function pngFallbackPath(path) {
+  if (!path || !path.endsWith('.webp')) return path;
+  return path.replace(/\.webp$/, '.png');
 }
 
 /**
@@ -198,4 +214,4 @@ function findCard(nameZh, nameEn, cardNumber) {
   return null;
 }
 
-module.exports = { CARD_REGISTRY, computeImagePath, findCard, MAJOR_TYPES };
+module.exports = { CARD_REGISTRY, computeImagePath, findCard, MAJOR_TYPES, pngFallbackPath };
