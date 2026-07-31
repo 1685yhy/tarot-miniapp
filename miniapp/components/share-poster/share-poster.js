@@ -22,6 +22,30 @@
  *     streak="{{streak}}"
  *     bind:close="onCloseDailySharePoster"
  *   />
+ *
+ * Usage (friend invite poster — mode="invite", "送好友一张牌"):
+ *   <share-poster
+ *     mode="invite"
+ *     visible="{{showInvitePoster}}"
+ *     inviteCode="{{inviteCode}}"
+ *     cardImagePath="{{shareCardImage}}"
+ *     cardName="{{shareCardName}}"
+ *     keyInsight="{{shareKeyInsight}}"
+ *     nickname="{{userNickname}}"
+ *     bind:close="onCloseInvitePoster"
+ *   />
+ *
+ * Usage (zodiac match poster — mode="zodiac", "星座契合 · 塔罗关系牌"):
+ *   <share-poster
+ *     mode="zodiac"
+ *     visible="{{showMatchPoster}}"
+ *     zodiacSigns="{{matchSignsText}}"
+ *     cardImagePath="{{matchCardImage}}"
+ *     cardName="{{matchCardName}}"
+ *     keyInsight="{{matchCompatText}}"
+ *     bind:close="onCloseMatchPoster"
+ *     bind:share="onShareMatchPoster"
+ *   />
  */
 const { drawSharePoster } = require('../../utils/canvas-poster');
 
@@ -34,7 +58,15 @@ Component({
     },
     mode: {
       type: String,
-      value: 'reading', // 'reading' | 'daily'
+      value: 'reading', // 'reading' | 'daily' | 'invite' | 'zodiac'
+    },
+    inviteCode: {
+      type: String,
+      value: '', // invite mode: user's invite code (STAR-XXXX), baked into QR scene
+    },
+    zodiacSigns: {
+      type: String,
+      value: '', // zodiac mode: "♈ + ♉" pairing shown as the poster hero
     },
     cardImagePath: {
       type: String,
@@ -107,7 +139,7 @@ Component({
        Draw the poster on canvas using the utility
        --------------------------------------------------------------- */
     _drawPoster() {
-      const { mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak } = this.properties;
+      const { mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak, inviteCode, zodiacSigns } = this.properties;
 
       // Use the first card image; if cardImagePath is empty, skip
       if (!cardImagePath && !cardName) {
@@ -126,6 +158,8 @@ Component({
         nickname: nickname || '',
         dateText: dateText || '',
         streak: streak || 0,
+        inviteCode: inviteCode || '',
+        zodiacSigns: zodiacSigns || '',
         onSuccess: (tempFilePath) => {
           this.setData({
             previewPath: tempFilePath,

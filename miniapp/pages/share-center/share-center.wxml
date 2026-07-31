@@ -67,8 +67,69 @@
     <text class="invite-action-arrow">→</text>
   </view>
 
+  <!-- ============ 星座契合 · 塔罗关系牌 ============ -->
+  <view class="zodiac-section anim-fade-up anim-stagger-4">
+    <view class="zodiac-header">
+      <text class="zodiac-header-title">星座契合 · 塔罗关系牌</text>
+      <text class="zodiac-header-hint">选两个星座，看看你们的塔罗关系牌，纯属好玩 ✦</text>
+    </view>
+
+    <!-- Two zodiac pickers side by side -->
+    <view class="zodiac-pickers">
+      <view class="zodiac-picker" bindtap="onSelectSign1" role="button" aria-label="选择第一个星座">
+        <text class="zodiac-picker-emoji">{{sign1Emoji}}</text>
+        <text class="zodiac-picker-name">{{sign1Name}}</text>
+        <text class="zodiac-picker-tip">点击更换</text>
+      </view>
+      <text class="zodiac-plus">+</text>
+      <view class="zodiac-picker" bindtap="onSelectSign2" role="button" aria-label="选择第二个星座">
+        <text class="zodiac-picker-emoji">{{sign2Emoji}}</text>
+        <text class="zodiac-picker-name">{{sign2Name}}</text>
+        <text class="zodiac-picker-tip">点击更换</text>
+      </view>
+    </view>
+
+    <button
+      class="btn-primary zodiac-btn"
+      bindtap="onCheckMatch"
+      loading="{{matchLoading}}"
+      disabled="{{matchLoading}}"
+    >看结果</button>
+
+    <!-- Match result -->
+    <view class="zodiac-result" wx:if="{{matchResult}}">
+      <view class="zodiac-result-card-row">
+        <text class="zodiac-result-label">你们的塔罗关系牌</text>
+        <text class="zodiac-result-card">🃏 {{matchResult.card_name}}</text>
+      </view>
+      <text class="zodiac-result-text">{{matchResult.compatibility_text}}</text>
+      <button class="btn-secondary zodiac-share-btn" bindtap="onShowMatchPoster">生成海报 · 分享看看</button>
+    </view>
+  </view>
+
+  <!-- ============ 星座选择弹层 ============ -->
+  <view class="zodiac-picker-overlay" wx:if="{{pickerFor}}" bindtap="onClosePicker">
+    <view class="zodiac-picker-panel" catchtap="noop">
+      <text class="zodiac-picker-panel-title">选择星座</text>
+      <view class="zodiac-picker-grid">
+        <view
+          class="zodiac-picker-option"
+          wx:for="{{zodiacList}}" wx:key="key"
+          data-key="{{item.key}}"
+          bindtap="onPickSign"
+          role="button"
+          aria-label="选择{{item.name}}"
+        >
+          <text class="zodiac-picker-option-emoji">{{item.emoji}}</text>
+          <text class="zodiac-picker-option-name">{{item.name}}</text>
+        </view>
+      </view>
+      <button class="btn-secondary zodiac-picker-cancel" bindtap="onClosePicker">取消</button>
+    </view>
+  </view>
+
   <!-- ============ 奖励进度 ============ -->
-  <view class="reward-section anim-fade-up anim-stagger-4">
+  <view class="reward-section anim-fade-up anim-stagger-5">
     <view class="reward-header">
       <image class="reward-header-icon" src="/images/icons/star_filled_64.png" mode="aspectFit" lazy-load aria-label="分享奖励" />
       <text class="reward-header-title">分享奖励进度</text>
@@ -154,7 +215,7 @@
   </view>
 
   <!-- ============ 分享历史 ============ -->
-  <view class="history-section anim-fade-up anim-stagger-5">
+  <view class="history-section anim-fade-up anim-stagger-6">
     <view class="history-header">
       <image class="history-header-icon" src="/images/icons/history_64.png" mode="aspectFit" lazy-load aria-label="分享记录" />
       <text class="history-header-title">分享记录</text>
@@ -184,3 +245,15 @@
   </view>
 
 </view>
+
+<!-- ===== 星座契合 · 塔罗关系牌 海报 ===== -->
+<share-poster
+  mode="zodiac"
+  visible="{{showMatchPoster}}"
+  zodiacSigns="{{matchSignsText}}"
+  cardImagePath="{{matchCardImage}}"
+  cardName="{{matchCardName}}"
+  keyInsight="{{matchCompatText}}"
+  bind:close="onCloseMatchPoster"
+  bind:share="onShareMatchPoster"
+/>
