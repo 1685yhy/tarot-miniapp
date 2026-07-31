@@ -574,10 +574,17 @@ page {
   padding: var(--spacing-md) 0;
 }
 
-.quota-exhausted-text {
+.quota-exhausted-link {
   font-size: var(--font-size-caption);
-  color: var(--color-lavender);
+  color: var(--color-gold);
   letter-spacing: 1rpx;
+  text-decoration: underline;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.quota-exhausted-link:active {
+  opacity: 0.6;
 }
 
 /* ================================================================
