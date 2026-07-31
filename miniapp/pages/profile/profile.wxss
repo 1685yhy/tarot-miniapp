@@ -542,7 +542,7 @@
 .history-card:active {
   transform: scale(0.97);
   border-color: rgba(244, 212, 140, 0.20);
-  box-shadow: var(--shadow-card-press);
+  box-shadow: var(--shadow-pressed);
 }
 .history-card-header {
   display: flex;

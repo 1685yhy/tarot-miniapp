@@ -187,7 +187,7 @@ page {
   background: var(--color-card);
   border-color: var(--color-gold);
   border-left-color: var(--color-gold);
-  box-shadow: var(--shadow-card-press);
+  box-shadow: var(--shadow-pressed);
 }
 
 /* ──────────── Premium spread card ──────────── */
@@ -200,7 +200,7 @@ page {
 .spread-card.premium:active {
   border-color: var(--color-gold-light);
   border-left-color: var(--color-gold-light);
-  box-shadow: var(--shadow-card-press);
+  box-shadow: var(--shadow-pressed);
 }
 
 /* Gold diamond corner for premium */

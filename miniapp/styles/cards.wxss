@@ -1,0 +1,66 @@
+/* ============================================================
+   Card System — 3 variants (Design Council PRD 5.5)
+   card-default | card-interactive | card-featured
+   ------------------------------------------------------------
+   Consolidates the previous 7 variants
+   (warm, teaching, press, reveal, rise, float, shimmer) into 3.
+
+   WXSS has no `composes` / `@extend`, so each variant repeats
+   the base card styles explicitly. Values stay consistent via
+   the design tokens in styles/common.wxss.
+
+   NOTE: .card-interactive deliberately mirrors the .card base
+   (styles/common.wxss) so `card card-interactive` renders
+   identically to the previous pressable card pattern —
+   no visual regression.
+   ============================================================ */
+
+/* -----------------------------------------------------------
+   card-default — base card for info display
+   ----------------------------------------------------------- */
+.card-default {
+  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 40%, #303065 100%);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.18);
+  border-radius: 16rpx;
+  padding: var(--spacing-md);
+  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.28);
+}
+
+/* -----------------------------------------------------------
+   card-interactive — tappable card with press feedback
+   (base styles copied from card-default, aligned to the .card
+   base in common.wxss to preserve existing appearance)
+   ----------------------------------------------------------- */
+.card-interactive {
+  background: var(--color-surface-gradient);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.card-interactive:active {
+  transform: scale(0.97);
+  border-color: rgba(244, 212, 140, 0.55) !important;
+  box-shadow: var(--shadow-pressed);
+}
+
+/* -----------------------------------------------------------
+   card-featured — daily card only, breathing glow border
+   (the breathing glow overlay itself is page-scoped in
+   pages/index/index.wxss — see .card-ready .card-featured)
+   ----------------------------------------------------------- */
+.card-featured {
+  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 40%, #303065 100%);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.30);
+  border-radius: 16rpx;
+  padding: var(--spacing-md);
+  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.28), 0 0 50rpx rgba(244, 212, 140, 0.04);
+  position: relative;
+  overflow: hidden;
+}

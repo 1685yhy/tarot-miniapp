@@ -60,7 +60,7 @@
 
     <!-- BEFORE DRAW — card awaiting tap -->
     <view class="daily-card-wrap {{!hasDrawnToday && !dailyCard ? 'card-ready' : ''}}" wx:if="{{!dailyCard && !dailyCardRestoring}}" bindtap="drawDailyCard" animation="{{cardAnimData}}" role="button" aria-label="翻开今日之牌">
-      <view class="card card-warm card-float">
+      <view class="card card-featured">
         <!-- Ripple effect container (triggers via rippleActive state) -->
         <view class="ripple-box">
           <view class="ripple-circle {{rippleActive?'ripple-run':''}}"></view>
@@ -76,7 +76,7 @@
 
     <!-- RESTORING — skeleton while re-fetching today's card -->
     <view class="daily-card-wrap" wx:elif="{{dailyCardRestoring}}">
-      <view class="card card--teaching">
+      <view class="card card-featured daily-card-panel">
         <view class="skeleton skeleton--block" style="width:200rpx;height:280rpx;margin:0 auto 20rpx;border-radius:16rpx;"></view>
         <view class="skeleton skeleton--title" style="width:40%;margin:0 auto 12rpx;"></view>
         <view class="skeleton skeleton--text-sm" style="width:55%;margin:0 auto;"></view>
@@ -84,8 +84,8 @@
     </view>
 
     <!-- AFTER DRAW — teaching entry card -->
-    <view class="daily-card-wrap daily-card-teaching {{dailyCardFlipped ? 'daily-card--flipped' : ''}}" wx:else bindtap="onDailyCardTap" data-today-flipped="{{dailyCardFlipped}}" role="button" aria-label="查看今日卡牌详解">
-      <view class="card card--teaching card-rise">
+    <view class="daily-card-wrap daily-card-featured {{dailyCardFlipped ? 'daily-card--flipped' : ''}}" wx:else bindtap="onDailyCardTap" data-today-flipped="{{dailyCardFlipped}}" role="button" aria-label="查看今日卡牌详解">
+      <view class="card card-featured daily-card-panel daily-card-enter">
         <!-- Sparkle particles (only when not flipped) -->
         <view wx:if="{{!dailyCardFlipped}}" class="sparkle-field">
           <view class="sparkle s1"></view>
@@ -136,7 +136,7 @@
 
   <!-- 星光树洞入口 -->
   <view class="anim-fade-in-up-2" style="margin-top:30rpx" bindtap="onGoCommunity" role="button" aria-label="进入星光树洞">
-    <view class="card card-press community-entry-card">
+    <view class="card card-interactive community-entry-card">
       <view class="diary-entry-left">
         <view class="community-entry-icon">
           <text class="community-entry-emoji">🕊️</text>
@@ -153,7 +153,7 @@
 
   <!-- 未完成解读恢复入口 -->
   <view wx:if="{{pendingReading}}" class="anim-fade-in-up-2" style="margin-top:30rpx" bindtap="onContinueReading" role="button" aria-label="继续上次未完成的解读">
-    <view class="card card-press pending-reading-card">
+    <view class="card card-interactive pending-reading-card">
       <view class="pending-reading-left">
         <view class="pending-reading-icon-wrap">
           <image class="pending-reading-icon" src="/images/icons/star_64.png" mode="aspectFit" lazy-load aria-label="上次未完成的解读" />
@@ -169,7 +169,7 @@
 
   <!-- 今日记录入口 -->
   <view class="anim-fade-in-up-2" style="margin-top:30rpx" bindtap="onGoDiary" role="button" aria-label="记录今天">
-    <view class="card card-press diary-entry-card">
+    <view class="card card-interactive diary-entry-card">
       <view class="diary-entry-left">
         <image class="diary-entry-icon" src="/images/icons/diary_64.png" mode="aspectFit" lazy-load aria-label="记录今天" />
         <view>
@@ -198,26 +198,26 @@
   <view class="section anim-fade-in-up-3">
     <text class="section-title">选择牌阵</text>
     <view class="spread-grid-2">
-      <view class="card card-press spread-card" bindtap="navigateToReading" data-type="three_card" animation="{{spreadAnimData[0]}}" role="button" aria-label="选择三牌占卜牌阵">
+      <view class="card card-interactive spread-card" bindtap="navigateToReading" data-type="three_card" animation="{{spreadAnimData[0]}}" role="button" aria-label="选择三牌占卜牌阵">
         <view class="spread-tag spread-tag-free">免费</view>
         <image class="spread-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" lazy-load aria-label="三牌占卜" />
         <text class="body-sm">三牌占卜</text>
         <text class="body-xs">过去·现在·未来</text>
       </view>
-      <view class="card card-press spread-card" bindtap="navigateToReading" data-type="triangle" animation="{{spreadAnimData[1]}}" role="button" aria-label="选择恋人三角牌阵">
+      <view class="card card-interactive spread-card" bindtap="navigateToReading" data-type="triangle" animation="{{spreadAnimData[1]}}" role="button" aria-label="选择恋人三角牌阵">
         <view class="spread-tag spread-tag-premium">会员</view>
         <image class="spread-icon" src="/images/icons/theme_love_64.png" mode="aspectFit" lazy-load aria-label="恋人三角" />
         <text class="body-sm">恋人三角</text>
         <text class="body-xs">感情关系深度解读</text>
         <view class="spread-theme-chip spread-theme-chip--love">爱情</view>
       </view>
-      <view class="card card-press spread-card" bindtap="navigateToReading" data-type="celtic_cross" animation="{{spreadAnimData[2]}}" role="button" aria-label="选择凯尔特十字牌阵">
+      <view class="card card-interactive spread-card" bindtap="navigateToReading" data-type="celtic_cross" animation="{{spreadAnimData[2]}}" role="button" aria-label="选择凯尔特十字牌阵">
         <view class="spread-tag spread-tag-premium">会员</view>
         <image class="spread-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" lazy-load aria-label="凯尔特十字" />
         <text class="body-sm">凯尔特十字</text>
         <text class="body-xs">全方位综合解牌</text>
       </view>
-      <view class="card card-press spread-card" bindtap="navigateToReading" data-type="career" animation="{{spreadAnimData[3]}}" role="button" aria-label="选择事业牌阵">
+      <view class="card card-interactive spread-card" bindtap="navigateToReading" data-type="career" animation="{{spreadAnimData[3]}}" role="button" aria-label="选择事业牌阵">
         <view class="spread-tag spread-tag-premium">会员</view>
         <image class="spread-icon" src="/images/icons/theme_career_64.png" mode="aspectFit" lazy-load aria-label="事业牌阵" />
         <text class="body-sm">事业牌阵</text>
@@ -225,13 +225,13 @@
         <view class="spread-theme-chip spread-theme-chip--career">事业</view>
       </view>
     </view>
-    <view class="card card-press more-spreads" bindtap="goToAllSpreads" animation="{{spreadAnimData[4]}}" role="button" aria-label="查看更多牌阵">
+    <view class="card card-interactive more-spreads" bindtap="goToAllSpreads" animation="{{spreadAnimData[4]}}" role="button" aria-label="查看更多牌阵">
       <text class="more-text anim-gentle-pulse">查看更多 · 共10种牌阵</text>
       <text class="more-arrow">→</text>
     </view>
 
     <!-- 会员解锁全部牌阵入口（仅非会员显示） -->
-    <view wx:if="{{!isMember}}" class="card card-press unlock-spreads-card" bindtap="onGoMembership" role="button" aria-label="升级星光会员解锁全部牌阵">
+    <view wx:if="{{!isMember}}" class="card card-interactive unlock-spreads-card" bindtap="onGoMembership" role="button" aria-label="升级星光会员解锁全部牌阵">
       <view class="unlock-spreads-left">
         <image class="unlock-spreads-icon" src="/images/icons/lock_64.png" mode="aspectFit" lazy-load aria-label="解锁全部牌阵" />
       </view>
