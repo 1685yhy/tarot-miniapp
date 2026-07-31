@@ -2,5 +2,7 @@
   "navigationBarTitleText": "记录",
   "navigationBarBackgroundColor": "#1A1A3E",
   "navigationBarTextStyle": "white",
-  "usingComponents": {}
+  "usingComponents": {
+    "share-poster": "../../components/share-poster/share-poster"
+  }
 }

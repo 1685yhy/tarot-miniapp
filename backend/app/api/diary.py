@@ -16,10 +16,12 @@ from app.models.user import User
 from app.utils.auth import get_current_user
 from app.config import settings
 from app.schemas.diary import (
+    DiaryCardBrief,
     DiaryCreate,
     DiaryEntryResponse,
     DiaryListResponse,
     DiaryReviewResponse,
+    DiarySharePreview,
     WeeklyMoodTrend,
 )
 
@@ -173,6 +175,58 @@ async def list_entries(
             for e in entries
         ],
         page=page,
+    )
+
+
+@router.get("/entries/{entry_id}/share-preview", response_model=DiarySharePreview)
+async def entry_share_preview(
+    entry_id: str,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Anonymized share preview for a diary entry.
+
+    Returns only share-safe fields for the poster: a short excerpt of the
+    reflection (first 200 chars), mood + emoji, entry date, and card brief.
+    All user-identifying information is stripped — no nickname, no user_id,
+    no raw reflection beyond the excerpt.
+    """
+    result = await db.execute(
+        select(DiaryEntry).where(
+            DiaryEntry.id == entry_id,
+            DiaryEntry.user_id == user.id,
+        )
+    )
+    entry = result.scalar_one_or_none()
+    if not entry:
+        raise HTTPException(status_code=404, detail="日记不存在")
+
+    card = None
+    if entry.card_id:
+        card_result = await db.execute(
+            select(TarotCard).where(TarotCard.id == entry.card_id)
+        )
+        card = card_result.scalar_one_or_none()
+
+    mood_key = entry.mood or "thoughtful"
+    mood_emoji = MOOD_EMOJI_MAP.get(mood_key, ("🤔", 3))[0]
+    excerpt = (entry.reflection or "").strip()[:200]
+
+    return DiarySharePreview(
+        date=str(entry.entry_date),
+        mood=entry.mood,
+        mood_emoji=mood_emoji,
+        excerpt=excerpt,
+        card=(
+            DiaryCardBrief(
+                id=card.id,
+                name_zh=card.name_zh,
+                meaning_upright=card.meaning_upright[:200],
+            )
+            if card
+            else None
+        ),
     )
 
 

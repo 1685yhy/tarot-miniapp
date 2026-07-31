@@ -1,9 +1,12 @@
 // pages/diary/diary.js
 const { request, getFriendlyError } = require('../../utils/api');
 const { computeImagePath, pngFallbackPath } = require('../../utils/cards');
+const analytics = require('../../utils/analytics');
 
 // Mood score map for trend analysis
 const MOOD_SCORE_MAP = { happy: 4.5, calm: 3.5, excited: 5, anxious: 2, sad: 1, thoughtful: 3 };
+// Mood emoji map — fallback if the backend share-preview omits mood_emoji
+const MOOD_EMOJI_MAP = { happy: '😊', calm: '😌', excited: '🤩', anxious: '😰', sad: '😢', thoughtful: '🤔' };
 const BASE_URL = require('../../utils/api').BASE_URL;
 
 Page({
@@ -44,6 +47,10 @@ Page({
 
     // Edit state
     editingEntryId: null,
+
+    // Diary share poster (anonymous)
+    showDiarySharePoster: false,
+    diaryShareData: null,
   },
 
   onReady() {
@@ -509,6 +516,55 @@ Page({
       wx.hideLoading();
       wx.showToast({ title: '生成失败', icon: 'none' });
     });
+  },
+
+  /** Open the share-poster modal with anonymized diary data */
+  async onShareDiaryEntry(e) {
+    const id = e.currentTarget.dataset.id;
+    if (!id) return;
+    const entry = this.data.entries.find(en => String(en.id) === String(id));
+    if (!entry) return;
+
+    wx.showLoading({ title: '生成分享图...', mask: true });
+    try {
+      // Backend returns only share-safe fields — no nickname, no user_id
+      const preview = await request(`/diary/entries/${id}/share-preview`);
+      const diaryShareData = {
+        moodEmoji: preview.mood_emoji || MOOD_EMOJI_MAP[entry.mood] || '🤔',
+        date: preview.date || entry.date,
+        excerpt: preview.excerpt || '',
+        cardImagePath: preview.card ? computeImagePath(preview.card) : (entry.cardImagePath || ''),
+        cardName: preview.card ? preview.card.name_zh : (entry.card ? entry.card.name_zh : ''),
+      };
+      this.setData({ diaryShareData, showDiarySharePoster: true });
+      wx.hideLoading();
+    } catch (err) {
+      wx.hideLoading();
+      wx.showToast({ title: '生成失败，请重试', icon: 'none' });
+    }
+  },
+
+  onCloseDiarySharePoster() {
+    this.setData({ showDiarySharePoster: false });
+  },
+
+  onShareDiaryPosterToFriend(e) {
+    const imagePath = e.detail && e.detail.imagePath;
+    if (!imagePath) return;
+    analytics.trackShare('wechat_friend', 'diary_poster');
+    try {
+      wx.shareAppMessage({
+        imageUrl: imagePath,
+        title: '星光映照 · 塔罗日记',
+      });
+    } catch (err) {
+      // Fallback: guide the user to save first
+      wx.showToast({
+        title: '请先保存海报，再从相册分享',
+        icon: 'none',
+        duration: 2000,
+      });
+    }
   },
 
   onGoHome() {

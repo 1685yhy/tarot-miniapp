@@ -285,15 +285,17 @@ function _drawQRCode(ctx, W, Y, qrImg, ctaText, inviteCode) {
 
 /**
  * Draw the brand footer.
+ *
+ * @param {string} [brandText] - Optional override (diary mode uses "星光映照 · 塔罗日记")
  */
-function _drawFooter(ctx, W, Y) {
+function _drawFooter(ctx, W, Y, brandText) {
   ctx.save();
   ctx.fillStyle = C_GOLD;
   ctx.globalAlpha = 0.6;
   ctx.font = `${Math.round(W * 0.030)}px "PingFang SC", "Helvetica Neue", sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
-  ctx.fillText('星光映照 · 塔罗占卜', W / 2, Y);
+  ctx.fillText(brandText || '星光映照 · 塔罗占卜', W / 2, Y);
   ctx.restore();
 }
 
@@ -518,6 +520,148 @@ function _drawZodiacLayout(ctx, W, H, data) {
   _drawFooter(ctx, W, H - Math.round(W * 0.040));
 }
 
+/**
+ * Draw the "diary share" poster layout — anonymous journal excerpt.
+ *
+ * Layout (3:4 portrait):
+ *   - Top: mood emoji (hero) + entry date
+ *   - Middle: small tarot card thumbnail + card name (when attached),
+ *     then the anonymized diary excerpt (wrapped, capped above the QR zone)
+ *   - Bottom: mini-program code with CTA + "星光映照 · 塔罗日记" brand footer
+ *
+ * The poster never contains user-identifying info — no nickname, no user_id.
+ *
+ * @param {Object} data - { cardImg, qrImg, moodEmoji, dateText, cardName, excerpt }
+ */
+function _drawDiaryLayout(ctx, W, H, data) {
+  const { cardImg, qrImg, moodEmoji, dateText, cardName, excerpt } = data;
+  // Top of the QR area — excerpt text is capped so it never overlaps it
+  const qrZoneY = H - Math.round(W * 0.26);
+
+  // ── Top: mood emoji (hero) + date ──
+  let y = Math.round(W * 0.13);
+
+  if (moodEmoji) {
+    ctx.save();
+    ctx.font = `${Math.round(W * 0.11)}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(moodEmoji, W / 2, y);
+    ctx.restore();
+    y += Math.round(W * 0.15);
+  }
+
+  if (dateText) {
+    ctx.save();
+    ctx.fillStyle = C_MUTED;
+    ctx.font = `${Math.round(W * 0.030)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(dateText, W / 2, y);
+    ctx.restore();
+    y += Math.round(W * 0.052);
+  }
+
+  // ── Middle: small tarot card thumbnail (when the entry has a card) ──
+  let textY = y;
+  if (cardImg) {
+    const cardW = Math.round(W * 0.26);
+    const cardH = Math.round(cardW * CARD_ASPECT);
+    const cardX = Math.round((W - cardW) / 2);
+    const r = Math.round(cardW * 0.02);
+
+    // Soft golden glow behind the card
+    const glowPad = Math.round(W * 0.012);
+    ctx.save();
+    ctx.fillStyle = 'rgba(244, 212, 140, 0.10)';
+    _roundRect(ctx, cardX - glowPad, textY - glowPad, cardW + glowPad * 2, cardH + glowPad * 2, r + glowPad);
+    ctx.fill();
+    ctx.restore();
+
+    // Card image (clipped to rounded rect) + gold border
+    ctx.save();
+    _roundRect(ctx, cardX, textY, cardW, cardH, r);
+    ctx.clip();
+    ctx.drawImage(cardImg, cardX, textY, cardW, cardH);
+    ctx.restore();
+
+    ctx.save();
+    _roundRect(ctx, cardX, textY, cardW, cardH, r);
+    ctx.strokeStyle = C_GOLD;
+    ctx.lineWidth = 1.5;
+    ctx.globalAlpha = 0.75;
+    ctx.stroke();
+    ctx.restore();
+
+    textY += cardH + Math.round(W * 0.034);
+
+    // Card name under the thumbnail
+    if (cardName) {
+      ctx.save();
+      ctx.fillStyle = C_GOLD;
+      ctx.font = `${Math.round(W * 0.032)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText(`🃏 ${cardName}`, W / 2, textY);
+      ctx.restore();
+      textY += Math.round(W * 0.052);
+    }
+  } else if (cardName) {
+    // No card image — card name alone, gold and subtle
+    ctx.save();
+    ctx.fillStyle = C_GOLD;
+    ctx.globalAlpha = 0.85;
+    ctx.font = `${Math.round(W * 0.032)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(`🃏 ${cardName}`, W / 2, textY);
+    ctx.restore();
+    textY += Math.round(W * 0.052);
+  }
+
+  // ── Divider line ──
+  textY += Math.round(W * 0.018);
+  const lineX = Math.round(W * 0.20);
+  const lineW = Math.round(W * 0.60);
+  ctx.save();
+  ctx.strokeStyle = 'rgba(244, 212, 140, 0.25)';
+  ctx.lineWidth = 0.5;
+  ctx.beginPath();
+  ctx.moveTo(lineX, textY);
+  ctx.lineTo(lineX + lineW, textY);
+  ctx.stroke();
+  ctx.restore();
+  textY += Math.round(W * 0.030);
+
+  // ── Diary excerpt (wrapped, capped above the QR zone) ──
+  if (excerpt) {
+    const maxW = Math.round(W * 0.78);
+    const x = Math.round((W - maxW) / 2);
+    const fontSize = Math.round(W * 0.031);
+    const lineH = Math.round(fontSize * 1.6);
+    const available = qrZoneY - textY - Math.round(W * 0.012);
+    const maxLines = Math.max(1, Math.min(6, Math.floor(available / lineH)));
+
+    ctx.save();
+    ctx.fillStyle = C_WHITE;
+    ctx.font = `${fontSize}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+
+    const lines = _wrapText(ctx, excerpt, maxW);
+    let excerptY = textY;
+    for (let i = 0; i < Math.min(lines.length, maxLines); i++) {
+      ctx.fillText(lines[i], x, excerptY);
+      excerptY += lineH;
+    }
+    ctx.restore();
+  }
+
+  // ── Bottom: mini-program code + brand footer ──
+  _drawQRCode(ctx, W, qrZoneY, qrImg, '扫码 · 写下你的星光日记');
+  _drawFooter(ctx, W, H - Math.round(W * 0.040), '星光映照 · 塔罗日记');
+}
+
 // =====================================================================
 //  Main entry — drawSharePoster
 // =====================================================================
@@ -528,22 +672,24 @@ function _drawZodiacLayout(ctx, W, H, data) {
  * @param {string}   canvasId          - Canvas element ID
  * @param {Object}   opts              - Options object
  * @param {Object}   opts.context      - Component/page `this` (for SelectorQuery)
- * @param {string}   opts.mode         - 'reading' (default) | 'daily' | 'invite' | 'zodiac'
+ * @param {string}   opts.mode         - 'reading' (default) | 'daily' | 'invite' | 'zodiac' | 'diary'
  * @param {string}   opts.cardImagePath - Tarot card image URL
  * @param {string}   opts.cardName     - Card display name (e.g. "愚者 · The Fool")
  * @param {string}   opts.keyInsight   - Short excerpt from the interpretation
  * @param {string}   opts.nickname     - User's display name
- * @param {string}   opts.dateText     - Formatted date for daily mode (e.g. "2026.07.31")
+ * @param {string}   opts.dateText     - Formatted date for daily/diary modes (e.g. "2026.07.31")
  * @param {number}   opts.streak       - Consecutive draw days for daily mode
  * @param {string}   opts.inviteCode   - Invite mode ("送好友一张牌"): QR carries
  *                                      `scene=invite_code=CODE`, CTA + code shown
  * @param {string}   opts.zodiacSigns  - Zodiac mode: pairing text (e.g. "♈ + ♉"),
  *                                      drawn as the poster hero
+ * @param {string}   opts.moodEmoji    - Diary mode: mood emoji drawn as the poster hero
+ * @param {string}   opts.excerpt      - Diary mode: anonymized diary excerpt text
  * @param {Function} opts.onSuccess    - Callback (tempFilePath)
  * @param {Function} opts.onError      - Callback (Error)
  */
 function drawSharePoster(canvasId, opts) {
-  const { context, mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak, inviteCode, zodiacSigns, onSuccess, onError } = opts || {};
+  const { context, mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak, inviteCode, zodiacSigns, moodEmoji, excerpt, onSuccess, onError } = opts || {};
   const isInviteMode = !!(mode === 'invite' && inviteCode);
 
   if (!context || !canvasId) {
@@ -614,6 +760,16 @@ function drawSharePoster(canvasId, opts) {
           cardName: cardName,
           keyInsight: keyInsight,
           zodiacSigns: zodiacSigns || '',
+        });
+      } else if (mode === 'diary') {
+        // ── Diary share poster (anonymous journal excerpt) ──
+        _drawDiaryLayout(ctx, W, H, {
+          cardImg: cardImg,
+          qrImg: qrImg,
+          moodEmoji: moodEmoji || '',
+          dateText: dateText || '',
+          cardName: cardName || '',
+          excerpt: excerpt || '',
         });
       } else {
         // ── Reading result poster (also invite mode: same layout + invite QR) ──
