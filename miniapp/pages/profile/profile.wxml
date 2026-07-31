@@ -81,6 +81,25 @@
       </view>
     </view>
 
+    <!-- ============ AI 周回顾 — 星光周报分享长图 ============ -->
+    <view class="weekly-card anim-fade-up anim-stagger-3">
+      <view class="weekly-card-header">
+        <image src="/images/icons/report_64.png" mode="aspectFit" class="weekly-card-header-icon" aria-label="AI 周回顾" />
+        <text class="weekly-card-title">✦ AI 周回顾</text>
+      </view>
+      <text class="weekly-card-desc">本周心情轨迹 · 常遇之牌 · AI 寄语 — 生成一张属于你的星光周报长图</text>
+      <button
+        class="weekly-card-btn"
+        bindtap="onShareWeeklyReport"
+        loading="{{weeklyLoading}}"
+        disabled="{{weeklyLoading}}"
+        aria-label="生成AI周报分享图"
+      >
+        <image class="btn-inline-icon" src="/images/icons/star_64.png" mode="aspectFit" aria-label="生成分享图" />
+        <text>{{weeklyLoading ? '正在生成周报...' : '生成分享图'}}</text>
+      </button>
+    </view>
+
     <!-- ============ Stats ============ -->
     <view class="stats-row anim-fade-up anim-stagger-2">
       <view class="stat-item">
@@ -396,4 +415,14 @@
       </scroll-view>
     </view>
   </view>
+
+  <!-- ============ AI 周报分享长图 ============ -->
+  <weekly-report-poster
+    visible="{{showWeeklyPoster}}"
+    weeklyData="{{weeklyReportData}}"
+    cardImagePath="{{weeklyCardImage}}"
+    nickname="{{user.nickname}}"
+    bind:close="onCloseWeeklyPoster"
+    bind:share="onShareWeeklyPoster"
+  />
 </view>
