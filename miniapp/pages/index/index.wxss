@@ -2105,3 +2105,29 @@
 .dev-test-entry { text-align: center; padding: 16rpx; margin: 24rpx 32rpx; opacity: 0.3; }
 .dev-test-text { font-size: 22rpx; color: #9A95B8; }
 
+/* ============================================================
+   29. ZONE LAYOUT — 每日一牌占首屏 (Design Council PRD v0.4)
+   Zone 1 (hero-zone): brand + subtitle + daily card + badge,
+   min 60vh — daily card is the single above-fold focus.
+   Zone 2: all other content scrolls below the fold.
+   Flexbox only (WXSS has no CSS Grid). No other style changes.
+   ============================================================ */
+
+/* --- Zone 1: above-fold container, min 60vh, flex column --- */
+.hero-zone {
+  display: flex;
+  flex-direction: column;
+  min-height: 60vh;
+  position: relative;
+  z-index: var(--z-base);
+}
+
+/* --- Daily card area: vertically centered within Zone 1 --- */
+.daily-card-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+  margin: 24rpx 0; /* preserves previous wrapper spacing */
+}
+

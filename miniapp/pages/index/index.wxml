@@ -38,7 +38,10 @@
   <view class="nebula nebula-gold"></view>
 
 
-  <!-- Hero -->
+  <!-- ===== Zone 1: 首屏 (60vh) ===== -->
+  <view class="hero-zone">
+
+  <!-- Hero — 品牌名 + 副标题 + 每日更新徽章 -->
   <view class="hero anim-fade-in-up-1">
     <text class="title-1" style="text-align:center;display:block">星光映照</text>
     <text class="body-text" style="text-align:center;display:block;margin-top:12rpx">每日一牌，遇见自己</text>
@@ -52,8 +55,8 @@
   </view>
 
 
-  <!-- 每日一牌 — 教学入口 (v2.0) -->
-  <view class="anim-fade-in-up-2" style="margin:24rpx 0">
+  <!-- 每日一牌 — 教学入口 (v2.0) — 在 Zone 1 内垂直居中 -->
+  <view class="daily-card-area anim-fade-in-up-2">
 
     <!-- BEFORE DRAW — card awaiting tap with shimmer, sparkles, float -->
     <view class="daily-card-wrap {{!hasDrawnToday && !dailyCard ? 'card-ready' : ''}}" wx:if="{{!dailyCard && !dailyCardRestoring}}" bindtap="drawDailyCard" animation="{{cardAnimData}}" role="button">
@@ -127,6 +130,9 @@
     </view>
 
   </view>
+
+  </view>
+  <!-- ===== Zone 2: 滚动区 ===== -->
 
   <!-- 9.9新人专享CTA（在每日一牌流程之后展示） -->
   <view class="hero-cta anim-fade-in-up-3" bindtap="onStartFirstReading" wx:if="{{!isMember && freeReadingsUsed === 0}}" role="button" aria-label="9.9元首次AI深度解读">
@@ -248,6 +254,8 @@
       <text class="dev-test-text">🔍 页面测试</text>
     </view>
   </view>
+
+  <!-- 固定浮层（position:fixed，不影响滚动布局，不属于 Zone 内容） -->
 
   <!-- ===== 3-Step Onboarding Overlay (v2.1) — simplified, all steps visible at once ===== -->
   <view class="onboarding-overlay {{showOnboarding ? 'onboarding-overlay--visible' : ''}}">
