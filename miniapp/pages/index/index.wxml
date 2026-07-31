@@ -58,7 +58,7 @@
   <!-- 每日一牌 — 教学入口 (v2.0) — 在 Zone 1 内垂直居中 -->
   <view class="daily-card-area anim-fade-in-up-2">
 
-    <!-- BEFORE DRAW — card awaiting tap with shimmer, sparkles, float -->
+    <!-- BEFORE DRAW — card awaiting tap -->
     <view class="daily-card-wrap {{!hasDrawnToday && !dailyCard ? 'card-ready' : ''}}" wx:if="{{!dailyCard && !dailyCardRestoring}}" bindtap="drawDailyCard" animation="{{cardAnimData}}" role="button">
       <view class="card card-warm card-float">
         <!-- Ripple effect container (triggers via rippleActive state) -->
@@ -86,17 +86,11 @@
     <!-- AFTER DRAW — teaching entry card -->
     <view class="daily-card-wrap daily-card-teaching {{dailyCardFlipped ? 'daily-card--flipped' : ''}}" wx:else bindtap="onDailyCardTap" data-today-flipped="{{dailyCardFlipped}}" role="button" aria-label="查看今日卡牌详解">
       <view class="card card--teaching card-rise">
-        <!-- Breathing glow overlay (only when not flipped) -->
-        <view wx:if="{{!dailyCardFlipped}}" class="daily-card-glow-overlay"></view>
-
         <!-- Sparkle particles (only when not flipped) -->
         <view wx:if="{{!dailyCardFlipped}}" class="sparkle-field">
           <view class="sparkle s1"></view>
           <view class="sparkle s2"></view>
           <view class="sparkle s3"></view>
-          <view class="sparkle s4"></view>
-          <view class="sparkle s5"></view>
-          <view class="sparkle s6"></view>
         </view>
 
         <!-- Card thumbnail -->
