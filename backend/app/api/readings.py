@@ -220,6 +220,14 @@ async def _load_drawn_cards_response(
     resp = []
     card_ids = [dc.card_id for dc in drawn_cards]
 
+    # Batch-load card rows in one query (avoid N+1 per card)
+    cards_by_id: dict[int, TarotCard] = {}
+    if card_ids:
+        card_result = await db.execute(
+            select(TarotCard).where(TarotCard.id.in_(card_ids))
+        )
+        cards_by_id = {card.id: card for card in card_result.scalars().all()}
+
     # Batch-load teaching info
     teaching_info: dict[int, dict] = {}
     if card_ids:
@@ -233,7 +241,7 @@ async def _load_drawn_cards_response(
             }
 
     for dc in drawn_cards:
-        card = await _load_card_info(db, dc.card_id)
+        card = cards_by_id.get(dc.card_id)
         entry = {
             "id": dc.id,
             "card_id": dc.card_id,
@@ -319,12 +327,18 @@ async def create_reading(
     await db.flush()
 
     # ── Save DrawnCard rows & collect enriched info for AI ──
+    # Batch-load all drawn cards in a single query (avoid N+1 per card).
+    card_ids = [c["card_id"] for c in cards_data]
+    cards_by_id: dict[int, TarotCard] = {}
+    if card_ids:
+        card_result = await db.execute(
+            select(TarotCard).where(TarotCard.id.in_(card_ids))
+        )
+        cards_by_id = {card.id: card for card in card_result.scalars().all()}
+
     cards_info: list[dict] = []
     for c in cards_data:
-        result = await db.execute(
-            select(TarotCard).where(TarotCard.id == c["card_id"])
-        )
-        card = result.scalar_one_or_none()
+        card = cards_by_id.get(c["card_id"])
         if card is None:
             continue  # should never happen with valid IDs
 
@@ -342,6 +356,9 @@ async def create_reading(
                 **c,
                 "name_zh": card.name_zh,
                 "name_en": card.name_en,
+                "arcana": card.arcana,
+                "suit": card.suit,
+                "card_number": card.card_number,
                 "image_description": card.image_description,
                 "meaning_upright": card.meaning_upright,
                 "meaning_reversed": card.meaning_reversed,
@@ -355,7 +372,6 @@ async def create_reading(
         )
 
     # ── Fetch teaching data for the drawn cards ──
-    card_ids = [c["card_id"] for c in cards_data]
     teaching_info: dict[int, dict] = {}
     if card_ids:
         t_result = await db.execute(
@@ -414,13 +430,10 @@ async def create_reading(
     await db.flush()
     await db.refresh(reading, ["drawn_cards"])
 
-    # ── Build response ──
+    # ── Build response (reuse cards already loaded above — no extra queries) ──
     drawn_resp = []
     for dc in reading.drawn_cards:
-        result = await db.execute(
-            select(TarotCard).where(TarotCard.id == dc.card_id)
-        )
-        card = result.scalar_one_or_none()
+        card = cards_by_id.get(dc.card_id)
         entry = {
             "id": dc.id,
             "card_id": dc.card_id,
@@ -569,13 +582,18 @@ async def reinterpret_reading(
     if reading.user_id != user.id:
         raise HTTPException(status_code=403, detail="无权操作他人的解读")
 
-    # Build cards_info from drawn_cards
+    # Build cards_info from drawn_cards (batch-loaded — avoid N+1 per card)
+    drawn_card_ids = [dc.card_id for dc in reading.drawn_cards]
+    cards_by_id: dict[int, TarotCard] = {}
+    if drawn_card_ids:
+        card_result = await db.execute(
+            select(TarotCard).where(TarotCard.id.in_(drawn_card_ids))
+        )
+        cards_by_id = {card.id: card for card in card_result.scalars().all()}
+
     cards_info: list[dict] = []
     for dc in reading.drawn_cards:
-        card_result = await db.execute(
-            select(TarotCard).where(TarotCard.id == dc.card_id)
-        )
-        card = card_result.scalar_one_or_none()
+        card = cards_by_id.get(dc.card_id)
         if card is None:
             continue
         cards_info.append(

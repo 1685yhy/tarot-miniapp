@@ -38,6 +38,14 @@ const SPREAD_TYPE_NAMES = {
   fortune_telling: '财运占卜',
 };
 
+// ---- Loading timing (ms) ----
+// Quick mode (default): lightweight skeleton shown for a minimum of 800ms,
+// then results appear the moment the API returns.
+const QUICK_MIN_MS = 800;
+// Immersive mode (opt-in): single "正在解读..." pulsing state that lasts
+// at most 2s — after that the result appears as soon as the API returns.
+const IMMERSIVE_MAX_MS = 2000;
+
 Page({
   data: {
     reading: null,
@@ -46,11 +54,8 @@ Page({
     pageError: null,
     activeCardIndex: 0,
 
-    // 3-stage loading sequence
-    loadingStage: 1,        // 1 = 洗牌中, 2 = 翻牌中, 3 = 星光解读中
-    loadingDotCount: 0,     // 0..3 — how many dots are lit in stage 3
-    loadingTimeText: '',    // dynamic status text in stage 3
-    showWaitOptions: false, // show the "continue waiting?" UI after timeout
+    // Loading states (single-stage: quick skeleton / immersive pulse)
+    loadingStage: 1,
 
     // Quick / immersive mode
     isQuick: false,
@@ -125,13 +130,16 @@ Page({
       this._cachedError = null;
 
       if (isQuick) {
-        // Quick mode: skip all loading stages, show result as soon as it arrives
+        // Quick mode (default): lightweight skeleton — 800ms minimum,
+        // then results appear as soon as the API returns
         this._isQuickMode = true;
-        this.setData({ isQuick: true, isImmersive: false, pageLoading: false });
+        this._quickStartTime = Date.now();
+        this._quickMinTimer = null;
+        this.setData({ isQuick: true, isImmersive: false, pageLoading: true });
         this._createReading();
       } else {
-        // Immersive mode: full 3-stage animation
-        this.setData({ isQuick: false, isImmersive: true });
+        // Immersive mode (opt-in): single pulsing state, max 2s
+        this.setData({ isQuick: false, isImmersive: true, pageLoading: true });
         this._startStages();
         this._createReading();
       }
@@ -147,10 +155,10 @@ Page({
     this.setData({ isSaved: saved.includes(id) });
     this._cachedError = null;
 
-    // Start the 3-stage ritual animation
+    // Start the single pulsing state
     this._startStages();
 
-    // Fire the API call in parallel — result is cached until stage 3 begins
+    // Fire the API call in parallel — result shows as soon as it returns
     this._load();
   },
 
@@ -184,70 +192,19 @@ Page({
   },
 
   /* ---------------------------------------------------------------
-     Stage Progression
+     Loading Progression
      --------------------------------------------------------------- */
 
   _startStages() {
-    this.setData({ loadingStage: 1, loadingDotCount: 0, loadingTimeText: '', showWaitOptions: false });
-
-    // Stage 1: 洗牌中 — 500ms (Phase A: total ~1.5s)
+    // Immersive mode: a single "正在解读..." pulsing state. It lasts at
+    // most IMMERSIVE_MAX_MS — after that the result appears the moment
+    // the API response arrives (no artificial delay added).
+    this._immersiveStarted = true;
+    this.setData({ loadingStage: 1 });
     this._stageTimer1 = setTimeout(() => {
       if (this._destroyed) return;
-
-      // Stage 2: 翻牌中 — 500ms
-      this.setData({ loadingStage: 2 });
-      this._stageTimer2 = setTimeout(() => {
-        if (this._destroyed) return;
-
-        // Stage 3: 星光解读中 — transitions to result as soon as API returns
-        this.setData({
-          loadingStage: 3,
-          loadingDotCount: 0,
-          loadingTimeText: '',
-          showWaitOptions: false,
-        });
-        this._startStage3();
-        // If the API already returned during stages 1-2, show result now
-        this._tryShowResult();
-      }, 500);
-    }, 500);
-  },
-
-  /* ---------------------------------------------------------------
-     Stage 3 — Progress Dots + Timeout Messages
-     --------------------------------------------------------------- */
-
-  _startStage3() {
-    // Light up one dot every ~1.5s (3 dots total ≈ 4.5s) — much faster for Phase A
-    this._dotTimer = setInterval(() => {
-      if (this._destroyed) return;
-      const next = Math.min(this.data.loadingDotCount + 1, 3);
-      this.setData({ loadingDotCount: next });
-    }, 1500);
-
-    // After 2 seconds: show "AI正在仔细分析你的牌面..."
-    this._timeout3 = setTimeout(() => {
-      if (this._destroyed) return;
-      this.setData({ loadingTimeText: 'AI正在仔细分析你的牌面...' });
-    }, 2000);
-
-    // After 8 seconds: polite nudge
-    this._timeout25 = setTimeout(() => {
-      if (this._destroyed) return;
-      this.setData({ loadingTimeText: '仍在努力中，请稍等...' });
-    }, 8000);
-
-    // After 15 seconds: firmer nudge
-    this._timeout50 = setTimeout(() => {
-      if (this._destroyed) return;
-      this.setData({ loadingTimeText: '可能需要更长时间，请耐心等待...' });
-    }, 15000);
-
-    // After 18 seconds: offer a choice
-    this._timeout55 = setTimeout(() => {
-      if (this._destroyed) return;
-      this.setData({ loadingTimeText: '', showWaitOptions: true });
-    }, 18000);
+      this._tryShowResult();
+    }, IMMERSIVE_MAX_MS);
   },
 
   /* ---------------------------------------------------------------
@@ -343,15 +300,32 @@ Page({
 
   /* ---------------------------------------------------------------
      Transition to Result
-     Only fires when both stage 3 has begun AND the API has returned,
-     so stages 1-2 always play through in full.
+     - Quick mode: skeleton holds for at least QUICK_MIN_MS, then the
+       result shows the moment the API has returned.
+     - Immersive mode: fires once the pulse has started (at most
+       IMMERSIVE_MAX_MS after start) AND the API has returned.
      --------------------------------------------------------------- */
 
   _tryShowResult() {
-    // Quick mode bypass — no loading stages to wait for
-    if (!this._isQuickMode && this.data.loadingStage !== 3) return;
+    // Quick mode: keep the skeleton on screen for at least 800ms so
+    // content never flashes in.
+    if (this._isQuickMode) {
+      const elapsed = Date.now() - this._quickStartTime;
+      if (elapsed < QUICK_MIN_MS) {
+        if (!this._quickMinTimer) {
+          this._quickMinTimer = setTimeout(() => {
+            this._quickMinTimer = null;
+            if (this._destroyed) return;
+            this._tryShowResult();
+          }, QUICK_MIN_MS - elapsed);
+        }
+        return;
+      }
+    } else if (!this._immersiveStarted) {
+      return; // pulse has not started yet
+    }
 
-    this._clearStage3Timers();
+    this._clearStageTimers();
 
     if (this._cachedReading) {
       let reading = this._cachedReading;
@@ -442,16 +416,7 @@ Page({
 
   _clearStageTimers() {
     if (this._stageTimer1) { clearTimeout(this._stageTimer1); this._stageTimer1 = null; }
-    if (this._stageTimer2) { clearTimeout(this._stageTimer2); this._stageTimer2 = null; }
-    this._clearStage3Timers();
-  },
-
-  _clearStage3Timers() {
-    if (this._dotTimer) { clearInterval(this._dotTimer); this._dotTimer = null; }
-    if (this._timeout3) { clearTimeout(this._timeout3); this._timeout3 = null; }
-    if (this._timeout25) { clearTimeout(this._timeout25); this._timeout25 = null; }
-    if (this._timeout50) { clearTimeout(this._timeout50); this._timeout50 = null; }
-    if (this._timeout55) { clearTimeout(this._timeout55); this._timeout55 = null; }
+    if (this._quickMinTimer) { clearTimeout(this._quickMinTimer); this._quickMinTimer = null; }
   },
 
   /** Animate drawn cards appearing one by one using wx.createAnimation stagger */
@@ -526,34 +491,6 @@ Page({
         duration: 2000,
       });
     }
-  },
-
-  onContinueWaiting() {
-    this.setData({ showWaitOptions: false, loadingTimeText: '好的，继续为你解读...' });
-
-    // Restart the 55-second timer so the prompt can reappear later
-    if (this._timeout55) { clearTimeout(this._timeout55); }
-    this._timeout55 = setTimeout(() => {
-      if (this._destroyed) return;
-      this.setData({ loadingTimeText: '', showWaitOptions: true });
-    }, 55000);
-  },
-
-  onCheckLater() {
-    this._clearStageTimers();
-    // Save as pending background reading so user can pick up later
-    const pending = wx.getStorageSync('pending_reading');
-    if (pending) {
-      wx.setStorageSync('background_reading', {
-        spread: pending.spread_type,
-        question: pending.question,
-        theme: pending.theme,
-        persona: pending.persona || null,
-        timestamp: Date.now(),
-      });
-    }
-    wx.showToast({ title: '解读生成后可在记录中查看', icon: 'none', duration: 2000 });
-    this._navBackTimer = setTimeout(() => { wx.navigateBack(); }, 2200);
   },
 
   onCardSwiperChange(e) {
@@ -639,7 +576,13 @@ Page({
     this._destroyed = false;
     this._cachedReading = null;
     this._cachedError = null;
-    this._startStages();
+    this.setData({ pageLoading: true, pageError: null });
+    if (this._isQuickMode) {
+      this._quickStartTime = Date.now();
+      this._quickMinTimer = null;
+    } else {
+      this._startStages();
+    }
     this._load();
   },
 
