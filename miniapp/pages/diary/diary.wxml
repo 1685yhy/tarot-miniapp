@@ -214,6 +214,12 @@
             show-menu-by-longpress
             aria-label="日记配图"
           />
+
+          <!-- Share poster button — subtle, below the diary content -->
+          <view class="entry-share-card-btn" bindtap="onShareDiaryEntry" data-id="{{entry.id}}" role="button" aria-label="生成分享图">
+            <text class="entry-share-card-star">✦</text>
+            <text>生成分享图</text>
+          </view>
         </view>
       </view>
 
@@ -356,5 +362,19 @@
 
   <!-- ===== Hidden canvas for share card generation ===== -->
   <canvas type="2d" id="diary-share-canvas" style="width: 375px; height: 600px; position: fixed; left: -9999px; top: 0; pointer-events: none;"></canvas>
+
+  <!-- ===== 日记精选分享海报（匿名） ===== -->
+  <share-poster
+    wx:if="{{diaryShareData}}"
+    mode="diary"
+    visible="{{showDiarySharePoster}}"
+    moodEmoji="{{diaryShareData.moodEmoji}}"
+    dateText="{{diaryShareData.date}}"
+    cardImagePath="{{diaryShareData.cardImagePath}}"
+    cardName="{{diaryShareData.cardName}}"
+    excerpt="{{diaryShareData.excerpt}}"
+    bind:close="onCloseDiarySharePoster"
+    bind:share="onShareDiaryPosterToFriend"
+  />
 
 </view>

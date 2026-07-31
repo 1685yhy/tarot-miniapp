@@ -44,6 +44,20 @@ class DiaryListResponse(BaseModel):
     page: int
 
 
+class DiarySharePreview(BaseModel):
+    """Anonymized diary data for share posters.
+
+    Contains only share-safe fields — no nickname, no user_id, no raw
+    reflection beyond the 200-char excerpt.
+    """
+
+    date: str
+    mood: str | None
+    mood_emoji: str
+    excerpt: str
+    card: DiaryCardBrief | None = None
+
+
 class WeeklyMoodTrend(BaseModel):
     date: str
     mood_score: float

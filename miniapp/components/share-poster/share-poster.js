@@ -46,6 +46,20 @@
  *     bind:close="onCloseMatchPoster"
  *     bind:share="onShareMatchPoster"
  *   />
+ *
+ * Usage (diary share poster — mode="diary", "日记精选分享", fully anonymous:
+ * mood emoji + date + anonymized excerpt + card thumbnail; no nickname):
+ *   <share-poster
+ *     mode="diary"
+ *     visible="{{showDiarySharePoster}}"
+ *     moodEmoji="{{diaryShareData.moodEmoji}}"
+ *     dateText="{{diaryShareData.date}}"
+ *     cardImagePath="{{diaryShareData.cardImagePath}}"
+ *     cardName="{{diaryShareData.cardName}}"
+ *     excerpt="{{diaryShareData.excerpt}}"
+ *     bind:close="onCloseDiarySharePoster"
+ *     bind:share="onShareDiaryPosterToFriend"
+ *   />
  */
 const { drawSharePoster } = require('../../utils/canvas-poster');
 
@@ -58,7 +72,7 @@ Component({
     },
     mode: {
       type: String,
-      value: 'reading', // 'reading' | 'daily' | 'invite' | 'zodiac'
+      value: 'reading', // 'reading' | 'daily' | 'invite' | 'zodiac' | 'diary'
     },
     inviteCode: {
       type: String,
@@ -86,11 +100,19 @@ Component({
     },
     dateText: {
       type: String,
-      value: '', // daily mode: formatted date, e.g. "2026.07.31"
+      value: '', // daily/diary modes: formatted date, e.g. "2026.07.31"
     },
     streak: {
       type: Number,
       value: 0, // daily mode: consecutive draw days
+    },
+    moodEmoji: {
+      type: String,
+      value: '', // diary mode: mood emoji drawn as the poster hero
+    },
+    excerpt: {
+      type: String,
+      value: '', // diary mode: anonymized diary excerpt text
     },
   },
 
@@ -139,10 +161,11 @@ Component({
        Draw the poster on canvas using the utility
        --------------------------------------------------------------- */
     _drawPoster() {
-      const { mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak, inviteCode, zodiacSigns } = this.properties;
+      const { mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak, inviteCode, zodiacSigns, moodEmoji, excerpt } = this.properties;
 
-      // Use the first card image; if cardImagePath is empty, skip
-      if (!cardImagePath && !cardName) {
+      // Card image is optional in diary mode — mood emoji + date + excerpt
+      // still make a valid anonymous poster.
+      if (!cardImagePath && !cardName && mode !== 'diary') {
         this.setData({ drawError: true });
         return;
       }
@@ -160,6 +183,8 @@ Component({
         streak: streak || 0,
         inviteCode: inviteCode || '',
         zodiacSigns: zodiacSigns || '',
+        moodEmoji: moodEmoji || '',
+        excerpt: excerpt || '',
         onSuccess: (tempFilePath) => {
           this.setData({
             previewPath: tempFilePath,
