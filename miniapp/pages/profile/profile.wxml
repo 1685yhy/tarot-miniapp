@@ -43,6 +43,44 @@
       </button>
     </view>
 
+    <!-- ============ 我的星光之旅 ============ -->
+    <view class="journey-card anim-fade-up anim-stagger-2">
+      <view class="journey-header">
+        <image src="/images/icons/star_64.png" mode="aspectFit" class="journey-header-icon" aria-label="星光之旅" />
+        <text class="journey-title">✦ 我的星光之旅</text>
+      </view>
+      <view class="journey-grid">
+        <view class="journey-item">
+          <view class="journey-num-row">
+            <text class="journey-num">{{streak}}</text>
+            <text class="journey-unit">天</text>
+          </view>
+          <text class="journey-label">连续打卡</text>
+        </view>
+        <view class="journey-item">
+          <view class="journey-num-row">
+            <text class="journey-num">{{collectionCount}}</text>
+            <text class="journey-unit">/ 78 张牌</text>
+          </view>
+          <text class="journey-label">已收集</text>
+        </view>
+        <view class="journey-item">
+          <view class="journey-num-row">
+            <text class="journey-num">{{totalReadings}}</text>
+            <text class="journey-unit">次</text>
+          </view>
+          <text class="journey-label">累计解读</text>
+        </view>
+        <view class="journey-item">
+          <view class="journey-num-row">
+            <text class="journey-num">{{diaryCount}}</text>
+            <text class="journey-unit">篇</text>
+          </view>
+          <text class="journey-label">日记</text>
+        </view>
+      </view>
+    </view>
+
     <!-- ============ Stats ============ -->
     <view class="stats-row anim-fade-up anim-stagger-2">
       <view class="stat-item">

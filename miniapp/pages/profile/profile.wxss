@@ -278,6 +278,96 @@
 }
 
 /* ============================================================
+   我的星光之旅 — 2x2 stat grid · Golden numbers · Lavender labels
+   ============================================================ */
+.journey-card {
+  background: var(--color-surface-gradient);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg) var(--spacing-xl) var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+  box-shadow: var(--shadow-card);
+}
+
+.journey-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+}
+
+.journey-header-icon {
+  width: 32rpx;
+  height: 32rpx;
+  display: block;
+}
+
+.journey-title {
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gold);
+  letter-spacing: 2rpx;
+}
+
+.journey-grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.journey-item {
+  width: 50%;
+  box-sizing: border-box;
+  text-align: center;
+  padding: var(--spacing-sm) 0;
+  position: relative;
+}
+
+.journey-item:nth-child(odd)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1rpx;
+  height: 40%;
+  background: linear-gradient(
+    180deg, transparent 0%,
+    rgba(244, 212, 140, 0.18) 50%,
+    transparent 100%
+  );
+}
+
+.journey-num-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6rpx;
+}
+
+.journey-num {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-gold);
+  line-height: 1.1;
+  text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.20);
+}
+
+.journey-unit {
+  font-size: var(--font-size-xs);
+  color: var(--color-lavender);
+  letter-spacing: 1rpx;
+}
+
+.journey-label {
+  font-size: var(--font-size-caption);
+  color: var(--color-lavender);
+  display: block;
+  margin-top: 6rpx;
+  letter-spacing: 2rpx;
+}
+
+/* ============================================================
    MENU SECTION — Icon circles with gold background
    ============================================================ */
 .menu-section {

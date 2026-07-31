@@ -114,12 +114,6 @@
         <text wx:if="{{!dailyCardFlipped}}" class="body-sm daily-card-cta">点击学习这张牌 ✦</text>
         <text wx:else class="body-xs daily-card-revisit">点击回顾今日学习</text>
 
-        <!-- Streak badge (only if 2+ consecutive days) -->
-        <view wx:if="{{streak >= 2}}" class="streak-badge">
-          <image class="streak-icon" src="/images/icons/star_64.png" mode="aspectFit" lazy-load aria-label="连续 {{streak}} 天" />
-          <text class="streak-count">连续 {{streak}} 天</text>
-        </view>
-
       </view>
     </view>
 

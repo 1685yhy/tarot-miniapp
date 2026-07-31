@@ -100,6 +100,12 @@ Page({
     personaStats: [],
     mostUsedPersona: null,
     mostUsedPersonaCount: 0,
+
+    // 我的星光之旅 stats
+    streak: 0,
+    collectionCount: 0,
+    totalReadings: 0,
+    diaryCount: 0,
   },
 
   // —— History card image loading ——
@@ -157,6 +163,22 @@ Page({
       // Load invite rewards from share stats
       const inviteRewards = shareStats?.free_deep_readings || 0;
 
+      // 我的星光之旅 — streak (same local source as the home daily card)
+      let storedStreak = 0;
+      try {
+        storedStreak = wx.getStorageSync('streak') || 0;
+      } catch (_e) {
+        storedStreak = 0;
+      }
+      // 已收集 N/78 张牌 — collection spans the full 78-card encyclopedia
+      let collectionCount = 0;
+      try {
+        const favIds = wx.getStorageSync('favorite_cards') || [];
+        collectionCount = favIds.length;
+      } catch (_e) {
+        collectionCount = 0;
+      }
+
       this.setData({
         user,
         memberStatus: status ? {
@@ -171,10 +193,16 @@ Page({
         })),
         inviteRewards,
         historyTotal: history.total || (history.items ? history.items.length : 0),
+        streak: storedStreak,
+        collectionCount,
+        totalReadings: history.total || (history.items ? history.items.length : 0),
         pageLoading: false,
         historyPage: 1,
         hasMore: history.items ? history.items.length >= 20 : false,
       });
+
+      // Diary count — fetched in background (list API is paginated, no total field)
+      this._loadDiaryCount();
 
       // Compute persona usage stats from history
       this._computePersonaStats(history.items || []);
@@ -194,6 +222,22 @@ Page({
     } catch (_e) {
       this.setData({ favoriteCount: 0 });
     }
+  },
+
+  /** 我的星光之旅 — diary entry count (paginated API, no total; cap at 10 pages) */
+  async _loadDiaryCount() {
+    let total = 0;
+    try {
+      for (let page = 1; page <= 10; page++) {
+        const data = await request(`/diary/entries?page=${page}`);
+        const entries = data.entries || [];
+        total += entries.length;
+        if (entries.length < 20) break; // last page reached
+      }
+    } catch (_err) {
+      // Silent degrade — keep count at 0
+    }
+    this.setData({ diaryCount: total });
   },
 
   async _loadSavedReadings() {
