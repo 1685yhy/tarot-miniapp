@@ -674,8 +674,6 @@
   padding: var(--spacing-xl) var(--spacing-lg);
   position: relative;
   border: 1rpx solid rgba(244, 212, 140, 0.06);
-  overflow: hidden;
-  transition: opacity 0.4s ease-out;
 }
 
 /* Subtle top light wash */
@@ -693,16 +691,6 @@
     transparent
   );
 }
-
-/* Collapsed / expanded — commented out: unused in current WXML */
-/* .letter-body.collapsed {
-  max-height: 800rpx;
-  overflow: hidden;
-} */
-/* .letter-body.expanded {
-  max-height: none;
-  overflow: visible;
-} */
 
 /* ---- Letter Text ---- */
 .letter-text {
@@ -723,29 +711,6 @@
 /* nth-child animations on .letter-text are non-functional in WXSS
    (WXSS does not support animation-delay on <text> with nth-child).
    Kept as reference for possible future JS-based stagger implementation. */
-/* ---- Toggle ---- */
-.letter-toggle {
-  display: flex;
-  justify-content: center;
-  margin-top: 12rpx;
-}
-
-.toggle-btn {
-  font-size: var(--font-size-caption);
-  color: var(--color-lavender);
-  letter-spacing: 2rpx;
-  padding: var(--spacing-md) var(--spacing-xl);
-  border: 1rpx solid rgba(180, 169, 224, 0.18);
-  border-radius: var(--radius-pill);
-  display: inline-block;
-  transition: opacity 0.2s, border-color 0.2s, background 0.2s;
-}
-
-.toggle-btn:active {
-  opacity: 1;
-  border-color: rgba(180, 169, 224, 0.4);
-  background: rgba(180, 169, 224, 0.05);
-}
 
 /* ================================================================
    4. ACTIONS

@@ -45,7 +45,6 @@ Page({
     pageLoading: true,
     pageError: null,
     activeCardIndex: 0,
-    showFullInterpretation: false,
 
     // 3-stage loading sequence
     loadingStage: 1,        // 1 = 洗牌中, 2 = 翻牌中, 3 = 星光解读中
@@ -409,7 +408,7 @@ Page({
       const hasTeachingData = teachingCards.length > 0;
 
       const reflectionQuestion = reading.reflection_question || '今天的解读对你意味着什么？';
-      this.setData({ reading, personaDisplay, tldr, teachingCards, hasTeachingData, spreadTypeName, pageLoading: false, showFullInterpretation: true, reflectionQuestion });
+      this.setData({ reading, personaDisplay, tldr, teachingCards, hasTeachingData, spreadTypeName, pageLoading: false, reflectionQuestion });
       // Trigger staggered card entrance animation after render
       this._animateCardReveal();
       // Play reveal sound when reading result appears
@@ -630,11 +629,6 @@ Page({
     }
     this._touchStartY = 0;
   },
-
-  /** @deprecated — unused, kept for future use */
-  // onToggleFull() {
-  //   this.setData({ showFullInterpretation: !this.data.showFullInterpretation });
-  // },
 
   onToggleTeaching() {
     this.setData({ showTeaching: !this.data.showTeaching });
