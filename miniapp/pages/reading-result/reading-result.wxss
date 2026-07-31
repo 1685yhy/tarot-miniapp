@@ -1400,7 +1400,7 @@
    ACCESSIBILITY: Reduced Motion
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  view, text, image, button, scroll-view, swiper, swiper-item, canvas {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
