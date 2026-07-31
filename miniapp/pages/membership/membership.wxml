@@ -32,8 +32,8 @@
         <text class="trial-icon">✨</text>
       </view>
       <text class="trial-title">先体验，再决定</text>
-      <text class="trial-sub">3天免费试用 · 无需付费 · 随时取消</text>
-      <button class="trial-btn" bindtap="onStartTrial">免费试用 3 天</button>
+      <text class="trial-sub">7天免费试用 · 无需付费 · 随时取消</text>
+      <button class="trial-btn" bindtap="onStartTrial">免费试用 7 天</button>
       <view class="trial-guarantee">
         <text class="trial-guarantee-text">试用期结束前不会扣费，无需绑定支付方式</text>
       </view>

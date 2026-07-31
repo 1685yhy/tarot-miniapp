@@ -5,7 +5,7 @@ const analytics = require('../../utils/analytics');
 
 const TRIAL_STORAGE_KEY = 'trial_expiry';
 const TRIAL_MEMBER_KEY = 'is_trial_member';
-const TRIAL_DURATION_MS = 3 * 24 * 60 * 60 * 1000; // 3 days
+const TRIAL_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 Page({
   data: {
@@ -240,7 +240,7 @@ Page({
     this.onLoad();
   },
 
-  /** 开启 3 天免费试用 */
+  /** 开启 7 天免费试用 */
   onStartTrial() {
     // Analytics: free trial started
     analytics.trackTrialStart();
@@ -250,9 +250,9 @@ Page({
     this.setData({
       isTrialActive: true,
       trialExpiryDate: trialExpiry,
-      trialDaysLeft: 3,
+      trialDaysLeft: 7,
     });
-    wx.showToast({ title: '试用已开启！3天内畅享全部功能', icon: 'success' });
+    wx.showToast({ title: '试用已开启！7天内畅享全部功能', icon: 'success' });
     // 跳转到首页，让用户立即体验
     if (!this._timers) this._timers = [];
     this._timers.push(setTimeout(() => {
