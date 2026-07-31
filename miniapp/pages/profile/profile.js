@@ -106,6 +106,12 @@ Page({
     collectionCount: 0,
     totalReadings: 0,
     diaryCount: 0,
+
+    // AI 周回顾 — 星光周报分享长图
+    showWeeklyPoster: false,
+    weeklyReportData: null,
+    weeklyCardImage: '',
+    weeklyLoading: false,
   },
 
   // —— History card image loading ——
@@ -301,6 +307,67 @@ Page({
   onRetry() {
     this.setData({ pageError: null, pageLoading: true });
     this.loadData();
+  },
+
+  /** AI 周回顾 — 拉取本周数据并打开「我的星光一周」分享长图 */
+  async onShareWeeklyReport() {
+    if (this.data.weeklyLoading) return;
+    this.setData({ weeklyLoading: true });
+    try {
+      const report = await request('/report/weekly');
+      if (!report || !report.has_data) {
+        wx.showToast({
+          title: '本周还没有星光记录，先来占卜或写日记吧',
+          icon: 'none',
+          duration: 2500,
+        });
+        return;
+      }
+      // 常遇之牌图片 — 由前端卡牌注册表计算 CDN 路径
+      let cardImage = '';
+      if (report.most_frequent_card && report.most_frequent_card.name) {
+        cardImage = computeCardImage(report.most_frequent_card.name);
+      }
+      this.setData({
+        weeklyReportData: report,
+        weeklyCardImage: cardImage,
+        showWeeklyPoster: true,
+      });
+    } catch (err) {
+      const msg = getFriendlyError(err);
+      wx.showToast({ title: msg || '周报生成失败，请稍后重试', icon: 'none' });
+    } finally {
+      this.setData({ weeklyLoading: false });
+    }
+  },
+
+  onCloseWeeklyPoster() {
+    this.setData({ showWeeklyPoster: false });
+  },
+
+  /** 分享周报长图给朋友 — 用户主动分享，无诱导文案 */
+  onShareWeeklyPoster(e) {
+    const imagePath = e.detail && e.detail.imagePath;
+    if (!imagePath) return;
+    // wx.showShareImageMenu — 小程序原生分享图片菜单（基础库 2.14.0+）
+    if (wx.showShareImageMenu) {
+      wx.showShareImageMenu({
+        path: imagePath,
+        fail: () => {
+          wx.showToast({
+            title: '请先保存海报，再从相册分享',
+            icon: 'none',
+            duration: 2000,
+          });
+        },
+      });
+    } else {
+      wx.showToast({
+        title: '请先保存海报，再从相册分享',
+        icon: 'none',
+        duration: 2000,
+      });
+    }
   },
 
   onGoMembership() {

@@ -1,0 +1,51 @@
+<!-- ================================================================
+     Weekly Report Poster — "我的星光一周" AI weekly report long image
+     9:16 portrait (phone wallpaper style). Full-screen modal with
+     hidden canvas, preview image, and save / share actions.
+     ================================================================ -->
+
+<view class="wrp-overlay {{visible ? 'wrp-overlay--visible' : ''}}" wx:if="{{visible}}">
+
+  <!-- Close button (top-right corner) -->
+  <view class="wrp-close" bindtap="onClose" role="button" aria-label="关闭周报长图">
+    <image class="wrp-close-icon" src="/images/icons/close_64.png" mode="aspectFit" aria-label="关闭" />
+  </view>
+
+  <!-- Canvas (hidden from view, used for drawing) -->
+  <canvas
+    type="2d"
+    id="weeklyCanvas"
+    class="wrp-canvas"
+    style="width: {{canvasW}}px; height: {{canvasH}}px;"
+  ></canvas>
+
+  <!-- Loading indicator while drawing -->
+  <view class="wrp-loading" wx:if="{{!previewPath && !drawError}}">
+    <view class="wrp-loading-spinner"></view>
+    <text class="wrp-loading-text">正在绘制你的星光一周...</text>
+  </view>
+
+  <!-- Error state -->
+  <view class="wrp-error" wx:elif="{{drawError}}">
+    <text class="wrp-error-text">生成失败，请重试</text>
+    <button class="wrp-btn-retry" bindtap="onRetry">重新生成</button>
+  </view>
+
+  <!-- Preview image (once drawn) -->
+  <view class="wrp-preview-wrap" wx:elif="{{previewPath}}">
+    <image class="wrp-preview" src="{{previewPath}}" mode="aspectFit" aria-label="AI 周报长图预览"></image>
+  </view>
+
+  <!-- Bottom action buttons -->
+  <view class="wrp-actions" wx:if="{{previewPath}}">
+    <button class="wrp-btn wrp-btn-primary" bindtap="onSave">
+      <text class="wrp-btn-icon">↓</text>
+      <text>保存到相册</text>
+    </button>
+    <button class="wrp-btn wrp-btn-secondary" bindtap="onShare">
+      <text class="wrp-btn-icon">↗</text>
+      <text>分享给朋友</text>
+    </button>
+  </view>
+
+</view>

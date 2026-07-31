@@ -10,7 +10,7 @@ Enhanced Annual Report API endpoint.
 import json
 import logging
 from collections import Counter
-from datetime import date, datetime
+from datetime import date, datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from openai import AsyncOpenAI
@@ -515,3 +515,181 @@ async def get_annual_report(
     await db.flush()
 
     return result
+
+
+# =====================================================================
+#  Weekly report — "我的星光一周" share poster data
+# =====================================================================
+
+async def _get_readings_for_days(
+    db: AsyncSession, user_id: str, days: int
+) -> list[Reading]:
+    """Fetch readings from the last N calendar days (inclusive of today),
+    with drawn cards. Aligned with `week_dates` so the poster's 7 slots
+    can render every returned entry."""
+    since = datetime.now(timezone.utc) - timedelta(days=days - 1)
+    result = await db.execute(
+        select(Reading)
+        .where(Reading.user_id == user_id, Reading.created_at >= since)
+        .options(selectinload(Reading.drawn_cards).selectinload(DrawnCard.card))
+        .order_by(Reading.created_at.asc())
+    )
+    return list(result.scalars().all())
+
+
+async def _get_diary_entries_for_days(
+    db: AsyncSession, user_id: str, days: int
+) -> list[DiaryEntry]:
+    """Fetch diary entries from the last N calendar days (inclusive of today)."""
+    since = date.today() - timedelta(days=days - 1)
+    result = await db.execute(
+        select(DiaryEntry)
+        .where(DiaryEntry.user_id == user_id, DiaryEntry.entry_date >= since)
+        .order_by(DiaryEntry.entry_date.asc())
+    )
+    return list(result.scalars().all())
+
+
+@router.get("/weekly")
+async def get_weekly_report(
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Generate an AI weekly report — data for the "我的星光一周" share poster.
+
+    Returns:
+    - week_range / week_dates: date range of the last 7 days
+    - mood_trends: diary mood trend (one entry per recorded day)
+    - most_frequent_card: most drawn card in the last 7 days (name, count, keywords)
+    - top_keywords: keywords of the most frequent card
+    - ai_summary: AI one-line warm reflection
+    """
+    today = date.today()
+    week_start = today - timedelta(days=6)
+
+    readings = await _get_readings_for_days(db, user.id, 7)
+    diary_entries = await _get_diary_entries_for_days(db, user.id, 7)
+
+    # ── Most frequent card (from readings, last 7 days) ──
+    card_counter = Counter()
+    card_first: dict[str, TarotCard] = {}
+    all_card_names: list[str] = []
+    for reading in readings:
+        for dc in reading.drawn_cards:
+            if dc.card:
+                name = dc.card.name_zh
+                all_card_names.append(name)
+                card_counter[name] += 1
+                card_first.setdefault(name, dc.card)
+
+    most_frequent_card = None
+    top_keywords: list[str] = []
+    if card_counter:
+        top_name = card_counter.most_common(1)[0][0]
+        top_card = card_first[top_name]
+        try:
+            keywords_raw = json.loads(top_card.keywords_upright) if top_card.keywords_upright else []
+        except json.JSONDecodeError:
+            keywords_raw = []
+        if isinstance(keywords_raw, list):
+            top_keywords = [str(k) for k in keywords_raw[:3]]
+        most_frequent_card = {
+            "name": top_name,
+            "count": card_counter[top_name],
+            "meaning": top_card.meaning_upright[:200],
+            "keywords": top_keywords,
+        }
+
+    # ── Mood trend (diary entries, last 7 days) ──
+    mood_trends = []
+    for entry in diary_entries:
+        if entry.mood and entry.entry_date:
+            info = _MOOD_EMOJI_MAP.get(entry.mood)
+            if info:
+                mood_trends.append({
+                    "date": str(entry.entry_date),
+                    "mood_score": info[1],
+                    "mood_label": info[2],
+                    "mood_emoji": info[0],
+                })
+
+    # ── Week date slots (all 7 days, for the poster row) ──
+    week_dates = [(week_start + timedelta(days=i)).isoformat() for i in range(7)]
+
+    # ── AI one-line summary ──
+    ai_summary = None
+    client = _get_ai_client()
+    if client and (all_card_names or diary_entries):
+        top_card_name = most_frequent_card["name"] if most_frequent_card else "无"
+        top_card_count = most_frequent_card["count"] if most_frequent_card else 0
+        mood_line_parts = "、".join(f"{t['date']}:{t['mood_label']}" for t in mood_trends) or "无"
+        system_prompt = (
+            "你是一位温柔而有诗意的塔罗周记陪伴者，像老朋友一样了解用户。"
+            "所有输出必须使用中文。"
+        )
+        user_prompt = (
+            "请基于用户过去一周的塔罗占卜与日记数据，写一句话作为本周寄语。\n\n"
+            f"【本周数据】\n"
+            f"占卜次数: {len(readings)}\n"
+            f"最常抽到的牌: {top_card_name}（{top_card_count}次）\n"
+            f"每日心情: {mood_line_parts}\n\n"
+            "要求：一行、温暖有画面感、像朋友的一句话，不超过60字。"
+            "请严格按照以下JSON格式回复，不要包含任何多余内容：\n"
+            '{"one_line_summary": "..."}'
+        )
+        try:
+            response = await client.chat.completions.create(
+                model=settings.DEEPSEEK_MODEL,
+                max_tokens=256,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                timeout=60.0,
+            )
+            content = response.choices[0].message.content
+            if content:
+                stripped = content.strip()
+                if stripped.startswith("```"):
+                    lines = stripped.split("\n")
+                    stripped = "\n".join(
+                        line for line in lines if not line.strip().startswith("```")
+                    ).strip()
+                try:
+                    ai_summary = json.loads(stripped).get("one_line_summary")
+                except json.JSONDecodeError:
+                    ai_summary = stripped[:80]
+        except Exception as exc:
+            logger.warning("AI weekly summary generation failed: %s", exc)
+
+    # ── Fallback summary if AI failed / no data ──
+    if not ai_summary:
+        if mood_trends:
+            avg_score = sum(t["mood_score"] for t in mood_trends) / len(mood_trends)
+            if avg_score >= 4:
+                mood_line = "心情整体轻快明亮，星光一直在你身边。"
+            elif avg_score >= 3:
+                mood_line = "心情平稳温和，起起落落都是成长的痕迹。"
+            else:
+                mood_line = "这一周情绪有些起伏，记得好好照顾自己。"
+        else:
+            mood_line = "新的一周，愿你与星光相遇。"
+        if most_frequent_card:
+            ai_summary = (
+                f"本周你和「{most_frequent_card['name']}」相遇了"
+                f"{most_frequent_card['count']}次——{mood_line}"
+            )
+        else:
+            ai_summary = mood_line
+
+    return {
+        "week_range": f"{week_start.strftime('%m.%d')} ~ {today.strftime('%m.%d')}",
+        "week_dates": week_dates,
+        "mood_trends": mood_trends,
+        "most_frequent_card": most_frequent_card,
+        "top_keywords": top_keywords,
+        "ai_summary": ai_summary,
+        "total_readings": len(readings),
+        "diary_count": len(diary_entries),
+        "has_data": bool(readings or diary_entries),
+    }

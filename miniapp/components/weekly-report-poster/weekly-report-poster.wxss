@@ -1,0 +1,204 @@
+/* ================================================================
+   Weekly Report Poster — 9:16 long image modal overlay
+   Dark indigo theme · warm gold accents
+   ================================================================ */
+
+/* ---- Overlay ---- */
+.wrp-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+  pointer-events: none;
+}
+
+.wrp-overlay--visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ---- Close button ---- */
+.wrp-close {
+  position: absolute;
+  top: 48rpx;
+  right: 32rpx;
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: background 0.2s;
+}
+
+.wrp-close:active {
+  background: rgba(255, 255, 255, 0.20);
+}
+
+.wrp-close-icon {
+  width: 36rpx;
+  height: 36rpx;
+  display: block;
+}
+
+/* ---- Canvas (hidden — used only for drawing buffer) ---- */
+.wrp-canvas {
+  position: absolute;
+  left: -99999rpx;
+  top: -99999rpx;
+  pointer-events: none;
+}
+
+/* ---- Loading ---- */
+.wrp-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.wrp-loading-spinner {
+  width: 64rpx;
+  height: 64rpx;
+  border: 3rpx solid rgba(244, 212, 140, 0.12);
+  border-top-color: #F4D48C;
+  border-radius: 50%;
+  animation: wrp-spin 0.8s linear infinite;
+}
+
+@keyframes wrp-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.wrp-loading-text {
+  font-size: 26rpx;
+  color: rgba(240, 237, 232, 0.60);
+  letter-spacing: 2rpx;
+}
+
+/* ---- Error state ---- */
+.wrp-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.wrp-error-text {
+  font-size: 28rpx;
+  color: rgba(232, 122, 138, 0.80);
+  letter-spacing: 2rpx;
+}
+
+.wrp-btn-retry {
+  background: rgba(244, 212, 140, 0.12);
+  color: #F4D48C;
+  border: 1rpx solid rgba(244, 212, 140, 0.25);
+  border-radius: 48rpx;
+  padding: 18rpx 48rpx;
+  font-size: 26rpx;
+  letter-spacing: 2rpx;
+  font-weight: 500;
+}
+
+.wrp-btn-retry::after {
+  border: none;
+}
+
+.wrp-btn-retry:active {
+  background: rgba(244, 212, 140, 0.22);
+}
+
+/* ---- Preview image (9:16 long image — height-capped, width auto) ---- */
+.wrp-preview-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 78%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.wrp-preview {
+  width: auto;
+  max-width: 76%;
+  height: 72vh;
+  border-radius: 16rpx;
+  box-shadow:
+    0 8rpx 40rpx rgba(0, 0, 0, 0.40),
+    0 0 60rpx rgba(244, 212, 140, 0.08);
+}
+
+/* ---- Bottom action buttons ---- */
+.wrp-actions {
+  position: absolute;
+  bottom: calc(64rpx + env(safe-area-inset-bottom, 0px));
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: var(--spacing-md);
+  padding: 0 var(--spacing-xl);
+}
+
+.wrp-btn {
+  flex: 1;
+  max-width: 280rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xxs);
+  border-radius: 50rpx;
+  padding: var(--spacing-md) 0;
+  font-size: 28rpx;
+  font-weight: 500;
+  letter-spacing: 2rpx;
+  transition: opacity 0.2s, background 0.2s;
+}
+
+.wrp-btn::after {
+  border: none;
+}
+
+/* Primary: gold */
+.wrp-btn-primary {
+  background: linear-gradient(135deg, #F4D48C 0%, #D4B06A 100%);
+  color: #1A1A3E;
+  box-shadow: 0 4rpx 20rpx rgba(244, 212, 140, 0.25);
+}
+
+.wrp-btn-primary:active {
+  opacity: 0.85;
+  transform: scale(0.97);
+}
+
+/* Secondary: lavender outline */
+.wrp-btn-secondary {
+  background: transparent;
+  color: #B8A9E0;
+  border: 1.5rpx solid rgba(184, 169, 224, 0.35);
+}
+
+.wrp-btn-secondary:active {
+  background: rgba(184, 169, 224, 0.08);
+  border-color: rgba(184, 169, 224, 0.55);
+  transform: scale(0.97);
+}
+
+.wrp-btn-icon {
+  font-size: 32rpx;
+  line-height: 1;
+}
