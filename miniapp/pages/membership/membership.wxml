@@ -75,7 +75,7 @@
       <text class="pricing-section-title">选择方案</text>
 
       <!-- 年度 (推荐) -->
-      <view class="pricing-card pricing-card--rec" data-product="{{pricingYearly}}" bindtap="onPurchase">
+      <view class="pricing-card pricing-card--rec" data-product="{{pricingYearly}}" bindtap="onPurchase" role="button" aria-label="购买年度会员">
         <view class="pricing-card-badge">最受欢迎</view>
         <text class="pricing-card-name">年度会员</text>
         <view class="pricing-card-price-row">
@@ -89,7 +89,7 @@
       </view>
 
       <!-- 月度 -->
-      <view class="pricing-card" data-product="{{pricingMonthly}}" bindtap="onPurchase">
+      <view class="pricing-card" data-product="{{pricingMonthly}}" bindtap="onPurchase" role="button" aria-label="购买月度会员">
         <text class="pricing-card-name">月度会员</text>
         <view class="pricing-card-price-row">
           <text class="pricing-card-currency">¥</text>
@@ -100,7 +100,7 @@
       </view>
 
       <!-- 学生价 -->
-      <view class="pricing-card pricing-card--student" data-product="{{pricingStudent}}" bindtap="onPurchase">
+      <view class="pricing-card pricing-card--student" data-product="{{pricingStudent}}" bindtap="onPurchase" role="button" aria-label="购买学生会员">
         <view class="pricing-card-student-badge">🎓 学生专享</view>
         <view class="pricing-card-student-header">
           <text class="pricing-card-name">学生会员</text>
@@ -122,7 +122,7 @@
       <text class="pack-section-sub">一次性购买 · 永不过期 · 不限牌阵</text>
 
       <!-- 3次包 -->
-      <view class="pack-card" data-product="{{pricingPack3}}" bindtap="onPurchasePack">
+      <view class="pack-card" data-product="{{pricingPack3}}" bindtap="onPurchasePack" role="button" aria-label="购买3次深度解读包">
         <view class="pack-card-left">
           <text class="pack-card-name">3次深度解读</text>
           <view class="pack-card-tag">一次性</view>
@@ -138,7 +138,7 @@
       </view>
 
       <!-- 10次包（超值） -->
-      <view class="pack-card pack-card--best" data-product="{{pricingPack10}}" bindtap="onPurchasePack">
+      <view class="pack-card pack-card--best" data-product="{{pricingPack10}}" bindtap="onPurchasePack" role="button" aria-label="购买10次深度解读包">
         <view class="pack-card-badge">超值</view>
         <view class="pack-card-left">
           <text class="pack-card-name">10次深度解读</text>
@@ -154,7 +154,7 @@
         <button class="pack-card-btn pack-card-btn--primary" catchtap="onPurchasePack" data-product="{{pricingPack10}}">立即购买</button>
       </view>
 
-      <view class="pack-detail-link" bindtap="onPackDetail">
+      <view class="pack-detail-link" bindtap="onPackDetail" role="button" aria-label="了解深度解读包详情">
         <text class="pack-detail-text">了解深度解读包 ›</text>
       </view>
     </view>
@@ -169,7 +169,7 @@
 
       <view class="shop-grid">
         <!-- 塔罗牌 -->
-        <view class="shop-card" bindtap="onShopComingSoon">
+        <view class="shop-card" bindtap="onShopComingSoon" role="button" aria-label="查看实体塔罗牌，即将上线">
           <view class="shop-card-img">
             <text class="shop-card-img-icon">🃏</text>
           </view>
@@ -182,7 +182,7 @@
         </view>
 
         <!-- 水晶手串 -->
-        <view class="shop-card" bindtap="onShopComingSoon">
+        <view class="shop-card" bindtap="onShopComingSoon" role="button" aria-label="查看星座水晶手串，即将上线">
           <view class="shop-card-img">
             <text class="shop-card-img-icon">📿</text>
           </view>
@@ -195,7 +195,7 @@
         </view>
 
         <!-- 香薰蜡烛 -->
-        <view class="shop-card" bindtap="onShopComingSoon">
+        <view class="shop-card" bindtap="onShopComingSoon" role="button" aria-label="查看塔罗香薰蜡烛，即将上线">
           <view class="shop-card-img">
             <text class="shop-card-img-icon">🕯️</text>
           </view>

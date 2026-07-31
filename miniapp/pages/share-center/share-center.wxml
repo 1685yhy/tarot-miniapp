@@ -60,7 +60,7 @@
   </view>
 
   <!-- ============ 邀请好友按钮 ============ -->
-  <view class="invite-action anim-fade-up anim-stagger-3" bindtap="onInviteFriend">
+  <view class="invite-action anim-fade-up anim-stagger-3" bindtap="onInviteFriend" role="button" aria-label="邀请朋友">
     <view class="invite-btn-glow"></view>
     <image class="invite-action-icon" src="/images/icons/sparkle_64.png" mode="aspectFit" lazy-load aria-label="邀请朋友" />
     <text class="invite-action-text">邀请朋友</text>
@@ -178,7 +178,7 @@
     </view>
 
     <!-- Back to profile -->
-    <view class="back-action" bindtap="onBack">
+    <view class="back-action" bindtap="onBack" role="button" aria-label="返回个人中心">
       <text class="back-text">返回个人中心</text>
     </view>
   </view>
