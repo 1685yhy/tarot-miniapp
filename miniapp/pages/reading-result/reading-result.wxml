@@ -3,56 +3,37 @@
      Warm, intimate, magical. Three-card spread reveal.
      ============================================================ -->
 
-<!-- ===== LOADING STATE: 3-Stage Anticipation ===== -->
+<!-- ===== LOADING STATE ===== -->
 <view class="page" wx:if="{{pageLoading}}">
   <view class="loading-box">
 
-    <!-- Stage 1: 洗牌中 ... -->
-    <view class="stage" wx:if="{{loadingStage === 1}}">
-      <view class="shuffle-icon">
-        <view class="card-shuffle card-left"></view>
-        <view class="card-shuffle card-right"></view>
-      </view>
-      <text class="stage-title">洗牌中...</text>
-      <text class="stage-sub">命运之轮缓缓转动</text>
-    </view>
-
-    <!-- Stage 2: 翻牌中 ... -->
-    <view class="stage" wx:elif="{{loadingStage === 2}}">
-      <view class="flip-icon">
-        <view class="card-flip-inner"></view>
-      </view>
-      <text class="stage-title">翻牌中...</text>
-      <text class="stage-sub">牌面渐渐浮现</text>
-    </view>
-
-    <!-- Stage 3: 星光解读中 ... with progress feedback -->
-    <view class="stage" wx:elif="{{loadingStage === 3}}">
-      <view class="loading-candle">
-        <view class="candle-flame"></view>
-      </view>
-      <text class="stage-title">星光解读中...</text>
-      <text class="stage-sub">答案正在凝聚</text>
-
-      <!-- Progress step indicator: 3 dots -->
-      <view class="dot-row">
-        <view class="dot {{loadingDotCount >= 1 ? 'lit' : ''}}"></view>
-        <view class="dot {{loadingDotCount >= 2 ? 'lit' : ''}}"></view>
-        <view class="dot {{loadingDotCount >= 3 ? 'lit' : ''}}"></view>
-      </view>
-
-      <!-- Dynamic time-status text -->
-      <text class="stage-time" wx:if="{{loadingTimeText}}">{{loadingTimeText}}</text>
-
-      <!-- Wait timeout: user decision -->
-      <view class="wait-options" wx:if="{{showWaitOptions}}">
-        <text class="wait-hint">可能网络不稳定，是否继续等待？</text>
-        <view class="wait-btns">
-          <button class="btn-wait-yes" bindtap="onContinueWaiting">继续等待</button>
-          <text class="btn-wait-no" bindtap="onCheckLater" role="button" aria-label="稍后查看">稍后查看</text>
+    <!-- Quick mode (default): lightweight skeleton — 800ms, then results -->
+    <block wx:if="{{isQuick}}">
+      <view class="quick-skeleton">
+        <view class="qs-card-row">
+          <view class="qs-card"></view>
+          <view class="qs-card"></view>
+          <view class="qs-card"></view>
         </view>
+        <view class="qs-line qs-line-w60"></view>
+        <view class="qs-line qs-line-w90"></view>
+        <view class="qs-line qs-line-w80"></view>
+        <text class="quick-loading-text">正在生成解读...</text>
       </view>
-    </view>
+    </block>
+
+    <!-- Immersive mode (opt-in): single pulsing state, max 2s -->
+    <block wx:else>
+      <view class="stage">
+        <view class="loading-pulse">
+          <view class="pulse-ring pulse-ring-1"></view>
+          <view class="pulse-ring pulse-ring-2"></view>
+          <view class="pulse-core"></view>
+        </view>
+        <text class="stage-title">正在解读...</text>
+        <text class="stage-sub">星光正在为你凝聚答案</text>
+      </view>
+    </block>
 
   </view>
 </view>
