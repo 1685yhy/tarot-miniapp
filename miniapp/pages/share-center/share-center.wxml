@@ -56,7 +56,7 @@
         <text class="copy-btn-text">{{copied ? '已复制' : '复制'}}</text>
       </button>
     </view>
-    <text class="invite-code-hint">分享给朋友，你们都将获得 3 次免费深度解读</text>
+    <text class="invite-code-hint">分享给朋友，你们都将获得 1 次免费深度解读</text>
   </view>
 
   <!-- ============ 邀请好友按钮 ============ -->
