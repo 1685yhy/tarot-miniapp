@@ -60,9 +60,6 @@ Page({
     // Save / share
     isSaved: false,         // whether this reading is in saved_readings storage
 
-    // Undo reading
-    showUndo: false,
-
     // ---- wx.createAnimation native animation system ----
     useNativeAnim: true,
     // Staggered card entrance animations (one per drawn card)
@@ -101,9 +98,8 @@ Page({
     hasTeachingData: false,
     teachingCards: [],
 
-    // Task 4: Reflection question & reading depth
+    // Task 4: Reflection question
     reflectionQuestion: '',
-    readingDepth: 'standard',
   },
 
   onLoad(options) {
@@ -412,9 +408,8 @@ Page({
       }
       const hasTeachingData = teachingCards.length > 0;
 
-      const readingDepth = reading.depth || 'standard';
       const reflectionQuestion = reading.reflection_question || '今天的解读对你意味着什么？';
-      this.setData({ reading, personaDisplay, tldr, teachingCards, hasTeachingData, spreadTypeName, pageLoading: false, showUndo: true, showFullInterpretation: true, readingDepth, reflectionQuestion });
+      this.setData({ reading, personaDisplay, tldr, teachingCards, hasTeachingData, spreadTypeName, pageLoading: false, showFullInterpretation: true, reflectionQuestion });
       // Trigger staggered card entrance animation after render
       this._animateCardReveal();
       // Play reveal sound when reading result appears
@@ -666,30 +661,8 @@ Page({
     wx.navigateBack();
   },
 
-  /** @deprecated — unused, kept for future use */
-  // onUndoReading() {
-  //   const reading = this.data.reading;
-  //   wx.showModal({
-  //     title: '重新抽牌',
-  //     content: '确定要放弃本次解读，重新抽牌吗？',
-  //     success: (res) => {
-  //       if (res.confirm) {
-  //         wx.removeStorageSync('pending_reading');
-  //         wx.redirectTo({
-  //           url: '/pages/reading/reading?type=' + (reading?.spread_type || 'three_card'),
-  //         });
-  //       }
-  //     },
-  //   });
-  // },
-
   onBackHome() {
     wx.switchTab({ url: '/pages/index/index' });
-  },
-
-  /** Navigate to membership page */
-  onGoMembership() {
-    wx.navigateTo({ url: '/pages/membership/membership' });
   },
 
   /** Navigate to diary page with the first card as reflection prompt */
