@@ -65,8 +65,8 @@
      Opacity and transform are separate keyframes so the
      reversed selector can override one without losing the other. */
   animation:
-    card-rise-opacity var(--duration-base) cubic-bezier(0.23, 1, 0.32, 1) forwards,
-    card-rise-transform var(--duration-base) cubic-bezier(0.23, 1, 0.32, 1) forwards,
+    rise-opacity var(--duration-base) cubic-bezier(0.23, 1, 0.32, 1) forwards,
+    rise-transform var(--duration-base) cubic-bezier(0.23, 1, 0.32, 1) forwards,
     card-border-glow 1s ease-out forwards;
 
   transition:
@@ -79,7 +79,7 @@
    Fades in on mount
    ============================================================ */
 
-@keyframes card-rise-opacity {
+@keyframes rise-opacity {
   0%   { opacity: 0; }
   100% { opacity: 1; }
 }
@@ -89,7 +89,7 @@
    Slides up 40rpx on mount
    ============================================================ */
 
-@keyframes card-rise-transform {
+@keyframes rise-transform {
   0%   { transform: translateY(40rpx) scale(0.96); }
   100% { transform: translateY(0) scale(1); }
 }
@@ -145,10 +145,10 @@
     transparent 100%
   );
   transform: translateX(-100%);
-  animation: card-shimmer 0.4s ease-out 0.5s forwards;
+  animation: sheen-sweep 0.4s ease-out 0.5s forwards;
 }
 
-@keyframes card-shimmer {
+@keyframes sheen-sweep {
   0%   { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
 }
@@ -192,7 +192,7 @@
   /* Combine mount animations (fade-in + border glow only — no rise transform)
      with the continuous blood-rose glow pulse that starts after mount. */
   animation:
-    card-rise-opacity var(--duration-base) cubic-bezier(0.23, 1, 0.32, 1) forwards,
+    rise-opacity var(--duration-base) cubic-bezier(0.23, 1, 0.32, 1) forwards,
     card-border-glow 1s ease-out forwards,
     reversed-glow 4s ease-in-out 1.5s infinite alternate;
 }

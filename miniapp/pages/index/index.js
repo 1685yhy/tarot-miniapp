@@ -504,7 +504,7 @@ Page({
 
     // --- wx.createAnimation 3-step sequence (when enabled) ---
     // Replaces the CSS-only shake+ripple with native animation.
-    // Step 3 (card appear) uses the existing CSS .card-rise reveal
+    // Step 3 (card appear) uses the existing CSS .card-featured reveal
     // on the post-draw card which runs alongside.
     if (this.data.useNativeAnim) {
       const preAnim = createAnim({});

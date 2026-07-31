@@ -233,13 +233,20 @@
 /* ================================================================
    1. CARD REVEAL — Three-card spread
    ================================================================ */
-.card-reveal {
+/* Spread stage container. This element is a layout wrapper, not an
+   info card, so it neutralizes the global .card-default base
+   visuals (styles/cards.wxss) and keeps the container layout. */
+.card-default {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-bottom: 16rpx;
-  padding-top: 24rpx;
+  padding: 24rpx 0 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 /* Warm gold glow behind the center card */

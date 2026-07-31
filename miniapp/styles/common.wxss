@@ -58,7 +58,7 @@ page {
   --shadow-elevated: 0 8rpx 40rpx rgba(0, 0, 0, 0.35), 0 0 60rpx rgba(244, 212, 140, 0.10);
   --shadow-glow-gold: 0 0 30rpx rgba(244, 212, 140, 0.15);
   --shadow-gold-button: 0 4rpx 20rpx rgba(244, 212, 140, 0.25);
-  --shadow-card-press: 0 2rpx 12rpx rgba(0, 0, 0, 0.35), 0 0 40rpx rgba(244, 212, 140, 0.12);
+  --shadow-pressed: 0 2rpx 12rpx rgba(0, 0, 0, 0.35), 0 0 40rpx rgba(244, 212, 140, 0.12);
 
   /* -- Typography Scale -- */
   --font-size-xs: 20rpx;            /* 极小文字 */
@@ -530,7 +530,7 @@ page {
 .card:active {
   background: var(--color-card-hover);
   border-color: rgba(244, 212, 140, 0.20);
-  box-shadow: var(--shadow-card-press);
+  box-shadow: var(--shadow-pressed);
   transform: scale(0.97);
 }
 
@@ -1689,7 +1689,7 @@ page {
    ----------------------------------------------------------- */
 
 /* Card appears to rise up from below with opacity (0.5s) */
-@keyframes card-rise {
+@keyframes rise-in {
   0% {
     opacity: 0;
     transform: translateY(40rpx) scale(0.97);
@@ -1741,7 +1741,7 @@ page {
 
 /* --- Entrance Classes (one-shot, use forwards) --- */
 .anim-rise {
-  animation: card-rise var(--duration-base) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: rise-in var(--duration-base) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 /* --- Glow Classes (infinite) --- */
@@ -1750,31 +1750,31 @@ page {
 }
 
 /* -----------------------------------------------------------
-   23-D. STAGGERED ENTRANCE (card-rise with increasing delays)
+   23-D. STAGGERED ENTRANCE (rise-in with increasing delays)
    ----------------------------------------------------------- */
 
 .anim-rise-1 {
-  animation: card-rise var(--duration-base) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: rise-in var(--duration-base) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   animation-delay: 0.05s;
 }
 
 .anim-rise-2 {
-  animation: card-rise var(--duration-base) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: rise-in var(--duration-base) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   animation-delay: 0.12s;
 }
 
 .anim-rise-3 {
-  animation: card-rise var(--duration-base) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: rise-in var(--duration-base) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   animation-delay: 0.20s;
 }
 
 .anim-rise-4 {
-  animation: card-rise var(--duration-base) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: rise-in var(--duration-base) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   animation-delay: 0.30s;
 }
 
 .anim-rise-5 {
-  animation: card-rise var(--duration-base) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: rise-in var(--duration-base) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   animation-delay: 0.42s;
 }
 

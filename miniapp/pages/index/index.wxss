@@ -124,22 +124,19 @@
 
 /* -----------------------------------------------------------
    4. CARD VARIANTS
+   Base styles for the 3 consolidated variants
+   (card-default / card-interactive / card-featured) live in
+   styles/cards.wxss. This page only carries the daily-card
+   specific overlays and animations.
    ----------------------------------------------------------- */
 
-/* --- Warm variant — dark indigo, golden promise --- */
-.card-warm {
-  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 40%, #303065 100%);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.30);
-  box-shadow:
-    0 4rpx 24rpx rgba(0, 0, 0, 0.28),
-    0 0 50rpx rgba(244, 212, 140, 0.04);
-  position: relative;
-  overflow: hidden;
-  animation: card-warm-breathe 5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
-}
+/* --- Featured daily card (before draw): breathing glow overlays ---
+   Scoped to the card-ready wrapper so only the pre-draw daily card
+   gets the warm breathing glow. The teaching panels
+   (.card-featured + .daily-card-panel) stay static. */
 
 /* Glow pseudo-element — animated opacity instead of box-shadow */
-.card-warm::before {
+.card-ready .card-featured::before {
   content: '';
   position: absolute;
   top: 0;
@@ -149,12 +146,12 @@
   background: radial-gradient(ellipse at center, rgba(244, 212, 140, 0.08) 0%, transparent 70%);
   pointer-events: none;
   opacity: 0.3;
-  animation: card-warm-breathe 5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  animation: featured-breathe 5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
   z-index: 0;
 }
 
 /* Subtle warm gradient overlay */
-.card-warm::after {
+.card-ready .card-featured::after {
   content: '';
   position: absolute;
   top: -50%;
@@ -248,18 +245,9 @@
   }
 }
 
-/* --- Pressable interaction --- */
-.card-press {
-  transition: transform var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.card-press:active {
-  transform: scale(0.97);
-  border-color: rgba(244, 212, 140, 0.55) !important;
-  box-shadow: var(--shadow-card-press);
-}
+/* --- Pressable interaction ---
+   Provided by the global .card-interactive variant
+   (styles/cards.wxss). */
 
 /* ============================================================
    4c. PENDING READING CARD — resume incomplete reading
@@ -426,13 +414,14 @@
   z-index: 0;
 }
 
-/* --- Card rise reveal (dramatic entrance) --- */
-/* NOTE: card-glow-breathe (infinite) removed from .card-rise — glow now static only */
-.card-rise {
-  animation: card-rise-reveal 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s both;
+/* --- Card rise reveal (dramatic entrance) ---
+   Applied to the after-draw featured card (.card-featured). */
+/* NOTE: card-glow-breathe (infinite) removed from .card-featured — glow now static only */
+.daily-card-enter {
+  animation: rise-reveal 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s both;
 }
 
-@keyframes card-rise-reveal {
+@keyframes rise-reveal {
   0% {
     opacity: 0;
     transform: scale(0.85);
@@ -590,7 +579,7 @@
 }
 
 /* --- Spread grid cards: constellation map feel --- */
-.section .card-press {
+.section .card-interactive {
   background: linear-gradient(145deg, #25255A 0%, #2A2A5E 100%);
   border: 1.5rpx solid rgba(244, 212, 140, 0.12);
   border-radius: var(--radius-lg, 24rpx);
@@ -601,10 +590,10 @@
   transition: transform var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
 }
 
-.section .card-press:active {
+.section .card-interactive:active {
   transform: scale(0.97);
   border-color: rgba(244, 212, 140, 0.20) !important;
-  box-shadow: var(--shadow-card-press);
+  box-shadow: var(--shadow-pressed);
 }
 
 /* Spread card icon — fixed size, centered */
@@ -617,7 +606,7 @@
 }
 
 /* Spread card text labels */
-.section .card-press .body-sm {
+.section .card-interactive .body-sm {
   display: block;
   font-weight: 600;
   color: var(--color-text-primary, #F0EDE8);
@@ -625,7 +614,7 @@
   letter-spacing: 1rpx;
 }
 
-.section .card-press .body-xs {
+.section .card-interactive .body-xs {
   display: block;
   margin-top: 6rpx;
 }
@@ -699,15 +688,15 @@
   }
 }
 
-.section > view > .card-press {
+.section > view > .card-interactive {
   opacity: 0;
   animation: card-staggered 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
-.section > view > .card-press:nth-child(1) { animation-delay: 0.30s; }
-.section > view > .card-press:nth-child(2) { animation-delay: 0.35s; }
-.section > view > .card-press:nth-child(3) { animation-delay: 0.40s; }
-.section > view > .card-press:nth-child(4) { animation-delay: 0.45s; }
+.section > view > .card-interactive:nth-child(1) { animation-delay: 0.30s; }
+.section > view > .card-interactive:nth-child(2) { animation-delay: 0.35s; }
+.section > view > .card-interactive:nth-child(3) { animation-delay: 0.40s; }
+.section > view > .card-interactive:nth-child(4) { animation-delay: 0.45s; }
 
 .more-spreads {
   opacity: 0;
@@ -738,7 +727,7 @@
 .more-spreads:active {
   transform: scale(0.97);
   border-color: rgba(244, 212, 140, 0.20) !important;
-  box-shadow: var(--shadow-card-press);
+  box-shadow: var(--shadow-pressed);
 }
 
 .more-text {
@@ -978,7 +967,7 @@
    17. CARD GLOW — Breathing golden aura + warm breathe
    ============================================================ */
 
-@keyframes card-warm-breathe {
+@keyframes featured-breathe {
   0%, 100% { opacity: 0.3; }
   50% { opacity: 0.8; }
 }
@@ -1064,9 +1053,9 @@
   letter-spacing: 1rpx;
 }
 
-.card-ready .card-warm {
+.card-ready .card-featured {
   animation:
-    card-warm-breathe 5s cubic-bezier(0.45, 0, 0.55, 1) infinite,
+    featured-breathe 5s cubic-bezier(0.45, 0, 0.55, 1) infinite,
     card-ready-pulse 2s cubic-bezier(0.45, 0, 0.55, 1) infinite !important;
 }
 
@@ -1238,7 +1227,7 @@
   gap: var(--spacing-sm);
 }
 
-.spread-grid-2 > .card-press {
+.spread-grid-2 > .card-interactive {
   width: calc((100% - 16rpx) / 2);
   box-sizing: border-box;
 }
@@ -1247,12 +1236,14 @@
    22. DAILY CARD TEACHING ENTRY — v2.0
    ============================================================ */
 
-.daily-card-teaching {
+.daily-card-featured {
   position: relative;
 }
 
-/* Teaching card variant — compact thumbnail + CTA */
-.card--teaching {
+/* Teaching card panel — compact thumbnail + CTA layout.
+   Used with .card-featured (was .card--teaching; the variant
+   was absorbed into the consolidated card system). */
+.daily-card-panel {
   position: relative;
   overflow: hidden;
   border-color: var(--color-gold-dark, #D4B06A) !important;
@@ -1352,7 +1343,7 @@
 }
 
 /* NOTE: daily-card-glow-overlay (breathing glow) removed — card keeps its
-   static box-shadow border glow from .card--teaching (no animation) */
+   static box-shadow border glow from .daily-card-panel (no animation) */
 
 /* ============================================================
    24. TASKS CARD — "今日任务" widget on homepage

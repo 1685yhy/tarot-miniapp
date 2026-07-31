@@ -56,7 +56,7 @@
       <!-- ==========================================================
            1. CARD REVEAL — Three-card spread on a table
            ========================================================== -->
-      <view class="card-reveal">
+      <view class="card-default">
 
         <!-- Warm glow behind the center (present) card -->
         <view class="center-glow"></view>
