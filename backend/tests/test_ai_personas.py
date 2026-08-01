@@ -32,7 +32,7 @@ class TestGetPersona:
         """Each known persona key should return the matching persona dict."""
         cases = {
             "gentle_star": "温和的星",
-            "wise_moon": "智慧的月",
+            "wise_moon": "星光",
             "frank_sun": "率直的太阳",
         }
         for key, expected_name in cases.items():
