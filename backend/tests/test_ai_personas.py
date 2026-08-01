@@ -77,7 +77,7 @@ class TestPersonaSignatures:
 
     def test_wise_moon_signature(self):
         sig = get_persona_signature("wise_moon")
-        assert "智慧的月" in sig, f"Signature missing persona name: {sig}"
+        assert "星光" in sig, f"Signature missing persona name: {sig}"
 
     def test_frank_sun_signature(self):
         sig = get_persona_signature("frank_sun")
