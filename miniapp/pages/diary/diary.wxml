@@ -49,11 +49,11 @@
           <text class="review-title">本周回顾</text>
         </view>
         <view class="review-header-actions">
-          <text class="review-refresh-btn" bindtap="onRefreshReview" role="button" aria-label="生成周回顾">
+          <view class="review-refresh-btn" bindtap="onRefreshReview" role="button" aria-label="生成周回顾">
             <text wx:if="{{reviewLoading}}">加载中...</text>
             <text wx:elif="{{weeklyReview}}">⟳ 刷新</text>
             <text wx:else>生成回顾</text>
-          </text>
+          </view>
         </view>
       </view>
 
@@ -164,7 +164,7 @@
               <text class="entry-date">{{entry.date}}</text>
             </view>
             <view class="entry-header-right">
-              <text class="entry-share-btn" style="padding:8rpx 20rpx;font-size:24rpx;" bindtap="onShareEntry" data-id="{{entry.id}}" role="button" aria-label="分享日记">分享</text>
+              <view class="entry-share-btn" bindtap="onShareEntry" data-id="{{entry.id}}" role="button" aria-label="分享日记">分享</view>
               <text class="entry-mood">
                 <text wx:if="{{entry.mood === 'happy'}}">😊</text>
                 <text wx:elif="{{entry.mood === 'sad'}}">😢</text>
@@ -346,7 +346,7 @@
         </view>
         <view wx:else class="image-preview-wrap">
           <image class="image-preview" src="{{selectedImage}}" mode="aspectFill" aria-label="已选图片预览" />
-          <text class="image-remove-btn" bindtap="onRemoveImage" role="button" aria-label="移除图片">✕</text>
+          <view class="image-remove-btn" bindtap="onRemoveImage" role="button" aria-label="移除图片"><text class="image-remove-btn-char">✕</text></view>
         </view>
       </view>
 

@@ -22,8 +22,8 @@
 }
 
 .community-header-back {
-  width: 72rpx;
-  height: 72rpx;
+  width: 88rpx;
+  height: 88rpx;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -157,7 +157,9 @@
 }
 
 .topic-card-emoji {
-  font-size: 40rpx;
+  width: 44rpx;
+  height: 44rpx;
+  display: block;
 }
 
 .topic-card-title {
@@ -328,7 +330,8 @@
 }
 
 .empty-posts-icon {
-  font-size: 64rpx;
+  width: 88rpx;
+  height: 88rpx;
   margin-bottom: var(--spacing-md);
   display: block;
   opacity: 0.60;
@@ -361,7 +364,8 @@
   width: 100rpx;
   height: 100rpx;
   border-radius: 50%;
-  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
+  border: 2rpx solid rgba(244, 212, 140, 0.40);
+  background: var(--color-surface-gradient);
   box-shadow:
     0 4rpx 24rpx rgba(244, 212, 140, 0.35),
     0 0 60rpx rgba(244, 212, 140, 0.15);
@@ -381,10 +385,9 @@
 }
 
 .fab-write-icon {
-  font-size: 44rpx;
-  color: var(--color-text-inverse);
-  font-weight: var(--font-weight-bold);
-  line-height: 1;
+  width: 44rpx;
+  height: 44rpx;
+  display: block;
 }
 
 /* ============================================================

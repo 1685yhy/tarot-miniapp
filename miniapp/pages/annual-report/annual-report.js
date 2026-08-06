@@ -430,6 +430,24 @@ Page({
     wx.switchTab({ url: '/pages/index/index' });
   },
 
+  /**
+   * Custom back button (page has no native nav bar).
+   * Prefer navigating back; fall back to the home tab when there is
+   * no history stack (e.g. opened directly from a share card).
+   */
+  onBack() {
+    const pages = getCurrentPages();
+    if (pages.length > 1) {
+      wx.navigateBack({
+        fail: () => {
+          wx.switchTab({ url: '/pages/index/index' });
+        },
+      });
+    } else {
+      wx.switchTab({ url: '/pages/index/index' });
+    }
+  },
+
   // ════════════════════════════════════════════════════════════════
   //  UTILITY
   // ════════════════════════════════════════════════════════════════

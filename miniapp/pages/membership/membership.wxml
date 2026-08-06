@@ -29,7 +29,7 @@
     <!-- ===== 免费试用横幅 ===== -->
     <view class="free-trial-banner">
       <view class="trial-icon-wrap">
-        <text class="trial-icon">✨</text>
+        <image class="trial-icon" src="/images/icons/sparkle_64.png" mode="aspectFit" aria-label="免费试用" />
       </view>
       <text class="trial-title">先体验，再决定</text>
       <text class="trial-sub">7天免费试用 · 无需付费 · 随时取消</text>
@@ -101,7 +101,10 @@
 
       <!-- 学生价 -->
       <view class="pricing-card pricing-card--student" data-product="{{pricingStudent}}" bindtap="onPurchase" role="button" aria-label="购买学生会员">
-        <view class="pricing-card-student-badge">🎓 学生专享</view>
+        <view class="pricing-card-student-badge">
+          <image class="pricing-card-student-badge-icon" src="/images/icons/diamond_64.png" mode="aspectFit" aria-label="学生专享" />
+          <text>学生专享</text>
+        </view>
         <view class="pricing-card-student-header">
           <text class="pricing-card-name">学生会员</text>
           <text class="pricing-card-student-sub">需学生认证</text>
@@ -172,7 +175,7 @@
           <view class="celebration-star celebration-star-2">✦</view>
           <view class="celebration-star celebration-star-3">✦</view>
         </view>
-        <text class="celebration-icon">✨</text>
+        <image class="celebration-icon" src="/images/icons/sparkle_64.png" mode="aspectFit" aria-label="支付成功" />
         <text class="celebration-title">支付成功！</text>
         <text class="celebration-sub">欢迎加入星光会员</text>
         <view class="celebration-benefits">

@@ -242,7 +242,7 @@
   <view class="push-prompt {{showPushPrompt ? 'push-prompt--visible' : ''}}" wx:if="{{showPushPrompt && !pushSubscribed}}">
     <view class="push-prompt-card">
       <view class="push-prompt-header">
-        <text class="push-prompt-icon">🔔</text>
+        <image class="push-prompt-icon" src="/images/icons/sparkle_64.png" mode="aspectFit" aria-label="每日推送提醒" />
         <text class="push-prompt-title">每日推送提醒</text>
       </view>
       <text class="push-prompt-desc">每天自动推送今日塔罗牌，不错过每一份星光指引</text>

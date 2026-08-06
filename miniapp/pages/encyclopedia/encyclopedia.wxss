@@ -183,6 +183,7 @@
 .search-bar {
   display: flex;
   align-items: center;
+  min-height: 88rpx;
   background: var(--color-surface);
   border-radius: var(--radius-pill);
   padding: var(--spacing-sm) var(--spacing-lg);
@@ -211,7 +212,7 @@
 .filter-bar {
   white-space: nowrap;
   margin-bottom: var(--spacing-2xl);
-  height: 76rpx;
+  height: auto;
   padding: 0 2rpx;
 }
 
@@ -287,24 +288,36 @@
   top: 12rpx;
   right: 12rpx;
   z-index: 3;
-  width: 48rpx;
-  height: 48rpx;
+  width: 88rpx;
+  height: 88rpx;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+.card-favorite::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 48rpx;
+  height: 48rpx;
   background: rgba(26, 26, 62, 0.70);
   border-radius: 50%;
-  transition: transform var(--duration-fast) var(--ease-out),
-              background var(--duration-fast) var(--ease-out);
+  transition: background var(--duration-fast) var(--ease-out);
 }
 .card-favorite:active {
   transform: scale(1.20);
+}
+.card-favorite:active::before {
   background: rgba(26, 26, 62, 0.90);
 }
-.card-favorite.favorited {
+.card-favorite.favorited::before {
   background: rgba(244, 212, 140, 0.15);
 }
 .fav-icon {
+  position: relative;
   width: 32rpx;
   height: 32rpx;
   display: block;
@@ -340,9 +353,17 @@
 }
 
 .card-thumb-placeholder::after {
-  content: '🃏';
-  font-size: var(--font-size-title);
-  opacity: 0.30;
+  content: '';
+  width: 72rpx;
+  height: 100rpx;
+  border-radius: var(--radius-sm);
+  border: 1.5rpx solid rgba(244, 212, 140, 0.25);
+  background: linear-gradient(
+    145deg,
+    var(--color-card-hover) 0%,
+    var(--color-surface) 100%
+  );
+  opacity: 0.55;
 }
 
 /* ---- Card Number — subtle golden label ---- */
@@ -516,6 +537,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-height: 88rpx;
   font-size: var(--font-size-caption);
   font-weight: var(--font-weight-medium);
   border-radius: var(--radius-pill);

@@ -334,6 +334,49 @@ page {
 }
 
 /* ================================================================
+   Custom back button — top-left golden pill
+   Below the status bar, clear of the right-side capsule,
+   hit area >= 88rpx (min-height)
+   ================================================================ */
+.wrapped-back {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 16rpx);
+  left: 24rpx;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  min-height: 88rpx;
+  padding: 0 32rpx 0 20rpx;
+  box-sizing: border-box;
+  border-radius: var(--radius-pill);
+  background: rgba(244, 212, 140, 0.10);
+  border: 1rpx solid rgba(244, 212, 140, 0.28);
+  color: var(--color-gold);
+  backdrop-filter: blur(8rpx);
+  -webkit-backdrop-filter: blur(8rpx);
+  transition: background 0.15s ease-out, transform 0.15s ease-out;
+}
+
+.wrapped-back:active {
+  background: rgba(244, 212, 140, 0.20);
+  transform: scale(0.96);
+}
+
+.wrapped-back-icon {
+  width: 32rpx;
+  height: 32rpx;
+  display: block;
+}
+
+.wrapped-back-text {
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 2rpx;
+  line-height: 1;
+}
+
+/* ================================================================
    Wrapped stage — full screen
    ================================================================ */
 .wrapped-stage {
@@ -342,12 +385,13 @@ page {
   background: #0B0B1A;
 }
 
-/* Progress dots */
+/* Progress dots — pushed below status bar + back button, and
+   stops short of the right-side capsule (approx 180rpx zone) */
 .wrapped-progress {
   position: fixed;
-  top: 40rpx;
+  top: calc(env(safe-area-inset-top) + 120rpx);
   left: 40rpx;
-  right: 40rpx;
+  right: 200rpx;
   display: flex;
   gap: 4rpx;
   z-index: 100;
@@ -986,8 +1030,8 @@ page {
 }
 
 .screen-4-stat-sub {
-  font-size: 18rpx;
-  color: rgba(176, 169, 224, 0.3);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
   display: block;
   margin-top: 4rpx;
 }
@@ -1082,8 +1126,8 @@ page {
 }
 
 .screen-5-bar-label {
-  font-size: 18rpx;
-  color: rgba(176, 169, 224, 0.3);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
 }
 
 /* Mood trend dots */
@@ -1343,8 +1387,8 @@ page {
 }
 
 .screen-7-recap-label {
-  font-size: 18rpx;
-  color: rgba(176, 169, 224, 0.4);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
   display: block;
 }
 

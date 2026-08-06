@@ -198,7 +198,7 @@
 /* Begin reading CTA button (empty state) */
 .begin-reading-btn {
   margin-top: 24rpx;
-  background: linear-gradient(135deg, var(--color-gold), #D4AF37);
+  background: linear-gradient(135deg, var(--color-gold), var(--color-gold-dark));
   color: var(--color-text-inverse);
   border: none;
   border-radius: 48rpx;
@@ -322,7 +322,7 @@
 }
 
 .weekly-card-btn {
-  background: linear-gradient(135deg, var(--color-gold), #D4AF37);
+  background: linear-gradient(135deg, var(--color-gold), var(--color-gold-dark));
   color: var(--color-text-inverse);
   border: none;
   border-radius: 48rpx;

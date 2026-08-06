@@ -76,7 +76,7 @@
       <text class="section-title">会员里程碑</text>
       <view class="milestone-list">
         <view class="milestone-item {{streak >= 7 ? 'milestone-reached' : ''}}">
-          <view class="milestone-icon">👑</view>
+          <view class="milestone-icon"><image class="milestone-icon-img" src="/images/icons/diamond_64.png" mode="aspectFit" aria-label="钻石里程碑" /></view>
           <view class="milestone-info">
             <text class="milestone-days">连续 7 天</text>
             <text class="milestone-reward">+1 天会员体验</text>
@@ -84,7 +84,7 @@
           <view class="milestone-status">{{streak >= 7 ? '已达成' : '未达成'}}</view>
         </view>
         <view class="milestone-item {{streak >= 30 ? 'milestone-reached' : ''}}">
-          <view class="milestone-icon">👑</view>
+          <view class="milestone-icon"><image class="milestone-icon-img" src="/images/icons/star_64.png" mode="aspectFit" aria-label="星星里程碑" /></view>
           <view class="milestone-info">
             <text class="milestone-days">连续 30 天</text>
             <text class="milestone-reward">+3 天会员体验</text>
@@ -92,7 +92,7 @@
           <view class="milestone-status">{{streak >= 30 ? '已达成' : '未达成'}}</view>
         </view>
         <view class="milestone-item {{streak >= 100 ? 'milestone-reached' : ''}}">
-          <view class="milestone-icon">👑</view>
+          <view class="milestone-icon"><image class="milestone-icon-img" src="/images/icons/sparkle_64.png" mode="aspectFit" aria-label="闪耀里程碑" /></view>
           <view class="milestone-info">
             <text class="milestone-days">连续 100 天</text>
             <text class="milestone-reward">+7 天会员体验</text>

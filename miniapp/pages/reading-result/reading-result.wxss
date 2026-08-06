@@ -19,8 +19,11 @@
   flex-direction: column;
 }
 
+/* Native nav bar (~44px = 88rpx) is drawn on top of the viewport,
+   so 100vh extends past the visible area and pushes the bottom
+   action bar off-screen. Subtract the nav bar height. */
 .content-scroll {
-  height: 100vh;
+  height: calc(100vh - 88rpx);
 }
 
 .inner-wrap {
@@ -619,8 +622,9 @@
 
 .dpw-icon {
   display: block;
-  font-size: 52rpx;
-  margin-bottom: 12rpx;
+  width: 64rpx;
+  height: 64rpx;
+  margin: 0 auto 12rpx;
 }
 
 .dpw-label {
@@ -1067,7 +1071,7 @@
 .onboarding-hint .hint-text {
   display: block;
   font-size: var(--font-size-caption, 24rpx);
-  color: #ffffff;
+  color: var(--color-text-primary);
   line-height: 1.6;
   letter-spacing: 1rpx;
   opacity: 0.85;
@@ -1078,13 +1082,13 @@
    ============================================================ */
 .unlock-cta { padding: 48rpx 32rpx; text-align: center; }
 .unlock-divider { display: flex; align-items: center; margin-bottom: 32rpx; }
-.unlock-divider-line { flex: 1; height: 1rpx; background: rgba(201,168,76,0.15); }
-.unlock-divider-star { margin: 0 16rpx; color: #C9A84C; font-size: 24rpx; }
-.unlock-title { display: block; font-size: 32rpx; color: #F4D48C; font-weight: 600; margin-bottom: 12rpx; }
-.unlock-desc { display: block; font-size: 26rpx; color: rgba(255,255,255,0.5); margin-bottom: 32rpx; }
+.unlock-divider-line { flex: 1; height: 1rpx; background: rgba(244, 212, 140, 0.15); }
+.unlock-divider-star { margin: 0 16rpx; color: var(--color-gold); font-size: 24rpx; }
+.unlock-title { display: block; font-size: 32rpx; color: var(--color-gold); font-weight: 600; margin-bottom: 12rpx; }
+.unlock-desc { display: block; font-size: 26rpx; color: var(--color-text-secondary); margin-bottom: 32rpx; }
 .unlock-btn {
-  background: linear-gradient(135deg, #C9A84C, #E0C878);
-  color: #1a1a2e; font-size: 28rpx; font-weight: 600;
+  background: linear-gradient(135deg, var(--color-gold), var(--color-gold-dark));
+  color: var(--color-text-inverse); font-size: 28rpx; font-weight: 600;
   border-radius: 48rpx; padding: 20rpx 56rpx; border: none;
 }
 
@@ -1116,7 +1120,8 @@
 }
 
 .teaching-toggle-icon {
-  font-size: 28rpx;
+  width: 32rpx;
+  height: 32rpx;
   flex-shrink: 0;
 }
 

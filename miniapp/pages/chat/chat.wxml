@@ -95,29 +95,31 @@
 
 </view>
 
-<!-- ===== Input area — fixed bottom ===== -->
+<!-- ===== Input area — fixed bottom =====
+     Quota hint lives INSIDE the input bar (flex column) so it rises
+     together with the textarea when auto-height grows — never overlaps -->
 <view class="input-bar">
-  <label class="input-wrap">
-    <textarea class="chat-input" placeholder="写下你想问的..."
-      placeholder-class="input-placeholder"
-      value="{{inputText}}" bindinput="onInput"
-      auto-height="{{true}}" maxlength="1000"
-      show-confirm-bar="{{false}}"
-      cursor-spacing="12"
-      adjust-position="{{true}}"
-    />
-  </label>
-  <view class="send-btn {{sending || !canSend ? 'send-btn--disabled' : ''}}"
-    bindtap="onSend" aria-label="发送" role="button"
-  >
-    <text class="send-text">发送</text>
+  <view class="free-quota-bar" wx:if="{{remainingFree >= 0 && remainingFree <= 1}}">
+    <text class="quota-text" wx:if="{{remainingFree === 1}}">剩余 1 次追问</text>
+    <text class="quota-text quota-text--exhausted" wx:elif="{{remainingFree === 0}}">今日可用追问已用完</text>
   </view>
-</view>
-
-<!-- 配额信息只在剩余 1 次或已用完时展示（纯文字，无 CTA） -->
-<view class="free-quota-bar" wx:if="{{remainingFree >= 0 && remainingFree <= 1}}">
-  <text class="quota-text" wx:if="{{remainingFree === 1}}">剩余 1 次追问</text>
-  <text class="quota-text quota-text--exhausted" wx:elif="{{remainingFree === 0}}">今日可用追问已用完</text>
+  <view class="input-row">
+    <label class="input-wrap">
+      <textarea class="chat-input" placeholder="写下你想问的..."
+        placeholder-class="input-placeholder"
+        value="{{inputText}}" bindinput="onInput"
+        auto-height="{{true}}" maxlength="1000"
+        show-confirm-bar="{{false}}"
+        cursor-spacing="12"
+        adjust-position="{{true}}"
+      />
+    </label>
+    <view class="send-btn {{sending || !canSend ? 'send-btn--disabled' : ''}}"
+      bindtap="onSend" aria-label="发送" role="button"
+    >
+      <text class="send-text">发送</text>
+    </view>
+  </view>
 </view>
 
 <!-- Back to Home removed — native nav bar provides back button -->
