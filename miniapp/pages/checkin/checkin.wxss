@@ -503,7 +503,6 @@
 }
 
 .milestone-icon {
-  font-size: 36rpx;
   flex-shrink: 0;
   width: 48rpx;
   height: 48rpx;
@@ -514,6 +513,12 @@
   border-radius: 50%;
   transition: background 0.3s ease,
               box-shadow 0.3s ease;
+}
+
+.milestone-icon-img {
+  width: 28rpx;
+  height: 28rpx;
+  display: block;
 }
 
 .milestone-reached .milestone-icon {

@@ -5,6 +5,12 @@
 
 <view class="container">
 
+  <!-- Custom back button — page uses navigationStyle custom, native back is unavailable -->
+  <view class="wrapped-back" bindtap="onBack" role="button" aria-label="返回上一页">
+    <image class="wrapped-back-icon" src="/images/icons/arrow_left_64.png" mode="aspectFit" aria-label="返回" />
+    <text class="wrapped-back-text">返回</text>
+  </view>
+
   <!-- ===== LOADING ===== -->
   <block wx:if="{{pageLoading && !generating}}">
     <view class="wrapped-loading">

@@ -143,7 +143,7 @@
   padding: 10rpx 24rpx;
   font-size: var(--font-size-caption);
   color: var(--color-gold);
-  min-height: 60rpx;
+  min-height: 88rpx;
   line-height: 1;
 }
 
@@ -464,6 +464,10 @@
 
 /* Back action */
 .back-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 88rpx;
   text-align: center;
   padding: var(--spacing-md) 0 var(--spacing-sm);
   margin-top: var(--spacing-sm);

@@ -803,7 +803,7 @@
 .bubble-action {
   display: block;
   font-size: var(--font-size-xs, 20rpx);
-  color: #ffffff;
+  color: var(--color-text-primary);
   margin-top: 8rpx;
   opacity: 0.75;
   letter-spacing: 1rpx;

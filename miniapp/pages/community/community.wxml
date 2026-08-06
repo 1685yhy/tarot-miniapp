@@ -48,7 +48,7 @@
       </view>
       <!-- Card icon -->
       <view class="topic-card-icon">
-        <text class="topic-card-emoji">🌟</text>
+        <image class="topic-card-emoji" src="/images/icons/star_64.png" mode="aspectFit" aria-label="今日话题" />
       </view>
       <!-- Title -->
       <text class="topic-card-title">{{topic.topic.title}}</text>
@@ -102,7 +102,7 @@
 
     <!-- Empty state -->
     <view wx:elif="{{!pageLoading}}" class="empty-posts" bindtap="openComposer" role="button" aria-label="写第一篇倾诉">
-      <text class="empty-posts-icon">🕊️</text>
+      <image class="empty-posts-icon" src="/images/icons/heart_64.png" mode="aspectFit" aria-label="树洞" />
       <text class="empty-posts-title">还没有人倾诉</text>
       <text class="empty-posts-sub">成为第一个匿名发声的人</text>
     </view>
@@ -110,7 +110,7 @@
 
   <!-- ===== 浮动按钮 — 写倾诉 ===== -->
   <view class="fab fab-write" bindtap="openComposer" role="button" aria-label="写倾诉">
-    <text class="fab-write-icon">✎</text>
+    <image class="fab-write-icon" src="/images/icons/chat_ask_64.png" mode="aspectFit" aria-label="写倾诉" />
   </view>
 
   <!-- ===== 倾诉编辑器浮层 ===== -->

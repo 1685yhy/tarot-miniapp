@@ -128,7 +128,9 @@ page {
 }
 
 .trial-icon {
-  font-size: 36rpx;
+  width: 40rpx;
+  height: 40rpx;
+  display: block;
 }
 
 .trial-title {
@@ -152,6 +154,7 @@ page {
   align-items: center;
   justify-content: center;
   min-width: 400rpx;
+  min-height: 88rpx;
   padding: var(--spacing-sm) 0;
   background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
   color: #1A1A3E;
@@ -341,7 +344,6 @@ page {
   margin-bottom: var(--spacing-md);
   text-align: center;
   transition: transform 0.2s, border-color 0.2s;
-  overflow: hidden;
 }
 
 .pricing-card:active {
@@ -361,11 +363,12 @@ page {
     90deg,
     transparent 0%,
     var(--color-gold-glow) 30%,
-    rgba(212, 175, 55, 0.3) 50%,
+    rgba(244, 212, 140, 0.3) 50%,
     var(--color-gold-glow) 70%,
     transparent 100%
   );
   pointer-events: none;
+  border-radius: 24rpx 24rpx 0 0;
 }
 
 /* ---- Recommended Card ---- */
@@ -419,14 +422,22 @@ page {
 }
 
 .pricing-card-student-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6rpx;
   font-size: var(--font-size-xs);
   color: var(--color-lavender);
   font-weight: 600;
   padding: 4rpx var(--spacing-xs);
   background: rgba(184, 169, 224, 0.1);
   border-radius: var(--radius-pill);
-  display: inline-block;
   margin-bottom: var(--spacing-xs);
+}
+
+.pricing-card-student-badge-icon {
+  width: 24rpx;
+  height: 24rpx;
+  display: block;
 }
 
 .pricing-card-student-header {
@@ -508,6 +519,7 @@ page {
 .pricing-card-btn {
   display: block;
   width: 80%;
+  min-height: 88rpx;
   margin: var(--spacing-sm) auto 0;
   padding: var(--spacing-sm) 0;
   border: none;
@@ -579,7 +591,6 @@ page {
   padding: var(--spacing-md);
   margin-bottom: var(--spacing-sm);
   transition: transform 0.2s, border-color 0.2s;
-  overflow: hidden;
 }
 
 .pack-card:active {
@@ -596,6 +607,7 @@ page {
   height: 2rpx;
   background: linear-gradient(90deg, transparent, rgba(244, 212, 140, 0.15), transparent);
   pointer-events: none;
+  border-radius: 24rpx 24rpx 0 0;
 }
 
 .pack-card--best {
@@ -680,6 +692,7 @@ page {
 
 .pack-card-btn {
   width: 100%;
+  min-height: 88rpx;
   margin-top: var(--spacing-sm);
   padding: var(--spacing-xs) 0;
   border: 1.5rpx solid rgba(244, 212, 140, 0.25);
@@ -713,6 +726,10 @@ page {
 }
 
 .pack-detail-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 88rpx;
   text-align: center;
   padding: var(--spacing-sm) 0;
 }
@@ -862,9 +879,10 @@ page {
 }
 
 .celebration-icon {
-  font-size: 72rpx;
+  width: 88rpx;
+  height: 88rpx;
   display: block;
-  margin-bottom: var(--spacing-sm);
+  margin: 0 auto var(--spacing-sm);
   animation: celebration-icon-bounce 0.6s ease-out 0.2s both;
 }
 

@@ -128,7 +128,7 @@
           <view class="divider-line"></view>
         </view>
         <view class="deep-paywall-card">
-          <text class="dpw-icon">🔮</text>
+          <image class="dpw-icon" src="/images/icons/lock_64.png" mode="aspectFit" aria-label="解锁深度解读" />
           <text class="dpw-label">想要更深层的指引？</text>
           <text class="dpw-title">解锁深度解读 ¥{{priceTestBucket}}</text>
           <text class="dpw-desc">专属塔罗师解读 · 无限追问 · 更深入的牌面剖析</text>
@@ -156,7 +156,7 @@
            ========================================================== -->
       <view class="teaching-section" wx:if="{{hasTeachingData}}">
         <view class="teaching-toggle" bindtap="onToggleTeaching" role="button" aria-label="切换牌面深度解析">
-          <text class="teaching-toggle-icon">🔮</text>
+          <image class="teaching-toggle-icon" src="/images/icons/sparkle_64.png" mode="aspectFit" aria-label="牌面深度解析" />
           <text class="teaching-toggle-text">牌面深度解析</text>
           <text class="teaching-toggle-arrow">{{showTeaching ? '收起 ▲' : '展开 ▼'}}</text>
         </view>
