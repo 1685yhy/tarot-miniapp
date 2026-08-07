@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.database import get_db
 from app.models.community import Topic, Post
 from app.models.card import TarotCard
+from app.models.user import User
 from app.schemas.community import (
     CommunityTodayResponse,
     TopicResponse,
@@ -14,6 +15,8 @@ from app.schemas.community import (
     PostCreate,
     PostListResponse,
 )
+from app.services.msg_check import msg_sec_check
+from app.utils.auth import get_current_user
 
 logger = logging.getLogger(__name__)
 
@@ -151,9 +154,16 @@ async def list_posts(
 @router.post("/posts", response_model=PostResponse, status_code=201)
 async def create_post(
     body: PostCreate,
+    user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Create an anonymous post on a daily topic. No user identity stored."""
+    """Create a post on a daily topic. Posts display anonymously, but the
+    author is tracked (user_id) for moderation / account deletion."""
+    # Content safety — local keyword gate + WeChat msgSecCheck (fail-open)
+    check = await msg_sec_check(body.content, user.openid)
+    if not check["safe"]:
+        raise HTTPException(status_code=400, detail="内容包含违规信息，请修改后再发布")
+
     # Verify topic exists
     topic_result = await db.execute(
         select(Topic).where(Topic.id == body.topic_id)
@@ -163,6 +173,7 @@ async def create_post(
 
     post = Post(
         topic_id=body.topic_id,
+        user_id=user.id,
         content=body.content,
     )
     db.add(post)

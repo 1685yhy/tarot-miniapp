@@ -14,6 +14,7 @@ from app.models.diary import DiaryEntry
 from app.models.card import TarotCard
 from app.models.user import User
 from app.utils.auth import get_current_user
+from app.utils.quota import reset_ai_quota_if_new_day
 from app.config import settings
 from app.schemas.diary import (
     DiaryCardBrief,
@@ -240,7 +241,16 @@ async def weekly_review(
     AI-generated weekly review.
     Collects diary entries from the last 7 days, analyzes mood trends,
     finds the most influential card, and generates an insight + next week guidance.
+
+    Non-members are limited to ``FREE_DIARY_AI_DAILY`` AI calls per day
+    (reflection-prompt + review share the same budget).
     """
+    # ── Free-tier daily quota (non-members only) ──
+    if not user.is_member:
+        reset_ai_quota_if_new_day(user)
+        if user.diary_ai_count_today >= settings.FREE_DIARY_AI_DAILY:
+            raise HTTPException(status_code=402, detail="今日 AI 日记次数已用完，请开通会员或明日再来")
+
     today = date.today()
     week_ago = today - timedelta(days=7)
     week_range = f"{week_ago} ~ {today}"
@@ -386,6 +396,10 @@ async def weekly_review(
         except Exception as exc:
             logger.warning("AI weekly review generation failed: %s", exc)
 
+    # ── Count toward the daily quota (non-members only) ──
+    if not user.is_member:
+        user.diary_ai_count_today += 1
+
     # ── Compute fallback summary if AI failed ──
     if not emotional_trend_summary and mood_trends:
         scores = [t.mood_score for t in mood_trends]
@@ -525,7 +539,16 @@ async def get_reflection_prompt(
     """
     Generate a personalized reflection question based on today's card.
     Uses the card teaching database + AI to create a unique, thought-provoking prompt.
+
+    Non-members are limited to ``FREE_DIARY_AI_DAILY`` AI calls per day
+    (reflection-prompt + review share the same budget).
     """
+    # ── Free-tier daily quota (non-members only) ──
+    if not user.is_member:
+        reset_ai_quota_if_new_day(user)
+        if user.diary_ai_count_today >= settings.FREE_DIARY_AI_DAILY:
+            raise HTTPException(status_code=402, detail="今日 AI 日记次数已用完，请开通会员或明日再来")
+
     # ── Fetch card teaching data ──
     from app.models.card_teaching import CardTeaching
 
@@ -546,6 +569,8 @@ async def get_reflection_prompt(
     client = _get_ai_client()
     if not client:
         # Fallback without AI
+        if not user.is_member:
+            user.diary_ai_count_today += 1
         return {"question": f"今天的「{body.card_name}」给你带来了什么感受？它在哪些方面触动了你？"}
 
     try:
@@ -579,7 +604,11 @@ async def get_reflection_prompt(
             timeout=30.0,
         )
         question = response.choices[0].message.content.strip()
+        if not user.is_member:
+            user.diary_ai_count_today += 1
         return {"question": question}
     except Exception as exc:
         logger.warning("Failed to generate reflection prompt: %s", exc)
+        if not user.is_member:
+            user.diary_ai_count_today += 1
         return {"question": f"今天的「{body.card_name}」想告诉你什么？花几分钟写下你的感受吧。"}

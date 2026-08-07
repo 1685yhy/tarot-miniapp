@@ -1,10 +1,10 @@
 from datetime import date
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class DiaryCreate(BaseModel):
     mood: str | None = None
-    reflection: str | None = None
+    reflection: str | None = Field(None, max_length=2000, description="日记感悟，最长 2000 字")
     card_id: int | None = None  # allow frontend to specify associated card
     image_url: str | None = None  # uploaded image URL for this entry
 

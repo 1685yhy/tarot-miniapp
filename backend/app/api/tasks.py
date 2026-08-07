@@ -14,7 +14,7 @@ from app.db.database import get_db
 from app.models.user import User
 from app.models.checkin import CheckIn
 from app.models.reading import Reading
-from app.utils.auth import get_current_user
+from app.utils.auth import get_current_user, utc_aware
 from app.schemas.task import CheckInResponse, TaskStatusResponse, LevelInfo
 
 router = APIRouter(prefix="/tasks", tags=["签到与任务"])
@@ -126,7 +126,7 @@ async def checkin(user: User = Depends(get_current_user), db: AsyncSession = Dep
                 user.is_member = True
                 user.member_expires_at = now + timedelta(days=milestone_days)
             else:
-                if user.member_expires_at and user.member_expires_at > now:
+                if utc_aware(user.member_expires_at) and utc_aware(user.member_expires_at) > now:
                     user.member_expires_at += timedelta(days=milestone_days)
                 else:
                     user.member_expires_at = now + timedelta(days=milestone_days)

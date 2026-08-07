@@ -1,12 +1,16 @@
+import json
+
 from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
-import json
 
 from app.db.database import get_db
 from app.models.card import TarotCard
 from app.models.card_teaching import CardTeaching
+from app.models.user import User
 from app.schemas.card import CardBrief, CardDetail, CardListResponse, CardTeachingResponse
+from app.services.daily_card import pick_daily_card
+from app.utils.auth import get_optional_user
 
 router = APIRouter(prefix="/cards", tags=["塔罗百科"])
 
@@ -45,16 +49,30 @@ async def list_cards(
 @router.get("/daily", response_model=CardDetail)
 async def daily_card(
     zodiac: str | None = Query(None, description="用户星座，如 白羊座"),
+    user: User | None = Depends(get_optional_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """每日一牌 - 随机抽取一张（使用数据库随机排序，避免ID不连续问题）
+    """每日一牌 - 按「用户 + 日期」确定性选牌（P1-8）。
+
+    Same user on the same calendar date always gets the same card (and a
+    different one the next day), with no storage needed — the card index is
+    derived from a hash of ``user_id:YYYY-MM-DD``. Anonymous callers get a
+    random card as before.
 
     zodiac: 可选星座参数，用于为 AI 解读提供个性化星象上下文
     """
-    result = await db.execute(
-        select(TarotCard).order_by(func.random()).limit(1)
-    )
-    card = result.scalar_one()
+    if user:
+        # Deterministic pick from the full 78-card deck (order by id).
+        result = await db.execute(select(TarotCard).order_by(TarotCard.id))
+        cards = result.scalars().all()
+        if not cards:
+            raise HTTPException(status_code=500, detail="卡牌数据为空")
+        card = pick_daily_card(list(cards), user.id)
+    else:
+        result = await db.execute(
+            select(TarotCard).order_by(func.random()).limit(1)
+        )
+        card = result.scalar_one()
 
     # 如果提供了星座，将星座信息附加到返回数据中供前端/解读使用
     card_detail = CardDetail.model_validate(card)

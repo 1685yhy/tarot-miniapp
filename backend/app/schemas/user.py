@@ -14,6 +14,9 @@ class UserResponse(BaseModel):
     member_expires_at: datetime | None
     free_readings_today: int
     free_chats_today: int
+    # P0-1: standalone annual-report purchase entitlement (default False keeps
+    # backwards-compatible serialization for old clients)
+    annual_report_paid: bool = False
 
     model_config = ConfigDict(from_attributes=True)
 

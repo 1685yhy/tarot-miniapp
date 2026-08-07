@@ -27,8 +27,12 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRE_MINUTES: int = 60 * 24 * 30  # 30 days
 
-    # Super admin — these user IDs bypass all free-tier limits
-    SUPER_ADMIN_IDS: list[str] = ["15eda012-5ad2-4211-ad06-072d194f617d"]
+    # Super admin — these user IDs bypass all free-tier limits.
+    # Configured via .env as comma-separated UUIDs, e.g.
+    #   SUPER_ADMIN_IDS=15eda012-5ad2-4211-ad06-072d194f617d,<other-id>
+    # Kept as a raw string because pydantic-settings list[] fields demand JSON
+    # env values; the method below splits the comma-separated form.
+    SUPER_ADMIN_IDS: str = ""
 
     # Sentry
     SENTRY_DSN: str = ""
@@ -36,11 +40,41 @@ class Settings(BaseSettings):
     # Dev login toggle — production must be false; backend guarded by 404
     ENABLE_DEV_LOGIN: bool = False
 
+    # Shared secret required by the X-Dev-Key header on /auth/dev-login.
+    # Leave empty to keep dev-login locked down (401) even in dev env.
+    DEV_LOGIN_KEY: str = ""
+
     # Limits
     FREE_DAILY_READINGS: int = 5
     FREE_CHAT_MESSAGES: int = 3
+    # Non-member AI extras (per day)
+    FREE_REINTERPRETS_DAILY: int = 3    # POST /readings/{id}/reinterpret
+    FREE_DIARY_AI_DAILY: int = 5        # diary reflection-prompt + review combined
+
+    # Community content safety — WeChat msgSecCheck v2
+    WECHAT_MSG_CHECK_ENABLED: bool = True
+
+    # WeChat subscription-message template IDs (P0-4).
+    # Fill with the REAL approved template IDs to enable push; empty = the
+    # push service is disabled (subscribe returns 400 "推送服务未开通", and
+    # send_subscribe_message logs "模板未配置" instead of calling WeChat).
+    WX_TEMPLATE_DAILY_CARD: str = ""
+    WX_TEMPLATE_MEMBER_EXPIRE: str = ""
+    WX_TEMPLATE_ANNUAL_REPORT: str = ""
+
+    # Rate limiting
+    RATE_LIMIT_MAX_REQUESTS: int = 60
+    RATE_LIMIT_WINDOW_SECONDS: int = 60
 
     model_config = SettingsConfigDict(env_file=".env")
+
+    def super_admin_ids(self) -> list[str]:
+        """Parse the comma-separated SUPER_ADMIN_IDS into a list of user ids."""
+        return [
+            part.strip()
+            for part in (self.SUPER_ADMIN_IDS or "").split(",")
+            if part.strip()
+        ]
 
 
 settings = Settings()

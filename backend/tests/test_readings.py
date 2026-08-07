@@ -12,26 +12,28 @@ This is fine — the endpoint is still exercised end-to-end.
 
 from fastapi.testclient import TestClient
 
+from app.config import settings
+
 
 def _auth_headers(client: TestClient) -> dict[str, str]:
     """Helper: log in as a member (unlimited readings) and return auth headers."""
-    resp = client.post("/auth/dev-login?member=true")
+    resp = client.post(
+        "/auth/dev-login?member=true",
+        headers={"X-Dev-Key": settings.DEV_LOGIN_KEY},
+    )
     token = resp.json()["token"]
     return {"Authorization": f"Bearer {token}"}
 
 
 def test_create_reading_requires_auth(client: TestClient):
     """
-    POST /readings/spread/three_card without token should return 422.
-
-    FastAPI validates ``Header(...)`` at the parameter-binding layer before
-    the handler runs, so a missing required header yields 422, not 401.
+    POST /readings/spread/three_card without token should return 401.
     """
     response = client.post(
         "/readings/spread/three_card",
         json={"question": "今天的运势如何？"},
     )
-    assert response.status_code == 422
+    assert response.status_code == 401
 
 
 def test_create_reading_and_get_history(client: TestClient):
