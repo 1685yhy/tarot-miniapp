@@ -1,9 +1,8 @@
 /* ============================================================
-   柔光星辰 — Soft Starlight Design System
-   Theme: Lying on grass, gazing at a starry night sky
-   Target: Women 20-35, self-discovery, spiritual warmth
-   Inspired by: Planetarium observatory, campfire glow,
-   distant galaxies, cosmic intimacy
+   柔光星辰 — Soft Starlight Design System · E3 奶油疗愈明亮主题
+   Theme: Cream healing — warm cream, matte pink, fine gold
+   奶油米白 #FAF6EF · 雾粉 #E8C4BE · 细金 #C9A97C · 墨 #3D3A36
+   Inspired by: morning light on parchment, honey, quiet warmth
    ============================================================ */
 
 /* -----------------------------------------------------------
@@ -11,37 +10,40 @@
    ----------------------------------------------------------- */
 
 page {
-  /* --- Color Palette --- */
-  --color-bg: #1A1A3E;
-  --color-bg-gradient: linear-gradient(180deg, #1A1A3E 0%, #1E1E45 40%, #22224D 100%);
-  --color-surface: #252550;
-  --color-card: #2A2A5A;
-  --color-card-hover: #313165;
-  --color-card-border: rgba(244, 212, 140, 0.12);
-  --color-card-border-hover: rgba(244, 212, 140, 0.25);
-  --color-surface-hover: #2D2D60;
-  --color-surface-gradient: linear-gradient(145deg, #252550 0%, #2A2A5A 100%);
+  /* --- Color Palette · E3 奶油疗愈明亮主题 --- */
+  --color-bg: #FAF6EF;
+  --color-bg-gradient: linear-gradient(180deg, #FAF6EF 0%, #F7F0E3 40%, #F2ECDF 100%);
+  --color-surface: #FFFDF8;
+  --color-card: #FFFDF8;
+  --color-card-hover: #F4EDE0;
+  --color-card-border: rgba(201, 169, 124, 0.28);
+  --color-card-border-hover: rgba(201, 169, 124, 0.45);
+  --color-surface-hover: #F4EDE0;
+  --color-surface-gradient: linear-gradient(145deg, #FFFDF8 0%, #F7F0E3 100%);
 
   /* -- Accents -- */
-  --color-gold: #F4D48C;
-  --color-gold-light: #FADE9E;
-  --color-gold-dark: #D4B06A;
-  --color-gold-glow: rgba(244, 212, 140, 0.15);
-  --color-gold-glow-strong: rgba(244, 212, 140, 0.30);
-  --color-lavender: #B8A9E0;
-  --color-lavender-light: #D0C4EE;
-  --color-lavender-dark: #9A8CC8;
-  --color-lavender-glow: rgba(184, 169, 224, 0.15);
+  --color-gold: #C9A97C;
+  --color-gold-light: #D9BC8F;
+  --color-gold-dark: #A98B5F;
+  --color-gold-deep-ink: #8A6B3D;       /* 金深 — 金底上的可读文字/金标题 (≈4.6:1) */
+  --color-gold-glow: rgba(201, 169, 124, 0.10);
+  --color-gold-glow-strong: rgba(201, 169, 124, 0.22);
+  --color-lavender: #D8D2E4;
+  --color-lavender-light: #E6E1EE;
+  --color-lavender-deep: #6E6A96;       /* 深灰紫 — 次级/三级文字 (≈4.68:1) */
+  --color-lavender-dark: var(--color-lavender-deep);
+  --color-lavender-glow: rgba(216, 210, 228, 0.15);
+  --color-btn-pink-ink: #5C4A3A;        /* 粉底按钮墨棕字 */
 
   /* -- Text -- */
-  --color-text-primary: #F0EDE8;
-  --color-text-secondary: #B8A9E0;
-  --color-text-tertiary: #A098C0;
-  --color-text-inverse: #1A1A3E;
-  --color-text-link: #F4D48C;
-  --color-text-link-hover: #FADE9E;
+  --color-text-primary: #3D3A36;
+  --color-text-secondary: #8A8478;
+  --color-text-tertiary: #6E6A96;       /* 三级文字 4.68:1 (原 #B0AA9C 仅 2.15:1) */
+  --color-text-inverse: #FAF6EF;
+  --color-text-link: #8A6B3D;           /* 链接色 4.59:1 (原 #A98B5F 仅 2.98:1) */
+  --color-text-link-hover: #A98B5F;
 
-  /* -- Status Colors -- */
+  /* -- Status Colors (功能色保留色相) -- */
   --color-success: #7BC6A0;
   --color-warning: #E8C87A;
   --color-error: #E87A8A;
@@ -51,14 +53,14 @@ page {
   --color-error-bg: rgba(232, 122, 138, 0.12);
   --color-info-bg: rgba(122, 184, 232, 0.12);
 
-  /* -- Overlay & Shadows -- */
-  --color-overlay: rgba(10, 10, 30, 0.60);
-  --color-overlay-light: rgba(10, 10, 30, 0.35);
-  --shadow-card: 0 2rpx 8rpx rgba(0, 0, 0, 0.30), 0 0 30rpx rgba(244, 212, 140, 0.06);
-  --shadow-elevated: 0 8rpx 40rpx rgba(0, 0, 0, 0.35), 0 0 60rpx rgba(244, 212, 140, 0.10);
-  --shadow-glow-gold: 0 0 30rpx rgba(244, 212, 140, 0.15);
-  --shadow-gold-button: 0 4rpx 20rpx rgba(244, 212, 140, 0.25);
-  --shadow-pressed: 0 2rpx 12rpx rgba(0, 0, 0, 0.35), 0 0 40rpx rgba(244, 212, 140, 0.12);
+  /* -- Overlay & Shadows (明亮主题阴影必须轻) -- */
+  --color-overlay: rgba(61, 58, 54, 0.45);
+  --color-overlay-light: rgba(61, 58, 54, 0.25);
+  --shadow-card: 0 2rpx 8rpx rgba(61, 58, 54, 0.08);
+  --shadow-elevated: 0 8rpx 30rpx rgba(61, 58, 54, 0.10);
+  --shadow-glow-gold: 0 0 24rpx rgba(201, 169, 124, 0.10);
+  --shadow-gold-button: 0 4rpx 14rpx rgba(201, 169, 124, 0.25);
+  --shadow-pressed: 0 2rpx 8rpx rgba(61, 58, 54, 0.10);
 
   /* -- Typography Scale -- */
   --font-size-xs: 20rpx;            /* 极小文字 */
@@ -149,7 +151,7 @@ page {
   position: absolute;
   width: 3rpx;
   height: 3rpx;
-  background: rgba(244, 212, 140, 0.60);
+  background: rgba(201, 169, 124, 0.55);
   border-radius: var(--radius-pill);
   animation: star-twinkle 4s ease-in-out infinite;
 }
@@ -157,7 +159,7 @@ page {
 .star--dim {
   width: 2rpx;
   height: 2rpx;
-  background: rgba(184, 169, 224, 0.40);
+  background: rgba(190, 182, 212, 0.55);
   animation-duration: 5s;
   animation-delay: -1s;
 }
@@ -165,10 +167,10 @@ page {
 .star--bright {
   width: 4rpx;
   height: 4rpx;
-  background: rgba(244, 212, 140, 0.85);
+  background: rgba(201, 169, 124, 0.80);
   animation-duration: 3s;
   animation-delay: -2s;
-  box-shadow: 0 0 6rpx rgba(244, 212, 140, 0.30);
+  box-shadow: 0 0 6rpx rgba(201, 169, 124, 0.35);
 }
 
 @keyframes star-twinkle {
@@ -202,8 +204,8 @@ page {
   margin-top: -250rpx;
   background: radial-gradient(
     circle at center,
-    rgba(244, 212, 140, 0.10) 0%,
-    rgba(244, 212, 140, 0.04) 30%,
+    rgba(201, 169, 124, 0.10) 0%,
+    rgba(201, 169, 124, 0.04) 30%,
     transparent 70%
   );
   pointer-events: none;
@@ -213,8 +215,8 @@ page {
 .glow-hero--lavender {
   background: radial-gradient(
     circle at center,
-    rgba(184, 169, 224, 0.10) 0%,
-    rgba(184, 169, 224, 0.04) 30%,
+    rgba(190, 182, 212, 0.16) 0%,
+    rgba(190, 182, 212, 0.06) 30%,
     transparent 70%
   );
 }
@@ -227,7 +229,7 @@ page {
   height: 300rpx;
   background: linear-gradient(
     to top,
-    rgba(244, 212, 140, 0.06) 0%,
+    rgba(201, 169, 124, 0.08) 0%,
     transparent 100%
   );
   pointer-events: none;
@@ -324,23 +326,23 @@ page {
 .number-gold {
   font-size: var(--font-size-title);
   font-weight: var(--font-weight-bold);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   line-height: var(--line-height-tight);
-  text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.15);
+  text-shadow: 0 0 20rpx rgba(201, 169, 124, 0.18);
 }
 
 .number-gold-lg {
   font-size: var(--font-size-display);
   font-weight: var(--font-weight-bold);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   line-height: var(--line-height-tight);
-  text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.15);
+  text-shadow: 0 0 20rpx rgba(201, 169, 124, 0.18);
 }
 
 .number-lavender {
   font-size: var(--font-size-title);
   font-weight: var(--font-weight-bold);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   line-height: var(--line-height-tight);
 }
 
@@ -350,9 +352,9 @@ page {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(244, 212, 140, 0.20) 15%,
-    rgba(244, 212, 140, 0.30) 50%,
-    rgba(244, 212, 140, 0.20) 85%,
+    rgba(201, 169, 124, 0.25) 15%,
+    rgba(201, 169, 124, 0.40) 50%,
+    rgba(201, 169, 124, 0.25) 85%,
     transparent 100%
   );
   margin: var(--spacing-lg) 0;
@@ -363,9 +365,9 @@ page {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(184, 169, 224, 0.20) 15%,
-    rgba(184, 169, 224, 0.30) 50%,
-    rgba(184, 169, 224, 0.20) 85%,
+    rgba(190, 182, 212, 0.25) 15%,
+    rgba(190, 182, 212, 0.40) 50%,
+    rgba(190, 182, 212, 0.25) 85%,
     transparent 100%
   );
 }
@@ -376,9 +378,9 @@ page {
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(244, 212, 140, 0.20) 20%,
-    rgba(244, 212, 140, 0.30) 50%,
-    rgba(244, 212, 140, 0.20) 80%,
+    rgba(201, 169, 124, 0.25) 20%,
+    rgba(201, 169, 124, 0.40) 50%,
+    rgba(201, 169, 124, 0.25) 80%,
     transparent 100%
   );
   margin: 0 var(--spacing-md);
@@ -404,45 +406,45 @@ page {
   overflow: hidden;
 }
 
-/* Primary — Golden glow */
+/* Primary — 细金实心（深金渐变 + 墨字，墨 on 金 ≈5:1 WCAG ✓） */
 .btn-primary {
-  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
-  color: var(--color-text-inverse);
+  background: linear-gradient(135deg, #C9A97C 0%, #B08F52 50%, #A98B5F 100%);
+  color: #3D3A36;
   box-shadow: var(--shadow-gold-button);
 }
 
 .btn-primary:active {
   transform: scale(0.97);
-  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.20);
+  box-shadow: 0 2rpx 12rpx rgba(201, 169, 124, 0.28);
   opacity: 0.92;
 }
 
 .btn-primary--disabled,
 .btn-primary[disabled] {
-  background: rgba(244, 212, 140, 0.20);
-  color: rgba(26, 26, 62, 0.35);
+  background: rgba(201, 169, 124, 0.22);
+  color: rgba(61, 58, 54, 0.35);
   box-shadow: none;
   pointer-events: none;
 }
 
-/* Secondary — Lavender outline */
+/* Secondary — Lavender outline (灰紫描边，文字深灰紫 #6E6A96 4.68:1 ✓) */
 .btn-secondary {
   background: transparent;
-  color: var(--color-lavender);
-  border: 1rpx solid rgba(184, 169, 224, 0.35);
+  color: var(--color-lavender-dark);
+  border: 1rpx solid rgba(110, 106, 150, 0.50);
   box-shadow: none;
 }
 
 .btn-secondary:active {
-  background: rgba(184, 169, 224, 0.08);
-  border-color: rgba(184, 169, 224, 0.55);
+  background: rgba(216, 210, 228, 0.30);
+  border-color: rgba(110, 106, 150, 0.75);
   transform: scale(0.97);
 }
 
 .btn-secondary--disabled,
 .btn-secondary[disabled] {
-  border-color: rgba(184, 169, 224, 0.12);
-  color: rgba(184, 169, 224, 0.30);
+  border-color: rgba(190, 182, 212, 0.25);
+  color: rgba(190, 182, 212, 0.45);
   pointer-events: none;
 }
 
@@ -457,22 +459,22 @@ page {
 }
 
 .btn-ghost:active {
-  color: var(--color-gold);
-  background: rgba(244, 212, 140, 0.06);
+  color: var(--color-gold-dark);
+  background: rgba(201, 169, 124, 0.10);
 }
 
-/* Special — Glowing gold outline */
+/* Special — Glowing gold outline (文字金深 4.59:1 ✓) */
 .btn-glow {
   background: transparent;
-  color: var(--color-gold);
-  border: 1rpx solid rgba(244, 212, 140, 0.30);
-  box-shadow: 0 0 20rpx rgba(244, 212, 140, 0.08);
+  color: var(--color-gold-deep-ink);
+  border: 1rpx solid rgba(201, 169, 124, 0.50);
+  box-shadow: 0 0 20rpx rgba(201, 169, 124, 0.12);
 }
 
 .btn-glow:active {
-  background: rgba(244, 212, 140, 0.08);
-  border-color: rgba(244, 212, 140, 0.50);
-  box-shadow: 0 0 30rpx rgba(244, 212, 140, 0.15);
+  background: rgba(201, 169, 124, 0.12);
+  border-color: rgba(201, 169, 124, 0.70);
+  box-shadow: 0 0 30rpx rgba(201, 169, 124, 0.20);
   transform: scale(0.97);
 }
 
@@ -505,7 +507,7 @@ page {
 
 .card {
   background: var(--color-surface-gradient);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
+  border: 1.5rpx solid var(--color-card-border);
   border-radius: var(--radius-md);
   padding: var(--spacing-md);
   box-shadow: var(--shadow-card);
@@ -529,14 +531,14 @@ page {
 
 .card:active {
   background: var(--color-card-hover);
-  border-color: rgba(244, 212, 140, 0.20);
+  border-color: rgba(201, 169, 124, 0.45);
   box-shadow: var(--shadow-pressed);
   transform: scale(0.97);
 }
 
 .card--glass {
-  background: linear-gradient(145deg, rgba(37, 37, 80, 0.70) 0%, rgba(42, 42, 90, 0.70) 100%);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.15);
+  background: linear-gradient(145deg, rgba(255, 253, 248, 0.85) 0%, rgba(247, 240, 227, 0.85) 100%);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.30);
 }
 
 .card--elevated {
@@ -545,8 +547,8 @@ page {
 }
 
 .card--glow {
-  border-color: rgba(244, 212, 140, 0.25);
-  box-shadow: var(--shadow-card), 0 0 30rpx rgba(244, 212, 140, 0.08);
+  border-color: rgba(201, 169, 124, 0.40);
+  box-shadow: var(--shadow-card), 0 0 30rpx rgba(201, 169, 124, 0.12);
 }
 
 .card--compact {
@@ -593,7 +595,7 @@ page {
   justify-content: flex-end;
   margin-top: var(--spacing-sm);
   padding-top: var(--spacing-sm);
-  border-top: 1rpx solid rgba(244, 212, 140, 0.08);
+  border-top: 1rpx solid rgba(201, 169, 124, 0.18);
 }
 
 /* -----------------------------------------------------------
@@ -609,7 +611,7 @@ page {
   width: 100%;
   height: 88rpx;
   background: var(--color-surface);
-  border: 1rpx solid rgba(244, 212, 140, 0.12);
+  border: 1rpx solid rgba(201, 169, 124, 0.28);
   border-radius: var(--radius-md);
   padding: 0 var(--spacing-md);
   font-size: var(--font-size-body);
@@ -624,8 +626,8 @@ page {
 }
 
 .input:focus {
-  border-color: rgba(244, 212, 140, 0.40);
-  box-shadow: 0 0 0 2rpx rgba(244, 212, 140, 0.08);
+  border-color: rgba(201, 169, 124, 0.55);
+  box-shadow: 0 0 0 2rpx rgba(201, 169, 124, 0.10);
   background: var(--color-surface);
 }
 
@@ -675,7 +677,7 @@ page {
   width: 100%;
   height: 88rpx;
   background: var(--color-surface);
-  border: 1rpx solid rgba(244, 212, 140, 0.12);
+  border: 1rpx solid rgba(201, 169, 124, 0.28);
   border-radius: var(--radius-md);
   padding: 0 var(--spacing-md);
   font-size: var(--font-size-body);
@@ -688,7 +690,7 @@ page {
 
 .picker:active {
   background: var(--color-surface);
-  border-color: rgba(244, 212, 140, 0.30);
+  border-color: rgba(201, 169, 124, 0.50);
 }
 
 .picker--placeholder {
@@ -708,7 +710,7 @@ page {
   padding: 16rpx 20rpx;
   min-height: 88rpx;
   background: var(--color-surface);
-  border: 1rpx solid rgba(244, 212, 140, 0.10);
+  border: 1rpx solid rgba(201, 169, 124, 0.25);
   border-radius: var(--radius-pill);
   font-size: var(--font-size-caption);
   color: var(--color-text-secondary);
@@ -716,14 +718,14 @@ page {
 }
 
 .check-item:active {
-  border-color: rgba(244, 212, 140, 0.35);
+  border-color: rgba(201, 169, 124, 0.50);
   color: var(--color-text-primary);
 }
 
 .check-item--active {
-  background: rgba(244, 212, 140, 0.10);
-  border-color: rgba(244, 212, 140, 0.35);
-  color: var(--color-gold);
+  background: rgba(201, 169, 124, 0.16);
+  border-color: rgba(201, 169, 124, 0.55);
+  color: var(--color-gold-dark);
 }
 
 /* -----------------------------------------------------------
@@ -767,13 +769,13 @@ page {
 .section__title {
   font-size: var(--font-size-subhead);
   font-weight: var(--font-weight-semibold);
-  color: var(--color-gold);
+  color: var(--color-gold-deep-ink);
   letter-spacing: 1rpx;
 }
 
 .section__action {
   font-size: var(--font-size-caption);
-  color: var(--color-gold);
+  color: var(--color-gold-deep-ink);
   font-weight: var(--font-weight-medium);
 }
 
@@ -866,7 +868,7 @@ page {
   line-height: var(--line-height-tight);
   letter-spacing: 3rpx;
   margin-bottom: var(--spacing-sm);
-  text-shadow: 0 0 40rpx rgba(244, 212, 140, 0.08);
+  text-shadow: 0 0 40rpx rgba(201, 169, 124, 0.12);
 }
 
 .hero__subtitle {
@@ -902,8 +904,8 @@ page {
   justify-content: space-around;
   height: calc(100rpx + var(--safe-area-bottom));
   padding-bottom: var(--safe-area-bottom);
-  background: rgba(37, 37, 80, 0.92);
-  border-top: 1rpx solid rgba(244, 212, 140, 0.08);
+  background: rgba(255, 253, 248, 0.94);
+  border-top: 1rpx solid rgba(201, 169, 124, 0.22);
   z-index: var(--z-sticky);
 }
 
@@ -938,7 +940,7 @@ page {
 }
 
 .tab-item--active .tab-item__label {
-  color: var(--color-gold);
+  color: var(--color-gold-deep-ink);
   font-weight: var(--font-weight-medium);
 }
 
@@ -949,10 +951,10 @@ page {
   left: 50%;
   width: 40rpx;
   height: 3rpx;
-  background: var(--color-gold);
+  background: var(--color-gold-dark);
   border-radius: var(--radius-sm);
   margin-left: -20rpx;
-  box-shadow: 0 0 10rpx rgba(244, 212, 140, 0.30);
+  box-shadow: 0 0 10rpx rgba(201, 169, 124, 0.35);
 }
 
 /* Nav Bar (top) */
@@ -1008,7 +1010,7 @@ page {
   max-width: 600rpx;
   padding: 24rpx 32rpx;
   background: var(--color-card);
-  border: 1rpx solid rgba(244, 212, 140, 0.20);
+  border: 1rpx solid rgba(201, 169, 124, 0.35);
   border-radius: var(--radius-pill);
   font-size: var(--font-size-caption);
   color: var(--color-text-primary);
@@ -1039,19 +1041,19 @@ page {
   border-radius: var(--radius-pill);
   color: var(--color-text-primary);
   background: var(--color-surface);
-  border: 1rpx solid rgba(244, 212, 140, 0.15);
+  border: 1rpx solid rgba(201, 169, 124, 0.30);
 }
 
 .badge--gold {
-  background: rgba(244, 212, 140, 0.12);
-  color: var(--color-gold);
-  border-color: rgba(244, 212, 140, 0.20);
+  background: rgba(201, 169, 124, 0.18);
+  color: var(--color-gold-deep-ink); /* 金深 4.16:1 on 金色胶囊 ≈4.6:1 on 奶油 */
+  border-color: rgba(201, 169, 124, 0.35);
 }
 
 .badge--lavender {
-  background: rgba(184, 169, 224, 0.12);
-  color: var(--color-lavender);
-  border-color: rgba(184, 169, 224, 0.20);
+  background: rgba(216, 210, 228, 0.35);
+  color: var(--color-lavender-dark); /* #6E6A96 — 4.68:1 ✓ */
+  border-color: rgba(110, 106, 150, 0.40);
 }
 
 .badge--success {
@@ -1081,7 +1083,7 @@ page {
 }
 
 .badge--dot.badge--gold {
-  box-shadow: 0 0 6rpx rgba(244, 212, 140, 0.40);
+  box-shadow: 0 0 6rpx rgba(201, 169, 124, 0.45);
 }
 
 /* -----------------------------------------------------------
@@ -1093,14 +1095,14 @@ page {
   align-items: center;
   padding: var(--spacing-md);
   background: var(--color-surface-gradient);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
+  border: 1.5rpx solid var(--color-card-border);
   border-radius: var(--radius-md);
   transition: transform var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out);
 }
 
 .list-item:active {
   background: var(--color-card-hover);
-  border-color: rgba(244, 212, 140, 0.20);
+  border-color: rgba(201, 169, 124, 0.45);
   transform: scale(0.97);
 }
 
@@ -1160,8 +1162,8 @@ page {
 .loading__spinner {
   width: 64rpx;
   height: 64rpx;
-  border: 3rpx solid rgba(244, 212, 140, 0.10);
-  border-top-color: var(--color-gold);
+  border: 3rpx solid rgba(201, 169, 124, 0.22);
+  border-top-color: var(--color-gold-dark);
   border-radius: var(--radius-pill);
   animation: spin 0.6s linear infinite;
 }
@@ -1182,7 +1184,7 @@ page {
   background: linear-gradient(
     90deg,
     var(--color-surface) 25%,
-    rgba(255,255,255,0.03) 37%,
+    rgba(61, 58, 54, 0.06) 37%,
     var(--color-surface) 63%
   );
   background-size: 400% 100%;
@@ -1302,7 +1304,7 @@ page {
   z-index: var(--z-modal);
   padding: var(--spacing-lg) var(--page-padding) calc(var(--spacing-xl) + var(--safe-area-bottom));
   padding-bottom: calc(var(--spacing-xl) + var(--safe-area-bottom));
-  box-shadow: 0 -8rpx 40rpx rgba(0, 0, 0, 0.30);
+  box-shadow: 0 -8rpx 40rpx rgba(61, 58, 54, 0.12);
 }
 
 .modal--center {
@@ -1319,7 +1321,7 @@ page {
 .modal__handle {
   width: 64rpx;
   height: 6rpx;
-  background: rgba(106, 101, 136, 0.35);
+  background: rgba(61, 58, 54, 0.18);
   border-radius: var(--radius-pill);
   margin: 0 auto var(--spacing-md);
 }
@@ -1352,7 +1354,7 @@ page {
   width: 80rpx;
   height: 80rpx;
   border-radius: var(--radius-pill);
-  border: 2rpx solid rgba(244, 212, 140, 0.15);
+  border: 2rpx solid rgba(201, 169, 124, 0.30);
   overflow: hidden;
   flex-shrink: 0;
   background: var(--color-surface);
@@ -1369,14 +1371,14 @@ page {
 }
 
 .avatar--glow {
-  border-color: rgba(244, 212, 140, 0.30);
-  box-shadow: 0 0 16rpx rgba(244, 212, 140, 0.12);
+  border-color: rgba(201, 169, 124, 0.45);
+  box-shadow: 0 0 16rpx rgba(201, 169, 124, 0.18);
 }
 
 .avatar--ring {
   border-width: 3rpx;
-  border-color: var(--color-gold);
-  box-shadow: 0 0 20rpx rgba(244, 212, 140, 0.15);
+  border-color: var(--color-gold-dark);
+  box-shadow: 0 0 20rpx rgba(201, 169, 124, 0.20);
 }
 
 /* -----------------------------------------------------------
@@ -1386,7 +1388,7 @@ page {
 .progress {
   width: 100%;
   height: 8rpx;
-  background: rgba(106, 101, 136, 0.20);
+  background: rgba(61, 58, 54, 0.12);
   border-radius: var(--radius-pill);
   overflow: hidden;
 }
@@ -1396,12 +1398,12 @@ page {
   background: linear-gradient(90deg, var(--color-gold-dark) 0%, var(--color-gold) 50%, var(--color-gold-light) 100%);
   border-radius: var(--radius-pill);
   transition: width var(--duration-slow) var(--ease-out);
-  box-shadow: 0 0 10rpx rgba(244, 212, 140, 0.15);
+  box-shadow: 0 0 10rpx rgba(201, 169, 124, 0.25);
 }
 
 .progress--lavender .progress__fill {
   background: linear-gradient(90deg, var(--color-lavender-dark) 0%, var(--color-lavender) 50%, var(--color-lavender-light) 100%);
-  box-shadow: 0 0 10rpx rgba(184, 169, 224, 0.15);
+  box-shadow: 0 0 10rpx rgba(190, 182, 212, 0.25);
 }
 
 /* -----------------------------------------------------------
@@ -1494,8 +1496,8 @@ page {
 .text-primary { color: var(--color-text-primary); }
 .text-secondary { color: var(--color-text-secondary); }
 .text-tertiary { color: var(--color-text-tertiary); }
-.text-gold { color: var(--color-gold); text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.15); }
-.text-lavender { color: var(--color-lavender); }
+.text-gold { color: var(--color-gold-dark); text-shadow: 0 0 20rpx rgba(201, 169, 124, 0.18); }
+.text-lavender { color: var(--color-lavender-dark); }
 .text-success { color: var(--color-success); }
 .text-warning { color: var(--color-warning); }
 .text-error { color: var(--color-error); }
@@ -1581,12 +1583,12 @@ page {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(106, 101, 136, 0.30);
+  background: rgba(176, 170, 156, 0.35);
   border-radius: var(--radius-sm);
 }
 
 ::-webkit-scrollbar-thumb:active {
-  background: rgba(106, 101, 136, 0.50);
+  background: rgba(176, 170, 156, 0.60);
 }
 
 /* -----------------------------------------------------------
@@ -1613,8 +1615,8 @@ page {
   width: 100rpx;
   height: 100rpx;
   border-radius: var(--radius-pill);
-  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 100%);
-  box-shadow: 0 4rpx 24rpx rgba(244, 212, 140, 0.30);
+  background: linear-gradient(135deg, #C9A97C 0%, #B08F52 100%);
+  box-shadow: 0 4rpx 24rpx rgba(201, 169, 124, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1624,7 +1626,7 @@ page {
 
 .fab:active {
   transform: scale(0.92);
-  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.20);
+  box-shadow: 0 2rpx 12rpx rgba(201, 169, 124, 0.25);
 }
 
 .fab__icon {
@@ -1640,23 +1642,23 @@ page {
   width: 16rpx;
   height: 16rpx;
   border-radius: var(--radius-pill);
-  background: var(--color-lavender);
-  opacity: 0.20;
-  box-shadow: 0 0 20rpx rgba(184, 169, 224, 0.10);
+  background: var(--color-lavender-dark);
+  opacity: 0.25;
+  box-shadow: 0 0 20rpx rgba(190, 182, 212, 0.15);
 }
 
 /* Reading queue indicator */
 .reading-progress {
   width: 100%;
   height: 3rpx;
-  background: rgba(106, 101, 136, 0.15);
+  background: rgba(61, 58, 54, 0.10);
   border-radius: var(--radius-sm);
   overflow: hidden;
 }
 
 .reading-progress__fill {
   height: 100%;
-  background: var(--color-gold);
+  background: var(--color-gold-dark);
   border-radius: var(--radius-sm);
   transition: width var(--duration-slow) var(--ease-out);
 }
@@ -1712,10 +1714,10 @@ page {
 @keyframes glow-pulse-gold {
   0%,
   100% {
-    box-shadow: 0 0 10rpx rgba(244, 212, 140, 0.08), 0 0 30rpx rgba(244, 212, 140, 0.04);
+    box-shadow: 0 0 10rpx rgba(201, 169, 124, 0.12), 0 0 30rpx rgba(201, 169, 124, 0.06);
   }
   50% {
-    box-shadow: 0 0 20rpx rgba(244, 212, 140, 0.25), 0 0 50rpx rgba(244, 212, 140, 0.10);
+    box-shadow: 0 0 20rpx rgba(201, 169, 124, 0.28), 0 0 50rpx rgba(201, 169, 124, 0.14);
   }
 }
 
@@ -1858,9 +1860,9 @@ page {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(244, 212, 140, 0.04) 40%,
-    rgba(244, 212, 140, 0.06) 50%,
-    rgba(244, 212, 140, 0.04) 60%,
+    rgba(201, 169, 124, 0.06) 40%,
+    rgba(201, 169, 124, 0.10) 50%,
+    rgba(201, 169, 124, 0.06) 60%,
     transparent 100%
   );
   animation: shimmer-sweep 1.8s ease-in-out infinite;
@@ -1934,14 +1936,14 @@ page {
   flex: 1;
   height: 1rpx;
   max-width: 60rpx;
-  background: rgba(160, 152, 192, 0.12);
+  background: rgba(201, 169, 124, 0.25);
 }
 
 .disc-text {
   font-size: var(--font-size-xs, 20rpx);
-  color: var(--color-text-tertiary, #A098C0);
+  color: var(--color-text-tertiary, #6E6A96);
   letter-spacing: 1rpx;
-  opacity: 0.55;
+  opacity: 0.85;
   text-align: center;
   line-height: 1.5;
 }

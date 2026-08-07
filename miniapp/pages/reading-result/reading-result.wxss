@@ -6,10 +6,20 @@
      var(--color-surface) — card surface (dark indigo)
      var(--color-gold) — warm gold (accent, light, emphasis)
      var(--color-gold-dark) — deeper gold (gradient stop)
-     var(--color-lavender) — lavender (secondary, link, soft)
+     var(--color-lavender-dark) — lavender (secondary, link, soft)
      var(--color-text-primary) — warm cream (body text)
      var(--color-text-tertiary) — muted lavender (tertiary, subtle)
    ================================================================ */
+
+/* === E3 补全: reading-result ===
+   设计级补全（与首页 E3 气质统一）：
+   1. 新增奶油 wash 氛围光斑（.wash-pink/.wash-gold，wxml 已加）
+   2. 解读师名/信件标题/卡名 → 衬线宽字距
+   3. 信件卡片 → 奶油底 + 细金描边 + E3 浅阴影（修复 0.2 黑重阴影）
+   4. 修复深色残留：分享CTA卡 深靛蓝底 → 奶油底（share-cta-card）
+   5. 放大卡阴影 0.5 黑 → E3 浅阴影
+   6. 深度解读卡/反思卡 紫色调 → E3 灰紫/雾粉
+   7. 模式徽章 → 雾粉胶囊，回首页/返回链接 → E3 灰 */
 
 /* ===== 0. Page Base ===== */
 .page {
@@ -64,7 +74,7 @@
 /* ---- Stage Icons Base ---- */
 .stage-title {
   font-size: var(--font-size-subhead);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   font-weight: 500;
   margin-bottom: 12rpx;
   letter-spacing: 3rpx;
@@ -72,7 +82,7 @@
 
 .stage-sub {
   font-size: var(--font-size-caption);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   letter-spacing: 4rpx;
   opacity: 0.7;
 }
@@ -98,15 +108,15 @@
   width: 140rpx;
   height: 200rpx;
   border-radius: 16rpx;
-  background: rgba(244, 212, 140, 0.08);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.14);
+  background: rgba(201, 169, 124, 0.08);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.14);
 }
 
 .qs-line {
   width: 100%;
   height: 24rpx;
   border-radius: 999rpx;
-  background: rgba(244, 212, 140, 0.08);
+  background: rgba(201, 169, 124, 0.08);
   margin-bottom: 20rpx;
 }
 
@@ -117,7 +127,7 @@
 .quick-loading-text {
   margin-top: 24rpx;
   font-size: var(--font-size-caption);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   letter-spacing: 3rpx;
   opacity: 0.7;
   animation: qs-text-pulse 1.6s ease-in-out infinite;
@@ -148,10 +158,10 @@
   background: radial-gradient(
     circle at 35% 35%,
     rgba(255, 235, 190, 0.9) 0%,
-    rgba(244, 212, 140, 0.35) 60%,
-    rgba(244, 212, 140, 0) 100%
+    rgba(201, 169, 124, 0.35) 60%,
+    rgba(201, 169, 124, 0) 100%
   );
-  box-shadow: 0 0 40rpx rgba(244, 212, 140, 0.35);
+  box-shadow: 0 0 40rpx rgba(201, 169, 124, 0.35);
   animation: pulse-core 2s ease-in-out infinite;
 }
 
@@ -162,7 +172,7 @@
   right: 0;
   bottom: 0;
   border-radius: 50%;
-  border: 2rpx solid rgba(244, 212, 140, 0.25);
+  border: 2rpx solid rgba(201, 169, 124, 0.25);
   animation: pulse-ring 2s ease-out infinite;
 }
 
@@ -213,15 +223,15 @@
 
 .error-hint {
   font-size: var(--font-size-caption);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   margin-bottom: 44rpx;
   letter-spacing: 1rpx;
 }
 
 .btn-retry {
-  background: rgba(244, 212, 140, 0.12);
-  color: var(--color-gold);
-  border: 1rpx solid rgba(244, 212, 140, 0.25);
+  background: rgba(201, 169, 124, 0.12);
+  color: var(--color-gold-dark);
+  border: 1rpx solid rgba(201, 169, 124, 0.25);
   border-radius: var(--radius-pill);
   padding: var(--spacing-sm) 56rpx;
   font-size: var(--font-size-body);
@@ -262,8 +272,8 @@
   height: 320rpx;
   background: radial-gradient(
     circle,
-    rgba(244, 212, 140, 0.10) 0%,
-    rgba(244, 212, 140, 0.04) 40%,
+    rgba(201, 169, 124, 0.10) 0%,
+    rgba(201, 169, 124, 0.04) 40%,
     transparent 70%
   );
   pointer-events: none;
@@ -310,21 +320,21 @@
   width: 160rpx;
   height: 224rpx;
   border-radius: var(--radius-sm);
-  border: 2rpx solid rgba(244, 212, 140, 0.55);
+  border: 2rpx solid rgba(201, 169, 124, 0.55);
   box-shadow:
-    0 0 20rpx rgba(244, 212, 140, 0.12),
-    0 4rpx 12rpx rgba(0, 0, 0, 0.3);
+    0 0 20rpx rgba(201, 169, 124, 0.12),
+    0 4rpx 12rpx rgba(61, 58, 54, 0.10);
   background: var(--color-surface);
   display: block;
 }
 
 /* Center card image gets a stronger glow */
 .card-item:nth-child(2) .card-img {
-  border-color: rgba(244, 212, 140, 0.8);
+  border-color: rgba(201, 169, 124, 0.8);
   box-shadow:
-    0 0 36rpx rgba(244, 212, 140, 0.30),
-    0 0 16rpx rgba(244, 212, 140, 0.12),
-    0 4rpx 20rpx rgba(0, 0, 0, 0.35);
+    0 0 36rpx rgba(201, 169, 124, 0.30),
+    0 0 16rpx rgba(201, 169, 124, 0.12),
+    0 4rpx 20rpx rgba(61, 58, 54, 0.10);
 }
 
 /* ---- Card Inner (position relative for overlay) ---- */
@@ -341,7 +351,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(26, 26, 62, 0.80);
+  background: rgba(255, 253, 248, 0.92);
   backdrop-filter: blur(2rpx);
   -webkit-backdrop-filter: blur(2rpx);
   padding: 8rpx 6rpx 10rpx;
@@ -353,7 +363,7 @@
 .card-pos {
   display: block;
   font-size: var(--font-size-xs);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   letter-spacing: 3rpx;
   font-weight: 500;
   opacity: 0.88;
@@ -380,7 +390,7 @@
   display: block;
   margin-top: 32rpx;
   font-size: var(--font-size-xs);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   letter-spacing: 5rpx;
   font-weight: 400;
   opacity: 0.5;
@@ -391,11 +401,11 @@
   display: inline-block;
   margin-top: 16rpx;
   padding: 8rpx 24rpx;
-  background: rgba(244, 212, 140, 0.10);
-  border: 1rpx solid rgba(244, 212, 140, 0.20);
+  background: rgba(201, 169, 124, 0.10);
+  border: 1rpx solid rgba(201, 169, 124, 0.20);
   border-radius: 999rpx;
   font-size: var(--font-size-caption);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   letter-spacing: 3rpx;
   font-weight: 500;
   text-align: center;
@@ -405,12 +415,12 @@
    4. TL;DR CARD — 三行结论卡片
    ================================================================ */
 .tldr-card {
-  background: rgba(37, 37, 80, 0.35);
-  border-left: 4rpx solid var(--color-gold, #F4D48C);
+  background: rgba(201, 169, 124, 0.10);
+  border-left: 4rpx solid var(--color-gold, #C9A97C);
   border-radius: var(--radius-md, 16rpx);
   padding: var(--spacing-lg, 28rpx) var(--spacing-lg, 28rpx) var(--spacing-md, 24rpx);
   margin-bottom: var(--spacing-xl, 48rpx);
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2rpx 12rpx rgba(61, 58, 54, 0.08);
 }
 
 .tldr-item {
@@ -429,15 +439,15 @@
   width: 12rpx;
   height: 12rpx;
   border-radius: 50%;
-  background: var(--color-gold, #F4D48C);
+  background: var(--color-gold, #C9A97C);
   margin-top: 10rpx;
   margin-right: 16rpx;
-  box-shadow: 0 0 8rpx rgba(244, 212, 140, 0.4);
+  box-shadow: 0 0 8rpx rgba(201, 169, 124, 0.4);
 }
 
 .tldr-text {
   font-size: var(--font-size-caption, 26rpx);
-  color: var(--color-text-primary, #F0EDE8);
+  color: var(--color-text-primary, #3D3A36);
   letter-spacing: 1rpx;
   line-height: 1.6;
   flex: 1;
@@ -453,7 +463,7 @@
 
 .tldr-expand text {
   font-size: var(--font-size-caption, 26rpx);
-  color: var(--color-lavender, #B8A9E0);
+  color: var(--color-lavender, #6E6A96);
   letter-spacing: 2rpx;
   padding: 8rpx 24rpx;
   border-radius: var(--radius-pill, 999rpx);
@@ -477,23 +487,23 @@
   gap: var(--spacing-sm);
   margin-bottom: var(--spacing-2xl);
   padding: 28rpx 48rpx;
-  background: linear-gradient(135deg, rgba(244, 212, 140, 0.16) 0%, rgba(244, 212, 140, 0.05) 100%);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.35);
+  background: linear-gradient(135deg, rgba(201, 169, 124, 0.16) 0%, rgba(201, 169, 124, 0.05) 100%);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.35);
   border-radius: var(--radius-pill);
   width: fit-content;
   margin-left: auto;
   margin-right: auto;
   box-shadow:
-    0 0 36rpx rgba(244, 212, 140, 0.14),
-    inset 0 0 24rpx rgba(244, 212, 140, 0.04);
+    0 0 36rpx rgba(201, 169, 124, 0.14),
+    inset 0 0 24rpx rgba(201, 169, 124, 0.04);
 }
 
 .pb-icon {
   font-size: 56rpx;
   line-height: 1;
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   flex-shrink: 0;
-  text-shadow: 0 0 24rpx rgba(244, 212, 140, 0.55);
+  text-shadow: 0 0 24rpx rgba(201, 169, 124, 0.55);
 }
 
 .pb-info {
@@ -504,7 +514,7 @@
 
 .pb-label {
   font-size: var(--font-size-caption);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   letter-spacing: 4rpx;
   opacity: 0.9;
   line-height: 1.3;
@@ -512,16 +522,16 @@
 
 .pb-name {
   font-size: 40rpx;
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   letter-spacing: 4rpx;
   font-weight: var(--font-weight-bold);
   line-height: 1.3;
-  text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.35);
+  text-shadow: 0 0 20rpx rgba(201, 169, 124, 0.35);
 }
 
 .pb-desc {
   font-size: 20rpx;
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   letter-spacing: 2rpx;
   opacity: 0.7;
   line-height: 1.3;
@@ -544,7 +554,7 @@
   background: linear-gradient(
     to right,
     transparent,
-    rgba(244, 212, 140, 0.25),
+    rgba(201, 169, 124, 0.25),
     transparent
   );
 }
@@ -558,11 +568,11 @@
 
 /* ---- Letter Body Container — hero card ---- */
 .letter-body {
-  background: rgba(37, 37, 80, 0.45);
+  background: rgba(201, 169, 124, 0.12);
   border-radius: var(--radius-md);
   padding: var(--spacing-xl) var(--spacing-lg);
   position: relative;
-  border: 1rpx solid rgba(244, 212, 140, 0.14);
+  border: 1rpx solid rgba(201, 169, 124, 0.14);
   box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.20);
 }
 
@@ -577,7 +587,7 @@
   background: linear-gradient(
     to right,
     transparent,
-    rgba(244, 212, 140, 0.12),
+    rgba(201, 169, 124, 0.12),
     transparent
   );
 }
@@ -613,8 +623,8 @@
   position: relative;
   margin: var(--spacing-lg) var(--spacing-md);
   padding: var(--spacing-lg);
-  background: linear-gradient(135deg, rgba(180,140,200,0.10) 0%, rgba(244,212,140,0.08) 100%);
-  border: 1.5rpx solid rgba(244,212,140,0.20);
+  background: linear-gradient(135deg, rgba(216,210,228,0.10) 0%, rgba(201,169,124,0.08) 100%);
+  border: 1.5rpx solid rgba(201,169,124,0.20);
   border-radius: var(--radius-lg, 24rpx);
   text-align: center;
   overflow: hidden;
@@ -630,7 +640,7 @@
 .dpw-label {
   display: block;
   font-size: var(--font-size-caption, 24rpx);
-  color: var(--color-lavender, #B8A9E0);
+  color: var(--color-lavender, #6E6A96);
   letter-spacing: 2rpx;
   margin-bottom: 10rpx;
 }
@@ -638,7 +648,7 @@
 .dpw-title {
   display: block;
   font-size: var(--font-size-subhead, 36rpx);
-  color: var(--color-gold, #F4D48C);
+  color: var(--color-gold-dark, #A98B5F);
   font-weight: 700;
   letter-spacing: 2rpx;
   margin-bottom: 12rpx;
@@ -657,9 +667,9 @@
   align-items: center;
   justify-content: center;
   padding: 16rpx 56rpx;
-  background: linear-gradient(135deg, #F4D48C 0%, #D4B06A 100%);
+  background: linear-gradient(135deg, #C9A97C 0%, #A98B5F 100%);
   border-radius: var(--radius-pill, 999rpx);
-  color: #1A1A3E;
+  color: #FAF6EF;
   font-size: var(--font-size-body, 30rpx);
   font-weight: 600;
   letter-spacing: 2rpx;
@@ -697,8 +707,8 @@
   border: none;
   letter-spacing: 5rpx;
   box-shadow:
-    0 6rpx 28rpx rgba(244, 212, 140, 0.25),
-    0 2rpx 8rpx rgba(244, 212, 140, 0.12);
+    0 6rpx 28rpx rgba(201, 169, 124, 0.25),
+    0 2rpx 8rpx rgba(201, 169, 124, 0.12);
   transition: opacity 0.2s;
   position: relative;
   overflow: hidden;
@@ -716,12 +726,12 @@
 .btn-share {
   width: 100%;
   background: transparent;
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   font-weight: 500;
   font-size: var(--font-size-body);
   border-radius: var(--radius-pill);
   padding: var(--spacing-md) 0;
-  border: 1.5rpx solid rgba(244, 212, 140, 0.3);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.3);
   letter-spacing: 4rpx;
   transition: border-color 0.2s, background 0.2s;
 }
@@ -731,20 +741,20 @@
 }
 
 .btn-share:active {
-  border-color: rgba(244, 212, 140, 0.6);
-  background: rgba(244, 212, 140, 0.06);
+  border-color: rgba(201, 169, 124, 0.6);
+  background: rgba(201, 169, 124, 0.06);
 }
 
 /* ---- Secondary: "再来一次" outlined pill ---- */
 .btn-redo {
   width: 100%;
   background: transparent;
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   font-weight: 500;
   font-size: var(--font-size-body);
   border-radius: var(--radius-pill);
   padding: var(--spacing-md) 0;
-  border: 1.5rpx solid rgba(244, 212, 140, 0.3);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.3);
   letter-spacing: 4rpx;
   transition: border-color 0.2s, background 0.2s;
 }
@@ -754,8 +764,8 @@
 }
 
 .btn-redo:active {
-  border-color: rgba(244, 212, 140, 0.6);
-  background: rgba(244, 212, 140, 0.06);
+  border-color: rgba(201, 169, 124, 0.6);
+  background: rgba(201, 169, 124, 0.06);
 }
 
 /* ---- Tertiary: "回到首页" outlined pill ---- */
@@ -793,7 +803,7 @@
 .btn-save {
   display: inline-block;
   font-size: var(--font-size-caption);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   letter-spacing: 2rpx;
   opacity: 0.65;
   padding: var(--spacing-sm) var(--spacing-xl);
@@ -806,20 +816,20 @@
 
 .btn-save:active {
   opacity: 1;
-  color: var(--color-gold);
-  border-color: rgba(244, 212, 140, 0.35);
-  background: rgba(244, 212, 140, 0.06);
+  color: var(--color-gold-dark);
+  border-color: rgba(201, 169, 124, 0.35);
+  background: rgba(201, 169, 124, 0.06);
 }
 
 .btn-saved {
   display: inline-block;
   font-size: var(--font-size-caption);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   letter-spacing: 2rpx;
   opacity: 0.75;
   padding: var(--spacing-sm) var(--spacing-xl);
   border-radius: var(--radius-pill);
-  border: 1rpx solid rgba(244, 212, 140, 0.3);
+  border: 1rpx solid rgba(201, 169, 124, 0.3);
   transition: opacity 0.2s;
 }
 
@@ -851,7 +861,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(10, 10, 30, 0.85);
+  background: rgba(61, 58, 54, 0.50);
   z-index: 200;
   display: flex;
   align-items: center;
@@ -924,10 +934,10 @@
   border-radius: var(--radius-md);
   overflow: hidden;
   background: var(--color-surface);
-  border: 2rpx solid rgba(244, 212, 140, 0.6);
+  border: 2rpx solid rgba(201, 169, 124, 0.6);
   box-shadow:
-    0 0 60rpx rgba(244, 212, 140, 0.20),
-    0 0 30rpx rgba(244, 212, 140, 0.08),
+    0 0 60rpx rgba(201, 169, 124, 0.20),
+    0 0 30rpx rgba(201, 169, 124, 0.08),
     0 8rpx 40rpx rgba(0, 0, 0, 0.5);
   cursor: pointer;
 }
@@ -970,7 +980,7 @@
   padding: var(--spacing-lg);
   font-size: var(--font-size-subhead);
   font-weight: var(--font-weight-medium);
-  color: var(--color-lavender-light);
+  color: var(--color-lavender-dark);
   text-align: center;
   letter-spacing: 3rpx;
   line-height: 1.5;
@@ -989,7 +999,7 @@
 
 .back-position {
   font-size: var(--font-size-caption);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   letter-spacing: 4rpx;
   opacity: 0.7;
   margin-bottom: 12rpx;
@@ -1007,13 +1017,13 @@
 .back-divider {
   width: 80rpx;
   height: 1rpx;
-  background: linear-gradient(to right, transparent, rgba(244, 212, 140, 0.3), transparent);
+  background: linear-gradient(to right, transparent, rgba(201, 169, 124, 0.3), transparent);
   margin: var(--spacing-md) 0;
 }
 
 .back-label {
   font-size: var(--font-size-xs);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   letter-spacing: 3rpx;
   opacity: 0.6;
   margin-bottom: 8rpx;
@@ -1040,7 +1050,7 @@
 /* ---- Hint text below the enlarged card ---- */
 .enlarged-hint {
   font-size: var(--font-size-caption);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   letter-spacing: 2rpx;
   opacity: 0.4;
   margin-top: 32rpx;
@@ -1052,8 +1062,8 @@
 .onboarding-hint {
   padding: 20rpx 28rpx;
   margin: 24rpx 0 8rpx;
-  background: rgba(26, 26, 62, 0.95);
-  border: 1.5rpx solid var(--color-gold, #F4D48C);
+  background: rgba(255, 253, 248, 0.97);
+  border: 1.5rpx solid var(--color-gold, #C9A97C);
   border-radius: 16rpx;
   text-align: center;
   opacity: 0;
@@ -1082,9 +1092,9 @@
    ============================================================ */
 .unlock-cta { padding: 48rpx 32rpx; text-align: center; }
 .unlock-divider { display: flex; align-items: center; margin-bottom: 32rpx; }
-.unlock-divider-line { flex: 1; height: 1rpx; background: rgba(244, 212, 140, 0.15); }
-.unlock-divider-star { margin: 0 16rpx; color: var(--color-gold); font-size: 24rpx; }
-.unlock-title { display: block; font-size: 32rpx; color: var(--color-gold); font-weight: 600; margin-bottom: 12rpx; }
+.unlock-divider-line { flex: 1; height: 1rpx; background: rgba(201, 169, 124, 0.15); }
+.unlock-divider-star { margin: 0 16rpx; color: var(--color-gold-dark); font-size: 24rpx; }
+.unlock-title { display: block; font-size: 32rpx; color: var(--color-gold-dark); font-weight: 600; margin-bottom: 12rpx; }
 .unlock-desc { display: block; font-size: 26rpx; color: var(--color-text-secondary); margin-bottom: 32rpx; }
 .unlock-btn {
   background: linear-gradient(135deg, var(--color-gold), var(--color-gold-dark));
@@ -1106,8 +1116,8 @@
   align-items: center;
   gap: var(--spacing-xs, 12rpx);
   padding: var(--spacing-sm, 16rpx) var(--spacing-md, 24rpx);
-  background: rgba(244, 212, 140, 0.06);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.15);
+  background: rgba(201, 169, 124, 0.06);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.15);
   border-radius: var(--radius-md, 16rpx);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -1115,8 +1125,8 @@
 }
 
 .teaching-toggle:active {
-  background: rgba(244, 212, 140, 0.10);
-  border-color: rgba(244, 212, 140, 0.30);
+  background: rgba(201, 169, 124, 0.10);
+  border-color: rgba(201, 169, 124, 0.30);
 }
 
 .teaching-toggle-icon {
@@ -1129,13 +1139,13 @@
   flex: 1;
   font-size: var(--font-size-caption, 26rpx);
   font-weight: 600;
-  color: var(--color-gold, #F4D48C);
+  color: var(--color-gold-dark, #A98B5F);
   letter-spacing: 2rpx;
 }
 
 .teaching-toggle-arrow {
   font-size: var(--font-size-xs, 20rpx);
-  color: var(--color-lavender, #B8A9E0);
+  color: var(--color-lavender, #6E6A96);
   flex-shrink: 0;
   letter-spacing: 1rpx;
 }
@@ -1157,10 +1167,10 @@
 .teaching-card {
   margin-top: var(--spacing-sm, 16rpx);
   padding: var(--spacing-md, 24rpx);
-  background: rgba(37, 37, 80, 0.35);
-  border: 1rpx solid rgba(244, 212, 140, 0.10);
+  background: rgba(201, 169, 124, 0.10);
+  border: 1rpx solid rgba(201, 169, 124, 0.10);
   border-radius: var(--radius-md, 16rpx);
-  border-left: 4rpx solid var(--color-gold, #F4D48C);
+  border-left: 4rpx solid var(--color-gold, #C9A97C);
 }
 
 .teaching-card-header {
@@ -1170,7 +1180,7 @@
 .teaching-card-name {
   font-size: var(--font-size-body, 30rpx);
   font-weight: 600;
-  color: var(--color-gold, #F4D48C);
+  color: var(--color-gold-dark, #A98B5F);
   letter-spacing: 2rpx;
 }
 
@@ -1178,7 +1188,7 @@
   display: block;
   font-size: var(--font-size-xs, 20rpx);
   font-weight: 500;
-  color: var(--color-lavender, #B8A9E0);
+  color: var(--color-lavender, #6E6A96);
   letter-spacing: 2rpx;
   margin-bottom: var(--spacing-xs, 12rpx);
   opacity: 0.8;
@@ -1198,27 +1208,27 @@
 .teaching-symbol-name {
   font-size: var(--font-size-caption, 24rpx);
   font-weight: 500;
-  color: var(--color-text-primary, #F0EDE8);
+  color: var(--color-text-primary, #3D3A36);
   letter-spacing: 1rpx;
   flex-shrink: 0;
 }
 
 .teaching-symbol-meaning {
   font-size: var(--font-size-caption, 24rpx);
-  color: var(--color-lavender, #B8A9E0);
+  color: var(--color-lavender, #6E6A96);
   letter-spacing: 1rpx;
   line-height: 1.6;
 }
 
 .teaching-connection {
   padding-top: var(--spacing-xs, 12rpx);
-  border-top: 1rpx solid rgba(244, 212, 140, 0.08);
+  border-top: 1rpx solid rgba(201, 169, 124, 0.08);
 }
 
 .teaching-connection-text {
   display: block;
   font-size: var(--font-size-caption, 24rpx);
-  color: var(--color-text-primary, #F0EDE8);
+  color: var(--color-text-primary, #3D3A36);
   line-height: 1.7;
   letter-spacing: 1rpx;
   opacity: 0.9;
@@ -1243,7 +1253,7 @@
 .share-cta-card {
   position: relative;
   background: linear-gradient(145deg, rgba(42,42,90,0.7) 0%, rgba(53,53,112,0.5) 100%);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.2);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.2);
   border-radius: 24rpx;
   padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md);
   text-align: center;
@@ -1256,7 +1266,7 @@
   left: 0;
   right: 0;
   height: 2rpx;
-  background: linear-gradient(90deg, transparent, rgba(244,212,140,0.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(201,169,124,0.3), transparent);
   pointer-events: none;
 }
 .share-cta-close {
@@ -1281,10 +1291,10 @@
 }
 .share-cta-icon {
   font-size: 44rpx;
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   display: block;
   margin-bottom: var(--spacing-xs);
-  text-shadow: 0 0 20rpx rgba(244,212,140,0.3);
+  text-shadow: 0 0 20rpx rgba(201,169,124,0.3);
 }
 .share-cta-title {
   font-size: var(--font-size-subhead);
@@ -1296,7 +1306,7 @@
 }
 .share-cta-desc {
   font-size: var(--font-size-caption);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   display: block;
   margin-bottom: var(--spacing-md);
   letter-spacing: 1rpx;
@@ -1308,14 +1318,14 @@
   justify-content: center;
   min-width: 320rpx;
   padding: var(--spacing-sm) 56rpx;
-  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
-  color: #1A1A3E;
+  background: linear-gradient(135deg, #C9A97C 0%, #B08F52 50%, #A98B5F 100%);
+  color: #FAF6EF;
   font-size: var(--font-size-body);
   font-weight: 700;
   border: none;
   border-radius: var(--radius-pill);
   letter-spacing: 3rpx;
-  box-shadow: 0 4rpx 28rpx rgba(244, 212, 140, 0.25);
+  box-shadow: 0 4rpx 28rpx rgba(201, 169, 124, 0.25);
   transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
 }
 .share-cta-btn::after {
@@ -1323,7 +1333,7 @@
 }
 .share-cta-btn:active {
   transform: scale(0.96);
-  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.15);
+  box-shadow: 0 2rpx 12rpx rgba(201, 169, 124, 0.15);
 }
 
 /* ============================================================
@@ -1333,8 +1343,8 @@
   position: relative;
   margin: var(--spacing-lg) var(--spacing-md);
   padding: var(--spacing-lg);
-  background: linear-gradient(135deg, rgba(180,140,200,0.10) 0%, rgba(244,212,140,0.08) 100%);
-  border: 1.5rpx solid rgba(244,212,140,0.20);
+  background: linear-gradient(135deg, rgba(216,210,228,0.10) 0%, rgba(201,169,124,0.08) 100%);
+  border: 1.5rpx solid rgba(201,169,124,0.20);
   border-radius: var(--radius-lg, 24rpx);
   text-align: center;
   overflow: hidden;
@@ -1347,7 +1357,7 @@
   transform: translateX(-50%);
   width: 200rpx;
   height: 80rpx;
-  background: radial-gradient(ellipse, rgba(244,212,140,0.15) 0%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(201,169,124,0.15) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -1360,7 +1370,7 @@
 .reflection-card-label {
   display: block;
   font-size: var(--font-size-caption, 24rpx);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   font-weight: 600;
   letter-spacing: 2rpx;
   margin-bottom: 12rpx;
@@ -1380,9 +1390,9 @@
   align-items: center;
   justify-content: center;
   padding: 16rpx 48rpx;
-  background: linear-gradient(135deg, #F4D48C 0%, #D4B06A 100%);
+  background: linear-gradient(135deg, #C9A97C 0%, #A98B5F 100%);
   border-radius: var(--radius-pill, 999rpx);
-  color: #1A1A3E;
+  color: #FAF6EF;
   font-size: var(--font-size-body, 30rpx);
   font-weight: 600;
   letter-spacing: 2rpx;
@@ -1394,42 +1404,109 @@
 }
 
 /* ============================================================
-   BOTTOM BAR — Gift + Share + Save + Diary, evenly spaced row
+   BOTTOM ACTIONS — 分级主次（P0-2 重构）
+   主：追问解读师（实心雾粉） / 次：分享海报（细金描边）
+   小图标行：送牌 / 保存 / 写日记
    ============================================================ */
-.bottom-bar {
+.ask-share-row {
   display: flex;
-  align-items: stretch;
-  gap: 12rpx;
-  padding: var(--spacing-md, 24rpx) 0 var(--spacing-sm, 16rpx);
+  gap: 20rpx;
+  padding: var(--spacing-md, 24rpx) 0 var(--spacing-xs, 12rpx);
 }
 
-/* Equal-width buttons spanning the full row — evenly spaced */
-.bottom-bar-btn {
-  flex: 1;
+.ask-primary-btn {
+  flex: 1.4;
   min-width: 0;
-  background: transparent;
-  color: var(--color-gold, #F4D48C);
-  font-size: 22rpx;
+  background: linear-gradient(135deg, #E8C4BE 0%, #DCA9A1 100%);
+  color: var(--color-btn-pink-ink);
+  font-family: var(--e3-serif, 'Songti SC', serif);
+  font-size: 30rpx;
   font-weight: 500;
+  letter-spacing: 3rpx;
   border-radius: var(--radius-pill, 999rpx);
-  padding: var(--spacing-md, 24rpx) 4rpx;
-  border: 1.5rpx solid rgba(244, 212, 140, 0.3);
-  letter-spacing: 1rpx;
+  padding: var(--spacing-md, 24rpx) 12rpx;
+  border: 1rpx solid rgba(201, 169, 124, 0.35);
   text-align: center;
-  transition: border-color 0.2s, background 0.2s;
-  min-height: 88rpx;
+  min-height: 96rpx;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 4rpx 20rpx rgba(61, 58, 54, 0.10), inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.bottom-bar-btn::after {
+.ask-primary-btn::after {
   border: none;
 }
 
-.bottom-bar-btn:active {
-  border-color: rgba(244, 212, 140, 0.6);
-  background: rgba(244, 212, 140, 0.06);
+.ask-primary-btn:active {
+  transform: scale(0.965);
+  box-shadow: 0 2rpx 10rpx rgba(61, 58, 54, 0.08);
+}
+
+.share-secondary-btn {
+  flex: 1;
+  min-width: 0;
+  background: var(--e3-cream-hi, #FFFDF8);
+  color: var(--e3-gold-deep, #B08F52);
+  font-family: var(--e3-serif, 'Songti SC', serif);
+  font-size: 28rpx;
+  font-weight: 500;
+  letter-spacing: 2rpx;
+  border-radius: var(--radius-pill, 999rpx);
+  padding: var(--spacing-md, 24rpx) 12rpx;
+  border: 1.5rpx solid rgba(201, 169, 124, 0.35);
+  text-align: center;
+  min-height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--e3-shadow, 0 2rpx 8rpx rgba(61, 58, 54, 0.08));
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.share-secondary-btn::after {
+  border: none;
+}
+
+.share-secondary-btn:active {
+  transform: scale(0.965);
+  border-color: rgba(201, 169, 124, 0.6);
+}
+
+/* 小图标按钮行 — 送牌 / 保存 / 写日记 */
+.mini-action-row {
+  display: flex;
+  gap: 12rpx;
+  padding-bottom: var(--spacing-sm, 16rpx);
+}
+
+.mini-action-btn {
+  flex: 1;
+  min-width: 0;
+  background: rgba(201, 169, 124, 0.08);
+  color: var(--e3-ink-soft, #8A8478);
+  font-size: 22rpx;
+  font-weight: 400;
+  letter-spacing: 1rpx;
+  border-radius: var(--radius-pill, 999rpx);
+  padding: var(--spacing-sm, 16rpx) 4rpx;
+  border: 1rpx solid rgba(201, 169, 124, 0.20);
+  text-align: center;
+  min-height: 76rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.mini-action-btn::after {
+  border: none;
+}
+
+.mini-action-btn:active {
+  background: rgba(201, 169, 124, 0.14);
+  border-color: rgba(201, 169, 124, 0.4);
 }
 
 /* ---- Secondary exit link (below the action row) ---- */
@@ -1441,7 +1518,7 @@
 
 .bottom-back-link {
   font-size: var(--font-size-caption, 24rpx);
-  color: var(--color-lavender, #B8A9E0);
+  color: var(--color-lavender, #6E6A96);
   letter-spacing: 3rpx;
   opacity: 0.65;
   padding: 12rpx 40rpx;
@@ -1450,7 +1527,7 @@
 
 .bottom-back-link:active {
   opacity: 1;
-  color: var(--color-gold, #F4D48C);
+  color: var(--color-gold-dark, #A98B5F);
 }
 
 /* ============================================================
@@ -1470,7 +1547,7 @@
 .persona-first-label {
   display: block;
   font-size: var(--font-size-subhead, 32rpx);
-  color: var(--color-gold, #F4D48C);
+  color: var(--color-gold-dark, #A98B5F);
   font-weight: 600;
   text-align: center;
   letter-spacing: 3rpx;
@@ -1503,7 +1580,7 @@
 .divider-persona-line {
   width: 120rpx;
   height: 1rpx;
-  background: linear-gradient(to right, transparent, rgba(244, 212, 140, 0.2), transparent);
+  background: linear-gradient(to right, transparent, rgba(201, 169, 124, 0.2), transparent);
 }
 
 /* ============================================================
@@ -1515,4 +1592,310 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ============================================================
+   E3 奶油疗愈 — 设计级补全（追加覆盖）
+   ============================================================ */
+page {
+  --e3-cream: #FAF6EF;
+  --e3-cream-hi: #FFFDF8;
+  --e3-paper: #F2ECDF;
+  --e3-pink: #E8C4BE;
+  --e3-pink-ink: #B08A82;
+  --e3-gold: #C9A97C;
+  --e3-gold-deep: #8A6B3D;
+  --e3-line: rgba(201, 169, 124, 0.28);
+  --e3-line-soft: rgba(201, 169, 124, 0.38);
+  --e3-ink: #3D3A36;
+  --e3-ink-soft: #8A8478;
+  --e3-ink-faint: #6E6A96;
+  --e3-shadow: 0 2rpx 8rpx rgba(61, 58, 54, 0.08);
+  --e3-hi: inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
+  --e3-serif: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif CJK SC', 'Noto Serif SC', serif;
+}
+
+/* —— 奶油底色氛围光斑（与首页 .wash 一致） —— */
+.wash {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+.wash-pink {
+  top: -160rpx;
+  right: -180rpx;
+  width: 560rpx;
+  height: 560rpx;
+  background: radial-gradient(circle, rgba(232, 196, 190, 0.40) 0%, rgba(232, 196, 190, 0) 66%);
+}
+.wash-gold {
+  left: -180rpx;
+  top: 900rpx;
+  width: 500rpx;
+  height: 500rpx;
+  background: radial-gradient(circle, rgba(201, 169, 124, 0.20) 0%, rgba(201, 169, 124, 0) 66%);
+}
+
+/* —— 解读师身份条：衬线名 + 奶油底 —— */
+.persona-badge {
+  background: linear-gradient(135deg, rgba(232, 196, 190, 0.26) 0%, rgba(232, 196, 190, 0.08) 100%);
+  border: 1rpx solid var(--e3-line);
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+}
+.pb-name {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  letter-spacing: 6rpx;
+  color: var(--e3-gold-deep);
+  text-shadow: none;
+}
+.pb-label {
+  color: var(--e3-ink-soft);
+}
+
+/* —— 牌名 / 牌位 / 模式徽章 —— */
+.card-name {
+  font-family: var(--e3-serif);
+  color: var(--e3-ink);
+  letter-spacing: 2rpx;
+}
+.mode-badge {
+  background: rgba(232, 196, 190, 0.35);
+  border: 1rpx solid rgba(201, 169, 124, 0.25);
+  color: var(--e3-pink-ink);
+  font-family: var(--e3-serif);
+  letter-spacing: 3rpx;
+}
+.spread-type {
+  color: var(--e3-ink-faint);
+}
+
+/* —— 信件（hero）：奶油信笺 + 细金描边 —— */
+.letter-body {
+  background: linear-gradient(145deg, var(--e3-cream-hi) 0%, var(--e3-paper) 100%);
+  border: 1rpx solid var(--e3-line);
+  border-radius: 24rpx;
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+}
+.letter-body::before {
+  background: linear-gradient(to right, transparent, rgba(201, 169, 124, 0.30), transparent);
+}
+.letter-text {
+  color: var(--e3-ink);
+  font-family: var(--e3-serif);
+  line-height: 2;
+  letter-spacing: 2rpx;
+}
+
+/* —— TL;DR 结论卡 —— */
+.tldr-card {
+  background: linear-gradient(145deg, var(--e3-cream-hi) 0%, var(--e3-paper) 100%);
+  border-left: 4rpx solid var(--e3-gold-deep);
+  border-radius: 20rpx;
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+}
+.tldr-text {
+  color: var(--e3-ink-soft);
+  font-family: var(--e3-serif);
+  letter-spacing: 1rpx;
+}
+.tldr-dot {
+  background: var(--e3-gold);
+  box-shadow: 0 0 8rpx rgba(201, 169, 124, 0.35);
+}
+
+/* —— 深度解读付费卡（深色残留修复：紫→灰紫/雾粉） —— */
+.deep-paywall-card {
+  background: linear-gradient(145deg, rgba(216, 210, 228, 0.18) 0%, rgba(232, 196, 190, 0.16) 100%);
+  border: 1rpx solid rgba(201, 169, 124, 0.20);
+  border-radius: 24rpx;
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+}
+.dpw-label {
+  color: var(--e3-ink-soft);
+  font-family: var(--e3-serif);
+}
+.dpw-title {
+  color: var(--e3-gold-deep);
+  font-family: var(--e3-serif);
+  font-weight: 500;
+}
+.dpw-desc {
+  color: var(--e3-ink-soft);
+}
+
+/* —— 反思卡（日记引导） —— */
+.reflection-card {
+  background: linear-gradient(145deg, rgba(232, 196, 190, 0.22) 0%, rgba(216, 210, 228, 0.14) 100%);
+  border: 1rpx solid rgba(201, 169, 124, 0.20);
+  border-radius: 24rpx;
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+}
+.reflection-card-glow {
+  background: radial-gradient(ellipse, rgba(201, 169, 124, 0.18) 0%, transparent 70%);
+}
+.reflection-card-label {
+  color: var(--e3-pink-ink);
+  font-family: var(--e3-serif);
+  letter-spacing: 3rpx;
+}
+.reflection-card-question {
+  color: var(--e3-ink);
+  font-family: var(--e3-serif);
+  letter-spacing: 1rpx;
+}
+
+/* —— 分享CTA卡（深靛蓝底 → 奶油底，浅底可读性修复） —— */
+.share-cta-card {
+  background: linear-gradient(145deg, var(--e3-cream-hi) 0%, var(--e3-paper) 100%);
+  border: 1rpx solid var(--e3-line);
+  border-radius: 24rpx;
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+}
+.share-cta-card::before {
+  background: linear-gradient(90deg, transparent, rgba(201, 169, 124, 0.4), transparent);
+}
+.share-cta-title {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 4rpx;
+}
+.share-cta-desc {
+  color: var(--e3-ink-soft);
+}
+.share-cta-icon {
+  color: var(--e3-gold-deep);
+  text-shadow: none;
+}
+
+/* —— 教学区块 —— */
+.teaching-toggle {
+  background: var(--e3-cream-hi);
+  border: 1rpx solid var(--e3-line);
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+}
+.teaching-toggle-text {
+  font-family: var(--e3-serif);
+  color: var(--e3-ink);
+  letter-spacing: 3rpx;
+}
+.teaching-card {
+  background: linear-gradient(145deg, var(--e3-cream-hi) 0%, var(--e3-paper) 100%);
+  border: 1rpx solid var(--e3-line);
+  border-left: 4rpx solid var(--e3-gold);
+  border-radius: 20rpx;
+  box-shadow: var(--e3-shadow);
+}
+.teaching-card-name {
+  font-family: var(--e3-serif);
+  color: var(--e3-gold-deep);
+  letter-spacing: 2rpx;
+}
+.teaching-label {
+  color: var(--e3-ink-soft);
+}
+.teaching-symbol-meaning {
+  color: var(--e3-ink-faint);
+}
+
+/* —— 放大卡浮层：阴影 0.5 黑 → E3 浅阴影 —— */
+.enlarged-card {
+  background: var(--e3-cream-hi);
+  border: 2rpx solid rgba(201, 169, 124, 0.55);
+  box-shadow: 0 8rpx 40rpx rgba(61, 58, 54, 0.18), 0 0 40rpx rgba(201, 169, 124, 0.18);
+}
+.back-card-name {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 4rpx;
+}
+.back-position {
+  color: var(--e3-gold-deep);
+  font-family: var(--e3-serif);
+}
+.back-keywords,
+.back-desc {
+  color: var(--e3-ink-soft);
+}
+.back-label {
+  color: var(--e3-ink-faint);
+}
+.enlarged-hint {
+  color: var(--e3-ink-faint);
+}
+.fallback-name-text {
+  color: var(--e3-ink-soft);
+  font-family: var(--e3-serif);
+  text-shadow: none;
+}
+
+/* —— 底部返回链接 —— */
+.bottom-back-link {
+  color: var(--e3-ink-faint);
+}
+
+/* —— TL;DR 要点徽章（弱化与正文的重复感） —— */
+.tldr-badge-row {
+  margin-bottom: 18rpx;
+}
+.tldr-badge {
+  display: inline-block;
+  padding: 4rpx 20rpx;
+  font-size: 20rpx;
+  font-weight: 500;
+  color: var(--e3-gold-deep, #B08F52);
+  background: rgba(201, 169, 124, 0.14);
+  border: 1rpx solid rgba(201, 169, 124, 0.3);
+  border-radius: 999rpx;
+  letter-spacing: 2rpx;
+  line-height: 1.6;
+}
+
+/* —— letter 视觉分隔线（纯文本字段 · 不改内容结构） —— */
+.letter-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18rpx;
+  margin-bottom: 26rpx;
+}
+.letter-divider-line {
+  width: 120rpx;
+  height: 1rpx;
+  background: linear-gradient(to right, transparent, rgba(201, 169, 124, 0.4), transparent);
+}
+.letter-divider-star {
+  font-size: 22rpx;
+  color: var(--e3-gold-deep, #B08F52);
+  opacity: 0.8;
+}
+
+/* —— 加载状态 —— */
+.stage-title {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-gold-deep);
+  letter-spacing: 6rpx;
+}
+.stage-sub {
+  color: var(--e3-ink-soft);
+}
+
+/* —— 错误 / 空状态 —— */
+.error-text {
+  font-family: var(--e3-serif);
+  color: var(--e3-ink);
+  letter-spacing: 3rpx;
+}
+.error-hint {
+  color: var(--e3-ink-soft);
+}
+.btn-retry {
+  background: var(--e3-cream-hi);
+  border: 1rpx solid var(--e3-line-soft);
+  color: var(--e3-gold-deep);
+  box-shadow: var(--e3-shadow);
 }

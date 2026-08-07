@@ -685,6 +685,10 @@ Page({
           analytics.trackPurchaseComplete(product, Number(bucket), { priceTestBucket: bucket });
           this.setData({ purchasingDeep: false });
           wx.showToast({ title: '解锁成功 ✦', icon: 'success' });
+          // P0-2 fix: the purchase grants +1 paid reading credit — re-run the
+          // reading with depth=deep so the user actually receives the deep
+          // interpretation they paid for (backend consumes the credit).
+          this._requestDeepReading();
         },
         fail: (err) => {
           this.setData({ purchasingDeep: false });
@@ -699,6 +703,52 @@ Page({
       this.setData({ purchasingDeep: false });
       wx.hideLoading();
       wx.showToast({ title: '下单失败', icon: 'none' });
+    }
+  },
+
+  /** P0-2: 深度解读购买成功后，重发一次 depth=deep 的解读请求。
+   *  以当前展示的解读为模板（问题/主题/人设沿用），生成深度版替换之。
+   *  微信支付回调可能比 requestPayment 成功晚 1-2 秒到账，因此在余额
+   *  尚未入账（402）时做短暂重试。
+   */
+  async _requestDeepReading(retries = 2) {
+    const prev = this.data.reading || this._cachedReading || {};
+    const spread = prev.spread_type || this._pendingSpread || 'three_card';
+    const data = {
+      spread_type: spread,
+      question: prev.question || null,
+      theme: prev.theme || 'general',
+      persona: prev.persona || null,
+      zodiac: '',
+      depth: 'deep',
+    };
+    wx.showLoading({ title: '深度解读生成中...', mask: true });
+    try {
+      const result = await request(`/readings/spread/${spread}`, {
+        method: 'POST',
+        data: data,
+      });
+      wx.hideLoading();
+      if (!result || !result.interpretation) {
+        wx.showToast({ title: '深度解读生成失败，请重试', icon: 'none' });
+        return;
+      }
+      // 用深度版替换当前解读
+      this._cachedReading = result;
+      this._cachedError = null;
+      this._isQuickMode = false;
+      this._immersiveStarted = true;
+      this._tryShowResult();
+      wx.showToast({ title: '深度解读已生成 ✦', icon: 'success' });
+    } catch (err) {
+      // 支付回调尚未到账（余额为 0 导致 402）— 短暂等待后重试
+      if (err.statusCode === 402 && retries > 0) {
+        wx.hideLoading();
+        setTimeout(() => this._requestDeepReading(retries - 1), 1500);
+        return;
+      }
+      wx.hideLoading();
+      wx.showToast({ title: getFriendlyError(err) || '深度解读生成失败', icon: 'none' });
     }
   },
 

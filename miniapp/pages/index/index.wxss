@@ -1,176 +1,381 @@
 /* ============================================================
-   首页 — 柔光星辰 (Soft Starlight)
-   First impression — warm, magical, like a summer night sky
+   首页 — 星光映照 · E3 奶油疗愈版（真实水彩插画）
+   奶油米白 #FAF6EF / 莫兰迪雾粉 #E8C4BE / 细金 #C9A97C / 墨 #3D3A36
+   真实插画资产 assets/web/*.jpg，代码只做排版与氛围
    ============================================================ */
 
 /* -----------------------------------------------------------
-   1. HERO — Warm stargazing at twilight
-   Overrides common.wxss .hero
+   E3 DESIGN TOKENS（页面级，不污染全局变量）
    ----------------------------------------------------------- */
+page {
+  --e3-cream: #FAF6EF;
+  --e3-cream-hi: #FFFDF8;
+  --e3-paper: #F2ECDF;
+  --e3-pink: #E8C4BE;
+  --e3-pink-deep: #DCA9A1;
+  --e3-pink-ink: #B08A82;
+  --e3-gold: #C9A97C;
+  --e3-gold-deep: #8A6B3D;
+  --e3-line: rgba(201, 169, 124, 0.28);
+  --e3-line-soft: rgba(201, 169, 124, 0.38);
+  --e3-lav: #D8D2E4;
+  --e3-ink: #3D3A36;
+  --e3-ink-soft: #8A8478;
+  --e3-ink-faint: #6E6A96;
+  --e3-shadow: 0 4rpx 20rpx rgba(61, 58, 54, 0.06);
+  --e3-hi: inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
+  --e3-cardline: 0 0 0 1rpx rgba(201, 169, 124, 0.32), 0 20rpx 52rpx rgba(61, 58, 54, 0.14), inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
+  --e3-serif: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif CJK SC', 'Noto Serif SC', serif;
+  --e3-sans: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
 
-.hero {
+  /* 覆盖全局深色底 —— 只改外观，不动全局设计变量 */
+  background: #FAF6EF;
+  color: #3D3A36;
+  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+/* -----------------------------------------------------------
+   0. PAGE 容器（三种状态共用）
+   ----------------------------------------------------------- */
+.page {
+  min-height: 100vh;
+  padding: 0 50rpx 56rpx;
+  padding-bottom: calc(56rpx + env(safe-area-inset-bottom));
   position: relative;
+  box-sizing: border-box;
+  background: #FAF6EF;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* 低饱和水彩底色氛围（真实插画之外仅作底色） */
+.wash {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+.wash-pink {
+  top: -140rpx;
+  right: -160rpx;
+  width: 560rpx;
+  height: 560rpx;
+  background: radial-gradient(circle, rgba(232, 196, 190, 0.50) 0%, rgba(232, 196, 190, 0) 66%);
+}
+.wash-gold {
+  left: -180rpx;
+  top: 700rpx;
+  width: 500rpx;
+  height: 500rpx;
+  background: radial-gradient(circle, rgba(201, 169, 124, 0.28) 0%, rgba(201, 169, 124, 0) 66%);
+}
+
+/* 右下角淡粉水彩小花（真实资产 · 50% 透明 · 从CTA后探出 · 首屏固定区域） */
+.hint-flower {
+  position: absolute;
+  right: 0;
+  bottom: 36rpx;
+  width: 300rpx;
+  height: 276rpx;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.5;
+  transform: scaleX(-1) rotate(-7deg);
+}
+.hint-flower-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 24rpx;
+  display: block;
+}
+
+/* -----------------------------------------------------------
+   1. 入场动画（与旧版类名一致）
+   ----------------------------------------------------------- */
+.anim-fade-in-up-1 {
+  animation: page-fade-up 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+.anim-fade-in-up-2 {
+  opacity: 0;
+  animation: page-fade-up 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.25s forwards;
+}
+.anim-fade-in-up-3 {
+  opacity: 0;
+  animation: page-fade-up 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.5s forwards;
+}
+@keyframes page-fade-up {
+  0% { opacity: 0; transform: translateY(30rpx); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.anim-greeting-fade {
+  animation: greeting-fade-in 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+@keyframes greeting-fade-in {
+  0% { opacity: 0; transform: translateY(8rpx); }
+  100% { opacity: 0.9; transform: translateY(0); }
+}
+
+.anim-slide-up {
+  opacity: 0;
+  animation: slideUp 0.35s ease-out forwards;
+}
+@keyframes slideUp {
+  0% { opacity: 0; transform: translateY(30rpx); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.anim-gentle-pulse {
+  animation: gentlePulse 2s ease-in-out infinite;
+}
+@keyframes gentlePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+/* -----------------------------------------------------------
+   2. ZONE 1 — E3 顶部（微字 / 品牌 / 日期 / 问候 / 徽章）
+   ----------------------------------------------------------- */
+.hero-zone {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 60rpx var(--spacing-md) 40rpx;
-  min-height: auto;
-  overflow: hidden;
-  z-index: var(--z-base);
+  padding-top: 40rpx;
 }
 
-/* --- Main golden radial glow behind the title --- */
-.hero::before {
+.e3-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 微字 STARLIT · 每日一牌 */
+.microlabel {
+  font-family: var(--e3-sans);
+  font-size: 22rpx;
+  font-weight: 400;
+  color: var(--e3-gold-deep);
+  letter-spacing: 10rpx;
+  display: block;
+}
+
+/* 品牌 星光映照（衬线宽字距） */
+.brand {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  font-size: 52rpx;
+  color: var(--e3-ink);
+  letter-spacing: 16rpx;
+  margin-top: 12rpx;
+  display: block;
+}
+
+/* 日期行 */
+.date-row {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  margin-top: 18rpx;
+}
+.gold-dot {
+  width: 6rpx;
+  height: 6rpx;
+  border-radius: 50%;
+  background: var(--e3-gold);
+  flex-shrink: 0;
+}
+.date-text {
+  font-family: var(--e3-serif);
+  font-size: 22rpx;
+  color: var(--e3-ink-soft);
+  letter-spacing: 3rpx;
+}
+
+/* 问候语（v2.1 逻辑保留 · 压缩为日期下的一行小字） */
+.greeting-text {
+  display: block;
+  font-family: var(--e3-serif);
+  font-size: 24rpx;
+  color: var(--e3-ink-soft);
+  letter-spacing: 2rpx;
+  margin-top: 10rpx;
+  opacity: 0.85;
+  line-height: 1.5;
+  position: relative;
+  z-index: 1;
+}
+
+/* 每日状态徽章（逻辑保留） */
+.daily-updated-badge,
+.daily-reminder-badge {
+  display: inline-block;
+  margin-top: 18rpx;
+  padding: 8rpx 26rpx;
+  font-size: 20rpx;
+  font-weight: 500;
+  border-radius: 999rpx;
+  letter-spacing: 3rpx;
+  background: var(--e3-cream-hi);
+  border: 1rpx solid var(--e3-line-soft);
+  box-shadow: var(--e3-hi);
+}
+.daily-updated-badge {
+  color: var(--e3-pink-ink);
+}
+.daily-reminder-badge {
+  color: var(--e3-ink-soft);
+  opacity: 0.85;
+}
+
+/* -----------------------------------------------------------
+   3. 中央大牌面（2:3 竖卡 · cover 裁切 · 细金描边 · 顶部高光）
+   ----------------------------------------------------------- */
+.daily-card-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30rpx;
+  width: 100%;
+}
+
+.paint-wrap {
+  position: relative;
+  margin: 0 auto;
+  width: 480rpx;
+  z-index: 3;
+}
+/* 旧类名保留（结构沿用） */
+.daily-card-wrap {
+  position: relative;
+}
+.art {
+  position: relative;
+  overflow: hidden;
+}
+
+/* 待开启状态：细金描边轻柔呼吸 */
+.card-ready .painting {
+  animation: floaty 5.5s ease-in-out infinite, ready-breathe 2.6s ease-in-out infinite;
+}
+@keyframes ready-breathe {
+  0%, 100% { box-shadow: 0 0 0 1rpx rgba(201, 169, 124, 0.32), 0 20rpx 52rpx rgba(61, 58, 54, 0.14), inset 0 1rpx 0 rgba(255, 255, 255, 0.6); }
+  50% { box-shadow: 0 0 0 2rpx rgba(201, 169, 124, 0.6), 0 20rpx 52rpx rgba(61, 58, 54, 0.16), inset 0 1rpx 0 rgba(255, 255, 255, 0.6); }
+}
+
+/* 真实插画卡（圆角裁剪 · 细金描边 · 极浅阴影 · 顶部高光） */
+.painting {
+  position: relative;
+  width: 480rpx;
+  height: 720rpx;
+  border-radius: 32rpx;
+  overflow: hidden;
+  border: 1rpx solid var(--e3-line);
+  box-shadow: var(--e3-cardline);
+  background: var(--e3-cream-hi);
+  animation: floaty 5.5s ease-in-out infinite;
+}
+.painting::after {
   content: '';
   position: absolute;
-  top: 45%;
-  left: 50%;
-  width: 560rpx;
-  height: 560rpx;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(
-    circle at center,
-    rgba(244, 212, 140, 0.15) 0%,
-    rgba(244, 212, 140, 0.08) 20%,
-    rgba(244, 212, 140, 0.03) 40%,
-    transparent 65%
-  );
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 38%;
   pointer-events: none;
-  z-index: 0;
-  animation: hero-glow-pulse 4s ease-in-out infinite;
+  background: linear-gradient(180deg, rgba(255, 253, 248, 0.32), rgba(255, 253, 248, 0));
+  border-radius: 32rpx 32rpx 0 0;
+  z-index: 2;
+}
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12rpx); }
 }
 
-@keyframes hero-glow-pulse {
-  0%, 100% {
-    opacity: 0.8;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  15% {
-    opacity: 0.9;
-    transform: translate(-50%, -50%) scale(1.08);
-  }
-  30% {
-    opacity: 0.6;
-    transform: translate(-50%, -50%) scale(1.02);
-  }
-  45% {
-    opacity: 0.8;
-    transform: translate(-50%, -50%) scale(1.04);
-  }
-  60% {
-    opacity: 0.5;
-    transform: translate(-50%, -50%) scale(1);
-  }
+/* 覆盖全局 .card-featured 深色样式 */
+.painting.card-featured {
+  background: var(--e3-cream-hi);
+  border-color: var(--e3-line);
+  box-shadow: var(--e3-cardline);
+  padding: 0;
+  border-radius: 32rpx;
 }
 
-/* NOTE: ::before/::after removed from <text> — WXSS does not support on text elements */
-
-/* -----------------------------------------------------------
-   2. HERO TITLE & SUBTITLE
-   ----------------------------------------------------------- */
-
-.title-1 {
-  font-size: var(--font-size-display);
-  font-weight: var(--font-weight-bold, 700);
-  color: var(--color-text-primary, #F0EDE8);
-  line-height: var(--line-height-tight, 1.3);
-  letter-spacing: 10rpx;
-  text-shadow:
-    0 0 40rpx rgba(244, 212, 140, 0.10),
-    0 0 80rpx rgba(244, 212, 140, 0.04);
-  position: relative;
-  z-index: 1;
-}
-
-.hero .body-text {
-  color: var(--color-lavender, #B8A9E0);
-  font-size: var(--font-size-body, 30rpx);
-  letter-spacing: 4rpx;
-  position: relative;
-  z-index: 1;
-  text-shadow: 0 0 30rpx rgba(184, 169, 224, 0.08);
-}
-
-/* -----------------------------------------------------------
-   3. PAGE ANIMATIONS — Staggered entrance
-   ----------------------------------------------------------- */
-
-.anim-fade-in-up-1 {
-  animation: page-fade-up 0.6s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94)) forwards;
-}
-
-.anim-fade-in-up-2 {
-  opacity: 0;
-  animation: page-fade-up 0.6s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94)) 0.25s forwards;
-}
-
-.anim-fade-in-up-3 {
-  opacity: 0;
-  animation: page-fade-up 0.6s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94)) 0.5s forwards;
-}
-
-@keyframes page-fade-up {
-  0% {
-    opacity: 0;
-    transform: translateY(30rpx);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* -----------------------------------------------------------
-   4. CARD VARIANTS
-   Base styles for the 3 consolidated variants
-   (card-default / card-interactive / card-featured) live in
-   styles/cards.wxss. This page only carries the daily-card
-   specific overlays and animations.
-   ----------------------------------------------------------- */
-
-/* --- Featured daily card (before draw): breathing glow overlays ---
-   Scoped to the card-ready wrapper so only the pre-draw daily card
-   gets the warm breathing glow. The teaching panels
-   (.card-featured + .daily-card-panel) stay static. */
-
-/* Glow pseudo-element — animated opacity instead of box-shadow */
-.card-ready .card-featured::before {
-  content: '';
+.paint-img {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(ellipse at center, rgba(244, 212, 140, 0.08) 0%, transparent 70%);
-  pointer-events: none;
-  opacity: 0.3;
-  animation: featured-breathe 5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  display: block;
   z-index: 0;
 }
 
-/* Subtle warm gradient overlay */
-.card-ready .card-featured::after {
-  content: '';
+/* 金色微光点缀（对应原型 Spark） */
+.paint-spark {
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(
-    ellipse at 30% 20%,
-    rgba(244, 212, 140, 0.04) 0%,
-    transparent 60%
-  );
+  right: 28rpx;
+  top: 30rpx;
+  font-size: 30rpx;
+  color: var(--e3-gold);
+  z-index: 3;
+  opacity: 0.7;
+  animation: spark-twinkle-soft 2.6s ease-in-out infinite;
   pointer-events: none;
 }
+@keyframes spark-twinkle-soft {
+  0%, 100% { opacity: 0.3; transform: scale(0.9) rotate(0deg); }
+  50% { opacity: 0.9; transform: scale(1.15) rotate(20deg); }
+}
 
-/* NOTE: card-float animation removed — restraint overrides levitation */
+/* 轻触提示（悬浮于牌面底部） */
+.card-body {
+  position: absolute;
+  left: 50%;
+  bottom: 36rpx;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+  padding: 14rpx 40rpx;
+  background: rgba(255, 253, 248, 0.82);
+  border: 1rpx solid rgba(201, 169, 124, 0.3);
+  border-radius: 999rpx;
+  box-shadow: var(--e3-shadow);
+  white-space: nowrap;
+}
+.card-hint-big {
+  font-family: var(--e3-serif);
+  font-size: 28rpx;
+  color: var(--e3-ink);
+  letter-spacing: 3rpx;
+}
+.card-hint-sm {
+  font-family: var(--e3-sans);
+  font-size: 20rpx;
+  color: var(--e3-ink-soft);
+  letter-spacing: 3rpx;
+}
+.card-shake {
+  animation: card-shake-fx 0.15s ease-out;
+}
+@keyframes card-shake-fx {
+  0%, 100% { transform: translateX(-50%); }
+  15% { transform: translateX(calc(-50% - 3rpx)); }
+  30% { transform: translateX(calc(-50% + 3rpx)); }
+  45% { transform: translateX(calc(-50% - 2rpx)); }
+  60% { transform: translateX(calc(-50% + 2rpx)); }
+  75% { transform: translateX(calc(-50% - 1rpx)); }
+  90% { transform: translateX(calc(-50% + 1rpx)); }
+}
 
-/* NOTE: card-shimmer (shimmer-sweep) and card-sparkles (orbit) removed — restraint */
-
-/* --- RIPPLE EFFECT — expanding circle from center on tap --- */
+/* Ripple（保留 rippleActive 逻辑） */
 .ripple-box {
   position: absolute;
   top: 0;
@@ -180,9 +385,8 @@
   pointer-events: none;
   overflow: hidden;
   border-radius: inherit;
-  z-index: 2;
+  z-index: 4;
 }
-
 .ripple-circle {
   position: absolute;
   top: 50%;
@@ -190,1019 +394,44 @@
   width: 16rpx;
   height: 16rpx;
   margin: -8rpx 0 0 -8rpx;
-  background: rgba(244, 212, 140, 0.30);
+  background: rgba(201, 169, 124, 0.35);
   border-radius: 50%;
   transform: scale(0.05);
   opacity: 0;
 }
-
 .ripple-run {
   animation: ripple-expand 0.15s ease-out forwards;
 }
-
 @keyframes ripple-expand {
-  0% {
-    transform: scale(0.05);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(24);
-    opacity: 0;
-  }
+  0% { transform: scale(0.05); opacity: 1; }
+  100% { transform: scale(40); opacity: 0; }
 }
 
-/* --- SHAKE — brief oscillation simulating shuffle --- */
-.card-body {
-  position: relative;
-  z-index: 1;
-}
-
-.card-shake {
-  animation: card-shake-fx 0.15s ease-out;
-}
-
-@keyframes card-shake-fx {
-  0%, 100% {
-    transform: translateX(0);
-  }
-  15% {
-    transform: translateX(-3rpx);
-  }
-  30% {
-    transform: translateX(3rpx);
-  }
-  45% {
-    transform: translateX(-2rpx);
-  }
-  60% {
-    transform: translateX(2rpx);
-  }
-  75% {
-    transform: translateX(-1rpx);
-  }
-  90% {
-    transform: translateX(1rpx);
-  }
-}
-
-/* --- Pressable interaction ---
-   Provided by the global .card-interactive variant
-   (styles/cards.wxss). */
-
-/* ============================================================
-   4c. PENDING READING CARD — resume incomplete reading
-   ============================================================ */
-.pending-reading-card {
-  padding: var(--spacing-md) var(--spacing-md);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(135deg, rgba(244,212,140,0.10) 0%, rgba(180,140,200,0.08) 100%);
-  border-color: rgba(244,212,140,0.20);
-}
-
-.pending-reading-left {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
-
-.pending-reading-icon-wrap {
-  width: 48rpx;
-  height: 48rpx;
-  background: rgba(244,212,140,0.15);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.pending-reading-icon {
-  width: 48rpx;
-  height: 48rpx;
-  display: block;
-}
-
-.pending-reading-label {
-  display: block;
-  font-weight: 500;
-  color: var(--color-gold);
-}
-
-.pending-reading-hint {
-  display: block;
-  margin-top: 4rpx;
-}
-
-.pending-reading-arrow {
-  font-size: var(--font-size-caption);
-  color: var(--color-text-tertiary);
-}
-
-/* ============================================================
-   4d. DIARY ENTRY CARD — today's journal entry
-   ============================================================ */
-.diary-entry-card {
-  padding: var(--spacing-md) var(--spacing-md);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(135deg, rgba(244,212,140,0.14) 0%, rgba(180,140,200,0.10) 100%);
-  border-color: rgba(244,212,140,0.30);
-}
-
-.diary-entry-left {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
-
-.diary-entry-emoji {
-  font-size: var(--font-size-title);
-}
-
-.diary-entry-icon {
-  width: 48rpx;
-  height: 48rpx;
-}
-
-.diary-entry-label {
-  display: block;
-  font-weight: 500;
-  color: var(--color-gold);
-}
-
-.diary-entry-hint {
-  display: block;
-  margin-top: 4rpx;
-}
-
-.diary-entry-arrow {
-  font-size: var(--font-size-caption);
-  color: var(--color-text-tertiary);
-}
-
-/* ============================================================
-   4f. COMMUNITY ENTRY CARD — home page tree hole entry
-   ============================================================ */
-.community-entry-card {
-  padding: var(--spacing-md) var(--spacing-md);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(135deg, rgba(244,212,140,0.14) 0%, rgba(180,140,200,0.10) 100%);
-  border-color: rgba(244,212,140,0.30);
-}
-
-.community-entry-icon {
-  width: 48rpx;
-  height: 48rpx;
-  background: rgba(244,212,140,0.15);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.community-entry-emoji {
-  font-size: var(--font-size-body);
-}
-
-.community-entry-label {
-  display: block;
-  font-weight: 500;
-  color: var(--color-gold);
-}
-
-.community-entry-hint {
-  display: block;
-  margin-top: 4rpx;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  max-width: 380rpx;
-}
-
-/* -----------------------------------------------------------
-   4b. AFTER-DRAW — Card Reveal & Particles
-   ----------------------------------------------------------- */
-
-/* --- Revealed state base --- */
-.card.card--revealed {
-  position: relative;
-  overflow: hidden;
-  border-color: var(--color-gold-dark, #D4B06A) !important;
-  background: linear-gradient(145deg, #2A2A5E 0%, #2E2E62 100%);
-  box-shadow:
-    0 4rpx 24rpx rgba(0, 0, 0, 0.28),
-    0 0 40rpx rgba(244, 212, 140, 0.06),
-    0 0 80rpx rgba(244, 212, 140, 0.03);
-}
-
-/* Glow pseudo-element — static opacity (breathe animation removed) */
-.card.card--revealed::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(ellipse at center, rgba(244, 212, 140, 0.10) 0%, transparent 70%);
-  pointer-events: none;
-  opacity: 0.3;
-  z-index: 0;
-}
-
-/* --- Card rise reveal (dramatic entrance) ---
-   Applied to the after-draw featured card (.card-featured). */
-/* NOTE: card-glow-breathe (infinite) removed from .card-featured — glow now static only */
-.daily-card-enter {
-  animation: rise-reveal 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s both;
-}
-
-@keyframes rise-reveal {
-  0% {
-    opacity: 0;
-    transform: scale(0.85);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* NOTE: particle-field burst removed — over-decoration */
-
-/* --- Text reveal — slide up with stagger --- */
-.reveal-text {
-  animation: slide-up-reveal 0.4s ease-out 0s both;
-  position: relative;
-  z-index: 1;
-}
-
-@keyframes slide-up-reveal {
-  0% {
-    opacity: 0;
-    transform: translateY(20rpx);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* -----------------------------------------------------------
-   5. TYPOGRAPHY ALIASES (page-specific)
-   ----------------------------------------------------------- */
-
-/* Big hero title — handled by .title-1 above */
-
-/* Card title inside daily card */
-.title-2 {
-  font-size: var(--font-size-title, 48rpx);
-  font-weight: var(--font-weight-semibold, 600);
-  color: var(--color-gold, #F4D48C);
-  line-height: var(--line-height-tight, 1.3);
-  text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.08);
-}
-
-/* Card subtitle / small label */
-.title-4 {
-  font-size: var(--font-size-subhead, 36rpx);
-  font-weight: var(--font-weight-medium, 500);
-  color: var(--color-text-primary, #F0EDE8);
-  line-height: var(--line-height-tight, 1.3);
-  letter-spacing: 2rpx;
-}
-
-/* Small body text */
-.body-sm {
-  font-size: var(--font-size-caption, 24rpx);
-  font-weight: var(--font-weight-normal, 400);
-  color: var(--color-lavender, #B8A9E0);
-  line-height: var(--line-height-base, 1.6);
-  letter-spacing: 1rpx;
-}
-
-/* Extra small body text — spread card descriptions */
-.body-xs {
-  font-size: var(--font-size-xs, 20rpx);
-  font-weight: var(--font-weight-normal, 400);
-  color: var(--color-text-tertiary, #A098C0);
-  line-height: var(--line-height-base, 1.6);
-  letter-spacing: 0.5rpx;
-}
-
-/* Accent-colored caption */
-.accent-text {
-  color: var(--color-gold, #F4D48C);
-  font-weight: var(--font-weight-medium, 500);
-  letter-spacing: 2rpx;
-}
-
-/* -----------------------------------------------------------
-   6. SECTION TITLE (spread grid header)
-   ----------------------------------------------------------- */
-
-.section-title {
-  font-size: var(--font-size-subhead, 36rpx);
-  font-weight: var(--font-weight-semibold, 600);
-  color: var(--color-text-primary, #F0EDE8);
-  display: block;
-  margin-bottom: var(--spacing-md, 24rpx);
-  letter-spacing: 2rpx;
-  position: relative;
-  padding-left: var(--spacing-md);
-}
-
-.section-title {
-  padding-left: var(--spacing-md);
-  border-left: 3rpx solid var(--color-gold, #F4D48C);
-}
-
-/* --- Spread grid cards --- */
-.spread-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  padding: var(--spacing-md) var(--spacing-sm);
-}
-
-/* --- Free/Premium tags on spread cards --- */
-.spread-tag {
-  position: absolute;
-  top: 8rpx;
-  right: 8rpx;
-  font-size: var(--font-size-xs);
-  font-weight: 500;
-  padding: 3rpx 12rpx;
-  border-radius: var(--radius-sm);
-  line-height: 1.5;
-  letter-spacing: 0.5rpx;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.spread-tag-free {
-  color: #B8A9E0;
-  background: rgba(184, 169, 224, 0.18);
-}
-
-.spread-tag-premium {
-  color: #F4D48C;
-  background: rgba(244, 212, 140, 0.18);
-}
-
-/* Small theme affinity chip on home page spread cards */
-.spread-theme-chip {
-  display: inline-block;
-  margin-top: 6rpx;
-  padding: 2rpx 12rpx;
-  font-size: var(--font-size-xs);
-  font-weight: 500;
-  border-radius: var(--radius-sm);
-  line-height: 1.6;
-  letter-spacing: 0.5rpx;
-}
-
-.spread-theme-chip--love {
-  color: #F4A4C8;
-  background: rgba(244, 164, 200, 0.15);
-}
-
-.spread-theme-chip--career {
-  color: #8FC9F0;
-  background: rgba(143, 201, 240, 0.15);
-}
-
-/* --- Spread grid cards: constellation map feel --- */
-.section .card-interactive {
-  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 100%);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
-  border-radius: var(--radius-lg, 24rpx);
-  padding: var(--spacing-lg) var(--spacing-md);
-  position: relative;
-  overflow: hidden;
-  box-shadow: var(--shadow-card);
-  transition: transform var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
-}
-
-.section .card-interactive:active {
-  transform: scale(0.97);
-  border-color: rgba(244, 212, 140, 0.20) !important;
-  box-shadow: var(--shadow-pressed);
-}
-
-/* Spread card icon — fixed size, centered */
-.spread-icon {
-  width: 48rpx;
-  height: 48rpx;
-  display: block;
-  margin: 0 auto 16rpx;
-  opacity: 0.85;
-}
-
-/* Spread card text labels */
-.section .card-interactive .body-sm {
-  display: block;
-  font-weight: 600;
-  color: var(--color-text-primary, #F0EDE8);
-  font-size: var(--font-size-caption, 24rpx);
-  letter-spacing: 1rpx;
-}
-
-.section .card-interactive .body-xs {
-  display: block;
-  margin-top: 6rpx;
-}
-
-/* -----------------------------------------------------------
-   7. ERROR STATE
-   ----------------------------------------------------------- */
-
-.error-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 120rpx var(--spacing-lg, 32rpx) 80rpx;
-  text-align: center;
-  animation: page-fade-up 0.6s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94)) forwards;
-}
-
-.error-icon {
-  font-size: calc(var(--font-size-display) + 16rpx);
-  color: var(--color-gold, #F4D48C);
-  opacity: 0.50;
-  margin-bottom: var(--spacing-lg, 32rpx);
-  display: block;
-  text-shadow: 0 0 30rpx rgba(244, 212, 140, 0.10);
-}
-
-.error-text {
-  font-size: var(--font-size-title, 40rpx);
-  font-weight: var(--font-weight-semibold, 600);
-  color: var(--color-text-primary, #F0EDE8);
-  margin-bottom: var(--spacing-xs, 12rpx);
-  display: block;
-}
-
-.error-hint {
-  font-size: var(--font-size-caption, 24rpx);
-  color: var(--color-text-tertiary, #A098C0);
-  margin-bottom: var(--spacing-xl, 48rpx);
-  display: block;
-  line-height: var(--line-height-base, 1.6);
-}
-
-/* Buttons via common.wxss: .btn-ghost, .btn-primary */
-
-/* -----------------------------------------------------------
-   8. DECORATIVE: Daily card icon (✦) special treatment
-   ----------------------------------------------------------- */
-
-.card-body > text:first-child {
-  display: block;
-  margin-bottom: 24rpx;
-  font-size: var(--font-size-title);
-  color: var(--color-gold, #F4D48C);
-  text-shadow: 0 0 30rpx rgba(244, 212, 140, 0.15);
-}
-
-/* ============================================================
-   10. SPREAD GRID — Staggered entrance
-   Each card rises with scale + opacity, 50ms apart
-   ============================================================ */
-
-@keyframes card-staggered {
-  0% {
-    opacity: 0;
-    transform: translateY(24rpx) scale(0.92);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.section > view > .card-interactive {
-  opacity: 0;
-  animation: card-staggered 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-
-.section > view > .card-interactive:nth-child(1) { animation-delay: 0.30s; }
-.section > view > .card-interactive:nth-child(2) { animation-delay: 0.35s; }
-.section > view > .card-interactive:nth-child(3) { animation-delay: 0.40s; }
-.section > view > .card-interactive:nth-child(4) { animation-delay: 0.45s; }
-
-.more-spreads {
-  opacity: 0;
-  animation: card-staggered 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.50s forwards;
-}
-
-/* NOTE: spread-grid shimmer sweep and icon tap pulse removed — restraint */
-
-/* ============================================================
-   11. MORE SPREADS — "查看更多" entry card
-   ============================================================ */
-
-.more-spreads {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: var(--spacing-lg);
-  padding: var(--spacing-md) var(--spacing-md);
-  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 100%);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
-  border-radius: var(--radius-lg, 24rpx);
-  box-shadow: var(--shadow-card);
-  transition: transform var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.more-spreads:active {
-  transform: scale(0.97);
-  border-color: rgba(244, 212, 140, 0.20) !important;
-  box-shadow: var(--shadow-pressed);
-}
-
-.more-text {
-  font-size: var(--font-size-caption, 24rpx);
-  font-weight: var(--font-weight-medium, 500);
-  color: var(--color-gold, #F4D48C);
-  letter-spacing: 1rpx;
-}
-
-.more-arrow {
-  font-size: var(--font-size-body);
-  color: var(--color-gold, #F4D48C);
-  opacity: 0.6;
-  margin-left: 12rpx;
-  transition: transform 0.15s var(--ease-soft, cubic-bezier(0.25, 0.46, 0.45, 0.94));
-}
-
-.more-spreads:active .more-arrow {
-  transform: translateX(6rpx);
-  opacity: 1;
-}
-
-/* ============================================================
-   12. ONBOARDING BUBBLE — Step 1 lightweight hint
-   Dark semi-transparent background + gold border + arrow
-   ============================================================ */
-
-/* Wrapper: positioned relative to daily card area with margin */
-.onboarding-bubble-wrap {
-  position: relative;
-  margin: 0 auto 20rpx;
-  max-width: 520rpx;
-  z-index: 100;
-  opacity: 0;
-  transform: translateY(-10rpx);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  pointer-events: none;
-}
-
-.onboarding-bubble-wrap.bubble-visible {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-
-/* Bubble card */
-.onboarding-bubble {
-  position: relative;
-  padding: 24rpx 32rpx 28rpx;
-  background: rgba(26, 26, 62, 0.95);
-  border: 1.5rpx solid var(--color-gold, #F4D48C);
-  border-radius: 16rpx;
-  text-align: center;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.onboarding-bubble:active {
-  opacity: 0.85;
-}
-
-/* Bubble text — gold title */
-.bubble-text {
-  display: block;
-  font-size: var(--font-size-caption, 24rpx);
-  font-weight: var(--font-weight-medium, 500);
-  color: var(--color-gold, #F4D48C);
-  line-height: 1.6;
-  letter-spacing: 2rpx;
-}
-
-/* Bubble action — white secondary text */
-.bubble-action {
-  display: block;
-  font-size: var(--font-size-xs, 20rpx);
-  color: var(--color-text-primary);
-  margin-top: 8rpx;
-  opacity: 0.75;
-  letter-spacing: 1rpx;
-}
-
-/* Downward-pointing arrow */
-.bubble-arrow {
-  position: absolute;
-  bottom: -14rpx;
-  left: 50%;
-  margin-left: -12rpx;
-  width: 0;
-  height: 0;
-  border-left: 12rpx solid transparent;
-  border-right: 12rpx solid transparent;
-  border-top: 14rpx solid rgba(26, 26, 62, 0.95);
-  z-index: 2;
-}
-
-/* Gold border triangle behind the arrow */
-.bubble-arrow::before {
-  content: '';
-  position: absolute;
-  top: -16rpx;
-  left: -14rpx;
-  width: 0;
-  height: 0;
-  border-left: 14rpx solid transparent;
-  border-right: 14rpx solid transparent;
-  border-top: 16rpx solid var(--color-gold, #F4D48C);
-  z-index: -1;
-}
-
-/* ============================================================
-   13. PARALLAX STARS — Three layers for atmospheric depth
-   Using CSS box-shadow technique (WXSS-compatible)
-   ============================================================ */
-
-/* Base layer — full-screen fixed overlay */
-.stars-layer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
-  overflow: hidden;
-}
-
-/* --- Layer 1 — Distant: 21 tiny dots, very dim, slow drift (was 41, halved for perf) --- */
-.stars-distant::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 2rpx;
-  height: 2rpx;
-  background: transparent;
-  border-radius: 50%;
-  box-shadow:
-    25rpx 40rpx rgba(255,255,255,0.09),
-    120rpx 30rpx rgba(255,255,255,0.10),
-    230rpx 60rpx rgba(255,255,255,0.08),
-    340rpx 85rpx rgba(255,255,255,0.09),
-    455rpx 120rpx rgba(255,255,255,0.08),
-    580rpx 170rpx rgba(255,255,255,0.06),
-    690rpx 210rpx rgba(255,255,255,0.09),
-    130rpx 400rpx rgba(255,255,255,0.06),
-    270rpx 480rpx rgba(255,255,255,0.05),
-    420rpx 520rpx rgba(255,255,255,0.07),
-    560rpx 300rpx rgba(255,255,255,0.08),
-    710rpx 420rpx rgba(255,255,255,0.05),
-    100rpx 630rpx rgba(255,255,255,0.06),
-    260rpx 580rpx rgba(255,255,255,0.07),
-    430rpx 720rpx rgba(255,255,255,0.09),
-    600rpx 680rpx rgba(255,255,255,0.08),
-    140rpx 880rpx rgba(255,255,255,0.08),
-    320rpx 900rpx rgba(255,255,255,0.09),
-    480rpx 950rpx rgba(255,255,255,0.05),
-    660rpx 920rpx rgba(255,255,255,0.06),
-    730rpx 780rpx rgba(255,255,255,0.08);
-}
-
-/* --- Layer 2 — Mid: 9 gold-tinted dots, medium drift (was 18, halved for perf) --- */
-.stars-mid::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 3rpx;
-  height: 3rpx;
-  background: transparent;
-  border-radius: 50%;
-  box-shadow:
-    55rpx 130rpx rgba(244,212,140,0.08),
-    250rpx 230rpx rgba(244,212,140,0.09),
-    470rpx 280rpx rgba(244,212,140,0.08),
-    700rpx 240rpx rgba(244,212,140,0.09),
-    200rpx 450rpx rgba(244,212,140,0.08),
-    460rpx 500rpx rgba(244,212,140,0.09),
-    670rpx 560rpx rgba(244,212,140,0.08),
-    250rpx 720rpx rgba(244,212,140,0.09),
-    530rpx 790rpx rgba(244,212,140,0.08);
-}
-
-/* --- Layer 3 — Close: 4 bright gold dots, fast drift with glow (was 7, ~halved for perf) --- */
-.stars-close::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 5rpx;
-  height: 5rpx;
-  background: transparent;
-  border-radius: 50%;
-  box-shadow:
-    120rpx 160rpx rgba(244,212,140,0.30),
-    120rpx 160rpx 8rpx 2rpx rgba(244,212,140,0.06),
-    520rpx 220rpx rgba(244,212,140,0.30),
-    520rpx 220rpx 8rpx 2rpx rgba(244,212,140,0.06),
-    450rpx 600rpx rgba(244,212,140,0.30),
-    450rpx 600rpx 8rpx 2rpx rgba(244,212,140,0.06),
-    300rpx 800rpx rgba(244,212,140,0.30),
-    300rpx 800rpx 8rpx 2rpx rgba(244,212,140,0.06);
-}
-
-/* ============================================================
-   14. NEBULA GLOW — Ultra-subtle colored gradients
-   ============================================================ */
-
-.nebula {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.nebula-lavender {
-  background: radial-gradient(
-    ellipse 65% 50% at 80% 20%,
-    rgba(184, 169, 224, 0.04) 0%,
-    transparent 70%
-  );
-  animation: none;
-}
-
-.nebula-gold {
-  background: radial-gradient(
-    ellipse 55% 60% at 20% 80%,
-    rgba(244, 212, 140, 0.03) 0%,
-    transparent 65%
-  );
-  animation: none;
-}
-
-/* ============================================================
-   17. CARD GLOW — Breathing golden aura + warm breathe
-   ============================================================ */
-
-@keyframes featured-breathe {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.8; }
-}
-
-@keyframes card-glow-breathe {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.8; }
-}
-
-/* ============================================================
-   18. SPARKLE PARTICLES — Floating near revealed card surface
-   ============================================================ */
-
-.sparkle-field {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 2;
-  overflow: hidden;
-  border-radius: inherit;
-}
-
-.sparkle {
-  position: absolute;
-  width: 4rpx;
-  height: 4rpx;
-  background: #F4D48C;
-  border-radius: 50%;
-  opacity: 0;
-  box-shadow: 0 0 6rpx 2rpx rgba(244,212,140,0.20);
-}
-
-.s1 { top: 15%; left: 8%;  animation: sparkle-float 3.2s ease-in-out 0.3s infinite; }
-.s2 { top: 22%; left: 88%; animation: sparkle-float 3.8s ease-in-out 0.9s infinite; }
-.s3 { top: 70%; left: 10%; animation: sparkle-float 2.8s ease-in-out 0.1s infinite; }
-
-@keyframes sparkle-float {
-  0%, 100% {
-    opacity: 0;
-    transform: translateY(12rpx) scale(0.4);
-  }
-  25% {
-    opacity: 0.2;
-    transform: translateY(-6rpx) scale(1.1);
-  }
-  50% {
-    opacity: 0.12;
-    transform: translateY(-12rpx) scale(0.7);
-  }
-  75% {
-    opacity: 0.15;
-    transform: translateY(-2rpx) scale(0.9);
-  }
-}
-
-/* --- Reminder badges --- */
-.daily-updated-badge {
-  display: inline-block;
-  margin-top: 16rpx;
-  padding: var(--spacing-xxs) var(--spacing-sm);
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-gold);
-  background: rgba(244, 212, 140, 0.10);
-  border: 1rpx solid rgba(244, 212, 140, 0.20);
-  border-radius: var(--radius-pill);
-  letter-spacing: 1rpx;
-}
-
-.daily-reminder-badge {
-  display: inline-block;
-  margin-top: 16rpx;
-  padding: var(--spacing-xxs) var(--spacing-sm);
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-medium);
-  color: rgba(244, 212, 140, 0.55);
-  background: rgba(244, 212, 140, 0.06);
-  border: 1rpx solid rgba(244, 212, 140, 0.12);
-  border-radius: var(--radius-pill);
-  letter-spacing: 1rpx;
-}
-
-.card-ready .card-featured {
-  animation:
-    featured-breathe 5s cubic-bezier(0.45, 0, 0.55, 1) infinite,
-    card-ready-pulse 2s cubic-bezier(0.45, 0, 0.55, 1) infinite !important;
-}
-
-@keyframes card-ready-pulse {
-  0%, 100% { border-color: rgba(244, 212, 140, 0.40); opacity: 0.4; }
-  50% { border-color: rgba(244, 212, 140, 0.70); opacity: 0.9; }
-}
-
-/* --- Reflection prompt --- */
-.reflection-prompt {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-xxs);
-  margin-top: var(--spacing-sm);
-  padding: var(--spacing-sm);
-  position: relative;
-  z-index: 1;
-}
-
-.reflection-text {
-  font-size: var(--font-size-caption);
-  color: var(--color-lavender);
-  line-height: var(--line-height-base);
-  letter-spacing: 1rpx;
-  opacity: 0.80;
-}
-
-.reflection-link {
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-gold);
-  letter-spacing: 1rpx;
-  padding: 6rpx var(--spacing-sm);
-  border-bottom: 1rpx dashed rgba(244, 212, 140, 0.25);
-  transition: opacity var(--duration-fast) var(--ease-out), border-bottom-color var(--duration-fast) var(--ease-out);
-}
-
-.reflection-link:active {
-  opacity: 0.70;
-  border-bottom-color: rgba(244, 212, 140, 0.50);
-}
-
-/* -----------------------------------------------------------
-   11. FREE TIER — Text-only quota display (no progress bar)
-   ----------------------------------------------------------- */
-.free-quota-bar {
-  margin: var(--spacing-lg) 0 var(--spacing-sm);
-  text-align: center;
-  padding: var(--spacing-sm) var(--spacing-lg);
-}
-
-.quota-text {
-  font-size: var(--font-size-xs);
-  color: var(--color-lavender, #C8B8E8);
-  letter-spacing: 0.04em;
-  line-height: 1.6;
-}
-
-.quota-text--exhausted {
-  color: var(--color-gold, #F4D48C);
-  font-weight: 500;
-}
-
-/* -----------------------------------------------------------
-   11b. (removed) 9.9新人专享 CTA — paywalls moved to post-reading only
-   ----------------------------------------------------------- */
-
-/* ============================================================
-   20b. FLEXBOX GRID — WXSS-compatible replacements for CSS Grid
-   WXSS does NOT support display:grid
-   ============================================================ */
-
-/* 3-column skeleton grid */
-.skeleton-grid-3 {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-sm);
-}
-
-.skeleton-grid-3 > .skeleton--card-sm {
-  width: calc((100% - 32rpx) / 3);
-}
-
-/* 2-column spread card grid */
-.spread-grid-2 {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-sm);
-}
-
-.spread-grid-2 > .card-interactive {
-  width: calc((100% - 16rpx) / 2);
-  box-sizing: border-box;
-}
-
-/* ============================================================
-   22. DAILY CARD TEACHING ENTRY — v2.0
-   ============================================================ */
-
-.daily-card-featured {
-  position: relative;
-}
-
-/* Teaching card panel — compact thumbnail + CTA layout.
-   Used with .card-featured (was .card--teaching; the variant
-   was absorbed into the consolidated card system). */
+/* 抽牌后：牌面（保留逻辑与类名；宽高由 .painting 决定，勿覆盖） */
 .daily-card-panel {
   position: relative;
-  overflow: hidden;
-  border-color: var(--color-gold-dark, #D4B06A) !important;
-  background: linear-gradient(145deg, #2A2A5E 0%, #2E2E62 100%);
-  box-shadow:
-    0 4rpx 24rpx rgba(0, 0, 0, 0.28),
-    0 0 50rpx rgba(244, 212, 140, 0.15),
-    0 0 100rpx rgba(244, 212, 140, 0.06);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-lg);
-  text-align: center;
 }
 
-/* Card thumbnail */
 .daily-card-thumb-wrap {
-  width: 200rpx;
-  height: 280rpx;
-  margin-bottom: 20rpx;
-  border-radius: var(--radius-md, 16rpx);
+  width: 100%;
+  height: 100%;
+  border-radius: 32rpx;
   overflow: hidden;
-  box-shadow: 0 0 30rpx rgba(244, 212, 140, 0.20), 0 0 60rpx rgba(244, 212, 140, 0.08);
+  position: relative;
+  z-index: 1;
 }
-
 .daily-card-thumb {
   width: 100%;
   height: 100%;
+  display: block;
 }
-
-/* Fallback for daily card thumbnail when image fails to load */
 .daily-card-thumb-wrap.daily-card-thumb-error {
-  background: linear-gradient(145deg, #25255A 0%, #2E2E62 100%);
-  border: 1rpx solid rgba(212, 168, 83, 0.20);
+  background: linear-gradient(160deg, #F4EDE0, #EFE6D8);
+  border: 1rpx dashed var(--e3-line-soft);
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
 .daily-card-thumb-fallback {
   width: 100%;
   height: 100%;
@@ -1210,263 +439,860 @@
   align-items: center;
   justify-content: center;
 }
-
 .thumb-fallback-name {
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-lavender-light);
+  font-family: var(--e3-serif);
+  font-size: 24rpx;
+  font-weight: 500;
+  color: var(--e3-ink-soft);
   text-align: center;
   letter-spacing: 3rpx;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  background: rgba(26, 16, 53, 0.70);
-  border: 1rpx solid rgba(212, 168, 83, 0.20);
-  border-radius: var(--radius-sm);
+  padding: 14rpx 24rpx;
+  background: rgba(255, 253, 248, 0.85);
+  border: 1rpx solid var(--e3-line);
+  border-radius: 12rpx;
   max-width: 80%;
   line-height: 1.5;
-  text-shadow: 0 0 8rpx rgba(212, 168, 83, 0.30);
 }
 
-/* Card name */
+/* 已学习徽章（牌面左上角） */
+.daily-card-badge {
+  position: absolute;
+  top: 20rpx;
+  left: 20rpx;
+  z-index: 3;
+  display: inline-block;
+  padding: 8rpx 22rpx;
+  font-size: 20rpx;
+  font-weight: 500;
+  color: var(--e3-pink-ink);
+  background: rgba(255, 253, 248, 0.92);
+  border: 1rpx solid var(--e3-line-soft);
+  border-radius: 999rpx;
+  letter-spacing: 3rpx;
+  box-shadow: var(--e3-shadow);
+}
+
+/* 星光粒子（仅未学习时） */
+.sparkle-field {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+  overflow: hidden;
+  border-radius: inherit;
+}
+.sparkle {
+  position: absolute;
+  width: 4rpx;
+  height: 4rpx;
+  background: var(--e3-gold);
+  border-radius: 50%;
+  opacity: 0;
+  box-shadow: 0 0 6rpx 2rpx rgba(201, 169, 124, 0.25);
+}
+.s1 { top: 15%; left: 8%;  animation: sparkle-float 3.2s ease-in-out 0.3s infinite; }
+.s2 { top: 22%; left: 88%; animation: sparkle-float 3.8s ease-in-out 0.9s infinite; }
+.s3 { top: 70%; left: 10%; animation: sparkle-float 2.8s ease-in-out 0.1s infinite; }
+@keyframes sparkle-float {
+  0%, 100% { opacity: 0; transform: translateY(12rpx) scale(0.4); }
+  25% { opacity: 0.3; transform: translateY(-6rpx) scale(1.1); }
+  50% { opacity: 0.15; transform: translateY(-12rpx) scale(0.7); }
+  75% { opacity: 0.25; transform: translateY(-2rpx) scale(0.9); }
+}
+
+/* 牌名与 CTA（抽牌后） */
+.title-4 {
+  font-weight: 500;
+  line-height: 1.3;
+}
 .daily-card-name {
   display: block;
-  margin-bottom: 8rpx;
-  color: var(--color-gold, #F4D48C);
+  font-family: var(--e3-serif);
+  font-size: 36rpx;
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 4rpx;
+  margin-top: 22rpx;
+  text-align: center;
 }
-
-/* CTA text (unflipped) */
 .daily-card-cta {
   display: block;
-  color: var(--color-lavender, #B8A9E0);
+  font-size: 22rpx;
+  color: var(--e3-ink-faint);
   letter-spacing: 2rpx;
-  opacity: 0.85;
+  margin-top: 8rpx;
+  text-align: center;
 }
-
-/* Revisit text (flipped) */
 .daily-card-revisit {
   display: block;
-  color: var(--color-text-tertiary, #A098C0);
-  opacity: 0.65;
-}
-
-/* "已学习 ✓" badge — green, pill-shaped */
-.daily-card-badge {
-  display: inline-block;
-  padding: 6rpx var(--spacing-sm);
-  font-size: var(--font-size-caption, 24rpx);
-  font-weight: var(--font-weight-medium, 500);
-  color: #5EE0A0;
-  background: rgba(94, 224, 160, 0.12);
-  border: 1rpx solid rgba(94, 224, 160, 0.25);
-  border-radius: var(--radius-pill, 999rpx);
+  font-size: 22rpx;
+  color: var(--e3-ink-faint);
   letter-spacing: 2rpx;
-  margin-bottom: 12rpx;
+  margin-top: 8rpx;
+  text-align: center;
 }
 
-/* NOTE: daily-card-glow-overlay (breathing glow) removed — card keeps its
-   static box-shadow border glow from .daily-card-panel (no animation) */
-
-/* ============================================================
-   24. TASKS CARD — "今日任务" widget on homepage
-   ============================================================ */
-
-.tasks-card {
-  padding: var(--spacing-md, 24rpx);
-  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 100%);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
-  border-radius: var(--radius-lg, 24rpx);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: transform var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+/* 保存今日卡牌（弱化为小字链接） */
+.daily-share-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16rpx;
+  padding: 12rpx 0;
+  position: relative;
+  z-index: 2;
+}
+.daily-share-link text {
+  font-size: 20rpx;
+  font-weight: 400;
+  color: var(--e3-ink-faint);
+  letter-spacing: 2rpx;
+  opacity: 0.7;
+  padding: 6rpx 24rpx;
+  border-bottom: 1rpx dashed rgba(201, 169, 124, 0.35);
+}
+.daily-share-link:active text {
+  opacity: 1;
+  color: var(--e3-pink-ink);
 }
 
-.tasks-card:active {
+/* -----------------------------------------------------------
+   3c. 明日之牌预告 — 回流钩子（衬线小字 · 墨灰 #8A8478 · 细金描边 · E3）
+   ----------------------------------------------------------- */
+.tomorrow-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 22rpx;
+  padding: 12rpx 24rpx;
+  border: 1rpx solid var(--e3-line-soft);
+  border-radius: 16rpx;
+  background: rgba(255, 253, 248, 0.62);
+  box-shadow: var(--e3-shadow);
+  position: relative;
+  z-index: 2;
+}
+.tomorrow-hint-text {
+  font-family: var(--e3-serif);
+  font-size: 24rpx;
+  color: var(--e3-ink-soft); /* #8A8478 墨灰 */
+  letter-spacing: 3rpx;
+}
+.tomorrow-hint:active {
+  background: rgba(232, 196, 190, 0.22);
+}
+
+/* -----------------------------------------------------------
+   4. 牌语 + CTA
+   ----------------------------------------------------------- */
+.phrase {
+  margin-top: 26rpx;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+.phrase-text {
+  font-family: var(--e3-serif);
+  font-size: 30rpx;
+  color: var(--e3-ink);
+  letter-spacing: 3rpx;
+  line-height: 1.6;
+}
+
+.cta-row {
+  margin-top: 30rpx;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  z-index: 3;
+}
+
+/* CTA — 哑光雾粉实心 + 深棕字（覆盖全局 .btn/.btn-primary） */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.btn-primary {
+  min-width: 420rpx;
+  height: 104rpx;
+  padding: 0 70rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999rpx;
+  background: var(--e3-pink);
+  color: var(--color-btn-pink-ink);
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  font-size: 30rpx;
+  letter-spacing: 8rpx;
+  text-indent: 8rpx; /* 抵消末字间距，视觉居中 */
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
+  box-sizing: border-box;
+}
+.btn-primary--pressed {
+  transform: scale(0.965);
+  box-shadow: 0 2rpx 10rpx rgba(61, 58, 54, 0.08), var(--e3-hi);
+}
+
+/* -----------------------------------------------------------
+   5. ZONE 2 — 入口卡片（星光树洞 / 恢复 / 记录今天）
+   ----------------------------------------------------------- */
+.card-pressed {
   transform: scale(0.97);
-  border-color: rgba(244, 212, 140, 0.20) !important;
 }
 
-.tasks-card-header {
+/* 覆盖全局 .card-interactive 深色样式 */
+.card-interactive {
+  background: var(--e3-cream-hi);
+  border: 1rpx solid var(--e3-line);
+  border-radius: 28rpx;
+  padding: 28rpx 32rpx;
+  box-shadow: var(--e3-shadow);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+.community-entry-card,
+.diary-entry-card,
+.pending-reading-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--spacing-sm, 16rpx);
+}
+.community-entry-card {
+  border-color: var(--e3-line-soft);
 }
 
-.tasks-card-title {
-  font-size: var(--font-size-subhead, 36rpx);
-  font-weight: 600;
-  color: var(--color-gold, #F4D48C);
-  letter-spacing: 3rpx;
-}
-
-.tasks-card-stats {
+.diary-entry-left,
+.pending-reading-left {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs, 12rpx);
+  gap: 20rpx;
+  min-width: 0;
+  flex: 1;
 }
 
-.tasks-card-progress {
-  font-size: var(--font-size-xs, 20rpx);
-  color: var(--color-lavender, #B8A9E0);
-  letter-spacing: 1rpx;
-  flex-shrink: 0;
-}
-
-.tasks-progress-bar {
-  width: 60rpx;
-  height: 6rpx;
-  background: rgba(184, 169, 224, 0.12);
-  border-radius: 999rpx;
-  overflow: hidden;
-}
-
-.tasks-progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #F4D48C, #D4B06A);
-  border-radius: 999rpx;
-  transition: width 0.4s ease-out;
-}
-
-.tasks-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs, 12rpx);
-  margin-bottom: var(--spacing-sm, 16rpx);
-}
-
-.task-item {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm, 16rpx);
-  padding: var(--spacing-xs, 12rpx) 0;
-  border-bottom: 1rpx solid rgba(244, 212, 140, 0.06);
-}
-
-.task-item:last-child {
-  border-bottom: none;
-}
-
-.task-check {
-  width: 32rpx;
-  height: 32rpx;
+/* 星光树洞图标（粉雾圆底） */
+.community-entry-icon {
+  width: 88rpx;
+  height: 88rpx;
+  background: rgba(232, 196, 190, 0.42);
   border-radius: 50%;
-  border: 2rpx solid rgba(244, 212, 140, 0.20);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  border: 1rpx solid rgba(201, 169, 124, 0.25);
+}
+.community-entry-emoji {
+  font-size: 40rpx;
 }
 
-.task-check--checked {
-  background: linear-gradient(135deg, #F4D48C 0%, #D4B06A 100%);
-  border-color: #F4D48C;
+/* 通用小图标 */
+.diary-entry-icon {
+  width: 88rpx;
+  height: 88rpx;
+  flex-shrink: 0;
 }
-
-.task-check-icon {
-  font-size: 18rpx;
-  color: #1A1A3E;
-  font-weight: 700;
+.pending-reading-icon-wrap {
+  width: 88rpx;
+  height: 88rpx;
+  background: rgba(232, 196, 190, 0.42);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1rpx solid rgba(201, 169, 124, 0.25);
 }
-
-.task-name {
-  font-size: var(--font-size-caption, 24rpx);
-  color: var(--color-text-primary, #F0EDE8);
-  letter-spacing: 1rpx;
-}
-
-.task-item--done .task-name {
-  color: var(--color-gold, #F4D48C);
-  text-decoration: line-through;
-  opacity: 0.7;
-}
-
-.tasks-card-footer {
-  padding-top: var(--spacing-xs, 12rpx);
-  border-top: 1rpx solid rgba(244, 212, 140, 0.06);
-}
-
-.tasks-card-reward {
-  font-size: var(--font-size-xs, 20rpx);
-  color: var(--color-text-tertiary, #9A95B8);
-  letter-spacing: 1rpx;
+.pending-reading-icon {
+  width: 48rpx;
+  height: 48rpx;
   display: block;
+}
+
+/* 文字 */
+.body-sm {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 1rpx;
+  line-height: 1.5;
+}
+.body-xs {
+  font-size: 22rpx;
+  color: var(--e3-ink-soft);
+  line-height: 1.5;
+}
+.community-entry-label,
+.pending-reading-label,
+.diary-entry-label {
+  display: block;
+  font-family: var(--e3-serif);
+  font-size: 28rpx;
+  letter-spacing: 2rpx;
+}
+.community-entry-hint,
+.pending-reading-hint,
+.diary-entry-hint {
+  display: block;
+  margin-top: 6rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 380rpx;
+}
+.diary-entry-arrow,
+.pending-reading-arrow {
+  font-size: 28rpx;
+  color: var(--e3-ink-faint);
+  flex-shrink: 0;
+  margin-left: 16rpx;
+}
+
+/* -----------------------------------------------------------
+   6. 免费次数提示
+   ----------------------------------------------------------- */
+.free-quota-bar {
+  margin: 30rpx 0 6rpx;
+  text-align: center;
+  padding: 16rpx 32rpx;
+}
+.quota-text {
+  font-size: 20rpx;
+  color: var(--e3-ink-faint);
+  letter-spacing: 2rpx;
+  line-height: 1.6;
+}
+.quota-text--exhausted {
+  color: var(--e3-pink-ink);
+  font-weight: 500;
+}
+
+/* -----------------------------------------------------------
+   7. 牌阵区
+   ----------------------------------------------------------- */
+.section {
+  margin-top: 34rpx;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  margin-bottom: 26rpx;
+}
+
+/* 牌阵区标题行 — 居中标题 + 右侧免费次数小字（P0-1 重构） */
+.spread-head-row {
+  position: relative;
+  margin-bottom: 26rpx;
+}
+.spread-head-row .section-head {
+  margin-bottom: 0;
+}
+.spread-quota {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 40%;
+}
+.spread-quota .quota-text {
+  font-size: 20rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 1rpx;
+}
+.sec-line {
+  width: 70rpx;
+  height: 1rpx;
+  background: rgba(201, 169, 124, 0.35);
+}
+.sec-dot {
+  width: 6rpx;
+  height: 6rpx;
+  border-radius: 50%;
+  background: rgba(201, 169, 124, 0.55);
+}
+.section-title {
+  font-family: var(--e3-serif);
+  font-size: 32rpx;
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 8rpx;
+  display: block;
+}
+
+.spread-grid-2 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24rpx;
+}
+.spread-grid-2 > .card-interactive {
+  width: calc((100% - 24rpx) / 2);
+  box-sizing: border-box;
+}
+
+/* 牌阵卡 */
+.spread-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 40rpx 20rpx 34rpx;
+  gap: 10rpx;
+}
+.spread-card .body-sm {
+  font-family: var(--e3-serif);
+  font-size: 28rpx;
+  letter-spacing: 2rpx;
+}
+.spread-card .body-xs {
+  font-size: 20rpx;
+  letter-spacing: 1rpx;
+}
+
+.spread-icon {
+  width: 56rpx;
+  height: 56rpx;
+  display: block;
+  margin: 0 auto 14rpx;
+  opacity: 0.9;
+}
+
+/* 免费 / 会员标签 */
+.spread-tag {
+  position: absolute;
+  top: 14rpx;
+  right: 14rpx;
+  font-size: 20rpx;
+  font-weight: 500;
+  padding: 4rpx 14rpx;
+  border-radius: 999rpx;
+  line-height: 1.5;
+  letter-spacing: 1rpx;
+  z-index: 2;
+  pointer-events: none;
+}
+.spread-tag-free {
+  color: #8A6F4E;
+  background: rgba(201, 169, 124, 0.14);
+}
+.spread-tag-premium {
+  color: var(--color-btn-pink-ink);
+  background: var(--e3-pink);
+}
+
+/* 主题小标签 */
+.spread-theme-chip {
+  display: inline-block;
+  margin-top: 8rpx;
+  padding: 2rpx 14rpx;
+  font-size: 20rpx;
+  font-weight: 500;
+  border-radius: 999rpx;
+  line-height: 1.6;
+  letter-spacing: 1rpx;
+}
+.spread-theme-chip--love {
+  color: var(--e3-pink-ink);
+  background: rgba(232, 196, 190, 0.35);
+}
+.spread-theme-chip--career {
+  color: #7A8F74;
+  background: rgba(159, 184, 154, 0.30);
+}
+
+/* 查看更多 */
+.more-spreads {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  margin-top: 24rpx;
+  padding: 26rpx 32rpx;
+  border-radius: 28rpx;
+  background: var(--e3-cream-hi);
+  border: 1rpx dashed var(--e3-line-soft);
+  box-shadow: none;
+}
+.more-text {
+  font-family: var(--e3-serif);
+  font-size: 26rpx;
+  font-weight: 500;
+  color: var(--e3-ink-soft);
+  letter-spacing: 2rpx;
+}
+.more-arrow {
+  font-size: 26rpx;
+  color: var(--e3-ink-faint);
+  transition: transform 0.15s ease;
+}
+.card-interactive:active .more-arrow {
+  transform: translateX(6rpx);
+}
+
+/* 耗尽态：补充解读次数（小号胶囊按钮 · 单入口） */
+.refill-quota-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 26rpx auto 0;
+  padding: 18rpx 48rpx;
+  border-radius: 999rpx;
+  background: var(--e3-cream-hi);
+  border: 1rpx solid rgba(201, 169, 124, 0.45);
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  width: fit-content;
+}
+.refill-quota-btn--pressed {
+  transform: scale(0.96);
+  box-shadow: 0 2rpx 10rpx rgba(61, 58, 54, 0.08), var(--e3-hi);
+}
+.refill-quota-text {
+  font-family: var(--e3-serif);
+  font-size: 24rpx;
+  font-weight: 500;
+  color: var(--e3-gold-deep);
+  letter-spacing: 3rpx;
+}
+
+/* -----------------------------------------------------------
+   7b. 今日快捷 — 三合一紧凑横排（树洞 / 记录今天 / 继续解读）
+   ----------------------------------------------------------- */
+.quick-entry-row {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 30rpx;
+}
+.quick-entry-card {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14rpx;
+  padding: 30rpx 12rpx 26rpx;
+  background: var(--e3-cream-hi);
+  border: 1rpx solid var(--e3-line);
+  border-radius: 24rpx;
+  box-shadow: var(--e3-shadow);
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+.quick-entry-icon {
+  width: 76rpx;
+  height: 76rpx;
+  border-radius: 50%;
+  background: rgba(232, 196, 190, 0.42);
+  border: 1rpx solid rgba(201, 169, 124, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.quick-entry-emoji {
+  font-size: 36rpx;
+  line-height: 1;
+}
+.quick-entry-img {
+  width: 40rpx;
+  height: 40rpx;
+  display: block;
+}
+.quick-entry-label {
+  font-family: var(--e3-serif);
+  font-size: 24rpx;
+  color: var(--e3-ink);
+  letter-spacing: 2rpx;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* -----------------------------------------------------------
+   8. 加载骨架（奶油版）
+   ----------------------------------------------------------- */
+.skeleton {
+  background: linear-gradient(90deg, var(--e3-paper) 25%, rgba(255, 253, 248, 0.75) 37%, var(--e3-paper) 63%);
+  background-size: 400% 100%;
+  animation: shimmer-sweep 1.8s ease-in-out infinite;
+  border-radius: 12rpx;
+}
+@keyframes shimmer-sweep {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+.skeleton--circle {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+}
+.skeleton--text {
+  height: 28rpx;
+  width: 100%;
+  margin-bottom: 16rpx;
+}
+.skeleton--text-sm {
+  height: 24rpx;
+  width: 100%;
+  margin-bottom: 16rpx;
+}
+.skeleton--title {
+  height: 36rpx;
+  width: 60%;
+  margin-bottom: 16rpx;
+}
+.skeleton--block {
+  height: 200rpx;
+  border-radius: 24rpx;
+}
+.skeleton--card-sm {
+  height: 140rpx;
+  border-radius: 24rpx;
+}
+.skeleton-grid-3 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24rpx;
+}
+.skeleton-grid-3 > .skeleton--card-sm {
+  width: calc((100% - 48rpx) / 3);
+}
+
+/* -----------------------------------------------------------
+   9. 错误状态（E3 奶油版）
+   ----------------------------------------------------------- */
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 160rpx 32rpx 80rpx;
   text-align: center;
 }
-
-/* ============================================================
-   ACCESSIBILITY: Reduced Motion
-   ============================================================ */
-@media (prefers-reduced-motion: reduce) {
-  view, text, image, button, scroll-view, swiper, swiper-item, canvas {
-    animation-duration: 0s !important;
-    animation-delay: 0s !important;
-    transition-duration: 0s !important;
-  }
-  .sparkle-field .sparkle { opacity: 0; }
-  .to-star { animation: none !important; opacity: 0.08; }
-  .tarot-overlay-content { animation: none; }
+.error-text {
+  font-family: var(--e3-serif);
+  font-size: 40rpx;
+  font-weight: 500;
+  color: var(--e3-ink);
+  margin-bottom: 16rpx;
+  display: block;
+  letter-spacing: 4rpx;
+}
+.error-hint {
+  font-size: 24rpx;
+  color: var(--e3-ink-soft);
+  margin-bottom: 48rpx;
+  display: block;
+  line-height: 1.6;
 }
 
-/* ============================================================
-   25. TAROT EXPLAINER OVERLAY — Immersive cosmic overlay
-   Full-screen fixed overlay with centered card content,
-   golden border, floating stars, and an entrance animation.
-   ============================================================ */
+/* 错误页重试按钮（覆盖全局 .btn-ghost） */
+button.btn-ghost {
+  background: var(--e3-cream-hi);
+  color: var(--e3-ink-soft);
+  border: 1rpx solid var(--e3-line-soft);
+  border-radius: 999rpx;
+  padding: 0 56rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  font-size: 26rpx;
+  font-weight: 500;
+  letter-spacing: 3rpx;
+  box-shadow: var(--e3-shadow);
+}
+button.btn-ghost::after {
+  border: none;
+}
+button.btn-ghost:active {
+  transform: scale(0.96);
+  color: var(--e3-ink);
+}
 
-/* --- Full-screen backdrop --- */
+/* -----------------------------------------------------------
+   10. 引导浮层（onboarding · 保留全部逻辑与类名）
+   ----------------------------------------------------------- */
+.onboarding-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(250, 246, 239, 0.96);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48rpx;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.onboarding-overlay--visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.onboarding-card {
+  position: relative;
+  width: 100%;
+  max-width: 620rpx;
+  background: var(--e3-cream-hi);
+  border: 1rpx solid var(--e3-line);
+  border-radius: 32rpx;
+  padding: 48rpx 40rpx 36rpx;
+  text-align: center;
+  box-shadow: 0 16rpx 60rpx rgba(61, 58, 54, 0.14), var(--e3-hi);
+  animation: overlay-enter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+@keyframes overlay-enter {
+  0% { opacity: 0; transform: scale(0.92); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.onboarding-all-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 26rpx;
+  margin-bottom: 34rpx;
+}
+.onboarding-step-mini {
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+  text-align: left;
+}
+.onboarding-emoji-wrap {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(232, 196, 190, 0.42);
+  border: 1rpx solid rgba(201, 169, 124, 0.25);
+  flex-shrink: 0;
+}
+.onboarding-emoji {
+  font-size: 40rpx;
+}
+.onboarding-step-mini-text {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+.onboarding-step-mini-title {
+  font-family: var(--e3-serif);
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 3rpx;
+  display: block;
+}
+.onboarding-step-mini-desc {
+  font-size: 22rpx;
+  color: var(--e3-ink-soft);
+  letter-spacing: 1rpx;
+  display: block;
+}
+
+.zodiac-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16rpx;
+  margin: 34rpx 0 20rpx;
+  width: 100%;
+  max-width: 520rpx;
+}
+.zodiac-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: calc((100% - 32rpx) / 3);
+  padding: 18rpx 8rpx;
+  background: rgba(201, 169, 124, 0.07);
+  border: 1rpx solid rgba(201, 169, 124, 0.22);
+  border-radius: 20rpx;
+  box-sizing: border-box;
+  transition: transform 0.2s ease-out, background 0.2s ease-out, border-color 0.2s ease-out;
+}
+.zodiac-item:active {
+  background: rgba(232, 196, 190, 0.35);
+  border-color: rgba(201, 169, 124, 0.45);
+  transform: scale(0.95);
+}
+.zodiac-item-emoji {
+  font-size: 36rpx;
+  display: block;
+  margin-bottom: 6rpx;
+}
+.zodiac-item-name {
+  font-size: 20rpx;
+  color: var(--e3-ink-soft);
+  letter-spacing: 1rpx;
+  display: block;
+}
+
+.zodiac-skip {
+  display: inline-block;
+  padding: 12rpx 24rpx;
+}
+.zodiac-skip-text {
+  font-size: 22rpx;
+  color: var(--e3-ink-soft);
+  letter-spacing: 2rpx;
+  border-bottom: 1rpx dashed rgba(201, 169, 124, 0.5);
+}
+
+/* -----------------------------------------------------------
+   11. 塔罗简介浮层（保留全部逻辑与类名）
+   ----------------------------------------------------------- */
 .tarot-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(26, 26, 62, 0.96);
-  z-index: var(--z-modal);
+  background: rgba(250, 246, 239, 0.96);
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-lg);
+  padding: 48rpx;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.4s var(--ease-soft);
+  transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
-
 .tarot-overlay--visible {
   opacity: 1;
   pointer-events: auto;
 }
-
-/* --- Centered content card --- */
 .tarot-overlay-content {
   position: relative;
   width: 100%;
-  max-width: 580rpx;
-  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 100%);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.30);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-2xl) var(--spacing-lg) var(--spacing-xl);
+  max-width: 620rpx;
+  background: var(--e3-cream-hi);
+  border: 1rpx solid var(--e3-line);
+  border-radius: 32rpx;
+  padding: 56rpx 44rpx 44rpx;
   text-align: center;
   overflow: hidden;
-  box-shadow:
-    0 8rpx 40rpx rgba(0, 0, 0, 0.35),
-    0 0 60rpx rgba(244, 212, 140, 0.10),
-    0 0 120rpx rgba(244, 212, 140, 0.05);
-  animation: overlay-enter 0.4s var(--ease-soft) forwards;
-  transform-origin: center;
+  box-shadow: 0 16rpx 60rpx rgba(61, 58, 54, 0.14), var(--e3-hi);
+  animation: overlay-enter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
-
-@keyframes overlay-enter {
-  0% {
-    opacity: 0;
-    transform: scale(0.92);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* --- Star particles inside the card (reuse sparkle-float) --- */
 .tarot-overlay-stars {
   position: absolute;
   top: 0;
@@ -1477,17 +1303,15 @@
   overflow: hidden;
   border-radius: inherit;
 }
-
 .to-star {
   position: absolute;
   width: 4rpx;
   height: 4rpx;
-  background: #F4D48C;
+  background: var(--e3-gold);
   border-radius: 50%;
   opacity: 0;
-  box-shadow: 0 0 6rpx 2rpx rgba(244, 212, 140, 0.20);
+  box-shadow: 0 0 6rpx 2rpx rgba(201, 169, 124, 0.2);
 }
-
 .to-star.s1 { top: 12%; left: 10%; animation: sparkle-float 3.2s ease-in-out 0.3s infinite; }
 .to-star.s2 { top: 18%; left: 85%; animation: sparkle-float 3.8s ease-in-out 0.9s infinite; }
 .to-star.s3 { top: 75%; left: 8%; animation: sparkle-float 2.8s ease-in-out 0.1s infinite; }
@@ -1495,442 +1319,84 @@
 .to-star.s5 { top: 85%; left: 45%; animation: sparkle-float 4.2s ease-in-out 2.2s infinite; }
 .to-star.s6 { top: 30%; left: 50%; animation: sparkle-float 2.6s ease-in-out 0.7s infinite; }
 
-/* --- Central glowing card icon --- */
 .tarot-overlay-icon {
   position: relative;
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: 28rpx;
 }
-
 .to-card-icon {
-  width: 120rpx;
-  height: 120rpx;
+  width: 112rpx;
+  height: 112rpx;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(244, 212, 140, 0.08);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.25);
-  border-radius: var(--radius-lg);
-  box-shadow:
-    0 0 40rpx rgba(244, 212, 140, 0.12),
-    0 0 80rpx rgba(244, 212, 140, 0.05);
+  background: rgba(232, 196, 190, 0.42);
+  border: 1rpx solid rgba(201, 169, 124, 0.25);
+  border-radius: 50%;
   position: relative;
   z-index: 1;
 }
-
 .to-card-emoji {
-  font-size: 52rpx;
+  font-size: 48rpx;
 }
-
-/* --- Title in gold --- */
 .tarot-overlay-title {
   display: block;
-  font-size: var(--font-size-title);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-gold);
-  line-height: var(--line-height-tight);
-  letter-spacing: 4rpx;
-  margin-bottom: var(--spacing-md);
+  font-family: var(--e3-serif);
+  font-size: 40rpx;
+  font-weight: 500;
+  color: var(--e3-ink);
+  line-height: 1.3;
+  letter-spacing: 6rpx;
+  margin-bottom: 20rpx;
   position: relative;
   z-index: 1;
-  text-shadow: 0 0 30rpx rgba(244, 212, 140, 0.12);
 }
-
-/* --- Body text in lavender --- */
 .tarot-overlay-body {
   display: block;
-  font-size: var(--font-size-caption);
-  color: var(--color-lavender);
-  line-height: var(--line-height-loose);
+  font-size: 24rpx;
+  color: var(--e3-ink-soft);
+  line-height: 1.9;
   letter-spacing: 2rpx;
   position: relative;
   z-index: 1;
-  opacity: 0.90;
+  opacity: 0.92;
 }
-
-/* --- Button — gold gradient matching .btn-primary --- */
 .tarot-overlay-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: var(--spacing-lg) auto 0;
-  padding: 24rpx 48rpx;
-  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
-  border-radius: var(--radius-pill);
-  color: var(--color-text-inverse);
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: 3rpx;
-  box-shadow: var(--shadow-gold-button);
-  position: relative;
-  z-index: 1;
-  transition: transform var(--duration-fast) var(--ease-out);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  max-width: 320rpx;
-}
-
-/* ============================================================
-   25.5 CHECKIN ENTRY — Compact badge in hero section
-   ============================================================ */
-
-.checkin-entry {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-xxs, 8rpx);
-  margin-top: 16rpx;
-  padding: 6rpx 20rpx;
-  background: rgba(244, 212, 140, 0.06);
-  border: 1rpx solid rgba(244, 212, 140, 0.15);
-  border-radius: var(--radius-pill, 999rpx);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: transform var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
-  position: relative;
-  z-index: 1;
-}
-
-.checkin-entry:active {
-  transform: scale(0.95);
-  background: rgba(244, 212, 140, 0.12);
-  border-color: rgba(244, 212, 140, 0.30);
-}
-
-.checkin-entry-icon {
-  font-size: 22rpx;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.checkin-entry-text {
-  font-size: var(--font-size-xs, 20rpx);
-  color: var(--color-gold, #F4D48C);
-  letter-spacing: 1rpx;
+  margin: 36rpx auto 0;
+  padding: 0 64rpx;
+  height: 96rpx;
+  background: var(--e3-pink);
+  border-radius: 999rpx;
+  color: var(--color-btn-pink-ink);
+  font-family: var(--e3-serif);
+  font-size: 28rpx;
   font-weight: 500;
-  line-height: 1.4;
-}
-
-.checkin-entry--done {
-  background: rgba(154, 149, 184, 0.06);
-  border-color: rgba(154, 149, 184, 0.15);
-}
-
-.checkin-entry--done .checkin-entry-text {
-  color: var(--color-lavender, #B8A9E0);
-  font-weight: 400;
-}
-
-/* ============================================================
-   26. TIME-OF-DAY GREETING — Gentle fade-in on each page visit
-   ============================================================ */
-
-
-.greeting-text {
-  display: block;
-  font-size: var(--font-size-caption, 24rpx);
-  font-weight: var(--font-weight-medium, 500);
-  color: var(--color-lavender, #B8A9E0);
-  letter-spacing: 3rpx;
-  margin-top: 16rpx;
-  opacity: 0.85;
-  text-shadow: 0 0 20rpx rgba(184, 169, 224, 0.08);
+  letter-spacing: 6rpx;
+  text-indent: 6rpx;
+  box-shadow: var(--e3-shadow), var(--e3-hi);
   position: relative;
   z-index: 1;
-}
-
-.anim-greeting-fade {
-  animation: greeting-fade-in 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-
-@keyframes greeting-fade-in {
-  0% {
-    opacity: 0;
-    transform: translateY(8rpx);
-  }
-  100% {
-    opacity: 0.85;
-    transform: translateY(0);
-  }
-}
-
-/* ============================================================
-   27. ONBOARDING OVERLAY (v2.1) — Full-screen 3-step flow
-   ============================================================ */
-
-.onboarding-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(26, 26, 62, 0.97);
-  z-index: var(--z-modal, 1000);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-lg, 32rpx);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s var(--ease-soft);
-}
-
-.onboarding-overlay--visible {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.onboarding-card {
-  position: relative;
+  transition: transform 0.15s ease;
+  max-width: 340rpx;
   width: 100%;
-  max-width: 580rpx;
-  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 100%);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.30);
-  border-radius: var(--radius-lg, 24rpx);
-  padding: var(--spacing-2xl, 48rpx) var(--spacing-lg, 32rpx) var(--spacing-xl, 32rpx);
-  text-align: center;
-  box-shadow:
-    0 8rpx 40rpx rgba(0, 0, 0, 0.35),
-    0 0 60rpx rgba(244, 212, 140, 0.10);
-  animation: overlay-enter 0.4s var(--ease-soft) forwards;
+}
+.tarot-overlay-btn:active {
+  transform: scale(0.96);
 }
 
-/* Step dots */
-.onboarding-dots {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12rpx;
-  margin-bottom: var(--spacing-xl, 48rpx);
-}
-
-.onboarding-dot {
-  width: 12rpx;
-  height: 12rpx;
-  border-radius: 50%;
-  background: rgba(244, 212, 140, 0.15);
-  transition: background 0.3s ease, box-shadow 0.3s ease, width 0.3s ease, border-radius 0.3s ease;
-}
-
-.onboarding-dot--active {
-  background: var(--color-gold, #F4D48C);
-  box-shadow: 0 0 12rpx rgba(244, 212, 140, 0.40);
-  width: 24rpx;
-  border-radius: 12rpx;
-}
-
-/* Step content */
-.onboarding-step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.onboarding-emoji-wrap {
-  width: 120rpx;
-  height: 120rpx;
-  margin: 0 auto var(--spacing-lg, 32rpx);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(244, 212, 140, 0.08);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.25);
-  border-radius: var(--radius-lg, 24rpx);
-  box-shadow:
-    0 0 40rpx rgba(244, 212, 140, 0.12),
-    0 0 80rpx rgba(244, 212, 140, 0.05);
-}
-
-.onboarding-emoji {
-  font-size: 52rpx;
-}
-
-.onboarding-title {
-  display: block;
-  font-size: var(--font-size-title, 40rpx);
-  font-weight: var(--font-weight-semibold, 600);
-  color: var(--color-gold, #F4D48C);
-  letter-spacing: 4rpx;
-  margin-bottom: var(--spacing-sm, 24rpx);
-  text-shadow: 0 0 30rpx rgba(244, 212, 140, 0.12);
-}
-
-.onboarding-desc {
-  display: block;
-  font-size: var(--font-size-body, 30rpx);
-  color: var(--color-text-primary, #F0EDE8);
-  line-height: var(--line-height-base, 1.6);
-  letter-spacing: 2rpx;
-  margin-bottom: var(--spacing-xs, 12rpx);
-}
-
-.onboarding-sub {
-  display: block;
-  font-size: var(--font-size-caption, 24rpx);
-  color: var(--color-lavender, #B8A9E0);
-  opacity: 0.80;
-  letter-spacing: 2rpx;
-  margin-top: var(--spacing-xs, 12rpx);
-  line-height: var(--line-height-base, 1.6);
-}
-
-/* Navigation button */
-.onboarding-nav {
-  margin-top: var(--spacing-xl, 48rpx);
-}
-
-.onboarding-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24rpx 64rpx;
-  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
-  border-radius: var(--radius-pill, 999rpx);
-  box-shadow: var(--shadow-gold-button);
-  transition: transform var(--duration-fast) var(--ease-out), opacity var(--duration-fast) var(--ease-out);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.onboarding-btn:active {
-  transform: scale(0.97);
-  opacity: 0.92;
-}
-
-.onboarding-btn-text {
-  font-size: var(--font-size-body, 30rpx);
-  font-weight: var(--font-weight-medium, 500);
-  color: var(--color-text-inverse);
-  letter-spacing: 4rpx;
-}
-
-/* ============================================================
-   28. ZODIAC GRID (onboarding step 3)
-   ============================================================ */
-
-.zodiac-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 16rpx;
-  margin: var(--spacing-lg, 32rpx) 0 var(--spacing-sm, 24rpx);
-  width: 100%;
-  max-width: 480rpx;
-}
-
-.zodiac-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: calc((100% - 32rpx) / 3);
-  padding: 16rpx 8rpx;
-  background: rgba(244, 212, 140, 0.06);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.15);
-  border-radius: var(--radius-md, 16rpx);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: transform var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
-  box-sizing: border-box;
-}
-
-.zodiac-item:active {
-  background: rgba(244, 212, 140, 0.18);
-  border-color: rgba(244, 212, 140, 0.40);
-  transform: scale(0.95);
-}
-
-.zodiac-item-emoji {
-  font-size: 40rpx;
-  display: block;
-  margin-bottom: 6rpx;
-}
-
-.zodiac-item-name {
-  font-size: var(--font-size-xs, 20rpx);
-  color: var(--color-text-primary, #F0EDE8);
-  letter-spacing: 1rpx;
-  display: block;
-}
-
-/* Skip link */
-.zodiac-skip {
-  display: inline-block;
-  padding: 12rpx 24rpx;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.zodiac-skip:active {
-  opacity: 0.60;
-}
-
-.zodiac-skip-text {
-  font-size: var(--font-size-caption, 24rpx);
-  color: var(--color-text-tertiary, #A098C0);
-  letter-spacing: 2rpx;
-  border-bottom: 1rpx dashed rgba(160, 152, 192, 0.25);
-}
-
-/* ============================================================
-   (removed) Membership CTA text link — paywalls moved to post-reading only
-   ============================================================ */
-
-/* DEV: 自动化测试入口 */
-.dev-test-entry { text-align: center; padding: 16rpx; margin: 24rpx 32rpx; opacity: 0.3; }
-.dev-test-text { font-size: 22rpx; color: #9A95B8; }
-
-/* ============================================================
-   29. ZONE LAYOUT — 每日一牌占首屏 (Design Council PRD v0.4)
-   Zone 1 (hero-zone): brand + subtitle + daily card + badge,
-   min 60vh — daily card is the single above-fold focus.
-   Zone 2: all other content scrolls below the fold.
-   Flexbox only (WXSS has no CSS Grid). No other style changes.
-   ============================================================ */
-
-/* --- Zone 1: above-fold container, min 60vh, flex column --- */
-.hero-zone {
-  display: flex;
-  flex-direction: column;
-  min-height: 60vh;
-  position: relative;
-  z-index: var(--z-base);
-}
-
-/* --- Daily card area: vertically centered within Zone 1 --- */
-.daily-card-area {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  flex: 1;
-  margin: 24rpx 0; /* preserves previous wrapper spacing */
-}
-
-
-/* --- Daily card check-in share link ("保存今日卡牌") --- */
-.daily-share-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: var(--spacing-sm);
-  padding: var(--spacing-xs) 0;
-  position: relative;
-  z-index: 1;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.daily-share-link text {
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-gold);
-  letter-spacing: 2rpx;
-  opacity: 0.72;
-  padding: 6rpx 24rpx;
-  border-bottom: 1rpx dashed rgba(244, 212, 140, 0.28);
-  transition: opacity var(--duration-fast) var(--ease-out), border-bottom-color var(--duration-fast) var(--ease-out);
-}
-
-.daily-share-link:active text {
-  opacity: 1;
-  border-bottom-color: rgba(244, 212, 140, 0.55);
+/* -----------------------------------------------------------
+   12. 无障碍：减少动效
+   ----------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  view, text, image, button, scroll-view, swiper, swiper-item, canvas {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    transition-duration: 0s !important;
+  }
+  .sparkle-field .sparkle { opacity: 0; }
+  .to-star { animation: none !important; opacity: 0.08; }
+  .tarot-overlay-content { animation: none; }
 }

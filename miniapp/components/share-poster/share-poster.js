@@ -60,6 +60,26 @@
  *     bind:close="onCloseDiarySharePoster"
  *     bind:share="onShareDiaryPosterToFriend"
  *   />
+ *
+ * Usage (fortune trend poster — mode="fortune", "我的牌运", personal data
+ * 截图物，无小程序码):
+ *   <share-poster
+ *     mode="fortune"
+ *     visible="{{showFortunePoster}}"
+ *     fortuneData="{{posterData}}"
+ *     nickname="{{userNickname}}"
+ *     bind:close="onCloseFortunePoster"
+ *     bind:share="onShareFortunePosterToFriend"
+ *   />
+ *
+ * fortuneData shape:
+ *   {
+ *     dateText, totalReadings, mood,
+ *     cards: [{name, name_en, count}],
+ *     majorCount, minorCount,
+ *     suitList: [{name, count}],
+ *     trend: [{date, count}]
+ *   }
  */
 const { drawSharePoster } = require('../../utils/canvas-poster');
 
@@ -72,7 +92,12 @@ Component({
     },
     mode: {
       type: String,
-      value: 'reading', // 'reading' | 'daily' | 'invite' | 'zodiac' | 'diary'
+      value: 'reading', // 'reading' | 'daily' | 'invite' | 'zodiac' | 'diary' | 'fortune'
+    },
+    // type: null — 复杂嵌套对象原样传递，避免运行时将嵌套数组强转为「数字键对象」
+    fortuneData: {
+      type: null,
+      value: {}, // fortune mode: 牌运曲线数据 { dateText, totalReadings, mood, cards, majorCount, minorCount, suitList, trend }
     },
     inviteCode: {
       type: String,
@@ -161,11 +186,11 @@ Component({
        Draw the poster on canvas using the utility
        --------------------------------------------------------------- */
     _drawPoster() {
-      const { mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak, inviteCode, zodiacSigns, moodEmoji, excerpt } = this.properties;
+      const { mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak, inviteCode, zodiacSigns, moodEmoji, excerpt, fortuneData } = this.properties;
 
-      // Card image is optional in diary mode — mood emoji + date + excerpt
-      // still make a valid anonymous poster.
-      if (!cardImagePath && !cardName && mode !== 'diary') {
+      // Card image is optional in diary/fortune modes — data-only posters
+      // (mood emoji + excerpt / fortune trend data) are still valid.
+      if (!cardImagePath && !cardName && mode !== 'diary' && mode !== 'fortune') {
         this.setData({ drawError: true });
         return;
       }
@@ -185,6 +210,7 @@ Component({
         zodiacSigns: zodiacSigns || '',
         moodEmoji: moodEmoji || '',
         excerpt: excerpt || '',
+        fortuneData: fortuneData || {},
         onSuccess: (tempFilePath) => {
           this.setData({
             previewPath: tempFilePath,

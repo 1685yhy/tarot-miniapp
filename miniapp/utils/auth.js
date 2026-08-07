@@ -1,4 +1,5 @@
 const { request } = require('./api');
+const { DEV_LOGIN_KEY } = require('./config');
 
 let loginPromise = null;
 
@@ -24,8 +25,12 @@ const login = async () => {
 };
 
 // 开发模式：后端没有真实微信AppSecret时，用dev-login绕过
+// 安全：仅此端点携带 X-Dev-Key 保护密钥（开发环境才可用的旁路登录）
 const devLogin = async () => {
-  const data = await request('/auth/dev-login', { method: 'POST' });
+  const data = await request('/auth/dev-login', {
+    method: 'POST',
+    header: { 'X-Dev-Key': DEV_LOGIN_KEY },
+  });
   wx.setStorageSync('token', data.token);
   wx.setStorageSync('user', data.user);
   return data.user;

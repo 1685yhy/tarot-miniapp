@@ -90,6 +90,8 @@ const request = async (url, options = {}, retryCount = 0) => {
       success: (res) => {
         if (res.statusCode === 401) {
           wx.removeStorageSync('token');
+          // 保留现有行为：reLaunch 到首页（登录页），不强制自动重登，避免死循环
+          console.warn('[api] 401 未授权，token 已失效，跳转登录页:', url, res.data);
           const app = getApp();
           const redirectCount = app.globalData._authRedirectCount || 0;
           if (redirectCount >= 1) {

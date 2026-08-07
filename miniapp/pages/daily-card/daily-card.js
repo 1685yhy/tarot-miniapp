@@ -75,6 +75,9 @@ Page({
     nextMilestone: 7,
     milestoneProgress: 0,
     streakHint: '',
+
+    // P2-2: teaching area folded by default ("详解 ▾")
+    teachingExpanded: false,
   },
 
   async onLoad() {
@@ -352,6 +355,18 @@ Page({
     if (this.data.dailyCard) {
       this._loadTeaching(this.data.dailyCard.id);
     }
+  },
+
+  // ---- P2-2: teaching area fold toggle ----
+
+  /** 展开/收起「详解」教学区 */
+  onToggleTeaching() {
+    this.setData({ teachingExpanded: !this.data.teachingExpanded });
+  },
+
+  /** 跳转签到页（streak banner 入口） */
+  onGoCheckin() {
+    wx.navigateTo({ url: '/pages/checkin/checkin' });
   },
 
   // ---- Push subscription ----

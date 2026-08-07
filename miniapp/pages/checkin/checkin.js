@@ -4,10 +4,11 @@ const { checkLogin } = require('../../utils/auth');
 
 // ── Level definitions (mirrors backend) ──
 const LEVELS = [
-  { name: '星光旅人', min: 0, max: 6, badgeColor: '#9A95B8', desc: '开始你的星光之旅' },
-  { name: '星辰学徒', min: 7, max: 29, badgeColor: '#B8A9E0', desc: '星辰之路，日渐精进' },
-  { name: '月光智者', min: 30, max: 99, badgeColor: '#F4D48C', desc: '智慧如月，普照人心' },
-  { name: '银河导师', min: 100, max: 999999, badgeColor: '#FFD700', desc: '银河导师，星光照耀' },
+  // E3 徽章色 — 奶油底上可读 (≥4.5:1)，最高阶保留细金作为品牌装饰
+  { name: '星光旅人', min: 0, max: 6, badgeColor: '#6E6A96', desc: '开始你的星光之旅' },
+  { name: '星辰学徒', min: 7, max: 29, badgeColor: '#8A6B3D', desc: '星辰之路，日渐精进' },
+  { name: '月光智者', min: 30, max: 99, badgeColor: '#5C4A3A', desc: '智慧如月，普照人心' },
+  { name: '银河导师', min: 100, max: 999999, badgeColor: '#C9A97C', desc: '银河导师，星光照耀' },
 ];
 
 function resolveLevel(streak) {

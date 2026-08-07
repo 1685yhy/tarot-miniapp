@@ -9,21 +9,55 @@
       <text class="about-title">关于星光映照</text>
     </view>
 
-    <view class="about-section">
+    <!-- P4-3：三节卡片化 — 品牌观奶油卡 -->
+    <view class="about-section about-section--brand">
       <text class="about-heading">我们相信</text>
       <text class="about-text">塔罗不是预测命运的工具，而是一面镜子——帮你看见自己内心已经知道、却未说出口的东西。星光映照是一个安静的陪伴空间，没有套路，没有焦虑营销，只有你与自己的对话。</text>
     </view>
 
-    <view class="about-section">
-      <text class="about-heading">我们不做</text>
-      <text class="about-text">❌ 不预测未来、不承诺运势改变</text>
-      <text class="about-text">❌ 不诱导消费、不制造焦虑</text>
-      <text class="about-text">❌ 不替代专业心理咨询</text>
+    <!-- P4-3：「我们不做」→ 承诺式正向表达（保留原意） -->
+    <view class="about-section about-section--promise">
+      <text class="about-heading">我们恪守</text>
+      <view class="promise-item">
+        <text class="promise-mark">✦</text>
+        <view class="promise-body">
+          <text class="promise-title">观照，而非预言</text>
+          <text class="promise-desc">不预测未来，不承诺运势改变</text>
+        </view>
+      </view>
+      <view class="promise-item">
+        <text class="promise-mark">✦</text>
+        <view class="promise-body">
+          <text class="promise-title">陪伴，而非营销</text>
+          <text class="promise-desc">不诱导消费，不制造焦虑</text>
+        </view>
+      </view>
+      <view class="promise-item">
+        <text class="promise-mark">✦</text>
+        <view class="promise-body">
+          <text class="promise-title">参考，而非诊疗</text>
+          <text class="promise-desc">不替代专业心理咨询，重大困扰请寻求专业帮助</text>
+        </view>
+      </view>
     </view>
 
-    <view class="about-section">
-      <text class="about-heading">AI说明</text>
-      <text class="about-text">本产品使用 DeepSeek V4 Pro 人工智能模型生成解读内容。AI并非真人塔罗师，所有内容仅供自我觉察参考。</text>
+    <!-- P4-3：AI 说明 — 细金描边卡 -->
+    <view class="about-section about-section--ai">
+      <text class="about-heading">AI 说明</text>
+      <text class="about-text">本产品使用 DeepSeek V4 Pro 人工智能模型生成解读内容。AI 并非真人塔罗师，所有内容仅供自我觉察参考。</text>
+    </view>
+
+    <!-- P4-3：协议 / 反馈入口 -->
+    <view class="about-legal">
+      <view class="about-legal-item" bindtap="onOpenAgreement" role="button" aria-label="打开用户协议">
+        <text class="about-legal-text">用户协议</text>
+        <text class="about-legal-arrow">›</text>
+      </view>
+      <view class="about-legal-divider"></view>
+      <view class="about-legal-item" bindtap="onOpenPrivacy" role="button" aria-label="打开隐私政策">
+        <text class="about-legal-text">隐私政策</text>
+        <text class="about-legal-arrow">›</text>
+      </view>
     </view>
 
     <view class="about-footer">

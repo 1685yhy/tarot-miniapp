@@ -46,90 +46,30 @@
     </view>
   </view>
 
-  <!-- ============ 邀请码卡片 ============ -->
-  <view class="invite-code-card anim-fade-up anim-stagger-2">
-    <text class="invite-code-label">你的专属邀请码</text>
-    <view class="invite-code-row">
-      <text class="invite-code-text" selectable="true">{{inviteCode || 'STAR-****'}}</text>
-      <button class="copy-btn" bindtap="onCopyCode">
-        <image class="copy-btn-icon" src="/images/icons/star_64.png" mode="aspectFit" lazy-load aria-label="复制邀请码" />
-        <text class="copy-btn-text">{{copied ? '已复制' : '复制'}}</text>
-      </button>
-    </view>
-    <text class="invite-code-hint">分享给朋友，你们都将获得 1 次免费深度解读</text>
-  </view>
-
-  <!-- ============ 邀请好友按钮 ============ -->
-  <view class="invite-action anim-fade-up anim-stagger-3" bindtap="onInviteFriend" role="button" aria-label="邀请朋友">
-    <view class="invite-btn-glow"></view>
-    <image class="invite-action-icon" src="/images/icons/sparkle_64.png" mode="aspectFit" lazy-load aria-label="邀请朋友" />
-    <text class="invite-action-text">邀请朋友</text>
-    <text class="invite-action-arrow">→</text>
-  </view>
-
-  <!-- ============ 星座契合 · 塔罗关系牌 ============ -->
-  <view class="zodiac-section anim-fade-up anim-stagger-4">
-    <view class="zodiac-header">
-      <text class="zodiac-header-title">星座契合 · 塔罗关系牌</text>
-      <text class="zodiac-header-hint">选两个星座，看看你们的塔罗关系牌，纯属好玩 ✦</text>
+  <!-- ============ 邀请码 + 邀请按钮（P2-4：合并为一块） ============ -->
+  <view class="invite-block anim-fade-up anim-stagger-2">
+    <view class="invite-code-card">
+      <text class="invite-code-label">你的专属邀请码</text>
+      <view class="invite-code-row">
+        <text class="invite-code-text" selectable="true">{{inviteCode || 'STAR-****'}}</text>
+        <button class="copy-btn" bindtap="onCopyCode">
+          <image class="copy-btn-icon" src="/images/icons/star_64.png" mode="aspectFit" lazy-load aria-label="复制邀请码" />
+          <text class="copy-btn-text">{{copied ? '已复制' : '复制'}}</text>
+        </button>
+      </view>
+      <text class="invite-code-hint">分享给朋友，你们都将获得 1 次免费深度解读</text>
     </view>
 
-    <!-- Two zodiac pickers side by side -->
-    <view class="zodiac-pickers">
-      <view class="zodiac-picker" bindtap="onSelectSign1" role="button" aria-label="选择第一个星座">
-        <text class="zodiac-picker-emoji">{{sign1Emoji}}</text>
-        <text class="zodiac-picker-name">{{sign1Name}}</text>
-        <text class="zodiac-picker-tip">点击更换</text>
-      </view>
-      <text class="zodiac-plus">+</text>
-      <view class="zodiac-picker" bindtap="onSelectSign2" role="button" aria-label="选择第二个星座">
-        <text class="zodiac-picker-emoji">{{sign2Emoji}}</text>
-        <text class="zodiac-picker-name">{{sign2Name}}</text>
-        <text class="zodiac-picker-tip">点击更换</text>
-      </view>
-    </view>
-
-    <button
-      class="btn-primary zodiac-btn"
-      bindtap="onCheckMatch"
-      loading="{{matchLoading}}"
-      disabled="{{matchLoading}}"
-    >看结果</button>
-
-    <!-- Match result -->
-    <view class="zodiac-result" wx:if="{{matchResult}}">
-      <view class="zodiac-result-card-row">
-        <text class="zodiac-result-label">你们的塔罗关系牌</text>
-        <text class="zodiac-result-card">🃏 {{matchResult.card_name}}</text>
-      </view>
-      <text class="zodiac-result-text">{{matchResult.compatibility_text}}</text>
-      <button class="btn-secondary zodiac-share-btn" bindtap="onShowMatchPoster">生成海报 · 分享看看</button>
+    <view class="invite-action" bindtap="onInviteFriend" role="button" aria-label="邀请朋友">
+      <view class="invite-btn-glow"></view>
+      <image class="invite-action-icon" src="/images/icons/sparkle_64.png" mode="aspectFit" lazy-load aria-label="邀请朋友" />
+      <text class="invite-action-text">邀请朋友</text>
+      <text class="invite-action-arrow">→</text>
     </view>
   </view>
 
-  <!-- ============ 星座选择弹层 ============ -->
-  <view class="zodiac-picker-overlay" wx:if="{{pickerFor}}" bindtap="onClosePicker">
-    <view class="zodiac-picker-panel" catchtap="noop">
-      <text class="zodiac-picker-panel-title">选择星座</text>
-      <view class="zodiac-picker-grid">
-        <view
-          class="zodiac-picker-option"
-          wx:for="{{zodiacList}}" wx:key="key"
-          data-key="{{item.key}}"
-          bindtap="onPickSign"
-          role="button"
-          aria-label="选择{{item.name}}"
-        >
-          <text class="zodiac-picker-option-emoji">{{item.emoji}}</text>
-          <text class="zodiac-picker-option-name">{{item.name}}</text>
-        </view>
-      </view>
-      <button class="btn-secondary zodiac-picker-cancel" bindtap="onClosePicker">取消</button>
-    </view>
-  </view>
-
-  <!-- ============ 奖励进度 ============ -->
-  <view class="reward-section anim-fade-up anim-stagger-5">
+  <!-- ============ 奖励进度（P2-4：上移，紧随邀请） ============ -->
+  <view class="reward-section anim-fade-up anim-stagger-3">
     <view class="reward-header">
       <image class="reward-header-icon" src="/images/icons/star_filled_64.png" mode="aspectFit" lazy-load aria-label="分享奖励" />
       <text class="reward-header-title">分享奖励进度</text>
@@ -237,10 +177,66 @@
         <text class="history-reward" wx:if="{{item.rewarded}}">+奖励</text>
       </view>
     </view>
+  </view>
 
-    <!-- Back to profile -->
-    <view class="back-action" bindtap="onBack" role="button" aria-label="返回个人中心">
-      <text class="back-text">返回个人中心</text>
+  <!-- ============ 星座契合 · 塔罗关系牌（P2-4：移到页面最底部，交互与绑定完整保留） ============ -->
+  <view class="zodiac-section anim-fade-up anim-stagger-4">
+    <view class="zodiac-header">
+      <text class="zodiac-header-title">星座契合 · 塔罗关系牌</text>
+      <text class="zodiac-header-hint">选两个星座，看看你们的塔罗关系牌，纯属好玩 ✦</text>
+    </view>
+
+    <!-- Two zodiac pickers side by side -->
+    <view class="zodiac-pickers">
+      <view class="zodiac-picker" bindtap="onSelectSign1" role="button" aria-label="选择第一个星座">
+        <text class="zodiac-picker-emoji">{{sign1Emoji}}</text>
+        <text class="zodiac-picker-name">{{sign1Name}}</text>
+        <text class="zodiac-picker-tip">点击更换</text>
+      </view>
+      <text class="zodiac-plus">+</text>
+      <view class="zodiac-picker" bindtap="onSelectSign2" role="button" aria-label="选择第二个星座">
+        <text class="zodiac-picker-emoji">{{sign2Emoji}}</text>
+        <text class="zodiac-picker-name">{{sign2Name}}</text>
+        <text class="zodiac-picker-tip">点击更换</text>
+      </view>
+    </view>
+
+    <button
+      class="btn-primary zodiac-btn"
+      bindtap="onCheckMatch"
+      loading="{{matchLoading}}"
+      disabled="{{matchLoading}}"
+    >看结果</button>
+
+    <!-- Match result -->
+    <view class="zodiac-result" wx:if="{{matchResult}}">
+      <view class="zodiac-result-card-row">
+        <text class="zodiac-result-label">你们的塔罗关系牌</text>
+        <text class="zodiac-result-card">🃏 {{matchResult.card_name}}</text>
+      </view>
+      <text class="zodiac-result-text">{{matchResult.compatibility_text}}</text>
+      <button class="btn-secondary zodiac-share-btn" bindtap="onShowMatchPoster">生成海报 · 分享看看</button>
+    </view>
+  </view>
+
+  <!-- ============ 星座选择弹层 ============ -->
+  <view class="zodiac-picker-overlay" wx:if="{{pickerFor}}" bindtap="onClosePicker">
+    <view class="zodiac-picker-panel" catchtap="noop">
+      <text class="zodiac-picker-panel-title">选择星座</text>
+      <view class="zodiac-picker-grid">
+        <view
+          class="zodiac-picker-option"
+          wx:for="{{zodiacList}}" wx:key="key"
+          data-key="{{item.key}}"
+          bindtap="onPickSign"
+          role="button"
+          aria-label="选择{{item.name}}"
+        >
+          <text class="zodiac-picker-option-emoji">{{item.emoji}}</text>
+          <text class="zodiac-picker-option-name">{{item.name}}</text>
+        </view>
+      </view>
+      <button class="btn-secondary zodiac-picker-cancel" bindtap="onClosePicker">取消</button>
     </view>
   </view>
 

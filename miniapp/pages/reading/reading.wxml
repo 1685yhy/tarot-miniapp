@@ -23,6 +23,10 @@
 <view class="orb-bottom"></view>
 
 <view class="page">
+  <!-- E3 奶油底色氛围光斑（与首页气质统一） -->
+  <view class="wash wash-pink"></view>
+  <view class="wash wash-gold"></view>
+
   <!-- ===== 加载骨架 ===== -->
   <view wx:if="{{pageLoading}}">
     <view class="reading-skeleton-wrap">
@@ -57,11 +61,7 @@
         </view>
         <text class="quota-text" wx:if="{{freeReadingsUsed < freeReadingsTotal}}">今日免费解读 {{freeReadingsUsed}}/{{freeReadingsTotal}} · 明日0点重置</text>
         <view wx:else>
-          <text class="quota-text quota-text--exhausted">免费次数已用完 ✦ 购买补充包继续解读</text>
-          <view class="exhausted-packs">
-            <button class="exhausted-pack-btn" bindtap="onPurchasePackQuick" data-product="{{packQuick3}}">¥9.90 / 3次</button>
-            <button class="exhausted-pack-btn exhausted-pack-btn--best" bindtap="onPurchasePackQuick" data-product="{{packQuick10}}">¥29.90 / 10次</button>
-          </view>
+          <text class="quota-text quota-text--exhausted">今日免费次数已用完 · 明日0点重置</text>
         </view>
       </view>
 
@@ -103,13 +103,11 @@
           <view class="spread-card-meta">
             <text class="spread-card-count">{{item.cards}}张</text>
           </view>
-          <!-- Premium overlay: more prominent than a badge -->
+          <!-- Premium 锁 — 轻量角标（P1-1：不盖满整卡 · premium 显隐逻辑不变） -->
           <view class="premium-overlay" wx:if="{{item.premium}}">
-            <view class="premium-overlay-bg"></view>
             <view class="premium-overlay-content">
               <image class="premium-overlay-icon" src="/images/icons/lock_64.png" mode="aspectFit" lazy-load aria-label="会员专属" />
-              <text class="premium-overlay-text">会员专属</text>
-              <text class="premium-overlay-sub">开通即可使用</text>
+              <text class="premium-overlay-text">会员</text>
             </view>
           </view>
         </view>
@@ -180,23 +178,25 @@
         </view>
       </view>
 
-      <!-- 主题选择：仅通用牌阵显示；专属牌阵已隐含主题，不展示选择器 -->
-      <view class="mb-xxxl anim-fade-up anim-stagger-3" wx:if="{{!spreadDefaultTheme}}">
-        <text class="theme-section-label">解读侧重</text>
-        <view class="theme-options">
-          <view wx:for="{{displayThemes}}" wx:key="key"
-            class="theme-item {{theme === item.key ? 'theme-active' : ''}}"
-            bindtap="onThemeTap" data-theme="{{item.key}}" role="button" aria-label="选择解读侧重{{item.label}}">
-            <image class="theme-icon" src="{{item.icon}}" mode="aspectFit" lazy-load aria-label="{{item.label}}" />
-            <text class="theme-label">{{item.label}}</text>
+      <!-- 主题选择 / 专属提示 — 统一最小高度容器（P1-1：两形态切换不跳动） -->
+      <view class="theme-stage anim-fade-up anim-stagger-3">
+        <view class="mb-xxxl" wx:if="{{!spreadDefaultTheme}}">
+          <text class="theme-section-label">解读侧重</text>
+          <view class="theme-options">
+            <view wx:for="{{displayThemes}}" wx:key="key"
+              class="theme-item {{theme === item.key ? 'theme-active' : ''}}"
+              bindtap="onThemeTap" data-theme="{{item.key}}" role="button" aria-label="选择解读侧重{{item.label}}">
+              <image class="theme-icon" src="{{item.icon}}" mode="aspectFit" lazy-load aria-label="{{item.label}}" />
+              <text class="theme-label">{{item.label}}</text>
+            </view>
           </view>
         </view>
-      </view>
 
-      <!-- 专属牌阵提示：不展示主题选择，仅告知用户此牌阵的解读方向 -->
-      <view class="theme-lock-banner" wx:if="{{spreadDefaultTheme}}">
-        <text class="theme-lock-icon">✦</text>
-        <text class="theme-lock-text">此牌阵侧重<text class="theme-lock-keyword">{{themeDefaultLabel}}</text>解读</text>
+        <!-- 专属牌阵提示：不展示主题选择，仅告知用户此牌阵的解读方向 -->
+        <view class="theme-lock-banner" wx:if="{{spreadDefaultTheme}}">
+          <text class="theme-lock-icon">✦</text>
+          <text class="theme-lock-text">此牌阵侧重<text class="theme-lock-keyword">{{themeDefaultLabel}}</text>解读</text>
+        </view>
       </view>
 
       <!-- ========== Persona selection ========== -->
@@ -215,16 +215,7 @@
         </view>
       </view>
 
-      <!-- Draw button -->
-      <button class="btn-primary btn--full {{isDrawing ? 'btn-drawing' : ''}}" bindtap="onStartReading" disabled="{{isDrawing}}">
-        <text wx:if="{{!isDrawing}}">翻开牌阵</text>
-        <text wx:else>牌灵正在回应...</text>
-      </button>
-
-      <!-- AI 解读时间提示 -->
-      <text class="reading-time-note" wx:if="{{!isDrawing}}">AI解读大约需要 10-20 秒</text>
-
-      <!-- Mode selector cards -->
+      <!-- Mode selector cards（P1-1：移到「翻开牌阵」按钮之前） -->
       <view class="mode-selector">
         <view class="mode-card {{quickMode ? 'mode-active' : ''}}" bindtap="onSelectMode" data-mode="quick" role="button" aria-label="快速抽牌模式">
           <text class="mode-card-icon">⚡</text>
@@ -241,6 +232,15 @@
           </view>
         </view>
       </view>
+
+      <!-- Draw button -->
+      <button class="btn-primary btn--full {{isDrawing ? 'btn-drawing' : ''}}" bindtap="onStartReading" disabled="{{isDrawing}}">
+        <text wx:if="{{!isDrawing}}">翻开牌阵</text>
+        <text wx:else>牌灵正在回应...</text>
+      </button>
+
+      <!-- AI 解读时间提示 -->
+      <text class="reading-time-note" wx:if="{{!isDrawing}}">AI解读大约需要 10-20 秒</text>
 
       <view class="btn-back-spreads-wrap">
         <text class="btn-text btn-back-spreads" bindtap="onBackToSpreads" role="button" aria-label="返回重新选择牌阵">← 重新选择牌阵</text>

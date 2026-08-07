@@ -552,6 +552,11 @@ Page({
     wx.navigateTo({ url: '/pages/community/community' });
   },
 
+  /** Navigate to membership page（牌阵区耗尽态「补充解读次数」入口） */
+  onGoMembership() {
+    wx.navigateTo({ url: '/pages/membership/membership' });
+  },
+
   /** Navigate to annual report page (members only) */
   onGoAnnualReport() {
     wx.navigateTo({ url: '/pages/annual-report/annual-report' });
@@ -604,6 +609,11 @@ Page({
   /** Navigate to daily-card teaching page */
   onDailyCardTap() {
     wx.navigateTo({ url: '/pages/daily-card/daily-card' });
+  },
+
+  /** 明日之牌预告 — 回流钩子：制造期待，不跳转、不展示牌面 */
+  onTomorrowHintTap() {
+    wx.showToast({ title: '明日的牌，明天来揭晓 ✦', icon: 'none', duration: 2000 });
   },
 
   /* ---------------------------------------------------------------

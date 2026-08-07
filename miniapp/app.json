@@ -3,7 +3,8 @@
     "pages/index/index",
     "pages/encyclopedia/encyclopedia",
     "pages/profile/profile",
-    "pages/about/about"
+    "pages/about/about",
+    "pages/legal/legal"
   ],
   "subPackages": [
     {
@@ -53,20 +54,24 @@
     {
       "root": "pages/share-center/",
       "pages": ["share-center"]
+    },
+    {
+      "root": "pages/fortune-trend/",
+      "pages": ["fortune-trend"]
     }
   ],
   "window": {
     "backgroundTextStyle": "dark",
-    "navigationBarBackgroundColor": "#1A1A3E",
+    "navigationBarBackgroundColor": "#FAF6EF",
     "navigationBarTitleText": "星光映照",
-    "navigationBarTextStyle": "white",
-    "backgroundColor": "#0f0f23"
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FAF6EF"
   },
   "tabBar": {
-    "color": "#9A95B8",
-    "selectedColor": "#F4D48C",
-    "backgroundColor": "#1A1A3E",
-    "borderStyle": "white",
+    "color": "#B0AA9C",
+    "selectedColor": "#8A6B3D",
+    "backgroundColor": "#FAF6EF",
+    "borderStyle": "black",
     "list": [
       {
         "pagePath": "pages/index/index",

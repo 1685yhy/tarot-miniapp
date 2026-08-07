@@ -425,7 +425,7 @@
   z-index: 5;
   font-size: var(--font-size-caption);
   font-weight: var(--font-weight-medium);
-  color: var(--color-lavender-light);
+  color: var(--color-lavender-dark);
   text-align: center;
   letter-spacing: 3rpx;
   padding: var(--spacing-sm) var(--spacing-md);
@@ -481,7 +481,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 
-  color: var(--color-gold-light);
+  color: var(--color-gold-dark);
   text-shadow:
     0 0 6rpx rgba(212, 168, 83, 0.30),
     0 1rpx 3rpx rgba(0, 0, 0, 0.40);
@@ -513,7 +513,7 @@
 .badge-upright {
   background: rgba(212, 168, 83, 0.12);
   border: 0.5rpx solid rgba(212, 168, 83, 0.25);
-  color: var(--color-gold-light);
+  color: var(--color-gold-dark);
 }
 
 .badge-reversed {

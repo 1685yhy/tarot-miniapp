@@ -1,6 +1,6 @@
 {
-  "navigationBarTitleText": "",
-  "navigationBarBackgroundColor": "#1A1A3E",
-  "navigationBarTextStyle": "white",
+  "navigationBarTitleText": "星光树洞",
+  "navigationBarBackgroundColor": "#FAF6EF",
+  "navigationBarTextStyle": "black",
   "usingComponents": {}
 }

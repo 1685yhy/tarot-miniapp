@@ -3,6 +3,14 @@
   "packOptions": {
     "ignore": [
       {
+        "type": "file",
+        "value": "private.wxfc41c6b04fa892d1.key"
+      },
+      {
+        "type": "file",
+        "value": "*.key"
+      },
+      {
         "type": "folder",
         "value": "images/cards_thumb"
       },

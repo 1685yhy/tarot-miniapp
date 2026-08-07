@@ -24,15 +24,21 @@ const QR_SIZE_RATIO = 0.13;          // QR code as fraction of canvas width
 const CARD_WIDTH_RATIO = 0.56;       // card image ~56% of canvas width
 const CARD_ASPECT = 1.5;             // tarot card height / width
 
-// ── Colour palette ───────────────────────────────────────────────────
-const C_GOLD      = '#F4D48C';
-const C_GOLD_MUTED = '#C4A46C';
-const C_WHITE     = '#F0EDE8';
-const C_MUTED     = '#B8A9E0';
-const C_DARK      = '#1A1A3E';
-const C_BG_TOP    = '#1A1A3E';
-const C_BG_MID    = '#12122E';
-const C_BG_BOT    = '#0B0B16';
+// ── Colour palette · E3 奶油疗愈明亮主题 ──────────────────────────────
+// 奶油底 #FAF6EF→#F2ECDF 渐变 · 墨字 #3D3A36 · 深金字 #8A6B3D (≈4.6:1)
+// 细金 #C9A97C 仅作装饰（描边/光点） · 三级文字 #6E6A96 (≈4.68:1)
+const C_GOLD      = '#C9A97C';   // 细金 — decorative (borders / star dots)
+const C_GOLD_MUTED = '#A98B5F';  // 深金 — decorative
+const C_GOLD_INK  = '#8A6B3D';   // 金深 — title / label text on cream (4.6:1)
+const C_WHITE     = '#3D3A36';   // 墨 — body text on cream (12:1)
+const C_MUTED     = '#6E6A96';   // 深灰紫 — secondary text (4.68:1)
+const C_DARK      = '#8A6B3D';   // 金深 — brand accent text
+const C_BG_TOP    = '#FAF6EF';   // 奶油
+const C_BG_MID    = '#F7F0E3';
+const C_BG_BOT    = '#F2ECDF';
+const C_PLACEHOLDER = '#F7F0E3'; // card image fallback fill
+const C_GLOW      = 'rgba(201, 169, 124, 0.18)'; // soft gold glow on cream
+const C_LINE_GOLD = 'rgba(201, 169, 124, 0.45)'; // visible gold line on cream
 
 // =====================================================================
 //  Helpers
@@ -101,22 +107,22 @@ function _drawStars(ctx, W) {
 function _drawHeader(ctx, W, nickname) {
   let y = 14;
 
-  // Brand header
+  // Brand header — 金深字 (4.6:1 on cream)
   ctx.save();
-  ctx.fillStyle = C_GOLD;
+  ctx.fillStyle = C_GOLD_INK;
   ctx.font = `bold ${Math.round(W * 0.043)}px "PingFang SC", "Helvetica Neue", sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
   ctx.fillText('✦ 星光映照 ✦', W / 2, y);
   ctx.restore();
 
-  // Decorative line under brand
+  // Decorative line under brand — 细金，cream 上加透明 (0.55)
   const lineW = Math.round(W * 0.3);
   const lineX = Math.round((W - lineW) / 2);
   const lineY = y + Math.round(W * 0.058);
   ctx.save();
   ctx.strokeStyle = C_GOLD;
-  ctx.globalAlpha = 0.4;
+  ctx.globalAlpha = 0.55;
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(lineX, lineY);
@@ -158,7 +164,7 @@ function _drawCardImage(ctx, W, Y, imgElement) {
     ctx.drawImage(imgElement, cardX, Y, cardW, cardH);
   } else {
     // Fallback placeholder fill
-    ctx.fillStyle = '#252550';
+    ctx.fillStyle = C_PLACEHOLDER;
     ctx.fillRect(cardX, Y, cardW, cardH);
   }
   ctx.restore();
@@ -183,7 +189,7 @@ function _drawCardName(ctx, W, Y, cardName) {
   if (!cardName) return Y + 4;
   const nameY = Y + 6;
   ctx.save();
-  ctx.fillStyle = C_GOLD;
+  ctx.fillStyle = C_GOLD_INK;
   ctx.font = `bold ${Math.round(W * 0.043)}px "PingFang SC", "Helvetica Neue", sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
@@ -247,10 +253,10 @@ function _drawQRCode(ctx, W, Y, qrImg, ctaText, inviteCode) {
   }
   ctx.restore();
 
-  // QR white border (always draw border, so placeholder looks intentional)
+  // QR border — cream 底上用细金描边（白码块在奶油上需描边可见）
   ctx.save();
   _roundRect(ctx, qrX, qrAreaY, qrSize, qrSize, 6);
-  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+  ctx.strokeStyle = 'rgba(201, 169, 124, 0.50)';
   ctx.lineWidth = 1;
   ctx.stroke();
   ctx.restore();
@@ -265,13 +271,13 @@ function _drawQRCode(ctx, W, Y, qrImg, ctaText, inviteCode) {
   ctx.fillText(ctaText || '扫码探索你的命运', W / 2, ctaY);
   ctx.restore();
 
-  // Invite mode: invite code line under the CTA (gold, so friends can also
+  // Invite mode: invite code line under the CTA (金深, so friends can also
   // type it in manually — "送好友一张牌" flow, no points / cash reward)
   if (inviteCode) {
     const codeY = ctaY + Math.round(W * 0.032);
     ctx.save();
-    ctx.fillStyle = C_GOLD;
-    ctx.globalAlpha = 0.9;
+    ctx.fillStyle = C_GOLD_INK;
+    ctx.globalAlpha = 0.95;
     ctx.font = `${Math.round(W * 0.030)}px "PingFang SC", "Helvetica Neue", sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
@@ -290,8 +296,8 @@ function _drawQRCode(ctx, W, Y, qrImg, ctaText, inviteCode) {
  */
 function _drawFooter(ctx, W, Y, brandText) {
   ctx.save();
-  ctx.fillStyle = C_GOLD;
-  ctx.globalAlpha = 0.6;
+  ctx.fillStyle = C_GOLD_INK;
+  ctx.globalAlpha = 0.85;
   ctx.font = `${Math.round(W * 0.030)}px "PingFang SC", "Helvetica Neue", sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
@@ -308,7 +314,7 @@ function _drawFooter(ctx, W, Y, brandText) {
  *   - Middle: card name + date + "连续第N天 ✦" (date only when no streak)
  *   - Bottom: mini-program code + brand footer
  *
- * Background is a dark indigo gradient #1A1A3E → #12122E.
+ * Background is an E3 cream gradient #FAF6EF → #F7F0E3 → #F2ECDF.
  *
  * @param {Object} data - { cardImg, qrImg, cardName, dateText, streak }
  */
@@ -323,10 +329,10 @@ function _drawDailyLayout(ctx, W, H, data) {
   const cardY = Math.round((topAreaH - cardH) / 2) + Math.round(W * 0.004); // keep glow fully inside
   const r = Math.round(cardW * 0.02);
 
-  // Soft golden glow behind the card
+  // Soft golden glow behind the card (E3: 细金光晕 on cream)
   const glowPad = Math.round(W * 0.014);
   ctx.save();
-  ctx.fillStyle = 'rgba(244, 212, 140, 0.10)';
+  ctx.fillStyle = C_GLOW;
   _roundRect(ctx, cardX - glowPad, cardY - glowPad, cardW + glowPad * 2, cardH + glowPad * 2, r + glowPad);
   ctx.fill();
   ctx.restore();
@@ -338,7 +344,7 @@ function _drawDailyLayout(ctx, W, H, data) {
   if (cardImg) {
     ctx.drawImage(cardImg, cardX, cardY, cardW, cardH);
   } else {
-    ctx.fillStyle = '#252550';
+    ctx.fillStyle = C_PLACEHOLDER;
     ctx.fillRect(cardX, cardY, cardW, cardH);
   }
   ctx.restore();
@@ -354,9 +360,9 @@ function _drawDailyLayout(ctx, W, H, data) {
   // ── Middle: card name + date + streak ──
   let y = cardY + cardH + Math.round(W * 0.038);
 
-  // Card name (gold, bold)
+  // Card name (金深, bold — 4.6:1 on cream)
   ctx.save();
-  ctx.fillStyle = C_GOLD;
+  ctx.fillStyle = C_GOLD_INK;
   ctx.font = `bold ${Math.round(W * 0.046)}px "PingFang SC", "Helvetica Neue", sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
@@ -382,7 +388,7 @@ function _drawDailyLayout(ctx, W, H, data) {
   // Streak line — "连续第N天 ✦" (only when 2+ consecutive days)
   if (streak >= 2) {
     ctx.save();
-    ctx.fillStyle = C_GOLD;
+    ctx.fillStyle = C_GOLD_INK;
     ctx.font = `${Math.round(W * 0.032)}px "PingFang SC", "Helvetica Neue", sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
@@ -420,7 +426,7 @@ function _drawZodiacLayout(ctx, W, H, data) {
   y += Math.round(W * 0.012);
 
   ctx.save();
-  ctx.fillStyle = C_GOLD;
+  ctx.fillStyle = C_GOLD_INK;
   ctx.font = `bold ${Math.round(W * 0.042)}px "PingFang SC", "Helvetica Neue", sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
@@ -458,10 +464,10 @@ function _drawZodiacLayout(ctx, W, H, data) {
   const cardX = Math.round((W - cardW) / 2);
   const r = Math.round(cardW * 0.02);
 
-  // Soft golden glow behind the card
+  // Soft golden glow behind the card (E3)
   const glowPad = Math.round(W * 0.012);
   ctx.save();
-  ctx.fillStyle = 'rgba(244, 212, 140, 0.10)';
+  ctx.fillStyle = C_GLOW;
   _roundRect(ctx, cardX - glowPad, y - glowPad, cardW + glowPad * 2, cardH + glowPad * 2, r + glowPad);
   ctx.fill();
   ctx.restore();
@@ -473,7 +479,7 @@ function _drawZodiacLayout(ctx, W, H, data) {
   if (cardImg) {
     ctx.drawImage(cardImg, cardX, y, cardW, cardH);
   } else {
-    ctx.fillStyle = '#252550';
+    ctx.fillStyle = C_PLACEHOLDER;
     ctx.fillRect(cardX, y, cardW, cardH);
   }
   ctx.restore();
@@ -570,10 +576,10 @@ function _drawDiaryLayout(ctx, W, H, data) {
     const cardX = Math.round((W - cardW) / 2);
     const r = Math.round(cardW * 0.02);
 
-    // Soft golden glow behind the card
+    // Soft golden glow behind the card (E3)
     const glowPad = Math.round(W * 0.012);
     ctx.save();
-    ctx.fillStyle = 'rgba(244, 212, 140, 0.10)';
+    ctx.fillStyle = C_GLOW;
     _roundRect(ctx, cardX - glowPad, textY - glowPad, cardW + glowPad * 2, cardH + glowPad * 2, r + glowPad);
     ctx.fill();
     ctx.restore();
@@ -598,7 +604,7 @@ function _drawDiaryLayout(ctx, W, H, data) {
     // Card name under the thumbnail
     if (cardName) {
       ctx.save();
-      ctx.fillStyle = C_GOLD;
+      ctx.fillStyle = C_GOLD_INK;
       ctx.font = `${Math.round(W * 0.032)}px "PingFang SC", "Helvetica Neue", sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
@@ -607,10 +613,10 @@ function _drawDiaryLayout(ctx, W, H, data) {
       textY += Math.round(W * 0.052);
     }
   } else if (cardName) {
-    // No card image — card name alone, gold and subtle
+    // No card image — card name alone, 金深 and subtle
     ctx.save();
-    ctx.fillStyle = C_GOLD;
-    ctx.globalAlpha = 0.85;
+    ctx.fillStyle = C_GOLD_INK;
+    ctx.globalAlpha = 0.9;
     ctx.font = `${Math.round(W * 0.032)}px "PingFang SC", "Helvetica Neue", sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
@@ -619,13 +625,13 @@ function _drawDiaryLayout(ctx, W, H, data) {
     textY += Math.round(W * 0.052);
   }
 
-  // ── Divider line ──
+  // ── Divider line (E3 细金，cream 上加透明) ──
   textY += Math.round(W * 0.018);
   const lineX = Math.round(W * 0.20);
   const lineW = Math.round(W * 0.60);
   ctx.save();
-  ctx.strokeStyle = 'rgba(244, 212, 140, 0.25)';
-  ctx.lineWidth = 0.5;
+  ctx.strokeStyle = C_LINE_GOLD;
+  ctx.lineWidth = 0.8;
   ctx.beginPath();
   ctx.moveTo(lineX, textY);
   ctx.lineTo(lineX + lineW, textY);
@@ -662,6 +668,266 @@ function _drawDiaryLayout(ctx, W, H, data) {
   _drawFooter(ctx, W, H - Math.round(W * 0.040), '星光映照 · 塔罗日记');
 }
 
+/**
+ * Draw the "fortune trend" poster layout (牌运曲线 · 个人数据资产).
+ *
+ * Layout (3:4 portrait):
+ *   - Top: brand + nickname (drawn by _drawHeader), title 我的牌运 (金深)
+ *     + date · 近30天解读次数
+ *   - 高频之牌 top3 rows (rank + name × count)
+ *   - 大/小阿卡那 ratio bar + legend
+ *   - 花色 4 chips (权杖/圣杯/宝剑/星币)
+ *   - 每日解读 bar chart (最近 14 天 · 细金柱)
+ *   - mood 一句话总结 (牌运之语)
+ *   - Bottom: brand footer "星光映照 · 我的牌运"
+ *
+ * No mini-program QR — this is a personal data poster (截图物).
+ *
+ * Note: 微信组件属性传递时，嵌套数组可能被运行时转换为「数字键对象」
+ * （{0:…,1:…}）— 所有数组字段一律经 _toArray 归一化后再使用。
+ *
+ * @param {Object} data - { dateText, totalReadings, activeDays, mood,
+ *                          cards: [{name, name_en, count}], majorCount,
+ *                          minorCount, suitList: [{name, count}],
+ *                          trend: [{date, count}] }
+ */
+function _toArray(v) {
+  if (Array.isArray(v)) return v;
+  if (v && typeof v === 'object') {
+    // 微信组件属性中的「数字键对象」数组退化形态
+    return Object.keys(v).map(k => v[k]);
+  }
+  return [];
+}
+
+function _drawFortuneLayout(ctx, W, H, data) {
+  const {
+    dateText, totalReadings, mood,
+    cards, majorCount, minorCount, suitList, trend,
+  } = data || {};
+  const major = majorCount || 0;
+  const minor = minorCount || 0;
+  const totalCards = major + minor;
+
+  // ── Title 我的牌运 (金深 bold) ──
+  let y = Math.round(W * 0.158);
+  ctx.save();
+  ctx.fillStyle = C_GOLD_INK;
+  ctx.font = `bold ${Math.round(W * 0.050)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillText('我的牌运', W / 2, y);
+  ctx.restore();
+  y += Math.round(W * 0.070);
+
+  // ── Date + total readings (深灰紫) ──
+  const summary = dateText
+    ? `${dateText} · 近30天解读 ${totalReadings || 0} 次`
+    : `近30天解读 ${totalReadings || 0} 次`;
+  ctx.save();
+  ctx.fillStyle = C_MUTED;
+  ctx.globalAlpha = 0.9;
+  ctx.font = `${Math.round(W * 0.027)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillText(summary, W / 2, y);
+  ctx.restore();
+  y += Math.round(W * 0.052);
+
+  // ── 高频之牌 top3 ──
+  const topCards = _toArray(cards).slice(0, 3);
+  if (topCards.length) {
+    ctx.save();
+    ctx.fillStyle = C_GOLD_INK;
+    ctx.font = `bold ${Math.round(W * 0.026)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText('✦ 高频之牌', W / 2, y);
+    ctx.restore();
+    y += Math.round(W * 0.042);
+
+    const rowH = Math.round(W * 0.040);
+    topCards.forEach((card, i) => {
+      ctx.save();
+      ctx.fillStyle = C_WHITE;
+      ctx.font = `${Math.round(W * 0.026)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText(`第${i + 1}名  ${card.name}  × ${card.count}`, W / 2, y);
+      ctx.restore();
+      y += rowH;
+    });
+    y += Math.round(W * 0.014);
+  }
+
+  // ── 大/小阿卡那比例条 ──
+  if (totalCards > 0) {
+    ctx.save();
+    ctx.fillStyle = C_GOLD_INK;
+    ctx.font = `bold ${Math.round(W * 0.026)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText('✦ 大阿卡那 · 小阿卡那', W / 2, y);
+    ctx.restore();
+    y += Math.round(W * 0.040);
+
+    const trackW = Math.round(W * 0.72);
+    const trackX = Math.round((W - trackW) / 2);
+    const trackH = Math.round(W * 0.024);
+    const majorW = Math.max(Math.round(trackW * (major / totalCards)), 2);
+    // track
+    ctx.save();
+    _roundRect(ctx, trackX, y, trackW, trackH, trackH / 2);
+    ctx.fillStyle = C_PLACEHOLDER;
+    ctx.fill();
+    ctx.restore();
+    // major fill (金深)
+    ctx.save();
+    _roundRect(ctx, trackX, y, majorW, trackH, trackH / 2);
+    ctx.fillStyle = C_GOLD_INK;
+    ctx.globalAlpha = 0.85;
+    ctx.fill();
+    ctx.restore();
+    y += trackH + Math.round(W * 0.030);
+
+    // legend
+    ctx.save();
+    ctx.fillStyle = C_MUTED;
+    ctx.font = `${Math.round(W * 0.023)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillText(`大阿卡那 ${major}`, trackX, y);
+    ctx.fillText(`小阿卡那 ${minor}`, trackX + trackW - Math.round(W * 0.34), y);
+    ctx.restore();
+    y += Math.round(W * 0.042);
+  }
+
+  // ── 花色 4 chips ──
+  const suits = _toArray(suitList).slice(0, 4);
+  if (suits.length) {
+    ctx.save();
+    ctx.fillStyle = C_GOLD_INK;
+    ctx.font = `bold ${Math.round(W * 0.026)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText('✦ 花色分布', W / 2, y);
+    ctx.restore();
+    y += Math.round(W * 0.040);
+
+    const chipGap = Math.round(W * 0.016);
+    const chipW = Math.round((W - Math.round(W * 0.16) - chipGap * 3) / 4);
+    const chipH = Math.round(W * 0.064);
+    const chipsX = Math.round(W * 0.08);
+    suits.forEach((s, i) => {
+      const cx = chipsX + i * (chipW + chipGap);
+      ctx.save();
+      _roundRect(ctx, cx, y, chipW, chipH, Math.round(W * 0.012));
+      ctx.fillStyle = C_GLOW;
+      ctx.fill();
+      ctx.strokeStyle = C_LINE_GOLD;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.fillStyle = C_GOLD_INK;
+      ctx.font = `${Math.round(W * 0.024)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`${s.name || ''} ${s.count || 0}`, cx + chipW / 2, y + chipH / 2 + 1);
+      ctx.restore();
+    });
+    y += chipH + Math.round(W * 0.032);
+  }
+
+  // ── 每日解读 bar chart（最近 14 天 · 细金柱）──
+  const trendData = _toArray(trend).slice(-14);
+  if (trendData.length) {
+    ctx.save();
+    ctx.fillStyle = C_GOLD_INK;
+    ctx.font = `bold ${Math.round(W * 0.026)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText('✦ 每日解读 · 近30天', W / 2, y);
+    ctx.restore();
+    y += Math.round(W * 0.040);
+
+    const chartW = Math.round(W * 0.74);
+    const chartX = Math.round((W - chartW) / 2);
+    const chartH = Math.round(W * 0.19);
+    const chartBottom = y + chartH;
+    const maxCount = trendData.reduce((m, t) => Math.max(m, t && t.count ? t.count : 0), 0) || 1;
+    const slotW = chartW / trendData.length;
+    const barW = Math.max(2, Math.round(slotW * 0.52));
+    const labelFont = Math.round(W * 0.019);
+
+    // baseline (细金)
+    ctx.save();
+    ctx.strokeStyle = C_LINE_GOLD;
+    ctx.globalAlpha = 0.6;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(chartX, chartBottom);
+    ctx.lineTo(chartX + chartW, chartBottom);
+    ctx.stroke();
+    ctx.restore();
+
+    trendData.forEach((t, i) => {
+      const count = t && t.count ? t.count : 0;
+      const barH = count > 0 ? Math.max(3, Math.round((count / maxCount) * (chartH - 10))) : 0;
+      const bx = chartX + slotW * i + (slotW - barW) / 2;
+      const by = chartBottom - barH;
+      ctx.save();
+      ctx.fillStyle = count > 0 ? C_GOLD : C_LINE_GOLD;
+      ctx.globalAlpha = count > 0 ? 0.92 : 0.55;
+      ctx.fillRect(bx, by, barW, count > 0 ? barH : 2);
+      ctx.restore();
+      // 仅标注首/中/末日期，避免拥挤
+      if (i === 0 || i === trendData.length - 1 || i === Math.floor(trendData.length / 2)) {
+        const dayLabel = t && t.date ? t.date.slice(5) : '';
+        ctx.save();
+        ctx.fillStyle = C_MUTED;
+        ctx.globalAlpha = 0.8;
+        ctx.font = `${labelFont}px "PingFang SC", "Helvetica Neue", sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText(dayLabel, bx + barW / 2, chartBottom + 3);
+        ctx.restore();
+      }
+    });
+    y = chartBottom + Math.round(W * 0.052);
+  }
+
+  // ── mood 一句话总结 ──
+  if (mood) {
+    ctx.save();
+    ctx.fillStyle = C_GOLD_INK;
+    ctx.font = `bold ${Math.round(W * 0.024)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText('牌运之语', W / 2, y);
+    ctx.restore();
+    y += Math.round(W * 0.038);
+
+    const maxW = Math.round(W * 0.76);
+    const x = Math.round((W - maxW) / 2);
+    const fontSize = Math.round(W * 0.027);
+    const lineH = Math.round(fontSize * 1.6);
+    // 不超过页脚位置（max 2 行）
+    const footerY = H - Math.round(W * 0.040);
+    const maxLines = Math.max(1, Math.min(2, Math.floor((footerY - y) / lineH)));
+    ctx.save();
+    ctx.fillStyle = C_WHITE;
+    ctx.font = `${fontSize}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    const lines = _wrapText(ctx, mood, maxW);
+    let textY = y;
+    for (let i = 0; i < Math.min(lines.length, maxLines); i++) {
+      ctx.fillText(lines[i], x, textY);
+      textY += lineH;
+    }
+    ctx.restore();
+  }
+}
+
 // =====================================================================
 //  Main entry — drawSharePoster
 // =====================================================================
@@ -672,7 +938,7 @@ function _drawDiaryLayout(ctx, W, H, data) {
  * @param {string}   canvasId          - Canvas element ID
  * @param {Object}   opts              - Options object
  * @param {Object}   opts.context      - Component/page `this` (for SelectorQuery)
- * @param {string}   opts.mode         - 'reading' (default) | 'daily' | 'invite' | 'zodiac' | 'diary'
+ * @param {string}   opts.mode         - 'reading' (default) | 'daily' | 'invite' | 'zodiac' | 'diary' | 'fortune'
  * @param {string}   opts.cardImagePath - Tarot card image URL
  * @param {string}   opts.cardName     - Card display name (e.g. "愚者 · The Fool")
  * @param {string}   opts.keyInsight   - Short excerpt from the interpretation
@@ -685,11 +951,12 @@ function _drawDiaryLayout(ctx, W, H, data) {
  *                                      drawn as the poster hero
  * @param {string}   opts.moodEmoji    - Diary mode: mood emoji drawn as the poster hero
  * @param {string}   opts.excerpt      - Diary mode: anonymized diary excerpt text
+ * @param {Object}   opts.fortuneData  - Fortune mode: 牌运曲线数据（无小程序码）
  * @param {Function} opts.onSuccess    - Callback (tempFilePath)
  * @param {Function} opts.onError      - Callback (Error)
  */
 function drawSharePoster(canvasId, opts) {
-  const { context, mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak, inviteCode, zodiacSigns, moodEmoji, excerpt, onSuccess, onError } = opts || {};
+  const { context, mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak, inviteCode, zodiacSigns, moodEmoji, excerpt, fortuneData, onSuccess, onError } = opts || {};
   const isInviteMode = !!(mode === 'invite' && inviteCode);
 
   if (!context || !canvasId) {
@@ -733,7 +1000,8 @@ function drawSharePoster(canvasId, opts) {
 
     // ── 4. Load card image, QR code, then draw everything ──
     let cardImageLoaded = false;
-    let qrImageLoaded = false;
+    // 牌运海报是个人数据截图物，不需要小程序码 — 直接视为已加载，不等下载
+    let qrImageLoaded = mode === 'fortune';
     let cardImg = null;
     let qrImg = null;
     let drawAttempted = false;
@@ -771,6 +1039,10 @@ function drawSharePoster(canvasId, opts) {
           cardName: cardName || '',
           excerpt: excerpt || '',
         });
+      } else if (mode === 'fortune') {
+        // ── 牌运曲线海报（个人数据资产 · 奶油底 · 金深标题 · 柱状图）──
+        _drawFortuneLayout(ctx, W, H, fortuneData || {});
+        _drawFooter(ctx, W, H - Math.round(W * 0.040), '星光映照 · 我的牌运');
       } else {
         // ── Reading result poster (also invite mode: same layout + invite QR) ──
         // Card image
@@ -936,17 +1208,17 @@ function _drawDiaryCard(ctx, canvas, W, H, dpr, entry, resolve) {
   const contentW = W - PADDING * 2;
   let y = PADDING;
 
-  // 1. Background
+  // 1. Background — E3 奶油渐变
   const gradient = ctx.createLinearGradient(0, 0, 0, H);
-  gradient.addColorStop(0, '#1A1A3E');
-  gradient.addColorStop(0.5, '#12122E');
-  gradient.addColorStop(1, '#0B0B16');
+  gradient.addColorStop(0, C_BG_TOP);
+  gradient.addColorStop(0.5, C_BG_MID);
+  gradient.addColorStop(1, C_BG_BOT);
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, W, H);
 
-  // 2. Brand header
+  // 2. Brand header — 金深字
   ctx.save();
-  ctx.fillStyle = '#F4D48C';
+  ctx.fillStyle = C_GOLD_INK;
   ctx.font = `bold ${Math.round(W * 0.045)}px "PingFang SC", "Helvetica Neue", sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
@@ -954,9 +1226,9 @@ function _drawDiaryCard(ctx, canvas, W, H, dpr, entry, resolve) {
   ctx.restore();
   y += Math.round(W * 0.065);
 
-  // 3. Date
+  // 3. Date — 深灰紫
   ctx.save();
-  ctx.fillStyle = '#B8A9E0';
+  ctx.fillStyle = C_MUTED;
   ctx.font = `${Math.round(W * 0.032)}px "PingFang SC", "Helvetica Neue", sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
@@ -978,7 +1250,7 @@ function _drawDiaryCard(ctx, canvas, W, H, dpr, entry, resolve) {
   // 5. Card name (if available)
   if (entry.card && entry.card.name_zh) {
     ctx.save();
-    ctx.fillStyle = '#F4D48C';
+    ctx.fillStyle = C_GOLD_INK;
     ctx.font = `${Math.round(W * 0.035)}px "PingFang SC", "Helvetica Neue", sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
@@ -987,13 +1259,13 @@ function _drawDiaryCard(ctx, canvas, W, H, dpr, entry, resolve) {
     y += Math.round(W * 0.048);
   }
 
-  // 6. Divider line
+  // 6. Divider line — E3 细金
   y += Math.round(W * 0.020);
   const lineX = PADDING + Math.round(contentW * 0.15);
   const lineW = Math.round(contentW * 0.70);
   ctx.save();
-  ctx.strokeStyle = 'rgba(244, 212, 140, 0.2)';
-  ctx.lineWidth = 0.5;
+  ctx.strokeStyle = C_LINE_GOLD;
+  ctx.lineWidth = 0.8;
   ctx.beginPath();
   ctx.moveTo(lineX, y);
   ctx.lineTo(lineX + lineW, y);
@@ -1003,9 +1275,9 @@ function _drawDiaryCard(ctx, canvas, W, H, dpr, entry, resolve) {
 
   // 7. Reflection text
   if (entry.reflection) {
-    // Label
+    // Label — 深灰紫
     ctx.save();
-    ctx.fillStyle = '#B8A9E0';
+    ctx.fillStyle = C_MUTED;
     ctx.font = `${Math.round(W * 0.028)}px "PingFang SC", "Helvetica Neue", sans-serif`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
@@ -1013,11 +1285,11 @@ function _drawDiaryCard(ctx, canvas, W, H, dpr, entry, resolve) {
     ctx.restore();
     y += Math.round(W * 0.040);
 
-    // Text content — simple wrap
+    // Text content — simple wrap (墨字 on cream ≈12:1)
     const fontSize = Math.round(W * 0.032);
     const lineH = fontSize * 1.6;
     ctx.save();
-    ctx.fillStyle = '#F0EDE8';
+    ctx.fillStyle = C_WHITE;
     ctx.font = `${fontSize}px "PingFang SC", "Helvetica Neue", sans-serif`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
@@ -1045,8 +1317,8 @@ function _drawDiaryCard(ctx, canvas, W, H, dpr, entry, resolve) {
     // We can't easily load images onto canvas from data URL/local paths here
     // So we skip canvas image rendering and just show a placeholder indicator
     ctx.save();
-    ctx.fillStyle = 'rgba(244, 212, 140, 0.08)';
-    ctx.strokeStyle = 'rgba(244, 212, 140, 0.15)';
+    ctx.fillStyle = 'rgba(201, 169, 124, 0.14)';
+    ctx.strokeStyle = 'rgba(201, 169, 124, 0.28)';
     const imgH = Math.round(W * 0.35);
     const imgW = Math.round(contentW * 0.6);
     const imgX = Math.round((W - imgW) / 2);
@@ -1054,7 +1326,7 @@ function _drawDiaryCard(ctx, canvas, W, H, dpr, entry, resolve) {
     ctx.fill();
     ctx.stroke();
 
-    ctx.fillStyle = '#B8A9E0';
+    ctx.fillStyle = C_MUTED;
     ctx.font = `${Math.round(W * 0.026)}px "PingFang SC", "Helvetica Neue", sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -1063,11 +1335,11 @@ function _drawDiaryCard(ctx, canvas, W, H, dpr, entry, resolve) {
     y += imgH + Math.round(W * 0.030);
   }
 
-  // 9. Footer
+  // 9. Footer — 金深
   y = Math.max(y, H - Math.round(W * 0.060));
   ctx.save();
-  ctx.fillStyle = '#F4D48C';
-  ctx.globalAlpha = 0.5;
+  ctx.fillStyle = C_GOLD_INK;
+  ctx.globalAlpha = 0.85;
   ctx.font = `${Math.round(W * 0.026)}px "PingFang SC", "Helvetica Neue", sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';

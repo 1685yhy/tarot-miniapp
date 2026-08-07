@@ -28,25 +28,9 @@
 
 <!-- ===== Main content ===== -->
 <view class="page" wx:else>
-
-  <!-- Progress header: collection count -->
-  <view class="collect-header">
-    <view class="collect-header-left">
-      <text class="collect-label">大牌收集</text>
-    </view>
-    <text class="collect-count">
-      <text class="collect-count-num">{{collectedCount}}</text>
-      <text class="collect-count-total"> / {{MAJOR_ARCANA_TOTAL}}</text>
-    </text>
-  </view>
-  <view class="collect-progress-wrap">
-    <view class="collect-progress-bar">
-      <view
-        class="collect-progress-fill {{showGlow ? 'collect-progress-fill--animated' : ''}}"
-        style="width:{{collectedCount > 0 ? (collectedCount / MAJOR_ARCANA_TOTAL * 100) : 0}}%"
-      ></view>
-    </view>
-  </view>
+  <!-- E3 奶油底色氛围光斑（与首页气质统一） -->
+  <view class="wash wash-pink"></view>
+  <view class="wash wash-gold"></view>
 
   <!-- ===== Card flip area ===== -->
   <view class="card-flip-section">
@@ -117,17 +101,52 @@
     <text class="ts-life">{{teachingLife}}</text>
   </view>
 
-  <!-- ===== Streak encouragement banner (from checkin system) ===== -->
-  <view class="streak-banner" wx:if="{{dailyStreak >= 0}}">
-    <view class="streak-progress-track">
-      <view class="streak-progress-fill" style="width: {{milestoneProgress}}%"></view>
+  <!-- ===== 今日心情（P2-2：上移到教学区之前，紧随翻牌） ===== -->
+  <view class="diary-section {{showTeaching ? 'diary-section--visible' : ''}}">
+    <view class="divider"></view>
+
+    <view wx:if="{{diarySaved}}" class="diary-saved-state">
+      <text class="diary-saved-text">今日心情已记录</text>
     </view>
-    <text class="streak-text">{{streakEncouragement}}</text>
-    <text class="streak-hint" wx:if="{{streakHint}}">{{streakHint}}</text>
+
+    <view wx:else class="diary-entry-area">
+      <view class="diary-entry-header">
+        <image class="diary-entry-icon" src="/images/icons/diary_64.png" mode="aspectFit" lazy-load aria-label="今日心情" />
+        <text class="diary-entry-title">今日心情</text>
+      </view>
+      <textarea
+        class="diary-input"
+        placeholder="这张牌让你想到了什么？记录此刻的感受..."
+        value="{{diaryText}}"
+        bindinput="onDiaryInput"
+        maxlength="500"
+      />
+      <text class="diary-char-count">{{diaryText.length}}/500</text>
+      <button bindtap="onDiarySave"
+        class="btn btn-primary btn--full btn--sm"
+        disabled="{{diarySaving || !diaryText.trim()}}"
+      >
+        {{diarySaving ? '保存中...' : '保存心情'}}
+      </button>
+    </view>
   </view>
 
-  <!-- ===== Teaching area (revealed after flip) ===== -->
+  <!-- ===== Teaching area (revealed after flip, 默认折叠「详解 ▾」) ===== -->
   <view class="teaching-area {{showTeaching ? 'teaching-area--visible' : ''}}">
+
+    <!-- 折叠头：详解 ▾（点击展开） -->
+    <view
+      class="teaching-toggle"
+      wx:if="{{teaching && !teachingLoading && !teachingError}}"
+      bindtap="onToggleTeaching"
+      role="button"
+      aria-label="{{teachingExpanded ? '收起详解' : '展开详解'}}"
+    >
+      <text class="teaching-toggle-title">详解</text>
+      <text class="teaching-toggle-arrow">{{teachingExpanded ? '▴' : '▾'}}</text>
+    </view>
+
+    <view wx:if="{{teachingExpanded}}" class="teaching-toggle-body">
 
     <!-- Teaching loading -->
     <view wx:if="{{teachingLoading}}" class="teaching-loading">
@@ -204,36 +223,22 @@
         </view>
       </view>
     </view>
+    </view>
   </view>
 
-  <!-- ===== Diary entry ===== -->
-  <view class="diary-section {{showTeaching ? 'diary-section--visible' : ''}}">
-    <view class="divider"></view>
-
-    <view wx:if="{{diarySaved}}" class="diary-saved-state">
-      <text class="diary-saved-text">今日心情已记录</text>
+  <!-- ===== Streak encouragement banner（P2-2：可点击 → 签到页） ===== -->
+  <view class="streak-banner" wx:if="{{dailyStreak >= 0}}" bindtap="onGoCheckin" role="button" aria-label="查看签到与连续打卡">
+    <view class="streak-progress-track">
+      <view class="streak-progress-fill" style="width: {{milestoneProgress}}%"></view>
     </view>
+    <text class="streak-text">{{streakEncouragement}}</text>
+    <text class="streak-hint" wx:if="{{streakHint}}">{{streakHint}}</text>
+    <text class="streak-cta">去签到 →</text>
+  </view>
 
-    <view wx:else class="diary-entry-area">
-      <view class="diary-entry-header">
-        <image class="diary-entry-icon" src="/images/icons/diary_64.png" mode="aspectFit" lazy-load aria-label="今日心情" />
-        <text class="diary-entry-title">今日心情</text>
-      </view>
-      <textarea
-        class="diary-input"
-        placeholder="这张牌让你想到了什么？记录此刻的感受..."
-        value="{{diaryText}}"
-        bindinput="onDiaryInput"
-        maxlength="500"
-      />
-      <text class="diary-char-count">{{diaryText.length}}/500</text>
-      <button bindtap="onDiarySave"
-        class="btn btn-primary btn--full btn--sm"
-        disabled="{{diarySaving || !diaryText.trim()}}"
-      >
-        {{diarySaving ? '保存中...' : '保存心情'}}
-      </button>
-    </view>
+  <!-- ===== 收集进度 — 页尾一行小字（P2-2：移出首屏） ===== -->
+  <view class="collect-footer">
+    <text class="collect-footer-text">收集 {{collectedCount}}/{{MAJOR_ARCANA_TOTAL}} · 大牌</text>
   </view>
 
   <!-- Back to Home removed — native nav bar provides back button -->

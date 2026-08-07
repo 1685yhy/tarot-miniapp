@@ -22,6 +22,10 @@ Page({
     },
     paymentSuccess: false,
     showCelebration: false,
+
+    // P2-3: 权益对比表 / 补充解读包 默认折叠
+    cmpExpanded: false,
+    packExpanded: false,
     unlockedBenefits: [
       { icon: '✨', text: '已解锁 10 种牌阵' },
       { icon: '💬', text: '无限 AI 追问' },
@@ -347,6 +351,16 @@ Page({
   onPurchasePack(e) {
     // Delegate to onPurchase with the same data format
     this.onPurchase(e);
+  },
+
+  /** P2-3: 展开/收起权益对比表 */
+  onToggleCmp() {
+    this.setData({ cmpExpanded: !this.data.cmpExpanded });
+  },
+
+  /** P2-3: 展开/收起补充解读包 */
+  onTogglePack() {
+    this.setData({ packExpanded: !this.data.packExpanded });
   },
 
   /** 补充包详情：简单提示一次性、永不过期 */

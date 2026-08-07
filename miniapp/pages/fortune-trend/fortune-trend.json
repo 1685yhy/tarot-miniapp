@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "我的牌运",
+  "navigationBarBackgroundColor": "#FAF6EF",
+  "navigationBarTextStyle": "black",
+  "backgroundColor": "#FAF6EF",
+  "backgroundTextStyle": "dark",
+  "usingComponents": {
+    "share-poster": "../../components/share-poster/share-poster"
+  }
+}
