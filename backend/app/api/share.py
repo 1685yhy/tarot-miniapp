@@ -87,17 +87,18 @@ class ShareStatsResponse(BaseModel):
 @router.post("/track", response_model=TrackShareResponse)
 async def track_share(
     body: TrackShareRequest,
+    user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
-    Track a share event.
+    Track a share event (requires login).
 
-    If *sharer_id* is provided the user's share_count increments and
-    tier-based rewards are evaluated.
+    The sharer is always the authenticated user — any ``sharer_id`` sent
+    in the body is ignored (prevents inflating other accounts' rewards).
     """
     result = await record_share(
         db,
-        sharer_id=body.sharer_id,
+        sharer_id=user.id,  # forced — body.sharer_id is ignored
         channel=body.channel,
         share_type=body.share_type,
         ref_id=body.ref_id,

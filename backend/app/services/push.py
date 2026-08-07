@@ -18,12 +18,42 @@ from app.config import settings
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Template IDs (placeholders — must be replaced with real WeChat-approved IDs)
+# Template keys (P0-4: configurable template IDs)
+#
+# The constants below are stable *keys* used by the frontend and stored in
+# push_subscriptions.template_id. The real WeChat template IDs are read from
+# settings (WX_TEMPLATE_DAILY_CARD / WX_TEMPLATE_MEMBER_EXPIRE /
+# WX_TEMPLATE_ANNUAL_REPORT, set in .env). While a key has no configured
+# template ID the push service is treated as NOT OPEN: subscribe returns 400
+# and send_subscribe_message logs "模板未配置" instead of calling WeChat.
 # ---------------------------------------------------------------------------
 
 TEMPLATE_DAILY_CARD = "TEMPLATE_DAILY_CARD"
 TEMPLATE_MEMBER_EXPIRE = "TEMPLATE_MEMBER_EXPIRE"
 TEMPLATE_ANNUAL_REPORT = "TEMPLATE_ANNUAL_REPORT"
+
+_TEMPLATE_KEY_TO_SETTING = {
+    TEMPLATE_DAILY_CARD: "WX_TEMPLATE_DAILY_CARD",
+    TEMPLATE_MEMBER_EXPIRE: "WX_TEMPLATE_MEMBER_EXPIRE",
+    TEMPLATE_ANNUAL_REPORT: "WX_TEMPLATE_ANNUAL_REPORT",
+}
+
+
+def resolve_template_id(template_key: str) -> str:
+    """Return the configured WeChat template ID for a template key ('' if unset).
+
+    This is where real (approved) template IDs plug in — fill
+    ``WX_TEMPLATE_DAILY_CARD`` etc. in .env and the whole chain works.
+    """
+    attr = _TEMPLATE_KEY_TO_SETTING.get(template_key)
+    if not attr:
+        return ""
+    return str(getattr(settings, attr, "") or "").strip()
+
+
+def is_template_configured(template_key: str) -> bool:
+    """True when a real WeChat template ID is configured for the key."""
+    return bool(resolve_template_id(template_key))
 
 # ---------------------------------------------------------------------------
 # In-memory access-token cache (shared with wxacode pattern)
@@ -98,6 +128,21 @@ async def send_subscribe_message(
     dict
         The JSON response from WeChat (``{"errcode": 0, "errmsg": "ok"}`` on success).
     """
+    # P0-4: never call WeChat with an unconfigured / placeholder template ID.
+    if not template_id or not str(template_id).strip():
+        logger.error(
+            "推送模板未配置（template_id 为空）— 跳过发送 openid=%s",
+            openid,
+        )
+        return {"errcode": -1, "errmsg": "模板未配置"}
+    if str(template_id) in _TEMPLATE_KEY_TO_SETTING:
+        logger.error(
+            "推送模板未配置（%s 仍是占位符，请在 .env 配置真实模板 ID）— 跳过发送 openid=%s",
+            template_id,
+            openid,
+        )
+        return {"errcode": -1, "errmsg": "模板未配置"}
+
     token = await _get_access_token()
 
     body = {

@@ -18,6 +18,11 @@ from pathlib import Path
 # ── Must set environment variables before any app imports ──────────────
 os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///./.pytest_tarot.db"
 os.environ["DEEPSEEK_API_KEY"] = ""  # Disable AI calls in tests
+os.environ["WECHAT_MSG_CHECK_ENABLED"] = "false"  # No real WeChat msgSecCheck calls
+os.environ["REDIS_URL"] = ""  # Force the in-process rate-limit store (deterministic)
+# The whole suite shares one dev-login user — raise the per-user limit so
+# the in-process rate limiter can't 429 late tests (limits stay 60/min in prod).
+os.environ["RATE_LIMIT_MAX_REQUESTS"] = "100000"
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 

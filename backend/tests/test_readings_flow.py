@@ -18,9 +18,15 @@ from app.config import settings
 
 
 def _auth_headers(client: TestClient, member: bool = False) -> dict[str, str]:
-    """Log in and return auth headers."""
-    url = "/auth/dev-login?member=true" if member else "/auth/dev-login"
-    resp = client.post(url)
+    """Log in and return auth headers.
+
+    The member flag is passed EXPLICITLY both ways: dev-login without the
+    member param preserves the shared dev user's existing state, which makes
+    tests order-dependent (e.g. a member user from an earlier file would make
+    the free-quota flow fail).
+    """
+    url = f"/auth/dev-login?member={'true' if member else 'false'}"
+    resp = client.post(url, headers={"X-Dev-Key": settings.DEV_LOGIN_KEY})
     token = resp.json()["token"]
     return {"Authorization": f"Bearer {token}"}
 

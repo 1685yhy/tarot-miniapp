@@ -10,7 +10,8 @@ Tarot reading API endpoints.
 import json
 import re
 import uuid as uuid_lib
-from datetime import datetime, timezone
+from collections import Counter
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select, func, delete
@@ -36,6 +37,7 @@ from app.services.ai_engine import generate_reading, generate_reflection_questio
 from app.services.ai_personas import get_persona
 from app.services.tarot import draw_cards
 from app.utils.auth import get_current_user
+from app.utils.quota import reset_ai_quota_if_new_day
 
 router = APIRouter(prefix="/readings", tags=["占卜解读"])
 
@@ -108,6 +110,9 @@ _SPREAD_TYPE_NAMES = {
     "relationship": "关系牌阵",
     "year_ahead": "年度运势",
 }
+
+# P1-6: spreads that were premium-only in the UI — now enforced server-side.
+PREMIUM_SPREADS = {"celtic_cross", "horseshoe", "relationship", "year_ahead"}
 
 
 async def _build_user_context_block(
@@ -213,6 +218,31 @@ def parse_action_items(text: str | None) -> list[dict]:
     return items
 
 
+def _build_fortune_mood(
+    major_count: int, minor_count: int, suit_dist: dict[str, int]
+) -> str:
+    """牌运一句话总结 — 纯规则式（3-4 条规则，不调 AI）。
+
+    - 无解读记录 → 星光初启
+    - 大阿卡那出现次数多于小阿卡那 → 转折之年
+    - 花色分布决定行动/情绪/思虑/稳健
+    """
+    if major_count + minor_count == 0:
+        return "星光初启，牌运之旅待你开启"
+    if major_count > minor_count:
+        return "转折之年 · 大牌主导，人生迎来关键变化"
+    top_suit, top_count = max(suit_dist.items(), key=lambda kv: kv[1])
+    if top_count == 0:
+        return "牌运平稳，随心而行"
+    if top_suit == "wands":
+        return "行动力强 · 宜主动出击"
+    if top_suit == "cups":
+        return "情绪丰沛 · 倾听内心声音"
+    if top_suit == "swords":
+        return "思虑渐明 · 拨云见日"
+    return "稳步向前 · 厚积薄发"
+
+
 async def _load_drawn_cards_response(
     db: AsyncSession, drawn_cards: list[DrawnCard]
 ) -> list[dict]:
@@ -283,8 +313,13 @@ async def create_reading(
     await _reset_daily_count_if_new_day(user)
 
     # ── Free-tier limit check ──
-    if user.is_member and user.member_expires_at and user.member_expires_at < datetime.now(timezone.utc):
-        user.is_member = False
+    if user.is_member and user.member_expires_at:
+        expires = user.member_expires_at
+        # SQLite returns naive datetimes; normalize to aware UTC before comparing
+        if expires.tzinfo is None:
+            expires = expires.replace(tzinfo=timezone.utc)
+        if expires < datetime.now(timezone.utc):
+            user.is_member = False
     uses_paid_credit = False
     if not user.is_member and user.free_readings_today >= settings.FREE_DAILY_READINGS:
         # Check if user has paid reading credits
@@ -295,6 +330,13 @@ async def create_reading(
                 status_code=402,
                 detail="今日免费次数已用完，请开通会员",
             )
+
+    # ── Premium spread gate (P1-6): previously UI-only, now enforced here ──
+    if spread_type in PREMIUM_SPREADS and not user.is_member:
+        raise HTTPException(
+            status_code=402,
+            detail="该牌阵为会员专属，请先开通会员",
+        )
 
     # ── Draw cards ──
     cards_data = draw_cards(spread_type)
@@ -308,10 +350,21 @@ async def create_reading(
     # ── Resolve depth level ──
     # basic:   TL;DR only (~200 chars) — free
     # standard: Full interpretation (current) — free
-    # deep:    Full + extra depth analysis — member only
+    # deep:    Full + extra depth analysis — member only, or non-members
+    #          who pay with paid_readings_balance / free_deep_readings
+    #          (P0-2: paid deep readings must actually deliver deep).
     reading_depth = req.depth or "standard"
+    deep_uses_free = False
+    deep_uses_paid = False
     if reading_depth == "deep" and not user.is_member:
-        reading_depth = "standard"
+        if (user.free_deep_readings or 0) > 0:
+            deep_uses_free = True
+        elif (user.paid_readings_balance or 0) > (1 if uses_paid_credit else 0):
+            # Requires one spare unit on top of the credit this reading
+            # already consumes for the daily quota (never overdraft).
+            deep_uses_paid = True
+        else:
+            reading_depth = "standard"
 
     # ── Create reading record ──
     reading = Reading(
@@ -321,7 +374,7 @@ async def create_reading(
         theme=req.theme,
         persona=persona_key,
         depth=reading_depth,
-        is_paid=user.is_member or uses_paid_credit,
+        is_paid=user.is_member or uses_paid_credit or deep_uses_free or deep_uses_paid,
     )
     db.add(reading)
     await db.flush()
@@ -402,8 +455,15 @@ async def create_reading(
         reading.interpretation = interpretation
         action_items = parse_action_items(interpretation)
 
-    # ── Deduct paid balance only after successful AI generation ──
+    # ── Deduct balances only after successful AI generation ──
     if uses_paid_credit:
+        user.paid_readings_balance -= 1
+    # P0-2: consume the deep-reading balance (free_deep_readings first,
+    # then paid_readings_balance) — this is where share-rewarded
+    # free_deep_readings finally get spent.
+    if deep_uses_free:
+        user.free_deep_readings -= 1
+    if deep_uses_paid:
         user.paid_readings_balance -= 1
 
     # ── Apply depth tier truncation ──
@@ -525,6 +585,89 @@ async def list_readings(
     return ReadingHistoryResponse(total=total, items=items)
 
 
+# -------------------------------------------------------------------
+# 牌运曲线 — 个人数据资产（近 N 天解读聚合）
+# -------------------------------------------------------------------
+
+
+@router.get("/fortune-trend")
+async def fortune_trend(
+    days: int = Query(30, ge=1, le=90, description="统计天数"),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """牌运曲线：聚合当前用户近 N 天解读记录。
+
+    Response
+    --------
+    {
+      "days": 30,
+      "total_readings": 12,
+      "cards": [{"name", "name_en", "count"}],       // 高频牌 top5（按抽出次数）
+      "arcana_dist": {"major": 4, "minor": 8},        // 大/小阿卡那分布
+      "suit_dist": {"wands", "cups", "swords", "pentacles"},
+      "mood": "稳步向前 · 厚积薄发",                  // 规则式一句话总结
+      "trend": [{"date": "2026-08-01", "count": 1}]   // 每日解读次数（满 N 天补零）
+    }
+    """
+    today = datetime.now(timezone.utc).date()
+    cutoff = today - timedelta(days=days - 1)
+    cutoff_dt = datetime(cutoff.year, cutoff.month, cutoff.day)
+
+    # ── 窗口内解读记录（含抽牌明细）──
+    result = await db.execute(
+        select(Reading)
+        .where(Reading.user_id == user.id, Reading.created_at >= cutoff_dt)
+        .options(selectinload(Reading.drawn_cards))
+        .order_by(Reading.created_at.asc())
+    )
+    readings: list[Reading] = list(result.scalars().all())
+    total_readings = len(readings)
+
+    # ── 聚合抽出的牌 ──
+    card_counter: Counter[int] = Counter()
+    arcana_dist = {"major": 0, "minor": 0}
+    suit_dist = {"wands": 0, "cups": 0, "swords": 0, "pentacles": 0}
+    for r in readings:
+        for dc in r.drawn_cards:
+            card_counter[dc.card_id] += 1
+
+    top_cards: list[dict] = []
+    if card_counter:
+        top_ids = [cid for cid, _ in card_counter.most_common(5)]
+        card_result = await db.execute(select(TarotCard).where(TarotCard.id.in_(top_ids)))
+        cards_by_id = {c.id: c for c in card_result.scalars().all()}
+        for cid, count in card_counter.most_common(5):
+            card = cards_by_id.get(cid)
+            if not card:
+                continue
+            top_cards.append({"name": card.name_zh, "name_en": card.name_en, "count": count})
+            arcana_dist[card.arcana] = arcana_dist.get(card.arcana, 0) + count
+            if card.suit in suit_dist:
+                suit_dist[card.suit] += count
+
+    # ── 每日解读次数（满 N 天，无记录的天补 0）──
+    daily_counts: dict[str, int] = {}
+    for r in readings:
+        if r.created_at:
+            key = r.created_at.date().isoformat()
+            daily_counts[key] = daily_counts.get(key, 0) + 1
+    trend = [
+        {"date": (today - timedelta(days=i)).isoformat(), "count": daily_counts.get((today - timedelta(days=i)).isoformat(), 0)}
+        for i in range(days - 1, -1, -1)
+    ]
+
+    return {
+        "days": days,
+        "total_readings": total_readings,
+        "cards": top_cards,
+        "arcana_dist": arcana_dist,
+        "suit_dist": suit_dist,
+        "mood": _build_fortune_mood(arcana_dist["major"], arcana_dist["minor"], suit_dist),
+        "trend": trend,
+    }
+
+
 @router.get("/{reading_id}", response_model=ReadingResponse)
 async def get_reading(
     reading_id: str,
@@ -570,7 +713,17 @@ async def reinterpret_reading(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Re-generate the AI interpretation for a reading."""
+    """Re-generate the AI interpretation for a reading.
+
+    Non-members are limited to ``FREE_REINTERPRETS_DAILY`` reinterprets per day
+    (members are unlimited).
+    """
+    # ── Free-tier daily quota (non-members only) ──
+    if not user.is_member:
+        reset_ai_quota_if_new_day(user)
+        if user.reinterpret_count_today >= settings.FREE_REINTERPRETS_DAILY:
+            raise HTTPException(status_code=402, detail="今日重解次数已用完，请开通会员")
+
     result = await db.execute(
         select(Reading)
         .where(Reading.id == reading_id)
@@ -659,6 +812,10 @@ async def reinterpret_reading(
         reading.reflection_question = await generate_reflection_question(
             reading.question, first_card_name, interpretation,
         )
+
+    # ── Count the successful reinterpret toward the daily quota (non-members) ──
+    if not user.is_member:
+        user.reinterpret_count_today += 1
 
     await db.flush()
     await db.refresh(reading, ["drawn_cards"])

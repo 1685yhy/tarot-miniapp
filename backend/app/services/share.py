@@ -13,6 +13,7 @@ from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.share_log import ShareLog, Invite
+from app.utils.auth import utc_aware
 from app.models.user import User
 
 # ---------------------------------------------------------------------------
@@ -94,7 +95,7 @@ async def record_share(
                         # Grant temporary membership
                         from datetime import timedelta
                         now = datetime.now(timezone.utc)
-                        if sharer.member_expires_at and sharer.member_expires_at > now:
+                        if utc_aware(sharer.member_expires_at) and utc_aware(sharer.member_expires_at) > now:
                             sharer.member_expires_at = sharer.member_expires_at + timedelta(days=tier["membership_days"])
                         else:
                             sharer.member_expires_at = now + timedelta(days=tier["membership_days"])

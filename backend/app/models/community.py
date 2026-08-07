@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from sqlalchemy import String, Text, Integer, Date, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.dialects.mysql import CHAR
 from app.db.database import Base
 
 
@@ -24,12 +25,20 @@ class Topic(Base):
 
 
 class Post(Base):
-    """Anonymous post on a daily topic — no user identity stored."""
+    """Post on a daily topic. Posts are displayed anonymously, but the
+    author is tracked (user_id) for moderation / account deletion.
+
+    user_id is nullable to keep historical anonymous rows valid; new posts
+    always set it.
+    """
     __tablename__ = "community_posts"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     topic_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("community_topics.id"), nullable=False, index=True
+    )
+    user_id: Mapped[str | None] = mapped_column(
+        CHAR(36), ForeignKey("users.id"), nullable=True, index=True
     )
     content: Mapped[str] = mapped_column(String(500), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
@@ -37,3 +46,4 @@ class Post(Base):
     )
 
     topic: Mapped["Topic"] = relationship(back_populates="posts")
+    user: Mapped["User | None"] = relationship("User")

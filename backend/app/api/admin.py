@@ -1,14 +1,14 @@
 """
 Admin dashboard routes for Starlight Tarot.
 
-All routes live under the /admin prefix and require the
-``X-Admin-User-Id`` header to match one of ``SUPER_ADMIN_IDS``.
+All routes live under the /admin prefix and require a valid JWT
+(``Authorization: Bearer <token>``) whose ``sub`` is in ``SUPER_ADMIN_IDS``
+(configured in .env, comma-separated).
 """
 
 from datetime import datetime, timezone, timedelta
-from typing import Optional
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import select, func, case
@@ -21,6 +21,7 @@ from app.models.card import TarotCard
 from app.models.reading import Reading
 from app.models.order import Order
 from app.models.user import User
+from app.utils.auth import get_user_from_token
 
 # ---------------------------------------------------------------------------
 # Analytics helper — query builder for funnel stats
@@ -86,16 +87,17 @@ templates = Jinja2Templates(directory="app/templates")
 
 async def require_admin(
     request: Request,
-    x_admin_user_id: Optional[str] = Header(None, alias="x-admin-user-id"),
     db: AsyncSession = Depends(get_db),
-):
-    """Check that the caller is a recognised super-admin."""
-    if not x_admin_user_id or x_admin_user_id not in settings.SUPER_ADMIN_IDS:
+) -> User:
+    """Require a valid JWT belonging to one of the configured super-admins."""
+    # No JWT at all → 403 (do not leak whether an account is required)
+    auth_header = request.headers.get("Authorization", "")
+    if not auth_header:
         raise HTTPException(status_code=403, detail="Forbidden: not a super-admin")
-    result = await db.execute(select(User).where(User.id == x_admin_user_id))
-    admin = result.scalar_one_or_none()
-    if not admin:
-        raise HTTPException(status_code=403, detail="Forbidden: admin user not found")
+    # Invalid/expired/stale token → 401 (from decode/token_version checks)
+    admin = await get_user_from_token(auth_header.replace("Bearer ", ""), db)
+    if admin.id not in settings.super_admin_ids():
+        raise HTTPException(status_code=403, detail="Forbidden: not a super-admin")
     return admin
 
 

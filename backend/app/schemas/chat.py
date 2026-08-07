@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class ActionItem(BaseModel):
@@ -10,7 +10,7 @@ class ActionItem(BaseModel):
 
 
 class ChatRequest(BaseModel):
-    message: str
+    message: str = Field(..., max_length=5000, description="追问内容，最长 5000 字")
 
 
 class ChatResponse(BaseModel):

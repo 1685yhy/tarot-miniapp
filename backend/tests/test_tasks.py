@@ -14,6 +14,7 @@ from unittest.mock import patch
 from fastapi.testclient import TestClient
 
 from app.api.tasks import _resolve_level, _next_level_info, LEVELS
+from app.config import settings
 from app.models.checkin import CheckIn
 
 
@@ -24,7 +25,7 @@ from app.models.checkin import CheckIn
 def _auth_headers(client: TestClient, member: bool = False) -> dict[str, str]:
     """Log in and return auth headers."""
     url = "/auth/dev-login?member=true" if member else "/auth/dev-login"
-    resp = client.post(url)
+    resp = client.post(url, headers={"X-Dev-Key": settings.DEV_LOGIN_KEY})
     token = resp.json()["token"]
     return {"Authorization": f"Bearer {token}"}
 

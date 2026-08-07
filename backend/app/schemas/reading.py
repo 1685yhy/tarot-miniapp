@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ChatMessageResponse(BaseModel):
@@ -16,7 +16,7 @@ class ChatMessageResponse(BaseModel):
 
 
 class CreateReadingRequest(BaseModel):
-    question: str | None = None
+    question: str | None = Field(None, max_length=2000, description="占卜问题，最长 2000 字")
     theme: str | None = None  # love / career / finance / general
     persona: str | None = None  # gentle_star / wise_moon / frank_sun
     zodiac: str | None = None  # aries / taurus / gemini / cancer / leo / virgo / libra / scorpio / sagittarius / capricorn / aquarius / pisces

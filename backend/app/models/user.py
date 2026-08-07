@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import String, Boolean, DateTime, Integer, Text
+from sqlalchemy import String, Boolean, DateTime, Integer, Text, Date
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.mysql import CHAR
 from app.db.database import Base
@@ -19,6 +19,9 @@ class User(Base):
     free_readings_today: Mapped[int] = mapped_column(Integer, default=0)
     free_chats_today: Mapped[int] = mapped_column(Integer, default=0)
     paid_readings_balance: Mapped[int] = mapped_column(Integer, default=0)
+    # P0-1: standalone annual-report purchase (annual_report product) unlocks
+    # GET /report/annual for non-members (independent of membership)
+    annual_report_paid: Mapped[bool] = mapped_column(Boolean, default=False)
     last_reading_date: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     annual_report_data: Mapped[str | None] = mapped_column(Text, nullable=True)
     annual_report_year: Mapped[int | None] = mapped_column(Integer, nullable=True)
@@ -27,6 +30,12 @@ class User(Base):
     share_count: Mapped[int] = mapped_column(Integer, default=0)
     free_deep_readings: Mapped[int] = mapped_column(Integer, default=0)
     reward_tier: Mapped[int] = mapped_column(Integer, default=0)
+    # Auth: bumped on logout/account-deletion to invalidate previously issued JWTs
+    token_version: Mapped[int] = mapped_column(Integer, default=0)
+    # Daily AI-extras quota (reinterpret / diary AI), reset when the day changes
+    reinterpret_count_today: Mapped[int] = mapped_column(Integer, default=0)
+    diary_ai_count_today: Mapped[int] = mapped_column(Integer, default=0)
+    quota_reset_date: Mapped[datetime | None] = mapped_column(Date, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 

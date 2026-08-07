@@ -9,6 +9,7 @@ Enhanced Annual Report API endpoint.
 
 import json
 import logging
+import re
 from collections import Counter
 from datetime import date, datetime, timedelta, timezone
 
@@ -230,6 +231,22 @@ def _get_monthly_chart_data(readings: list[Reading], year: int) -> list[dict]:
     ]
 
 
+def _parse_keywords(raw: str | None) -> list[str] | None:
+    """Parse keywords that may be stored as a JSON array OR a
+    Chinese-comma-separated string (legacy rows). Returns a list or None."""
+    if not raw or not raw.strip():
+        return None
+    try:
+        parsed = json.loads(raw)
+        if isinstance(parsed, list):
+            return [str(k) for k in parsed]
+    except (json.JSONDecodeError, TypeError):
+        pass
+    # Legacy: "开始、行动、..." or "开始, 行动, ..."
+    parts = re.split(r"[、,，]", raw)
+    return [p.strip() for p in parts if p.strip()] or None
+
+
 def _compute_personality(all_card_names: list[str]) -> dict:
     """Determine tarot personality archetype from most common cards."""
     if not all_card_names:
@@ -309,8 +326,13 @@ async def get_annual_report(
     - Tarot personality profile
     - AI-generated annual summary and new year blessing
     """
-    if not user.is_member:
-        raise HTTPException(status_code=402, detail="年度报告仅限会员使用")
+    # P0-1 fix: allow standalone annual-report purchasers (annual_report_paid)
+    # alongside members. Previously a paid ¥29.90 purchase granted nothing.
+    if not (user.is_member or user.annual_report_paid):
+        raise HTTPException(
+            status_code=402,
+            detail="年度报告仅限会员或已单次购买年度报告的用户使用",
+        )
 
     current_year = date.today().year
     target_year = year or current_year
@@ -381,7 +403,7 @@ async def get_annual_report(
                     "arcana": tc.arcana,
                     "suit": tc.suit,
                     "meaning": tc.meaning_upright[:400],
-                    "keyword": (json.loads(tc.keywords_upright) if tc.keywords_upright else ["转变"])[0],
+                    "keyword": (_parse_keywords(tc.keywords_upright) or ["转变"])[0],
                 }
 
     # ── Personality ──

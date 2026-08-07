@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import asynccontextmanager
 import logging
 import os
@@ -14,6 +15,7 @@ from app.api.ws import router as ws_router
 from app.api.monitor import router as monitor_router
 from app.middleware.metrics import MetricsMiddleware
 from app.middleware.rate_limit import rate_limit_middleware
+from app.services.daily_push import run_daily_push_loop
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +51,16 @@ async def lifespan(app: FastAPI):
         sys.exit(1)
 
     await create_all()
+
+    # ---- 21:00 晚间推送定时任务（留存功能第一批 · Feature 3）----
+    # 模板未配置（WX_TEMPLATE_DAILY_CARD 为空）时任务自动退出并记 error 日志。
+    push_task = asyncio.create_task(run_daily_push_loop())
     yield
+    push_task.cancel()
+    try:
+        await push_task
+    except asyncio.CancelledError:
+        pass
 
 
 app = FastAPI(title="塔罗占卜 API", version="1.0.0", lifespan=lifespan)
