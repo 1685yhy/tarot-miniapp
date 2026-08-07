@@ -1,7 +1,7 @@
 {
   "navigationBarTitleText": "星光分享中心",
-  "navigationBarBackgroundColor": "#1A1A3E",
-  "navigationBarTextStyle": "white",
+  "navigationBarBackgroundColor": "#FAF6EF",
+  "navigationBarTextStyle": "black",
   "usingComponents": {
     "share-poster": "../../components/share-poster/share-poster"
   }

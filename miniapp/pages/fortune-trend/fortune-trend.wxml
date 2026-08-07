@@ -1,0 +1,118 @@
+<!-- pages/fortune-trend/fortune-trend.wxml -->
+<!-- 牌运曲线 · E3 奶油疗愈（奶油底 / 细金描边 / 衬线标题） -->
+
+<!-- ===== 加载骨架 ===== -->
+<view class="page" wx:if="{{loading}}">
+  <view class="skeleton skeleton--title" style="width:40%;margin:60rpx auto 20rpx"></view>
+  <view class="skeleton skeleton--text" style="width:55%;margin:0 auto 48rpx"></view>
+  <view class="skeleton skeleton--block" style="height:200rpx;border-radius:28rpx"></view>
+  <view class="skeleton skeleton--block" style="height:360rpx;border-radius:28rpx;margin-top:28rpx"></view>
+</view>
+
+<!-- ===== 错误状态 ===== -->
+<view class="page" wx:elif="{{error}}">
+  <view class="error-state">
+    <text class="error-text">牌运暂时无法获取</text>
+    <text class="error-hint">{{error}}</text>
+    <button class="btn-ghost" bindtap="onRetry">重新加载</button>
+  </view>
+</view>
+
+<!-- ===== 主内容 ===== -->
+<view class="page" wx:else>
+
+  <!-- 页头 -->
+  <view class="ft-head">
+    <text class="ft-brand">STARLIT · 牌运曲线</text>
+    <text class="ft-title">我的牌运</text>
+    <text class="ft-sub">近 {{days}} 天 · 你的牌面足迹</text>
+  </view>
+
+  <!-- 一句话总结（mood） -->
+  <view class="ft-mood-card">
+    <text class="ft-mood-label">牌运之语</text>
+    <text class="ft-mood-text">{{mood || '星光初启，牌运之旅待你开启'}}</text>
+  </view>
+
+  <!-- 核心数字 -->
+  <view class="ft-stat-row">
+    <view class="ft-stat-card">
+      <text class="ft-stat-num">{{totalReadings}}</text>
+      <text class="ft-stat-label">近 30 天解读次数</text>
+    </view>
+    <view class="ft-stat-card">
+      <text class="ft-stat-num">{{activeDays}}</text>
+      <text class="ft-stat-label">有解读的天数</text>
+    </view>
+  </view>
+
+  <!-- 高频之牌 top3 -->
+  <view class="ft-block">
+    <view class="ft-block-title">✦ 高频之牌</view>
+    <view wx:if="{{!hasData}}" class="ft-empty">还没有解读记录，先去抽一牌吧 ✦</view>
+    <view class="ft-top-list" wx:else>
+      <view class="ft-top-item" wx:for="{{topCards}}" wx:key="name">
+        <text class="ft-top-rank">{{index + 1}}</text>
+        <text class="ft-top-name">{{item.name}}</text>
+        <text class="ft-top-en">{{item.name_en}}</text>
+        <text class="ft-top-count">{{item.count}} 次</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 大/小阿卡那比例条 -->
+  <view class="ft-block">
+    <view class="ft-block-title">✦ 大阿卡那 · 小阿卡那</view>
+    <view class="ft-ratio-track">
+      <view class="ft-ratio-fill" style="width: {{majorPct}}%"></view>
+    </view>
+    <view class="ft-ratio-legend">
+      <text class="ft-ratio-item"><text class="ft-dot ft-dot--major"></text>大阿卡那 {{majorCount}}</text>
+      <text class="ft-ratio-item"><text class="ft-dot ft-dot--minor"></text>小阿卡那 {{minorCount}}</text>
+    </view>
+  </view>
+
+  <!-- 花色分布 4 小格 -->
+  <view class="ft-block">
+    <view class="ft-block-title">✦ 花色分布</view>
+    <view class="ft-suit-grid">
+      <view class="ft-suit-cell" wx:for="{{suitList}}" wx:key="key">
+        <text class="ft-suit-emoji">{{item.emoji}}</text>
+        <text class="ft-suit-name">{{item.name}}</text>
+        <text class="ft-suit-count">{{item.count}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 趋势柱状图（CSS 柱状 · 避免 canvas 复杂度） -->
+  <view class="ft-block">
+    <view class="ft-block-title">✦ 每日解读 · 近 {{days}} 天</view>
+    <view class="ft-chart" wx:if="{{hasData}}">
+      <view class="ft-bar-col" wx:for="{{trend}}" wx:key="date">
+        <view class="ft-bar-area">
+          <view class="ft-bar {{item.count > 0 ? 'ft-bar--active' : ''}}" style="height: {{item.heightPct}}%"></view>
+        </view>
+        <text class="ft-bar-day" wx:if="{{item.showLabel}}">{{item.dayLabel}}</text>
+        <view class="ft-bar-day" wx:else></view>
+      </view>
+    </view>
+    <view wx:else class="ft-empty">暂无趋势数据</view>
+  </view>
+
+  <!-- 分享按钮（截图物 · 生成牌运海报） -->
+  <button class="ft-share-btn" bindtap="onShareFortune" loading="{{sharing}}" disabled="{{sharing}}" aria-label="生成牌运分享图">
+    <text class="ft-share-btn-text">生成牌运分享图 ✦</text>
+  </button>
+
+  <view class="ft-footer">星光映照 · 陪你遇见自己</view>
+
+  <!-- 牌运海报（canvas-poster · fortune 模式） -->
+  <share-poster
+    mode="fortune"
+    visible="{{showPoster}}"
+    fortuneData="{{posterData}}"
+    nickname="{{nickname}}"
+    bind:close="onClosePoster"
+    bind:share="onSharePosterToFriend"
+  />
+</view>

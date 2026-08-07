@@ -31,6 +31,9 @@ Page({
     reviewLoading: false,
     reviewError: null,
 
+    // P3-2: 本周回顾默认折叠（一行标题条，点击展开）
+    reviewExpanded: false,
+
     // Card image error
     diaryCardImgError: false,
     entryCardImgErrors: {},
@@ -354,6 +357,11 @@ Page({
   onRefreshReview() {
     this._loadWeeklyReview();
     wx.vibrateShort({ type: 'light' }).catch(() => {});
+  },
+
+  /** P3-2: 展开/收起本周回顾 */
+  onToggleReview() {
+    this.setData({ reviewExpanded: !this.data.reviewExpanded });
   },
 
   /** Get CSS width percentage for mood chart bar */

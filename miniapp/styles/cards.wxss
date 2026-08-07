@@ -19,11 +19,11 @@
    card-default — base card for info display
    ----------------------------------------------------------- */
 .card-default {
-  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 40%, #303065 100%);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.18);
+  background: linear-gradient(145deg, #FFFDF8 0%, #F7F0E3 40%, #F4EDE0 100%);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.30);
   border-radius: 16rpx;
   padding: var(--spacing-md);
-  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.28);
+  box-shadow: 0 4rpx 24rpx rgba(61, 58, 54, 0.10);
 }
 
 /* -----------------------------------------------------------
@@ -33,7 +33,7 @@
    ----------------------------------------------------------- */
 .card-interactive {
   background: var(--color-surface-gradient);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
+  border: 1.5rpx solid var(--color-card-border);
   border-radius: var(--radius-md);
   padding: var(--spacing-md);
   box-shadow: var(--shadow-card);
@@ -46,7 +46,7 @@
 
 .card-interactive:active {
   transform: scale(0.97);
-  border-color: rgba(244, 212, 140, 0.55) !important;
+  border-color: rgba(201, 169, 124, 0.70) !important;
   box-shadow: var(--shadow-pressed);
 }
 
@@ -56,11 +56,11 @@
    pages/index/index.wxss — see .card-ready .card-featured)
    ----------------------------------------------------------- */
 .card-featured {
-  background: linear-gradient(145deg, #25255A 0%, #2A2A5E 40%, #303065 100%);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.30);
+  background: linear-gradient(145deg, #FFFDF8 0%, #F7F0E3 40%, #F4EDE0 100%);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.45);
   border-radius: 16rpx;
   padding: var(--spacing-md);
-  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.28), 0 0 50rpx rgba(244, 212, 140, 0.04);
+  box-shadow: 0 4rpx 24rpx rgba(61, 58, 54, 0.10), 0 0 50rpx rgba(201, 169, 124, 0.08);
   position: relative;
   overflow: hidden;
 }

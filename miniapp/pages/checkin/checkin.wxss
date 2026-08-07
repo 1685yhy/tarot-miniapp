@@ -2,6 +2,13 @@
    签到页面 — 星光签到大厅
    ============================================================ */
 
+/* === E3 补全: checkin ===
+   设计级补全（与首页 E3 气质统一）：
+   1. 星星背景层：白色星点（奶油底上隐形）→ 细金星点（浅底可读性修复）
+   2. 连续天数/分区标题/签到弹层标题 → 衬线宽字距
+   3. 周历条/等级卡/里程碑卡 → 细金描边 + E3 浅阴影
+   4. 其余组件已 E3 化，微调次级文字色 */
+
 .page {
   min-height: 100vh;
   background: var(--color-bg);
@@ -59,8 +66,8 @@
 .loading-spinner {
   width: 60rpx;
   height: 60rpx;
-  border: 4rpx solid rgba(244, 212, 140, 0.15);
-  border-top-color: var(--color-gold);
+  border: 4rpx solid rgba(201, 169, 124, 0.15);
+  border-top-color: var(--color-gold-dark);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin-bottom: var(--spacing-md);
@@ -72,7 +79,7 @@
 
 .loading-text {
   font-size: var(--font-size-caption, 24rpx);
-  color: var(--color-lavender, #B8A9E0);
+  color: var(--color-lavender, #6E6A96);
   letter-spacing: 2rpx;
 }
 
@@ -103,7 +110,7 @@
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(244, 212, 140, 0.12) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(201, 169, 124, 0.12) 0%, transparent 70%);
   animation: glow-pulse 3s ease-in-out infinite;
 }
 
@@ -117,22 +124,22 @@
   position: absolute;
   top: 4rpx; right: 4rpx; bottom: 4rpx; left: 4rpx;
   border-radius: 50%;
-  border: 4rpx solid rgba(244, 212, 140, 0.25);
+  border: 4rpx solid rgba(201, 169, 124, 0.25);
 }
 
 .streak-number {
   font-size: 72rpx;
   font-weight: 700;
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   line-height: 1;
-  text-shadow: 0 0 40rpx rgba(244, 212, 140, 0.25);
+  text-shadow: 0 0 40rpx rgba(201, 169, 124, 0.25);
   position: relative;
   z-index: 1;
 }
 
 .streak-label {
   font-size: var(--font-size-caption, 24rpx);
-  color: var(--color-lavender, #B8A9E0);
+  color: var(--color-lavender, #6E6A96);
   letter-spacing: 4rpx;
   position: relative;
   z-index: 1;
@@ -140,7 +147,7 @@
 
 .streak-subtitle {
   font-size: var(--font-size-subhead, 36rpx);
-  color: var(--color-text-primary, #F0EDE8);
+  color: var(--color-text-primary, #3D3A36);
   font-weight: 500;
   letter-spacing: 4rpx;
   margin-bottom: var(--spacing-md);
@@ -179,12 +186,12 @@
 .section-title {
   font-size: var(--font-size-subhead, 36rpx);
   font-weight: 600;
-  color: var(--color-text-primary, #F0EDE8);
+  color: var(--color-text-primary, #3D3A36);
   display: block;
   margin-bottom: var(--spacing-md, 24rpx);
   letter-spacing: 2rpx;
   padding-left: var(--spacing-md, 24rpx);
-  border-left: 3rpx solid var(--color-gold, #F4D48C);
+  border-left: 3rpx solid var(--color-gold, #C9A97C);
 }
 
 .calendar-strip {
@@ -192,7 +199,7 @@
   justify-content: space-between;
   padding: var(--spacing-md, 24rpx) var(--spacing-sm, 16rpx);
   background: var(--color-surface-gradient);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.12);
   border-radius: var(--radius-lg, 24rpx);
 }
 
@@ -217,7 +224,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(244, 212, 140, 0.06);
+  background: rgba(201, 169, 124, 0.06);
   border: 2rpx solid transparent;
   transition: border-color 0.2s ease,
               background 0.2s ease,
@@ -225,25 +232,25 @@
 }
 
 .day-circle.day-today {
-  border-color: rgba(244, 212, 140, 0.30);
-  background: rgba(244, 212, 140, 0.08);
+  border-color: rgba(201, 169, 124, 0.45);
+  background: rgba(201, 169, 124, 0.14);
 }
 
 .day-circle.day-checked {
-  background: linear-gradient(135deg, #F4D48C 0%, #D4B06A 100%);
-  border-color: #F4D48C;
-  box-shadow: 0 0 20rpx rgba(244, 212, 140, 0.30);
+  background: linear-gradient(135deg, #C9A97C 0%, #A98B5F 100%);
+  border-color: #C9A97C;
+  box-shadow: 0 0 20rpx rgba(201, 169, 124, 0.30);
 }
 
 .day-checkmark {
   font-size: 24rpx;
-  color: #1A1A3E;
+  color: #FAF6EF;
   font-weight: 700;
 }
 
 .day-dot {
   font-size: 28rpx;
-  color: rgba(244, 212, 140, 0.30);
+  color: rgba(201, 169, 124, 0.50);
 }
 
 .day-num {
@@ -252,7 +259,7 @@
 }
 
 .day-num-today {
-  color: var(--color-gold, #F4D48C);
+  color: var(--color-gold-dark, #A98B5F);
   font-weight: 600;
 }
 
@@ -274,13 +281,13 @@
   align-items: center;
   justify-content: center;
   padding: 0;
-  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
+  background: linear-gradient(135deg, #C9A97C 0%, #B08F52 50%, #A98B5F 100%);
   border-radius: var(--radius-pill, 999rpx);
-  color: #1A1A3E;
+  color: #FAF6EF;
   font-size: var(--font-size-body, 30rpx);
   font-weight: 600;
   letter-spacing: 4rpx;
-  box-shadow: 0 4rpx 24rpx rgba(244, 212, 140, 0.30);
+  box-shadow: 0 4rpx 24rpx rgba(201, 169, 124, 0.30);
   border: none;
   cursor: pointer;
   transition: transform 0.2s ease,
@@ -290,14 +297,14 @@
 
 .checkin-btn:active {
   transform: scale(0.97);
-  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.20);
+  box-shadow: 0 2rpx 12rpx rgba(201, 169, 124, 0.20);
   opacity: 0.92;
 }
 
 .checkin-btn--done {
-  background: rgba(244, 212, 140, 0.10);
-  color: var(--color-gold, #F4D48C);
-  border: 2rpx solid rgba(244, 212, 140, 0.30);
+  background: rgba(201, 169, 124, 0.10);
+  color: var(--color-gold-dark, #A98B5F);
+  border: 2rpx solid rgba(201, 169, 124, 0.30);
   box-shadow: none;
 }
 
@@ -335,7 +342,7 @@
   gap: var(--spacing-sm, 16rpx);
   padding: var(--spacing-sm, 16rpx) var(--spacing-md, 24rpx);
   background: var(--color-surface-gradient);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.08);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.08);
   border-radius: var(--radius-md, 16rpx);
 }
 
@@ -366,8 +373,8 @@
 
 .level-current-tag {
   font-size: var(--font-size-xs, 20rpx);
-  color: var(--color-gold, #F4D48C);
-  background: rgba(244, 212, 140, 0.12);
+  color: var(--color-gold-dark, #A98B5F);
+  background: rgba(201, 169, 124, 0.12);
   padding: 4rpx 16rpx;
   border-radius: var(--radius-pill, 999rpx);
   flex-shrink: 0;
@@ -383,7 +390,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(26, 26, 62, 0.85);
+  background: rgba(61, 58, 54, 0.45);
   z-index: 1000;
   opacity: 0;
   pointer-events: none;
@@ -406,8 +413,8 @@
   position: absolute;
   top: 40%;
   border-radius: 50%;
-  background: #F4D48C;
-  box-shadow: 0 0 12rpx 4rpx rgba(244, 212, 140, 0.30);
+  background: #C9A97C;
+  box-shadow: 0 0 12rpx 4rpx rgba(201, 169, 124, 0.30);
   animation: particle-rise 1.5s ease-out forwards;
   opacity: 0;
 }
@@ -428,12 +435,12 @@
   flex-direction: column;
   align-items: center;
   background: var(--color-surface-gradient);
-  border: 2rpx solid rgba(244, 212, 140, 0.30);
+  border: 2rpx solid rgba(201, 169, 124, 0.30);
   border-radius: var(--radius-lg, 24rpx);
   padding: var(--spacing-2xl, 48rpx) var(--spacing-xl, 56rpx);
   box-shadow:
-    0 8rpx 40rpx rgba(0, 0, 0, 0.35),
-    0 0 60rpx rgba(244, 212, 140, 0.15);
+    0 8rpx 40rpx rgba(61, 58, 54, 0.10),
+    0 0 60rpx rgba(201, 169, 124, 0.15);
   animation: popup-enter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   z-index: 1;
 }
@@ -457,14 +464,14 @@
 .reward-title {
   font-size: var(--font-size-title, 40rpx);
   font-weight: 600;
-  color: var(--color-gold, #F4D48C);
+  color: var(--color-gold-dark, #A98B5F);
   letter-spacing: 3rpx;
   margin-bottom: var(--spacing-xs, 12rpx);
 }
 
 .reward-text {
   font-size: var(--font-size-body, 30rpx);
-  color: var(--color-lavender, #B8A9E0);
+  color: var(--color-lavender, #6E6A96);
   letter-spacing: 2rpx;
 }
 
@@ -489,7 +496,7 @@
   gap: var(--spacing-sm, 16rpx);
   padding: var(--spacing-sm, 16rpx) var(--spacing-md, 24rpx);
   background: var(--color-surface-gradient);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.08);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.08);
   border-radius: var(--radius-md, 16rpx);
   transition: border-color 0.3s ease,
               background 0.3s ease,
@@ -497,9 +504,9 @@
 }
 
 .milestone-item.milestone-reached {
-  border-color: rgba(244, 212, 140, 0.35);
-  background: linear-gradient(135deg, rgba(244, 212, 140, 0.10) 0%, rgba(212, 176, 106, 0.05) 100%);
-  box-shadow: 0 0 20rpx rgba(244, 212, 140, 0.08);
+  border-color: rgba(201, 169, 124, 0.35);
+  background: linear-gradient(135deg, rgba(201, 169, 124, 0.10) 0%, rgba(212, 176, 106, 0.05) 100%);
+  box-shadow: 0 0 20rpx rgba(201, 169, 124, 0.08);
 }
 
 .milestone-icon {
@@ -509,7 +516,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(244, 212, 140, 0.08);
+  background: rgba(201, 169, 124, 0.14);
   border-radius: 50%;
   transition: background 0.3s ease,
               box-shadow 0.3s ease;
@@ -522,8 +529,8 @@
 }
 
 .milestone-reached .milestone-icon {
-  background: rgba(244, 212, 140, 0.20);
-  box-shadow: 0 0 16rpx rgba(244, 212, 140, 0.20);
+  background: rgba(201, 169, 124, 0.20);
+  box-shadow: 0 0 16rpx rgba(201, 169, 124, 0.20);
 }
 
 .milestone-info {
@@ -534,12 +541,12 @@
   display: block;
   font-size: var(--font-size-caption, 24rpx);
   font-weight: 600;
-  color: var(--color-text-primary, #F0EDE8);
+  color: var(--color-text-primary, #3D3A36);
   letter-spacing: 2rpx;
 }
 
 .milestone-reached .milestone-days {
-  color: var(--color-gold, #F4D48C);
+  color: var(--color-gold-dark, #A98B5F);
 }
 
 .milestone-reward {
@@ -551,14 +558,14 @@
 }
 
 .milestone-reached .milestone-reward {
-  color: var(--color-gold, #F4D48C);
+  color: var(--color-gold-dark, #A98B5F);
   opacity: 0.85;
 }
 
 .milestone-status {
   font-size: var(--font-size-xs, 20rpx);
   color: var(--color-text-tertiary, #9A95B8);
-  background: rgba(244, 212, 140, 0.06);
+  background: rgba(201, 169, 124, 0.06);
   padding: 4rpx 16rpx;
   border-radius: var(--radius-pill, 999rpx);
   flex-shrink: 0;
@@ -568,8 +575,8 @@
 }
 
 .milestone-reached .milestone-status {
-  color: var(--color-gold, #F4D48C);
-  background: rgba(244, 212, 140, 0.15);
+  color: var(--color-gold-dark, #A98B5F);
+  background: rgba(201, 169, 124, 0.15);
   font-weight: 500;
 }
 
@@ -594,4 +601,133 @@
 /* Footer spacer for safe area */
 .footer-spacer {
   height: 60rpx;
+}
+
+/* ============================================================
+   E3 奶油疗愈 — 设计级补全（追加覆盖）
+   ============================================================ */
+page {
+  --e3-cream: #FAF6EF;
+  --e3-cream-hi: #FFFDF8;
+  --e3-paper: #F2ECDF;
+  --e3-pink: #E8C4BE;
+  --e3-pink-ink: #B08A82;
+  --e3-gold: #C9A97C;
+  --e3-gold-deep: #8A6B3D;
+  --e3-line: rgba(201, 169, 124, 0.28);
+  --e3-line-soft: rgba(201, 169, 124, 0.38);
+  --e3-ink: #3D3A36;
+  --e3-ink-soft: #8A8478;
+  --e3-ink-faint: #6E6A96;
+  --e3-shadow: 0 2rpx 8rpx rgba(61, 58, 54, 0.08);
+  --e3-hi: inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
+  --e3-serif: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif CJK SC', 'Noto Serif SC', serif;
+}
+
+/* —— 星星背景：深色残留 → 奶油底 + 浅金星点（P3-1） —— */
+.page {
+  background: #FAF6EF;
+  background-image: linear-gradient(180deg, #FAF6EF 0%, #F7F0E3 40%, #F2ECDF 100%);
+}
+.stars-layer::after {
+  box-shadow:
+    40rpx 80rpx rgba(201, 169, 124, 0.12),
+    120rpx 180rpx rgba(201, 169, 124, 0.09),
+    200rpx 50rpx rgba(201, 169, 124, 0.15),
+    300rpx 250rpx rgba(201, 169, 124, 0.08),
+    400rpx 120rpx rgba(201, 169, 124, 0.13),
+    500rpx 80rpx rgba(201, 169, 124, 0.09),
+    80rpx 400rpx rgba(201, 169, 124, 0.12),
+    250rpx 500rpx rgba(201, 169, 124, 0.09),
+    420rpx 380rpx rgba(201, 169, 124, 0.13),
+    550rpx 600rpx rgba(201, 169, 124, 0.08),
+    180rpx 700rpx rgba(201, 169, 124, 0.12),
+    350rpx 800rpx rgba(201, 169, 124, 0.09);
+}
+
+/* —— 连续签到 —— */
+.streak-number {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-gold-deep);
+  text-shadow: 0 0 40rpx rgba(201, 169, 124, 0.20);
+}
+.streak-subtitle {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 6rpx;
+}
+.level-name {
+  font-family: var(--e3-serif);
+}
+.level-progress {
+  color: var(--e3-ink-soft);
+}
+
+/* —— 分区标题（衬线） —— */
+.section-title {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 4rpx;
+  border-left: 3rpx solid var(--e3-gold-deep);
+}
+
+/* —— 周历 —— */
+.calendar-strip {
+  border: 1rpx solid var(--e3-line);
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+}
+.day-circle {
+  background: rgba(232, 196, 190, 0.20);
+  border: 2rpx solid transparent;
+}
+.day-circle.day-today {
+  border-color: rgba(201, 169, 124, 0.55);
+  background: rgba(232, 196, 190, 0.40);
+}
+.day-num-today {
+  color: var(--e3-gold-deep);
+  font-family: var(--e3-serif);
+}
+
+/* —— 等级 / 里程碑 —— */
+.level-item,
+.milestone-item {
+  border: 1rpx solid var(--e3-line);
+  box-shadow: var(--e3-shadow);
+}
+.level-item-name {
+  font-family: var(--e3-serif);
+}
+.milestone-days {
+  color: var(--e3-ink);
+  font-family: var(--e3-serif);
+  letter-spacing: 2rpx;
+}
+
+/* —— 签到弹层 —— */
+.reward-title {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-gold-deep);
+  letter-spacing: 6rpx;
+}
+.reward-text {
+  color: var(--e3-ink-soft);
+}
+.reward-popup {
+  border: 2rpx solid var(--e3-line-soft);
+  box-shadow: 0 8rpx 40rpx rgba(61, 58, 54, 0.10), 0 0 60rpx rgba(201, 169, 124, 0.15), var(--e3-hi);
+}
+
+/* —— 错误 / 加载 —— */
+.error-text {
+  font-family: var(--e3-serif);
+  color: var(--e3-ink);
+  letter-spacing: 3rpx;
+}
+.loading-text {
+  color: var(--e3-ink-soft);
 }

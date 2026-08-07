@@ -5,6 +5,9 @@
      ============================================================ -->
 
 <view class="container">
+  <!-- E3 奶油底色氛围光斑（与首页气质统一） -->
+  <view class="wash wash-pink"></view>
+  <view class="wash wash-gold"></view>
 
   <!-- ===== Loading skeleton ===== -->
   <view wx:if="{{pageLoading}}" class="skeleton-wrap">
@@ -24,14 +27,13 @@
     </view>
   </view>
 
-  <!-- ===== Context header — tiny lavender reminder ===== -->
+  <!-- ===== Context line — 一行小字（P3-4：与空状态合并，仅一行） ===== -->
   <view wx:if="{{readingContext && !pageLoading && !pageError}}" class="ctx-header">
-    <text class="ctx-label">关于「{{readingContext.spreadTypeName}}」的追问</text>
-    <text wx:if="{{readingContext.question}}" class="ctx-question">{{readingContext.question}}</text>
+    <text class="ctx-label">关于「{{readingContext.spreadTypeName}}」的追问<text wx:if="{{readingContext.question}}" class="ctx-question"> · {{readingContext.question}}</text></text>
   </view>
 
-  <!-- ===== Empty state — warm invitation ===== -->
-  <view wx:elif="{{messages.length === 0 && !pageLoading && !pageError}}" class="empty-wrap">
+  <!-- ===== Empty state — warm invitation（唯一主引导，与 ctx 行共存） ===== -->
+  <view wx:if="{{messages.length === 0 && !pageLoading && !pageError}}" class="empty-wrap">
     <view class="empty-inner">
       <view class="empty-glow"></view>
       <text class="empty-heading">关于这次解读，还有什么想了解的？</text>
@@ -45,7 +47,7 @@
     <text class="error-text">星光暂时无法回应</text>
     <text class="error-hint">{{pageError}}</text>
     <button class="retry-btn" bindtap="onRetry">再试一次</button>
-    <button class="retry-btn" bindtap="onGoHome" style="margin-top:16rpx;background:transparent;color:var(--color-gold);border:1px solid rgba(244,212,140,0.3);">回到首页</button>
+    <button class="retry-btn" bindtap="onGoHome" style="margin-top:16rpx;background:transparent;color:var(--color-gold);border:1px solid rgba(201,169,124,0.3);">回到首页</button>
   </view>
 
   <!-- ===== Message list ===== -->
@@ -61,7 +63,7 @@
       </view>
       <!-- AI / reader message -->
       <view wx:else class="msg-wrap msg-ai msg-enter">
-        <text class="role-label role-ai">解读者</text>
+        <text class="role-label role-ai">星塔罗师</text>
         <view class="msg-bubble bubble-ai">
           <text class="msg-text msg-text-ai">{{item.content}}</text>
           <text class="cursor-blink" wx:if="{{item.streaming}}">|</text>
@@ -86,11 +88,6 @@
       <image class="retry-icon" src="/images/icons/warning_64.png" mode="aspectFit" aria-label="发送失败" />
       <text class="retry-text">发送失败，点击重试</text>
     </view>
-
-    <!-- ===== 追问次数耗尽 — 单个文字链接（非banner/卡片） ===== -->
-    <view class="quota-exhausted" wx:if="{{quotaExhausted}}">
-      <text class="quota-exhausted-link" bindtap="onGoMembership" role="button" aria-label="升级会员，无限追问">升级会员 →</text>
-    </view>
   </view>
 
 </view>
@@ -99,9 +96,13 @@
      Quota hint lives INSIDE the input bar (flex column) so it rises
      together with the textarea when auto-height grows — never overlaps -->
 <view class="input-bar">
-  <view class="free-quota-bar" wx:if="{{remainingFree >= 0 && remainingFree <= 1}}">
+  <view class="free-quota-bar" wx:if="{{remainingFree >= 0 && remainingFree <= 1 && !quotaExhausted}}">
     <text class="quota-text" wx:if="{{remainingFree === 1}}">剩余 1 次追问</text>
     <text class="quota-text quota-text--exhausted" wx:elif="{{remainingFree === 0}}">今日可用追问已用完</text>
+  </view>
+  <!-- ===== 追问耗尽主按钮（P3-4：升级入口强化，绑已有 onGoMembership） ===== -->
+  <view class="quota-cta-bar" wx:if="{{quotaExhausted}}">
+    <button class="quota-cta-btn" bindtap="onGoMembership" role="button" aria-label="升级会员，无限追问">升级会员 · 无限追问 ✦</button>
   </view>
   <view class="input-row">
     <label class="input-wrap">

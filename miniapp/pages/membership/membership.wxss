@@ -4,6 +4,14 @@
    Free trial · Comparison table · Simplified pricing
    ============================================================ */
 
+/* === E3 补全: membership ===
+   设计级补全（与首页 E3 气质统一）：
+   1. 新增奶油 wash 氛围光斑（.wash-pink/.wash-gold，wxml 已加）
+   2. Hero/分区标题 → 衬线宽字距
+   3. 修复深色残留：学生价卡 深靛蓝底 → E3 灰紫奶油（pricing-card--student）
+   4. 对比表/定价卡/补充包卡 → 细金描边 + E3 浅阴影
+   5. 支付成功浮层标题衬线化 */
+
 page {
   font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
@@ -73,7 +81,7 @@ page {
 .mem-hero-title {
   font-size: var(--font-size-display);
   font-weight: 700;
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   display: block;
   letter-spacing: 4rpx;
 }
@@ -88,8 +96,8 @@ page {
    Free Trial Banner
    ================================================================ */
 .free-trial-banner {
-  background: linear-gradient(145deg, #2A2A5A 0%, #353570 100%);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.25);
+  background: linear-gradient(145deg, #FFFDF8 0%, #F7F0E3 100%);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.25);
   border-radius: 28rpx;
   padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md);
   text-align: center;
@@ -120,7 +128,7 @@ page {
   width: 72rpx;
   height: 72rpx;
   border-radius: 50%;
-  background: rgba(244, 212, 140, 0.12);
+  background: rgba(201, 169, 124, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -136,7 +144,7 @@ page {
 .trial-title {
   font-size: var(--font-size-subhead);
   font-weight: 700;
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   display: block;
   margin-bottom: 6rpx;
 }
@@ -156,14 +164,14 @@ page {
   min-width: 400rpx;
   min-height: 88rpx;
   padding: var(--spacing-sm) 0;
-  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
-  color: #1A1A3E;
+  background: linear-gradient(135deg, #C9A97C 0%, #B08F52 50%, #A98B5F 100%);
+  color: #FAF6EF;
   font-size: var(--font-size-body);
   font-weight: 700;
   border: none;
   border-radius: var(--radius-pill);
   letter-spacing: 2rpx;
-  box-shadow: 0 4rpx 28rpx rgba(244, 212, 140, 0.35), inset 0 1rpx 0 rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4rpx 28rpx rgba(201, 169, 124, 0.35), inset 0 1rpx 0 rgba(255, 255, 255, 0.3);
   transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
 }
 
@@ -173,7 +181,7 @@ page {
 
 .trial-btn:active {
   transform: scale(0.96);
-  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.25);
+  box-shadow: 0 2rpx 12rpx rgba(201, 169, 124, 0.25);
 }
 
 .trial-guarantee {
@@ -206,7 +214,7 @@ page {
 
 .cmp-table {
   background: var(--color-surface-gradient);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.12);
   border-radius: 24rpx;
   overflow: hidden;
 }
@@ -214,7 +222,7 @@ page {
 .cmp-row {
   display: flex;
   align-items: center;
-  border-bottom: 1rpx solid rgba(244, 212, 140, 0.06);
+  border-bottom: 1rpx solid rgba(201, 169, 124, 0.06);
 }
 
 .cmp-row:last-child {
@@ -222,7 +230,7 @@ page {
 }
 
 .cmp-row--header {
-  background: rgba(244, 212, 140, 0.06);
+  background: rgba(201, 169, 124, 0.06);
 }
 
 .cmp-cell {
@@ -246,7 +254,7 @@ page {
 }
 
 .cmp-cell--pro {
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   font-weight: 600;
 }
 
@@ -271,18 +279,18 @@ page {
 }
 
 .cmp-row--header .cmp-cell--pro {
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
 }
 
 /* ---- Savings Row ---- */
 .cmp-row--savings {
-  background: linear-gradient(90deg, rgba(244, 212, 140, 0.08) 0%, rgba(244, 212, 140, 0.03) 100%);
-  border-top: 1.5rpx solid rgba(244, 212, 140, 0.15);
+  background: linear-gradient(90deg, rgba(201, 169, 124, 0.08) 0%, rgba(201, 169, 124, 0.03) 100%);
+  border-top: 1.5rpx solid rgba(201, 169, 124, 0.15);
   position: relative;
 }
 
 .cmp-row--savings .cmp-cell--label {
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   font-weight: 700;
   font-size: var(--font-size-caption);
 }
@@ -308,12 +316,12 @@ page {
 }
 
 .savings-highlight {
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   font-weight: 700;
 }
 
 .cmp-cell--savings-pro .savings-item {
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   font-weight: 600;
 }
 
@@ -338,7 +346,7 @@ page {
 .pricing-card {
   position: relative;
   background: var(--color-surface-gradient);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.12);
   border-radius: 24rpx;
   padding: var(--spacing-lg);
   margin-bottom: var(--spacing-md);
@@ -363,7 +371,7 @@ page {
     90deg,
     transparent 0%,
     var(--color-gold-glow) 30%,
-    rgba(244, 212, 140, 0.3) 50%,
+    rgba(201, 169, 124, 0.3) 50%,
     var(--color-gold-glow) 70%,
     transparent 100%
   );
@@ -373,9 +381,9 @@ page {
 
 /* ---- Recommended Card ---- */
 .pricing-card--rec {
-  border-color: rgba(244, 212, 140, 0.35);
-  background: linear-gradient(145deg, #2A2A5A 0%, #353570 100%);
-  box-shadow: 0 4rpx 30rpx rgba(244, 212, 140, 0.12);
+  border-color: rgba(201, 169, 124, 0.35);
+  background: linear-gradient(145deg, #FFFDF8 0%, #F7F0E3 100%);
+  box-shadow: 0 4rpx 30rpx rgba(201, 169, 124, 0.12);
 }
 
 .pricing-card--rec::before {
@@ -394,19 +402,19 @@ page {
   position: absolute;
   top: -14rpx;
   right: 32rpx;
-  background: linear-gradient(135deg, #F4D48C, #E8C67A);
-  color: #1A1A3E;
+  background: linear-gradient(135deg, #C9A97C, #B08F52);
+  color: #FAF6EF;
   font-size: 20rpx;
   font-weight: 700;
   padding: 6rpx var(--spacing-sm);
   border-radius: 20rpx;
   letter-spacing: 1rpx;
-  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.35);
+  box-shadow: 0 2rpx 12rpx rgba(201, 169, 124, 0.35);
 }
 
 /* ---- Student Card ---- */
 .pricing-card--student {
-  border-color: rgba(184, 169, 224, 0.2);
+  border-color: rgba(190, 182, 212, 0.2);
   background: linear-gradient(145deg, #252548 0%, #2A2A55 100%);
 }
 
@@ -414,9 +422,9 @@ page {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(184, 169, 224, 0.3) 30%,
+    rgba(190, 182, 212, 0.3) 30%,
     var(--color-lavender) 50%,
-    rgba(184, 169, 224, 0.3) 70%,
+    rgba(190, 182, 212, 0.3) 70%,
     transparent 100%
   );
 }
@@ -426,10 +434,10 @@ page {
   align-items: center;
   gap: 6rpx;
   font-size: var(--font-size-xs);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   font-weight: 600;
   padding: 4rpx var(--spacing-xs);
-  background: rgba(184, 169, 224, 0.1);
+  background: rgba(190, 182, 212, 0.1);
   border-radius: var(--radius-pill);
   margin-bottom: var(--spacing-xs);
 }
@@ -472,14 +480,14 @@ page {
 
 .pricing-card-currency {
   font-size: var(--font-size-body);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   font-weight: 600;
 }
 
 .pricing-card-amount {
   font-size: 56rpx;
   font-weight: 800;
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   line-height: 1;
 }
 
@@ -527,8 +535,8 @@ page {
   font-size: var(--font-size-body);
   font-weight: 700;
   color: var(--color-text-inverse);
-  background: linear-gradient(135deg, #F4D48C, #E8C67A);
-  box-shadow: 0 4rpx 28rpx rgba(244, 212, 140, 0.35), inset 0 1rpx 0 rgba(255, 255, 255, 0.3);
+  background: linear-gradient(135deg, #C9A97C, #B08F52);
+  box-shadow: 0 4rpx 28rpx rgba(201, 169, 124, 0.35), inset 0 1rpx 0 rgba(255, 255, 255, 0.3);
   transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
   letter-spacing: 2rpx;
 }
@@ -539,29 +547,29 @@ page {
 
 .pricing-card-btn:active {
   transform: scale(0.96);
-  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.25);
+  box-shadow: 0 2rpx 12rpx rgba(201, 169, 124, 0.25);
 }
 
 .pricing-card-btn--secondary {
   background: transparent;
-  color: var(--color-gold);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.3);
+  color: var(--color-gold-dark);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.3);
   box-shadow: none;
 }
 
 .pricing-card-btn--secondary:active {
-  background: rgba(244, 212, 140, 0.08);
+  background: rgba(201, 169, 124, 0.08);
 }
 
 .pricing-card-btn--student {
   background: transparent;
-  color: var(--color-lavender);
-  border: 1.5rpx solid rgba(184, 169, 224, 0.3);
+  color: var(--color-lavender-dark);
+  border: 1.5rpx solid rgba(190, 182, 212, 0.3);
   box-shadow: none;
 }
 
 .pricing-card-btn--student:active {
-  background: rgba(184, 169, 224, 0.08);
+  background: rgba(190, 182, 212, 0.08);
 }
 
 /* ================================================================
@@ -586,7 +594,7 @@ page {
   flex-wrap: wrap;
   position: relative;
   background: var(--color-surface-gradient);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.10);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.10);
   border-radius: 24rpx;
   padding: var(--spacing-md);
   margin-bottom: var(--spacing-sm);
@@ -605,14 +613,14 @@ page {
   left: 0;
   right: 0;
   height: 2rpx;
-  background: linear-gradient(90deg, transparent, rgba(244, 212, 140, 0.15), transparent);
+  background: linear-gradient(90deg, transparent, rgba(201, 169, 124, 0.15), transparent);
   pointer-events: none;
   border-radius: 24rpx 24rpx 0 0;
 }
 
 .pack-card--best {
-  border-color: rgba(244, 212, 140, 0.25);
-  background: linear-gradient(145deg, #2A2A5A 0%, #353570 100%);
+  border-color: rgba(201, 169, 124, 0.25);
+  background: linear-gradient(145deg, #FFFDF8 0%, #F7F0E3 100%);
 }
 
 .pack-card--best::before {
@@ -624,14 +632,14 @@ page {
   position: absolute;
   top: -12rpx;
   right: 24rpx;
-  background: linear-gradient(135deg, #F4D48C, #E8C67A);
-  color: #1A1A3E;
+  background: linear-gradient(135deg, #C9A97C, #B08F52);
+  color: #FAF6EF;
   font-size: 20rpx;
   font-weight: 700;
   padding: 4rpx var(--spacing-xs);
   border-radius: 20rpx;
   letter-spacing: 1rpx;
-  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.35);
+  box-shadow: 0 2rpx 12rpx rgba(201, 169, 124, 0.35);
 }
 
 .pack-card-left {
@@ -650,8 +658,8 @@ page {
 .pack-card-tag {
   display: inline-block;
   font-size: 20rpx;
-  color: var(--color-gold);
-  background: rgba(244, 212, 140, 0.10);
+  color: var(--color-gold-dark);
+  background: rgba(201, 169, 124, 0.10);
   padding: 2rpx 12rpx;
   border-radius: var(--radius-pill);
   letter-spacing: 1rpx;
@@ -672,14 +680,14 @@ page {
 
 .pack-card-currency {
   font-size: var(--font-size-caption);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   font-weight: 600;
 }
 
 .pack-card-amount {
   font-size: 44rpx;
   font-weight: 800;
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   line-height: 1;
 }
 
@@ -695,11 +703,11 @@ page {
   min-height: 88rpx;
   margin-top: var(--spacing-sm);
   padding: var(--spacing-xs) 0;
-  border: 1.5rpx solid rgba(244, 212, 140, 0.25);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.25);
   border-radius: var(--radius-pill);
   font-size: var(--font-size-caption);
   font-weight: 600;
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   background: transparent;
   letter-spacing: 2rpx;
   transition: transform 0.15s, background 0.15s;
@@ -710,19 +718,19 @@ page {
 }
 
 .pack-card-btn:active {
-  background: rgba(244, 212, 140, 0.08);
+  background: rgba(201, 169, 124, 0.08);
   transform: scale(0.96);
 }
 
 .pack-card-btn--primary {
-  background: linear-gradient(135deg, #F4D48C, #E8C67A);
+  background: linear-gradient(135deg, #C9A97C, #B08F52);
   color: var(--color-text-inverse);
   border: none;
-  box-shadow: 0 4rpx 20rpx rgba(244, 212, 140, 0.25);
+  box-shadow: 0 4rpx 20rpx rgba(201, 169, 124, 0.25);
 }
 
 .pack-card-btn--primary:active {
-  background: linear-gradient(135deg, #E8C67A, #D4B06A);
+  background: linear-gradient(135deg, #B08F52, #A98B5F);
 }
 
 .pack-detail-link {
@@ -824,7 +832,7 @@ page {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(10, 10, 30, 0.92);
+  background: rgba(61, 58, 54, 0.55);
   z-index: var(--z-modal);
   display: flex;
   align-items: center;
@@ -837,8 +845,8 @@ page {
   position: relative;
   width: 100%;
   max-width: 540rpx;
-  background: linear-gradient(145deg, #2A2A5A 0%, #353570 100%);
-  border: 2rpx solid rgba(244, 212, 140, 0.30);
+  background: linear-gradient(145deg, #FFFDF8 0%, #F7F0E3 100%);
+  border: 2rpx solid rgba(201, 169, 124, 0.30);
   border-radius: 32rpx;
   padding: var(--spacing-2xl) var(--spacing-lg) var(--spacing-xl);
   text-align: center;
@@ -863,8 +871,8 @@ page {
 .celebration-star {
   position: absolute;
   font-size: 36rpx;
-  color: var(--color-gold);
-  text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.6);
+  color: var(--color-gold-dark);
+  text-shadow: 0 0 20rpx rgba(201, 169, 124, 0.6);
   animation: star-burst 0.8s ease-out forwards;
 }
 
@@ -895,7 +903,7 @@ page {
 .celebration-title {
   font-size: var(--font-size-title);
   font-weight: 700;
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   display: block;
   letter-spacing: 4rpx;
   margin-bottom: var(--spacing-xxs);
@@ -903,7 +911,7 @@ page {
 
 .celebration-sub {
   font-size: var(--font-size-caption);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   display: block;
   margin-bottom: var(--spacing-lg);
   letter-spacing: 2rpx;
@@ -915,8 +923,8 @@ page {
   gap: var(--spacing-sm);
   margin-bottom: var(--spacing-lg);
   padding: var(--spacing-md);
-  background: rgba(244, 212, 140, 0.06);
-  border: 1rpx solid rgba(244, 212, 140, 0.12);
+  background: rgba(201, 169, 124, 0.06);
+  border: 1rpx solid rgba(201, 169, 124, 0.12);
   border-radius: 20rpx;
 }
 
@@ -965,4 +973,272 @@ page {
 @keyframes fade-in {
   0% { opacity: 0; }
   100% { opacity: 1; }
+}
+
+/* ============================================================
+   E3 奶油疗愈 — 设计级补全（追加覆盖）
+   ============================================================ */
+page {
+  --e3-cream: #FAF6EF;
+  --e3-cream-hi: #FFFDF8;
+  --e3-paper: #F2ECDF;
+  --e3-pink: #E8C4BE;
+  --e3-pink-ink: #B08A82;
+  --e3-gold: #C9A97C;
+  --e3-gold-deep: #8A6B3D;
+  --e3-line: rgba(201, 169, 124, 0.28);
+  --e3-line-soft: rgba(201, 169, 124, 0.38);
+  --e3-lav: #D8D2E4;
+  --e3-ink: #3D3A36;
+  --e3-ink-soft: #8A8478;
+  --e3-ink-faint: #6E6A96;
+  --e3-shadow: 0 2rpx 8rpx rgba(61, 58, 54, 0.08);
+  --e3-hi: inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
+  --e3-serif: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif CJK SC', 'Noto Serif SC', serif;
+}
+
+/* —— 奶油底色氛围光斑（与首页 .wash 一致） —— */
+.wash {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+.wash-pink {
+  top: -140rpx;
+  right: -160rpx;
+  width: 560rpx;
+  height: 560rpx;
+  background: radial-gradient(circle, rgba(232, 196, 190, 0.38) 0%, rgba(232, 196, 190, 0) 66%);
+}
+.wash-gold {
+  left: -180rpx;
+  top: 1200rpx;
+  width: 500rpx;
+  height: 500rpx;
+  background: radial-gradient(circle, rgba(201, 169, 124, 0.18) 0%, rgba(201, 169, 124, 0) 66%);
+}
+.page {
+  position: relative;
+  z-index: 1;
+}
+
+/* —— Hero —— */
+.mem-hero-title {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 8rpx;
+}
+.mem-hero-sub {
+  color: var(--e3-ink-soft);
+  letter-spacing: 2rpx;
+}
+
+/* —— 免费试用横幅：细金描边 —— */
+.free-trial-banner {
+  border-color: var(--e3-line);
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+}
+.trial-title {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 4rpx;
+}
+.trial-sub {
+  color: var(--e3-ink-soft);
+}
+
+/* —— 对比表 —— */
+.cmp-section-title {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 6rpx;
+}
+.cmp-table {
+  border: 1rpx solid var(--e3-line);
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+}
+.cmp-row--header {
+  background: rgba(232, 196, 190, 0.22);
+}
+.cmp-row--header .cmp-cell--free {
+  color: var(--e3-ink-faint);
+}
+.cmp-row--header .cmp-cell--pro {
+  color: var(--e3-gold-deep);
+  font-family: var(--e3-serif);
+}
+
+/* —— 定价方案 —— */
+.pricing-section-title {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 6rpx;
+}
+.pricing-card {
+  border: 1rpx solid var(--e3-line);
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+}
+.pricing-card--rec {
+  border-color: var(--e3-line-soft);
+  box-shadow: 0 4rpx 30rpx rgba(201, 169, 124, 0.12), var(--e3-hi);
+}
+.pricing-card-name {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 3rpx;
+}
+.pricing-card-amount {
+  font-family: var(--e3-serif);
+  color: var(--e3-gold-deep);
+}
+
+/* —— 学生价卡：深靛蓝 → E3 灰紫奶油（浅底可读性修复） —— */
+.pricing-card--student {
+  border-color: rgba(216, 210, 228, 0.45);
+  background: linear-gradient(145deg, #F4F0FA 0%, #EDE7F4 100%);
+}
+.pricing-card--student::before {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(216, 210, 228, 0.5) 30%,
+    var(--e3-lav) 50%,
+    rgba(216, 210, 228, 0.5) 70%,
+    transparent 100%
+  );
+}
+.pricing-card-student-badge {
+  color: var(--color-lavender-deep);
+  background: rgba(216, 210, 228, 0.35);
+}
+.pricing-card-btn--student {
+  color: var(--color-lavender-deep);
+  border-color: rgba(216, 210, 228, 0.55);
+  font-family: var(--e3-serif);
+}
+
+/* —— 补充包 —— */
+.pack-section-sub {
+  color: var(--e3-ink-faint);
+  letter-spacing: 2rpx;
+}
+.pack-card {
+  border: 1rpx solid var(--e3-line);
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+}
+.pack-card-name {
+  font-family: var(--e3-serif);
+  color: var(--e3-ink);
+  letter-spacing: 2rpx;
+}
+
+/* —— 支付成功浮层 —— */
+.celebration-title {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 6rpx;
+}
+.celebration-sub {
+  color: var(--e3-ink-soft);
+}
+.celebration-card {
+  border-color: var(--e3-line-soft);
+  box-shadow: 0 16rpx 60rpx rgba(61, 58, 54, 0.14), var(--e3-hi);
+}
+
+/* —— 错误状态 —— */
+.error-text {
+  font-family: var(--e3-serif);
+  color: var(--e3-ink);
+  letter-spacing: 3rpx;
+}
+
+/* ============================================================
+   P2-3 新增：折叠头（权益对比 / 补充解读包）+ 学生价小卡
+   ============================================================ */
+
+/* —— 通用折叠头 —— */
+.fold-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-height: 88rpx;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--e3-cream-hi);
+  border: 1rpx solid var(--e3-line);
+  border-radius: 20rpx;
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+  margin-bottom: var(--spacing-md);
+  transition: background 0.15s ease;
+}
+.fold-header:active {
+  background: var(--e3-paper);
+}
+.fold-title {
+  font-family: var(--e3-serif);
+  font-size: var(--font-size-body);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 4rpx;
+  flex: 1;
+}
+.fold-arrow {
+  font-size: var(--font-size-caption);
+  color: var(--e3-gold-deep);
+  letter-spacing: 2rpx;
+}
+.pack-fold-sub {
+  font-size: var(--font-size-xs);
+  color: var(--e3-ink-faint);
+  letter-spacing: 1rpx;
+}
+.fold-body {
+  padding-top: var(--spacing-xs);
+}
+
+/* —— 学生价：弱化为一行小卡（支付逻辑保留） —— */
+.pricing-card--student-mini {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  margin-bottom: var(--spacing-sm);
+  background: linear-gradient(145deg, #F4F0FA 0%, #EDE7F4 100%);
+  border-radius: 20rpx;
+  text-align: left;
+}
+.pricing-card-student-mini-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex: 1;
+  min-width: 0;
+}
+.pricing-card-name--mini {
+  font-size: var(--font-size-body);
+  margin-bottom: 0;
+}
+.pricing-card-student-mini-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+.pricing-card-amount--mini {
+  font-size: 40rpx;
+}
+.pricing-card-btn--mini {
+  width: auto;
+  min-height: 88rpx;
+  margin: 0;
+  padding: 0 var(--spacing-lg);
+  font-size: var(--font-size-caption);
 }

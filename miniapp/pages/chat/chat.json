@@ -1,1 +1,6 @@
-{"navigationBarTitleText":"对话","navigationBarBackgroundColor":"#1A1A3E","navigationBarTextStyle":"white","usingComponents":{}}
+{
+  "navigationBarTitleText": "对话",
+  "navigationBarBackgroundColor": "#FAF6EF",
+  "navigationBarTextStyle": "black",
+  "usingComponents": {}
+}

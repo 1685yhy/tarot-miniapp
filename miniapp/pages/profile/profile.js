@@ -107,6 +107,10 @@ Page({
     totalReadings: 0,
     diaryCount: 0,
 
+    // 我的牌运 — 牌运曲线入口摘要（留存功能第一批）
+    fortuneTotal: 0,
+    fortuneMood: '',
+
     // AI 周回顾 — 星光周报分享长图
     showWeeklyPoster: false,
     weeklyReportData: null,
@@ -219,6 +223,27 @@ Page({
     // Also load saved readings from local storage
     this._loadSavedReadings();
     this._loadFavoriteCount();
+
+    // 我的牌运 — 入口摘要（独立请求，失败静默降级，不影响整页）
+    this._loadFortuneTrend();
+  },
+
+  /** 拉取牌运曲线摘要（近 30 天解读次数 + 一句话总结） */
+  async _loadFortuneTrend() {
+    try {
+      const data = await request('/readings/fortune-trend?days=30');
+      this.setData({
+        fortuneTotal: data.total_readings || 0,
+        fortuneMood: data.mood || '星光同行',
+      });
+    } catch (_err) {
+      // Silent degrade — 入口卡显示默认值
+    }
+  },
+
+  /** 进入「我的牌运」页（牌运曲线 · 个人数据资产） */
+  onGoFortuneTrend() {
+    wx.navigateTo({ url: '/pages/fortune-trend/fortune-trend' });
   },
 
   _loadFavoriteCount() {
@@ -394,6 +419,11 @@ Page({
     wx.navigateTo({ url: '/pages/diary/diary' });
   },
 
+  /** P3-1: 每日签到入口 */
+  onGoCheckin() {
+    wx.navigateTo({ url: '/pages/checkin/checkin' });
+  },
+
   onGoAnnualReport() {
     const app = getApp();
     const user = app.globalData.user;
@@ -422,6 +452,81 @@ Page({
 
   onGoAbout() {
     wx.navigateTo({ url: '/pages/about/about' });
+  },
+
+  /**
+   * 退出登录：请求后端使 token 失效（后端已实现 token_version 机制时生效；
+   * 若后端暂无 /auth/logout 接口则忽略失败），无论如何都清除本地登录态并回首页。
+   */
+  async onLogout() {
+    try {
+      await request('/auth/logout', { method: 'POST' });
+    } catch (err) {
+      // 后端尚未提供登出接口（404 等）时，降级为本地登出，不影响用户退出
+      console.warn('[profile] 后端登出接口调用失败，执行本地登出:', err.message);
+    }
+    wx.removeStorageSync('token');
+    wx.removeStorageSync('user');
+    wx.showToast({ title: '已退出登录', icon: 'success' });
+    setTimeout(() => {
+      wx.reLaunch({ url: '/pages/index/index' });
+    }, 600);
+  },
+
+  /**
+   * 注销账号：双重确认（说明弹窗 + 输入"注销"二字）后调用 DELETE /auth/me，
+   * 成功后清空全部本地数据并回到首页。
+   * 注销文案与隐私政策承诺一致：注销后数据将被删除或匿名化处理。
+   */
+  async onDeleteAccount() {
+    // 第一重确认：告知后果
+    const first = await new Promise((resolve) => {
+      wx.showModal({
+        title: '注销账号',
+        content: '注销后，您的解读记录、日记、会员权益等数据将被删除或匿名化处理，且不可恢复。确定继续吗？',
+        confirmText: '继续',
+        confirmColor: '#e64340',
+        cancelText: '取消',
+        success: resolve,
+      });
+    });
+    if (!first.confirm) return;
+
+    // 第二重确认：输入「注销」二字，防止误触
+    const second = await new Promise((resolve) => {
+      wx.showModal({
+        title: '再次确认注销',
+        content: '请输入「注销」二字以确认注销账号',
+        editable: true,
+        placeholderText: '请输入：注销',
+        confirmText: '确认注销',
+        confirmColor: '#e64340',
+        success: resolve,
+      });
+    });
+    if (!second.confirm) return;
+    if (String(second.content || '').trim() !== '注销') {
+      wx.showToast({ title: '输入不正确，已取消注销', icon: 'none' });
+      return;
+    }
+
+    wx.showLoading({ title: '注销中...', mask: true });
+    try {
+      await request('/auth/me', { method: 'DELETE' });
+      wx.clearStorageSync(); // 清空全部本地数据
+      wx.hideLoading();
+      wx.showToast({ title: '账号已注销', icon: 'success' });
+      setTimeout(() => {
+        wx.reLaunch({ url: '/pages/index/index' });
+      }, 1200);
+    } catch (err) {
+      wx.hideLoading();
+      wx.showToast({
+        title: getFriendlyError(err) || '注销失败，请稍后重试',
+        icon: 'none',
+        duration: 2500,
+      });
+    }
   },
 
   onToggleSound() {

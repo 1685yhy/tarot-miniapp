@@ -5,6 +5,13 @@
    Share Center — Starlight Design System
    ============================================================ */
 
+/* === E3 补全: share-center ===
+   设计级补全（与首页 E3 气质统一）：
+   1. 各区标题（Hero/奖励/历史/星座/弹层）→ 衬线宽字距
+   2. 星座选择弹层 深紫黑遮罩 → 墨色遮罩（浅底统一）
+   3. 星座选择器/待领取圆标/进度条底 灰紫 → E3 灰紫 #D8D2E4 系
+   4. 卡片统一细金描边 + E3 浅阴影（原已奶油底） */
+
 .page {
   padding: var(--spacing-lg);
   padding-bottom: calc(var(--safe-area-bottom) + var(--spacing-3xl));
@@ -20,8 +27,8 @@
   padding: var(--spacing-2xl) var(--spacing-xl) var(--spacing-xl);
   border-radius: var(--radius-lg);
   margin-bottom: var(--spacing-lg);
-  background: linear-gradient(145deg, #2A2A5A 0%, #252550 100%);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
+  background: linear-gradient(145deg, #FFFDF8 0%, #F7F0E3 100%);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.12);
   box-shadow: var(--shadow-card);
   overflow: hidden;
 }
@@ -33,7 +40,7 @@
   transform: translateX(-50%);
   width: 400rpx;
   height: 300rpx;
-  background: radial-gradient(circle, rgba(244, 212, 140, 0.10) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(201, 169, 124, 0.10) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -48,7 +55,7 @@
 .hero-title {
   font-size: var(--font-size-subhead);
   font-weight: var(--font-weight-bold);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   display: block;
   letter-spacing: 2rpx;
   margin-bottom: var(--spacing-xs);
@@ -56,7 +63,7 @@
 
 .hero-subtitle {
   font-size: var(--font-size-caption);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   display: block;
   letter-spacing: 1rpx;
   margin-bottom: var(--spacing-lg);
@@ -78,21 +85,21 @@
 .hero-stat-divider {
   width: 1rpx;
   height: 40rpx;
-  background: linear-gradient(180deg, transparent, rgba(244, 212, 140, 0.20), transparent);
+  background: linear-gradient(180deg, transparent, rgba(201, 169, 124, 0.20), transparent);
 }
 
 .hero-stat-num {
   display: block;
   font-size: var(--font-size-title);
   font-weight: var(--font-weight-bold);
-  color: var(--color-gold);
-  text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.20);
+  color: var(--color-gold-dark);
+  text-shadow: 0 0 20rpx rgba(201, 169, 124, 0.20);
 }
 
 .hero-stat-label {
   display: block;
   font-size: var(--font-size-caption);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   margin-top: 4rpx;
 }
 
@@ -100,8 +107,8 @@
    Invite Code Card
    ============================================================ */
 .invite-code-card {
-  background: linear-gradient(145deg, #252550 0%, #2A2A5A 100%);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
+  background: linear-gradient(145deg, #FFFDF8 0%, #F7F0E3 100%);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.12);
   border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
   margin-bottom: var(--spacing-lg);
@@ -112,7 +119,7 @@
 .invite-code-label {
   display: block;
   font-size: var(--font-size-caption);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   margin-bottom: var(--spacing-sm);
   letter-spacing: 1rpx;
 }
@@ -128,27 +135,27 @@
 .invite-code-text {
   font-size: var(--font-size-title);
   font-weight: var(--font-weight-bold);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   letter-spacing: 4rpx;
-  text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.15);
+  text-shadow: 0 0 20rpx rgba(201, 169, 124, 0.15);
 }
 
 .copy-btn {
   display: flex;
   align-items: center;
   gap: 6rpx;
-  background: rgba(244, 212, 140, 0.12);
-  border: 1rpx solid rgba(244, 212, 140, 0.25);
+  background: rgba(201, 169, 124, 0.12);
+  border: 1rpx solid rgba(201, 169, 124, 0.25);
   border-radius: var(--radius-pill);
   padding: 10rpx 24rpx;
   font-size: var(--font-size-caption);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   min-height: 88rpx;
   line-height: 1;
 }
 
 .copy-btn:active {
-  background: rgba(244, 212, 140, 0.20);
+  background: rgba(201, 169, 124, 0.20);
   transform: scale(0.95);
 }
 
@@ -160,7 +167,7 @@
 
 .copy-btn-text {
   font-size: var(--font-size-caption);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
 }
 
 .invite-code-hint {
@@ -178,7 +185,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
-  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
+  background: linear-gradient(135deg, #C9A97C 0%, #B08F52 50%, #A98B5F 100%);
   border-radius: var(--radius-pill);
   padding: var(--spacing-lg);
   margin-bottom: var(--spacing-xl);
@@ -190,7 +197,7 @@
 
 .invite-action:active {
   transform: scale(0.97);
-  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.20);
+  box-shadow: 0 2rpx 12rpx rgba(201, 169, 124, 0.20);
 }
 
 .invite-btn-glow {
@@ -229,8 +236,8 @@
    Reward Section
    ============================================================ */
 .reward-section {
-  background: linear-gradient(145deg, #252550 0%, #2A2A5A 100%);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
+  background: linear-gradient(145deg, #FFFDF8 0%, #F7F0E3 100%);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.12);
   border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
   margin-bottom: var(--spacing-lg);
@@ -243,7 +250,7 @@
   gap: var(--spacing-xs);
   margin-bottom: var(--spacing-lg);
   padding-bottom: var(--spacing-md);
-  border-bottom: 1rpx solid rgba(244, 212, 140, 0.08);
+  border-bottom: 1rpx solid rgba(201, 169, 124, 0.08);
 }
 
 .reward-header-icon {
@@ -256,7 +263,7 @@
 .reward-header-title {
   font-size: var(--font-size-subhead);
   font-weight: var(--font-weight-bold);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   letter-spacing: 2rpx;
 }
 
@@ -265,7 +272,7 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--spacing-md) 0;
-  border-bottom: 1rpx solid rgba(244, 212, 140, 0.05);
+  border-bottom: 1rpx solid rgba(201, 169, 124, 0.05);
   opacity: 0.60;
   transition: opacity var(--duration-fast) var(--ease-soft);
 }
@@ -343,9 +350,9 @@
 }
 
 .tier-status--pending {
-  background: rgba(244, 212, 140, 0.08);
+  background: rgba(201, 169, 124, 0.08);
   color: var(--color-gold-dark);
-  border: 1rpx solid rgba(244, 212, 140, 0.15);
+  border: 1rpx solid rgba(201, 169, 124, 0.15);
 }
 
 .tier-status--done {
@@ -358,7 +365,7 @@
 .reward-progress-wrap {
   margin-top: var(--spacing-lg);
   padding-top: var(--spacing-md);
-  border-top: 1rpx solid rgba(244, 212, 140, 0.08);
+  border-top: 1rpx solid rgba(201, 169, 124, 0.08);
   text-align: center;
 }
 
@@ -373,10 +380,10 @@
 
 .reward-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #D4B06A 0%, #F4D48C 50%, #FADE9E 100%);
+  background: linear-gradient(90deg, #A98B5F 0%, #C9A97C 50%, #D9BC8F 100%);
   border-radius: var(--radius-pill);
   transition: width var(--duration-slow) var(--ease-out);
-  box-shadow: 0 0 10rpx rgba(244, 212, 140, 0.15);
+  box-shadow: 0 0 10rpx rgba(201, 169, 124, 0.15);
 }
 
 .reward-progress-text {
@@ -401,8 +408,8 @@
    History Section
    ============================================================ */
 .history-section {
-  background: linear-gradient(145deg, #252550 0%, #2A2A5A 100%);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
+  background: linear-gradient(145deg, #FFFDF8 0%, #F7F0E3 100%);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.12);
   border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
   box-shadow: var(--shadow-card);
@@ -414,7 +421,7 @@
   gap: var(--spacing-xs);
   margin-bottom: var(--spacing-md);
   padding-bottom: var(--spacing-md);
-  border-bottom: 1rpx solid rgba(244, 212, 140, 0.08);
+  border-bottom: 1rpx solid rgba(201, 169, 124, 0.08);
 }
 
 .history-header-icon {
@@ -427,14 +434,14 @@
 .history-header-title {
   font-size: var(--font-size-subhead);
   font-weight: var(--font-weight-semibold);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
 }
 
 .history-item {
   display: flex;
   align-items: center;
   padding: var(--spacing-sm) 0;
-  border-bottom: 1rpx solid rgba(244, 212, 140, 0.04);
+  border-bottom: 1rpx solid rgba(201, 169, 124, 0.04);
 }
 
 .history-item:last-child {
@@ -449,7 +456,7 @@
 
 .history-type {
   font-size: var(--font-size-caption);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   margin-right: var(--spacing-sm);
 }
 
@@ -471,7 +478,7 @@
   text-align: center;
   padding: var(--spacing-md) 0 var(--spacing-sm);
   margin-top: var(--spacing-sm);
-  border-top: 1rpx solid rgba(244, 212, 140, 0.06);
+  border-top: 1rpx solid rgba(201, 169, 124, 0.06);
 }
 
 .back-text {
@@ -481,15 +488,15 @@
 }
 
 .back-text:active {
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
 }
 
 /* ============================================================
    Zodiac Match Section — 星座契合 · 塔罗关系牌 (v1.5)
    ============================================================ */
 .zodiac-section {
-  background: linear-gradient(145deg, #252550 0%, #2A2A5A 100%);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
+  background: linear-gradient(145deg, #FFFDF8 0%, #F7F0E3 100%);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.12);
   border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
   margin-bottom: var(--spacing-lg);
@@ -505,7 +512,7 @@
   display: block;
   font-size: var(--font-size-subhead);
   font-weight: var(--font-weight-bold);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   letter-spacing: 2rpx;
 }
 
@@ -530,14 +537,14 @@
   flex: 1;
   text-align: center;
   background: rgba(106, 101, 136, 0.12);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.18);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.18);
   border-radius: var(--radius-md);
   padding: var(--spacing-md) var(--spacing-sm);
   transition: transform var(--duration-fast) var(--ease-soft);
 }
 
 .zodiac-picker:active {
-  background: rgba(244, 212, 140, 0.10);
+  background: rgba(201, 169, 124, 0.10);
   transform: scale(0.97);
 }
 
@@ -545,8 +552,8 @@
   display: block;
   font-size: 64rpx;
   line-height: 1.2;
-  color: var(--color-gold);
-  text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.20);
+  color: var(--color-gold-dark);
+  text-shadow: 0 0 20rpx rgba(201, 169, 124, 0.20);
 }
 
 .zodiac-picker-name {
@@ -567,7 +574,7 @@
 .zodiac-plus {
   font-size: 40rpx;
   line-height: 1;
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   opacity: 0.70;
   flex-shrink: 0;
 }
@@ -580,7 +587,7 @@
 .zodiac-result {
   margin-top: var(--spacing-lg);
   padding-top: var(--spacing-md);
-  border-top: 1rpx solid rgba(244, 212, 140, 0.10);
+  border-top: 1rpx solid rgba(201, 169, 124, 0.10);
 }
 
 .zodiac-result-card-row {
@@ -599,8 +606,8 @@
 .zodiac-result-card {
   font-size: var(--font-size-subhead);
   font-weight: var(--font-weight-bold);
-  color: var(--color-gold);
-  text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.15);
+  color: var(--color-gold-dark);
+  text-shadow: 0 0 20rpx rgba(201, 169, 124, 0.15);
 }
 
 .zodiac-result-text {
@@ -633,8 +640,8 @@
 .zodiac-picker-panel {
   width: 600rpx;
   max-width: 86vw;
-  background: linear-gradient(145deg, #2A2A5A 0%, #252550 100%);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.15);
+  background: linear-gradient(145deg, #FFFDF8 0%, #F7F0E3 100%);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.15);
   border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
   box-shadow: var(--shadow-card);
@@ -645,7 +652,7 @@
   text-align: center;
   font-size: var(--font-size-subhead);
   font-weight: var(--font-weight-bold);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   letter-spacing: 2rpx;
   margin-bottom: var(--spacing-lg);
 }
@@ -662,21 +669,21 @@
   box-sizing: border-box;
   text-align: center;
   background: rgba(106, 101, 136, 0.12);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.10);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.10);
   border-radius: var(--radius-md);
   padding: var(--spacing-sm) 0;
 }
 
 .zodiac-picker-option:active {
-  background: rgba(244, 212, 140, 0.14);
-  border-color: rgba(244, 212, 140, 0.35);
+  background: rgba(201, 169, 124, 0.14);
+  border-color: rgba(201, 169, 124, 0.35);
 }
 
 .zodiac-picker-option-emoji {
   display: block;
   font-size: 44rpx;
   line-height: 1.2;
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
 }
 
 .zodiac-picker-option-name {
@@ -739,4 +746,193 @@
   color: var(--color-text-tertiary);
   display: block;
   margin-bottom: var(--spacing-xl);
+}
+
+/* ============================================================
+   E3 奶油疗愈 — 设计级补全（追加覆盖）
+   ============================================================ */
+page {
+  --e3-cream: #FAF6EF;
+  --e3-cream-hi: #FFFDF8;
+  --e3-paper: #F2ECDF;
+  --e3-pink: #E8C4BE;
+  --e3-pink-ink: #B08A82;
+  --e3-gold: #C9A97C;
+  --e3-gold-deep: #8A6B3D;
+  --e3-line: rgba(201, 169, 124, 0.28);
+  --e3-line-soft: rgba(201, 169, 124, 0.38);
+  --e3-lav: #D8D2E4;
+  --e3-ink: #3D3A36;
+  --e3-ink-soft: #8A8478;
+  --e3-ink-faint: #6E6A96;
+  --e3-shadow: 0 2rpx 8rpx rgba(61, 58, 54, 0.08);
+  --e3-hi: inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
+  --e3-serif: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif CJK SC', 'Noto Serif SC', serif;
+}
+
+/* —— 卡片细金描边统一 —— */
+.hero-card,
+.invite-code-card,
+.reward-section,
+.history-section,
+.zodiac-section {
+  border: 1rpx solid var(--e3-line);
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+}
+
+/* —— 衬线标题 —— */
+.hero-title {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 6rpx;
+}
+.hero-subtitle {
+  color: var(--e3-ink-soft);
+  letter-spacing: 2rpx;
+}
+.hero-stat-num {
+  font-family: var(--e3-serif);
+  color: var(--e3-gold-deep);
+  text-shadow: none;
+}
+.hero-stat-label {
+  color: var(--e3-ink-soft);
+}
+.reward-header-title,
+.history-header-title,
+.zodiac-header-title,
+.zodiac-picker-panel-title {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 4rpx;
+}
+.invite-code-text {
+  font-family: var(--e3-serif);
+  color: var(--e3-gold-deep);
+  text-shadow: none;
+  letter-spacing: 6rpx;
+}
+.invite-code-label {
+  color: var(--e3-ink-soft);
+  letter-spacing: 2rpx;
+}
+.zodiac-result-card {
+  font-family: var(--e3-serif);
+  color: var(--e3-gold-deep);
+  text-shadow: none;
+}
+
+/* —— 邀请码 / 复制按钮 —— */
+.copy-btn {
+  background: rgba(232, 196, 190, 0.30);
+  border: 1rpx solid rgba(201, 169, 124, 0.25);
+  color: var(--e3-pink-ink);
+  font-family: var(--e3-serif);
+}
+.copy-btn-text {
+  color: var(--e3-pink-ink);
+}
+
+/* —— 星座选择器：灰紫 → E3 灰紫 —— */
+.zodiac-picker {
+  background: rgba(216, 210, 228, 0.22);
+  border: 1rpx solid rgba(201, 169, 124, 0.20);
+  border-radius: 20rpx;
+}
+.zodiac-picker-emoji {
+  color: var(--e3-gold-deep);
+  text-shadow: none;
+}
+.zodiac-picker-name {
+  font-family: var(--e3-serif);
+  color: var(--e3-ink);
+}
+.zodiac-picker-tip {
+  color: var(--e3-ink-faint);
+}
+.zodiac-picker-option {
+  background: rgba(216, 210, 228, 0.22);
+  border: 1rpx solid rgba(201, 169, 124, 0.12);
+  border-radius: 20rpx;
+}
+.zodiac-picker-option-emoji {
+  color: var(--e3-gold-deep);
+}
+.zodiac-picker-option-name {
+  color: var(--e3-ink-soft);
+}
+
+/* —— 星座选择弹层：深紫黑遮罩 → 墨色 —— */
+.zodiac-picker-overlay {
+  background: rgba(61, 58, 54, 0.55);
+}
+.zodiac-picker-panel {
+  border: 1rpx solid var(--e3-line-soft);
+  box-shadow: 0 16rpx 60rpx rgba(61, 58, 54, 0.16), var(--e3-hi);
+}
+
+/* —— 奖励进度 —— */
+.tier-check--pending {
+  background: rgba(216, 210, 228, 0.35);
+  border: 1.5rpx solid rgba(216, 210, 228, 0.55);
+  color: var(--color-lavender-deep);
+}
+.tier-title {
+  font-family: var(--e3-serif);
+  color: var(--e3-ink);
+  letter-spacing: 1rpx;
+}
+.tier-desc {
+  color: var(--e3-ink-soft);
+}
+.reward-progress-bar {
+  background: rgba(216, 210, 228, 0.40);
+}
+.reward-progress-text {
+  color: var(--e3-ink-soft);
+}
+.reward-progress-next {
+  color: var(--e3-ink-faint);
+}
+.history-date {
+  color: var(--e3-ink-soft);
+}
+.history-type {
+  color: var(--e3-ink-faint);
+}
+
+/* —— 空 / 错误状态 —— */
+.empty-state-inline .empty-text {
+  font-family: var(--e3-serif);
+  color: var(--e3-ink-soft);
+  letter-spacing: 2rpx;
+}
+.error-state .error-text {
+  font-family: var(--e3-serif);
+  color: var(--e3-ink);
+  letter-spacing: 3rpx;
+}
+
+/* ============================================================
+   P2-4 新增：邀请码卡 + 邀请按钮 合并为一块
+   ============================================================ */
+.invite-block {
+  background: linear-gradient(145deg, #FFFDF8 0%, #F7F0E3 100%);
+  border: 1rpx solid var(--e3-line);
+  border-radius: 24rpx;
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+}
+.invite-block .invite-code-card {
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  margin-bottom: var(--spacing-md);
+}
+.invite-block .invite-action {
+  margin-bottom: 0;
 }

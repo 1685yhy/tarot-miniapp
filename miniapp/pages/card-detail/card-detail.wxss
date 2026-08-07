@@ -6,12 +6,21 @@
    Uses common.wxss design tokens with page-level overrides.
    ================================================================ */
 
+/* === E3 补全: card-detail ===
+   设计级补全（与首页 E3 气质统一）：
+   1. 新增奶油 wash 氛围光斑（.wash-pink/.wash-gold，wxml 已加）
+   2. 卡名（中/英）→ 衬线宽字距
+   3. 修复深色残留：释义卡/教学卡 深靛蓝渐变底 → 奶油底（meaning-card/teaching-section）
+   4. 重阴影 0.2 黑 → E3 浅阴影 + 顶部高光
+   5. 释义标题/教学标题 → 衬线 + 深金
+   6. 收藏/分享按钮、标签、元素卡 → 雾粉/灰紫 E3 色系 */
+
 /* ================================================================
    STARLIGHT THEME — page-level overrides
-   Aligned to the shared design system: bg #1A1A3E, gold #F4D48C
+   Aligned to the shared design system: bg #FAF6EF, gold #C9A97C (E3 奶油疗愈)
    ================================================================ */
 page {
-  --cd-bg: #1A1A3E;
+  --cd-bg: #FAF6EF;
   --cd-gold: var(--color-gold);
 }
 
@@ -23,7 +32,7 @@ page {
   background: linear-gradient(
     180deg,
     var(--cd-bg) 0%,
-    #1E1E45 50%,
+    #F7F0E3 50%,
     var(--cd-bg) 100%
   );
   padding: var(--spacing-lg) var(--spacing-md) var(--spacing-2xl);
@@ -50,12 +59,12 @@ page {
   width: 440rpx;
   height: 616rpx;
   border-radius: 24rpx;
-  border: 2rpx solid rgba(244, 212, 140, 0.45);
+  border: 2rpx solid rgba(201, 169, 124, 0.45);
   box-shadow:
-    0 0 0 6rpx rgba(244, 212, 140, 0.04),
-    0 0 40rpx rgba(244, 212, 140, 0.10),
-    0 0 80rpx rgba(244, 212, 140, 0.05),
-    0 16rpx 48rpx rgba(0, 0, 0, 0.40);
+    0 0 0 6rpx rgba(201, 169, 124, 0.04),
+    0 0 40rpx rgba(201, 169, 124, 0.10),
+    0 0 80rpx rgba(201, 169, 124, 0.05),
+    0 16rpx 48rpx rgba(61, 58, 54, 0.14);
   overflow: hidden;
   background: var(--color-surface);
   flex-shrink: 0;
@@ -75,7 +84,7 @@ page {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(145deg, var(--color-surface) 0%, #1E1E45 100%);
+  background: linear-gradient(145deg, var(--color-surface) 0%, #F7F0E3 100%);
 }
 
 .hero-placeholder-icon {
@@ -88,7 +97,7 @@ page {
   position: absolute;
   width: 28rpx;
   height: 28rpx;
-  border-color: rgba(244, 212, 140, 0.50);
+  border-color: rgba(201, 169, 124, 0.50);
   border-style: solid;
 }
 
@@ -126,21 +135,57 @@ page {
   margin-top: var(--spacing-lg);
   font-size: var(--font-size-title);
   font-weight: 700;
-  color: var(--color-gold-light);
+  color: var(--color-gold-dark);
   line-height: 1.2;
   letter-spacing: 6rpx;
-  text-shadow: 0 0 40rpx rgba(244, 212, 140, 0.15);
+  text-shadow: 0 0 40rpx rgba(201, 169, 124, 0.15);
 }
 
 .hero-name-en {
   display: block;
   margin-top: var(--spacing-xxs);
   font-size: var(--font-size-caption);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   line-height: 1.3;
   letter-spacing: 2rpx;
   font-style: italic;
   opacity: 0.80;
+}
+
+/* ── 右上角操作行：收藏 / 分享 小图标（P4-1 收敛） ── */
+.hero-actions {
+  position: relative;
+  align-self: flex-end;
+  margin-right: calc((100% - 440rpx) / 2);
+  margin-bottom: var(--spacing-sm);
+  display: flex;
+  gap: 16rpx;
+  z-index: 5;
+}
+
+.hero-action-btn {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: rgba(255, 253, 248, 0.92);
+  border: 1rpx solid rgba(201, 169, 124, 0.35);
+  box-shadow: 0 2rpx 8rpx rgba(61, 58, 54, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease-out,
+              border-color 0.15s ease-out;
+}
+
+.hero-action-btn:active {
+  background: rgba(232, 196, 190, 0.45);
+  border-color: rgba(201, 169, 124, 0.55);
+}
+
+.hero-action-icon {
+  width: 44rpx;
+  height: 44rpx;
+  display: block;
 }
 
 /* ================================================================
@@ -162,9 +207,9 @@ page {
   display: inline-block;
   padding: var(--spacing-xxs) var(--spacing-md);
   font-size: var(--font-size-caption);
-  color: var(--color-gold-light);
-  background: rgba(244, 212, 140, 0.09);
-  border: 1rpx solid rgba(244, 212, 140, 0.18);
+  color: var(--color-gold-dark);
+  background: rgba(201, 169, 124, 0.09);
+  border: 1rpx solid rgba(201, 169, 124, 0.18);
   border-radius: var(--radius-pill);
   letter-spacing: 2rpx;
   line-height: 1.4;
@@ -173,8 +218,8 @@ page {
 }
 
 .keyword-tag:active {
-  background: rgba(244, 212, 140, 0.18);
-  border-color: rgba(244, 212, 140, 0.35);
+  background: rgba(201, 169, 124, 0.18);
+  border-color: rgba(201, 169, 124, 0.35);
 }
 
 /* ================================================================
@@ -198,7 +243,7 @@ page {
   font-size: var(--font-size-body);
   font-weight: 500;
   letter-spacing: 3rpx;
-  border: 1.5rpx solid rgba(244, 212, 140, 0.30);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.30);
   color: var(--color-text-secondary);
   background: transparent;
   transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
@@ -219,7 +264,7 @@ page {
   border-color: var(--cd-gold);
   color: var(--color-text-inverse);
   font-weight: 600;
-  box-shadow: 0 4rpx 20rpx rgba(244, 212, 140, 0.25);
+  box-shadow: 0 4rpx 20rpx rgba(201, 169, 124, 0.25);
 }
 
 /* ================================================================
@@ -232,13 +277,13 @@ page {
     var(--color-card) 0%,
     rgba(24, 23, 52, 0.85) 100%
   );
-  border: 1rpx solid rgba(244, 212, 140, 0.12);
+  border: 1rpx solid rgba(201, 169, 124, 0.12);
   border-radius: var(--radius-md);
   padding: var(--spacing-lg) var(--spacing-xl);
   margin-bottom: var(--spacing-2xl);
   box-shadow:
     0 2rpx 16rpx rgba(0, 0, 0, 0.20),
-    0 0 1rpx rgba(244, 212, 140, 0.04);
+    0 0 1rpx rgba(201, 169, 124, 0.04);
   animation: sl-fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   opacity: 0;
 }
@@ -261,7 +306,7 @@ page {
   display: block;
   font-size: var(--font-size-caption);
   font-weight: 600;
-  color: var(--color-gold-light);
+  color: var(--color-gold-dark);
   letter-spacing: 4rpx;
   margin-bottom: var(--spacing-md);
   line-height: 1.4;
@@ -293,13 +338,13 @@ page {
     var(--color-card) 0%,
     rgba(24, 23, 52, 0.85) 100%
   );
-  border: 1rpx solid rgba(244, 212, 140, 0.12);
+  border: 1rpx solid rgba(201, 169, 124, 0.12);
   border-radius: var(--radius-md);
   padding: var(--spacing-lg) var(--spacing-xl);
   margin-bottom: var(--spacing-2xl);
   box-shadow:
     0 2rpx 16rpx rgba(0, 0, 0, 0.20),
-    0 0 1rpx rgba(244, 212, 140, 0.04);
+    0 0 1rpx rgba(201, 169, 124, 0.04);
 }
 
 .teaching-section-last {
@@ -310,7 +355,7 @@ page {
   display: block;
   font-size: var(--font-size-caption);
   font-weight: 600;
-  color: var(--color-gold-light);
+  color: var(--color-gold-dark);
   letter-spacing: 4rpx;
   margin-bottom: var(--spacing-md);
   line-height: 1.4;
@@ -335,14 +380,14 @@ page {
   width: 48rpx;
   height: 48rpx;
   border-radius: var(--radius-pill);
-  background: rgba(244, 212, 140, 0.12);
-  border: 1rpx solid rgba(244, 212, 140, 0.20);
+  background: rgba(201, 169, 124, 0.12);
+  border: 1rpx solid rgba(201, 169, 124, 0.20);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: var(--font-size-caption);
   font-weight: 600;
-  color: var(--color-gold-light);
+  color: var(--color-gold-dark);
   line-height: 1;
   margin-top: 4rpx;
 }
@@ -356,7 +401,7 @@ page {
   display: block;
   font-size: var(--font-size-body);
   font-weight: 600;
-  color: var(--color-lavender-light);
+  color: var(--color-lavender-dark);
   line-height: 1.4;
   margin-bottom: 4rpx;
   letter-spacing: 1rpx;
@@ -381,9 +426,9 @@ page {
   display: inline-block;
   padding: var(--spacing-xxs) var(--spacing-md);
   font-size: var(--font-size-caption);
-  color: var(--color-lavender);
-  background: rgba(184, 169, 224, 0.09);
-  border: 1rpx solid rgba(184, 169, 224, 0.18);
+  color: var(--color-lavender-dark);
+  background: rgba(190, 182, 212, 0.09);
+  border: 1rpx solid rgba(190, 182, 212, 0.18);
   border-radius: var(--radius-pill);
   letter-spacing: 2rpx;
   line-height: 1.4;
@@ -392,17 +437,17 @@ page {
 }
 
 .keyword-learning-tag:active {
-  background: rgba(184, 169, 224, 0.18);
-  border-color: rgba(184, 169, 224, 0.35);
+  background: rgba(190, 182, 212, 0.18);
+  border-color: rgba(190, 182, 212, 0.35);
 }
 
 /* ── Story card — cream text, larger leading ── */
 .story-card {
   position: relative;
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(201, 169, 124, 0.10);
   border-radius: var(--radius-md);
   padding: var(--spacing-md);
-  border-left: 3rpx solid rgba(244, 212, 140, 0.25);
+  border-left: 3rpx solid rgba(201, 169, 124, 0.25);
 }
 
 .story-text {
@@ -419,8 +464,8 @@ page {
   flex-direction: row;
   align-items: flex-start;
   gap: var(--spacing-md);
-  background: rgba(244, 212, 140, 0.05);
-  border: 1rpx solid rgba(244, 212, 140, 0.15);
+  background: rgba(201, 169, 124, 0.05);
+  border: 1rpx solid rgba(201, 169, 124, 0.15);
   border-radius: var(--radius-md);
   padding: var(--spacing-md);
 }
@@ -434,7 +479,7 @@ page {
 .life-connection-text {
   flex: 1;
   font-size: var(--font-size-body);
-  color: var(--color-gold-light);
+  color: var(--color-gold-dark);
   line-height: 1.7;
   letter-spacing: 1rpx;
   font-style: italic;
@@ -442,8 +487,8 @@ page {
 
 /* ── Element card — lavender accent ── */
 .element-card {
-  background: rgba(184, 169, 224, 0.06);
-  border: 1rpx solid rgba(184, 169, 224, 0.12);
+  background: rgba(190, 182, 212, 0.06);
+  border: 1rpx solid rgba(190, 182, 212, 0.12);
   border-radius: var(--radius-md);
   padding: var(--spacing-md);
 }
@@ -451,7 +496,7 @@ page {
 .element-text {
   display: block;
   font-size: var(--font-size-body);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   line-height: 1.7;
   letter-spacing: 1rpx;
 }
@@ -499,7 +544,7 @@ page {
   gap: var(--spacing-xs);
   margin-top: var(--spacing-2xl);
   padding: var(--spacing-md) 0;
-  border-top: 1rpx solid rgba(184, 169, 224, 0.08);
+  border-top: 1rpx solid rgba(190, 182, 212, 0.08);
   animation: sl-fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   animation-delay: 0.70s;
   opacity: 0;
@@ -507,18 +552,18 @@ page {
 
 .meta-label {
   font-size: var(--font-size-caption);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   letter-spacing: 2rpx;
   padding: 6rpx var(--spacing-sm);
-  background: rgba(184, 169, 224, 0.07);
-  border: 1rpx solid rgba(184, 169, 224, 0.12);
+  background: rgba(190, 182, 212, 0.07);
+  border: 1rpx solid rgba(190, 182, 212, 0.12);
   border-radius: var(--radius-pill);
   line-height: 1.4;
 }
 
 .meta-divider {
   font-size: var(--font-size-xs);
-  color: rgba(184, 169, 224, 0.25);
+  color: rgba(190, 182, 212, 0.25);
   line-height: 1;
 }
 
@@ -625,9 +670,9 @@ page {
 .error-btn {
   padding: var(--spacing-sm) var(--spacing-xl);
   font-size: var(--font-size-caption);
-  color: var(--color-gold-light);
-  background: rgba(244, 212, 140, 0.09);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.25);
+  color: var(--color-gold-dark);
+  background: rgba(201, 169, 124, 0.09);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.25);
   border-radius: var(--radius-pill);
   letter-spacing: 2rpx;
   transition: background 0.15s ease-out,
@@ -635,8 +680,8 @@ page {
 }
 
 .error-btn:active {
-  background: rgba(244, 212, 140, 0.16);
-  border-color: rgba(244, 212, 140, 0.40);
+  background: rgba(201, 169, 124, 0.16);
+  border-color: rgba(201, 169, 124, 0.40);
 }
 
 /* ================================================================
@@ -658,4 +703,327 @@ page {
    ================================================================ */
 .content-root {
   position: relative;
+}
+
+/* ============================================================
+   E3 奶油疗愈 — 设计级补全（追加覆盖）
+   ============================================================ */
+page {
+  --e3-cream: #FAF6EF;
+  --e3-cream-hi: #FFFDF8;
+  --e3-paper: #F2ECDF;
+  --e3-pink: #E8C4BE;
+  --e3-pink-ink: #B08A82;
+  --e3-gold: #C9A97C;
+  --e3-gold-deep: #8A6B3D;
+  --e3-line: rgba(201, 169, 124, 0.28);
+  --e3-line-soft: rgba(201, 169, 124, 0.38);
+  --e3-ink: #3D3A36;
+  --e3-ink-soft: #8A8478;
+  --e3-ink-faint: #6E6A96;
+  --e3-shadow: 0 2rpx 8rpx rgba(61, 58, 54, 0.08);
+  --e3-hi: inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
+  --e3-serif: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif CJK SC', 'Noto Serif SC', serif;
+}
+
+/* —— 奶油底色氛围光斑（与首页 .wash 一致） —— */
+.wash {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+.wash-pink {
+  top: -140rpx;
+  right: -160rpx;
+  width: 560rpx;
+  height: 560rpx;
+  background: radial-gradient(circle, rgba(232, 196, 190, 0.40) 0%, rgba(232, 196, 190, 0) 66%);
+}
+.wash-gold {
+  left: -180rpx;
+  top: 1000rpx;
+  width: 500rpx;
+  height: 500rpx;
+  background: radial-gradient(circle, rgba(201, 169, 124, 0.20) 0%, rgba(201, 169, 124, 0) 66%);
+}
+.page {
+  position: relative;
+  z-index: 1;
+}
+.content-root {
+  position: relative;
+  z-index: 1;
+}
+
+/* —— 卡牌名（衬线） —— */
+.hero-name-zh {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 8rpx;
+  text-shadow: none;
+}
+.hero-name-en {
+  color: var(--e3-ink-faint);
+  font-family: var(--e3-serif);
+}
+
+/* —— 释义卡：深靛蓝底 → 奶油底（浅底可读性修复） —— */
+.meaning-card {
+  background: linear-gradient(145deg, var(--e3-cream-hi) 0%, var(--e3-paper) 100%);
+  border: 1rpx solid var(--e3-line);
+  border-radius: 24rpx;
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+}
+.meaning-title {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-gold-deep);
+  letter-spacing: 4rpx;
+}
+.meaning-text {
+  color: var(--e3-ink-soft);
+  line-height: 1.9;
+}
+
+/* —— 教学区块：同奶油底 —— */
+.teaching-section {
+  background: linear-gradient(145deg, var(--e3-cream-hi) 0%, var(--e3-paper) 100%);
+  border: 1rpx solid var(--e3-line);
+  border-radius: 24rpx;
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+}
+.teaching-section-title {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-gold-deep);
+  letter-spacing: 4rpx;
+}
+.symbol-badge {
+  background: rgba(232, 196, 190, 0.40);
+  border: 1rpx solid rgba(201, 169, 124, 0.25);
+  color: var(--e3-pink-ink);
+  font-family: var(--e3-serif);
+}
+.symbol-name {
+  color: var(--e3-ink);
+  font-family: var(--e3-serif);
+  letter-spacing: 2rpx;
+}
+.symbol-meaning {
+  color: var(--e3-ink-soft);
+}
+.keyword-learning-tag {
+  color: var(--color-lavender-deep);
+  background: rgba(216, 210, 228, 0.28);
+  border: 1rpx solid rgba(216, 210, 228, 0.45);
+  font-family: var(--e3-serif);
+}
+.story-card {
+  background: rgba(232, 196, 190, 0.16);
+  border-left: 3rpx solid rgba(201, 169, 124, 0.35);
+  border-radius: 16rpx;
+}
+.story-text {
+  color: var(--e3-ink-soft);
+  font-family: var(--e3-serif);
+  line-height: 1.9;
+}
+.life-connection-card {
+  background: rgba(216, 210, 228, 0.14);
+  border: 1rpx solid rgba(201, 169, 124, 0.18);
+  border-radius: 20rpx;
+}
+.life-connection-text {
+  color: var(--e3-gold-deep);
+  font-family: var(--e3-serif);
+}
+.element-card {
+  background: rgba(216, 210, 228, 0.18);
+  border: 1rpx solid rgba(216, 210, 228, 0.35);
+  border-radius: 20rpx;
+}
+.element-text {
+  color: var(--color-lavender-deep);
+  font-family: var(--e3-serif);
+}
+
+/* —— 关键词标签 —— */
+.keyword-tag {
+  background: rgba(232, 196, 190, 0.30);
+  border: 1rpx solid rgba(201, 169, 124, 0.22);
+  color: var(--e3-pink-ink);
+  font-family: var(--e3-serif);
+  letter-spacing: 2rpx;
+}
+
+/* —— Tab 切换 —— */
+.tab-item {
+  border: 1.5rpx solid var(--e3-line-soft);
+  color: var(--e3-ink-soft);
+  background: var(--e3-cream-hi);
+  font-family: var(--e3-serif);
+  box-shadow: var(--e3-shadow);
+}
+.tab-active {
+  background: linear-gradient(135deg, #C9A97C 0%, #B08F52 50%, #A98B5F 100%);
+  border-color: var(--e3-gold-deep);
+  color: var(--e3-cream);
+  box-shadow: 0 4rpx 20rpx rgba(201, 169, 124, 0.25);
+}
+
+/* —— 元信息行 —— */
+.meta-label {
+  color: var(--color-lavender-deep);
+  background: rgba(216, 210, 228, 0.25);
+  border: 1rpx solid rgba(216, 210, 228, 0.40);
+  font-family: var(--e3-serif);
+  letter-spacing: 2rpx;
+}
+
+/* —— 错误状态 —— */
+.error-text {
+  font-family: var(--e3-serif);
+  color: var(--e3-ink);
+  letter-spacing: 3rpx;
+}
+.error-btn {
+  background: var(--e3-cream-hi);
+  border: 1rpx solid var(--e3-line-soft);
+  color: var(--e3-gold-deep);
+  box-shadow: var(--e3-shadow);
+  font-family: var(--e3-serif);
+}
+
+/* ================================================================
+   P4-1：释义主次重构 — 总述主卡 + 折叠分节
+   ================================================================ */
+
+/* ── 总述主卡：顶部细金线强化主次 ── */
+.meaning-card--main {
+  border-top: 4rpx solid var(--e3-gold-deep);
+  border-radius: 24rpx 24rpx 20rpx 20rpx;
+}
+
+/* ── 折叠分节（感情/事业/财运/健康） ── */
+.meaning-collapse {
+  background: linear-gradient(145deg, var(--e3-cream-hi) 0%, var(--e3-paper) 100%);
+  border: 1rpx solid var(--e3-line);
+  border-radius: 24rpx;
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+  margin-bottom: var(--spacing-2xl);
+  overflow: hidden;
+  animation: sl-fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+.meaning-collapse:nth-child(2) { animation-delay: 0.42s; }
+.meaning-collapse:nth-child(3) { animation-delay: 0.49s; }
+.meaning-collapse:nth-child(4) { animation-delay: 0.56s; }
+.meaning-collapse:nth-child(5) { animation-delay: 0.63s; }
+
+.meaning-collapse--last {
+  margin-bottom: 0;
+}
+
+.collapse-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  min-height: 88rpx;
+  transition: background 0.15s ease-out;
+}
+
+.collapse-header:active {
+  background: rgba(232, 196, 190, 0.28);
+}
+
+.collapse-title {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  font-size: var(--font-size-caption);
+  color: var(--e3-gold-deep);
+  letter-spacing: 4rpx;
+  line-height: 1.4;
+}
+
+.collapse-arrow {
+  font-size: var(--font-size-caption);
+  color: var(--e3-pink-ink);
+  line-height: 1;
+  transition: color 0.15s ease-out;
+}
+
+.meaning-collapse--open .collapse-arrow {
+  color: var(--e3-gold-deep);
+}
+
+.collapse-body {
+  padding: var(--spacing-md) var(--spacing-xl) var(--spacing-lg);
+  border-top: 1rpx solid rgba(201, 169, 124, 0.20);
+}
+
+/* ================================================================
+   P4-1：跨页闭环 — 上一张 / 下一张 导航条
+   ================================================================ */
+.card-nav {
+  display: flex;
+  align-items: stretch;
+  margin-top: var(--spacing-2xl);
+  background: linear-gradient(145deg, var(--e3-cream-hi) 0%, var(--e3-paper) 100%);
+  border: 1rpx solid var(--e3-line);
+  border-radius: 24rpx;
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+  overflow: hidden;
+  animation: sl-fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 0.75s;
+  opacity: 0;
+}
+
+.card-nav-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: var(--spacing-md) 0;
+  min-height: 96rpx;
+  transition: background 0.15s ease-out;
+}
+
+.card-nav-btn:active {
+  background: rgba(232, 196, 190, 0.28);
+}
+
+.card-nav-btn--disabled {
+  opacity: 0.35;
+}
+
+.card-nav-icon {
+  width: 32rpx;
+  height: 32rpx;
+  display: block;
+  opacity: 0.75;
+}
+
+.card-nav-label {
+  font-size: var(--font-size-caption);
+  color: var(--e3-ink-soft);
+  font-family: var(--e3-serif);
+  letter-spacing: 2rpx;
+}
+
+.card-nav-name {
+  font-size: var(--font-size-caption);
+  color: var(--e3-gold-deep);
+  font-family: var(--e3-serif);
+  letter-spacing: 2rpx;
+}
+
+.card-nav-divider {
+  width: 1rpx;
+  background: var(--e3-line);
+  margin: var(--spacing-sm) 0;
 }

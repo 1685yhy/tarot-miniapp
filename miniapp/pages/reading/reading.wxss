@@ -1,7 +1,18 @@
 /* ==============================
    柔光星辰 — Spread Selection
-   Dark indigo + warm golden starlight
+   E3 奶油疗愈: cream + fine gold + ink
    ============================== */
+
+/* === E3 补全: reading ===
+   设计级补全（与首页 E3 气质统一）：
+   1. 新增奶油 wash 氛围光斑（.wash-pink/.wash-gold，wxml 已加）
+   2. 星尘粒子背景（原 .star-field 无样式死元素）→ 金色微尘粒子
+   3. 光晕 orbs 由旧金/紫 改为 E3 雾粉/细金
+   4. 大标题衬线化（.heading-2/.heading-4/.ritual-heading/.prompt-text 等）
+   5. 牌阵卡/主题/解读师/模式卡 → 奶油底 + 细金描边 + 极浅阴影 + 顶部高光
+   6. 修复浅底可读性：premium 锁卡遮罩 深紫→墨色、白字→奶油卡+墨字
+   7. 洗牌卡背 深紫→墨灰紫细金边（E3 深色卡背），呼吸仪式 细金/雾粉
+   8. 浮层（exhausted/persona-intro）标题衬线化、次级文字换 E3 灰 */
 
 /* ----- Base (inherits common.wxss tokens) ----- */
 page {
@@ -19,7 +30,7 @@ page {
   width: 500rpx;
   height: 500rpx;
   border-radius: 50%;
-  background: radial-gradient(circle at center, rgba(244,212,140,0.12) 0%, transparent 70%);
+  background: radial-gradient(circle at center, rgba(201,169,124,0.12) 0%, transparent 70%);
   z-index: 0;
   pointer-events: none;
 }
@@ -163,7 +174,7 @@ page {
   padding: var(--spacing-md);
   box-sizing: border-box;
   background: linear-gradient(145deg, var(--color-surface) 0%, var(--color-card) 100%);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.12);
   border-left: 4rpx solid var(--color-gold-glow);
   border-radius: 24rpx;
   box-shadow: var(--shadow-card);
@@ -178,28 +189,28 @@ page {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   border-radius: 24rpx;
-  background: linear-gradient(135deg, transparent 50%, rgba(244,212,140,0.04));
+  background: linear-gradient(135deg, transparent 50%, rgba(201,169,124,0.04));
   pointer-events: none;
 }
 
 .spread-card:active {
   transform: scale(0.97);
   background: var(--color-card);
-  border-color: var(--color-gold);
-  border-left-color: var(--color-gold);
+  border-color: var(--color-gold-dark);
+  border-left-color: var(--color-gold-dark);
   box-shadow: var(--shadow-pressed);
 }
 
 /* ──────────── Premium spread card ──────────── */
 .spread-card.premium {
-  border-color: rgba(244, 212, 140, 0.20);
-  border-left-color: var(--color-gold);
-  background: linear-gradient(135deg, var(--color-surface) 0%, rgba(244, 212, 140, 0.06) 100%);
+  border-color: rgba(201, 169, 124, 0.20);
+  border-left-color: var(--color-gold-dark);
+  background: linear-gradient(135deg, var(--color-surface) 0%, rgba(201, 169, 124, 0.06) 100%);
 }
 
 .spread-card.premium:active {
-  border-color: var(--color-gold-light);
-  border-left-color: var(--color-gold-light);
+  border-color: var(--color-gold-dark);
+  border-left-color: var(--color-gold-dark);
   box-shadow: var(--shadow-pressed);
 }
 
@@ -209,7 +220,7 @@ page {
   top: 12rpx;
   right: 14rpx;
   font-size: var(--font-size-xs);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   opacity: 0.50;
   line-height: 1;
   pointer-events: none;
@@ -248,7 +259,7 @@ page {
 
 .spread-card-plainDesc {
   font-size: var(--font-size-xs);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   line-height: 1.4;
   margin-top: 4rpx;
   opacity: 0.80;
@@ -281,9 +292,9 @@ page {
 }
 
 .badge-gold {
-  background: rgba(244,212,140,0.18);
-  color: var(--color-gold-light);
-  border: 1rpx solid rgba(244,212,140,0.3);
+  background: rgba(201,169,124,0.18);
+  color: var(--color-gold-dark);
+  border: 1rpx solid rgba(201,169,124,0.3);
 }
 
 /* Popular badge — subtle gold pill */
@@ -293,9 +304,9 @@ page {
   border-radius: var(--radius-pill);
   font-size: var(--font-size-xs);
   font-weight: 500;
-  background: rgba(244, 212, 140, 0.12);
-  color: var(--color-gold);
-  border: 1rpx solid rgba(244, 212, 140, 0.20);
+  background: rgba(201, 169, 124, 0.12);
+  color: var(--color-gold-dark);
+  border: 1rpx solid rgba(201, 169, 124, 0.20);
   line-height: 1.4;
 }
 
@@ -315,8 +326,8 @@ page {
   gap: var(--spacing-xs);
   margin: 0 auto 28rpx;
   padding: var(--spacing-sm) var(--spacing-lg);
-  background: linear-gradient(135deg, rgba(244,212,140,0.12), rgba(244,212,140,0.06));
-  border: 1.5rpx solid rgba(244,212,140,0.20);
+  background: linear-gradient(135deg, rgba(201,169,124,0.12), rgba(201,169,124,0.06));
+  border: 1.5rpx solid rgba(201,169,124,0.20);
   border-radius: var(--radius-pill);
   cursor: pointer;
   transition: transform var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
@@ -325,26 +336,26 @@ page {
 
 .ritual-toggle:active {
   transform: scale(0.97);
-  background: linear-gradient(135deg, rgba(244,212,140,0.18), rgba(244,212,140,0.10));
-  border-color: rgba(244,212,140,0.35);
+  background: linear-gradient(135deg, rgba(201,169,124,0.18), rgba(201,169,124,0.10));
+  border-color: rgba(201,169,124,0.35);
 }
 
 .ritual-toggle.active {
-  background: linear-gradient(135deg, rgba(244,212,140,0.20), rgba(244,212,140,0.10));
-  border-color: var(--color-gold);
+  background: linear-gradient(135deg, rgba(201,169,124,0.20), rgba(201,169,124,0.10));
+  border-color: var(--color-gold-dark);
   box-shadow: 0 0 20rpx var(--color-gold-glow);
 }
 
 .ritual-toggle-text {
   font-size: var(--font-size-caption);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   font-weight: 500;
   letter-spacing: 0.04em;
 }
 
 .ritual-toggle-icon {
   font-size: var(--font-size-caption);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   opacity: 0.7;
   transition: transform 0.15s ease-out;
 }
@@ -395,7 +406,7 @@ page {
   min-height: 200rpx;
   padding: var(--spacing-md);
   background: var(--color-bg);
-  border: 1.5rpx solid rgba(244,212,140,0.10);
+  border: 1.5rpx solid rgba(201,169,124,0.10);
   border-radius: 16rpx;
   color: var(--color-text-primary);
   font-size: var(--font-size-body);
@@ -406,13 +417,13 @@ page {
 }
 
 .question-input:focus {
-  border-color: var(--color-gold);
+  border-color: var(--color-gold-dark);
   border-width: 2rpx;
   box-shadow: 0 0 20rpx var(--color-gold-glow);
 }
 
 .question-input::placeholder {
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   font-style: italic;
   font-weight: 300;
 }
@@ -427,17 +438,17 @@ page {
 
 .hint-text {
   font-size: var(--font-size-caption);
-  color: rgba(244,212,140,0.5);
+  color: rgba(201,169,124,0.5);
 }
 
 .char-counter {
   display: inline-block;
   padding: 4rpx 16rpx;
-  background: rgba(244,212,140,0.12);
-  border: 1rpx solid rgba(244,212,140,0.15);
+  background: rgba(201,169,124,0.12);
+  border: 1rpx solid rgba(201,169,124,0.15);
   border-radius: 999rpx;
   font-size: var(--font-size-caption);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   line-height: 1.4;
 }
 
@@ -461,7 +472,7 @@ page {
 
 .prompt-stars {
   font-size: var(--font-size-xs);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   opacity: 0.6;
   letter-spacing: 6rpx;
 }
@@ -469,7 +480,7 @@ page {
 .prompt-text {
   font-size: var(--font-size-body);
   font-weight: 600;
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   text-shadow: 0 0 20rpx var(--color-gold-glow);
   letter-spacing: 0.04em;
 }
@@ -482,7 +493,7 @@ page {
   display: block;
   text-align: center;
   font-size: var(--font-size-caption);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   opacity: 0.7;
   margin-bottom: var(--spacing-xs);
   letter-spacing: 0.04em;
@@ -493,7 +504,7 @@ page {
 .theme-section-label {
   display: block;
   text-align: center;
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   font-size: var(--font-size-caption);
   font-weight: 500;
   letter-spacing: 0.08em;
@@ -516,7 +527,7 @@ page {
   text-align: center;
   padding: var(--spacing-sm) var(--spacing-xxs);
   background: var(--color-surface);
-  border: 1.5rpx solid rgba(244,212,140,0.12);
+  border: 1.5rpx solid rgba(201,169,124,0.12);
   border-radius: 16rpx;
   transition: transform 0.2s ease-out, border-color 0.2s ease-out, background 0.2s ease-out;
   cursor: pointer;
@@ -544,8 +555,8 @@ page {
 }
 
 .theme-active {
-  background: rgba(244,212,140,0.08);
-  border-color: rgba(244,212,140,0.30);
+  background: rgba(201,169,124,0.08);
+  border-color: rgba(201,169,124,0.30);
 }
 
 .theme-active .theme-icon {
@@ -553,7 +564,7 @@ page {
 }
 
 .theme-active .theme-label {
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
 }
 
 /* Filter item for spread selection */
@@ -639,7 +650,7 @@ page {
 .ritual-heading {
   font-size: var(--font-size-subhead);
   font-weight: 600;
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   letter-spacing: 0.06em;
   text-shadow: 0 0 24rpx var(--color-gold-glow);
   margin-bottom: var(--spacing-xl);
@@ -647,7 +658,7 @@ page {
 
 .ritual-subtitle {
   font-size: var(--font-size-body);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   letter-spacing: 0.08em;
   margin-top: var(--spacing-xl);
   opacity: 0.85;
@@ -678,8 +689,8 @@ page {
   width: 120rpx;
   height: 120rpx;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, rgba(244,212,140,0.30), rgba(244,212,140,0.08));
-  box-shadow: 0 0 60rpx rgba(244,212,140,0.25);
+  background: radial-gradient(circle at 35% 35%, rgba(201,169,124,0.30), rgba(201,169,124,0.08));
+  box-shadow: 0 0 60rpx rgba(201,169,124,0.25);
   animation: breatheCircle 4s ease-in-out infinite;
   position: absolute;
   z-index: 2;
@@ -688,7 +699,7 @@ page {
 .breathing-ring {
   position: absolute;
   border-radius: 50%;
-  border: 1.5rpx solid rgba(244,212,140,0.15);
+  border: 1.5rpx solid rgba(201,169,124,0.15);
   pointer-events: none;
 }
 
@@ -710,7 +721,7 @@ page {
   position: absolute;
   font-size: var(--font-size-caption);
   font-weight: 500;
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   letter-spacing: 0.08em;
   text-shadow: 0 0 20rpx var(--color-gold-glow);
   z-index: 3;
@@ -754,9 +765,9 @@ page {
   width: 80rpx;
   height: 120rpx;
   border-radius: var(--radius-sm);
-  background: linear-gradient(145deg, #3A3070, #2A2050);
-  border: 1rpx solid rgba(244,212,140,0.20);
-  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.3);
+  background: linear-gradient(145deg, #6E6A96, #4E4A66); /* E3 墨灰紫卡背 */
+  border: 1rpx solid rgba(201,169,124,0.35);
+  box-shadow: 0 4rpx 20rpx rgba(61,58,54,0.22);
 }
 
 /* Card 1 — far left, slow flip */
@@ -842,7 +853,7 @@ page {
   max-width: 320rpx;
   padding: 24rpx 20rpx;
   background: var(--color-surface);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.12);
   border-radius: 20rpx;
   cursor: pointer;
   transition: transform 0.2s ease-out, border-color 0.2s ease-out, background 0.2s ease-out;
@@ -854,8 +865,8 @@ page {
 }
 
 .mode-card.mode-active {
-  background: rgba(244, 212, 140, 0.08);
-  border-color: rgba(244, 212, 140, 0.30);
+  background: rgba(201, 169, 124, 0.08);
+  border-color: rgba(201, 169, 124, 0.30);
 }
 
 .mode-card-icon {
@@ -879,7 +890,7 @@ page {
 }
 
 .mode-card.mode-active .mode-card-name {
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
 }
 
 .mode-card-desc {
@@ -901,7 +912,7 @@ page {
 }
 
 .btn-text:active {
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
 }
 
 /* ==============================
@@ -916,7 +927,7 @@ page {
 .quota-progress-wrap {
   width: 240rpx;
   height: 8rpx;
-  background: rgba(184, 169, 224, 0.12);
+  background: rgba(190, 182, 212, 0.12);
   border-radius: 999rpx;
   margin: 0 auto var(--spacing-xs);
   overflow: hidden;
@@ -924,7 +935,7 @@ page {
 
 .quota-progress {
   height: 100%;
-  background: linear-gradient(90deg, #F4D48C, #D4B06A);
+  background: linear-gradient(90deg, #C9A97C, #A98B5F);
   border-radius: 999rpx;
   transition: width 0.4s ease-out;
   transform-origin: left;
@@ -932,69 +943,23 @@ page {
 
 .quota-text {
   font-size: var(--font-size-caption);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   letter-spacing: 0.04em;
   line-height: 1.5;
 }
 
 .quota-text--exhausted {
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   font-weight: 500;
 }
 
-/* ─── Exhausted-state quick purchase buttons ─── */
-.exhausted-packs {
-  display: flex;
-  justify-content: center;
-  gap: var(--spacing-sm);
-  margin-top: var(--spacing-sm);
-}
-
-.exhausted-pack-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 200rpx;
-  padding: var(--spacing-xs) var(--spacing-md);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.25);
-  border-radius: var(--radius-pill);
-  font-size: var(--font-size-caption);
-  font-weight: 600;
-  color: var(--color-gold);
-  background: transparent;
-  letter-spacing: 1rpx;
-  transition: transform 0.15s, background 0.15s;
-  line-height: 1.4;
-}
-
-.exhausted-pack-btn::after {
-  border: none;
-}
-
-.exhausted-pack-btn:active {
-  background: rgba(244, 212, 140, 0.10);
-  transform: scale(0.96);
-}
-
-.exhausted-pack-btn--best {
-  background: linear-gradient(135deg, #F4D48C, #E8C67A);
-  color: var(--color-text-inverse);
-  border: none;
-  box-shadow: 0 2rpx 16rpx rgba(244, 212, 140, 0.25);
-  font-weight: 700;
-}
-
-.exhausted-pack-btn--best:active {
-  background: linear-gradient(135deg, #E8C67A, #D4B06A);
-  transform: scale(0.96);
-}
-
 /* ==============================
-   Premium overlay (full-card lock)
+   Premium 锁 — 轻量角标（P1-1：不盖满整卡）
    ============================== */
 .premium-overlay {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 16rpx;
+  right: 16rpx;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1003,44 +968,36 @@ page {
 }
 
 .premium-overlay-bg {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  border-radius: 24rpx;
-  background: linear-gradient(135deg, rgba(80, 60, 140, 0.50) 0%, rgba(60, 40, 120, 0.35) 100%);
-  backdrop-filter: blur(2rpx);
-  -webkit-backdrop-filter: blur(2rpx);
+  display: none;
 }
 
 .premium-overlay-content {
   position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 4rpx;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  background: rgba(244, 212, 140, 0.12);
-  border: 1rpx solid var(--color-gold-glow);
-  border-radius: 12rpx;
+  gap: 6rpx;
+  padding: 8rpx 18rpx;
+  background: rgba(255, 253, 248, 0.96);
+  border: 1rpx solid rgba(201, 169, 124, 0.4);
+  border-radius: 999rpx;
+  box-shadow: 0 2rpx 10rpx rgba(61, 58, 54, 0.12), inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
 }
 
 .premium-overlay-icon {
-  width: 40rpx;
-  height: 40rpx;
+  width: 28rpx;
+  height: 28rpx;
   display: block;
 }
 
 .premium-overlay-text {
-  font-size: var(--font-size-caption);
-  font-weight: 700;
-  color: var(--color-gold-light);
-  letter-spacing: 0.04em;
+  font-size: 20rpx;
+  font-weight: 600;
+  color: var(--e3-gold-deep, #B08F52);
+  letter-spacing: 2rpx;
 }
 
 .premium-overlay-sub {
-  font-size: var(--font-size-xs);
-  color: var(--color-lavender);
-  opacity: 0.80;
-  letter-spacing: 0.02em;
+  display: none;
 }
 
 /* ==============================
@@ -1080,26 +1037,26 @@ page {
   gap: var(--spacing-xs);
   margin: var(--spacing-lg) auto;
   padding: var(--spacing-sm) var(--spacing-lg);
-  background: rgba(244, 212, 140, 0.06);
-  border: 1rpx solid rgba(244, 212, 140, 0.15);
+  background: rgba(201, 169, 124, 0.06);
+  border: 1rpx solid rgba(201, 169, 124, 0.15);
   border-radius: 999rpx;
   width: fit-content;
 }
 
 .theme-lock-icon {
   font-size: var(--font-size-caption);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   opacity: 0.7;
 }
 
 .theme-lock-text {
   font-size: var(--font-size-caption);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   letter-spacing: 2rpx;
 }
 
 .theme-lock-keyword {
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   font-weight: 600;
   letter-spacing: 3rpx;
   padding: 0 4rpx;
@@ -1138,7 +1095,7 @@ page {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(10, 10, 30, 0.92);
+  background: rgba(61, 58, 54, 0.55);
   z-index: var(--z-modal);
   display: flex;
   align-items: center;
@@ -1156,8 +1113,8 @@ page {
   position: relative;
   width: 100%;
   max-width: 520rpx;
-  background: linear-gradient(145deg, #2A2A5A 0%, #353570 100%);
-  border: 2rpx solid rgba(244, 212, 140, 0.25);
+  background: linear-gradient(145deg, #FFFDF8 0%, #F7F0E3 100%);
+  border: 2rpx solid rgba(201, 169, 124, 0.25);
   border-radius: 32rpx;
   padding: var(--spacing-2xl) var(--spacing-lg) var(--spacing-lg);
   text-align: center;
@@ -1182,8 +1139,8 @@ page {
 .exhausted-star {
   position: absolute;
   font-size: 28rpx;
-  color: var(--color-gold);
-  text-shadow: 0 0 16rpx rgba(244, 212, 140, 0.5);
+  color: var(--color-gold-dark);
+  text-shadow: 0 0 16rpx rgba(201, 169, 124, 0.5);
   animation: exhausted-star-burst 0.8s ease-out forwards;
   opacity: 0;
 }
@@ -1207,7 +1164,7 @@ page {
 .exhausted-title {
   font-size: var(--font-size-title);
   font-weight: 700;
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   display: block;
   letter-spacing: 3rpx;
   margin-bottom: var(--spacing-xxs);
@@ -1215,7 +1172,7 @@ page {
 
 .exhausted-sub {
   font-size: var(--font-size-caption);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   display: block;
   margin-bottom: var(--spacing-md);
   letter-spacing: 2rpx;
@@ -1224,7 +1181,7 @@ page {
 
 .exhausted-divider {
   height: 1rpx;
-  background: linear-gradient(90deg, transparent, rgba(244, 212, 140, 0.20), transparent);
+  background: linear-gradient(90deg, transparent, rgba(201, 169, 124, 0.20), transparent);
   margin: 0 var(--spacing-lg) var(--spacing-md);
 }
 
@@ -1242,14 +1199,14 @@ page {
   width: 70%;
   margin: 0 auto;
   padding: var(--spacing-sm) 0;
-  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
-  color: #1A1A3E;
+  background: linear-gradient(135deg, #C9A97C 0%, #B08F52 50%, #A98B5F 100%);
+  color: #FAF6EF;
   font-size: var(--font-size-body);
   font-weight: 700;
   border: none;
   border-radius: var(--radius-pill);
   letter-spacing: 3rpx;
-  box-shadow: 0 4rpx 28rpx rgba(244, 212, 140, 0.30);
+  box-shadow: 0 4rpx 28rpx rgba(201, 169, 124, 0.30);
 }
 
 .exhausted-cta-btn::after {
@@ -1258,7 +1215,7 @@ page {
 
 .exhausted-cta-btn:active {
   transform: scale(0.96);
-  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.20);
+  box-shadow: 0 2rpx 12rpx rgba(201, 169, 124, 0.20);
 }
 
 .exhausted-dismiss {
@@ -1285,7 +1242,7 @@ page {
 .persona-section-label {
   display: block;
   text-align: center;
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   font-size: var(--font-size-caption);
   font-weight: 500;
   letter-spacing: 0.08em;
@@ -1308,7 +1265,7 @@ page {
   text-align: center;
   padding: var(--spacing-md) var(--spacing-xxs);
   background: var(--color-surface);
-  border: 1.5rpx solid rgba(244,212,140,0.12);
+  border: 1.5rpx solid rgba(201,169,124,0.12);
   border-radius: 16rpx;
   transition: transform 0.2s ease-out, border-color 0.2s ease-out, background 0.2s ease-out, box-shadow 0.2s ease-out;
   cursor: pointer;
@@ -1322,10 +1279,10 @@ page {
 }
 
 .persona-card.persona-active {
-  background: rgba(244,212,140,0.10);
-  border-color: var(--color-gold);
+  background: rgba(201,169,124,0.10);
+  border-color: var(--color-gold-dark);
   border-width: 2rpx;
-  box-shadow: 0 0 24rpx rgba(244,212,140,0.18);
+  box-shadow: 0 0 24rpx rgba(201,169,124,0.18);
 }
 
 .persona-icon {
@@ -1356,7 +1313,7 @@ page {
 }
 
 .persona-active .persona-name {
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
 }
 
 .persona-label {
@@ -1368,7 +1325,7 @@ page {
 }
 
 .persona-active .persona-label {
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   opacity: 0.85;
 }
 
@@ -1394,8 +1351,8 @@ page {
 .onboarding-bubble {
   position: relative;
   padding: 24rpx 32rpx;
-  background: rgba(26, 26, 62, 0.95);
-  border: 1.5rpx solid var(--color-gold, #F4D48C);
+  background: rgba(255, 253, 248, 0.97);
+  border: 1.5rpx solid var(--color-gold-dark, #A98B5F);
   border-radius: 16rpx;
   text-align: center;
   cursor: pointer;
@@ -1410,7 +1367,7 @@ page {
   display: block;
   font-size: var(--font-size-caption, 24rpx);
   font-weight: var(--font-weight-medium, 500);
-  color: var(--color-gold, #F4D48C);
+  color: var(--color-gold-dark, #A98B5F);
   line-height: 1.6;
   letter-spacing: 2rpx;
 }
@@ -1424,7 +1381,7 @@ page {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(10, 10, 30, 0.92);
+  background: rgba(61, 58, 54, 0.55);
   z-index: var(--z-modal, 300);
   display: flex;
   align-items: center;
@@ -1442,8 +1399,8 @@ page {
   position: relative;
   width: 100%;
   max-width: 540rpx;
-  background: linear-gradient(145deg, #2A2A5A 0%, #353570 100%);
-  border: 2rpx solid rgba(244, 212, 140, 0.25);
+  background: linear-gradient(145deg, #FFFDF8 0%, #F7F0E3 100%);
+  border: 2rpx solid rgba(201, 169, 124, 0.25);
   border-radius: 32rpx;
   padding: var(--spacing-2xl) var(--spacing-lg) var(--spacing-lg);
   text-align: center;
@@ -1468,8 +1425,8 @@ page {
 .persona-intro-star {
   position: absolute;
   font-size: 28rpx;
-  color: var(--color-gold);
-  text-shadow: 0 0 16rpx rgba(244, 212, 140, 0.5);
+  color: var(--color-gold-dark);
+  text-shadow: 0 0 16rpx rgba(201, 169, 124, 0.5);
   animation: persona-intro-star-burst 0.8s ease-out forwards;
   opacity: 0;
 }
@@ -1489,7 +1446,7 @@ page {
   display: block;
   margin-bottom: var(--spacing-sm);
   line-height: 1.2;
-  text-shadow: 0 0 30rpx rgba(244, 212, 140, 0.3);
+  text-shadow: 0 0 30rpx rgba(201, 169, 124, 0.3);
   animation: persona-intro-icon-breathe 2s ease-in-out infinite;
 }
 
@@ -1501,7 +1458,7 @@ page {
 .persona-intro-name {
   font-size: var(--font-size-title);
   font-weight: 700;
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   display: block;
   letter-spacing: 4rpx;
   margin-bottom: var(--spacing-sm);
@@ -1520,21 +1477,21 @@ page {
 
 .persona-intro-divider {
   height: 1rpx;
-  background: linear-gradient(90deg, transparent, rgba(244, 212, 140, 0.20), transparent);
+  background: linear-gradient(90deg, transparent, rgba(201, 169, 124, 0.20), transparent);
   margin: 0 var(--spacing-lg) var(--spacing-md);
 }
 
 .persona-intro-style-label {
   display: block;
   font-size: var(--font-size-body);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   letter-spacing: 2rpx;
   margin-bottom: var(--spacing-lg);
   opacity: 0.8;
 }
 
 .persona-intro-style-value {
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   font-weight: 600;
 }
 
@@ -1543,14 +1500,14 @@ page {
   width: 70%;
   margin: 0 auto;
   padding: var(--spacing-sm) 0;
-  background: linear-gradient(135deg, #F4D48C 0%, #E8C67A 50%, #D4B06A 100%);
-  color: #1A1A3E;
+  background: linear-gradient(135deg, #C9A97C 0%, #B08F52 50%, #A98B5F 100%);
+  color: #FAF6EF;
   font-size: var(--font-size-body);
   font-weight: 700;
   border: none;
   border-radius: var(--radius-pill);
   letter-spacing: 3rpx;
-  box-shadow: 0 4rpx 28rpx rgba(244, 212, 140, 0.30);
+  box-shadow: 0 4rpx 28rpx rgba(201, 169, 124, 0.30);
 }
 
 .persona-intro-cta::after {
@@ -1559,7 +1516,7 @@ page {
 
 .persona-intro-cta:active {
   transform: scale(0.96);
-  box-shadow: 0 2rpx 12rpx rgba(244, 212, 140, 0.20);
+  box-shadow: 0 2rpx 12rpx rgba(201, 169, 124, 0.20);
 }
 
 .persona-intro-skip {
@@ -1574,4 +1531,431 @@ page {
 
 .persona-intro-skip:active {
   opacity: 1;
+}
+
+/* ============================================================
+   E3 奶油疗愈 — 设计级补全（追加覆盖，置于文件末尾保证层叠生效）
+   ============================================================ */
+page {
+  --e3-cream: #FAF6EF;
+  --e3-cream-hi: #FFFDF8;
+  --e3-paper: #F2ECDF;
+  --e3-pink: #E8C4BE;
+  --e3-pink-ink: #B08A82;
+  --e3-gold: #C9A97C;
+  --e3-gold-deep: #8A6B3D;
+  --e3-line: rgba(201, 169, 124, 0.28);
+  --e3-line-soft: rgba(201, 169, 124, 0.38);
+  --e3-ink: #3D3A36;
+  --e3-ink-soft: #8A8478;
+  --e3-ink-faint: #6E6A96;
+  --e3-shadow: 0 2rpx 8rpx rgba(61, 58, 54, 0.08);
+  --e3-hi: inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
+  --e3-serif: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif CJK SC', 'Noto Serif SC', serif;
+}
+
+/* —— 奶油底色氛围光斑（与首页 .wash 一致） —— */
+.wash {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+.wash-pink {
+  top: -140rpx;
+  right: -160rpx;
+  width: 560rpx;
+  height: 560rpx;
+  background: radial-gradient(circle, rgba(232, 196, 190, 0.42) 0%, rgba(232, 196, 190, 0) 66%);
+}
+.wash-gold {
+  left: -180rpx;
+  top: 720rpx;
+  width: 500rpx;
+  height: 500rpx;
+  background: radial-gradient(circle, rgba(201, 169, 124, 0.22) 0%, rgba(201, 169, 124, 0) 66%);
+}
+
+/* —— 光晕 orbs → E3 雾粉 / 细金 —— */
+.orb-top {
+  background: radial-gradient(circle at center, rgba(232, 196, 190, 0.30) 0%, transparent 70%);
+}
+.orb-bottom {
+  background: radial-gradient(circle at center, rgba(201, 169, 124, 0.16) 0%, transparent 70%);
+}
+
+/* —— 星尘粒子背景（原无样式死元素 → 细金微尘） —— */
+.star-field {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.star-particle {
+  position: absolute;
+  width: 4rpx;
+  height: 4rpx;
+  border-radius: 50%;
+  background: var(--e3-gold);
+  opacity: 0;
+  box-shadow: 0 0 6rpx 2rpx rgba(201, 169, 124, 0.16);
+}
+.star-particle:nth-child(1)  { top: 10%; left: 6%;  animation: e3-star-tw 3.6s ease-in-out 0.1s infinite; }
+.star-particle:nth-child(2)  { top: 18%; left: 88%; animation: e3-star-tw 4.2s ease-in-out 0.9s infinite; }
+.star-particle:nth-child(3)  { top: 32%; left: 14%; animation: e3-star-tw 3.0s ease-in-out 0.4s infinite; }
+.star-particle:nth-child(4)  { top: 45%; left: 92%; animation: e3-star-tw 3.8s ease-in-out 1.4s infinite; }
+.star-particle:nth-child(5)  { top: 58%; left: 8%;  animation: e3-star-tw 4.6s ease-in-out 0.7s infinite; }
+.star-particle:nth-child(6)  { top: 70%; left: 86%; animation: e3-star-tw 3.2s ease-in-out 1.9s infinite; }
+.star-particle:nth-child(7)  { top: 82%; left: 16%; animation: e3-star-tw 4.0s ease-in-out 0.3s infinite; }
+.star-particle:nth-child(8)  { top: 90%; left: 80%; animation: e3-star-tw 3.4s ease-in-out 1.1s infinite; }
+.star-particle:nth-child(9)  { top: 25%; left: 40%; animation: e3-star-tw 3.9s ease-in-out 2.3s infinite; }
+.star-particle:nth-child(10) { top: 55%; left: 55%; animation: e3-star-tw 4.4s ease-in-out 0.6s infinite; }
+.star-particle:nth-child(11) { top: 75%; left: 34%; animation: e3-star-tw 3.1s ease-in-out 1.7s infinite; }
+.star-particle:nth-child(12) { top: 40%; left: 68%; animation: e3-star-tw 4.8s ease-in-out 2.6s infinite; }
+.star-particle:nth-child(13) { top: 8%;  left: 56%; animation: e3-star-tw 3.7s ease-in-out 1.2s infinite; }
+.star-particle:nth-child(14) { top: 64%; left: 72%; animation: e3-star-tw 4.1s ease-in-out 0.2s infinite; }
+.star-particle:nth-child(15) { top: 48%; left: 30%; animation: e3-star-tw 3.3s ease-in-out 2.0s infinite; }
+.star-particle:nth-child(16) { top: 86%; left: 62%; animation: e3-star-tw 4.5s ease-in-out 0.8s infinite; }
+@keyframes e3-star-tw {
+  0%, 100% { opacity: 0; transform: scale(0.5); }
+  50% { opacity: 0.55; transform: scale(1.2); }
+}
+
+/* —— 衬线大标题（宽字距） —— */
+.heading-2 {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  font-size: 44rpx;
+  color: var(--e3-ink);
+  letter-spacing: 8rpx;
+}
+.heading-4 {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 2rpx;
+}
+.text-secondary {
+  color: var(--e3-ink-soft);
+  letter-spacing: 2rpx;
+}
+.text-dim {
+  color: var(--e3-ink-faint);
+}
+
+/* —— 牌阵卡：奶油底 + 细金描边 + 极浅阴影 + 顶部高光 —— */
+.spread-card {
+  background: linear-gradient(145deg, var(--e3-cream-hi) 0%, var(--e3-paper) 100%);
+  border: 1rpx solid var(--e3-line);
+  border-left: 4rpx solid var(--e3-gold-deep);
+  border-radius: 24rpx;
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+}
+.spread-card::before {
+  background: linear-gradient(135deg, transparent 50%, rgba(201, 169, 124, 0.05));
+}
+.spread-card:active {
+  background: var(--e3-cream-hi);
+  border-color: var(--e3-gold-deep);
+  border-left-color: var(--e3-gold-deep);
+}
+.spread-card.premium {
+  border-color: var(--e3-line-soft);
+  border-left-color: var(--e3-gold-deep);
+  background: linear-gradient(145deg, var(--e3-cream-hi) 0%, rgba(232, 196, 190, 0.20) 100%);
+}
+.spread-card-desc,
+.spread-card-count {
+  color: var(--e3-ink-soft);
+}
+.spread-card-plainDesc {
+  color: var(--e3-lav, #6E6A96);
+}
+.badge-popular {
+  background: rgba(232, 196, 190, 0.40);
+  color: var(--e3-pink-ink);
+  border-color: rgba(201, 169, 124, 0.25);
+}
+
+/* —— premium 锁角标（P1-1 轻量版 · 金色小锁 + 文案） —— */
+.premium-overlay-content {
+  background: rgba(255, 253, 248, 0.96);
+  border: 1rpx solid rgba(201, 169, 124, 0.4);
+  border-radius: 999rpx;
+  box-shadow: 0 2rpx 10rpx rgba(61, 58, 54, 0.12), inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
+}
+.premium-overlay-text {
+  color: var(--e3-gold-deep);
+  font-weight: 600;
+  letter-spacing: 2rpx;
+}
+
+/* —— 冥想呼吸仪式 —— */
+.ritual-heading {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  font-size: 40rpx;
+  color: var(--e3-ink);
+  letter-spacing: 6rpx;
+  text-shadow: none;
+}
+.ritual-subtitle {
+  color: var(--e3-ink-soft);
+  letter-spacing: 6rpx;
+  font-family: var(--e3-serif);
+}
+.breathing-circle {
+  background: radial-gradient(circle at 35% 35%, rgba(201, 169, 124, 0.35), rgba(201, 169, 124, 0.06));
+  box-shadow: 0 0 60rpx rgba(201, 169, 124, 0.20);
+}
+.breathing-ring {
+  border-color: rgba(201, 169, 124, 0.28);
+}
+.breathing-text {
+  font-family: var(--e3-serif);
+  color: var(--e3-gold-deep);
+  letter-spacing: 8rpx;
+  text-shadow: none;
+}
+
+/* —— 洗牌卡背：深紫 → E3 墨灰紫 + 细金边 —— */
+.shuffle-card {
+  background: linear-gradient(145deg, #57525C 0%, #3D3A36 100%);
+  border: 1rpx solid rgba(201, 169, 124, 0.45);
+  box-shadow: 0 4rpx 20rpx rgba(61, 58, 54, 0.18);
+}
+
+/* —— 问题书写区：奶油信笺 —— */
+.question-box {
+  background: linear-gradient(145deg, var(--e3-cream-hi) 0%, var(--e3-paper) 100%);
+  border: 1rpx solid var(--e3-line-soft);
+  border-radius: 24rpx;
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+}
+.question-box-accent {
+  background: linear-gradient(90deg, transparent, var(--e3-gold), transparent);
+  opacity: 0.6;
+}
+.question-input {
+  background: rgba(255, 253, 248, 0.9);
+  border: 1rpx solid var(--e3-line);
+  border-radius: 16rpx;
+  color: var(--e3-ink);
+}
+.question-input:focus {
+  border-color: var(--e3-gold-deep);
+  box-shadow: 0 0 20rpx rgba(201, 169, 124, 0.14);
+}
+.question-input::placeholder {
+  color: var(--e3-ink-faint);
+  font-style: italic;
+}
+.prompt-text {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 4rpx;
+  text-shadow: none;
+}
+.prompt-stars {
+  color: var(--e3-gold-deep);
+  opacity: 0.7;
+}
+.hint-text {
+  color: var(--e3-ink-faint);
+}
+.char-counter {
+  background: rgba(232, 196, 190, 0.35);
+  border-color: rgba(201, 169, 124, 0.20);
+  color: var(--e3-pink-ink);
+}
+
+/* —— 主题两形态统一最小高度容器（P1-1：切换时不跳动） —— */
+.theme-stage {
+  min-height: 200rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.theme-stage .mb-xxxl {
+  margin-bottom: 12rpx;
+}
+
+/* —— 解读侧重（主题选择） —— */
+.theme-section-label {
+  font-family: var(--e3-serif);
+  color: var(--e3-ink);
+  letter-spacing: 6rpx;
+  font-weight: 500;
+}
+.theme-item {
+  background: var(--e3-cream-hi);
+  border: 1rpx solid var(--e3-line);
+  border-radius: 20rpx;
+  box-shadow: var(--e3-shadow);
+}
+.theme-label {
+  color: var(--e3-ink-soft);
+  letter-spacing: 2rpx;
+}
+.theme-active {
+  background: rgba(232, 196, 190, 0.30);
+  border-color: rgba(201, 169, 124, 0.50);
+}
+.theme-active .theme-label {
+  color: var(--e3-gold-deep);
+}
+.theme-hint {
+  color: var(--e3-ink-soft);
+  opacity: 0.8;
+}
+
+/* —— 解读师选择 —— */
+.persona-section-label {
+  font-family: var(--e3-serif);
+  color: var(--e3-ink);
+  letter-spacing: 6rpx;
+  font-weight: 500;
+}
+.persona-card {
+  background: var(--e3-cream-hi);
+  border: 1rpx solid var(--e3-line);
+  border-radius: 20rpx;
+  box-shadow: var(--e3-shadow);
+}
+.persona-card.persona-active {
+  background: rgba(232, 196, 190, 0.30);
+  border-color: var(--e3-gold-deep);
+  border-width: 2rpx;
+  box-shadow: 0 0 24rpx rgba(201, 169, 124, 0.15);
+}
+.persona-name {
+  font-family: var(--e3-serif);
+  color: var(--e3-ink);
+  letter-spacing: 2rpx;
+}
+.persona-label {
+  color: var(--e3-ink-faint);
+}
+.persona-active .persona-name {
+  color: var(--e3-gold-deep);
+}
+.persona-active .persona-label {
+  color: var(--e3-gold-deep);
+  opacity: 0.85;
+}
+
+/* —— 模式选择（快速 / 沉浸） —— */
+.mode-card {
+  background: var(--e3-cream-hi);
+  border: 1rpx solid var(--e3-line);
+  border-radius: 20rpx;
+  box-shadow: var(--e3-shadow);
+}
+.mode-card.mode-active {
+  background: rgba(232, 196, 190, 0.30);
+  border-color: rgba(201, 169, 124, 0.50);
+}
+.mode-card-name {
+  color: var(--e3-ink);
+  font-family: var(--e3-serif);
+  letter-spacing: 2rpx;
+}
+.mode-card.mode-active .mode-card-name {
+  color: var(--e3-gold-deep);
+}
+.mode-card-desc {
+  color: var(--e3-ink-faint);
+}
+
+/* —— 静心冥想开关 —— */
+.ritual-toggle {
+  background: linear-gradient(135deg, rgba(232, 196, 190, 0.35), rgba(232, 196, 190, 0.16));
+  border: 1rpx solid rgba(201, 169, 124, 0.35);
+}
+.ritual-toggle:active {
+  background: linear-gradient(135deg, rgba(232, 196, 190, 0.45), rgba(232, 196, 190, 0.25));
+  border-color: rgba(201, 169, 124, 0.5);
+}
+.ritual-toggle.active {
+  background: linear-gradient(135deg, rgba(232, 196, 190, 0.5), rgba(232, 196, 190, 0.28));
+  border-color: var(--e3-gold-deep);
+  box-shadow: 0 0 20rpx rgba(201, 169, 124, 0.18);
+}
+.ritual-toggle-text {
+  color: var(--e3-pink-ink);
+  font-family: var(--e3-serif);
+  letter-spacing: 3rpx;
+}
+.ritual-toggle-icon {
+  color: var(--e3-gold-deep);
+}
+
+/* —— 免费次数 —— */
+.quota-progress-wrap {
+  background: rgba(201, 169, 124, 0.14);
+}
+.quota-text {
+  color: var(--e3-ink-soft);
+}
+.quota-text--exhausted {
+  color: var(--e3-gold-deep);
+}
+
+/* —— 返回牌阵 —— */
+.btn-back-spreads {
+  color: var(--e3-ink-soft);
+  border-color: var(--e3-line);
+  background: var(--e3-cream-hi);
+}
+
+/* —— 免费次数耗尽浮层 —— */
+.exhausted-title {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 6rpx;
+  font-size: 40rpx;
+}
+.exhausted-sub {
+  color: var(--e3-ink-soft);
+}
+.exhausted-cta-text {
+  font-family: var(--e3-serif);
+  color: var(--e3-ink);
+  letter-spacing: 2rpx;
+}
+
+/* —— 解读师介绍浮层 —— */
+.persona-intro-name {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 6rpx;
+  font-size: 44rpx;
+}
+.persona-intro-desc {
+  color: var(--e3-ink-soft);
+}
+.persona-intro-style-label {
+  color: var(--e3-ink-soft);
+}
+.persona-intro-style-value {
+  color: var(--e3-gold-deep);
+  font-family: var(--e3-serif);
+  letter-spacing: 3rpx;
+}
+.persona-intro-card,
+.exhausted-card {
+  border-color: var(--e3-line-soft);
+  box-shadow: 0 16rpx 60rpx rgba(61, 58, 54, 0.14), var(--e3-hi);
+}
+
+/* —— AI 解读时间提示 —— */
+.reading-time-note {
+  color: var(--e3-ink-faint);
 }

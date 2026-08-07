@@ -38,13 +38,17 @@ const QR_SIZE_RATIO = 0.13;           // QR code as fraction of canvas width
 const CARD_WIDTH_RATIO = 0.32;        // card image ~32% of canvas width
 const CARD_ASPECT = 1.5;              // tarot card height / width
 
-// ── Colour palette (dark indigo + warm gold — app theme) ──
-const C_GOLD = '#F4D48C';
-const C_WHITE = '#F0EDE8';
-const C_MUTED = '#B8A9E0';
-const C_BG_TOP = '#1A1A3E';
-const C_BG_MID = '#12122E';
-const C_BG_BOT = '#0B0B16';
+// ── Colour palette · E3 奶油疗愈明亮主题 ──
+// 奶油底渐变 · 墨字 #3D3A36 · 金深标题 #8A6B3D (≈4.6:1) · 三级文字 #6E6A96 (≈4.68:1)
+const C_GOLD = '#C9A97C';        // 细金 — decorative (border / star dots)
+const C_GOLD_INK = '#8A6B3D';    // 金深 — title / label text on cream
+const C_WHITE = '#3D3A36';       // 墨 — body text on cream (12:1)
+const C_MUTED = '#6E6A96';       // 深灰紫 — secondary text (4.68:1)
+const C_BG_TOP = '#FAF6EF';      // 奶油
+const C_BG_MID = '#F7F0E3';
+const C_BG_BOT = '#F2ECDF';
+const C_PLACEHOLDER = '#F7F0E3'; // card image fallback fill
+const C_GLOW = 'rgba(201, 169, 124, 0.18)';   // soft gold glow on cream
 
 const WEEKDAY_LABELS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
@@ -108,8 +112,8 @@ function _drawStars(ctx, W, H) {
 /** Small brand line at the very top. Returns Y just below it. */
 function _drawBrand(ctx, W, Y) {
   ctx.save();
-  ctx.fillStyle = C_GOLD;
-  ctx.globalAlpha = 0.75;
+  ctx.fillStyle = C_GOLD_INK;
+  ctx.globalAlpha = 0.9;
   ctx.font = `bold ${Math.round(W * 0.028)}px "PingFang SC", "Helvetica Neue", sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
@@ -118,11 +122,11 @@ function _drawBrand(ctx, W, Y) {
   return Y + Math.round(W * 0.040);
 }
 
-/** Section label (gold, letter-spaced). */
+/** Section label (金深, letter-spaced). */
 function _drawSectionLabel(ctx, W, Y, label) {
   ctx.save();
-  ctx.fillStyle = C_GOLD;
-  ctx.globalAlpha = 0.9;
+  ctx.fillStyle = C_GOLD_INK;
+  ctx.globalAlpha = 0.95;
   ctx.font = `bold ${Math.round(W * 0.030)}px "PingFang SC", "Helvetica Neue", sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
@@ -131,12 +135,12 @@ function _drawSectionLabel(ctx, W, Y, label) {
   return Y + Math.round(W * 0.048);
 }
 
-/** Thin gold divider line. */
+/** Thin gold divider line (cream 上加透明). */
 function _drawDivider(ctx, W, Y) {
   const lineW = Math.round(W * 0.22);
   ctx.save();
   ctx.strokeStyle = C_GOLD;
-  ctx.globalAlpha = 0.25;
+  ctx.globalAlpha = 0.5;
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo((W - lineW) / 2, Y);
@@ -230,10 +234,10 @@ function _drawTopCard(ctx, W, Y, card, cardImg) {
   const cardX = Math.round((W - cardW) / 2);
   const r = Math.round(cardW * 0.02);
 
-  // Soft golden glow behind the card
+  // Soft golden glow behind the card (E3)
   const glowPad = Math.round(W * 0.014);
   ctx.save();
-  ctx.fillStyle = 'rgba(244, 212, 140, 0.10)';
+  ctx.fillStyle = C_GLOW;
   _roundRect(ctx, cardX - glowPad, Y - glowPad, cardW + glowPad * 2, cardH + glowPad * 2, r + glowPad);
   ctx.fill();
   ctx.restore();
@@ -245,7 +249,7 @@ function _drawTopCard(ctx, W, Y, card, cardImg) {
   if (cardImg) {
     ctx.drawImage(cardImg, cardX, Y, cardW, cardH);
   } else {
-    ctx.fillStyle = '#252550';
+    ctx.fillStyle = C_PLACEHOLDER;
     ctx.fillRect(cardX, Y, cardW, cardH);
   }
   ctx.restore();
@@ -258,10 +262,10 @@ function _drawTopCard(ctx, W, Y, card, cardImg) {
   ctx.stroke();
   ctx.restore();
 
-  // Card name (gold)
+  // Card name (金深 — 4.6:1 on cream)
   const nameY = Y + cardH + Math.round(W * 0.030);
   ctx.save();
-  ctx.fillStyle = C_GOLD;
+  ctx.fillStyle = C_GOLD_INK;
   ctx.font = `bold ${Math.round(W * 0.040)}px "PingFang SC", "Helvetica Neue", sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
@@ -338,7 +342,7 @@ function _drawQRCode(ctx, W, Y, qrImg) {
 
   ctx.save();
   _roundRect(ctx, qrX, qrAreaY, qrSize, qrSize, 6);
-  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+  ctx.strokeStyle = 'rgba(201, 169, 124, 0.50)';
   ctx.lineWidth = 1;
   ctx.stroke();
   ctx.restore();
@@ -354,11 +358,11 @@ function _drawQRCode(ctx, W, Y, qrImg) {
   ctx.restore();
 }
 
-/** Brand footer. */
+/** Brand footer (金深). */
 function _drawFooter(ctx, W, Y) {
   ctx.save();
-  ctx.fillStyle = C_GOLD;
-  ctx.globalAlpha = 0.6;
+  ctx.fillStyle = C_GOLD_INK;
+  ctx.globalAlpha = 0.85;
   ctx.font = `${Math.round(W * 0.028)}px "PingFang SC", "Helvetica Neue", sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
@@ -501,7 +505,7 @@ Component({
           y += Math.round(W * 0.006);
 
           ctx.save();
-          ctx.fillStyle = C_GOLD;
+          ctx.fillStyle = C_GOLD_INK;
           ctx.font = `bold ${Math.round(W * 0.064)}px "PingFang SC", "Helvetica Neue", sans-serif`;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'top';

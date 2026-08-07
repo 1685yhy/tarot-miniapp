@@ -49,6 +49,9 @@
 
 <!-- ===== MAIN CONTENT ===== -->
 <view class="page" wx:elif="{{reading}}">
+  <!-- E3 奶油底色氛围光斑（与首页气质统一） -->
+  <view class="wash wash-pink"></view>
+  <view class="wash wash-gold"></view>
   <scroll-view class="content-scroll" scroll-y enhanced show-scrollbar="{{false}}">
 
     <view class="inner-wrap">
@@ -104,6 +107,9 @@
            4. TL;DR — Key insight summary (before the full letter)
            ========================================================== -->
       <view class="tldr-card" wx:if="{{tldr && tldr.length > 0}}">
+        <view class="tldr-badge-row">
+          <text class="tldr-badge">✦ 要点</text>
+        </view>
         <view class="tldr-item" wx:for="{{tldr}}" wx:for-item="line" wx:key="*this">
           <view class="tldr-dot"></view>
           <text class="tldr-text">{{line}}</text>
@@ -112,27 +118,16 @@
 
       <!-- ==========================================================
            5. LETTER — The interpretation as personal prose (hero)
+           （纯文本字段 · 仅做视觉分隔线，不改内容结构）
            ========================================================== -->
       <view class="letter-section">
+        <view class="letter-divider">
+          <view class="letter-divider-line"></view>
+          <text class="letter-divider-star">✦</text>
+          <view class="letter-divider-line"></view>
+        </view>
         <view class="letter-body">
           <text class="letter-text">{{reading.interpretation}}</text>
-        </view>
-      </view>
-
-      <!-- ==========================================================
-           5b. DEEP READING PAYWALL — first-paid upgrade (A/B test)
-           Price varies by user bucket: ¥9.9 vs ¥19.9 (Task 2.7)
-           ========================================================== -->
-      <view class="deep-paywall" wx:if="{{!isMember}}">
-        <view class="divider">
-          <view class="divider-line"></view>
-        </view>
-        <view class="deep-paywall-card">
-          <image class="dpw-icon" src="/images/icons/lock_64.png" mode="aspectFit" aria-label="解锁深度解读" />
-          <text class="dpw-label">想要更深层的指引？</text>
-          <text class="dpw-title">解锁深度解读 ¥{{priceTestBucket}}</text>
-          <text class="dpw-desc">专属塔罗师解读 · 无限追问 · 更深入的牌面剖析</text>
-          <button class="dpw-btn" bindtap="onUnlockDeepReading" disabled="{{purchasingDeep}}" aria-label="解锁深度解读，价格{{priceTestBucket}}元">{{purchasingDeep ? '解锁中...' : '立即解锁'}}</button>
         </view>
       </view>
 
@@ -181,6 +176,23 @@
       </view>
 
       <!-- ==========================================================
+           7b. DEEP READING PAYWALL — 阅读后置（读完再卖）
+           A/B 价格逻辑不动：¥9.9 vs ¥19.9 (Task 2.7)
+           ========================================================== -->
+      <view class="deep-paywall" wx:if="{{!isMember}}">
+        <view class="divider">
+          <view class="divider-line"></view>
+        </view>
+        <view class="deep-paywall-card">
+          <image class="dpw-icon" src="/images/icons/lock_64.png" mode="aspectFit" aria-label="解锁深度解读" />
+          <text class="dpw-label">想要更深层的指引？</text>
+          <text class="dpw-title">解锁深度解读 ¥{{priceTestBucket}}</text>
+          <text class="dpw-desc">专属塔罗师解读 · 无限追问 · 更深入的牌面剖析</text>
+          <button class="dpw-btn" bindtap="onUnlockDeepReading" disabled="{{purchasingDeep}}" aria-label="解锁深度解读，价格{{priceTestBucket}}元">{{purchasingDeep ? '解锁中...' : '立即解锁'}}</button>
+        </view>
+      </view>
+
+      <!-- ==========================================================
            8. REFLECTION CARD — Guide user to diary journaling
            ========================================================== -->
       <view wx:if="{{reflectionQuestion}}" class="reflection-card">
@@ -194,13 +206,17 @@
       </view>
 
       <!-- ==========================================================
-           9. BOTTOM BAR — Share + Save + Diary in a row (evenly spaced)
+           9. BOTTOM ACTIONS — 分级：追问解读师（主）/ 分享海报（次）
+           送牌 / 保存 / 写日记 收进一行小图标按钮（保留原 bindtap）
            ========================================================== -->
-      <view class="bottom-bar">
-        <button class="bottom-bar-btn" bindtap="onSendCardToFriend" aria-label="送好友一张牌，好友扫码后双方各得一次免费深度解读">送好友一张牌 ✦</button>
-        <button class="bottom-bar-btn" bindtap="onOpenSharePoster" aria-label="分享解读海报">分享海报</button>
-        <button class="bottom-bar-btn" bindtap="{{isSaved ? 'onUnsaveReading' : 'onSaveReading'}}" aria-label="{{isSaved ? '取消保存解读' : '保存解读到收藏'}}">{{isSaved ? '已保存' : '保存解读'}}</button>
-        <button class="bottom-bar-btn" bindtap="onGoDiaryFromReading" aria-label="写日记记录感悟">写日记</button>
+      <view class="ask-share-row">
+        <button class="ask-primary-btn" bindtap="onAskMore" aria-label="追问解读师，与塔罗师继续对话">追问解读师 ✦</button>
+        <button class="share-secondary-btn" bindtap="onOpenSharePoster" aria-label="分享解读海报">分享海报</button>
+      </view>
+      <view class="mini-action-row">
+        <button class="mini-action-btn" bindtap="onSendCardToFriend" aria-label="送好友一张牌，好友扫码后双方各得一次免费深度解读">🎁 送好友一张牌</button>
+        <button class="mini-action-btn" bindtap="{{isSaved ? 'onUnsaveReading' : 'onSaveReading'}}" aria-label="{{isSaved ? '取消保存解读' : '保存解读到收藏'}}">{{isSaved ? '已保存' : '保存解读'}}</button>
+        <button class="mini-action-btn" bindtap="onGoDiaryFromReading" aria-label="写日记记录感悟">📝 写日记</button>
       </view>
 
       <!-- Secondary exit link -->

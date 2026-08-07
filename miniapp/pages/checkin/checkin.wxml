@@ -32,8 +32,17 @@
       <text wx:if="{{daysNeeded > 0 && nextLevelName}}" class="level-progress">距离「{{nextLevelName}}」还需 {{daysNeeded}} 天</text>
     </view>
 
+    <!-- ===== Check-In Button（P3-1：上移到圆环+等级之后、日历之前，首屏可见） ===== -->
+    <view class="checkin-btn-wrap anim-fade-up anim-stagger-2">
+      <button class="checkin-btn {{checkedIn ? 'checkin-btn--done' : ''}}" bindtap="onCheckIn" disabled="{{checkedIn}}">
+        <text wx:if="{{!checkedIn}}">✨ 今日签到</text>
+        <text wx:else>✓ 今日已签到</text>
+      </button>
+      <text wx:if="{{!checkedIn}}" class="checkin-hint">完成每日任务可额外获得免费解读次数</text>
+    </view>
+
     <!-- ===== Weekly Calendar ===== -->
-    <view class="calendar-section anim-fade-up anim-stagger-2">
+    <view class="calendar-section anim-fade-up anim-stagger-3">
       <text class="section-title">本周签到</text>
       <view class="calendar-strip">
         <view class="calendar-day" wx:for="{{weekDates}}" wx:key="date">
@@ -47,34 +56,22 @@
       </view>
     </view>
 
-    <!-- ===== Check-In Button ===== -->
-    <view class="checkin-btn-wrap anim-fade-up anim-stagger-3">
-      <button class="checkin-btn {{checkedIn ? 'checkin-btn--done' : ''}}" bindtap="onCheckIn" disabled="{{checkedIn}}">
-        <text wx:if="{{!checkedIn}}">✨ 今日签到</text>
-        <text wx:else>✓ 今日已签到</text>
-      </button>
-      <text wx:if="{{!checkedIn}}" class="checkin-hint">完成每日任务可额外获得免费解读次数</text>
-    </view>
-
-    <!-- ===== Level Description ===== -->
-    <view wx:if="{{level}}" class="level-desc-section anim-fade-up anim-stagger-4">
-      <text class="section-title">等级说明</text>
+    <!-- ===== 等级与里程碑（P3-1：合并为单一列表，视觉统一） ===== -->
+    <view class="level-desc-section anim-fade-up anim-stagger-4">
+      <text class="section-title">等级与里程碑</text>
       <view class="level-list">
-        <view class="level-item" wx:for="{{LEVELS}}" wx:key="name">
-          <view class="level-dot" style="background: {{item.badgeColor}};"></view>
-          <view class="level-info">
-            <text class="level-item-name" style="color: {{item.badgeColor}};">{{item.name}}</text>
-            <text class="level-item-range">{{item.min == 0 ? '0' : item.min}}-{{item.max >= 100 ? '∞' : item.max}} 天</text>
+        <!-- 等级（保留原显隐逻辑） -->
+        <block wx:if="{{level}}">
+          <view class="level-item" wx:for="{{LEVELS}}" wx:key="name">
+            <view class="level-dot" style="background: {{item.badgeColor}};"></view>
+            <view class="level-info">
+              <text class="level-item-name" style="color: {{item.badgeColor}};">{{item.name}}</text>
+              <text class="level-item-range">{{item.min == 0 ? '0' : item.min}}-{{item.max >= 100 ? '∞' : item.max}} 天</text>
+            </view>
+            <text wx:if="{{item.name === level.name}}" class="level-current-tag">当前</text>
           </view>
-          <text wx:if="{{item.name === level.name}}" class="level-current-tag">当前</text>
-        </view>
-      </view>
-    </view>
-
-    <!-- ===== Membership Milestones ===== -->
-    <view class="milestone-section anim-fade-up anim-stagger-5">
-      <text class="section-title">会员里程碑</text>
-      <view class="milestone-list">
+        </block>
+        <!-- 会员里程碑（保留原数据绑定与达成逻辑） -->
         <view class="milestone-item {{streak >= 7 ? 'milestone-reached' : ''}}">
           <view class="milestone-icon"><image class="milestone-icon-img" src="/images/icons/diamond_64.png" mode="aspectFit" aria-label="钻石里程碑" /></view>
           <view class="milestone-info">

@@ -1,5 +1,9 @@
 <!-- pages/membership/membership.wxml -->
 <view class="page">
+  <!-- E3 奶油底色氛围光斑（与首页气质统一） -->
+  <view class="wash wash-pink"></view>
+  <view class="wash wash-gold"></view>
+
   <!-- ===== 加载 ===== -->
   <view wx:if="{{pageLoading}}" class="skeleton-mem-wrap">
     <view class="skeleton-hero-area">
@@ -39,38 +43,7 @@
       </view>
     </view>
 
-    <!-- ===== 对比表: 免费 vs 会员 ===== -->
-    <view class="cmp-section">
-      <text class="cmp-section-title">免费 vs 会员</text>
-      <view class="cmp-table">
-        <!-- 表头 -->
-        <view class="cmp-row cmp-row--header">
-          <text class="cmp-cell cmp-cell--label"></text>
-          <text class="cmp-cell cmp-cell--free">免费用户</text>
-          <text class="cmp-cell cmp-cell--pro">会员</text>
-        </view>
-        <!-- 行: 每日解读 -->
-        <view class="cmp-row" wx:for="{{comparisonRows}}" wx:key="label">
-          <text class="cmp-cell cmp-cell--label">{{item.label}}</text>
-          <text class="cmp-cell cmp-cell--free {{item.free === '✗' ? 'cmp-cell--no' : ''}}">{{item.free}}</text>
-          <text class="cmp-cell cmp-cell--pro {{item.pro === '✗' ? 'cmp-cell--no' : ''}}">{{item.pro}}</text>
-        </view>
-        <!-- 已为你节省 -->
-        <view class="cmp-row cmp-row--savings">
-          <text class="cmp-cell cmp-cell--label">已为你节省</text>
-          <view class="cmp-cell cmp-cell--savings">
-            <text class="savings-item">月度：价值 {{comparisonSavings.monthly.value}}<text class="savings-highlight"> 省 {{comparisonSavings.monthly.save}}</text></text>
-            <text class="savings-item">年度：价值 {{comparisonSavings.yearly.value}}<text class="savings-highlight"> 省 {{comparisonSavings.yearly.save}}</text></text>
-          </view>
-          <view class="cmp-cell cmp-cell--savings-pro">
-            <text class="savings-item">无限次</text>
-            <text class="savings-item-s">{{pricingYearly.displayDaily}}起</text>
-          </view>
-        </view>
-      </view>
-    </view>
-
-    <!-- ===== 定价方案 ===== -->
+    <!-- ===== 定价方案（P2-3：价格优先，对比表移至页底折叠） ===== -->
     <view class="pricing-section">
       <text class="pricing-section-title">选择方案</text>
 
@@ -99,66 +72,107 @@
         <button class="pricing-card-btn pricing-card-btn--secondary">开通月度</button>
       </view>
 
-      <!-- 学生价 -->
-      <view class="pricing-card pricing-card--student" data-product="{{pricingStudent}}" bindtap="onPurchase" role="button" aria-label="购买学生会员">
-        <view class="pricing-card-student-badge">
+      <!-- 学生价（P2-3：弱化为一行小卡，支付逻辑与绑定保留） -->
+      <view wx:if="{{pricingStudent}}" class="pricing-card pricing-card--student pricing-card--student-mini" data-product="{{pricingStudent}}" bindtap="onPurchase" role="button" aria-label="购买学生会员">
+        <view class="pricing-card-student-mini-left">
           <image class="pricing-card-student-badge-icon" src="/images/icons/diamond_64.png" mode="aspectFit" aria-label="学生专享" />
-          <text>学生专享</text>
-        </view>
-        <view class="pricing-card-student-header">
-          <text class="pricing-card-name">学生会员</text>
+          <text class="pricing-card-name pricing-card-name--mini">学生会员</text>
           <text class="pricing-card-student-sub">需学生认证</text>
         </view>
-        <view class="pricing-card-price-row">
-          <text class="pricing-card-original">¥{{pricingStudent.displayOriginalPrice}}</text>
-          <text class="pricing-card-currency">¥</text>
-          <text class="pricing-card-amount">{{pricingStudent.displayPrice}}</text>
-          <text class="pricing-card-period">/月</text>
+        <view class="pricing-card-student-mini-right">
+          <view class="pricing-card-price-row">
+            <text class="pricing-card-original">¥{{pricingStudent.displayOriginalPrice}}</text>
+            <text class="pricing-card-currency">¥</text>
+            <text class="pricing-card-amount pricing-card-amount--mini">{{pricingStudent.displayPrice}}</text>
+            <text class="pricing-card-period">/月</text>
+          </view>
+          <button class="pricing-card-btn pricing-card-btn--student pricing-card-btn--mini">认证开通</button>
         </view>
-        <button class="pricing-card-btn pricing-card-btn--student">认证开通</button>
       </view>
     </view>
 
-    <!-- ===== 补充包：一次性购买 ===== -->
+    <!-- ===== 权益对比（P2-3：折叠，定价之后） ===== -->
+    <view class="cmp-section">
+      <view class="fold-header" bindtap="onToggleCmp" role="button" aria-label="{{cmpExpanded ? '收起权益对比' : '展开权益对比'}}">
+        <text class="fold-title">权益对比</text>
+        <text class="fold-arrow">{{cmpExpanded ? '▴' : '▾'}}</text>
+      </view>
+      <view wx:if="{{cmpExpanded}}" class="fold-body">
+        <view class="cmp-table">
+          <!-- 表头 -->
+          <view class="cmp-row cmp-row--header">
+            <text class="cmp-cell cmp-cell--label"></text>
+            <text class="cmp-cell cmp-cell--free">免费用户</text>
+            <text class="cmp-cell cmp-cell--pro">会员</text>
+          </view>
+          <!-- 行: 每日解读 -->
+          <view class="cmp-row" wx:for="{{comparisonRows}}" wx:key="label">
+            <text class="cmp-cell cmp-cell--label">{{item.label}}</text>
+            <text class="cmp-cell cmp-cell--free {{item.free === '✗' ? 'cmp-cell--no' : ''}}">{{item.free}}</text>
+            <text class="cmp-cell cmp-cell--pro {{item.pro === '✗' ? 'cmp-cell--no' : ''}}">{{item.pro}}</text>
+          </view>
+          <!-- 已为你节省 -->
+          <view class="cmp-row cmp-row--savings">
+            <text class="cmp-cell cmp-cell--label">已为你节省</text>
+            <view class="cmp-cell cmp-cell--savings">
+              <text class="savings-item">月度：价值 {{comparisonSavings.monthly.value}}<text class="savings-highlight"> 省 {{comparisonSavings.monthly.save}}</text></text>
+              <text class="savings-item">年度：价值 {{comparisonSavings.yearly.value}}<text class="savings-highlight"> 省 {{comparisonSavings.yearly.save}}</text></text>
+            </view>
+            <view class="cmp-cell cmp-cell--savings-pro">
+              <text class="savings-item">无限次</text>
+              <text class="savings-item-s">{{pricingYearly.displayDaily}}起</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- ===== 补充包：一次性购买（P2-3：折叠降权，支付逻辑保留） ===== -->
     <view class="pack-section">
-      <text class="pricing-section-title">深度解读包</text>
-      <text class="pack-section-sub">一次性购买 · 永不过期 · 不限牌阵</text>
-
-      <!-- 3次包 -->
-      <view class="pack-card" data-product="{{pricingPack3}}" bindtap="onPurchasePack" role="button" aria-label="购买3次深度解读包">
-        <view class="pack-card-left">
-          <text class="pack-card-name">3次深度解读</text>
-          <view class="pack-card-tag">一次性</view>
-        </view>
-        <view class="pack-card-right">
-          <view class="pack-card-price-row">
-            <text class="pack-card-currency">¥</text>
-            <text class="pack-card-amount">{{pricingPack3.displayPrice}}</text>
-          </view>
-          <text class="pack-card-unit">{{pricingPack3.displayUnitPrice}}</text>
-        </view>
-        <button class="pack-card-btn" catchtap="onPurchasePack" data-product="{{pricingPack3}}">立即购买</button>
+      <view class="fold-header" bindtap="onTogglePack" role="button" aria-label="{{packExpanded ? '收起补充解读包' : '展开补充解读包'}}">
+        <text class="fold-title">补充解读包</text>
+        <text class="pack-fold-sub">一次性 · 不过期</text>
+        <text class="fold-arrow">{{packExpanded ? '▴' : '▾'}}</text>
       </view>
+      <view wx:if="{{packExpanded}}" class="fold-body">
+        <text class="pack-section-sub">一次性购买 · 永不过期 · 不限牌阵</text>
 
-      <!-- 10次包（超值） -->
-      <view class="pack-card pack-card--best" data-product="{{pricingPack10}}" bindtap="onPurchasePack" role="button" aria-label="购买10次深度解读包">
-        <view class="pack-card-badge">超值</view>
-        <view class="pack-card-left">
-          <text class="pack-card-name">10次深度解读</text>
-          <view class="pack-card-tag">永久有效</view>
-        </view>
-        <view class="pack-card-right">
-          <view class="pack-card-price-row">
-            <text class="pack-card-currency">¥</text>
-            <text class="pack-card-amount">{{pricingPack10.displayPrice}}</text>
+        <!-- 3次包 -->
+        <view class="pack-card" data-product="{{pricingPack3}}" bindtap="onPurchasePack" role="button" aria-label="购买3次深度解读包">
+          <view class="pack-card-left">
+            <text class="pack-card-name">3次深度解读</text>
+            <view class="pack-card-tag">一次性</view>
           </view>
-          <text class="pack-card-unit">{{pricingPack10.displayUnitPrice}}</text>
+          <view class="pack-card-right">
+            <view class="pack-card-price-row">
+              <text class="pack-card-currency">¥</text>
+              <text class="pack-card-amount">{{pricingPack3.displayPrice}}</text>
+            </view>
+            <text class="pack-card-unit">{{pricingPack3.displayUnitPrice}}</text>
+          </view>
+          <button class="pack-card-btn" catchtap="onPurchasePack" data-product="{{pricingPack3}}">立即购买</button>
         </view>
-        <button class="pack-card-btn pack-card-btn--primary" catchtap="onPurchasePack" data-product="{{pricingPack10}}">立即购买</button>
-      </view>
 
-      <view class="pack-detail-link" bindtap="onPackDetail" role="button" aria-label="了解深度解读包详情">
-        <text class="pack-detail-text">了解深度解读包 ›</text>
+        <!-- 10次包（超值） -->
+        <view class="pack-card pack-card--best" data-product="{{pricingPack10}}" bindtap="onPurchasePack" role="button" aria-label="购买10次深度解读包">
+          <view class="pack-card-badge">超值</view>
+          <view class="pack-card-left">
+            <text class="pack-card-name">10次深度解读</text>
+            <view class="pack-card-tag">永久有效</view>
+          </view>
+          <view class="pack-card-right">
+            <view class="pack-card-price-row">
+              <text class="pack-card-currency">¥</text>
+              <text class="pack-card-amount">{{pricingPack10.displayPrice}}</text>
+            </view>
+            <text class="pack-card-unit">{{pricingPack10.displayUnitPrice}}</text>
+          </view>
+          <button class="pack-card-btn pack-card-btn--primary" catchtap="onPurchasePack" data-product="{{pricingPack10}}">立即购买</button>
+        </view>
+
+        <view class="pack-detail-link" bindtap="onPackDetail" role="button" aria-label="了解深度解读包详情">
+          <text class="pack-detail-text">了解深度解读包 ›</text>
+        </view>
       </view>
     </view>
 

@@ -1,11 +1,21 @@
 /* ================================================================
    Annual Report — Spotify Wrapped-style
-   Cosmic indigo #1A1A3E · Gold #F4D48C · Lavender #B8A9E0
+   E3 奶油疗愈明亮主题（浅色底 · 深金/细金点缀 · 衬线标题）
    Full-screen story format, 8 swipeable screens
    ================================================================ */
 
+/* === E3 补全: annual-report（深色→奶油浅色化改造） ===
+   用户点名要求全站统一 E3：深色夜空 → 奶油底浅色版（保留沉浸叙事感）
+   1. 全屏底 #0B0B1A → 奶油浅渐变 #FAF6EF→#F7F0E3→#F2ECDF
+   2. 金色文字 #F4D48C → 深金 #A98B5F / #C9A97C；浅字 #F0EDE8/#B8A9E0 → 墨 #3D3A36/墨灰 #8A8478
+   3. 星点/月亮装饰 → 浅金 rgba(201,169,124,...) 柔和版
+   4. 按钮 → E3 三段金渐变 #C9A97C→#B08F52→#A98B5F + 奶油字
+   5. 卡框/数据卡/海报弹层 → 奶油底 + 细金描边 + E3 浅阴影
+   6. 大标题衬线化；图表色板换 E3 色（奶油/雾粉/细金/灰紫）
+   7. 动画与交互全部保留 */
+
 page {
-  background: #0B0B1A;
+  background: #FAF6EF;
   overflow: hidden;
   height: 100vh;
 }
@@ -17,7 +27,7 @@ page {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   overflow: hidden;
-  background: #0B0B1A;
+  background: #FAF6EF;
 }
 
 /* ================================================================
@@ -43,8 +53,8 @@ page {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   border-radius: 50%;
-  border: 3rpx solid rgba(244, 212, 140, 0.15);
-  border-top-color: #F4D48C;
+  border: 3rpx solid rgba(201, 169, 124, 0.15);
+  border-top-color: #C9A97C;
   animation: wr-spin 1.2s cubic-bezier(0.6, 0, 0.4, 1) infinite;
 }
 
@@ -57,7 +67,7 @@ page {
 
 .wrapped-loading-title {
   font-size: 32rpx;
-  color: rgba(244, 212, 140, 0.8);
+  color: rgba(201, 169, 124, 0.8);
   font-weight: 600;
   letter-spacing: 3rpx;
 }
@@ -78,7 +88,7 @@ page {
   width: 120rpx;
   height: 120rpx;
   border-radius: 50%;
-  background: rgba(244, 212, 140, 0.08);
+  background: rgba(201, 169, 124, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -91,14 +101,14 @@ page {
 
 .wrapped-error-title {
   font-size: 32rpx;
-  color: #F0EDE8;
+  color: #3D3A36;
   font-weight: 600;
   margin-bottom: 12rpx;
 }
 
 .wrapped-error-hint {
   font-size: 24rpx;
-  color: rgba(176, 169, 224, 0.6);
+  color: rgba(138, 132, 120, 0.6);
   margin-bottom: 48rpx;
   text-align: center;
 }
@@ -106,8 +116,8 @@ page {
 .wrapped-retry-btn {
   width: 60%;
   padding: 24rpx 0;
-  background: linear-gradient(135deg, #F4D48C, #D4B06A);
-  color: #1A1A3E;
+  background: linear-gradient(135deg, #C9A97C, #A98B5F);
+  color: #F7F0E3;
   font-size: 28rpx;
   font-weight: 700;
   border-radius: 50rpx;
@@ -146,21 +156,21 @@ page {
 }
 
 .wrapped-gen-ring-1 {
-  border-top-color: rgba(244, 212, 140, 0.3);
-  border-bottom-color: rgba(184, 169, 224, 0.2);
+  border-top-color: rgba(201, 169, 124, 0.3);
+  border-bottom-color: rgba(138, 132, 120, 0.2);
   animation: wr-spin 2s linear infinite;
 }
 
 .wrapped-gen-ring-2 {
   top: 20rpx; right: 20rpx; bottom: 20rpx; left: 20rpx;
-  border-left-color: rgba(244, 212, 140, 0.2);
-  border-right-color: rgba(184, 169, 224, 0.3);
+  border-left-color: rgba(201, 169, 124, 0.2);
+  border-right-color: rgba(138, 132, 120, 0.3);
   animation: wr-spin 1.5s linear infinite reverse;
 }
 
 .wrapped-gen-ring-3 {
   top: 40rpx; right: 40rpx; bottom: 40rpx; left: 40rpx;
-  border-top-color: rgba(244, 212, 140, 0.15);
+  border-top-color: rgba(201, 169, 124, 0.15);
   animation: wr-spin 1s linear infinite;
 }
 
@@ -173,7 +183,7 @@ page {
 
 .wrapped-gen-title {
   font-size: 32rpx;
-  color: #F4D48C;
+  color: #C9A97C;
   font-weight: 600;
   letter-spacing: 3rpx;
   margin-bottom: 12rpx;
@@ -181,7 +191,7 @@ page {
 
 .wrapped-gen-sub {
   font-size: 24rpx;
-  color: rgba(176, 169, 224, 0.5);
+  color: rgba(138, 132, 120, 0.5);
   letter-spacing: 2rpx;
 }
 
@@ -195,7 +205,7 @@ page {
   position: absolute;
   width: 4rpx;
   height: 4rpx;
-  background: #F4D48C;
+  background: #C9A97C;
   border-radius: 50%;
   opacity: 0;
   animation: gen-particle 2s ease-in-out infinite;
@@ -230,7 +240,7 @@ page {
   width: 600rpx;
   height: 600rpx;
   top: 10%;
-  background: radial-gradient(circle, rgba(244, 212, 140, 0.06) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(201, 169, 124, 0.06) 0%, transparent 70%);
   animation: pre-glow-breathe 4s ease-in-out infinite;
 }
 
@@ -249,7 +259,7 @@ page {
   position: absolute;
   width: 4rpx;
   height: 4rpx;
-  background: #F4D48C;
+  background: #C9A97C;
   border-radius: 50%;
   opacity: 0;
   animation: pre-star-twinkle 3s ease-in-out infinite;
@@ -265,7 +275,7 @@ page {
   width: 140rpx;
   height: 140rpx;
   border-radius: 50%;
-  background: rgba(244, 212, 140, 0.1);
+  background: rgba(201, 169, 124, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -281,7 +291,7 @@ page {
 .pre-title {
   font-size: 48rpx;
   font-weight: 800;
-  color: #F4D48C;
+  color: #C9A97C;
   letter-spacing: 6rpx;
   position: relative;
   z-index: 1;
@@ -290,7 +300,7 @@ page {
 
 .pre-desc {
   font-size: 24rpx;
-  color: rgba(176, 169, 224, 0.6);
+  color: rgba(138, 132, 120, 0.6);
   line-height: 1.8;
   margin-bottom: 60rpx;
   position: relative;
@@ -300,8 +310,8 @@ page {
 .pre-gen-btn {
   width: 80%;
   padding: 28rpx 0;
-  background: linear-gradient(135deg, #F4D48C, #D4B06A);
-  color: #1A1A3E;
+  background: linear-gradient(135deg, #C9A97C, #A98B5F);
+  color: #F7F0E3;
   font-size: 30rpx;
   font-weight: 700;
   border-radius: 50rpx;
@@ -309,17 +319,17 @@ page {
   letter-spacing: 3rpx;
   position: relative;
   z-index: 1;
-  box-shadow: 0 0 40rpx rgba(244, 212, 140, 0.15);
+  box-shadow: 0 0 40rpx rgba(201, 169, 124, 0.15);
 }
 
 .pre-buy-btn {
   width: 80%;
   padding: 20rpx 0;
   background: transparent;
-  color: rgba(176, 169, 224, 0.5);
+  color: rgba(138, 132, 120, 0.5);
   font-size: 24rpx;
   border-radius: 50rpx;
-  border: 1rpx solid rgba(244, 212, 140, 0.1);
+  border: 1rpx solid rgba(201, 169, 124, 0.1);
   margin-top: 16rpx;
   position: relative;
   z-index: 1;
@@ -327,7 +337,7 @@ page {
 
 .pre-note {
   font-size: 20rpx;
-  color: rgba(176, 169, 224, 0.3);
+  color: rgba(138, 132, 120, 0.3);
   margin-top: 24rpx;
   position: relative;
   z-index: 1;
@@ -350,8 +360,8 @@ page {
   padding: 0 32rpx 0 20rpx;
   box-sizing: border-box;
   border-radius: var(--radius-pill);
-  background: rgba(244, 212, 140, 0.10);
-  border: 1rpx solid rgba(244, 212, 140, 0.28);
+  background: rgba(201, 169, 124, 0.10);
+  border: 1rpx solid rgba(201, 169, 124, 0.28);
   color: var(--color-gold);
   backdrop-filter: blur(8rpx);
   -webkit-backdrop-filter: blur(8rpx);
@@ -359,7 +369,7 @@ page {
 }
 
 .wrapped-back:active {
-  background: rgba(244, 212, 140, 0.20);
+  background: rgba(201, 169, 124, 0.20);
   transform: scale(0.96);
 }
 
@@ -382,7 +392,7 @@ page {
 .wrapped-stage {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: #0B0B1A;
+  background: #FAF6EF;
 }
 
 /* Progress dots — pushed below status bar + back button, and
@@ -400,12 +410,12 @@ page {
 .wrapped-dot {
   height: 4rpx;
   border-radius: 2rpx;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(201, 169, 124, 0.18);
   transition: background 0.3s ease;
 }
 
 .wrapped-dot--active {
-  background: #F4D48C;
+  background: #C9A97C;
 }
 
 /* ================================================================
@@ -443,7 +453,7 @@ page {
 .cosmic-ring {
   position: absolute;
   border-radius: 50%;
-  border: 1rpx solid rgba(244, 212, 140, 0.08);
+  border: 1rpx solid rgba(201, 169, 124, 0.08);
 }
 
 .cosmic-ring-1 {
@@ -456,14 +466,14 @@ page {
   width: 380rpx;
   height: 380rpx;
   animation: cr-spin 6s linear infinite reverse;
-  border-color: rgba(184, 169, 224, 0.08);
+  border-color: rgba(138, 132, 120, 0.08);
 }
 
 .cosmic-ring-3 {
   width: 260rpx;
   height: 260rpx;
   animation: cr-spin 4s linear infinite;
-  border-color: rgba(244, 212, 140, 0.12);
+  border-color: rgba(201, 169, 124, 0.12);
 }
 
 @keyframes cr-spin {
@@ -478,7 +488,7 @@ page {
 
 .screen-star {
   position: absolute;
-  background: #F4D48C;
+  background: #C9A97C;
   border-radius: 50%;
   opacity: 0;
 }
@@ -512,7 +522,7 @@ page {
 .screen-0-year {
   font-size: 120rpx;
   font-weight: 900;
-  color: rgba(244, 212, 140, 0.06);
+  color: rgba(201, 169, 124, 0.06);
   line-height: 1;
   letter-spacing: 8rpx;
   position: absolute;
@@ -525,13 +535,13 @@ page {
 .screen-0-divider {
   width: 60rpx;
   height: 2rpx;
-  background: linear-gradient(90deg, transparent, #F4D48C, transparent);
+  background: linear-gradient(90deg, transparent, #C9A97C, transparent);
   margin: 0 auto 32rpx;
 }
 
 .screen-0-title {
   font-size: 40rpx;
-  color: rgba(240, 237, 232, 0.6);
+  color: rgba(61, 58, 54, 0.6);
   display: block;
   letter-spacing: 8rpx;
   font-weight: 300;
@@ -540,11 +550,11 @@ page {
 .screen-0-subtitle {
   font-size: 72rpx;
   font-weight: 800;
-  color: #F4D48C;
+  color: #C9A97C;
   display: block;
   letter-spacing: 10rpx;
   margin-top: 8rpx;
-  text-shadow: 0 0 60rpx rgba(244, 212, 140, 0.15);
+  text-shadow: 0 0 60rpx rgba(201, 169, 124, 0.15);
 }
 
 .screen-0-sparkles {
@@ -556,7 +566,7 @@ page {
 .screen-0-sparkle {
   position: absolute;
   font-size: 20rpx;
-  color: #F4D48C;
+  color: #C9A97C;
   opacity: 0;
   animation: sparkle-rotate 2s ease-in-out infinite;
 }
@@ -573,7 +583,7 @@ page {
 
 .screen-0-hint {
   font-size: 20rpx;
-  color: rgba(176, 169, 224, 0.3);
+  color: rgba(138, 132, 120, 0.3);
   margin-top: 80rpx;
   display: block;
   animation: hint-blink 2s ease-in-out infinite;
@@ -592,7 +602,7 @@ page {
   width: 600rpx;
   height: 600rpx;
   top: 5%;
-  background: radial-gradient(circle, rgba(244, 212, 140, 0.04) 0%, transparent 60%);
+  background: radial-gradient(circle, rgba(201, 169, 124, 0.04) 0%, transparent 60%);
   pointer-events: none;
 }
 
@@ -604,7 +614,7 @@ page {
 
 .screen-1-label {
   font-size: 28rpx;
-  color: rgba(176, 169, 224, 0.6);
+  color: rgba(138, 132, 120, 0.6);
   display: block;
   letter-spacing: 4rpx;
   margin-bottom: 32rpx;
@@ -618,14 +628,14 @@ page {
 .screen-1-number {
   font-size: 200rpx;
   font-weight: 900;
-  color: #F4D48C;
+  color: #C9A97C;
   line-height: 1;
   letter-spacing: 4rpx;
   opacity: 0;
   transform: scale(0.3);
   transition: opacity 1s cubic-bezier(0.34, 1.56, 0.64, 1),
               transform 1s cubic-bezier(0.34, 1.56, 0.64, 1);
-  text-shadow: 0 0 80rpx rgba(244, 212, 140, 0.2);
+  text-shadow: 0 0 80rpx rgba(201, 169, 124, 0.2);
 }
 
 .screen-1-number--visible {
@@ -635,13 +645,13 @@ page {
 
 .screen-1-unit {
   font-size: 36rpx;
-  color: rgba(244, 212, 140, 0.5);
+  color: rgba(201, 169, 124, 0.5);
   margin-left: 8rpx;
 }
 
 .screen-1-sub {
   font-size: 24rpx;
-  color: rgba(176, 169, 224, 0.4);
+  color: rgba(138, 132, 120, 0.4);
   display: block;
   margin-top: 24rpx;
   letter-spacing: 2rpx;
@@ -661,7 +671,7 @@ page {
   position: absolute;
   width: 6rpx;
   height: 6rpx;
-  background: #F4D48C;
+  background: #C9A97C;
   border-radius: 50%;
   animation: sparkle-burst 1s ease-out forwards;
 }
@@ -696,7 +706,7 @@ page {
 
 .screen-2-label {
   font-size: 28rpx;
-  color: rgba(176, 169, 224, 0.6);
+  color: rgba(138, 132, 120, 0.6);
   display: block;
   letter-spacing: 4rpx;
   margin-bottom: 40rpx;
@@ -727,7 +737,7 @@ page {
 .screen-2-theme-text {
   font-size: 60rpx;
   font-weight: 800;
-  color: #F4D48C;
+  color: #C9A97C;
   letter-spacing: 6rpx;
 }
 
@@ -746,7 +756,7 @@ page {
 
 .screen-2-mini-bar-label {
   font-size: 24rpx;
-  color: rgba(240, 237, 232, 0.6);
+  color: rgba(61, 58, 54, 0.6);
   width: 80rpx;
   flex-shrink: 0;
 }
@@ -761,7 +771,7 @@ page {
 
 .screen-2-mini-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, rgba(244, 212, 140, 0.3), #F4D48C);
+  background: linear-gradient(90deg, rgba(201, 169, 124, 0.3), #C9A97C);
   border-radius: 12rpx;
   width: 0;
   transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
@@ -773,7 +783,7 @@ page {
 
 .screen-2-mini-bar-count {
   font-size: 22rpx;
-  color: rgba(244, 212, 140, 0.5);
+  color: rgba(201, 169, 124, 0.5);
   width: 60rpx;
   text-align: right;
   flex-shrink: 0;
@@ -787,7 +797,7 @@ page {
   width: 500rpx;
   height: 500rpx;
   top: 15%;
-  background: radial-gradient(circle, rgba(184, 169, 224, 0.04) 0%, transparent 60%);
+  background: radial-gradient(circle, rgba(138, 132, 120, 0.04) 0%, transparent 60%);
   pointer-events: none;
 }
 
@@ -800,7 +810,7 @@ page {
 
 .screen-3-label {
   font-size: 28rpx;
-  color: rgba(176, 169, 224, 0.6);
+  color: rgba(138, 132, 120, 0.6);
   display: block;
   letter-spacing: 4rpx;
   margin-bottom: 40rpx;
@@ -829,13 +839,13 @@ page {
   right: -20rpx;
   bottom: -20rpx;
   border-radius: 24rpx;
-  border: 1rpx solid rgba(244, 212, 140, 0.1);
+  border: 1rpx solid rgba(201, 169, 124, 0.1);
   animation: card-glow-pulse 3s ease-in-out infinite;
 }
 
 @keyframes card-glow-pulse {
-  0%, 100% { box-shadow: 0 0 20rpx rgba(244, 212, 140, 0.05); }
-  50% { box-shadow: 0 0 60rpx rgba(244, 212, 140, 0.12); }
+  0%, 100% { box-shadow: 0 0 20rpx rgba(201, 169, 124, 0.05); }
+  50% { box-shadow: 0 0 60rpx rgba(201, 169, 124, 0.12); }
 }
 
 .screen-3-card-frame {
@@ -843,8 +853,8 @@ page {
   height: 100%;
   border-radius: 20rpx;
   overflow: hidden;
-  background: #252550;
-  border: 2rpx solid rgba(244, 212, 140, 0.2);
+  background: #F7F0E3;
+  border: 2rpx solid rgba(201, 169, 124, 0.2);
   box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.5);
 }
 
@@ -852,7 +862,7 @@ page {
 .screen-3-card-frame.cups { border-color: rgba(60, 180, 244, 0.3); }
 .screen-3-card-frame.swords { border-color: rgba(200, 200, 210, 0.3); }
 .screen-3-card-frame.pentacles { border-color: rgba(60, 200, 140, 0.3); }
-.screen-3-card-frame.major { border-color: rgba(244, 212, 140, 0.3); }
+.screen-3-card-frame.major { border-color: rgba(201, 169, 124, 0.3); }
 
 .screen-3-card-placeholder {
   width: 100%;
@@ -884,7 +894,7 @@ page {
 
 /* Fallback when annual card image fails to load */
 .screen-3-card-fallback {
-  background: linear-gradient(150deg, #1A1A3E 0%, #252550 100%) !important;
+  background: linear-gradient(150deg, #F7F0E3 0%, #F7F0E3 100%) !important;
 }
 
 .screen-3-card-placeholder-name {
@@ -895,17 +905,17 @@ page {
   letter-spacing: 3rpx;
   padding: var(--spacing-xs) var(--spacing-sm);
   background: rgba(26, 16, 53, 0.70);
-  border: 1rpx solid rgba(212, 168, 83, 0.20);
+  border: 1rpx solid rgba(201, 169, 124, 0.20);
   border-radius: var(--radius-sm);
   max-width: 180rpx;
   line-height: 1.5;
-  text-shadow: 0 0 8rpx rgba(212, 168, 83, 0.30);
+  text-shadow: 0 0 8rpx rgba(201, 169, 124, 0.30);
 }
 
 .screen-3-card-name {
   font-size: 40rpx;
   font-weight: 800;
-  color: #F4D48C;
+  color: #C9A97C;
   display: block;
   letter-spacing: 4rpx;
   margin-bottom: 12rpx;
@@ -913,7 +923,7 @@ page {
 
 .screen-3-card-meaning {
   font-size: 22rpx;
-  color: rgba(176, 169, 224, 0.6);
+  color: rgba(138, 132, 120, 0.6);
   line-height: 1.8;
   display: block;
   max-width: 80%;
@@ -922,7 +932,7 @@ page {
 
 .screen-3-card-keyword {
   font-size: 26rpx;
-  color: #F4D48C;
+  color: #C9A97C;
   display: block;
   margin-top: 20rpx;
   opacity: 0.7;
@@ -949,7 +959,7 @@ page {
 
 .screen-4-label {
   font-size: 28rpx;
-  color: rgba(176, 169, 224, 0.6);
+  color: rgba(138, 132, 120, 0.6);
   display: block;
   letter-spacing: 4rpx;
   margin-bottom: 32rpx;
@@ -961,26 +971,26 @@ page {
   gap: 16rpx;
   padding: 16rpx 40rpx;
   border-radius: 50rpx;
-  background: linear-gradient(135deg, rgba(244, 212, 140, 0.1), rgba(184, 169, 224, 0.1));
-  border: 1rpx solid rgba(244, 212, 140, 0.15);
+  background: linear-gradient(135deg, rgba(201, 169, 124, 0.1), rgba(138, 132, 120, 0.1));
+  border: 1rpx solid rgba(201, 169, 124, 0.15);
   margin-bottom: 32rpx;
 }
 
 .screen-4-archetype-icon {
   font-size: 24rpx;
-  color: #F4D48C;
+  color: #C9A97C;
 }
 
 .screen-4-archetype-name {
   font-size: 40rpx;
   font-weight: 800;
-  color: #F4D48C;
+  color: #C9A97C;
   letter-spacing: 4rpx;
 }
 
 .screen-4-desc {
   font-size: 24rpx;
-  color: rgba(240, 237, 232, 0.6);
+  color: rgba(61, 58, 54, 0.6);
   line-height: 1.8;
   display: block;
   max-width: 80%;
@@ -989,14 +999,14 @@ page {
 
 .screen-4-insight {
   font-size: 24rpx;
-  color: rgba(184, 169, 224, 0.8);
+  color: rgba(138, 132, 120, 0.8);
   font-style: italic;
   display: block;
   line-height: 1.6;
   max-width: 75%;
   margin: 0 auto 40rpx;
   padding: 20rpx;
-  border-left: 2rpx solid rgba(184, 169, 224, 0.2);
+  border-left: 2rpx solid rgba(138, 132, 120, 0.2);
 }
 
 .screen-4-card-stats {
@@ -1018,14 +1028,14 @@ page {
 .screen-4-stat-num {
   font-size: 28rpx;
   font-weight: 700;
-  color: #F4D48C;
+  color: #C9A97C;
   display: block;
   margin-bottom: 6rpx;
 }
 
 .screen-4-stat-label {
   font-size: 20rpx;
-  color: rgba(176, 169, 224, 0.5);
+  color: rgba(138, 132, 120, 0.5);
   display: block;
 }
 
@@ -1053,7 +1063,7 @@ page {
 
 .screen-5-label {
   font-size: 28rpx;
-  color: rgba(176, 169, 224, 0.6);
+  color: rgba(138, 132, 120, 0.6);
   display: block;
   letter-spacing: 4rpx;
   margin-bottom: 8rpx;
@@ -1061,7 +1071,7 @@ page {
 
 .screen-5-sub {
   font-size: 22rpx;
-  color: rgba(176, 169, 224, 0.3);
+  color: rgba(138, 132, 120, 0.3);
   display: block;
   margin-bottom: 40rpx;
 }
@@ -1098,7 +1108,7 @@ page {
   max-width: 40rpx;
   min-height: 4rpx;
   border-radius: 6rpx 6rpx 0 0;
-  background: linear-gradient(180deg, #F4D48C, rgba(244, 212, 140, 0.2));
+  background: linear-gradient(180deg, #C9A97C, rgba(201, 169, 124, 0.2));
   transition: height 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
 }
@@ -1120,8 +1130,8 @@ page {
   top: -30rpx;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 18rpx;
-  color: rgba(244, 212, 140, 0.5);
+  font-size: 20rpx;
+  color: rgba(201, 169, 124, 0.5);
   white-space: nowrap;
 }
 
@@ -1138,7 +1148,7 @@ page {
 
 .screen-5-mood-title {
   font-size: 20rpx;
-  color: rgba(176, 169, 224, 0.4);
+  color: rgba(138, 132, 120, 0.4);
   display: block;
   margin-bottom: 12rpx;
   letter-spacing: 2rpx;
@@ -1170,8 +1180,8 @@ page {
   100% { transform: scale(1); }
 }
 
-.mood-happy { background: #F4D48C; box-shadow: 0 0 10rpx rgba(244, 212, 140, 0.3); }
-.mood-calm { background: #B8A9E0; box-shadow: 0 0 10rpx rgba(184, 169, 224, 0.3); }
+.mood-happy { background: #C9A97C; box-shadow: 0 0 10rpx rgba(201, 169, 124, 0.3); }
+.mood-calm { background: #8A8478; box-shadow: 0 0 10rpx rgba(138, 132, 120, 0.3); }
 .mood-gloomy { background: #6B5B95; box-shadow: 0 0 10rpx rgba(107, 91, 149, 0.3); }
 .mood-down { background: #3A2A5A; box-shadow: 0 0 10rpx rgba(58, 42, 90, 0.3); }
 
@@ -1181,7 +1191,7 @@ page {
 .screen-blessing-bg {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: radial-gradient(ellipse at 50% 30%, rgba(244, 212, 140, 0.03) 0%, transparent 60%);
+  background: radial-gradient(ellipse at 50% 30%, rgba(201, 169, 124, 0.03) 0%, transparent 60%);
   overflow: hidden;
 }
 
@@ -1195,7 +1205,7 @@ page {
   position: absolute;
   width: 4rpx;
   height: 4rpx;
-  background: #F4D48C;
+  background: #C9A97C;
   border-radius: 50%;
   opacity: 0;
   animation: blessing-star 3s ease-in-out infinite;
@@ -1225,7 +1235,7 @@ page {
 .screen-6-quote-mark {
   font-size: 100rpx;
   font-weight: 900;
-  color: rgba(244, 212, 140, 0.06);
+  color: rgba(201, 169, 124, 0.06);
   line-height: 0.6;
   text-align: left;
   padding-left: 40rpx;
@@ -1245,16 +1255,16 @@ page {
 
 .screen-6-blessing-line {
   font-size: 36rpx;
-  color: #F4D48C;
+  color: #C9A97C;
   line-height: 1.8;
   letter-spacing: 3rpx;
   font-weight: 600;
-  text-shadow: 0 0 40rpx rgba(244, 212, 140, 0.08);
+  text-shadow: 0 0 40rpx rgba(201, 169, 124, 0.08);
 }
 
 .screen-6-signature {
   font-size: 22rpx;
-  color: rgba(176, 169, 224, 0.4);
+  color: rgba(138, 132, 120, 0.4);
   display: block;
   margin-top: 40rpx;
   letter-spacing: 2rpx;
@@ -1286,13 +1296,13 @@ page {
 .screen-7-title {
   font-size: 36rpx;
   font-weight: 700;
-  color: #F4D48C;
+  color: #C9A97C;
   letter-spacing: 4rpx;
 }
 
 .screen-7-desc {
   font-size: 24rpx;
-  color: rgba(176, 169, 224, 0.5);
+  color: rgba(138, 132, 120, 0.5);
   letter-spacing: 2rpx;
 }
 
@@ -1301,7 +1311,7 @@ page {
   height: 360rpx;
   border-radius: 16rpx;
   background: rgba(255, 255, 255, 0.02);
-  border: 1rpx solid rgba(244, 212, 140, 0.1);
+  border: 1rpx solid rgba(201, 169, 124, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1312,7 +1322,7 @@ page {
 
 .screen-7-poster-preview:active {
   transform: scale(0.96);
-  border-color: rgba(244, 212, 140, 0.3);
+  border-color: rgba(201, 169, 124, 0.3);
 }
 
 .screen-7-poster-placeholder {
@@ -1327,7 +1337,7 @@ page {
 
 .screen-7-poster-text {
   font-size: 22rpx;
-  color: rgba(176, 169, 224, 0.4);
+  color: rgba(138, 132, 120, 0.4);
 }
 
 .screen-7-buttons {
@@ -1350,13 +1360,13 @@ page {
 }
 
 .screen-7-btn--moments {
-  background: linear-gradient(135deg, #F4D48C, #D4B06A);
-  color: #1A1A3E;
+  background: linear-gradient(135deg, #C9A97C, #A98B5F);
+  color: #F7F0E3;
 }
 
 .screen-7-btn--save {
   background: rgba(255, 255, 255, 0.05);
-  color: rgba(240, 237, 232, 0.6);
+  color: rgba(61, 58, 54, 0.6);
   border: 1rpx solid rgba(255, 255, 255, 0.08);
 }
 
@@ -1381,7 +1391,7 @@ page {
 .screen-7-recap-num {
   font-size: 24rpx;
   font-weight: 700;
-  color: #F4D48C;
+  color: #C9A97C;
   display: block;
   margin-bottom: 4rpx;
 }
@@ -1402,7 +1412,7 @@ page {
   width: 60%;
   padding: 20rpx 0;
   background: transparent;
-  color: rgba(176, 169, 224, 0.4);
+  color: rgba(138, 132, 120, 0.4);
   font-size: 22rpx;
   border-radius: 50rpx;
   border: 1rpx solid rgba(255, 255, 255, 0.06);
@@ -1440,7 +1450,7 @@ page {
 .poster-modal {
   width: 100%;
   max-height: 85vh;
-  background: #1A1A3E;
+  background: #F7F0E3;
   border-radius: 32rpx 32rpx 0 0;
   padding: 32rpx 32rpx 60rpx;
   transform: translateY(100%);
@@ -1461,7 +1471,7 @@ page {
 .poster-title {
   font-size: 32rpx;
   font-weight: 700;
-  color: #F4D48C;
+  color: #C9A97C;
 }
 
 .poster-close {
@@ -1476,7 +1486,7 @@ page {
 
 .poster-close-icon {
   font-size: 24rpx;
-  color: rgba(176, 169, 224, 0.6);
+  color: rgba(138, 132, 120, 0.6);
 }
 
 .poster-canvas-wrap {
@@ -1498,7 +1508,7 @@ page {
   flex-direction: column;
   align-items: center;
   gap: 16rpx;
-  color: rgba(176, 169, 224, 0.5);
+  color: rgba(138, 132, 120, 0.5);
   font-size: 24rpx;
 }
 
@@ -1506,8 +1516,8 @@ page {
   width: 48rpx;
   height: 48rpx;
   border-radius: 50%;
-  border: 3rpx solid rgba(244, 212, 140, 0.1);
-  border-top-color: #F4D48C;
+  border: 3rpx solid rgba(201, 169, 124, 0.1);
+  border-top-color: #C9A97C;
   animation: wr-spin 1s linear infinite;
 }
 
@@ -1524,8 +1534,8 @@ page {
 .poster-save-btn {
   width: 100%;
   padding: 24rpx 0;
-  background: linear-gradient(135deg, #F4D48C, #D4B06A);
-  color: #1A1A3E;
+  background: linear-gradient(135deg, #C9A97C, #A98B5F);
+  color: #F7F0E3;
   font-size: 28rpx;
   font-weight: 700;
   border-radius: 50rpx;
@@ -1536,7 +1546,7 @@ page {
 .poster-save-btn[disabled] {
   opacity: 0.3;
   background: rgba(255, 255, 255, 0.05);
-  color: rgba(176, 169, 224, 0.3);
+  color: rgba(138, 132, 120, 0.3);
 }
 
 /* ================================================================
@@ -1544,4 +1554,601 @@ page {
    ================================================================ */
 @keyframes wr-spin {
   to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   E3 奶油疗愈 — 深色→奶油浅色化改造（追加覆盖，动画全部保留）
+   ============================================================ */
+page {
+  --e3-cream: #FAF6EF;
+  --e3-cream-hi: #FFFDF8;
+  --e3-paper: #F2ECDF;
+  --e3-pink: #E8C4BE;
+  --e3-pink-ink: #B08A82;
+  --e3-gold: #C9A97C;
+  --e3-gold-deep: #8A6B3D;
+  --e3-line: rgba(201, 169, 124, 0.28);
+  --e3-line-soft: rgba(201, 169, 124, 0.38);
+  --e3-lav: #D8D2E4;
+  --e3-ink: #3D3A36;
+  --e3-ink-soft: #8A8478;
+  --e3-ink-faint: #6E6A96;
+  --e3-shadow: 0 2rpx 8rpx rgba(61, 58, 54, 0.08);
+  --e3-hi: inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
+  --e3-serif: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif CJK SC', 'Noto Serif SC', serif;
+  --e3-gold-btn: linear-gradient(135deg, #C9A97C 0%, #B08F52 50%, #A98B5F 100%);
+}
+
+/* —— 全屏底：深色夜空 → 奶油浅渐变 —— */
+page {
+  background: #FAF6EF;
+}
+.container,
+.wrapped-stage {
+  background: linear-gradient(180deg, #FAF6EF 0%, #F7F0E3 45%, #F2ECDF 100%);
+}
+
+/* ================================================================
+   Loading / Generating
+   ================================================================ */
+.wrapped-loading-ring {
+  border: 3rpx solid rgba(201, 169, 124, 0.18);
+  border-top-color: #C9A97C;
+}
+.wrapped-loading-title {
+  color: var(--e3-ink);
+  font-family: var(--e3-serif);
+  letter-spacing: 4rpx;
+}
+.wrapped-gen-ring-1 {
+  border-top-color: rgba(201, 169, 124, 0.35);
+  border-bottom-color: rgba(216, 210, 228, 0.30);
+}
+.wrapped-gen-ring-2 {
+  border-left-color: rgba(201, 169, 124, 0.25);
+  border-right-color: rgba(216, 210, 228, 0.40);
+}
+.wrapped-gen-ring-3 {
+  border-top-color: rgba(201, 169, 124, 0.20);
+}
+.wrapped-gen-title {
+  color: var(--e3-ink);
+  font-family: var(--e3-serif);
+  letter-spacing: 4rpx;
+}
+.wrapped-gen-sub {
+  color: var(--e3-ink-soft);
+}
+.wrapped-gen-particle {
+  background: #C9A97C;
+}
+
+/* ================================================================
+   Error
+   ================================================================ */
+.wrapped-error-icon-wrap {
+  background: rgba(232, 196, 190, 0.35);
+  border: 1rpx solid rgba(201, 169, 124, 0.25);
+}
+.wrapped-error-title {
+  color: var(--e3-ink);
+  font-family: var(--e3-serif);
+  letter-spacing: 4rpx;
+}
+.wrapped-error-hint {
+  color: var(--e3-ink-soft);
+}
+
+/* ================================================================
+   Pre-intro
+   ================================================================ */
+.pre-cosmic-glow {
+  background: radial-gradient(circle, rgba(232, 196, 190, 0.28) 0%, rgba(232, 196, 190, 0) 70%);
+}
+.pre-star {
+  background: #C9A97C;
+  box-shadow: 0 0 8rpx rgba(201, 169, 124, 0.25);
+}
+.pre-icon-wrap {
+  background: rgba(232, 196, 190, 0.35);
+  border: 1rpx solid rgba(201, 169, 124, 0.25);
+  box-shadow: var(--e3-shadow);
+}
+.pre-title {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 8rpx;
+}
+.pre-desc {
+  color: var(--e3-ink-soft);
+  line-height: 2;
+}
+.pre-gen-btn {
+  background: var(--e3-gold-btn);
+  color: #FAF6EF;
+  box-shadow: 0 4rpx 28rpx rgba(201, 169, 124, 0.30), var(--e3-hi);
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  letter-spacing: 4rpx;
+}
+.pre-buy-btn {
+  color: var(--e3-ink-soft);
+  border: 1rpx solid var(--e3-line);
+  background: var(--e3-cream-hi);
+}
+.pre-note {
+  color: var(--e3-ink-faint);
+}
+
+/* ================================================================
+   Back button — 奶油胶囊 + 细金描边
+   ================================================================ */
+.wrapped-back {
+  background: rgba(255, 253, 248, 0.92);
+  border: 1rpx solid var(--e3-line-soft);
+  color: var(--e3-ink-soft);
+  box-shadow: var(--e3-shadow);
+}
+.wrapped-back:active {
+  background: rgba(232, 196, 190, 0.35);
+}
+
+/* ================================================================
+   Progress dots
+   ================================================================ */
+.wrapped-dot {
+  background: rgba(201, 169, 124, 0.18);
+}
+.wrapped-dot--active {
+  background: #C9A97C;
+}
+
+/* ================================================================
+   SCREEN 0 — Intro
+   ================================================================ */
+.cosmic-ring {
+  border-color: rgba(201, 169, 124, 0.20);
+}
+.cosmic-ring-2 {
+  border-color: rgba(216, 210, 228, 0.35);
+}
+.cosmic-ring-3 {
+  border-color: rgba(201, 169, 124, 0.28);
+}
+.screen-star {
+  background: #C9A97C;
+  box-shadow: 0 0 8rpx rgba(201, 169, 124, 0.3);
+}
+.screen-0-year {
+  color: rgba(169, 139, 95, 0.12);
+  font-family: var(--e3-serif);
+}
+.screen-0-divider {
+  background: linear-gradient(90deg, transparent, #C9A97C, transparent);
+}
+.screen-0-title {
+  color: rgba(61, 58, 54, 0.55);
+  font-family: var(--e3-serif);
+}
+.screen-0-subtitle {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 10rpx;
+  text-shadow: 0 0 40rpx rgba(201, 169, 124, 0.20);
+}
+.screen-0-sparkle {
+  color: #C9A97C;
+}
+.screen-0-hint {
+  color: var(--e3-ink-faint);
+  font-family: var(--e3-serif);
+  letter-spacing: 4rpx;
+}
+
+/* ================================================================
+   SCREEN 1 — Big number
+   ================================================================ */
+.screen-bg-glow {
+  background: radial-gradient(circle, rgba(232, 196, 190, 0.22) 0%, transparent 60%);
+}
+.screen-1-label {
+  color: var(--e3-ink-soft);
+  font-family: var(--e3-serif);
+  letter-spacing: 4rpx;
+}
+.screen-1-number {
+  font-family: var(--e3-serif);
+  color: var(--e3-gold-deep);
+  text-shadow: 0 0 80rpx rgba(201, 169, 124, 0.25);
+}
+.screen-1-unit {
+  color: var(--e3-gold-deep);
+  font-family: var(--e3-serif);
+}
+.screen-1-sub {
+  color: var(--e3-ink-soft);
+}
+.sparkle-particle {
+  background: #C9A97C;
+}
+
+/* ================================================================
+   SCREEN 2 — Top theme（图表色板 → E3 细金/奶油/灰紫）
+   ================================================================ */
+.screen-2-label {
+  color: var(--e3-ink-soft);
+  font-family: var(--e3-serif);
+  letter-spacing: 4rpx;
+}
+.screen-2-theme-text {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 6rpx;
+}
+.screen-2-mini-bar-label {
+  color: var(--e3-ink-soft);
+  font-family: var(--e3-serif);
+}
+.screen-2-mini-bar-track {
+  background: rgba(216, 210, 228, 0.35);
+}
+.screen-2-mini-bar-fill {
+  background: linear-gradient(90deg, rgba(201, 169, 124, 0.45), #C9A97C);
+}
+.screen-2-mini-bar-count {
+  color: var(--e3-gold-deep);
+}
+
+/* ================================================================
+   SCREEN 3 — Annual card（卡框深紫 → 奶油）
+   ================================================================ */
+.screen-bg-card-glow {
+  background: radial-gradient(circle, rgba(232, 196, 190, 0.20) 0%, transparent 60%);
+}
+.screen-3-label {
+  color: var(--e3-ink-soft);
+  font-family: var(--e3-serif);
+  letter-spacing: 4rpx;
+}
+.screen-3-card-glow-ring {
+  border-color: rgba(201, 169, 124, 0.28);
+}
+@keyframes card-glow-pulse-e3 {
+  0%, 100% { box-shadow: 0 0 20rpx rgba(201, 169, 124, 0.10); }
+  50% { box-shadow: 0 0 60rpx rgba(201, 169, 124, 0.22); }
+}
+.screen-3-card-glow-ring {
+  animation: card-glow-pulse-e3 3s ease-in-out infinite;
+}
+.screen-3-card-frame {
+  background: var(--e3-cream-hi);
+  border: 2rpx solid rgba(201, 169, 124, 0.35);
+  box-shadow: 0 8rpx 40rpx rgba(61, 58, 54, 0.16), var(--e3-hi);
+}
+.screen-3-card-placeholder-inner {
+  background: rgba(232, 196, 190, 0.18);
+  border: 1rpx dashed rgba(201, 169, 124, 0.35);
+}
+.screen-3-card-fallback {
+  background: linear-gradient(150deg, var(--e3-cream-hi) 0%, var(--e3-paper) 100%) !important;
+}
+.screen-3-card-placeholder-name {
+  color: var(--e3-ink);
+  font-family: var(--e3-serif);
+  background: rgba(255, 253, 248, 0.9);
+  border: 1rpx solid var(--e3-line);
+  text-shadow: none;
+}
+.screen-3-card-name {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 6rpx;
+}
+.screen-3-card-meaning {
+  color: var(--e3-ink-soft);
+  font-family: var(--e3-serif);
+  line-height: 2;
+}
+.screen-3-card-keyword {
+  color: var(--e3-gold-deep);
+  font-family: var(--e3-serif);
+  letter-spacing: 6rpx;
+}
+
+/* ================================================================
+   SCREEN 4 — Personality（数据卡 → 奶油底）
+   ================================================================ */
+.screen-4-label {
+  color: var(--e3-ink-soft);
+  font-family: var(--e3-serif);
+  letter-spacing: 4rpx;
+}
+.screen-4-archetype-badge {
+  background: linear-gradient(135deg, rgba(232, 196, 190, 0.30), rgba(216, 210, 228, 0.25));
+  border: 1rpx solid rgba(201, 169, 124, 0.30);
+}
+.screen-4-archetype-icon {
+  color: var(--e3-gold-deep);
+}
+.screen-4-archetype-name {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 6rpx;
+}
+.screen-4-desc {
+  color: var(--e3-ink-soft);
+  font-family: var(--e3-serif);
+  line-height: 2;
+}
+.screen-4-insight {
+  color: var(--color-lavender-deep);
+  font-family: var(--e3-serif);
+  border-left: 2rpx solid rgba(216, 210, 228, 0.6);
+}
+.screen-4-stat {
+  background: var(--e3-cream-hi);
+  border: 1rpx solid var(--e3-line);
+  border-radius: 20rpx;
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+}
+.screen-4-stat-num {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-gold-deep);
+  letter-spacing: 2rpx;
+}
+.screen-4-stat-label {
+  color: var(--e3-ink-soft);
+  font-family: var(--e3-serif);
+  letter-spacing: 2rpx;
+}
+.screen-4-stat-sub {
+  color: var(--e3-ink-faint);
+}
+
+/* ================================================================
+   SCREEN 5 — Monthly chart（柱状图 → E3 细金/灰紫/雾粉）
+   ================================================================ */
+.screen-5-label {
+  color: var(--e3-ink-soft);
+  font-family: var(--e3-serif);
+  letter-spacing: 4rpx;
+}
+.screen-5-sub {
+  color: var(--e3-ink-faint);
+  font-family: var(--e3-serif);
+  letter-spacing: 2rpx;
+}
+.screen-5-bar-fill {
+  background: linear-gradient(180deg, #C9A97C, rgba(201, 169, 124, 0.35));
+}
+.screen-5-bar-empty {
+  background: rgba(216, 210, 228, 0.30);
+}
+.screen-5-bar-count {
+  color: var(--e3-gold-deep);
+  font-family: var(--e3-serif);
+}
+.screen-5-bar-label {
+  color: var(--e3-ink-soft);
+  font-family: var(--e3-serif);
+}
+.screen-5-mood-title {
+  color: var(--e3-ink-soft);
+  font-family: var(--e3-serif);
+  letter-spacing: 3rpx;
+}
+.screen-5-mood-dot {
+  background: rgba(216, 210, 228, 0.45);
+}
+.mood-happy { background: #C9A97C; box-shadow: 0 0 10rpx rgba(201, 169, 124, 0.35); }
+.mood-calm { background: #D8D2E4; box-shadow: 0 0 10rpx rgba(216, 210, 228, 0.40); }
+.mood-gloomy { background: #E8C4BE; box-shadow: 0 0 10rpx rgba(232, 196, 190, 0.40); }
+.mood-down { background: #B08A82; box-shadow: 0 0 10rpx rgba(176, 138, 130, 0.35); }
+
+/* ================================================================
+   SCREEN 6 — Blessing
+   ================================================================ */
+.screen-blessing-bg {
+  background: radial-gradient(ellipse at 50% 30%, rgba(232, 196, 190, 0.22) 0%, transparent 60%);
+}
+.blessing-star {
+  background: #C9A97C;
+  box-shadow: 0 0 8rpx rgba(201, 169, 124, 0.3);
+}
+.screen-6-quote-mark {
+  color: rgba(201, 169, 124, 0.25);
+  font-family: var(--e3-serif);
+}
+.screen-6-blessing-line {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-gold-deep);
+  letter-spacing: 4rpx;
+  text-shadow: 0 0 40rpx rgba(201, 169, 124, 0.15);
+}
+.screen-6-signature {
+  color: var(--e3-ink-faint);
+  font-family: var(--e3-serif);
+  letter-spacing: 3rpx;
+}
+
+/* ================================================================
+   SCREEN 7 — Share
+   ================================================================ */
+.screen-7-title {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 6rpx;
+}
+.screen-7-desc {
+  color: var(--e3-ink-soft);
+  font-family: var(--e3-serif);
+  letter-spacing: 2rpx;
+}
+.screen-7-poster-preview {
+  background: var(--e3-cream-hi);
+  border: 1rpx solid var(--e3-line);
+  border-radius: 20rpx;
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+}
+.screen-7-poster-preview:active {
+  border-color: var(--e3-line-soft);
+}
+.screen-7-poster-text {
+  color: var(--e3-ink-soft);
+  font-family: var(--e3-serif);
+  letter-spacing: 2rpx;
+}
+.screen-7-btn--moments {
+  background: var(--e3-gold-btn);
+  color: #FAF6EF;
+  box-shadow: 0 4rpx 20rpx rgba(201, 169, 124, 0.25), var(--e3-hi);
+  font-family: var(--e3-serif);
+  letter-spacing: 2rpx;
+}
+.screen-7-btn--save {
+  background: var(--e3-cream-hi);
+  color: var(--e3-ink-soft);
+  border: 1rpx solid var(--e3-line);
+  box-shadow: var(--e3-shadow);
+  font-family: var(--e3-serif);
+  letter-spacing: 2rpx;
+}
+.screen-7-recap-num {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-gold-deep);
+  letter-spacing: 2rpx;
+}
+.screen-7-recap-label {
+  color: var(--e3-ink-soft);
+  font-family: var(--e3-serif);
+  letter-spacing: 2rpx;
+}
+.screen-7-recap-divider {
+  background: rgba(201, 169, 124, 0.25);
+}
+.screen-7-redo {
+  color: var(--e3-ink-soft);
+  border: 1rpx solid var(--e3-line);
+  background: var(--e3-cream-hi);
+  font-family: var(--e3-serif);
+  letter-spacing: 2rpx;
+}
+
+/* ================================================================
+   Poster modal — 深靛蓝 → 奶油
+   ================================================================ */
+.poster-modal {
+  background: linear-gradient(180deg, #FFFDF8 0%, #F7F0E3 100%);
+  border-top: 1rpx solid var(--e3-line-soft);
+}
+.poster-title {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 4rpx;
+}
+.poster-close {
+  background: rgba(232, 196, 190, 0.30);
+  border: 1rpx solid rgba(201, 169, 124, 0.25);
+}
+.poster-close-icon {
+  color: var(--e3-pink-ink);
+}
+.poster-loading {
+  color: var(--e3-ink-soft);
+  font-family: var(--e3-serif);
+}
+.poster-loading-spinner {
+  border: 3rpx solid rgba(201, 169, 124, 0.15);
+  border-top-color: #C9A97C;
+}
+.poster-save-btn {
+  background: var(--e3-gold-btn);
+  color: #FAF6EF;
+  box-shadow: 0 4rpx 20rpx rgba(201, 169, 124, 0.25), var(--e3-hi);
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  letter-spacing: 3rpx;
+}
+.poster-save-btn[disabled] {
+  opacity: 0.3;
+  background: rgba(201, 169, 124, 0.18);
+  color: var(--e3-ink-faint);
+}
+
+/* —— 减动效兼容：新增 E3 动画一并收敛 —— */
+@media (prefers-reduced-motion: reduce) {
+  .screen-3-card-glow-ring { animation: none !important; }
+}
+
+/* —— 补遗漏：retry 按钮 / poster 遮罩（E3 统一） —— */
+.wrapped-retry-btn {
+  background: var(--e3-gold-btn);
+  color: #FAF6EF;
+  box-shadow: 0 4rpx 20rpx rgba(201, 169, 124, 0.25), var(--e3-hi);
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  letter-spacing: 3rpx;
+}
+.poster-overlay {
+  background: rgba(61, 58, 54, 0.55);
+}
+
+/* ================================================================
+   P4-2：非会员价格锚点前置 — 会员权益说明卡
+   ================================================================ */
+.pre-benefit-card {
+  width: 80%;
+  background: linear-gradient(145deg, #FFFDF8 0%, #F2ECDF 100%);
+  border: 1rpx solid var(--e3-line);
+  border-radius: 24rpx;
+  padding: 28rpx 36rpx;
+  margin-bottom: 44rpx;
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+  position: relative;
+  z-index: 1;
+}
+
+.pre-benefit-title {
+  display: block;
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  font-size: 32rpx;
+  color: var(--e3-gold-deep);
+  letter-spacing: 4rpx;
+  margin-bottom: 8rpx;
+}
+
+.pre-benefit-sub {
+  display: block;
+  font-size: 24rpx;
+  color: var(--e3-ink-soft);
+  letter-spacing: 2rpx;
+  line-height: 1.6;
+}
+
+/* ================================================================
+   P4-2：8 屏进度计数 — 每屏底部「3/8」小进度字
+   ================================================================ */
+.wrapped-counter {
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom) + 20rpx);
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 22rpx;
+  letter-spacing: 4rpx;
+  color: var(--e3-ink-faint);
+  font-family: var(--e3-serif);
+  z-index: 100;
+  pointer-events: none;
 }

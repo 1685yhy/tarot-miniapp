@@ -68,6 +68,8 @@ Page({
     },
     soundEnabled: true,
     isMember: false,
+    // P0-1: 单独购买年度报告后为 true（非会员但已购买）
+    reportUnlocked: false,
   },
 
   // ── Screen labels (for progress dots) ──
@@ -83,11 +85,14 @@ Page({
   ],
 
   async onLoad() {
-    // Check login
+    // Check login — refresh from server so a just-purchased
+    // annual_report_paid entitlement shows up (P0-1)
     try {
-      const user = await checkLogin();
+      const user = await checkLogin({ refresh: true });
       this.setData({
         isMember: !!user.is_member,
+        // P0-1: 单独购买过年度报告（annual_report_paid）同样解锁生成
+        reportUnlocked: !!user.annual_report_paid,
         year: new Date().getFullYear(),
       });
     } catch (_) {
@@ -423,6 +428,11 @@ Page({
   },
 
   onBuySingle() {
+    wx.navigateTo({ url: '/pages/membership/membership?product=annual_report' });
+  },
+
+  /** 非会员主按钮：开通会员免费生成 → 跳转会员页（P4-2） */
+  onOpenMembership() {
     wx.navigateTo({ url: '/pages/membership/membership?product=annual_report' });
   },
 

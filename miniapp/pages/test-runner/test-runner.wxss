@@ -1,7 +1,7 @@
 /* pages/test-runner/test-runner.wxss */
 .page { background: #1a1a2e; min-height: 100vh; padding: 32rpx; color: #fff; }
 .header { text-align: center; margin: 60rpx 0 40rpx; }
-.title { font-size: 40rpx; color: #F4D48C; display: block; }
+.title { font-size: 40rpx; color: #C9A97C; display: block; }
 .sub { font-size: 26rpx; color: rgba(255,255,255,0.4); margin-top: 8rpx; display: block; }
 .controls { text-align: center; margin: 40rpx 0; }
 .btn-start, .btn-retry {
@@ -22,7 +22,7 @@
 .result-item.fail { border-left: 6rpx solid #F44336; }
 .result-header { display: flex; align-items: center; gap: 12rpx; }
 .result-status { font-size: 28rpx; }
-.result-name { font-size: 28rpx; color: #F4D48C; font-weight: 600; }
+.result-name { font-size: 28rpx; color: #C9A97C; font-weight: 600; }
 .result-path { font-size: 22rpx; color: rgba(255,255,255,0.3); margin-left: auto; }
 .result-errors { margin-top: 16rpx; padding-top: 16rpx; border-top: 1rpx solid rgba(255,255,255,0.1); }
 .error-item { font-size: 22rpx; color: #F44336; display: block; margin-bottom: 8rpx; word-break: break-all; }

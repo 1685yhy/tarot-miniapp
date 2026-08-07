@@ -3,6 +3,15 @@
    Daily Card — Card Flip, Teaching, Collection Tracker
    ============================================================ */
 
+/* === E3 补全: daily-card ===
+   设计级补全（与首页 E3 气质统一）：
+   1. 新增奶油 wash 氛围光斑（.wash-pink/.wash-gold，wxml 已加）
+   2. 卡名/章节标题 → 衬线宽字距
+   3. 修复深色残留：图片加载失败的深紫底 → 奶油底（card-img-fallback-text）
+   4. 翻牌提示文字 黑阴影 → 细金/白柔和阴影（浅底可读性修复）
+   5. 进度条底/教学卡/心情卡 → E3 灰紫与雾粉 */
+
+
 /* -----------------------------------------------------------
    1. COLLECTION PROGRESS HEADER
    ----------------------------------------------------------- */
@@ -35,8 +44,8 @@
 .collect-count-num {
   font-size: var(--font-size-subhead);
   font-weight: var(--font-weight-bold);
-  color: var(--color-gold);
-  text-shadow: 0 0 20rpx rgba(244, 212, 140, 0.15);
+  color: var(--color-gold-dark);
+  text-shadow: 0 0 20rpx rgba(201, 169, 124, 0.15);
 }
 
 .collect-count-total {
@@ -61,7 +70,7 @@
   background: linear-gradient(90deg, var(--color-gold-dark) 0%, var(--color-gold) 50%, var(--color-gold-light) 100%);
   border-radius: var(--radius-pill);
   transition: width var(--duration-slow) var(--ease-out);
-  box-shadow: 0 0 10rpx rgba(244, 212, 140, 0.15);
+  box-shadow: 0 0 10rpx rgba(201, 169, 124, 0.15);
   transform-origin: left;
 }
 
@@ -97,7 +106,7 @@
   margin: 0 auto;
   border-radius: var(--radius-md);
   /* Initial subtle border glow for card-back */
-  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.30), 0 0 30rpx rgba(244, 212, 140, 0.04);
+  box-shadow: 0 4rpx 24rpx rgba(61, 58, 54, 0.10), 0 0 30rpx rgba(201, 169, 124, 0.06);
 }
 
 /* --- Flip animation (scaleX squish) --- */
@@ -125,27 +134,27 @@
 
 /* --- Golden glow after flip complete --- */
 .card-glow-revealed {
-  border-color: rgba(244, 212, 140, 0.50) !important;
+  border-color: rgba(201, 169, 124, 0.50) !important;
   box-shadow:
-    0 4rpx 24rpx rgba(0, 0, 0, 0.30),
-    0 0 40rpx rgba(244, 212, 140, 0.30),
-    0 0 80rpx rgba(244, 212, 140, 0.10) !important;
+    0 4rpx 24rpx rgba(61, 58, 54, 0.10),
+    0 0 40rpx rgba(201, 169, 124, 0.30),
+    0 0 80rpx rgba(201, 169, 124, 0.10) !important;
   animation: golden-reveal-glow 0.3s ease-out;
 }
 
 @keyframes golden-reveal-glow {
   0% {
     box-shadow:
-      0 4rpx 24rpx rgba(0, 0, 0, 0.30),
-      0 0 10rpx rgba(244, 212, 140, 0.05);
-    border-color: rgba(244, 212, 140, 0.12);
+      0 4rpx 24rpx rgba(61, 58, 54, 0.10),
+      0 0 10rpx rgba(201, 169, 124, 0.05);
+    border-color: rgba(201, 169, 124, 0.12);
   }
   100% {
     box-shadow:
-      0 4rpx 24rpx rgba(0, 0, 0, 0.30),
-      0 0 40rpx rgba(244, 212, 140, 0.30),
-      0 0 80rpx rgba(244, 212, 140, 0.10);
-    border-color: rgba(244, 212, 140, 0.50);
+      0 4rpx 24rpx rgba(61, 58, 54, 0.10),
+      0 0 40rpx rgba(201, 169, 124, 0.30),
+      0 0 80rpx rgba(201, 169, 124, 0.10);
+    border-color: rgba(201, 169, 124, 0.50);
   }
 }
 
@@ -176,7 +185,7 @@
 /* --- Card back (golden decorative pattern) --- */
 
 .card-back {
-  background: linear-gradient(145deg, #2A2A5E 0%, #252550 40%, #2E2E62 100%);
+  background: linear-gradient(145deg, #FFFDF8 0%, #F7F0E3 40%, #F4EDE0 100%);
   border: 2rpx solid var(--color-gold-dark);
   z-index: 2;
   display: flex;
@@ -196,29 +205,29 @@
 .card-back-ring {
   position: absolute;
   border-radius: 50%;
-  border: 2rpx solid rgba(244, 212, 140, 0.20);
+  border: 2rpx solid rgba(201, 169, 124, 0.20);
   pointer-events: none;
 }
 
 .card-back-ring--outer {
   width: 280rpx;
   height: 280rpx;
-  box-shadow: 0 0 30rpx rgba(244, 212, 140, 0.06);
+  box-shadow: 0 0 30rpx rgba(201, 169, 124, 0.06);
 }
 
 .card-back-ring--inner {
   width: 180rpx;
   height: 180rpx;
-  background: radial-gradient(circle, rgba(244, 212, 140, 0.08) 0%, transparent 70%);
-  border-color: rgba(244, 212, 140, 0.15);
+  background: radial-gradient(circle, rgba(201, 169, 124, 0.08) 0%, transparent 70%);
+  border-color: rgba(201, 169, 124, 0.15);
 }
 
 .card-back-star {
   position: relative;
   font-size: 64rpx;
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   opacity: 0.35;
-  text-shadow: 0 0 30rpx rgba(244, 212, 140, 0.20);
+  text-shadow: 0 0 30rpx rgba(201, 169, 124, 0.20);
   z-index: 1;
 }
 
@@ -249,9 +258,9 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(244, 212, 140, 0.04) 40%,
-    rgba(244, 212, 140, 0.06) 50%,
-    rgba(244, 212, 140, 0.04) 60%,
+    rgba(201, 169, 124, 0.04) 40%,
+    rgba(201, 169, 124, 0.06) 50%,
+    rgba(201, 169, 124, 0.04) 60%,
     transparent 100%
   );
   animation: shimmer-sweep 1.8s ease-in-out infinite;
@@ -321,7 +330,7 @@
 .fallback-cardname {
   font-size: var(--font-size-body);
   font-weight: var(--font-weight-medium);
-  color: var(--color-lavender-light);
+  color: var(--color-lavender-dark);
   text-align: center;
   letter-spacing: 3rpx;
   padding: var(--spacing-xs) var(--spacing-sm);
@@ -368,14 +377,14 @@
 .card-tap-hint-text {
   font-size: var(--font-size-caption);
   font-weight: var(--font-weight-medium);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   text-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.50);
   letter-spacing: 2rpx;
 }
 
 .card-tap-hint-sub {
   font-size: var(--font-size-xs);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   opacity: 0.70;
   text-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.50);
   letter-spacing: 1rpx;
@@ -398,8 +407,8 @@
   display: block;
   font-size: var(--font-size-title);
   font-weight: var(--font-weight-bold);
-  color: var(--color-gold);
-  text-shadow: 0 0 30rpx rgba(244, 212, 140, 0.10);
+  color: var(--color-gold-dark);
+  text-shadow: 0 0 30rpx rgba(201, 169, 124, 0.10);
   letter-spacing: 4rpx;
   line-height: var(--line-height-tight);
 }
@@ -407,7 +416,7 @@
 .card-name-en {
   display: block;
   font-size: var(--font-size-caption);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   margin-top: var(--spacing-xxs);
   letter-spacing: 2rpx;
   opacity: 0.75;
@@ -428,8 +437,8 @@
 .teaching-snippet {
   margin: var(--spacing-sm) 0 var(--spacing-xs);
   padding: var(--spacing-md);
-  background: linear-gradient(135deg, rgba(244, 212, 140, 0.07) 0%, rgba(244, 212, 140, 0.02) 100%);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.15);
+  background: linear-gradient(135deg, rgba(201, 169, 124, 0.07) 0%, rgba(201, 169, 124, 0.02) 100%);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.15);
   border-radius: var(--radius-md);
   position: relative;
   overflow: hidden;
@@ -448,7 +457,7 @@
   left: 0;
   right: 0;
   height: 2rpx;
-  background: linear-gradient(90deg, transparent, rgba(244, 212, 140, 0.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(201, 169, 124, 0.3), transparent);
 }
 
 .ts-header {
@@ -460,13 +469,13 @@
 
 .ts-icon {
   font-size: 24rpx;
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
 }
 
 .ts-title {
   font-size: var(--font-size-caption);
   font-weight: var(--font-weight-semibold);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   letter-spacing: 2rpx;
 }
 
@@ -474,7 +483,7 @@
   display: block;
   font-size: var(--font-size-caption);
   font-weight: var(--font-weight-medium);
-  color: var(--color-lavender-light);
+  color: var(--color-lavender-dark);
   line-height: var(--line-height-tight);
   margin-bottom: 6rpx;
   padding-left: calc(24rpx + var(--spacing-xs));
@@ -534,7 +543,7 @@
 
 .teaching-section {
   background: var(--color-surface-gradient);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.12);
   border-radius: var(--radius-md);
   padding: var(--spacing-md);
   margin-bottom: var(--spacing-md);
@@ -572,7 +581,7 @@
 .teaching-section-title {
   font-size: var(--font-size-subhead);
   font-weight: var(--font-weight-semibold);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   letter-spacing: 1rpx;
 }
 
@@ -595,7 +604,7 @@
   background: var(--color-gold);
   border-radius: 50%;
   flex-shrink: 0;
-  box-shadow: 0 0 8rpx rgba(244, 212, 140, 0.25);
+  box-shadow: 0 0 8rpx rgba(201, 169, 124, 0.25);
 }
 
 .symbol-content {
@@ -607,7 +616,7 @@
   display: block;
   font-size: var(--font-size-body);
   font-weight: var(--font-weight-medium);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   line-height: var(--line-height-tight);
 }
 
@@ -627,19 +636,19 @@
   gap: var(--spacing-xs);
   margin-top: var(--spacing-sm);
   padding-top: var(--spacing-sm);
-  border-top: 1rpx solid rgba(244, 212, 140, 0.08);
+  border-top: 1rpx solid rgba(201, 169, 124, 0.08);
 }
 
 .keyword-tag {
   padding: 6rpx var(--spacing-sm);
-  background: rgba(184, 169, 224, 0.10);
-  border: 1rpx solid rgba(184, 169, 224, 0.18);
+  background: rgba(190, 182, 212, 0.10);
+  border: 1rpx solid rgba(190, 182, 212, 0.18);
   border-radius: var(--radius-pill);
 }
 
 .keyword-tag-text {
   font-size: var(--font-size-caption);
-  color: var(--color-lavender-light);
+  color: var(--color-lavender-dark);
   letter-spacing: 1rpx;
 }
 
@@ -657,12 +666,12 @@
 .life-connection-text {
   display: block;
   font-size: var(--font-size-body);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   line-height: var(--line-height-loose);
   font-weight: var(--font-weight-medium);
   padding: var(--spacing-xs) var(--spacing-sm);
-  background: rgba(244, 212, 140, 0.06);
-  border-left: 3rpx solid rgba(244, 212, 140, 0.25);
+  background: rgba(201, 169, 124, 0.06);
+  border-left: 3rpx solid rgba(201, 169, 124, 0.25);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
@@ -739,7 +748,7 @@
   width: 100%;
   height: 180rpx;
   background: var(--color-surface);
-  border: 1rpx solid rgba(244, 212, 140, 0.12);
+  border: 1rpx solid rgba(201, 169, 124, 0.12);
   border-radius: var(--radius-md);
   padding: var(--spacing-md);
   font-size: var(--font-size-body);
@@ -754,7 +763,7 @@
 }
 
 .diary-input:focus {
-  border-color: rgba(244, 212, 140, 0.35);
+  border-color: rgba(201, 169, 124, 0.35);
 }
 
 .diary-char-count {
@@ -844,8 +853,8 @@
   align-items: center;
   padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-xs);
   margin: var(--spacing-xs) 0 var(--spacing-sm);
-  background: rgba(244, 212, 140, 0.04);
-  border: 1rpx solid rgba(244, 212, 140, 0.08);
+  background: rgba(201, 169, 124, 0.04);
+  border: 1rpx solid rgba(201, 169, 124, 0.08);
   border-radius: var(--radius-md);
   position: relative;
   overflow: hidden;
@@ -859,7 +868,7 @@
   left: 10%;
   right: 10%;
   height: 2rpx;
-  background: linear-gradient(90deg, transparent, rgba(244, 212, 140, 0.25), transparent);
+  background: linear-gradient(90deg, transparent, rgba(201, 169, 124, 0.25), transparent);
 }
 
 .streak-progress-track {
@@ -876,13 +885,13 @@
   background: linear-gradient(90deg, var(--color-gold-dark) 0%, var(--color-gold) 50%, var(--color-gold-light) 100%);
   border-radius: var(--radius-pill);
   transition: width var(--duration-slow) var(--ease-out);
-  box-shadow: 0 0 8rpx rgba(244, 212, 140, 0.12);
+  box-shadow: 0 0 8rpx rgba(201, 169, 124, 0.12);
 }
 
 .streak-text {
   font-size: var(--font-size-caption);
   font-weight: var(--font-weight-medium);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   letter-spacing: 1rpx;
   line-height: var(--line-height-tight);
   text-align: center;
@@ -890,7 +899,7 @@
 
 .streak-hint {
   font-size: var(--font-size-xs);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   opacity: 0.65;
   letter-spacing: 1rpx;
   line-height: var(--line-height-tight);
@@ -908,15 +917,15 @@
   justify-content: center;
   margin-top: var(--spacing-sm, 24rpx);
   padding: 6rpx 20rpx;
-  background: rgba(244, 212, 140, 0.08);
-  border: 1rpx solid rgba(244, 212, 140, 0.20);
+  background: rgba(201, 169, 124, 0.08);
+  border: 1rpx solid rgba(201, 169, 124, 0.20);
   border-radius: var(--radius-pill, 999rpx);
 }
 
 .zodiac-badge-text {
   font-size: var(--font-size-xs, 20rpx);
   font-weight: var(--font-weight-medium, 500);
-  color: var(--color-gold, #F4D48C);
+  color: var(--color-gold-dark, #A98B5F);
   letter-spacing: 2rpx;
 }
 
@@ -947,4 +956,262 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ============================================================
+   E3 奶油疗愈 — 设计级补全（追加覆盖）
+   ============================================================ */
+page {
+  --e3-cream: #FAF6EF;
+  --e3-cream-hi: #FFFDF8;
+  --e3-paper: #F2ECDF;
+  --e3-pink: #E8C4BE;
+  --e3-pink-ink: #B08A82;
+  --e3-gold: #C9A97C;
+  --e3-gold-deep: #8A6B3D;
+  --e3-line: rgba(201, 169, 124, 0.28);
+  --e3-line-soft: rgba(201, 169, 124, 0.38);
+  --e3-ink: #3D3A36;
+  --e3-ink-soft: #8A8478;
+  --e3-ink-faint: #6E6A96;
+  --e3-shadow: 0 2rpx 8rpx rgba(61, 58, 54, 0.08);
+  --e3-hi: inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
+  --e3-serif: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif CJK SC', 'Noto Serif SC', serif;
+}
+
+/* —— 奶油底色氛围光斑（与首页 .wash 一致） —— */
+.wash {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+.wash-pink {
+  top: -140rpx;
+  right: -160rpx;
+  width: 560rpx;
+  height: 560rpx;
+  background: radial-gradient(circle, rgba(232, 196, 190, 0.40) 0%, rgba(232, 196, 190, 0) 66%);
+}
+.wash-gold {
+  left: -180rpx;
+  top: 900rpx;
+  width: 500rpx;
+  height: 500rpx;
+  background: radial-gradient(circle, rgba(201, 169, 124, 0.20) 0%, rgba(201, 169, 124, 0) 66%);
+}
+.page {
+  position: relative;
+  z-index: 1;
+}
+
+/* —— 收集进度 —— */
+.collect-label {
+  font-family: var(--e3-serif);
+  color: var(--e3-ink-soft);
+  letter-spacing: 3rpx;
+}
+.collect-count-num {
+  font-family: var(--e3-serif);
+  color: var(--e3-gold-deep);
+  text-shadow: none;
+}
+.collect-progress-bar {
+  background: rgba(201, 169, 124, 0.16);
+}
+
+/* —— 卡名 —— */
+.card-name-zh {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 6rpx;
+  text-shadow: none;
+}
+.card-name-en {
+  color: var(--e3-ink-faint);
+  font-family: var(--e3-serif);
+}
+
+/* —— 图片失败 fallback：深紫底 → 奶油底（浅底可读性修复） —— */
+.card-img-fallback-text {
+  background: linear-gradient(150deg, var(--e3-cream-hi) 0%, var(--e3-paper) 50%, #F4EDE0 100%);
+}
+.fallback-cardname {
+  color: var(--e3-ink);
+  font-family: var(--e3-serif);
+  background: rgba(255, 253, 248, 0.85);
+  border: 1rpx solid var(--e3-line);
+  border-radius: 12rpx;
+  text-shadow: none;
+}
+.fallback-hint {
+  color: var(--e3-ink-faint);
+}
+
+/* —— 翻牌提示：黑阴影 → 细金柔和阴影 —— */
+.card-tap-hint-text {
+  color: var(--e3-ink);
+  font-family: var(--e3-serif);
+  letter-spacing: 3rpx;
+  text-shadow: 0 1rpx 8rpx rgba(255, 253, 248, 0.9);
+}
+.card-tap-hint-sub {
+  color: var(--e3-ink-soft);
+  text-shadow: 0 1rpx 8rpx rgba(255, 253, 248, 0.9);
+}
+
+/* —— 牌面小知识 / 教学 —— */
+.ts-title {
+  font-family: var(--e3-serif);
+  color: var(--e3-gold-deep);
+  letter-spacing: 3rpx;
+}
+.ts-symbol {
+  color: var(--e3-ink-soft);
+  font-family: var(--e3-serif);
+}
+.teaching-section-title {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 2rpx;
+}
+.symbol-name {
+  color: var(--e3-ink);
+  font-family: var(--e3-serif);
+}
+.symbol-desc {
+  color: var(--e3-ink-soft);
+}
+.keyword-tag {
+  background: rgba(216, 210, 228, 0.25);
+  border: 1rpx solid rgba(216, 210, 228, 0.40);
+}
+.keyword-tag-text {
+  color: var(--color-lavender-deep);
+  font-family: var(--e3-serif);
+}
+.story-text {
+  color: var(--e3-ink-soft);
+  font-family: var(--e3-serif);
+  line-height: 1.9;
+}
+.life-connection-text {
+  color: var(--e3-gold-deep);
+  font-family: var(--e3-serif);
+}
+
+/* —— 心情日记 —— */
+.diary-entry-title {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 3rpx;
+}
+.diary-input {
+  background: var(--e3-cream-hi);
+  border: 1rpx solid var(--e3-line);
+  color: var(--e3-ink);
+  border-radius: 20rpx;
+  box-shadow: var(--e3-hi);
+}
+
+/* —— 错误状态 —— */
+.error-title {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 4rpx;
+}
+.error-desc {
+  color: var(--e3-ink-soft);
+}
+
+/* —— 连续签到条 —— */
+.streak-text {
+  color: var(--e3-gold-deep);
+  font-family: var(--e3-serif);
+  letter-spacing: 2rpx;
+}
+.streak-hint {
+  color: var(--e3-ink-faint);
+}
+.streak-progress-track {
+  background: rgba(201, 169, 124, 0.16);
+}
+
+/* —— 星座徽章 —— */
+.zodiac-badge {
+  background: rgba(232, 196, 190, 0.30);
+  border: 1rpx solid rgba(201, 169, 124, 0.25);
+}
+.zodiac-badge-text {
+  color: var(--e3-pink-ink);
+  font-family: var(--e3-serif);
+}
+
+/* ============================================================
+   P2-2 新增：详解折叠头 / 签到条 CTA / 页尾收集小字
+   ============================================================ */
+
+/* —— 「详解 ▾」折叠头 —— */
+.teaching-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--e3-cream-hi);
+  border: 1rpx solid var(--e3-line);
+  border-radius: 20rpx;
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+  margin-bottom: var(--spacing-md);
+  transition: background 0.15s ease;
+}
+.teaching-toggle:active {
+  background: var(--e3-paper);
+}
+.teaching-toggle-title {
+  font-family: var(--e3-serif);
+  font-size: var(--font-size-body);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 4rpx;
+}
+.teaching-toggle-arrow {
+  font-size: var(--font-size-caption);
+  color: var(--e3-gold-deep);
+  letter-spacing: 2rpx;
+}
+
+/* —— 折叠体：保留原 teaching-content 呼吸间距 —— */
+.teaching-toggle-body {
+  padding-top: var(--spacing-xs);
+}
+
+/* —— 签到条：可点击 CTA —— */
+.streak-banner {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.streak-cta {
+  display: block;
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--e3-pink-ink);
+  letter-spacing: 2rpx;
+  margin-top: 6rpx;
+  text-align: center;
+}
+
+/* —— 页尾收集进度：一行小字 —— */
+.collect-footer {
+  text-align: center;
+  padding: var(--spacing-md) 0 var(--spacing-sm);
+}
+.collect-footer-text {
+  font-size: var(--font-size-xs);
+  font-family: var(--e3-serif);
+  color: var(--e3-ink-faint);
+  letter-spacing: 3rpx;
 }

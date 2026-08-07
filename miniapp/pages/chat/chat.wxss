@@ -3,6 +3,14 @@
    Intimate late-night follow-up about a tarot reading
    ============================================================ */
 
+/* === E3 补全: chat ===
+   设计级补全（与首页 E3 气质统一）：
+   1. 新增奶油 wash 氛围光斑（.wash-pink/.wash-gold，wxml 已加）
+   2. 语境条/解读师条 → 奶油底 + 细金描边 + 衬线名
+   3. 对话气泡 → 奶油底 + 细金左线（修复用户气泡 0.18 黑重阴影）
+   4. 空状态标题衬线化，发送按钮 → E3 三段金渐变
+   5. 输入栏保持奶油毛玻璃，占位/提示文字换 E3 灰 */
+
 page {
   font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue',
                'PingFang SC', 'Microsoft YaHei', sans-serif;
@@ -85,7 +93,7 @@ page {
 .skeleton-bubble.right { width: 50%; margin-left: auto; }
 
 /* ================================================================
-   Context header — tiny lavender reminder
+   Context header — 一行小字（P3-4：与空状态合并，单行省略）
    ================================================================ */
 .ctx-header {
   padding: 0 4rpx 28rpx;
@@ -93,26 +101,24 @@ page {
 }
 
 .ctx-label {
+  display: inline-block;
+  max-width: 100%;
   font-size: var(--font-size-caption);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   letter-spacing: 2rpx;
   line-height: 1.5;
-  display: block;
-}
-
-.ctx-question {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-tertiary);
-  display: block;
-  margin-top: 4rpx;
-  line-height: 1.4;
   /* clamp to 1 line with ellipsis */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 70%;
-  margin-left: auto;
-  margin-right: auto;
+  vertical-align: top;
+}
+
+.ctx-question {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-tertiary);
+  display: inline;
+  letter-spacing: 1rpx;
 }
 
 /* ================================================================
@@ -124,21 +130,21 @@ page {
   gap: 16rpx;
   padding: 24rpx var(--spacing-lg);
   margin: 0 0 28rpx;
-  background: linear-gradient(135deg, rgba(244,212,140,0.12) 0%, rgba(244,212,140,0.04) 100%);
-  border: 1rpx solid rgba(244,212,140,0.2);
+  background: linear-gradient(135deg, rgba(201,169,124,0.12) 0%, rgba(201,169,124,0.04) 100%);
+  border: 1rpx solid rgba(201,169,124,0.2);
   border-radius: 20rpx;
 }
 
 .persona-bar-icon {
   font-size: 40rpx;
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   flex-shrink: 0;
   width: 56rpx;
   height: 56rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(244,212,140,0.1);
+  background: rgba(201,169,124,0.1);
   border-radius: 50%;
 }
 
@@ -151,14 +157,14 @@ page {
 
 .persona-bar-name {
   font-size: var(--font-size-body);
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
   font-weight: 700;
   letter-spacing: 2rpx;
 }
 
 .persona-bar-desc {
   font-size: var(--font-size-xs);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   letter-spacing: 1rpx;
 }
 
@@ -204,7 +210,7 @@ page {
 .empty-sub {
   display: block;
   font-size: var(--font-size-caption);
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
   line-height: 1.6;
   letter-spacing: 1rpx;
 }
@@ -294,15 +300,15 @@ page {
 }
 
 .role-user {
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
 }
 
 .role-ai {
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
 }
 
 .role-typing {
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
 }
 
 /* ================================================================
@@ -339,9 +345,9 @@ page {
 .bubble-ai {
   background: var(--color-card);
   border-radius: 4rpx 18rpx 18rpx 18rpx;
-  border: 1rpx solid rgba(244, 212, 140, 0.08);
+  border: 1rpx solid rgba(201, 169, 124, 0.08);
   border-left: 3rpx solid var(--color-gold);
-  box-shadow: 0 2rpx 20rpx rgba(244, 212, 140, 0.06);
+  box-shadow: 0 2rpx 20rpx rgba(201, 169, 124, 0.06);
 }
 
 .msg-text-ai {
@@ -359,7 +365,7 @@ page {
   gap: var(--spacing-xxs);
   background: var(--color-card);
   border-radius: 4rpx 18rpx 18rpx 18rpx;
-  border: 1rpx solid rgba(244, 212, 140, 0.08);
+  border: 1rpx solid rgba(201, 169, 124, 0.08);
   border-left: 3rpx solid var(--color-gold);
   padding: var(--spacing-md) var(--spacing-lg);
   min-height: 28rpx;
@@ -400,8 +406,8 @@ page {
   gap: var(--spacing-xs);
   padding: var(--spacing-sm) var(--spacing-lg);
   padding-bottom: calc(var(--safe-area-bottom) + 20rpx);
-  background: rgba(26, 26, 62, 0.97);
-  border-top: 1.5rpx solid rgba(244, 212, 140, 0.08);
+  background: rgba(255, 253, 248, 0.97);
+  border-top: 1.5rpx solid rgba(201, 169, 124, 0.22);
   z-index: 100;
   backdrop-filter: blur(12rpx);
   -webkit-backdrop-filter: blur(12rpx);
@@ -422,8 +428,8 @@ page {
 }
 
 .chat-input:focus {
-  border-color: var(--color-gold);
-  box-shadow: 0 0 0 4rpx rgba(244, 212, 140, 0.10);
+  border-color: var(--color-gold-dark);
+  box-shadow: 0 0 0 4rpx rgba(201, 169, 124, 0.10);
 }
 
 .input-placeholder {
@@ -439,14 +445,14 @@ page {
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, var(--color-gold-light), var(--color-gold));
-  box-shadow: 0 4rpx 16rpx rgba(244, 212, 140, 0.25);
+  box-shadow: 0 4rpx 16rpx rgba(201, 169, 124, 0.25);
   transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
   flex-shrink: 0;
 }
 
 .send-btn:active {
   transform: scale(0.94);
-  box-shadow: 0 2rpx 8rpx rgba(244, 212, 140, 0.15);
+  box-shadow: 0 2rpx 8rpx rgba(201, 169, 124, 0.15);
 }
 
 .send-btn--disabled {
@@ -478,7 +484,7 @@ page {
 }
 
 .quota-text--exhausted {
-  color: var(--color-lavender);
+  color: var(--color-lavender-dark);
 }
 
 /* ================================================================
@@ -546,7 +552,7 @@ page {
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--radius-pill);
   background: var(--color-surface);
-  border: 1.5rpx solid rgba(244, 212, 140, 0.12);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.12);
   color: var(--color-text-primary);
   font-size: var(--font-size-body);
   line-height: 1.5;
@@ -571,24 +577,36 @@ page {
 }
 
 /* ================================================================
-   Quota exhausted — simple text only
+   Quota exhausted — 主按钮（P3-4：输入条上方，强化升级入口）
    ================================================================ */
-.quota-exhausted {
-  text-align: center;
-  padding: var(--spacing-md) 0;
+.quota-cta-bar {
+  padding: var(--spacing-xs) 0 0;
 }
 
-.quota-exhausted-link {
-  font-size: var(--font-size-caption);
-  color: var(--color-gold);
-  letter-spacing: 1rpx;
-  text-decoration: underline;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+.quota-cta-btn {
+  width: 100%;
+  min-height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #C9A97C 0%, #B08F52 50%, #A98B5F 100%);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  color: var(--e3-cream, #FAF6EF);
+  letter-spacing: 3rpx;
+  box-shadow: 0 4rpx 20rpx rgba(201, 169, 124, 0.30), inset 0 1rpx 0 rgba(255, 255, 255, 0.3);
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
 }
 
-.quota-exhausted-link:active {
-  opacity: 0.6;
+.quota-cta-btn::after {
+  border: none;
+}
+
+.quota-cta-btn:active {
+  transform: scale(0.97);
+  box-shadow: 0 2rpx 12rpx rgba(201, 169, 124, 0.20);
 }
 
 /* ================================================================
@@ -598,4 +616,179 @@ page {
   .msg-enter { animation: none; }
   .msg-user .msg-bubble, .msg-ai .msg-bubble { animation: none; }
   .empty-glow { animation: none; }
+}
+
+/* ============================================================
+   E3 奶油疗愈 — 设计级补全（追加覆盖）
+   ============================================================ */
+page {
+  --e3-cream: #FAF6EF;
+  --e3-cream-hi: #FFFDF8;
+  --e3-paper: #F2ECDF;
+  --e3-pink: #E8C4BE;
+  --e3-pink-ink: #B08A82;
+  --e3-gold: #C9A97C;
+  --e3-gold-deep: #8A6B3D;
+  --e3-line: rgba(201, 169, 124, 0.28);
+  --e3-line-soft: rgba(201, 169, 124, 0.38);
+  --e3-ink: #3D3A36;
+  --e3-ink-soft: #8A8478;
+  --e3-ink-faint: #6E6A96;
+  --e3-shadow: 0 2rpx 8rpx rgba(61, 58, 54, 0.08);
+  --e3-hi: inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
+  --e3-serif: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif CJK SC', 'Noto Serif SC', serif;
+}
+
+/* —— 奶油底色氛围光斑（与首页 .wash 一致） —— */
+.wash {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+.wash-pink {
+  top: -140rpx;
+  right: -160rpx;
+  width: 560rpx;
+  height: 560rpx;
+  background: radial-gradient(circle, rgba(232, 196, 190, 0.35) 0%, rgba(232, 196, 190, 0) 66%);
+}
+.wash-gold {
+  left: -180rpx;
+  top: 1000rpx;
+  width: 500rpx;
+  height: 500rpx;
+  background: radial-gradient(circle, rgba(201, 169, 124, 0.16) 0%, rgba(201, 169, 124, 0) 66%);
+}
+
+/* —— 语境提示条 —— */
+.ctx-label {
+  font-family: var(--e3-serif);
+  color: var(--e3-ink-soft);
+  letter-spacing: 3rpx;
+}
+.ctx-question {
+  color: var(--e3-ink-faint);
+}
+
+/* —— 解读师身份条：奶油底 + 细金描边 —— */
+.persona-bar {
+  background: linear-gradient(135deg, rgba(232, 196, 190, 0.26) 0%, rgba(232, 196, 190, 0.08) 100%);
+  border: 1rpx solid var(--e3-line);
+  border-radius: 24rpx;
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+}
+.persona-bar-icon {
+  background: rgba(255, 253, 248, 0.9);
+  border: 1rpx solid var(--e3-line);
+  color: var(--e3-gold-deep);
+}
+.persona-bar-name {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-gold-deep);
+  letter-spacing: 4rpx;
+}
+.persona-bar-desc {
+  color: var(--e3-ink-soft);
+}
+
+/* —— 空状态 —— */
+.empty-heading {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  color: var(--e3-ink);
+  letter-spacing: 3rpx;
+}
+.empty-sub {
+  color: var(--e3-ink-soft);
+  letter-spacing: 2rpx;
+}
+.empty-glow {
+  background: radial-gradient(circle, rgba(201, 169, 124, 0.18) 0%, transparent 70%);
+}
+
+/* —— 对话气泡 —— */
+.bubble-user {
+  background: linear-gradient(145deg, var(--e3-cream-hi) 0%, var(--e3-paper) 100%);
+  border: 1rpx solid var(--e3-line);
+  border-left: 3rpx solid var(--e3-gold-deep);
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+}
+.bubble-ai {
+  background: var(--e3-cream-hi);
+  border: 1rpx solid var(--e3-line);
+  border-left: 3rpx solid var(--e3-gold);
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+}
+.msg-text-user,
+.msg-text-ai {
+  color: var(--e3-ink);
+  letter-spacing: 1rpx;
+}
+.role-label {
+  font-family: var(--e3-serif);
+  letter-spacing: 3rpx;
+}
+.role-user {
+  color: var(--e3-ink-faint);
+}
+.role-ai {
+  color: var(--e3-gold-deep);
+}
+
+/* —— 正在输入 —— */
+.typing-box {
+  background: var(--e3-cream-hi);
+  border: 1rpx solid var(--e3-line);
+  border-left: 3rpx solid var(--e3-gold);
+  box-shadow: var(--e3-shadow);
+}
+.typing-dot {
+  background: linear-gradient(135deg, var(--e3-gold), var(--e3-gold-deep));
+}
+
+/* —— 发送按钮：E3 三段金渐变 —— */
+.send-btn {
+  background: linear-gradient(135deg, #C9A97C 0%, #B08F52 50%, #A98B5F 100%);
+  box-shadow: 0 4rpx 16rpx rgba(201, 169, 124, 0.28), var(--e3-hi);
+}
+.send-text {
+  font-family: var(--e3-serif);
+  letter-spacing: 6rpx;
+}
+
+/* —— 输入区 —— */
+.chat-input {
+  border-color: var(--e3-line);
+  background: var(--e3-cream-hi);
+  color: var(--e3-ink);
+}
+.input-placeholder {
+  color: var(--e3-ink-faint);
+  font-style: italic;
+}
+
+/* —— 追问次数 —— */
+.quota-text {
+  color: var(--e3-ink-faint);
+}
+.quota-text--exhausted {
+  color: var(--e3-pink-ink);
+}
+.quota-exhausted-link {
+  font-family: var(--e3-serif);
+  color: var(--e3-gold-deep);
+}
+
+/* —— 错误状态 —— */
+.error-text {
+  font-family: var(--e3-serif);
+  color: var(--e3-ink);
+  letter-spacing: 3rpx;
+}
+.retry-btn {
+  background: linear-gradient(135deg, #C9A97C 0%, #B08F52 50%, #A98B5F 100%);
+  box-shadow: 0 4rpx 20rpx rgba(201, 169, 124, 0.25);
+  color: var(--e3-cream);
 }

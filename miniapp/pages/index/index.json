@@ -1,7 +1,9 @@
 {
   "navigationBarTitleText": "星光映照",
-  "navigationBarBackgroundColor": "#1A1A3E",
-  "navigationBarTextStyle": "white",
+  "navigationBarBackgroundColor": "#FAF6EF",
+  "navigationBarTextStyle": "black",
+  "backgroundColor": "#FAF6EF",
+  "backgroundTextStyle": "dark",
   "usingComponents": {
     "share-poster": "../../components/share-poster/share-poster"
   }

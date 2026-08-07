@@ -23,43 +23,17 @@
 <!-- ===== 主内容 ===== -->
 <view class="page community-page" wx:else>
 
-  <!-- ===== Header ===== -->
-  <view class="community-header">
-    <view class="community-header-back" bindtap="goBack" role="button" aria-label="返回上一页">
-      <text class="community-back-arrow">←</text>
-    </view>
-    <view class="community-header-title">
-      <text class="community-title-main">星光树洞</text>
-      <text class="community-title-sub">匿名倾诉 · 每日话题</text>
-    </view>
-  </view>
-
-  <!-- ===== 今日话题卡片 ===== -->
+  <!-- ===== 今日话题卡片（P3-3：压缩为一行：图标+标题+今日话题+条数） ===== -->
   <view class="topic-card-wrap anim-fade-in-up-1">
-    <view class="topic-card">
-      <!-- Decorative glow -->
-      <view class="topic-card-glow"></view>
-      <!-- Star particles -->
-      <view class="topic-sparkles">
-        <view class="ts s1"></view>
-        <view class="ts s2"></view>
-        <view class="ts s3"></view>
-        <view class="ts s4"></view>
-      </view>
-      <!-- Card icon -->
+    <view class="topic-card topic-card--row">
       <view class="topic-card-icon">
         <image class="topic-card-emoji" src="/images/icons/star_64.png" mode="aspectFit" aria-label="今日话题" />
       </view>
-      <!-- Title -->
       <text class="topic-card-title">{{topic.topic.title}}</text>
-      <!-- Reflective question -->
-      <text class="topic-card-desc">{{topic.topic.description}}</text>
-      <!-- Post count -->
-      <view class="topic-card-footer">
-        <view class="topic-post-count">
-          <text class="topic-post-count-icon">✦</text>
-          <text class="topic-post-count-text">{{topic.post_count}} 条倾诉</text>
-        </view>
+      <text class="topic-card-tag">今日话题</text>
+      <view class="topic-post-count">
+        <text class="topic-post-count-icon">✦</text>
+        <text class="topic-post-count-text">{{topic.post_count}} 条</text>
       </view>
     </view>
   </view>
@@ -87,7 +61,10 @@
           wx:key="id"
         >
           <text class="post-content">{{post.content}}</text>
-          <text class="post-time">{{_formatTime(post.created_at)}}</text>
+          <view class="post-footer">
+            <text class="post-time">{{_formatTime(post.created_at)}}</text>
+            <text class="post-replies" wx:if="{{post.reply_count}}">{{post.reply_count}} 条回应</text>
+          </view>
         </view>
       </view>
 
@@ -103,8 +80,8 @@
     <!-- Empty state -->
     <view wx:elif="{{!pageLoading}}" class="empty-posts" bindtap="openComposer" role="button" aria-label="写第一篇倾诉">
       <image class="empty-posts-icon" src="/images/icons/heart_64.png" mode="aspectFit" aria-label="树洞" />
-      <text class="empty-posts-title">还没有人倾诉</text>
-      <text class="empty-posts-sub">成为第一个匿名发声的人</text>
+      <text class="empty-posts-title">树洞还很安静</text>
+      <text class="empty-posts-sub">写下第一句心里话，星光为你倾听 ✦</text>
     </view>
   </view>
 

@@ -69,11 +69,26 @@
       <text class="pre-title">{{year}} · 星光年度报告</text>
       <text class="pre-desc">像翻开一本星相书，回顾你这一年的占卜旅程<br/>最常抽到的牌 · 年度主题 · 塔罗人格</text>
 
-      <button class="pre-gen-btn" bindtap="onGenerate">
-        <text>生成我的年度报告</text>
-      </button>
-      <button class="pre-buy-btn" bindtap="onBuySingle">单独购买 ¥29.90</button>
-      <text class="pre-note">会员专属 · 也可单独购买</text>
+      <!-- P4-2 按钮语义修正：
+           会员态 → 主按钮直接免费生成（保留原逻辑）；
+           非会员态 → 会员权益卡价格锚点前置 + 主按钮引导开通会员 + 次按钮单买 -->
+      <block wx:if="{{isMember || reportUnlocked}}">
+        <button class="pre-gen-btn" bindtap="onGenerate">
+          <text>生成我的年度报告</text>
+        </button>
+        <text class="pre-note" wx:if="{{reportUnlocked}}">单次购买已生效 · 生成你的星光报告</text>
+        <text class="pre-note" wx:else>会员免费生成 · 已包含在会员权益中</text>
+      </block>
+      <block wx:else>
+        <view class="pre-benefit-card">
+          <text class="pre-benefit-title">会员免费生成</text>
+          <text class="pre-benefit-sub">非会员单买 ¥29.90 · 开通会员即免费</text>
+        </view>
+        <button class="pre-gen-btn" bindtap="onOpenMembership">
+          <text>开通会员免费生成</text>
+        </button>
+        <button class="pre-buy-btn" bindtap="onBuySingle">¥29.90 单独购买</button>
+      </block>
     </view>
   </block>
 
@@ -89,6 +104,9 @@
           class="wrapped-dot {{index <= currentScreen ? 'wrapped-dot--active' : ''}}"
           style="width: {{100 / totalScreens - 2}}%"></view>
       </view>
+
+      <!-- 屏进度：每屏底部「3/8」小进度字（P4-2） -->
+      <view class="wrapped-counter">{{currentScreen + 1}} / {{totalScreens}}</view>
 
       <!-- ============================================================
         SCREEN 0: INTRO — Cosmic splash
@@ -315,7 +333,7 @@
           <!-- Share buttons -->
           <view class="screen-7-buttons">
             <button class="screen-7-btn screen-7-btn--moments" open-type="share">
-              <image class="screen-7-btn-icon" src="/images/icons/star_64.png" mode="aspectFit" lazy-load aria-label="分享给好友" />
+              <image class="screen-7-btn-icon" src="/images/icons/star_cream_64.png" mode="aspectFit" lazy-load aria-label="分享给好友" />
               <text>分享给好友</text>
             </button>
             <button class="screen-7-btn screen-7-btn--save" bindtap="onShareTimeline">

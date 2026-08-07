@@ -1,0 +1,51 @@
+<!-- 用户协议 / 隐私政策（E3 奶油疗愈风，与 about 页同源） -->
+<view class="legal-page">
+  <view class="cosmic-bg"></view>
+
+  <view class="legal-content" wx:if="{{doc}}">
+    <!-- 页头 -->
+    <view class="legal-header">
+      <text class="legal-title">{{doc.title}}</text>
+      <text class="legal-meta">{{doc.meta}}</text>
+    </view>
+
+    <!-- 导语 -->
+    <text class="legal-intro" wx:if="{{doc.intro}}">{{doc.intro}}</text>
+
+    <!-- 章节卡片 -->
+    <view class="legal-section" wx:for="{{doc.chapters}}" wx:key="title">
+      <text class="legal-section-title">{{item.title}}</text>
+      <view class="legal-section-body">
+        <block wx:for="{{item.body}}" wx:key="index">
+          <!-- 段落 -->
+          <text wx:if="{{item.type === 'p'}}" class="legal-p">{{item.text}}</text>
+          <!-- 强调行 -->
+          <text wx:elif="{{item.type === 'strong'}}" class="legal-strong">{{item.text}}</text>
+          <!-- 无序列表 -->
+          <view wx:elif="{{item.type === 'ul'}}" class="legal-ul">
+            <text class="legal-ul-mark">✦</text>
+            <text class="legal-ul-text">{{item.text}}</text>
+          </view>
+          <!-- 有序列表（编号已含在文案中） -->
+          <text wx:elif="{{item.type === 'ol'}}" class="legal-ol">{{item.text}}</text>
+          <!-- 信息收集表（卡片行） -->
+          <view wx:elif="{{item.type === 'table'}}" class="legal-table">
+            <view class="legal-table-row" wx:for="{{item.rows}}" wx:for-item="row" wx:key="name">
+              <view class="legal-table-head">
+                <text class="legal-table-name">{{row.name}}</text>
+                <text class="legal-table-required {{row.required === '必要' ? 'legal-table-required--yes' : ''}}">{{row.required}}</text>
+              </view>
+              <text class="legal-table-usage">{{row.usage}}</text>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <!-- 页脚：版本号 + 更新日期 -->
+    <view class="legal-footer">
+      <view class="legal-footer-line"></view>
+      <text class="legal-footer-text">{{doc.footer}}</text>
+    </view>
+  </view>
+</view>

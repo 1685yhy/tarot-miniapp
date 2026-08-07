@@ -13,6 +13,11 @@ Page({
     heroImgError: false,
     teaching: null,
     activeTab: 'upright', // upright / reversed / teaching
+    activeSection: '',    // love / career / finance / health —— 折叠分节（'' = 全部收起）
+    prevCard: null,       // { id, name_zh } 上一张
+    nextCard: null,       // { id, name_zh } 下一张
+    isFirst: false,
+    isLast: false,
     pageLoading: true,
     pageError: null,
     teachingLoading: false,
@@ -57,7 +62,14 @@ Page({
 
   async loadCard(id) {
     if (this._destroyed) return;
-    this.setData({ pageLoading: true, pageError: null });
+    this.setData({
+      pageLoading: true,
+      pageError: null,
+      heroImgLoaded: false,
+      heroImgError: false,
+      webpFallbackTried: false,
+      teaching: null,
+    });
     try {
       const card = await request(`/cards/${id}`);
       // Guard: API may return null/array in unexpected formats
@@ -65,16 +77,20 @@ Page({
         throw new Error('卡牌数据异常');
       }
       card.imagePath = computeImagePath(card, IMAGE_BASE);
-      // Preprocess keywords into array (WXML does not support .split()/.trim())
+      // Preprocess keywords into arrays (WXML does not support .split()/.trim())
       // Guard against null/undefined keywords
-      const keywordsRaw = card.keywords_upright;
-      if (typeof keywordsRaw === 'string' && keywordsRaw.trim()) {
-        card.keywordsList = keywordsRaw.split(',').map(s => s.trim()).filter(Boolean);
-      } else {
-        card.keywordsList = [];
-      }
+      const splitKeywords = (raw) => {
+        if (typeof raw === 'string' && raw.trim()) {
+          return raw.split(',').map(s => s.trim()).filter(Boolean);
+        }
+        return [];
+      };
+      card.keywordsList = splitKeywords(card.keywords_upright);
+      card.keywordsListRev = splitKeywords(card.keywords_reversed);
       if (this._destroyed) return;
       this.setData({ card, pageLoading: false });
+      // 更新上一张/下一张导航信息（列表加载失败时降级为 id±1）
+      this._updateCardNav();
       // Fetch teaching data after card loads
       this.loadTeachingData(id);
     } catch (err) {
@@ -99,7 +115,72 @@ Page({
   },
 
   onTabTap(e) {
-    this.setData({ activeTab: e.currentTarget.dataset.tab });
+    this.setData({ activeTab: e.currentTarget.dataset.tab, activeSection: '' });
+  },
+
+  /** 页内折叠分节：感情/事业/财运/健康 展开收起（再次点击收起） */
+  onSectionTap(e) {
+    const section = e.currentTarget.dataset.section;
+    this.setData({
+      activeSection: this.data.activeSection === section ? '' : section,
+    });
+  },
+
+  /** 拉取全量卡牌列表一次，用于上一张/下一张的名称与顺序 */
+  async _ensureCardOrder() {
+    if (this._cardOrder) return this._cardOrder;
+    try {
+      const data = await request('/cards');
+      const list = Array.isArray(data) ? data : (data.cards || []);
+      this._cardOrder = list
+        .map(c => ({ id: c.id, name_zh: c.name_zh }))
+        .filter(c => c.id != null);
+    } catch (err) {
+      console.warn('[card-detail] 卡牌列表加载失败，降级为 id±1:', err.message);
+      this._cardOrder = [];
+    }
+    return this._cardOrder;
+  },
+
+  async _updateCardNav() {
+    const card = this.data.card;
+    if (!card) return;
+    const order = await this._ensureCardOrder();
+    const idx = order.findIndex(c => c.id === card.id);
+    if (idx === -1) {
+      // 兜底：服务端 id 连续（1-78），按 id±1 导航
+      this.setData({
+        prevCard: card.id > 1 ? { id: card.id - 1, name_zh: '' } : null,
+        nextCard: card.id < 78 ? { id: card.id + 1, name_zh: '' } : null,
+        isFirst: card.id <= 1,
+        isLast: card.id >= 78,
+      });
+      return;
+    }
+    this.setData({
+      prevCard: idx > 0 ? order[idx - 1] : null,
+      nextCard: idx < order.length - 1 ? order[idx + 1] : null,
+      isFirst: idx <= 0,
+      isLast: idx >= order.length - 1,
+    });
+  },
+
+  onPrevCard() {
+    const target = this.data.prevCard;
+    if (!target || this.data.pageLoading) return;
+    this._switchCard(target);
+  },
+
+  onNextCard() {
+    const target = this.data.nextCard;
+    if (!target || this.data.pageLoading) return;
+    this._switchCard(target);
+  },
+
+  _switchCard(target) {
+    wx.pageScrollTo({ scrollTop: 0, duration: 200 });
+    this.setData({ activeTab: 'upright', activeSection: '' });
+    this.loadCard(target.id);
   },
 
   onRetry() {
