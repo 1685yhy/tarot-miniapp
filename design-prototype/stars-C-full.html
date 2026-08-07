@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星光映照 · 纸本档案 · 五屏全流程</title>
+<meta name="description" content="星光映照塔罗小程序 — 纸本档案方向五屏全流程：今日 / 洗牌 / 读牌 / 解读 / 星光树洞">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,500&family=DM+Serif+Display:ital@0;1&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Noto+Serif+SC:wght@400;500;600;900&family=Noto+Sans+SC:wght@400;500;700&family=Cinzel:wght@400;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   星光映照 · 纸本档案 Paper Folio · 五屏全流程
+   壹·今日 / 贰·洗牌 / 叁·读牌 / 肆·解读 / 伍·星光树洞
+   ═══════════════════════════════════════════════════════════════ */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:#17141F;font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;-webkit-font-smoothing:antialiased;color:#EDE7E0}
+#root{min-height:100%}
+::selection{background:rgba(212,175,100,.3)}
+*{scrollbar-width:none}
+*::-webkit-scrollbar{display:none}
+
+/* ── 画布 ── */
+.stage{max-width:1960px;margin:0 auto;padding:28px 20px 60px;text-align:center}
+.stage h1{font-family:'Noto Serif SC',serif;font-weight:600;font-size:24px;letter-spacing:8px;color:#EDE7E0;margin-bottom:8px}
+.stage .sub{font-size:12px;color:rgba(237,231,224,.45);letter-spacing:3px;margin-bottom:34px}
+.flow{display:flex;gap:34px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.zone{display:flex;flex-direction:column;align-items:center}
+.zone-name{font-family:'Noto Serif SC',serif;font-size:14px;letter-spacing:4px;color:rgba(237,231,224,.8);margin:14px 0 4px}
+.zone-desc{font-family:'EB Garamond',serif;font-style:italic;font-size:12px;color:rgba(237,231,224,.4);letter-spacing:1px;margin-bottom:14px}
+@media(max-width:1100px){.flow{gap:26px}}
+.zoom{transition:transform .25s cubic-bezier(.2,.7,.3,1)}
+.zoom:hover{transform:scale(1.045);position:relative;z-index:5}
+
+/* ═══════════════════ C · 纸本档案 Paper Folio（与方向稿一致）═══════════════════ */
+.sys-c{
+  --paper:#ECE3D0; --vellum:#F0E6D2; --ink:#2A221B; --ink-mark:#1F1A16;
+  --rust:#A64B2A; --ochre:#C08A3E; --rose:#C98A8A; --sage:#7A8A6A;
+  --gold:#D9B26B; --gold-bright:#E2C078;
+  --serif-b:'EB Garamond','Noto Serif SC',serif;
+  --serif-d:'Cormorant Garamond','Noto Serif SC',serif;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Noto Sans SC','PingFang SC',system-ui,sans-serif;
+}
+.sys-c .screen{
+  background:var(--paper);color:var(--ink);position:relative;overflow:hidden;
+}
+.sys-c .screen::before{
+  content:'';position:absolute;inset:0;pointer-events:none;opacity:.4;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+}
+.sys-c .running{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:2px;color:rgba(42,34,27,.55);
+  display:flex;justify-content:space-between;padding:64px 20px 0;
+}
+.sys-c .brand{text-align:center;padding-top:26px;position:relative;z-index:2}
+.sys-c .brand .logo{font-family:var(--serif-d);font-style:italic;font-weight:500;font-size:30px;letter-spacing:6px;color:var(--ink-mark)}
+.sys-c .brand .tag{font-size:11px;color:rgba(42,34,27,.6);letter-spacing:3px;margin-top:9px}
+.sys-c .brand .greet{font-family:var(--serif-b);font-style:italic;font-size:14px;color:var(--rust);margin-top:13px;letter-spacing:1px}
+.sys-c .badge{
+  display:inline-block;margin-top:14px;transform:rotate(-2deg);
+  border:1.5px solid var(--ink);border-radius:2px;padding:5px 13px;
+  font-family:var(--sans);font-size:10px;letter-spacing:3px;color:var(--ink);
+  background:var(--vellum);box-shadow:3px 3px 0 rgba(42,34,27,.14);
+}
+.sys-c .cardwrap{position:relative;z-index:2;margin-top:26px;display:flex;justify-content:center}
+.sys-c .card{
+  width:172px;height:258px;border-radius:2px;cursor:pointer;position:relative;
+  background:var(--vellum);
+  border:1.5px solid var(--ink-mark);
+  box-shadow:6px 6px 0 rgba(42,34,27,.18);transition:transform .18s ease;
+}
+.sys-c .card:hover{transform:translateY(-4px)}
+.sys-c .card .plate-label{
+  position:absolute;top:-11px;left:50%;transform:translateX(-50%);
+  background:var(--paper);border:1px solid var(--ink);border-radius:1px;
+  font-family:var(--mono);font-size:8.5px;letter-spacing:2px;color:var(--rust);
+  padding:2px 9px;white-space:nowrap;
+}
+.sys-c .card .inner{position:absolute;inset:12px;border:1px solid rgba(42,34,27,.5);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:15px 8px}
+.sys-c .card .engrave{margin-top:14px;width:74px;height:74px}
+.sys-c .card .title{font-family:var(--serif-d);font-style:italic;font-size:16px;color:var(--ink-mark)}
+.sys-c .card .subtitle{font-family:var(--mono);font-size:8.5px;letter-spacing:2px;color:rgba(42,34,27,.6);margin-top:4px;text-transform:uppercase}
+.sys-c .card .hint{font-family:var(--serif-b);font-size:12px;font-style:italic;color:var(--rust);margin-bottom:5px}
+.sys-c .treepanel{
+  position:relative;z-index:2;margin:24px 18px 0;
+  border-top:1px solid rgba(42,34,27,.4);border-bottom:1px solid rgba(42,34,27,.4);
+  padding:12px 4px;
+}
+.sys-c .treepanel .t-label{font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--sage);text-transform:uppercase}
+.sys-c .treepanel .t-text{font-family:var(--serif-b);font-size:15.5px;line-height:1.55;margin-top:5px;color:var(--ink-mark)}
+.sys-c .treepanel .t-text em{font-style:italic;color:var(--rust)}
+.sys-c .treepanel .t-go{display:inline-block;margin-top:9px;transform:rotate(1.5deg);border:1px solid var(--ink);border-radius:1px;font-family:var(--sans);font-size:9.5px;letter-spacing:2px;padding:4px 11px;color:var(--ink);background:var(--vellum)}
+.sys-c .cta{
+  position:relative;z-index:2;margin:20px 18px 0;height:46px;border-radius:1px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  background:var(--ink-mark);color:var(--vellum);
+  font-family:var(--sans);font-size:13px;letter-spacing:4px;
+  box-shadow:5px 5px 0 rgba(42,34,27,.16);
+}
+.sys-c .cta em{font-family:var(--serif-d);font-style:italic;font-size:15px;letter-spacing:2px;margin-right:6px}
+.sys-c .tabbar{
+  position:relative;z-index:2;margin:22px 14px 0;height:54px;
+  display:flex;align-items:center;justify-content:space-around;
+  background:rgba(240,230,210,.8);border:1px solid rgba(42,34,27,.35);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6);
+}
+.sys-c .tabbar .tab{font-family:var(--mono);font-size:9.5px;letter-spacing:2px;color:rgba(42,34,27,.55);display:flex;flex-direction:column;align-items:center;gap:4px;min-width:64px;cursor:pointer}
+.sys-c .tabbar .tab:active{opacity:.55}
+.sys-c .tabbar .tab.on{color:var(--rust)}
+.sys-c .tabbar .tab.on::after{content:'';width:22px;height:1.5px;background:var(--rust);margin-top:2px}
+.sys-c .tabbar .tab .ic{width:18px;height:18px}
+
+/* 微信胶囊 (所有系统共用) */
+.wxcapsule{
+  position:absolute;top:13px;right:8px;z-index:30;display:flex;gap:4px;pointer-events:none;
+}
+.wxcapsule .cap{
+  width:40px;height:32px;border-radius:7px;
+  background:rgba(255,255,255,.22);border:0.5px solid rgba(255,255,255,.35);
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(10px);
+}
+.wxcapsule .cap svg{fill:rgba(0,0,0,.65)}
+.wxcapsule .cap:first-child{flex-direction:column;gap:3px}
+.wxcapsule .cap:first-child span{display:block;width:3px;height:3px;border-radius:50%;background:rgba(0,0,0,.6)}
+.wxcapsule .cap .circle{width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(0,0,0,.6)}
+
+/* ═══════════════════════════════════════════════════════════════
+   贰 · 洗牌（选牌）
+   ═══════════════════════════════════════════════════════════════ */
+.sys-c .shuf-head{position:relative;z-index:2;text-align:center;margin-top:12px}
+.sys-c .shuf-title{font-family:var(--serif-d);font-style:italic;font-weight:500;font-size:25px;letter-spacing:5px;color:var(--ink-mark)}
+.sys-c .shuf-sub{font-family:var(--sans);font-size:12px;letter-spacing:3px;color:rgba(42,34,27,.6);margin-top:7px}
+.sys-c .shuf-grid{position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,72px);grid-template-rows:repeat(3,98px);gap:9px 10px;justify-content:center;margin-top:16px}
+.sys-c .shuf-card{
+  position:relative;background:var(--vellum);border:1.5px solid var(--ink-mark);border-radius:2px;
+  box-shadow:4px 4px 0 rgba(42,34,27,.15);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .16s ease,box-shadow .16s ease,filter .16s ease;
+}
+.sys-c .shuf-card:active{filter:brightness(.9)}
+.sys-c .shuf-card::after{content:'';position:absolute;inset:6px;border:1px solid rgba(42,34,27,.35);pointer-events:none}
+.sys-c .shuf-card .cb-pattern{width:36px;height:36px;position:relative;z-index:1}
+.sys-c .shuf-card .cb-mark{position:absolute;bottom:9px;right:9px;width:11px;height:11px;z-index:1}
+.sys-c .shuf-card.sel{border-color:var(--rust);box-shadow:4px 4px 0 rgba(166,75,42,.38)}
+.sys-c .shuf-no{
+  position:absolute;top:-9px;right:-8px;width:19px;height:19px;border-radius:50%;z-index:2;
+  background:var(--ink-mark);color:var(--vellum);
+  font-family:'Noto Serif SC',serif;font-size:10px;line-height:19px;text-align:center;
+  box-shadow:0 0 0 1.5px var(--paper);
+}
+.sys-c .shuf-hint{position:relative;z-index:2;text-align:center;font-family:var(--serif-b);font-style:italic;font-size:13px;letter-spacing:1px;color:var(--rust);margin-top:12px}
+.sys-c .shuf-cta{
+  position:relative;z-index:2;margin:12px 18px 0;height:46px;border-radius:1px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  background:var(--ink-mark);color:var(--vellum);
+  font-family:var(--sans);font-size:13px;letter-spacing:4px;
+  box-shadow:5px 5px 0 rgba(42,34,27,.16);transition:transform .12s ease,box-shadow .12s ease;
+}
+.sys-c .shuf-cta em{font-family:var(--serif-d);font-style:italic;font-size:15px;letter-spacing:2px;margin-right:6px}
+.sys-c .shuf-cta:active{transform:translate(2px,2px);box-shadow:3px 3px 0 rgba(42,34,27,.16)}
+.sys-c .shuf-cta.ready{color:var(--gold-bright);animation:ctaready 1.7s ease-in-out infinite}
+@keyframes ctaready{0%,100%{box-shadow:5px 5px 0 rgba(42,34,27,.16)}50%{box-shadow:5px 5px 0 rgba(166,75,42,.5)}}
+
+/* ═══════════════════════════════════════════════════════════════
+   叁 · 读牌中（loading）· 烛光书房
+   ═══════════════════════════════════════════════════════════════ */
+.sys-c .screen.candle::after{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:radial-gradient(135% 95% at 50% 18%,transparent 50%,rgba(140,90,35,.13) 78%,rgba(120,70,25,.22) 100%);
+}
+.sys-c .load-head{position:relative;z-index:2;text-align:center;margin-top:12px}
+.sys-c .load-title{font-family:var(--serif-d);font-style:italic;font-size:23px;letter-spacing:3px;color:var(--ink-mark)}
+.sys-c .load-stage{position:relative;z-index:2;display:flex;justify-content:center;margin-top:20px}
+.sys-c .load-glow{
+  position:absolute;left:50%;top:50%;width:250px;height:250px;transform:translate(-50%,-50%);
+  border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(192,138,62,.3) 0%,rgba(192,138,62,.09) 45%,transparent 68%);
+}
+.sys-c .flipcard{width:166px;height:250px;perspective:1000px;position:relative}
+.sys-c .flip-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;animation:pageflip 4.2s cubic-bezier(.5,.1,.4,.9) infinite}
+@keyframes pageflip{
+  0%{transform:rotateY(0)}
+  46%{transform:rotateY(180deg)}
+  56%{transform:rotateY(180deg)}
+  100%{transform:rotateY(360deg)}
+}
+.sys-c .flip-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:2px}
+.sys-c .flip-back{background:var(--vellum);border:1.5px solid var(--ink-mark);box-shadow:6px 6px 0 rgba(42,34,27,.16);display:flex;align-items:center;justify-content:center}
+.sys-c .flip-back .cb-pattern{width:56px;height:56px}
+.sys-c .flip-front{
+  transform:rotateY(180deg);background:var(--vellum);border:1.5px solid var(--ink-mark);
+  box-shadow:6px 6px 0 rgba(42,34,27,.16);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+}
+.sys-c .flip-front .engrave{width:84px;height:84px;margin:0}
+.sys-c .flip-front .f-name{font-family:var(--serif-d);font-style:italic;font-size:15px;color:var(--ink-mark)}
+.sys-c .flip-front .f-sub{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:rgba(42,34,27,.55);text-transform:uppercase}
+.sys-c .load-name{position:relative;z-index:2;text-align:center;margin-top:16px}
+.sys-c .load-name .ln{font-family:var(--serif-b);font-size:17px;color:var(--ink-mark);letter-spacing:2px}
+.sys-c .load-name .ln em{font-style:italic;color:var(--rust)}
+.sys-c .load-dots{display:flex;gap:7px;justify-content:center;margin-top:10px}
+.sys-c .load-dots span{width:5px;height:5px;border-radius:50%;background:var(--rust);opacity:.3;animation:dotpage 1.6s ease-in-out infinite}
+.sys-c .load-dots span:nth-child(2){animation-delay:.22s}
+.sys-c .load-dots span:nth-child(3){animation-delay:.44s}
+@keyframes dotpage{0%,100%{transform:translateY(0);opacity:.3}45%{transform:translateY(-4px);opacity:1}}
+.sys-c .load-candle{position:relative;z-index:2;display:flex;justify-content:center;margin-top:12px}
+.sys-c .candle .flame{transform-origin:12px 8px;animation:flicker 2.4s ease-in-out infinite}
+@keyframes flicker{0%,100%{transform:scale(1) rotate(0)}32%{transform:scale(1.12,.9) rotate(-2deg)}64%{transform:scale(.92,1.1) rotate(1.6deg)}}
+.sys-c .load-progress{position:relative;z-index:2;margin:14px 42px 0}
+.sys-c .load-line{position:relative;height:1.5px;background:rgba(42,34,27,.22);overflow:hidden}
+.sys-c .load-fill{position:absolute;top:0;bottom:0;left:-45%;width:45%;background:var(--ink-mark);animation:fillmove 4.2s cubic-bezier(.5,.1,.4,.9) infinite}
+@keyframes fillmove{0%{left:-45%}46%{left:0}56%{left:0}100%{left:100%}}
+.sys-c .load-ticks{display:flex;justify-content:space-between;margin-top:7px}
+.sys-c .load-ticks span{width:2px;height:8px;background:rgba(42,34,27,.35);animation:tickink 4.2s linear infinite}
+@keyframes tickink{0%,8%{background:rgba(42,34,27,.35)}18%,100%{background:var(--rust)}}
+
+/* ═══════════════════════════════════════════════════════════════
+   肆 · 解读（结果页）
+   ═══════════════════════════════════════════════════════════════ */
+.sys-c .read-cardwrap{position:relative;z-index:2;display:flex;justify-content:center;margin-top:22px}
+.sys-c .read-card{width:158px;height:236px}
+.sys-c .read-card:hover{transform:none;cursor:default}
+.sys-c .read-card .engrave{width:94px;height:94px;margin-top:6px}
+.sys-c .read-card .hint{font-size:11.5px}
+.sys-c .read-text{position:relative;z-index:2;margin:20px 24px 0;font-family:var(--serif-b);font-size:15.5px;line-height:1.75;color:var(--ink-mark);text-align:justify}
+.sys-c .read-text .dropcap{float:left;font-family:var(--serif-d);font-weight:600;font-size:46px;line-height:.85;color:var(--rust);margin:5px 9px 0 0}
+.sys-c .read-stamps{position:relative;z-index:2;display:flex;justify-content:center;gap:12px;margin-top:18px}
+.sys-c .stamp{
+  display:inline-flex;align-items:center;gap:5px;background:var(--vellum);
+  border:1.5px solid var(--ink-mark);border-radius:1px;
+  box-shadow:3px 3px 0 rgba(42,34,27,.14);padding:6px 10px;
+  font-family:var(--sans);font-size:10px;letter-spacing:2px;color:var(--ink-mark);
+}
+.sys-c .stamp svg{width:10px;height:10px}
+.sys-c .stamp em{font-family:var(--serif-b);font-style:italic;font-size:10.5px;color:var(--rust);margin-left:1px}
+.sys-c .stamp.r1{transform:rotate(-2.5deg)}
+.sys-c .stamp.r2{transform:rotate(2deg)}
+.sys-c .stamp.r3{transform:rotate(-1deg)}
+.sys-c .read-btns{position:relative;z-index:2;display:flex;gap:10px;margin:20px 18px 0}
+.sys-c .btn{
+  flex:1;height:46px;border-radius:1px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--sans);font-size:12.5px;letter-spacing:2px;cursor:pointer;
+  transition:transform .14s ease;
+}
+.sys-c .btn:active{transform:scale(.95)}
+.sys-c .btn-ghost{border:1.5px solid var(--ink-mark);color:var(--ink-mark);background:transparent}
+.sys-c .btn-ghost em{font-family:var(--serif-d);font-style:italic;font-size:14px;letter-spacing:1px;margin-right:5px}
+.sys-c .btn-primary{background:var(--ink-mark);color:var(--gold-bright);box-shadow:5px 5px 0 rgba(42,34,27,.16)}
+
+/* ═══════════════════════════════════════════════════════════════
+   伍 · 聊天（星光树洞）
+   ═══════════════════════════════════════════════════════════════ */
+.sys-c .chat-bar{
+  position:relative;z-index:2;display:flex;align-items:center;justify-content:center;
+  padding:64px 20px 12px;border-bottom:1px solid rgba(42,34,27,.3);
+}
+.sys-c .chat-back{
+  position:absolute;left:16px;top:52px;width:44px;height:44px;border-radius:2px;
+  border:1.5px solid var(--ink-mark);background:var(--vellum);
+  box-shadow:3px 3px 0 rgba(42,34,27,.15);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  transition:transform .14s ease,box-shadow .14s ease;
+}
+.sys-c .chat-back:active{transform:translate(1.5px,1.5px);box-shadow:1px 1px 0 rgba(42,34,27,.15)}
+.sys-c .chat-masthead{font-family:var(--mono);font-size:9.5px;letter-spacing:2px;color:rgba(42,34,27,.6);padding-top:9px}
+.sys-c .chat-masthead .m-star{width:11px;height:11px;vertical-align:-1px;margin:0 3px}
+.sys-c .chat-body{position:relative;z-index:2;display:flex;flex-direction:column;padding:16px 16px 0;flex:1;overflow:hidden}
+.sys-c .chat-date{align-self:center;font-family:var(--mono);font-size:8.5px;letter-spacing:2px;color:rgba(42,34,27,.4);margin-bottom:15px}
+.sys-c .msg{max-width:80%;padding:11px 14px;font-family:var(--sans);font-size:13px;line-height:1.75;margin-bottom:13px}
+.sys-c .msg.ai{
+  align-self:flex-start;background:var(--vellum);border:1.5px solid var(--ink-mark);
+  border-radius:2px 10px 10px 10px;box-shadow:3px 3px 0 rgba(42,34,27,.13);
+  display:flex;gap:8px;align-items:flex-start;
+}
+.sys-c .msg.ai .ai-star{flex-shrink:0;width:14px;height:14px;margin-top:3px}
+.sys-c .msg.user{
+  align-self:flex-end;background:var(--ink-mark);color:var(--vellum);
+  border-radius:10px 2px 10px 10px;box-shadow:3px 3px 0 rgba(42,34,27,.18);
+}
+.sys-c .msg.user em{font-style:italic;color:var(--gold)}
+.sys-c .msg.typing{display:flex;gap:7px;align-items:center}
+.sys-c .msg.typing span{width:5px;height:5px;border-radius:50%;background:var(--rust);opacity:.3;animation:dotpage 1.5s ease-in-out infinite}
+.sys-c .msg.typing span:nth-child(2){animation-delay:.2s}
+.sys-c .msg.typing span:nth-child(3){animation-delay:.4s}
+.sys-c .chat-input{position:relative;z-index:2;display:flex;align-items:center;gap:10px;margin:10px 16px 24px;padding-top:12px;border-top:1px solid rgba(42,34,27,.25)}
+.sys-c .chat-input input{
+  flex:1;min-width:0;height:44px;background:var(--vellum);border:1.5px solid var(--ink-mark);
+  border-radius:2px;padding:0 14px;font-family:var(--sans);font-size:13px;color:var(--ink-mark);
+  outline:none;box-shadow:inset 2px 2px 0 rgba(42,34,27,.06);
+}
+.sys-c .chat-input input::placeholder{color:rgba(42,34,27,.42);letter-spacing:1px}
+.sys-c .chat-send{
+  flex-shrink:0;width:52px;height:44px;background:var(--ink-mark);border-radius:2px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  box-shadow:3px 3px 0 rgba(42,34,27,.18);transition:transform .12s ease,box-shadow .12s ease;
+}
+.sys-c .chat-send:active{transform:translate(1.5px,1.5px);box-shadow:1px 1px 0 rgba(42,34,27,.18)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z=="></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1=="></script>
+<script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js" crossorigin integrity="sha384-x/ilTFv/u/eu6YSmkFDZl5V5Mm/pkxxcVv2cVJOrr1J0rvILhMvRBCy6yA75wYBj"></script>
+<script type="text/babel" data-presets="env,react">
+const {useState} = React;
+
+/* ── 微信胶囊 ── */
+function WxCapsule(){
+  return (
+    <div className="wxcapsule">
+      <div className="cap">
+        <span/><span/><span/>
+      </div>
+      <div className="cap"><div className="circle"/></div>
+    </div>
+  );
+}
+
+/* ── 通用图标 ── */
+const Icon = ({name,color,size=20}) => {
+  const c = color||'currentColor';
+  const paths = {
+    home:<><path d="M3 11.2 10 5l7 6.2" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/><path d="M5.5 10.5V17h9v-6.5" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></>,
+    book:<><path d="M4 4.5h7.5V17H4z" fill="none" stroke={c} strokeWidth="1.6" strokeLinejoin="round"/><path d="M11.5 5h5V17h-5" fill="none" stroke={c} strokeWidth="1.6" strokeLinejoin="round"/></>,
+    user:<><circle cx="10" cy="7.5" r="3.2" fill="none" stroke={c} strokeWidth="1.6"/><path d="M4.5 17c.8-3 3-4.6 5.5-4.6s4.7 1.6 5.5 4.6" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round"/></>,
+    about:<><circle cx="10" cy="10" r="7" fill="none" stroke={c} strokeWidth="1.6"/><path d="M10 8.5v.2M10 11.5v2.6" stroke={c} strokeWidth="1.6" strokeLinecap="round"/></>,
+  };
+  return <svg className="ic" width={size} height={size} viewBox="0 0 20 20">{paths[name]}</svg>;
+};
+
+/* ── TabBar 数据 ── */
+const TABS = [
+  {key:'home', name:'映照', ic:'home'},
+  {key:'book', name:'百科', ic:'book'},
+  {key:'user', name:'我的', ic:'user'},
+  {key:'about', name:'关于', ic:'about'},
+];
+
+/* ── 版画五角星（铜版蚀刻星标） ── */
+function StarMark({size=14,color='#A64B2A'}){
+  return (
+    <svg width={size} height={size} viewBox="0 0 20 20" fill="none">
+      <path d="M10 3.5 L11.76 7.57 L16.18 7.99 L12.85 10.93 L13.82 15.26 L10 13 L6.18 15.26 L7.15 10.93 L3.82 7.99 L8.24 7.57 Z" stroke={color} strokeWidth="1.1" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+/* ── 牌背蚀刻花纹：放射状星芒线稿 ── */
+function CardBackPattern(){
+  const rays = Array.from({length:12},(_,i)=>{
+    const a = i*Math.PI/6;
+    return <line key={i} x1={30+Math.sin(a)*9} y1={30-Math.cos(a)*9} x2={30+Math.sin(a)*24} y2={30-Math.cos(a)*24} stroke="#2A221B" strokeWidth=".6"/>;
+  });
+  return (
+    <svg viewBox="0 0 60 60" fill="none">
+      <circle cx="30" cy="30" r="26" stroke="#2A221B" strokeWidth=".7"/>
+      <circle cx="30" cy="30" r="20" stroke="rgba(42,34,27,.55)" strokeWidth=".5"/>
+      <circle cx="30" cy="30" r="13" stroke="rgba(42,34,27,.4)" strokeWidth=".5"/>
+      {rays}
+      <path d="M30 24.5 L31.41 28.06 L35.23 28.3 L32.28 30.74 L33.23 34.45 L30 32.4 L26.77 34.45 L27.72 30.74 L24.77 28.3 L28.59 28.06 Z" stroke="#A64B2A" strokeWidth=".8" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+/* ── 星币王牌 · 蚀刻牌面 ── */
+function EngravePentacle(){
+  return (
+    <svg className="engrave" viewBox="0 0 80 80">
+      <circle cx="40" cy="40" r="30" fill="none" stroke="#A64B2A" strokeWidth="1.6"/>
+      <circle cx="40" cy="40" r="23" fill="none" stroke="#A64B2A" strokeWidth=".8"/>
+      <path d="M40 21v38M21 40h38M26 26l28 28M54 26l-28 28" stroke="#A64B2A" strokeWidth=".7"/>
+      <circle cx="40" cy="40" r="7" fill="none" stroke="#A64B2A" strokeWidth="1.2"/>
+      <path d="M40 8l3 6h-6z" fill="#A64B2A"/>
+    </svg>
+  );
+}
+
+/* ── 烛台（线稿，火焰摇曳） ── */
+function Candle(){
+  return (
+    <svg className="candle" width="22" height="34" viewBox="0 0 24 36" fill="none">
+      <g className="flame">
+        <path d="M12 2.5c1.5 2.4 2.8 4 2.8 5.7a2.8 2.8 0 1 1-5.6 0c0-1.7 1.3-3.3 2.8-5.7z" stroke="#A64B2A" strokeWidth="1.1" strokeLinejoin="round"/>
+      </g>
+      <rect x="8.5" y="12" width="7" height="20" fill="#ECE3D0" stroke="#2A221B" strokeWidth="1.1"/>
+      <path d="M8.5 24h7M8.5 27.5h7" stroke="rgba(42,34,27,.35)" strokeWidth=".8"/>
+    </svg>
+  );
+}
+
+/* ══════════ 壹 · 今日（首页）· 复刻方向稿 ScreenC ══════════ */
+function ScreenToday(){
+  return (
+    <div className="sys-c">
+      <div className="screen" style={{width:300,height:640,borderRadius:34,boxShadow:'0 30px 60px rgba(0,0,0,.5)'}}>
+        <WxCapsule/>
+        <div className="running">
+          <span>星光映照</span>
+          <span>VOL. I · NO. 078</span>
+        </div>
+        <div className="brand">
+          <div className="logo">星光映照</div>
+          <div className="tag">每日一牌 · 遇见自己</div>
+          <div className="greet">深夜宜静思，翻开今日的一页</div>
+          <div className="badge">今日运势待开启</div>
+        </div>
+        <div className="cardwrap">
+          <div className="card">
+            <div className="plate-label">PLATE I · 星币王牌</div>
+            <div className="inner">
+              <EngravePentacle/>
+              <div>
+                <div className="title">星币王牌</div>
+                <div className="subtitle">Ace of Pentacles</div>
+              </div>
+              <div className="hint">轻触，开启今日指引</div>
+            </div>
+          </div>
+        </div>
+        <div className="treepanel">
+          <div className="t-label">星光树洞 · 今日启示</div>
+          <div className="t-text">星币王牌落于首章——<em>新的开始正在发芽</em>，且行且看。</div>
+          <div className="t-go">与星塔罗师聊聊 →</div>
+        </div>
+        <div className="cta"><em>翻</em>开启今日指引</div>
+        <div className="tabbar">
+          {TABS.map(t=>
+            <div key={t.key} className={"tab"+(t.key==='home'?' on':'')}>
+              {t.key==='home' ? <span style={{fontSize:11,letterSpacing:3}}>映照</span> : <Icon name={t.ic}/>}
+            </div>)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════ 贰 · 洗牌（选牌）══════════ */
+function ScreenShuffle(){
+  const [picked, setPicked] = useState([]);
+  const toggle = (i) => {
+    setPicked(prev => {
+      if (prev.includes(i)) return prev.filter(x => x!==i);
+      if (prev.length >= 3) return prev;
+      return [...prev, i];
+    });
+  };
+  const n = picked.length;
+  const hint = n===0 ? '点选三张 · 第一张代表过去'
+    : n===1 ? '第一张已落（过去）· 第二张代表现在'
+    : n===2 ? '两张已落 · 第三张代表未来'
+    : '三张已定 · 墨迹将开，可以翻牌了';
+  const NUM = ['壹','贰','叁'];
+  const ROT = [-3,0,3];
+  return (
+    <div className="sys-c">
+      <div className="screen" style={{width:300,height:640,borderRadius:34,boxShadow:'0 30px 60px rgba(0,0,0,.5)'}}>
+        <WxCapsule/>
+        <div className="running">
+          <span>星光映照</span>
+          <span>THE SHUFFLE · 洗牌</span>
+        </div>
+        <div className="shuf-head">
+          <div className="shuf-title">净手 · 洗牌</div>
+          <div className="shuf-sub">凭直觉选三张牌</div>
+        </div>
+        <div className="shuf-grid">
+          {Array.from({length:9},(_,i)=>{
+            const order = picked.indexOf(i);
+            const sel = order >= 0;
+            return (
+              <div key={i} className={"shuf-card"+(sel?' sel':'')}
+                   onClick={()=>toggle(i)}
+                   style={sel ? {transform:`rotate(${ROT[order]}deg)`} : null}>
+                <div className="cb-pattern"><CardBackPattern/></div>
+                <div className="cb-mark"><StarMark size={11}/></div>
+                {sel && <div className="shuf-no">{NUM[order]}</div>}
+              </div>
+            );
+          })}
+        </div>
+        <div className="shuf-hint">{hint}</div>
+        <div className={"shuf-cta"+(n===3?' ready':'')}>
+          {n===3 ? <><em>翻</em>开牌面</> : '开始洗牌'}
+        </div>
+        <div className="tabbar">
+          {TABS.map(t=>
+            <div key={t.key} className={"tab"+(t.key==='home'?' on':'')}>
+              {t.key==='home' ? <span style={{fontSize:11,letterSpacing:3}}>映照</span> : <Icon name={t.ic}/>}
+            </div>)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════ 叁 · 读牌中（loading）══════════ */
+function ScreenReading(){
+  return (
+    <div className="sys-c">
+      <div className="screen candle" style={{width:300,height:640,borderRadius:34,boxShadow:'0 30px 60px rgba(0,0,0,.5)'}}>
+        <WxCapsule/>
+        <div className="running">
+          <span>星光映照</span>
+          <span>CHAPTER I</span>
+        </div>
+        <div className="load-head">
+          <div className="load-title">书页正在翻开…</div>
+        </div>
+        <div className="load-stage">
+          <div className="load-glow"/>
+          <div className="flipcard">
+            <div className="flip-inner">
+              <div className="flip-face flip-back">
+                <div className="cb-pattern"><CardBackPattern/></div>
+              </div>
+              <div className="flip-face flip-front">
+                <EngravePentacle/>
+                <div className="f-name">星币王牌</div>
+                <div className="f-sub">Ace of Pentacles</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="load-name">
+          <div className="ln">星币王牌 · <em>第一章</em></div>
+          <div className="load-dots"><span/><span/><span/></div>
+        </div>
+        <div className="load-candle"><Candle/></div>
+        <div className="load-progress">
+          <div className="load-line"><div className="load-fill"/></div>
+          <div className="load-ticks">
+            {Array.from({length:9},(_,i)=>
+              <span key={i} style={{animationDelay:(i*0.45)+'s'}}/>)}
+          </div>
+        </div>
+        <div className="tabbar">
+          {TABS.map(t=>
+            <div key={t.key} className={"tab"+(t.key==='home'?' on':'')}>
+              {t.key==='home' ? <span style={{fontSize:11,letterSpacing:3}}>映照</span> : <Icon name={t.ic}/>}
+            </div>)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════ 肆 · 解读（结果页）══════════ */
+function ScreenResult(){
+  return (
+    <div className="sys-c">
+      <div className="screen" style={{width:300,height:640,borderRadius:34,boxShadow:'0 30px 60px rgba(0,0,0,.5)'}}>
+        <WxCapsule/>
+        <div className="running">
+          <span>今日指引</span>
+          <span>2026年8月6日</span>
+        </div>
+        <div className="read-cardwrap">
+          <div className="card read-card">
+            <div className="plate-label">PLATE I · 星币王牌</div>
+            <div className="inner">
+              <EngravePentacle/>
+              <div>
+                <div className="title">星币王牌</div>
+                <div className="subtitle">Ace of Pentacles</div>
+              </div>
+              <div className="hint">新的开始，正当时</div>
+            </div>
+          </div>
+        </div>
+        <div className="read-text">
+          <span className="dropcap">星</span>币王牌落于今日首章——新的开始正在发芽。行远自迩，属于你的第一枚金币即将浮现。
+        </div>
+        <div className="read-stamps">
+          <span className="stamp r1"><StarMark size={10}/>感情<em>·新芽</em></span>
+          <span className="stamp r2"><StarMark size={10}/>事业<em>·春种</em></span>
+          <span className="stamp r3"><StarMark size={10}/>提示<em>·徐行</em></span>
+        </div>
+        <div className="read-btns">
+          <div className="btn btn-ghost"><em>存</em>为卡片</div>
+          <div className="btn btn-primary">与星塔罗师聊聊 →</div>
+        </div>
+        <div className="tabbar">
+          {TABS.map(t=>
+            <div key={t.key} className={"tab"+(t.key==='home'?' on':'')}>
+              {t.key==='home' ? <span style={{fontSize:11,letterSpacing:3}}>映照</span> : <Icon name={t.ic}/>}
+            </div>)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════ 伍 · 聊天（星光树洞）══════════ */
+function ScreenChat(){
+  return (
+    <div className="sys-c">
+      <div className="screen" style={{width:300,height:640,borderRadius:34,boxShadow:'0 30px 60px rgba(0,0,0,.5)'}}>
+        <WxCapsule/>
+        <div className="chat-bar">
+          <div className="chat-back">
+            <svg width="10" height="16" viewBox="0 0 10 16" fill="none">
+              <path d="M8.5 1 2 8l6.5 7" stroke="#2A221B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          <div className="chat-masthead">星光树洞 · <StarMark size={11} className="m-star"/> 星塔罗师</div>
+        </div>
+        <div className="chat-body">
+          <div className="chat-date">今夜 · 八月六日 · 子时</div>
+          <div className="msg ai">
+            <StarMark size={14} className="ai-star"/>
+            <div>夜安。我是星——今日的星币王牌，是给守夜人的一封短信：第一枚金币，已在路上。</div>
+          </div>
+          <div className="msg user">想问问那件等了好久的事……我该<em>主动</em>吗？</div>
+          <div className="msg ai">
+            <StarMark size={14} className="ai-star"/>
+            <div>星币王牌落于首章，正是播种的位置。行远自迩——你只需先落第一笔，金币自会落地有声。</div>
+          </div>
+          <div className="msg ai typing"><span/><span/><span/></div>
+        </div>
+        <div className="chat-input">
+          <input placeholder="落笔于纸，说与星听…"/>
+          <div className="chat-send">
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none">
+              <path d="M2.5 17.5 17.5 2.5" stroke="#F0E6D2" strokeWidth="1.6" strokeLinecap="round"/>
+              <path d="M7 2.5h10.5V13" stroke="#F0E6D2" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── 画布：五屏并排 ── */
+function App(){
+  const zones = [
+    {n:'壹 · 今日', en:'The Daily Page', el:<ScreenToday/>},
+    {n:'贰 · 洗牌', en:'The Shuffle', el:<ScreenShuffle/>},
+    {n:'叁 · 读牌', en:'Turning the Page', el:<ScreenReading/>},
+    {n:'肆 · 解读', en:'The Reading', el:<ScreenResult/>},
+    {n:'伍 · 星光树洞', en:'The Starlit Hollow', el:<ScreenChat/>},
+  ];
+  return (
+    <div className="stage">
+      <h1>星 光 映 照 · 纸本档案</h1>
+      <div className="sub">五屏一境 · 从今日到星光树洞 · 洗牌屏可点选</div>
+      <div className="flow">
+        {zones.map(z=>
+          <div key={z.n} className="zone">
+            <div className="zone-name">{z.n}</div>
+            <div className="zone-desc">{z.en}</div>
+            <div className="zoom">{z.el}</div>
+          </div>)}
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

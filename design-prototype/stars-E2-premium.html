@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星光映照 · E2 高级感增强 · 奶油疗愈精装版</title>
+<meta name="description" content="星光映照塔罗小程序 — 方向E2 · 高级感增强：莫兰迪低饱和 · 衬线宽字距 · 细金线 · 温柔的高级 · 六屏完整流程">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@300;400;500&family=Noto+Serif+SC:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   星光映照 · 方向E2 · 高级感增强（奶油疗愈精装版）
+   奶油米白 #FAF6EF / 单一主色 雾粉 #E8C4BE / 细金线 #C9A97C
+   衬线宽字距 / 手写体仅保留每屏一句引言 / 减法布局
+   ═══════════════════════════════════════════════════════════════ */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:#29231E;font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;-webkit-font-smoothing:antialiased;color:#EFE4D6}
+#root{min-height:100%}
+::selection{background:rgba(232,196,190,.45)}
+*{scrollbar-width:none}
+*::-webkit-scrollbar{display:none}
+
+/* ── 画布 ── */
+.stage{max-width:1600px;margin:0 auto;padding:44px 24px 88px}
+.stage h1{font-family:'Noto Serif SC',serif;font-weight:500;font-size:30px;text-align:center;letter-spacing:14px;color:#F0E2D0;margin-bottom:10px}
+.stage .sub{text-align:center;font-size:11px;color:rgba(201,169,124,.85);letter-spacing:4px;margin-bottom:6px}
+.stage .meta{text-align:center;font-size:11.5px;color:rgba(239,228,214,.35);letter-spacing:1px;margin-bottom:40px}
+.grid{display:flex;flex-wrap:wrap;gap:46px 30px;justify-content:center;align-items:flex-start}
+.zone{display:flex;flex-direction:column;align-items:center}
+.zoom{transition:transform .25s cubic-bezier(.2,.7,.3,1)}
+.zoom:hover{transform:scale(1.03)}
+.cap{margin-top:14px;font-family:'Noto Serif SC',serif;font-size:13px;letter-spacing:3px;color:rgba(240,226,208,.85)}
+.cap-sub{margin-top:4px;font-size:11px;letter-spacing:1px;color:rgba(240,226,208,.38)}
+@media(max-width:720px){.grid{flex-direction:column;align-items:center}}
+
+/* ═══════════════════ E2 · 奶油疗愈 · 高级感增强 ═══════════════════ */
+.sys-e2{
+  --cream:#FAF6EF; --cream-hi:#FFFDF8; --paper:#F2ECDF;
+  --pink:#E8C4BE; --pink-deep:#DCA9A1; --pink-ink:#B08A82;
+  --gold:#C9A97C; --gold-deep:#B08F52;
+  --line:rgba(201,169,124,.28); --line-soft:rgba(201,169,124,.38);
+  --lav:#D8D2E4;
+  --ink:#3D3A36; --ink-soft:#8A8478; --ink-faint:#B0AA9C;
+  --serif:'Noto Serif SC',serif;
+  --sans:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+  --hand:'Ma Shan Zheng','Noto Serif SC',cursive;
+  --num:'EB Garamond','Noto Serif SC',serif;
+  --shadow:0 2px 10px rgba(61,58,54,.06);
+  --hi:inset 0 1px 0 rgba(255,255,255,.6);
+}
+.sys-e2 .screen{
+  background:var(--cream);color:var(--ink);position:relative;overflow:hidden;
+  font-family:var(--serif);
+}
+/* 低饱和水彩底色分区（仅雾粉 + 极淡金） */
+.sys-e2 .wash{position:absolute;border-radius:50%;pointer-events:none;filter:blur(38px);z-index:0}
+/* 微信胶囊（奶油浅底 -> 白色胶囊深色icon） */
+.wxcapsule{
+  position:absolute;top:13px;right:8px;z-index:30;display:flex;gap:4px;pointer-events:none;
+}
+.wxcapsule .cap{
+  width:40px;height:32px;border-radius:7px;
+  background:rgba(255,253,248,.92);border:0.5px solid rgba(201,169,124,.3);
+  box-shadow:0 2px 6px rgba(61,58,54,.05);
+  display:flex;align-items:center;justify-content:center;
+}
+.wxcapsule .cap svg{fill:#3D3A36}
+.wxcapsule .cap:first-child{flex-direction:column;gap:3px}
+.wxcapsule .cap:first-child span{display:block;width:3px;height:3px;border-radius:50%;background:#3D3A36}
+.wxcapsule .cap .circle{width:15px;height:15px;border-radius:50%;border:1.5px solid #3D3A36}
+
+/* ── 返回 ── */
+.backbtn{
+  position:absolute;left:16px;top:56px;width:44px;height:44px;border-radius:50%;
+  background:rgba(255,253,248,.92);border:1px solid var(--line-soft);
+  box-shadow:var(--shadow),var(--hi);
+  display:flex;align-items:center;justify-content:center;z-index:10;cursor:pointer;
+  transition:transform .15s ease;
+}
+.backbtn:active{transform:scale(.93)}
+
+/* ── 通用文字（衬线为主 · 手写体仅引言） ── */
+.pad{position:relative;z-index:2}
+.microlabel{font-family:var(--sans);font-weight:400;font-size:11px;color:rgba(201,169,124,.9);letter-spacing:4px}
+.brand{font-family:var(--serif);font-weight:500;font-size:17px;color:var(--ink);letter-spacing:7px;margin-top:4px}
+.gold-dot{display:inline-block;width:3px;height:3px;border-radius:50%;background:var(--gold);flex-shrink:0}
+.date-row{display:flex;align-items:center;gap:7px;font-family:var(--num);font-size:12px;color:var(--ink-soft);letter-spacing:1.5px;margin-top:10px}
+.quote{font-family:var(--hand);font-size:22px;color:var(--ink);margin-top:10px;transform:rotate(-1deg);letter-spacing:1px;line-height:1.5}
+.quote-sub{font-family:var(--sans);font-size:11px;color:var(--ink-soft);margin-top:5px;letter-spacing:3px}
+.h-title{font-family:var(--serif);font-weight:500;font-size:28px;letter-spacing:3px;color:var(--ink)}
+.h-sub{font-family:var(--sans);font-size:11px;color:var(--ink-soft);letter-spacing:3px}
+.pill{
+  display:inline-flex;align-items:center;gap:5px;height:21px;padding:0 12px;border-radius:999px;
+  background:var(--cream-hi);border:1px solid rgba(201,169,124,.4);color:#8A8478;
+  font-family:var(--sans);font-size:10.5px;letter-spacing:2.5px;
+}
+.pill-lav{background:var(--lav);border-color:rgba(201,169,124,.28);color:#6E6676}
+.hint-line{margin-top:8px;text-align:center;font-family:var(--sans);font-size:10.5px;color:var(--ink-faint);letter-spacing:1px}
+.divider{display:flex;align-items:center;justify-content:center;gap:6px;margin:10px 0}
+.divider i{width:28px;height:1px;background:rgba(201,169,124,.35)}
+.divider b{width:3px;height:3px;border-radius:50%;background:rgba(201,169,124,.55)}
+.num{font-family:var(--num);font-style:normal}
+
+/* ── 按钮（哑光雾粉实心 / 细金描边） ── */
+.btn{
+  height:48px;border-radius:999px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-family:var(--serif);font-weight:500;font-size:14px;letter-spacing:3px;
+  transition:transform .15s ease,box-shadow .15s ease,opacity .2s ease;user-select:none;
+}
+.btn:active{transform:scale(.965)}
+.btn-primary{
+  background:var(--pink);color:#5C4A3A;
+  box-shadow:var(--shadow),var(--hi);
+}
+.btn-ghost{background:var(--cream-hi);border:1.5px solid rgba(201,169,124,.55);color:#7A705F;box-shadow:var(--hi)}
+.btn-off{opacity:.4;pointer-events:none}
+.w108{width:108px;flex-shrink:0}
+.flex1{flex:1}
+
+/* ── TabBar（极淡奶油玻璃 · 细金分隔） ── */
+.tabbar{
+  position:relative;z-index:5;margin:14px 14px 0;height:52px;border-radius:20px;
+  display:flex;align-items:center;justify-content:space-around;
+  background:rgba(255,253,248,.6);border:1px solid rgba(201,169,124,.22);
+  box-shadow:var(--shadow);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+}
+.tab{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:60px;font-family:var(--sans);font-size:10px;color:var(--ink-faint);letter-spacing:2px;cursor:pointer}
+.tab.on{color:var(--ink);font-weight:500}
+.tab .tdot{width:3.5px;height:3.5px;border-radius:50%;background:transparent}
+.tab.on .tdot{background:var(--gold)}
+
+/* ── 今日 · 水彩月亮牌 ── */
+.paint-wrap{position:relative;margin:18px auto 0;width:236px;z-index:3}
+.painting{
+  width:236px;height:186px;border-radius:16px;overflow:hidden;cursor:pointer;
+  border:1px solid var(--line);box-shadow:var(--shadow),var(--hi);
+  animation:floaty 5.5s ease-in-out infinite;
+}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(var(--rot,-1.5deg))}50%{transform:translateY(-7px) rotate(var(--rot,-1.5deg))}}
+.phrase{font-family:var(--serif);font-size:15px;color:var(--ink);text-align:center;margin-top:10px;letter-spacing:2px}
+.pill-wrap{display:flex;justify-content:center;margin-top:12px}
+
+/* ── 洗牌 ── */
+.grid3{display:grid;grid-template-columns:repeat(3,80px);gap:11px;justify-content:center;margin-top:20px}
+.s-rot{transition:transform .25s ease}
+.s-card{
+  width:80px;height:106px;border-radius:14px;position:relative;overflow:hidden;cursor:pointer;
+  border:1px solid var(--line);box-shadow:var(--shadow),var(--hi);
+  transition:transform .22s ease,box-shadow .22s ease;
+}
+.s-card:hover{transform:translateY(-4px)}
+.s-card.sel{
+  transform:translateY(-9px) scale(1.04);
+  box-shadow:0 10px 20px rgba(61,58,54,.1),0 0 0 2px rgba(255,253,248,.95),0 0 0 4px rgba(201,169,124,.5);
+}
+.counter{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:12px}
+.cdots{display:flex;gap:6px}
+.cdots i{width:8px;height:8px;border-radius:50%;background:rgba(201,169,124,.25);transition:background .2s ease,transform .2s ease}
+.cdots i.on{background:var(--gold);transform:scale(1.12)}
+.cdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:rgba(201,169,124,.25);transition:background .2s ease,transform .2s ease}
+.cdot.on{background:var(--gold);transform:scale(1.12)}
+.cnum{font-family:var(--sans);font-size:11px;color:var(--ink-soft);letter-spacing:2px}
+
+/* ── 读牌中 ── */
+.reading-head{position:relative;z-index:6;text-align:center;padding-top:86px}
+.reading-head .quote{display:inline-block;font-size:21px;transform:rotate(-1deg)}
+.reading-head .quote-sub{display:block;margin-top:6px}
+.flip-row{position:relative;z-index:6;display:flex;justify-content:center;gap:16px;margin-top:30px}
+.flip-card{width:78px;height:114px;position:relative;perspective:700px}
+.flip-inner{position:absolute;inset:0;transform-style:preserve-3d;animation:flipc 3.9s cubic-bezier(.6,.1,.4,.9) var(--del,0s) infinite}
+@keyframes flipc{0%{transform:rotateY(0)}48%{transform:rotateY(180deg)}100%{transform:rotateY(180deg)}}
+.flip-face{position:absolute;inset:0;border-radius:14px;backface-visibility:hidden;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow),var(--hi)}
+.flip-back{transform:rotateY(180deg)}
+.fallstar{position:absolute;z-index:5;pointer-events:none;animation:fall var(--dur,3.6s) linear var(--del,0s) infinite}
+@keyframes fall{0%{transform:translateY(-16px) rotate(0);opacity:0}12%{opacity:.7}100%{transform:translateY(620px) rotate(220deg);opacity:0}}
+.progress{position:relative;z-index:6;display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:30px}
+.p-track{width:150px;height:4px;border-radius:99px;background:rgba(201,169,124,.2);overflow:hidden}
+.p-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#E8C4BE,#C9A97C);transform-origin:left;animation:fillmove 3.9s linear infinite}
+@keyframes fillmove{0%{transform:scaleX(0)}55%{transform:scaleX(1)}100%{transform:scaleX(1)}}
+.p-dots{display:flex;gap:7px}
+.p-dots i{width:6px;height:6px;border-radius:50%;background:rgba(201,169,124,.28);animation:pd 3.9s ease infinite}
+.p-dots i:nth-child(2){animation-delay:.5s}
+.p-dots i:nth-child(3){animation-delay:1s}
+@keyframes pd{0%,100%{transform:scale(1);background:rgba(201,169,124,.28)}30%{transform:scale(1.28);background:#C9A97C}}
+
+/* ── 解读 ── */
+.rv-head{text-align:center;padding-top:47px}
+.rv-title{font-family:var(--serif);font-weight:500;font-size:30px;color:var(--ink);margin-top:8px;letter-spacing:4px}
+.rv-sub{font-family:var(--sans);font-size:11px;color:var(--ink-soft);margin-top:3px;letter-spacing:3px}
+.rv-art{width:216px;height:150px;margin:12px auto 0;border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow),var(--hi);transform:rotate(1.3deg);background:#E9EEE3}
+.rv-text{position:relative;z-index:3;margin-top:10px;padding:0 24px;font-size:15px;line-height:1.9;color:var(--ink)}
+.rv-text em{font-style:normal;color:var(--pink-ink)}
+.chips{display:flex;justify-content:center;gap:8px;margin-top:10px}
+.chip{
+  min-width:76px;height:36px;border-radius:999px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--sans);font-size:12px;letter-spacing:2px;cursor:pointer;border:1px solid;
+  background:var(--cream-hi);color:#8A8478;transition:all .2s ease;
+}
+.chip.on{font-weight:500;background:var(--pink);border-color:rgba(201,169,124,.55);color:#5C4A3A}
+.chip-line{text-align:center;font-family:var(--serif);font-size:13px;color:#7A725F;margin-top:8px;letter-spacing:1px}
+.btns{display:flex;gap:10px;margin-top:12px;padding:0 22px}
+.btn-row-fix{display:flex;gap:10px;margin-top:15px;padding:0 22px}
+
+/* ── 星光树洞 · 聊天 ── */
+.chat-head{position:relative;z-index:6;text-align:center;padding-top:58px}
+.chat-title{font-family:var(--serif);font-weight:500;font-size:18px;color:var(--ink);letter-spacing:5px}
+.chat-sub{display:flex;align-items:center;justify-content:center;gap:5px;font-family:var(--sans);font-size:10.5px;color:var(--ink-soft);margin-top:4px;letter-spacing:1.5px}
+.online-dot{width:5px;height:5px;border-radius:50%;background:#9FB89A;box-shadow:0 0 5px rgba(159,184,154,.7)}
+.chat-body{position:absolute;left:0;right:0;top:112px;bottom:84px;padding:4px 16px 0;overflow:hidden;display:flex;flex-direction:column;gap:12px;z-index:3}
+.chat-date{text-align:center;font-family:var(--num);font-size:10px;color:var(--ink-faint);letter-spacing:2.5px;margin-bottom:2px}
+.row{display:flex;gap:8px;align-items:flex-end}
+.row.me{justify-content:flex-end}
+.avatar{
+  width:36px;height:36px;border-radius:50%;flex-shrink:0;
+  background:var(--cream-hi);border:1px solid rgba(201,169,124,.3);
+  box-shadow:var(--shadow);
+  display:flex;align-items:center;justify-content:center;
+}
+.bub-ai{
+  max-width:78%;background:var(--cream-hi);border:1px solid rgba(201,169,124,.22);
+  border-radius:14px 14px 14px 4px;padding:11px 14px;font-size:13px;line-height:1.8;color:var(--ink);
+  box-shadow:var(--shadow);
+}
+.bub-me{
+  max-width:78%;background:var(--pink);border:1px solid rgba(201,169,124,.3);
+  border-radius:14px 14px 4px 14px;padding:11px 14px;font-size:13px;line-height:1.8;color:#5C4A3A;
+  box-shadow:var(--shadow);
+}
+.typing{display:inline-flex;gap:5px;padding:4px 2px}
+.typing i{width:6px;height:6px;border-radius:50%;background:#DCA9A1;animation:tb 1.1s ease infinite}
+.typing i:nth-child(2){animation-delay:.15s}
+.typing i:nth-child(3){animation-delay:.3s}
+@keyframes tb{0%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-4px);opacity:1}}
+.chat-input{
+  position:absolute;left:16px;right:16px;bottom:16px;height:48px;z-index:8;
+  border-radius:999px;background:var(--cream-hi);border:1px solid rgba(201,169,124,.35);
+  box-shadow:var(--shadow),var(--hi);
+  display:flex;align-items:center;padding:0 6px 0 18px;gap:8px;
+}
+.chat-input input{flex:1;border:none;outline:none;background:transparent;font-family:var(--serif);font-size:13px;color:var(--ink);height:44px;min-width:0}
+.chat-input input::placeholder{color:var(--ink-faint)}
+.sendbtn{
+  width:40px;height:40px;border-radius:50%;flex-shrink:0;cursor:pointer;
+  background:var(--pink);box-shadow:var(--hi);
+  display:flex;align-items:center;justify-content:center;transition:transform .15s ease;
+}
+.sendbtn:active{transform:scale(.9)}
+
+/* ── 专属海报（精品贺卡） ── */
+.poster{
+  position:relative;width:100%;border-radius:16px;overflow:hidden;z-index:3;
+  background:linear-gradient(168deg,#FBF7EF 0%,#F6EFE1 100%);
+  border:1px solid rgba(201,169,124,.3);
+  box-shadow:var(--shadow),var(--hi);
+  padding:22px 20px 18px;
+}
+.poster::before{content:'';position:absolute;inset:16px;border:2px solid rgba(201,169,124,.42);border-radius:12px;pointer-events:none}
+.tape{
+  position:absolute;top:-8px;left:50%;transform:translateX(-50%) rotate(-4deg);
+  width:74px;height:16px;background:rgba(232,196,190,.45);border:1px solid rgba(201,169,124,.22);border-radius:2px;
+  box-shadow:0 1px 4px rgba(61,58,54,.08);z-index:2;
+}
+.p-brand{display:flex;align-items:center;justify-content:space-between;padding:0 2px}
+.p-logo{font-family:var(--serif);font-weight:500;font-size:15px;color:#8A6F4E;letter-spacing:4px}
+.p-en{font-family:var(--num);font-size:9px;color:rgba(201,169,124,.85);letter-spacing:2.5px}
+.p-art{width:196px;height:140px;margin:9px auto 0;border-radius:12px;overflow:hidden;transform:rotate(-1.6deg);border:1px solid var(--line);box-shadow:var(--shadow),var(--hi);background:#B9B0CC}
+.p-date{font-family:var(--num);font-size:12px;color:var(--ink-soft);text-align:center;margin-top:10px;letter-spacing:2.5px}
+.p-line{font-family:var(--serif);font-weight:500;font-size:19px;color:var(--ink);text-align:center;margin-top:3px;letter-spacing:2px}
+.p-nick{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px;font-family:var(--sans);font-size:11px;color:var(--ink-soft);letter-spacing:1.5px}
+.p-nick svg{display:block}
+.p-foot{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding:0 2px}
+.p-name{font-family:var(--serif);font-weight:500;font-size:13px;color:#6B5B48;letter-spacing:2px;display:flex;flex-direction:column;gap:2px}
+.p-name small{font-family:var(--sans);font-weight:400;font-size:9px;color:var(--ink-faint);letter-spacing:1.5px}
+.qr{width:52px;height:52px;border-radius:8px;background:#FFF;border:1px solid rgba(201,169,124,.35);flex-shrink:0;padding:3px}
+.poster-btns{display:flex;gap:10px;margin-top:14px}
+
+/* ── Toast ── */
+.toast{
+  position:absolute;left:50%;transform:translateX(-50%);bottom:96px;z-index:40;
+  background:rgba(61,58,54,.94);color:#FFF8EE;font-family:var(--sans);font-size:12px;letter-spacing:1px;
+  padding:10px 18px;border-radius:999px;box-shadow:0 6px 18px rgba(61,58,54,.3);
+  animation:toastin 1.9s ease forwards;pointer-events:none;white-space:nowrap;
+}
+@keyframes toastin{0%{opacity:0;transform:translateX(-50%) translateY(10px)}12%{opacity:1;transform:translateX(-50%) translateY(0)}78%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-6px)}}
+
+/* ── 抽牌星光粒子 ── */
+.spark{position:absolute;z-index:25;pointer-events:none;animation:burst .75s ease-out forwards}
+@keyframes burst{0%{transform:translate(0,0) scale(.3) rotate(0);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(1.15) rotate(170deg);opacity:0}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z=="></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1=="></script>
+<script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js" crossorigin integrity="sha384-x/ilTFv/u/eu6YSmkFDZl5V5Mm/pkxxcVv2cVJOrr1J0rvILhMvRBCy6yA75wYBj"></script>
+<script type="text/babel" data-presets="env,react">
+const {useState,useEffect,useRef} = React;
+
+/* ═══════════════════════════════════════════════════════════
+   星光映照 · E2 高级感增强（奶油疗愈精装版）
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── 微信胶囊 ── */
+function WxCapsule(){
+  return (
+    <div className="wxcapsule">
+      <div className="cap"><span/><span/><span/></div>
+      <div className="cap"><div className="circle"/></div>
+    </div>
+  );
+}
+
+/* ── 通用图标 ── */
+const Icon = ({name,color,size=20}) => {
+  const c = color||'currentColor';
+  const paths = {
+    home:<><path d="M3 11.2 10 5l7 6.2" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/><path d="M5.5 10.5V17h9v-6.5" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></>,
+    book:<><path d="M4 4.5h7.5V17H4z" fill="none" stroke={c} strokeWidth="1.6" strokeLinejoin="round"/><path d="M11.5 5h5V17h-5" fill="none" stroke={c} strokeWidth="1.6" strokeLinejoin="round"/></>,
+    user:<><circle cx="10" cy="7.5" r="3.2" fill="none" stroke={c} strokeWidth="1.6"/><path d="M4.5 17c.8-3 3-4.6 5.5-4.6s4.7 1.6 5.5 4.6" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round"/></>,
+    about:<><circle cx="10" cy="10" r="7" fill="none" stroke={c} strokeWidth="1.6"/><path d="M10 8.5v.2M10 11.5v2.6" stroke={c} strokeWidth="1.6" strokeLinecap="round"/></>,
+  };
+  return <svg width={size} height={size} viewBox="0 0 20 20">{paths[name]}</svg>;
+};
+
+const TABS = [
+  {key:'home', name:'映照', ic:'home'},
+  {key:'book', name:'百科', ic:'book'},
+  {key:'user', name:'我的', ic:'user'},
+  {key:'about', name:'关于', ic:'about'},
+];
+
+/* ═══════════════════════════════════════════════════════════
+   水彩插画系统（莫兰迪降饱和 · 细金线勾勒）
+   ═══════════════════════════════════════════════════════════ */
+
+/* 四芒星光 */
+const STAR_PATH='M0,-7 C1.2,-3 3,-1.2 7,0 C3,1.2 1.2,3 0,7 C-1.2,3 -3,1.2 -7,0 C-3,-1.2 -1.2,-3 0,-7 Z';
+const Spark=({x=0,y=0,s=1,fill='#D8C4A0',op=0.7,r=0,style})=>(
+  <svg width={10*s} height={10*s} viewBox="-8 -8 16 16" style={style}>
+    <path d={STAR_PATH} transform={`scale(${s}) rotate(${r})`} fill={fill} opacity={op}/>
+  </svg>
+);
+
+/* 水彩月亮画（今日启示牌 / 海报）· 3-4 层柔光 + 1px 细金线 */
+function MoonPainting({slice=false}){
+  return (
+    <svg viewBox="0 0 240 190" style={{width:'100%',height:'100%',display:'block'}} preserveAspectRatio={slice?'xMidYMid slice':'xMidYMid meet'}>
+      <defs>
+        <linearGradient id="e2Sky" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#B9B0CC"/><stop offset=".55" stopColor="#D5CDE0"/><stop offset="1" stopColor="#EAE5EF"/>
+        </linearGradient>
+        <linearGradient id="e2Moon" x1="0" y1="0" x2=".8" y2="1">
+          <stop offset="0" stopColor="#FCF5E2"/><stop offset="1" stopColor="#EEDCB2"/>
+        </linearGradient>
+        <radialGradient id="e2Glow1" cx=".5" cy=".5" r=".5">
+          <stop offset="0" stopColor="#F6ECD2" stopOpacity=".5"/><stop offset=".62" stopColor="#F6ECD2" stopOpacity=".18"/><stop offset="1" stopColor="#F6ECD2" stopOpacity="0"/>
+        </radialGradient>
+        <radialGradient id="e2Glow2" cx=".5" cy=".5" r=".5">
+          <stop offset="0" stopColor="#EAE0F6" stopOpacity=".32"/><stop offset="1" stopColor="#EAE0F6" stopOpacity="0"/>
+        </radialGradient>
+        <filter id="e2Soft" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="5"/></filter>
+        <filter id="e2Bleed" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2.2"/></filter>
+      </defs>
+      {/* 水彩纸面（降饱和） */}
+      <path d="M58,10 C96,4 148,8 186,34 C214,54 228,90 222,128 C216,164 186,184 146,187 C106,190 62,182 36,158 C10,134 -4,96 14,62 C28,30 40,14 58,10 Z" fill="url(#e2Sky)"/>
+      <circle cx="42" cy="34" r="42" fill="#C4BBD6" opacity=".38" filter="url(#e2Bleed)"/>
+      <circle cx="200" cy="152" r="46" fill="#E3DBEA" opacity=".4" filter="url(#e2Bleed)"/>
+      <circle cx="28" cy="130" r="30" fill="#CBC3D8" opacity=".3" filter="url(#e2Bleed)"/>
+      {/* 月光 3 层柔光 */}
+      <circle cx="120" cy="76" r="72" fill="url(#e2Glow2)"/>
+      <circle cx="120" cy="76" r="64" fill="url(#e2Glow1)"/>
+      {/* 月亮 + 1px 细金线 */}
+      <circle cx="120" cy="76" r="40" fill="url(#e2Moon)"/>
+      <circle cx="120" cy="76" r="40" fill="none" stroke="rgba(201,169,124,.3)" strokeWidth="1"/>
+      <circle cx="106" cy="63" r="30" fill="#F9F1DD" opacity=".5" filter="url(#e2Soft)"/>
+      <circle cx="138" cy="90" r="33" fill="#C9C2D4" opacity=".55" filter="url(#e2Soft)"/>
+      {/* 星光（克制 3 颗） */}
+      <path d={STAR_PATH} transform="translate(60 38) scale(1)" fill="#EFE2BE" opacity=".7"/>
+      <path d={STAR_PATH} transform="translate(176 46) scale(.75)" fill="#EFE2BE" opacity=".6"/>
+      <path d={STAR_PATH} transform="translate(150 68) scale(.55)" fill="#EFE2BE" opacity=".55"/>
+      {/* 云 + 睡觉的小兔子（细金线轮廓） */}
+      <ellipse cx="120" cy="146" rx="34" ry="10" fill="#FFFDF8" opacity=".85" filter="url(#e2Soft)"/>
+      <ellipse cx="98" cy="141" rx="20" ry="8" fill="#FFFDF8" opacity=".72" filter="url(#e2Soft)"/>
+      <ellipse cx="143" cy="142" rx="22" ry="9" fill="#FFFDF8" opacity=".76" filter="url(#e2Soft)"/>
+      <g stroke="rgba(201,169,124,.3)" strokeWidth="1">
+        <ellipse cx="110" cy="80" rx="4" ry="10.5" fill="#FFFDF8" transform="rotate(-14 110 80)"/>
+        <ellipse cx="110" cy="82" rx="1.7" ry="5.5" fill="#E8C4BE" opacity=".75" transform="rotate(-14 110 82)"/>
+        <ellipse cx="130" cy="80" rx="4" ry="10.5" fill="#FFFDF8" transform="rotate(12 130 80)"/>
+        <ellipse cx="130" cy="82" rx="1.7" ry="5.5" fill="#E8C4BE" opacity=".75" transform="rotate(12 130 82)"/>
+        <circle cx="120" cy="98" r="12.5" fill="#FFFDF8"/>
+        <ellipse cx="120" cy="120" rx="15" ry="18.5" fill="#FFFDF8"/>
+        <path d="M115.5 95.5 Q119 98.5 122.5 95.5" stroke="#C9A488" strokeWidth="1.7" fill="none" strokeLinecap="round"/>
+        <circle cx="128" cy="101" r="2" fill="#E8C4BE" opacity=".6"/>
+        <circle cx="134.5" cy="124" r="4.5" fill="#FFFDF8"/>
+        <ellipse cx="112" cy="137" rx="5" ry="3.2" fill="#F7F0E2"/>
+        <ellipse cx="128" cy="137" rx="5" ry="3.2" fill="#F7F0E2"/>
+      </g>
+      {/* 底部颜料滴落（减淡） */}
+      <circle cx="66" cy="184" r="6" fill="#C4BBD6" opacity=".3"/>
+      <circle cx="172" cy="182" r="4.5" fill="#E3DBEA" opacity=".4"/>
+    </svg>
+  );
+}
+
+/* 五芒星币画（解读页 / 翻转牌面）· 细金线 + 破土嫩芽保留 */
+const PENTA='M20 6 L23.53 15.15 L33.32 15.67 L25.71 21.85 L28.23 31.33 L20 26 L11.77 31.33 L14.29 18.15 L6.68 24.33 L16.47 24.85 Z';
+function CoinPainting({slice=false}){
+  return (
+    <svg viewBox="0 0 240 190" style={{width:'100%',height:'100%',display:'block'}} preserveAspectRatio={slice?'xMidYMid slice':'xMidYMid meet'}>
+      <defs>
+        <linearGradient id="e2Mint" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#E9EEE3"/><stop offset=".6" stopColor="#ECE7EF"/><stop offset="1" stopColor="#F5EFDF"/>
+        </linearGradient>
+        <radialGradient id="e2Coin" cx=".35" cy=".3" r=".85">
+          <stop offset="0" stopColor="#F8EED2"/><stop offset=".55" stopColor="#E7CD96"/><stop offset="1" stopColor="#D2B173"/>
+        </radialGradient>
+        <radialGradient id="e2GoldGlow" cx=".5" cy=".5" r=".5">
+          <stop offset="0" stopColor="#F0E2BC" stopOpacity=".7"/><stop offset="1" stopColor="#F0E2BC" stopOpacity="0"/>
+        </radialGradient>
+        <filter id="m2Soft" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="4.5"/></filter>
+        <filter id="m2Bleed" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
+      </defs>
+      <path d="M52,14 C92,4 148,8 182,32 C212,54 226,92 214,128 C202,164 170,184 130,186 C90,188 48,178 26,152 C4,126 -6,88 12,56 C26,32 36,20 52,14 Z" fill="url(#e2Mint)"/>
+      <circle cx="46" cy="40" r="38" fill="#C7D3C2" opacity=".42" filter="url(#m2Bleed)"/>
+      <circle cx="196" cy="150" r="42" fill="#E1DAE9" opacity=".4" filter="url(#m2Bleed)"/>
+      <circle cx="186" cy="30" r="30" fill="#EFE5CB" opacity=".38" filter="url(#m2Bleed)"/>
+      {/* 金币 + 细金线 */}
+      <circle cx="120" cy="98" r="62" fill="url(#e2GoldGlow)"/>
+      <circle cx="120" cy="98" r="44" fill="url(#e2Coin)"/>
+      <circle cx="120" cy="98" r="44" fill="none" stroke="rgba(201,169,124,.35)" strokeWidth="1"/>
+      <circle cx="120" cy="98" r="32" fill="none" stroke="#B08F52" strokeWidth="1.2" opacity=".45"/>
+      <path d="M92 74 A36 36 0 0 1 140 68" stroke="#F7EDD4" strokeWidth="4.5" fill="none" strokeLinecap="round" opacity=".8"/>
+      <g transform="translate(120 98) scale(3.1) translate(-20 -20)">
+        <path d={PENTA} fill="#B08F52" opacity=".8"/>
+      </g>
+      {/* 发芽的小芽（新开始 · 治愈记忆点保留） */}
+      <path d="M120 56 C118 44 124 40 120 30" stroke="#8CA88B" strokeWidth="3.5" fill="none" strokeLinecap="round"/>
+      <path d="M120 46 C111 40 105 34 105 28 C113 28 119 34 120 41 Z" fill="#9FB79C"/>
+      <path d="M120 38 C129 32 135 26 135 20 C127 20 121 26 120 33 Z" fill="#A8BFA5"/>
+      {/* 星光（克制 2 颗） */}
+      <path d={STAR_PATH} transform="translate(66 62) scale(.8)" fill="#EFE2BE" opacity=".6"/>
+      <path d={STAR_PATH} transform="translate(164 74) scale(.7)" fill="#EFE2BE" opacity=".55"/>
+      <circle cx="120" cy="182" r="2.5" fill="#E1DAE9" opacity=".55"/>
+    </svg>
+  );
+}
+
+/* 牌背（奶油白底 + 细金线 / 细粉线纹样 · 统一质感） */
+function CardBackArt({tone='gold'}){
+  const line = tone==='pink' ? 'rgba(210,168,160,.6)' : 'rgba(201,169,124,.6)';
+  const gid='cb2-'+tone;
+  return (
+    <svg viewBox="0 0 80 112" preserveAspectRatio="xMidYMid slice" style={{width:'100%',height:'100%',display:'block'}}>
+      <defs>
+        <linearGradient id={gid} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#FBF7EF"/><stop offset="1" stopColor="#F1EADD"/>
+        </linearGradient>
+      </defs>
+      <rect width="80" height="112" fill={`url(#${gid})`}/>
+      <rect x="7" y="7" width="66" height="98" rx="11" fill="none" stroke={line} strokeWidth="1"/>
+      <path d="M52 34 A13 13 0 1 0 52 58 A10 10 0 1 1 52 34 Z" fill="none" stroke={line} strokeWidth="1.2" strokeLinejoin="round"/>
+      <path d={STAR_PATH} transform="translate(27 36) scale(.7)" fill={line} opacity=".9"/>
+      <circle cx="30" cy="62" r="1" fill={line} opacity=".7"/>
+      <circle cx="24" cy="78" r="1" fill={line} opacity=".6"/>
+      <circle cx="56" cy="76" r="1" fill={line} opacity=".65"/>
+    </svg>
+  );
+}
+
+/* 聊天头像 · 小月亮（细金线） */
+function MoonMini(){
+  return (
+    <svg viewBox="0 0 28 28" width="20" height="20">
+      <path d="M20 3.5 A11.5 11.5 0 1 0 20 24.5 A8.6 8.6 0 1 1 20 3.5 Z" fill="none" stroke="rgba(201,169,124,.75)" strokeWidth="1.4"/>
+      <path d={STAR_PATH} transform="translate(8 9) scale(.7)" fill="#D8B184"/>
+    </svg>
+  );
+}
+
+/* 海报 · 小程序码示意 */
+function QRMock(){
+  const cells=[[2,2],[3,2],[4,2],[2,3],[4,3],[2,4],[3,4],[4,4],[5,4],[2,5],[4,5],[3,6],[4,6],[6,2],[6,3],[6,4]];
+  return (
+    <svg viewBox="0 0 54 54" className="qr">
+      <rect width="54" height="54" rx="8" fill="#FFF"/>
+      <rect x="5" y="5" width="12" height="12" rx="3" fill="#3D3A36"/><rect x="8" y="8" width="6" height="6" rx="1.5" fill="#FFF"/>
+      <rect x="37" y="5" width="12" height="12" rx="3" fill="#3D3A36"/><rect x="40" y="8" width="6" height="6" rx="1.5" fill="#FFF"/>
+      <rect x="5" y="37" width="12" height="12" rx="3" fill="#3D3A36"/><rect x="8" y="40" width="6" height="6" rx="1.5" fill="#FFF"/>
+      {cells.map((c,i)=><rect key={i} x={6+c[0]*6} y={6+c[1]*6} width="3" height="3" rx="1" fill="#3D3A36" opacity=".9"/>)}
+    </svg>
+  );
+}
+
+function BackArrow({onClick}){
+  return (
+    <div className="backbtn" onClick={onClick}>
+      <svg width="20" height="20" viewBox="0 0 20 20"><path d="M12.5 4.5 7 10l5.5 5.5" fill="none" stroke="#8A8478" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
+   01 · 今日 —— 每日一牌 · 水彩月亮牌
+   ═══════════════════════════════════════════════════════════ */
+function ScreenToday(){
+  const [toast,setToast]=useState('');
+  const show=(t)=>{setToast(t);setTimeout(()=>setToast(''),1900);};
+  return (
+    <div className="sys-e2">
+      <div className="screen" style={{width:300,height:640,borderRadius:34,boxShadow:'0 30px 60px rgba(0,0,0,.55)'}} data-screen-label="s1-today">
+        <WxCapsule/>
+        <div className="wash" style={{width:210,height:210,right:-70,top:-50,background:'#E8C4BE',opacity:.32}}/>
+        <div className="wash" style={{width:190,height:190,left:-80,top:330,background:'#C9A97C',opacity:.18}}/>
+        <div className="pad" style={{padding:'64px 22px 0'}}>
+          <div className="microlabel">STARLIT · 每日一牌</div>
+          <div className="brand">星光映照</div>
+          <div className="date-row"><span className="gold-dot"/><span>AUG 7 · FRIDAY · 2026</span></div>
+          <div className="quote">今夜，月光替你问一卦</div>
+          <div className="quote-sub">把烦恼交给月亮，把今晚还给自己</div>
+          <div className="paint-wrap">
+            <div className="painting" onClick={()=>show('月亮牌：允许情绪自然流动，今晚不评判自己')} style={{'--rot':'-1.5deg'}}>
+              <MoonPainting/>
+            </div>
+            <Spark s={0.5} fill="#C9A97C" op={0.5} style={{position:'absolute',right:22,top:10}}/>
+          </div>
+          <div className="pill-wrap"><div className="pill">今日启示牌</div></div>
+          <div className="phrase">月亮牌 · 今晚允许自己慢下来</div>
+          <div className="btn btn-primary" style={{marginTop:14}} onClick={()=>show('牌面已翻开 · 月光正为你落笔')}>翻开今日牌面</div>
+        </div>
+        <div className="tabbar">
+          {TABS.map(t=>
+            <div key={t.key} className={"tab"+(t.key==='home'?' on':'')}>
+              <Icon name={t.ic} color={t.key==='home'?'#8A6F4E':'#B0AA9C'} size={20}/>
+              <span>{t.name}</span>
+              <span className="tdot"/>
+            </div>)}
+        </div>
+        {toast&&<div className="toast">{toast}</div>}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
+   02 · 洗牌 —— 净手 · 深呼吸 · 凭直觉选三张
+   ═══════════════════════════════════════════════════════════ */
+const BACKS=[
+  {h:'pink',r:-2},{h:'gold',r:1.5},{h:'gold',r:-1},
+  {h:'gold',r:2},{h:'pink',r:-1.5},{h:'gold',r:1},
+  {h:'gold',r:-2},{h:'gold',r:1.5},{h:'pink',r:-1},
+];
+function ScreenShuffle(){
+  const [sel,setSel]=useState([]);
+  const [sparks,setSparks]=useState([]);
+  const [toast,setToast]=useState('');
+  const ref=useRef(null);
+  const show=(t)=>{setToast(t);setTimeout(()=>setToast(''),1900);};
+  const toggle=(i)=>{
+    if(sel.includes(i)){setSel(sel.filter(x=>x!==i));return;}
+    if(sel.length>=3){show('三张已齐，相信直觉就好');return;}
+    const card=ref.current&&ref.current.querySelector(`[data-i="${i}"] .s-card`);
+    const screen=ref.current;
+    if(card&&screen){
+      const a=card.getBoundingClientRect(),b=screen.getBoundingClientRect();
+      const cx=a.left-b.left+a.width/2, cy=a.top-b.top+a.height/2;
+      const id=Date.now();
+      setSparks(prev=>[...prev,...Array.from({length:6},(_,k)=>({
+        id:id+k,x:cx,y:cy,
+        dx:(k%3-1)*30+(k*7%9-4)*6,
+        dy:-14-k*9,
+        del:k*0.03,
+      }))]);
+      setTimeout(()=>setSparks(prev=>prev.filter(p=>p.id<id)),800);
+    }
+    setSel([...sel,i]);
+  };
+  return (
+    <div className="sys-e2">
+      <div className="screen" style={{width:300,height:640,borderRadius:34,boxShadow:'0 30px 60px rgba(0,0,0,.55)'}} data-screen-label="s2-shuffle" ref={ref}>
+        <WxCapsule/>
+        <BackArrow onClick={()=>show('先别走，月亮在等你')}/>
+        <div className="wash" style={{width:190,height:190,right:-70,top:-30,background:'#E8C4BE',opacity:.28}}/>
+        <div className="wash" style={{width:170,height:170,left:-60,top:430,background:'#C9A97C',opacity:.16}}/>
+        <div className="pad" style={{padding:'46px 22px 0'}}>
+          <div className="h-title" style={{textAlign:'center'}}>凭直觉，选三张</div>
+          <div className="h-sub" style={{textAlign:'center',marginTop:7}}>净手 · 深呼吸 · 在心里想一个问题</div>
+          <div className="grid3" style={{marginTop:20}}>
+            {BACKS.map((b,i)=>
+              <div key={i} className="s-rot" style={{transform:`rotate(${b.r}deg)`}} data-i={i}>
+                <div className={"s-card"+(sel.includes(i)?' sel':'')} onClick={()=>toggle(i)}>
+                  <CardBackArt tone={b.h}/>
+                </div>
+              </div>)}
+          </div>
+          <div className="counter">
+            {Array.from({length:9}).map((_,k)=>
+              <span key={k} className={"cdot"+(k<sel.length?' on':'')}/>)}
+            <span className="cnum">已选 <span className="num">{sel.length}</span>/<span className="num">3</span></span>
+          </div>
+          <div className={"btn btn-primary"+(sel.length===3?'':' btn-off')} style={{marginTop:12}} onClick={()=>sel.length===3&&show('牌面正在翻开 · 三张牌已经苏醒')}>翻开牌面</div>
+          <div className="hint-line" style={{marginTop:8}}>牌没有对错，直觉会替你作答</div>
+        </div>
+        {sparks.map(s=>
+          <span key={s.id} className="spark" style={{left:s.x,top:s.y,'--dx':`${s.dx}px`,'--dy':`${s.dy}px`,animationDelay:`${s.del}s`}}>
+            <Spark s={0.7} fill="#C9A97C" op={0.9}/>
+          </span>)}
+        {toast&&<div className="toast">{toast}</div>}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
+   03 · 读牌中 —— 月亮正在为你落笔…
+   ═══════════════════════════════════════════════════════════ */
+function ScreenReading(){
+  const stars=[
+    {x:60,y:70,d:0,dur:3.8},{x:150,y:58,d:1.2,dur:4.2},{x:238,y:118,d:.6,dur:4},
+  ];
+  return (
+    <div className="sys-e2">
+      <div className="screen" style={{width:300,height:640,borderRadius:34,boxShadow:'0 30px 60px rgba(0,0,0,.55)'}} data-screen-label="s3-reading">
+        <WxCapsule/>
+        <BackArrow/>
+        <div className="wash" style={{width:220,height:220,left:40,top:180,background:'#E8C4BE',opacity:.3}}/>
+        <div className="wash" style={{width:200,height:200,right:-40,top:300,background:'#C9A97C',opacity:.14}}/>
+        {stars.map((s,i)=>
+          <span key={i} className="fallstar" style={{left:s.x,top:s.y,'--del':`${s.d}s`,'--dur':`${s.dur}s`}}>
+            <Spark s={0.6} fill="#C9A97C" op={0.5}/>
+          </span>)}
+        <div className="reading-head">
+          <div className="quote">月亮正在为你落笔…</div>
+          <div className="quote-sub">三张牌正在醒来，稍等片刻</div>
+        </div>
+        <div className="flip-row">
+          {[0,1,2].map(k=>
+            <div className="flip-card" key={k} style={{transform:`translateY(${k===1?10:k===0?2:-2}px)`}}>
+              <div className="flip-inner" style={{'--del':`${k*1.3}s`}}>
+                <div className="flip-face"><CardBackArt tone={['gold','pink','gold'][k]}/></div>
+                <div className="flip-face flip-back"><CoinPainting slice/></div>
+              </div>
+            </div>)}
+        </div>
+        <div className="progress">
+          <div className="p-track"><div className="p-fill"/></div>
+          <div className="p-dots"><i/><i/><i/></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
+   04 · 解读 —— 今日指引 · 温柔解读
+   ═══════════════════════════════════════════════════════════ */
+const CHIPS=[
+  {k:'love',t:'感情',line:'今天适合主动说一句想说的话，哪怕很小声。'},
+  {k:'work',t:'事业',line:'先完成最小的一步，余下的交给时间。'},
+  {k:'self',t:'内心觉察',line:'允许自己暂时不完美，你已经很努力了。'},
+];
+function ScreenReveal(){
+  const [chip,setChip]=useState('love');
+  const [toast,setToast]=useState('');
+  const show=(t)=>{setToast(t);setTimeout(()=>setToast(''),1900);};
+  const cur=CHIPS.find(c=>c.k===chip);
+  return (
+    <div className="sys-e2">
+      <div className="screen" style={{width:300,height:640,borderRadius:34,boxShadow:'0 30px 60px rgba(0,0,0,.55)'}} data-screen-label="s4-reveal">
+        <WxCapsule/>
+        <BackArrow onClick={()=>show('牌面已收好 · 随时可以再翻开')}/>
+        <div className="wash" style={{width:190,height:190,right:-60,top:-40,background:'#E8C4BE',opacity:.26}}/>
+        <div className="wash" style={{width:170,height:170,left:-70,bottom:-50,background:'#C9A97C',opacity:.14}}/>
+        <div className="pad">
+          <div className="rv-head">
+            <div className="pill pill-lav" style={{display:'inline-flex'}}>今日指引 · 8月7日</div>
+            <div className="rv-title">星币王牌</div>
+            <div className="rv-sub">新的开始，正在土壤里发芽</div>
+          </div>
+          <div className="rv-art"><CoinPainting/></div>
+          <div className="rv-text">
+            <p>星币王牌今日降临——<em>新的可能正在土壤里发芽</em>。你不必急着收获，允许一切慢慢生长。</p>
+            <div className="divider"><i/><b/><i/></div>
+            <p>今天的好运，藏在每一个「慢慢来」里。</p>
+          </div>
+          <div className="chips">
+            {CHIPS.map(c=>
+              <div key={c.k} className={"chip"+(chip===c.k?' on':'')}
+                style={chip===c.k?{borderColor:'rgba(201,169,124,.55)'}:{borderColor:'rgba(201,169,124,.35)'}}
+                onClick={()=>setChip(c.k)}>
+                {c.t}
+              </div>)}
+          </div>
+          <div className="chip-line">{cur.line}</div>
+          <div className="btns">
+            <div className="btn btn-ghost w108" onClick={()=>show('卡片已存好，去朋友圈晒晒吧')}>存为卡片</div>
+            <div className="btn btn-primary flex1" onClick={()=>show('星塔罗师正在赶来 · 稍等片刻')}>与星塔罗师聊聊</div>
+          </div>
+          <div className="hint-line" style={{marginTop:8}}>每张牌都是温柔的提醒，不是审判</div>
+        </div>
+        {toast&&<div className="toast">{toast}</div>}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
+   05 · 星光树洞 —— 与星塔罗师聊聊
+   ═══════════════════════════════════════════════════════════ */
+const CURATED=[
+  '听见了。星币王牌想告诉你：种子破土前，都有一段安静的等待。今天不必赶路，先把眼前的小事做好，好不好？',
+  '嗯，我懂那种闷闷的感觉。月亮牌说：夜晚是用来休息的，不是用来较劲的。喝杯温水，早点睡，明天又是新的土壤。',
+  '温柔地抱抱你。牌面里那株小芽正在生长，它不着急，你也不用。想把哪件事先放一放？我陪你一起想。',
+];
+function ScreenChat(){
+  const [msgs,setMsgs]=useState([
+    {from:'ai',text:'晚上好，我是星塔罗师小满。今晚月色温柔，你抽到的星币王牌告诉我——你心里正有一粒想发芽的种子。愿意和我说说吗？'},
+    {from:'me',text:'我今天有点焦虑，总觉得事情进展得太慢了…'},
+  ]);
+  const [typing,setTyping]=useState(false);
+  const [input,setInput]=useState('');
+  const idx=useRef(0);
+  const send=()=>{
+    const v=input.trim();
+    if(!v)return;
+    setMsgs(m=>[...m,{from:'me',text:v}]);
+    setInput('');
+    setTyping(true);
+    setTimeout(()=>{
+      setTyping(false);
+      const reply=CURATED[idx.current%CURATED.length];
+      idx.current++;
+      setMsgs(m=>[...m,{from:'ai',text:reply}]);
+    },1500);
+  };
+  return (
+    <div className="sys-e2">
+      <div className="screen" style={{width:300,height:640,borderRadius:34,boxShadow:'0 30px 60px rgba(0,0,0,.55)'}} data-screen-label="s5-chat">
+        <WxCapsule/>
+        <BackArrow/>
+        <div className="wash" style={{width:200,height:200,right:-70,top:-50,background:'#E8C4BE',opacity:.26}}/>
+        <div className="wash" style={{width:180,height:180,left:-70,top:380,background:'#D8D2E4',opacity:.22}}/>
+        <div className="chat-head">
+          <div className="chat-title">星光树洞</div>
+          <div className="chat-sub"><span className="online-dot"/>星塔罗师 · 在线</div>
+        </div>
+        <div className="chat-body">
+          <div className="chat-date">AUG 7 · 夜</div>
+          {msgs.map((m,i)=>
+            <div key={i} className={"row"+(m.from==='me'?' me':'')}>
+              {m.from==='ai'&&<div className="avatar"><MoonMini/></div>}
+              <div className={m.from==='me'?'bub-me':'bub-ai'}>{m.text}</div>
+            </div>)}
+          {typing&&
+            <div className="row">
+              <div className="avatar"><MoonMini/></div>
+              <div className="bub-ai typing"><i/><i/><i/></div>
+            </div>}
+        </div>
+        <div className="chat-input">
+          <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==='Enter')send();}} placeholder="和月亮说点悄悄话…"/>
+          <div className="sendbtn" onClick={send}>
+            <svg width="17" height="17" viewBox="0 0 20 20">
+              <path d="M3 3.5 17 10 3 16.5 5.6 10 Z" fill="#5C4A3A"/>
+              <path d="M5.6 10H17" stroke="#5C4A3A" strokeWidth="1.1"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
+   06 · 专属海报 —— 精品贺卡 · 一键存图
+   ═══════════════════════════════════════════════════════════ */
+function ScreenPoster(){
+  const [toast,setToast]=useState('');
+  const show=(t)=>{setToast(t);setTimeout(()=>setToast(''),1900);};
+  return (
+    <div className="sys-e2">
+      <div className="screen" style={{width:300,height:640,borderRadius:34,boxShadow:'0 30px 60px rgba(0,0,0,.55)'}} data-screen-label="s6-poster">
+        <WxCapsule/>
+        <div className="wash" style={{width:190,height:190,right:-70,top:-40,background:'#E8C4BE',opacity:.3}}/>
+        <div className="wash" style={{width:170,height:170,left:-70,bottom:-60,background:'#C9A97C',opacity:.15}}/>
+        <div className="pad" style={{padding:'24px 17px 0'}}>
+          <div className="poster">
+            <div className="tape"/>
+            <div className="p-brand">
+              <span className="p-logo">星光映照</span>
+              <span className="p-en">STARLIT</span>
+            </div>
+            <div className="p-art"><MoonPainting slice/></div>
+            <div className="p-date">AUG 7 · 2026</div>
+            <div className="p-line">星币王牌 · 新的开始正在发芽</div>
+            <div className="p-nick">
+              <Spark s={0.4} fill="#C9A97C" op={0.75}/>
+              <span>映照者 · 小满</span>
+            </div>
+            <div className="p-foot">
+              <div className="p-name">星光映照<small>每日一牌 · 遇见自己</small></div>
+              <QRMock/>
+            </div>
+          </div>
+          <div className="poster-btns">
+            <div className="btn btn-ghost w108" onClick={()=>show('已保存到相册 · 去朋友圈晒晒吧')}>保存图片</div>
+            <div className="btn btn-primary flex1" onClick={()=>show('长按海报即可分享给朋友')}>分享给朋友</div>
+          </div>
+          <div className="hint-line">长按海报 · 存进相册再发朋友圈</div>
+        </div>
+        {toast&&<div className="toast">{toast}</div>}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
+   画布 · 六屏流程
+   ═══════════════════════════════════════════════════════════ */
+function Stage(){
+  const zones=[
+    {l:'01 · 今日', d:'每日一牌 · 水彩月亮牌', el:<ScreenToday/>},
+    {l:'02 · 洗牌', d:'直觉三选 · 3×3 牌阵', el:<ScreenShuffle/>},
+    {l:'03 · 读牌中', d:'月光落笔 · 星光散落', el:<ScreenReading/>},
+    {l:'04 · 解读', d:'今日指引 · 三向觉察', el:<ScreenReveal/>},
+    {l:'05 · 星光树洞', d:'AI 陪伴 · 温柔回应', el:<ScreenChat/>},
+    {l:'06 · 专属海报', d:'精品贺卡 · 一键存图', el:<ScreenPoster/>},
+  ];
+  return (
+    <div className="stage">
+      <h1>星 光 映 照</h1>
+      <div className="sub">E2 · 高级感增强 · 奶油疗愈精装版</div>
+      <div className="meta">莫兰迪低饱和 + 衬线宽字距 + 细金线 · 温柔的高级 · 每张牌都是温柔的提醒 · 结果页即传播页</div>
+      <div className="grid">
+        {zones.map(z=>
+          <div key={z.l} className="zone">
+            <div className="zoom">{z.el}</div>
+            <div className="cap">{z.l}</div>
+            <div className="cap-sub">{z.d}</div>
+          </div>)}
+      </div>
+    </div>
+  );
+}
+
+/* ── 溢出自检（渲染后测量每屏内容是否超出 640 高）── */
+function App(){
+  const hm=(location.hash||'').match(/^#(d?)([1-6])$/);
+  const demo=!!hm&&hm[1]==='d';
+  const want=hm?parseInt(hm[2],10):0;
+  useEffect(()=>{
+    if(!demo)return;
+    const t=setTimeout(()=>{
+      document.querySelectorAll('.s-card').forEach((el,i)=>{if(i<3)setTimeout(()=>el.click(),i*150);});
+      const input=document.querySelector('input');
+      if(input){
+        const setter=Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,'value').set;
+        setter.call(input,'今天有点累，但我会慢慢来的。');
+        input.dispatchEvent(new Event('input',{bubbles:true}));
+        setTimeout(()=>{
+          const sb=document.querySelector('.sendbtn');
+          if(sb)sb.click();
+        },200);
+      }
+    },1000);
+    return ()=>clearTimeout(t);
+  },[]);
+  useEffect(()=>{
+    const check=()=>{
+      const res=[];
+      document.querySelectorAll('[data-screen-label]').forEach(el=>{
+        const sr=el.getBoundingClientRect();
+        let maxB=0;
+        el.querySelectorAll('*').forEach(n=>{
+          const st=getComputedStyle(n);
+          if(st.position==='static'||st.position==='relative'){
+            const r=n.getBoundingClientRect();
+            if(r.bottom-sr.top>maxB)maxB=r.bottom-sr.top;
+          }
+        });
+        res.push(el.getAttribute('data-screen-label')+':flowB='+Math.round(maxB)+'/'+el.clientHeight);
+      });
+      const box=document.getElementById('check-result');
+      if(box)box.textContent='CHECK|'+res.join('|')+'|fontHand:'+document.fonts.check('16px "Ma Shan Zheng"')+'|fontSerif:'+document.fonts.check('16px "Noto Serif SC"');
+    };
+    const t=setTimeout(check,900);
+    if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>setTimeout(check,500));
+    return ()=>clearTimeout(t);
+  },[]);
+  const screens=[<ScreenToday/>,<ScreenShuffle/>,<ScreenReading/>,<ScreenReveal/>,<ScreenChat/>,<ScreenPoster/>];
+  return (
+    <div>
+      <div id="check-result" style={{display:'none'}}/>
+      {want>=1&&want<=6
+        ? <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'#29231E',padding:'26px'}}>{screens[want-1]}</div>
+        : <Stage/>}
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

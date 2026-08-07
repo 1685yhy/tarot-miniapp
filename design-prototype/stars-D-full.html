@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星光映照 · 星盘刻度 · 每日指引全流程</title>
+<meta name="description" content="星光映照塔罗小程序 — 星盘刻度方向完整五屏流程：今日 / 洗牌 / 读牌 / 解读 / 树洞">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,500&family=DM+Serif+Display:ital@0;1&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Noto+Serif+SC:wght@400;500;600;900&family=Noto+Sans+SC:wght@400;500;700&family=Cinzel:wght@400;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   星光映照 · 星盘刻度（Astro Dial）· 每日指引五屏全流程
+   视觉语言与四方向对比稿 D 屏完全一致：墨绿黑渐变 / 黄铜刻度盘 /
+   Cinzel 罗马体 / 黄铜徽章 / 卡牌星币 glyph / tabbar
+   ═══════════════════════════════════════════════════════════════ */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:#17141F;font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;-webkit-font-smoothing:antialiased;color:#EDE7E0}
+#root{min-height:100%}
+::selection{background:rgba(212,175,100,.3)}
+*{scrollbar-width:none}
+*::-webkit-scrollbar{display:none}
+
+/* ── 画布 ── */
+.stage{max-width:1900px;margin:0 auto;padding:34px 26px 70px}
+.stage h1{font-family:'Noto Serif SC',serif;font-weight:600;font-size:26px;text-align:center;letter-spacing:6px;color:#EDE7E0;margin-bottom:8px}
+.stage .sub{text-align:center;font-size:12.5px;color:rgba(237,231,224,.45);letter-spacing:3px;margin-bottom:38px}
+.flow{display:flex;flex-wrap:wrap;justify-content:center;gap:42px 30px;align-items:flex-start}
+.ph{display:flex;flex-direction:column;align-items:center;gap:14px}
+.ph-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:5px;color:rgba(200,169,106,.72)}
+
+/* ── 设备框：圆角黑框 + 动态岛 + home 指示条 ── */
+.device{position:relative;padding:4px;border-radius:42px;background:#070A09;
+  box-shadow:0 0 0 1px rgba(0,0,0,.9),0 34px 64px rgba(0,0,0,.55),0 2px 12px rgba(200,169,106,.06)}
+.device .island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:76px;height:27px;border-radius:15px;background:#000;z-index:40;pointer-events:none}
+.device .homebar{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:118px;height:4.5px;border-radius:3px;background:rgba(255,255,255,.7);z-index:40;pointer-events:none}
+
+/* ═══════════════════════════════════════════════════════════════
+   === 壹 · 今日（首页）===
+   完全复用 .sys-d：dial-ring 刻度盘、Cinzel 品牌、黄铜徽章、
+   星币 ACE 卡牌、星光树洞、黄铜 CTA、tabbar（映照高亮）
+   ═══════════════════════════════════════════════════════════════ */
+.sys-d{
+  --bg:#0E1614; --bg2:#13201C; --brass:#C8A96A; --brass-bright:#E8CE96;
+  --brass-dim:rgba(200,169,106,.5); --ink:#E9E4D8; --moss:#6F8B6F;
+  --serif:'Cinzel','Noto Serif SC',serif;
+  --sans:'Noto Sans SC','PingFang SC',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+.sys-d .screen{
+  background:radial-gradient(130% 100% at 50% 0%, var(--bg2) 0%, var(--bg) 60%, #0A100E 100%);
+  color:var(--ink);position:relative;overflow:hidden;
+}
+.sys-d .screen.fl-col{display:flex;flex-direction:column}
+.sys-d .dial-ring{
+  position:absolute;top:52px;left:50%;transform:translateX(-50%);
+  width:340px;height:340px;border-radius:50%;pointer-events:none;opacity:.5;
+  border:1px solid var(--brass-dim);
+}
+.sys-d .dial-ring::before{
+  content:'';position:absolute;inset:14px;border-radius:50%;border:1px solid rgba(200,169,106,.22);
+}
+.sys-d .dial-ring::after{
+  content:'';position:absolute;inset:-8px;border-radius:50%;border:1px dashed rgba(200,169,106,.14);
+}
+.sys-d .dial-tick{position:absolute;top:52px;left:50%;transform-origin:50% 170px;width:1px;height:7px;background:var(--brass-dim)}
+.sys-d .brand{text-align:center;padding-top:42px;position:relative;z-index:2}
+.sys-d .brand .logo{font-family:var(--serif);font-weight:600;font-size:25px;line-height:1.2;letter-spacing:9px;color:var(--brass-bright);text-shadow:0 0 20px rgba(200,169,106,.3)}
+.sys-d .brand .tag{font-size:11px;line-height:1.4;color:rgba(233,228,216,.5);letter-spacing:4px;margin-top:5px}
+.sys-d .brand .greet{font-family:var(--serif);font-size:12px;line-height:1.4;letter-spacing:3px;color:var(--moss);margin-top:8px}
+.sys-d .badge{
+  display:inline-flex;align-items:center;gap:8px;margin-top:7px;
+  border:1px solid var(--brass-dim);border-radius:2px;padding:5px 15px;
+  font-family:var(--mono);font-size:9.5px;line-height:1.4;letter-spacing:3px;color:var(--brass-bright);
+  background:rgba(200,169,106,.06);
+}
+.sys-d .badge .dot{width:5px;height:5px;background:var(--brass-bright);box-shadow:0 0 10px var(--brass)}
+.sys-d .cardwrap{position:relative;z-index:2;margin-top:8px;display:flex;justify-content:center}
+.sys-d .card{
+  width:160px;height:236px;border-radius:2px;cursor:pointer;position:relative;
+  background:linear-gradient(160deg,#18231F 0%,#101813 100%);
+  border:1px solid var(--brass-dim);
+  box-shadow:0 0 0 1px rgba(200,169,106,.08),0 14px 34px rgba(0,0,0,.6);
+  transition:transform .18s ease;
+}
+.sys-d .card:hover{transform:translateY(-4px)}
+.sys-d .card:active{transform:scale(.98)}
+.sys-d .card .inner{position:absolute;inset:8px;border:1px solid rgba(200,169,106,.4);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:15px 8px}
+.sys-d .card .glyph{
+  width:78px;height:78px;margin-top:14px;border-radius:50%;
+  border:1.5px solid var(--brass);
+  display:flex;align-items:center;justify-content:center;position:relative;
+  background:radial-gradient(circle at 40% 34%, rgba(200,169,106,.22) 0%, transparent 60%);
+}
+.sys-d .card .glyph::before{content:'';position:absolute;inset:5px;border-radius:50%;border:1px solid rgba(200,169,106,.35)}
+.sys-d .card .title{font-family:var(--serif);font-size:13px;line-height:1.3;letter-spacing:3px;color:var(--brass-bright)}
+.sys-d .card .subtitle{font-family:var(--mono);font-size:8.5px;line-height:1.4;letter-spacing:2px;color:rgba(233,228,216,.5);margin-top:4px;text-transform:uppercase}
+.sys-d .card .hint{font-family:var(--sans);font-size:11px;line-height:1.4;letter-spacing:2px;color:rgba(233,228,216,.7);margin-bottom:5px}
+.sys-d .card .hint small{display:block;font-family:var(--mono);font-size:8.5px;color:rgba(233,228,216,.4);margin-top:4px;letter-spacing:1px}
+.sys-d .treepanel{
+  position:relative;z-index:2;margin:6px 18px 0;border:1px solid rgba(200,169,106,.3);
+  border-radius:2px;background:rgba(200,169,106,.05);padding:7px 12px;
+}
+.sys-d .treepanel .t-label{font-family:var(--mono);font-size:9.5px;line-height:1.4;letter-spacing:3px;color:var(--moss);text-transform:uppercase}
+.sys-d .treepanel .t-text{font-family:'Noto Serif SC',serif;font-size:15px;line-height:1.4;margin-top:3px;color:var(--ink)}
+.sys-d .treepanel .t-text i{font-style:italic;color:var(--brass-bright)}
+.sys-d .treepanel .t-go{margin-top:5px;font-family:var(--mono);font-size:9.5px;line-height:1.4;letter-spacing:2px;color:var(--brass)}
+.sys-d .cta{
+  position:relative;z-index:2;margin:8px 18px 0;height:46px;border-radius:2px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  background:linear-gradient(90deg,var(--brass) 0%,#D9BC7F 50%,var(--brass) 100%);
+  color:#171208;font-family:var(--serif);font-size:13px;font-weight:600;letter-spacing:4px;
+  box-shadow:0 0 26px rgba(200,169,106,.3);
+}
+.sys-d .cta:active{transform:scale(.98)}
+.sys-d .tabbar{
+  position:relative;z-index:2;margin:8px 14px 0;height:56px;
+  display:flex;align-items:center;justify-content:space-around;
+  background:rgba(10,16,14,.7);border:1px solid rgba(200,169,106,.25);
+}
+.sys-d .tabbar .tab{font-family:var(--mono);font-size:9.5px;line-height:1.4;letter-spacing:2px;color:rgba(233,228,216,.45);display:flex;flex-direction:column;align-items:center;gap:4px;min-width:64px}
+.sys-d .tabbar .tab.on{color:var(--brass-bright)}
+.sys-d .tabbar .tab .ic{width:19px;height:19px}
+.sys-d .tabbar .tab.on .bar{width:20px;height:1.5px;background:var(--brass)}
+.sys-d .screen.fl-col > .tabbar{margin-top:auto;margin-bottom:16px}
+
+/* ═══════════════════════════════════════════════════════════════
+   === 贰 · 洗牌（选牌）===
+   3×3 牌背（墨绿底 + 黄铜边框 + 罗经玫瑰星芒刻度 SVG）、
+   中央提示、底部黄铜 CTA（未选「开始洗牌」/ 已选「翻开牌面」）
+   ═══════════════════════════════════════════════════════════════ */
+.sys-d .head{position:relative;z-index:2;padding-top:46px;text-align:center}
+.sys-d .head .t{font-family:var(--serif);font-weight:600;font-size:18px;line-height:1.25;letter-spacing:8px;color:var(--brass-bright);text-shadow:0 0 18px rgba(200,169,106,.25)}
+.sys-d .head .s{font-family:var(--mono);font-size:11px;line-height:1.4;letter-spacing:3.5px;color:var(--moss);margin-top:8px}
+.sys-d .grid9{position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,74px);gap:11px;justify-content:center;margin-top:18px}
+.sys-d .grid9.shake .cb{animation:cbjig .5s ease-in-out}
+.sys-d .grid9.shake .cb:nth-child(2n){animation-delay:.07s}
+.sys-d .grid9.shake .cb:nth-child(3n){animation-delay:.14s}
+.sys-d .cb{width:74px;height:108px;border-radius:2px;cursor:pointer;position:relative;
+  background:linear-gradient(160deg,#18231F 0%,#101813 100%);
+  border:1px solid rgba(200,169,106,.45);
+  box-shadow:0 5px 14px rgba(0,0,0,.45);
+  transition:transform .14s ease,border-color .14s ease,box-shadow .14s ease}
+.sys-d .cb:active{transform:scale(.94)}
+.sys-d .cb .cb-in{position:absolute;inset:5px;border:1px solid rgba(200,169,106,.35);border-radius:1px;display:flex;align-items:center;justify-content:center}
+.sys-d .cb.sel{border-color:var(--brass-bright);box-shadow:0 0 22px rgba(200,169,106,.45),0 5px 14px rgba(0,0,0,.45)}
+.sys-d .cb.sel .cb-in{border-color:rgba(200,169,106,.65);box-shadow:inset 0 0 12px rgba(200,169,106,.12)}
+.sys-d .cb.sel .cb-in svg{filter:drop-shadow(0 0 6px rgba(200,169,106,.8))}
+.sys-d .act{margin-top:auto}
+.sys-d .pick-hint{position:relative;z-index:2;text-align:center;margin-top:12px;
+  font-family:var(--mono);font-size:11px;line-height:1.4;letter-spacing:2.5px;color:rgba(233,228,216,.55)}
+.sys-d .pick-hint b{color:var(--brass-bright);font-weight:400}
+.sys-d .cta.ready{animation:ctapulse 1.8s ease-in-out infinite}
+
+/* ═══════════════════════════════════════════════════════════════
+   === 叁 · 读牌中（loading）===
+   中央卡牌翻转（牌背→星币 ACE 牌面）、三点动画 + 「刻度转过
+   星币之位…」、底部黄铜进度条（细线+刻度）、缓慢旋转的刻度环
+   ═══════════════════════════════════════════════════════════════ */
+.sys-d .dial-spin{animation:dialspin 20s linear infinite}
+.sys-d .flip3d{position:relative;z-index:2;width:106px;height:158px;margin:34px auto 0;perspective:700px}
+.sys-d .flip3d .f{position:absolute;inset:0;transform-style:preserve-3d;animation:cardflip 3.4s ease-in-out infinite}
+.sys-d .flip3d .face{position:absolute;inset:0;border-radius:2px;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border:1px solid var(--brass-dim);background:linear-gradient(160deg,#18231F 0%,#101813 100%);
+  box-shadow:0 10px 26px rgba(0,0,0,.5)}
+.sys-d .flip3d .face.bk{display:flex;align-items:center;justify-content:center}
+.sys-d .flip3d .face.bk .cb-in{position:absolute;inset:5px;border:1px solid rgba(200,169,106,.35);border-radius:1px;display:flex;align-items:center;justify-content:center}
+.sys-d .flip3d .face.ft{transform:rotateY(180deg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  box-shadow:0 0 30px rgba(200,169,106,.4),0 10px 26px rgba(0,0,0,.5)}
+.sys-d .flip3d .face.ft .glyph{width:56px;height:56px;margin-top:0}
+.sys-d .flip3d .face.ft .t{font-family:var(--serif);font-size:11px;line-height:1.3;letter-spacing:3px;color:var(--brass-bright)}
+.sys-d .flip3d .face.ft .sub{font-family:var(--mono);font-size:7.5px;line-height:1.3;letter-spacing:2px;color:rgba(233,228,216,.5)}
+.sys-d .load-line{position:relative;z-index:2;text-align:center;margin-top:24px;
+  font-family:var(--mono);font-size:11px;line-height:1.4;letter-spacing:3px;color:var(--moss)}
+.sys-d .dots{display:inline-flex;gap:6px;margin-left:10px;vertical-align:1px}
+.sys-d .dots i{width:4px;height:4px;border-radius:50%;background:var(--brass);box-shadow:0 0 6px rgba(200,169,106,.7);animation:dotp 1.2s ease-in-out infinite}
+.sys-d .dots i:nth-child(2){animation-delay:.18s}
+.sys-d .dots i:nth-child(3){animation-delay:.36s}
+.sys-d .prog{position:relative;z-index:2;height:16px;margin:0 40px}
+.sys-d .screen.fl-col > .prog{margin-top:auto;margin-bottom:0}
+.sys-d .prog .track{position:absolute;left:0;right:0;top:7.5px;height:1px;background:rgba(200,169,106,.22)}
+.sys-d .prog .tk{position:absolute;top:2px;width:1px;height:12px;background:rgba(200,169,106,.32)}
+.sys-d .prog .tk:nth-child(odd){height:8px;top:4px;opacity:.55}
+.sys-d .prog .fill{position:absolute;left:0;top:6px;width:0;height:4px;border-radius:2px;
+  background:linear-gradient(90deg,var(--brass-dim),var(--brass-bright));
+  box-shadow:0 0 10px rgba(200,169,106,.55);animation:progfill 4.2s ease-in-out infinite}
+
+/* ═══════════════════════════════════════════════════════════════
+   === 肆 · 解读（结果页）===
+   顶部等宽日期行、放大版星币 ACE 大牌面（glyph 黄铜发光）、
+   解读文、三枚刻度胶囊标签（感情/事业/提示）、双按钮
+   ═══════════════════════════════════════════════════════════════ */
+.sys-d .rst-head{position:relative;z-index:2;padding-top:44px;text-align:center}
+.sys-d .rst-head .d1{font-family:var(--mono);font-size:11px;line-height:1.4;letter-spacing:3px;color:rgba(233,228,216,.6)}
+.sys-d .rst-head .d2{font-family:var(--mono);font-size:9.5px;line-height:1.4;letter-spacing:3px;color:var(--moss);margin-top:5px}
+.sys-d .divider{width:130px;height:1px;margin:8px auto 0;background:linear-gradient(90deg,transparent,rgba(200,169,106,.55),transparent);position:relative}
+.sys-d .divider::before,.sys-d .divider::after{content:'';position:absolute;top:-2.5px;width:5px;height:5px;transform:rotate(45deg);background:var(--brass)}
+.sys-d .divider::before{left:22px}
+.sys-d .divider::after{right:22px}
+.sys-d .card.big{width:168px;height:252px;cursor:default}
+.sys-d .card.big:hover{transform:none}
+.sys-d .card.big .glyph{width:92px;height:92px;margin-top:16px;box-shadow:0 0 34px rgba(200,169,106,.5),inset 0 0 20px rgba(200,169,106,.12)}
+.sys-d .card.big .glyph svg{width:42px;height:42px}
+.sys-d .card.big .hint{font-family:var(--mono);font-size:9px;line-height:1.4;letter-spacing:2px}
+.sys-d .treepanel.rst{margin-top:10px;padding:10px 14px}
+.sys-d .treepanel.rst .t-text{font-size:13px;line-height:1.7}
+.sys-d .tags{position:relative;z-index:2;display:flex;justify-content:center;gap:11px;margin-top:12px;padding:4px 0}
+.sys-d .tag{height:36px;padding:0 16px;border-radius:999px;border:1px solid var(--brass-dim);cursor:pointer;
+  display:flex;align-items:center;gap:7px;
+  font-family:var(--mono);font-size:11px;line-height:1.4;letter-spacing:2px;color:var(--brass);background:rgba(200,169,106,.05);
+  transition:background .15s ease}
+.sys-d .tag:active{background:rgba(200,169,106,.16)}
+.sys-d .tag .d{width:4px;height:4px;border-radius:50%;background:var(--brass);box-shadow:0 0 6px var(--brass)}
+.sys-d .btnrow{position:relative;z-index:2;display:flex;gap:12px;margin:12px 18px 0}
+.sys-d .btnrow .sec{flex:0 0 110px;height:44px;border-radius:2px;border:1px solid var(--brass-dim);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:12px;line-height:1.4;letter-spacing:3px;color:var(--brass-bright);background:rgba(200,169,106,.04);
+  transition:background .15s ease}
+.sys-d .btnrow .sec:active{background:rgba(200,169,106,.14)}
+.sys-d .btnrow .prim{flex:1;height:44px;border-radius:2px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(90deg,var(--brass) 0%,#D9BC7F 50%,var(--brass) 100%);
+  color:#171208;font-family:var(--serif);font-size:12.5px;line-height:1.4;font-weight:600;letter-spacing:3px;
+  box-shadow:0 0 26px rgba(200,169,106,.35);transition:transform .14s ease}
+.sys-d .btnrow .prim:active{transform:scale(.97)}
+
+/* ═══════════════════════════════════════════════════════════════
+   === 伍 · 树洞（聊天）===
+   返回箭头 + 标题、AI 墨绿玻璃气泡（黄铜星标）、用户黄铜描边
+   气泡、底部输入框（墨绿深底 + 黄铜描边 + 黄铜发送钮）；无 tabbar
+   ═══════════════════════════════════════════════════════════════ */
+.sys-d .chat-head{position:relative;z-index:2;padding-top:44px;height:88px;display:flex;align-items:center}
+.sys-d .chat-head .back{width:44px;height:44px;margin-left:12px;border-radius:2px;border:1px solid var(--brass-dim);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;background:rgba(200,169,106,.05);transition:background .15s ease}
+.sys-d .chat-head .back:active{background:rgba(200,169,106,.16)}
+.sys-d .chat-head .ct-title{position:absolute;left:64px;right:8px;text-align:center;
+  font-family:var(--mono);font-size:11px;line-height:1.4;letter-spacing:2px;color:var(--brass-bright);white-space:nowrap}
+.sys-d .chatbox{position:relative;z-index:2;padding:14px 16px 0;display:flex;flex-direction:column;gap:16px}
+.sys-d .st-line{display:flex;align-items:center;justify-content:center;gap:8px;
+  font-family:var(--mono);font-size:11px;line-height:1.4;letter-spacing:3px;color:rgba(233,228,216,.5)}
+.sys-d .st-line .dot{width:5px;height:5px;border-radius:50%;background:var(--moss);box-shadow:0 0 8px var(--moss);animation:pulsesoft 2.4s infinite}
+.sys-d .msg{display:flex;gap:10px;align-items:flex-start}
+.sys-d .msg.you{justify-content:flex-end}
+.sys-d .msg .avatar{flex:0 0 34px;width:34px;height:34px;border-radius:50%;border:1px solid var(--brass-dim);
+  display:flex;align-items:center;justify-content:center;background:rgba(200,169,106,.08);box-shadow:0 0 12px rgba(200,169,106,.12)}
+.sys-d .msg .bubble{max-width:212px;border-radius:6px;padding:10px 13px;
+  font-family:'Noto Serif SC',serif;font-size:13px;line-height:1.65;color:var(--ink)}
+.sys-d .msg.ai .bubble{background:rgba(24,35,31,.82);border:1px solid rgba(200,169,106,.3);backdrop-filter:blur(8px)}
+.sys-d .msg.you .bubble{background:rgba(200,169,106,.06);border:1px solid var(--brass-dim);color:var(--brass-bright)}
+.sys-d .msg .bubble.typing{display:flex;gap:5px;align-items:center;height:40px;padding:0 16px}
+.sys-d .msg .bubble.typing i{width:5px;height:5px;border-radius:50%;background:var(--brass-dim);animation:dotp 1.2s ease-in-out infinite}
+.sys-d .msg .bubble.typing i:nth-child(2){animation-delay:.18s}
+.sys-d .msg .bubble.typing i:nth-child(3){animation-delay:.36s}
+.sys-d .chat-input{position:relative;z-index:2;display:flex;align-items:center;gap:10px;margin:16px 14px 0;
+  border:1px solid var(--brass-dim);border-radius:6px;background:rgba(10,16,14,.85);padding:6px 6px 6px 14px}
+.sys-d .screen.fl-col > .chat-input{margin-top:auto;margin-bottom:18px}
+.sys-d .chat-input input{flex:1;min-width:0;height:36px;background:none;border:none;outline:none;color:var(--ink);
+  font-family:var(--mono);font-size:11px;letter-spacing:1px}
+.sys-d .chat-input input::placeholder{color:rgba(233,228,216,.4)}
+.sys-d .chat-input .send{flex:0 0 44px;width:44px;height:44px;border-radius:4px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(90deg,var(--brass) 0%,#D9BC7F 50%,var(--brass) 100%);
+  box-shadow:0 0 14px rgba(200,169,106,.4);transition:transform .14s ease}
+.sys-d .chat-input .send:active{transform:scale(.94)}
+
+/* ── 动画关键帧 ── */
+@keyframes cbjig{0%,100%{transform:rotate(0)}25%{transform:rotate(-7deg)}75%{transform:rotate(6deg)}}
+@keyframes cardflip{0%{transform:rotateY(0deg)}26%{transform:rotateY(180deg)}72%{transform:rotateY(180deg)}100%{transform:rotateY(0deg)}}
+@keyframes dialspin{from{transform:translateX(-50%) rotate(0deg)}to{transform:translateX(-50%) rotate(360deg)}}
+@keyframes dotp{0%,100%{opacity:.25;transform:scale(.75)}50%{opacity:1;transform:scale(1.2)}}
+@keyframes pulsesoft{0%,100%{opacity:.5}50%{opacity:1}}
+@keyframes progfill{0%{width:5%}60%{width:78%}100%{width:92%}}
+@keyframes ctapulse{0%,100%{box-shadow:0 0 18px rgba(200,169,106,.35)}50%{box-shadow:0 0 36px rgba(200,169,106,.65)}}
+
+/* 微信胶囊 */
+.wxcapsule{
+  position:absolute;top:13px;right:8px;z-index:30;display:flex;gap:4px;pointer-events:none;
+}
+.wxcapsule .cap{
+  width:40px;height:32px;border-radius:7px;
+  background:rgba(255,255,255,.22);border:0.5px solid rgba(255,255,255,.35);
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(10px);
+}
+.wxcapsule .cap svg{fill:rgba(0,0,0,.65)}
+.wxcapsule .cap:first-child{flex-direction:column;gap:3px}
+.wxcapsule .cap:first-child span{display:block;width:3px;height:3px;border-radius:50%;background:rgba(0,0,0,.6)}
+.wxcapsule .cap .circle{width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(0,0,0,.6)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z=="></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1=="></script>
+<script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js" crossorigin integrity="sha384-x/ilTFv/u/eu6YSmkFDZl5V5Mm/pkxxcVv2cVJOrr1J0rvILhMvRBCy6yA75wYBj"></script>
+<script type="text/babel" data-presets="env,react">
+const {useState} = React;
+
+/* ── 微信胶囊 ── */
+function WxCapsule(){
+  return (
+    <div className="wxcapsule">
+      <div className="cap">
+        <span/><span/><span/>
+      </div>
+      <div className="cap"><div className="circle"/></div>
+    </div>
+  );
+}
+
+/* ── 通用图标（照抄对比稿）── */
+const Icon = ({name,color,size=20}) => {
+  const c = color||'currentColor';
+  const paths = {
+    home:<><path d="M3 11.2 10 5l7 6.2" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/><path d="M5.5 10.5V17h9v-6.5" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></>,
+    book:<><path d="M4 4.5h7.5V17H4z" fill="none" stroke={c} strokeWidth="1.6" strokeLinejoin="round"/><path d="M11.5 5h5V17h-5" fill="none" stroke={c} strokeWidth="1.6" strokeLinejoin="round"/></>,
+    user:<><circle cx="10" cy="7.5" r="3.2" fill="none" stroke={c} strokeWidth="1.6"/><path d="M4.5 17c.8-3 3-4.6 5.5-4.6s4.7 1.6 5.5 4.6" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round"/></>,
+    about:<><circle cx="10" cy="10" r="7" fill="none" stroke={c} strokeWidth="1.6"/><path d="M10 8.5v.2M10 11.5v2.6" stroke={c} strokeWidth="1.6" strokeLinecap="round"/></>,
+  };
+  return <svg className="ic" width={size} height={size} viewBox="0 0 20 20">{paths[name]}</svg>;
+};
+
+/* ── TabBar 数据 ── */
+const TABS = [
+  {key:'home', name:'映照', ic:'home'},
+  {key:'book', name:'百科', ic:'book'},
+  {key:'user', name:'我的', ic:'user'},
+  {key:'about', name:'关于', ic:'about'},
+];
+
+/* ── 星币五角 glyph（照抄对比稿）── */
+const PENTACLE = <path d="M20 3l4.5 9.5L34 9l-4 10 10 4-9.5 4.5L34 37l-9.5-4L20 42.5 15.5 33 6 37l4-10L0 23l9.5-4L6 9l9.5 4z" fill="none" stroke="#C8A96A" strokeWidth="1.4" transform="translate(0,-3) scale(.92)"/>;
+
+/* ── 罗经玫瑰 / 星芒刻度（牌背纹样，呼应刻度盘）── */
+function CompassRose({size=36}){
+  const ticks=Array.from({length:24},(_,i)=>i*15);
+  return (
+    <svg width={size} height={size} viewBox="0 0 40 40">
+      <circle cx="20" cy="20" r="18.5" fill="none" stroke="#C8A96A" strokeWidth="1"/>
+      <circle cx="20" cy="20" r="13" fill="none" stroke="#C8A96A" strokeWidth=".6" strokeDasharray="2 2" opacity=".55"/>
+      {ticks.map(a=>{
+        const r=a*Math.PI/180;
+        return <line key={a} x1={(20+13*Math.cos(r)).toFixed(2)} y1={(20+13*Math.sin(r)).toFixed(2)} x2={(20+18.5*Math.cos(r)).toFixed(2)} y2={(20+18.5*Math.sin(r)).toFixed(2)} stroke="#C8A96A" strokeWidth={a%30===0?.9:.5} opacity={a%30===0?.95:.55}/>;
+      })}
+      <path d="M20 4.5 L23 20 L20 35.5 L17 20 Z" fill="rgba(200,169,106,.2)"/>
+      <path d="M4.5 20 L20 17 L35.5 20 L20 23 Z" fill="rgba(200,169,106,.2)"/>
+      <path d="M20 10.5 L29.5 20 L20 29.5 L10.5 20 Z" fill="none" stroke="#C8A96A" strokeWidth=".8"/>
+      <circle cx="20" cy="20" r="2.2" fill="#C8A96A"/>
+    </svg>
+  );
+}
+
+/* ── 黄铜星标（星塔罗师头像）── */
+const StarGlyph = () => (
+  <svg width="15" height="15" viewBox="0 0 20 20">
+    <path d="M10 1.8 12 8.6 18.8 10.6 12 12.6 10 19.4 8 12.6 1.2 10.6 8 8.6Z" fill="#C8A96A"/>
+  </svg>
+);
+
+/* ── 设备框：圆角黑框 + 动态岛 + home 指示条 ── */
+const SCREEN = {width:300,height:640,borderRadius:34,boxShadow:'inset 0 0 0 1px rgba(200,169,106,.1)'};
+function Device({children}){
+  return (
+    <div className="device">
+      {children}
+      <div className="island"/>
+      <div className="homebar"/>
+    </div>
+  );
+}
+
+const TICKS = Array.from({length:24},(_,i)=>i*15);
+function DialRing({spin=false,top=52}){
+  return (
+    <div className={"dial-ring"+(spin?' dial-spin':'')} style={{top}}>
+      {TICKS.map(t=><span key={t} className="dial-tick" style={{transform:`rotate(${t}deg)`}}/>)}
+    </div>
+  );
+}
+function TabBar(){
+  return (
+    <div className="tabbar">
+      {TABS.map(t=>
+        <div key={t.key} className={"tab"+(t.key==='home'?' on':'')}>
+          {t.key==='home' ? <span className="bar"/> : <Icon name={t.ic}/>}
+        </div>)}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
+   === 壹 · 今日（首页）===
+   完全复刻对比稿 ScreenD：刻度盘 / 品牌 / 徽章 / ACE 卡牌 /
+   树洞 / CTA / tabbar
+   ═══════════════════════════════════════════════════════════ */
+function ScreenToday(){
+  return (
+    <Device>
+      <div className="sys-d">
+        <div className="screen" style={SCREEN}>
+          <WxCapsule/>
+          <DialRing/>
+          <div className="brand">
+            <div className="logo">星光映照</div>
+            <div className="tag">每日一牌 · 遇见自己</div>
+            <div className="greet">观星者 · 夜半刻度准</div>
+            <div className="badge"><span className="dot"/><span>今日运势待开启</span></div>
+          </div>
+          <div className="cardwrap">
+            <div className="card">
+              <div className="inner">
+                <div className="glyph"><svg width="34" height="34" viewBox="0 0 40 40">{PENTACLE}</svg></div>
+                <div>
+                  <div className="title">星币 · ACE</div>
+                  <div className="subtitle">Pentacles I</div>
+                </div>
+                <div className="hint">轻触卡片<small>开启今日指引</small></div>
+              </div>
+            </div>
+          </div>
+          <div className="treepanel">
+            <div className="t-label">星光树洞</div>
+            <div className="t-text">今日启示 <i>星币王牌</i>：新的开始正在发芽</div>
+            <div className="t-go">与星塔罗师聊聊 →</div>
+          </div>
+          <div className="cta">开启今日指引</div>
+          <TabBar/>
+        </div>
+      </div>
+    </Device>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
+   === 贰 · 洗牌（选牌）===
+   3×3 牌背；点选高亮（最多三张）；CTA 状态切换
+   ═══════════════════════════════════════════════════════════ */
+function ScreenShuffle(){
+  const [sel,setSel]=useState([]);
+  const [tick,setTick]=useState(0);
+  const toggle=i=>{
+    setSel(prev=>prev.includes(i)?prev.filter(x=>x!==i):(prev.length>=3?prev:[...prev,i]));
+  };
+  const onCta=()=>{if(sel.length===0) setTick(t=>t+1);};
+  return (
+    <Device>
+      <div className="sys-d">
+        <div className="screen fl-col" style={SCREEN}>
+          <WxCapsule/>
+          <DialRing/>
+          <div className="head">
+            <div className="t">净手 · 洗牌</div>
+            <div className="s">凭直觉选三张牌</div>
+          </div>
+          <div key={tick} className={"grid9"+(tick>0?' shake':'')}>
+            {Array.from({length:9},(_,i)=>
+              <div key={i} className={"cb"+(sel.includes(i)?' sel':'')} onClick={()=>toggle(i)}>
+                <div className="cb-in"><CompassRose size={36}/></div>
+              </div>)}
+          </div>
+          <div className="act">
+            <div className="pick-hint">
+              {sel.length===0 ? '点选三张 · 第一张代表过去'
+                : sel.length===3 ? <>三张已定 · <b>第一张代表过去</b></>
+                : <>已选 <b>{sel.length}/3</b> · 第一张代表过去</>}
+            </div>
+            <div className={"cta"+(sel.length===3?' ready':'')} onClick={onCta}>{sel.length===0?'开始洗牌':'翻开牌面'}</div>
+          </div>
+          <TabBar/>
+        </div>
+      </div>
+    </Device>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
+   === 叁 · 读牌中（loading）===
+   卡牌翻转动画 + 三点 + 黄铜进度条 + 旋转刻度环
+   ═══════════════════════════════════════════════════════════ */
+function ScreenReading(){
+  return (
+    <Device>
+      <div className="sys-d">
+        <div className="screen fl-col" style={SCREEN}>
+          <WxCapsule/>
+          <DialRing spin top={72}/>
+          <div className="head">
+            <div className="t">星盘正在转动…</div>
+            <div className="s">观星镜对准 · 星位校准中</div>
+          </div>
+          <div className="flip3d">
+            <div className="f">
+              <div className="face bk">
+                <div className="cb-in"><CompassRose size={44}/></div>
+              </div>
+              <div className="face ft">
+                <div className="glyph"><svg width="26" height="26" viewBox="0 0 40 40">{PENTACLE}</svg></div>
+                <div>
+                  <div className="t">星币 · ACE</div>
+                  <div className="sub">Pentacles I</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="load-line">刻度转过星币之位<i className="dots"><i/><i/><i/></i></div>
+          <div className="prog">
+            <div className="track"/>
+            {Array.from({length:13},(_,i)=><span key={i} className="tk" style={{left:(i*100/12)+'%'}}/>)}
+            <div className="fill"/>
+          </div>
+          <TabBar/>
+        </div>
+      </div>
+    </Device>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
+   === 肆 · 解读（结果页）===
+   大牌面 + 解读文 + 三枚胶囊标签 + 双按钮
+   ═══════════════════════════════════════════════════════════ */
+function ScreenResult(){
+  return (
+    <Device>
+      <div className="sys-d">
+        <div className="screen fl-col" style={SCREEN}>
+          <WxCapsule/>
+          <DialRing/>
+          <div className="rst-head">
+            <div className="d1">今日指引 · 2026年8月6日</div>
+            <div className="d2">丙午年 · 星位定格</div>
+            <div className="divider"/>
+          </div>
+          <div className="cardwrap">
+            <div className="card big">
+              <div className="inner">
+                <div className="glyph"><svg width="42" height="42" viewBox="0 0 40 40">{PENTACLE}</svg></div>
+                <div>
+                  <div className="title">星币 · ACE</div>
+                  <div className="subtitle">Pentacles I</div>
+                </div>
+                <div className="hint">正位 · 新的开始</div>
+              </div>
+            </div>
+          </div>
+          <div className="treepanel rst">
+            <div className="t-label">星盘解读</div>
+            <div className="t-text">星币王牌落于今日——<i>新的开始正在发芽</i>。星盘所指，属于你的第一枚金币即将浮现。</div>
+          </div>
+          <div className="tags">
+            <div className="tag"><span className="d"/><span>感情</span></div>
+            <div className="tag"><span className="d"/><span>事业</span></div>
+            <div className="tag"><span className="d"/><span>提示</span></div>
+          </div>
+          <div className="btnrow">
+            <div className="sec">存为卡片</div>
+            <div className="prim">与星塔罗师聊聊 →</div>
+          </div>
+          <TabBar/>
+        </div>
+      </div>
+    </Device>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
+   === 伍 · 树洞（聊天）===
+   返回箭头 + 对话气泡 + 输入框；无 tabbar
+   ═══════════════════════════════════════════════════════════ */
+function ScreenChat(){
+  return (
+    <Device>
+      <div className="sys-d">
+        <div className="screen fl-col" style={SCREEN}>
+          <WxCapsule/>
+          <DialRing/>
+          <div className="chat-head">
+            <div className="back">
+              <svg width="15" height="15" viewBox="0 0 20 20">
+                <path d="M12.5 4 6 10l6.5 6" fill="none" stroke="#C8A96A" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <div className="ct-title">星光树洞 · 星塔罗师</div>
+          </div>
+          <div className="chatbox">
+            <div className="st-line"><span className="dot"/><span>星塔罗师 · 在线守候</span></div>
+            <div className="msg ai">
+              <div className="avatar"><StarGlyph/></div>
+              <div className="bubble">观星者，夜安。我是星塔罗师——今晚的星币王牌为你守候。</div>
+            </div>
+            <div className="msg you"><div className="bubble">我该抓住这次机会吗？</div></div>
+            <div className="msg ai">
+              <div className="avatar"><StarGlyph/></div>
+              <div className="bubble">星币之位亮起，说明它已抵达你手边。犹豫时，先迈第一步。</div>
+            </div>
+            <div className="msg you"><div className="bubble">好，我试试。</div></div>
+            <div className="msg ai">
+              <div className="avatar"><StarGlyph/></div>
+              <div className="bubble typing"><i/><i/><i/></div>
+            </div>
+          </div>
+          <div className="chat-input">
+            <input placeholder="对准星盘，说给星听…"/>
+            <div className="send">
+              <svg width="15" height="15" viewBox="0 0 20 20">
+                <path d="M3 10h12M11 5l5 5-5 5" fill="none" stroke="#171208" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Device>
+  );
+}
+
+/* ── 画布 ── */
+function App(){
+  const screens=[
+    {n:'壹',name:'今日',el:<ScreenToday/>},
+    {n:'贰',name:'洗牌',el:<ScreenShuffle/>},
+    {n:'叁',name:'读牌',el:<ScreenReading/>},
+    {n:'肆',name:'解读',el:<ScreenResult/>},
+    {n:'伍',name:'树洞',el:<ScreenChat/>},
+  ];
+  return (
+    <div className="stage">
+      <h1>星 光 映 照</h1>
+      <div className="sub">星盘刻度 · 每日指引 · 全流程五屏</div>
+      <div className="flow">
+        {screens.map(s=>
+          <div key={s.n} className="ph">
+            <div className="ph-label">{s.n} · {s.name}</div>
+            {s.el}
+          </div>)}
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

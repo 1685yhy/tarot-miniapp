@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星光映照 · 暮色玻璃 · 五屏旅程</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,500&family=DM+Serif+Display:ital@0;1&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Noto+Serif+SC:wght@400;500;600;900&family=Noto+Sans+SC:wght@400;500;700&family=Cinzel:wght@400;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   星光映照 · 暮色玻璃（Glass Dusk）· 五屏完整旅程
+   壹 今日 → 贰 洗牌 → 叁 读牌中 → 肆 解读 → 伍 星光树洞
+   样式系统直接复用 design-prototype/index.html 的 .sys-b，
+   新屏样式按同一语言扩展，保证视觉完全一致
+   ═══════════════════════════════════════════════════════════════ */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:#17141F;font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;-webkit-font-smoothing:antialiased;color:#EDE7E0}
+#root{min-height:100%}
+::selection{background:rgba(212,175,100,.3)}
+*{scrollbar-width:none}
+*::-webkit-scrollbar{display:none}
+
+/* ── 画布 ── */
+.stage{max-width:1860px;margin:0 auto;padding:28px 20px 60px}
+.stage h1{font-family:'Noto Serif SC',serif;font-weight:600;font-size:26px;text-align:center;letter-spacing:6px;color:#EDE7E0;margin-bottom:6px}
+.stage .sub{text-align:center;font-size:13px;color:rgba(237,231,224,.45);letter-spacing:2px;margin-bottom:34px}
+.row{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;gap:36px 30px}
+.card-zone{display:flex;flex-direction:column;align-items:center}
+.zone-name{font-family:'Noto Serif SC',serif;font-size:14px;letter-spacing:5px;color:rgba(237,231,224,.78);margin:16px 0 4px}
+.zone-desc{font-size:12px;color:rgba(237,231,224,.42);letter-spacing:1px;margin-bottom:6px}
+.zoom{transition:transform .25s cubic-bezier(.2,.7,.3,1)}
+.zoom:hover{transform:scale(1.045);position:relative;z-index:5}
+
+/* ═══════════════════ B · 暮色玻璃（原样复用 index.html 的 .sys-b）═══════════════════ */
+.sys-b{
+  --sky1:#FFB89A; --sky2:#E89AB8; --sky3:#A684D6; --sky4:#5D6FBF;
+  --ink:#221836; --ink-soft:#5A4B6E; --gold:#F5D682;
+  --glass:rgba(255,255,255,.22); --glass-strong:rgba(255,255,255,.34);
+  --glass-stroke:rgba(255,255,255,.55);
+  --serif:'DM Serif Display','Noto Serif SC',serif;
+  --sans:'Noto Sans SC','PingFang SC',system-ui,sans-serif;
+}
+.sys-b .screen{
+  background:linear-gradient(180deg, var(--sky1) 0%, var(--sky2) 30%, var(--sky3) 62%, var(--sky4) 100%);
+  color:#fff;position:relative;overflow:hidden;
+}
+/* 屏幕固定尺寸（index.html 中原为内联样式） */
+.sys-b .screen{width:300px;height:640px;border-radius:34px;box-shadow:0 30px 60px rgba(0,0,0,.5)}
+.sys-b .sun{position:absolute;top:64px;right:26px;width:96px;height:96px;border-radius:50%;background:radial-gradient(circle at 40% 34%, #FFF3CF 0%, var(--gold) 55%, rgba(245,214,130,.35) 100%);box-shadow:0 0 60px rgba(245,214,130,.55);pointer-events:none}
+.sys-b .aura{position:absolute;bottom:84px;left:-60px;width:230px;height:230px;border-radius:50%;background:var(--sky3);filter:blur(44px);opacity:.55;pointer-events:none}
+.sys-b .starb{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;opacity:.8;pointer-events:none}
+.sys-b .brand{text-align:center;padding-top:70px;position:relative;z-index:2}
+.sys-b .brand .eyebrow{font-size:11px;letter-spacing:4px;color:rgba(255,255,255,.85);text-shadow:0 1px 3px rgba(91,80,130,.4)}
+.sys-b .brand .logo{font-family:var(--serif);font-style:italic;font-weight:400;font-size:32px;margin-top:6px;text-shadow:0 1px 4px rgba(91,80,130,.35)}
+.sys-b .brand .greet{font-size:13px;color:rgba(255,255,255,.92);margin-top:10px;text-shadow:0 1px 3px rgba(91,80,130,.35);letter-spacing:2px}
+.sys-b .badge{
+  display:inline-flex;align-items:center;gap:6px;margin-top:13px;border-radius:999px;
+  background:var(--glass);border:1px solid var(--glass-stroke);padding:5px 14px;
+  font-size:11px;letter-spacing:2px;color:#fff;
+  box-shadow:0 4px 18px rgba(80,60,120,.22),inset 0 1px 0 rgba(255,255,255,.6);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+}
+.sys-b .badge .dot{width:5px;height:5px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold)}
+.sys-b .cardwrap{position:relative;z-index:2;margin-top:24px;display:flex;justify-content:center}
+.sys-b .card{
+  width:168px;height:252px;border-radius:18px;cursor:pointer;position:relative;
+  background:linear-gradient(155deg, rgba(255,255,255,.5) 0%, rgba(255,255,255,.2) 100%);
+  border:1px solid var(--glass-stroke);
+  box-shadow:0 16px 40px rgba(74,54,116,.3),inset 0 1.5px 0 rgba(255,255,255,.65);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);transition:transform .18s ease;
+}
+.sys-b .card:hover{transform:translateY(-4px)}
+.sys-b .card .inner{position:absolute;inset:9px;border:1px solid rgba(255,255,255,.5);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:15px 8px}
+.sys-b .card .orb{
+  width:70px;height:70px;border-radius:50%;margin-top:16px;
+  background:radial-gradient(circle at 36% 30%, #FFF8E2 0%, var(--gold) 50%, #E8A95C 100%);
+  box-shadow:0 0 30px rgba(245,214,130,.75),0 0 60px rgba(245,214,130,.35);
+}
+.sys-b .card .title{font-family:var(--serif);font-style:italic;font-size:15px;text-shadow:0 1px 3px rgba(91,80,130,.4)}
+.sys-b .card .subtitle{font-size:9.5px;letter-spacing:3px;color:rgba(255,255,255,.8);margin-top:3px;text-transform:uppercase}
+.sys-b .card .hint{font-size:11px;letter-spacing:2px;margin-bottom:6px;text-shadow:0 1px 3px rgba(91,80,130,.4)}
+.sys-b .card .hint small{display:block;font-size:9.5px;color:rgba(255,255,255,.7);letter-spacing:1px;margin-top:4px}
+.sys-b .treepanel{
+  position:relative;z-index:2;margin:20px 18px 0;border-radius:16px;
+  background:var(--glass);border:1px solid var(--glass-stroke);padding:13px 16px;
+  box-shadow:0 8px 26px rgba(74,54,116,.25),inset 0 1px 0 rgba(255,255,255,.55);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+}
+.sys-b .treepanel .t-label{font-size:10px;letter-spacing:3px;color:rgba(255,255,255,.78);text-transform:uppercase}
+.sys-b .treepanel .t-text{font-family:var(--serif);font-style:italic;font-size:15px;margin-top:4px}
+.sys-b .treepanel .t-go{margin-top:7px;font-size:10.5px;color:var(--gold);letter-spacing:1px}
+.sys-b .cta{
+  position:relative;z-index:2;margin:18px 18px 0;height:46px;border-radius:999px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  background:linear-gradient(90deg,#FFB89A 0%,#E89AB8 50%,#A684D6 100%);
+  color:#fff;font-size:14px;font-weight:600;letter-spacing:3px;
+  box-shadow:0 6px 26px rgba(180,90,140,.45),inset 0 1px 0 rgba(255,255,255,.5);
+  transition:transform .16s ease;
+}
+.sys-b .cta:active{transform:scale(.97)}
+.sys-b .tabbar{
+  position:relative;z-index:2;margin:18px 14px 0;height:56px;border-radius:18px;
+  display:flex;align-items:center;justify-content:space-around;
+  background:rgba(34,24,54,.42);border:1px solid rgba(255,255,255,.18);
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+}
+.sys-b .tabbar .tab{font-size:10.5px;color:rgba(255,255,255,.65);display:flex;flex-direction:column;align-items:center;gap:4px;min-width:64px;letter-spacing:1px}
+.sys-b .tabbar .tab.on{color:#fff}
+.sys-b .tabbar .tab.on .pill{background:rgba(255,255,255,.92);color:var(--ink);border-radius:999px;padding:2px 12px;font-size:10px;letter-spacing:2px;font-weight:600}
+.sys-b .tabbar .tab .ic{width:20px;height:20px}
+
+/* 微信胶囊（复用 index.html） */
+.wxcapsule{
+  position:absolute;top:13px;right:8px;z-index:30;display:flex;gap:4px;pointer-events:none;
+}
+.wxcapsule .cap{
+  width:40px;height:32px;border-radius:7px;
+  background:rgba(255,255,255,.22);border:0.5px solid rgba(255,255,255,.35);
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+}
+.wxcapsule .cap svg{fill:rgba(0,0,0,.65)}
+.wxcapsule .cap:first-child{flex-direction:column;gap:3px}
+.wxcapsule .cap:first-child span{display:block;width:3px;height:3px;border-radius:50%;background:rgba(0,0,0,.6)}
+.wxcapsule .cap .circle{width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(0,0,0,.6)}
+
+/* ═══════════════════ 设备框 · 圆角黑框 + 动态岛 + home 指示条 ═══════════════════ */
+.device{position:relative;width:326px;padding:13px;border-radius:52px;
+  background:linear-gradient(165deg,#3A3A42 0%,#0B0B0F 55%,#1C1C22 100%);
+  box-shadow:0 34px 70px rgba(0,0,0,.62),inset 0 0 0 2px rgba(255,255,255,.07)}
+.device .island{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:92px;height:26px;border-radius:14px;background:#000;z-index:40;box-shadow:inset 0 0 2px rgba(255,255,255,.14)}
+.device .homedot{position:absolute;bottom:7px;left:50%;transform:translateX(-50%);width:112px;height:5px;border-radius:3px;background:rgba(255,255,255,.6);z-index:40;pointer-events:none}
+
+/* === 贰 · 洗牌（选牌）=== */
+.b-head{position:relative;z-index:2;text-align:center;padding-top:50px}
+.b-head .t{font-family:var(--serif);font-style:italic;font-size:21px;letter-spacing:3px;text-shadow:0 1px 3px rgba(91,80,130,.4)}
+.b-head .s{font-size:12px;letter-spacing:3px;color:rgba(255,255,255,.92);margin-top:7px;text-shadow:0 1px 3px rgba(91,80,130,.35)}
+.b-grid{position:relative;z-index:2;margin:16px 19px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.backcard{
+  aspect-ratio:79/112;border-radius:14px;position:relative;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(150deg,rgba(255,255,255,.36) 0%,rgba(255,255,255,.15) 100%);
+  border:1px solid rgba(255,255,255,.55);
+  box-shadow:0 10px 24px rgba(74,54,116,.28),inset 0 1px 0 rgba(255,255,255,.6);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+}
+.backcard::after{content:'';position:absolute;inset:6px;border:1px solid rgba(255,255,255,.42);border-radius:9px;pointer-events:none}
+.backcard .sheen{position:absolute;left:6px;top:6px;width:38%;height:26%;border-radius:8px;background:linear-gradient(135deg,rgba(255,255,255,.5),transparent);pointer-events:none;z-index:1}
+.backcard svg{width:56%;height:auto;position:relative;z-index:1}
+.backcard:hover{transform:translateY(-3px)}
+.backcard:active{transform:scale(.95)}
+.backcard.sel{transform:translateY(-8px) scale(1.02);border-color:var(--gold);
+  box-shadow:0 16px 34px rgba(74,54,116,.42),0 0 22px rgba(245,214,130,.5),inset 0 1px 0 rgba(255,255,255,.6)}
+.backcard.sel::before{content:'';position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;z-index:3;
+  background:radial-gradient(circle at 35% 30%,#FFF3CF,var(--gold) 60%,#E8A95C);
+  box-shadow:0 0 10px rgba(245,214,130,.85)}
+.b-hint{position:relative;z-index:2;text-align:center;margin-top:10px;font-size:12px;letter-spacing:2px;color:rgba(255,255,255,.92);text-shadow:0 1px 3px rgba(91,80,130,.35)}
+.sys-b .cta.shuf-cta{margin-top:16px}
+.sys-b .tabbar.tab-close{margin-top:12px}
+
+/* === 叁 · 读牌中（loading）=== */
+.duskveil{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(60,46,96,.14) 0%,rgba(52,42,86,.30) 55%,rgba(38,32,74,.46) 100%)}
+.read-title{position:relative;z-index:2;text-align:center;padding-top:56px;font-family:var(--serif);font-style:italic;font-size:19px;letter-spacing:3px;text-shadow:0 1px 3px rgba(91,80,130,.4)}
+.flip-stage{position:relative;z-index:2;margin-top:24px;display:flex;justify-content:center;perspective:1100px}
+.flip-glow{position:absolute;left:50%;top:50%;width:230px;height:230px;transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(circle,rgba(245,214,130,.5) 0%,rgba(245,214,130,0) 65%);filter:blur(6px);
+  animation:glowPulse 5.4s ease-in-out .3s infinite;pointer-events:none}
+@keyframes glowPulse{0%,28%{opacity:.22}70%,100%{opacity:.85}}
+.flip-card{width:168px;height:252px;position:relative;z-index:1;transform-style:preserve-3d;will-change:transform;
+  animation:flipReading 5.4s cubic-bezier(.45,.05,.3,1) .3s infinite}
+.flip-card .face{position:absolute;inset:0;border-radius:18px;overflow:hidden;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.face-back{display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(150deg,rgba(255,255,255,.36) 0%,rgba(255,255,255,.15) 100%);
+  border:1px solid rgba(255,255,255,.55);
+  box-shadow:0 16px 40px rgba(74,54,116,.32),inset 0 1.5px 0 rgba(255,255,255,.65);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.face-back .sheen{position:absolute;left:10px;top:10px;width:40%;height:26%;border-radius:10px;background:linear-gradient(135deg,rgba(255,255,255,.5),transparent)}
+.face-back svg{width:48%;height:auto}
+.face-front{transform:rotateY(180deg);
+  background:linear-gradient(155deg, rgba(255,255,255,.5) 0%, rgba(255,255,255,.2) 100%);
+  border:1px solid var(--glass-stroke);
+  box-shadow:0 16px 40px rgba(74,54,116,.3),inset 0 1.5px 0 rgba(255,255,255,.65);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+@keyframes flipReading{0%,30%{transform:rotateY(0deg)}72%,100%{transform:rotateY(180deg)}}
+.f-inner{position:absolute;inset:9px;border:1px solid rgba(255,255,255,.5);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:15px 8px}
+.f-orb{width:70px;height:70px;border-radius:50%;margin-top:16px;
+  background:radial-gradient(circle at 36% 30%, #FFF8E2 0%, var(--gold) 50%, #E8A95C 100%);
+  box-shadow:0 0 30px rgba(245,214,130,.75),0 0 60px rgba(245,214,130,.35)}
+.f-title{font-family:var(--serif);font-style:italic;font-size:15px;letter-spacing:2px;text-shadow:0 1px 3px rgba(91,80,130,.4)}
+.f-sub{font-size:9.5px;letter-spacing:3px;color:rgba(255,255,255,.8);margin-top:3px;text-transform:uppercase}
+.f-cap{height:24px}
+.think-row{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;margin-top:22px}
+.think-dots{display:flex;gap:7px;margin-bottom:11px}
+.think-dots span{width:5px;height:5px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold);animation:dotPulse 1.4s ease-in-out infinite}
+.think-dots span:nth-child(2){animation-delay:.18s}
+.think-dots span:nth-child(3){animation-delay:.36s}
+@keyframes dotPulse{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-4px)}}
+.think-text{font-size:12.5px;letter-spacing:2px;color:rgba(255,255,255,.95);text-shadow:0 1px 3px rgba(91,80,130,.4)}
+.progress{position:absolute;left:50%;transform:translateX(-50%);bottom:52px;width:220px;height:3px;border-radius:2px;
+  background:rgba(255,255,255,.25);overflow:hidden;z-index:2}
+.progress .fill{height:100%;border-radius:2px;transform-origin:left;
+  background:linear-gradient(90deg,rgba(245,214,130,.4),var(--gold) 60%,#E8A95C);
+  box-shadow:0 0 12px rgba(245,214,130,.8);animation:progressGrow 5.4s cubic-bezier(.3,.6,.4,1) .3s infinite}
+@keyframes progressGrow{0%{transform:scaleX(0)}55%{transform:scaleX(.9)}100%{transform:scaleX(1)}}
+
+/* === 肆 · 解读（结果页）=== */
+.res-top{position:relative;z-index:2;text-align:center;padding-top:54px;font-size:12px;letter-spacing:3px;color:rgba(255,255,255,.92);text-shadow:0 1px 3px rgba(91,80,130,.35)}
+.res-card{position:relative;z-index:2;margin-top:14px;display:flex;justify-content:center}
+.reading{position:relative;z-index:2;margin:14px 18px 0;border-radius:16px;
+  background:var(--glass-strong);border:1px solid var(--glass-stroke);padding:15px 17px;
+  box-shadow:0 8px 26px rgba(74,54,116,.25),inset 0 1px 0 rgba(255,255,255,.55);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.reading .r-label{font-size:11px;letter-spacing:3px;color:rgba(34,24,54,.6);text-transform:uppercase}
+.reading .r-text{font-family:var(--serif);font-style:italic;font-size:14.5px;line-height:1.75;color:var(--ink);margin-top:6px}
+.reading .r-text b{font-weight:700;color:#9A6A1F}
+.res-tags{position:relative;z-index:2;display:flex;justify-content:center;gap:10px;margin-top:12px}
+.tag-pill{min-width:64px;height:30px;padding:0 14px;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:5px;
+  font-size:11.5px;letter-spacing:2px;color:var(--ink);
+  background:rgba(255,255,255,.32);border:1px solid rgba(255,255,255,.6);
+  box-shadow:0 4px 14px rgba(74,54,116,.18),inset 0 1px 0 rgba(255,255,255,.7);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.tag-pill::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px rgba(245,214,130,.9)}
+.res-btns{position:relative;z-index:2;display:flex;gap:10px;margin:14px 18px 0}
+.btn-ghost{flex:1;height:46px;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:6px;
+  font-size:13px;letter-spacing:2px;color:var(--ink);cursor:pointer;
+  background:rgba(255,255,255,.32);border:1px solid rgba(255,255,255,.6);
+  box-shadow:0 4px 18px rgba(74,54,116,.2),inset 0 1px 0 rgba(255,255,255,.7);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  transition:transform .15s ease,background .15s ease}
+.btn-ghost:hover{transform:translateY(-2px);background:rgba(255,255,255,.42)}
+.btn-ghost:active{transform:scale(.97)}
+.btn-ghost.done{color:#8A5C2E;letter-spacing:1px}
+.btn-main{flex:1.6;height:46px;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:4px;
+  font-size:13.5px;font-weight:600;letter-spacing:2px;color:#fff;cursor:pointer;
+  background:linear-gradient(90deg,#FFB89A 0%,#E89AB8 50%,#A684D6 100%);
+  box-shadow:0 6px 26px rgba(180,90,140,.45),inset 0 1px 0 rgba(255,255,255,.5);
+  transition:transform .15s ease}
+.btn-main:hover{transform:translateY(-2px)}
+.btn-main:active{transform:scale(.97)}
+.btn-main .arrow{font-family:var(--serif);font-style:italic;font-size:15px;line-height:1}
+
+/* === 伍 · 星光树洞（聊天）=== */
+.chat-nav{position:relative;z-index:2;display:flex;align-items:center;padding:50px 14px 0}
+.back-btn{width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  background:rgba(255,255,255,.28);border:1px solid rgba(255,255,255,.5);
+  box-shadow:0 4px 14px rgba(74,54,116,.2),inset 0 1px 0 rgba(255,255,255,.6);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:transform .15s ease}
+.back-btn:hover{transform:translateY(-2px)}
+.back-btn:active{transform:scale(.92)}
+.back-btn svg{width:11px;height:18px}
+.chat-title{flex:1;text-align:center;font-family:var(--serif);font-style:italic;font-size:16.5px;letter-spacing:2px;
+  text-shadow:0 1px 3px rgba(91,80,130,.4);margin-right:44px}
+.chat-list{position:relative;z-index:2;padding:14px 16px 64px;max-height:468px;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
+.msg{display:flex;gap:8px;max-width:86%;animation:msgIn .35s ease both}
+.msg.ai{align-self:flex-start}
+.msg.me{align-self:flex-end;justify-content:flex-end}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.m-avatar{width:24px;height:24px;border-radius:50%;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.5);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.m-avatar svg{width:14px;height:14px}
+.bubble{padding:11px 14px;border-radius:16px;font-size:13px;line-height:1.7;letter-spacing:.5px;word-break:break-word}
+.msg.ai .bubble{border-top-left-radius:5px;color:var(--ink);
+  background:rgba(255,255,255,.3);border:1px solid rgba(255,255,255,.5);
+  box-shadow:0 6px 18px rgba(74,54,116,.18),inset 0 1px 0 rgba(255,255,255,.55);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.msg.me .bubble{border-top-right-radius:5px;color:var(--ink);
+  background:rgba(255,255,255,.86);border:1px solid rgba(255,255,255,.95);
+  box-shadow:0 6px 18px rgba(74,54,116,.22)}
+.chat-input{position:absolute;left:0;right:0;bottom:26px;z-index:3;display:flex;align-items:center;gap:8px;padding:0 14px}
+.chat-input .field{flex:1;height:44px;border-radius:999px;display:flex;align-items:center;padding:0 16px;
+  font-family:'Noto Sans SC','PingFang SC',system-ui,sans-serif;font-size:13px;letter-spacing:1px;color:var(--ink);
+  background:rgba(255,255,255,.34);border:1px solid rgba(255,255,255,.6);outline:none;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 4px 14px rgba(74,54,116,.16);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.chat-input .field::placeholder{color:rgba(34,24,54,.45)}
+.send-btn{width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  background:linear-gradient(135deg,#FFB89A 0%,#E89AB8 55%,#A684D6 100%);
+  box-shadow:0 6px 18px rgba(180,90,140,.45),inset 0 1px 0 rgba(255,255,255,.5);
+  transition:transform .15s ease,opacity .15s ease}
+.send-btn:hover{transform:translateY(-2px)}
+.send-btn:active{transform:scale(.92)}
+.send-btn.off{opacity:.55}
+.send-btn svg{width:16px;height:16px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z=="></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1=="></script>
+<script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js" crossorigin integrity="sha384-x/ilTFv/u/eu6YSmkFDZl5V5Mm/pkxxcVv2cVJOrr1J0rvILhMvRBCy6yA75wYBj"></script>
+<script type="text/babel" data-presets="env,react">
+const {useState,useEffect,useRef} = React;
+
+/* ── 微信胶囊 ── */
+function WxCapsule(){
+  return (
+    <div className="wxcapsule">
+      <div className="cap">
+        <span/><span/><span/>
+      </div>
+      <div className="cap"><div className="circle"/></div>
+    </div>
+  );
+}
+
+/* ── 通用图标（复用 index.html）── */
+const Icon = ({name,color,size=20}) => {
+  const c = color||'currentColor';
+  const paths = {
+    home:<><path d="M3 11.2 10 5l7 6.2" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/><path d="M5.5 10.5V17h9v-6.5" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></>,
+    book:<><path d="M4 4.5h7.5V17H4z" fill="none" stroke={c} strokeWidth="1.6" strokeLinejoin="round"/><path d="M11.5 5h5V17h-5" fill="none" stroke={c} strokeWidth="1.6" strokeLinejoin="round"/></>,
+    user:<><circle cx="10" cy="7.5" r="3.2" fill="none" stroke={c} strokeWidth="1.6"/><path d="M4.5 17c.8-3 3-4.6 5.5-4.6s4.7 1.6 5.5 4.6" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round"/></>,
+    about:<><circle cx="10" cy="10" r="7" fill="none" stroke={c} strokeWidth="1.6"/><path d="M10 8.5v.2M10 11.5v2.6" stroke={c} strokeWidth="1.6" strokeLinecap="round"/></>,
+  };
+  return <svg className="ic" width={size} height={size} viewBox="0 0 20 20">{paths[name]}</svg>;
+};
+
+/* ── TabBar 数据（复用）── */
+const TABS = [
+  {key:'home', name:'映照', ic:'home'},
+  {key:'book', name:'百科', ic:'book'},
+  {key:'user', name:'我的', ic:'user'},
+  {key:'about', name:'关于', ic:'about'},
+];
+
+/* ── 设备壳：圆角黑框内 300×640 屏幕 + 动态岛 + home 指示条 + 胶囊 ── */
+function ScreenShell({children}){
+  return (
+    <div className="device">
+      <div className="sys-b">
+        <div className="screen">
+          <div className="island"/>
+          <div className="homedot"/>
+          <WxCapsule/>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── 星点（暮色风格）── */
+const Stars = ({pts}) => (
+  <>{pts.map((p,i)=><span key={i} className="starb" style={{left:p[0],top:p[1]}}/>)}</>
+);
+
+/* ── 金色太阳牌背（SVG 纹样）── */
+function CardBack(){
+  const gold = '#F5D682';
+  const rays = Array.from({length:12},(_,i)=>{
+    const a = i*Math.PI/6;
+    return {x1:30+11.5*Math.cos(a), y1:38+11.5*Math.sin(a),
+            x2:30+16.5*Math.cos(a), y2:38+16.5*Math.sin(a)};
+  });
+  const spark = (x,y)=>(
+    <path transform={`translate(${x-30} ${y-38})`} d="M30 35.4l.9 1.5 1.5.9-1.5.9-.9 1.5-.9-1.5-1.5-.9 1.5-.9z" fill={gold} fillOpacity=".9"/>
+  );
+  return (
+    <>
+      <div className="sheen"/>
+      <svg viewBox="0 0 60 88">
+        <rect x="3.5" y="3.5" width="53" height="81" rx="6" fill="rgba(255,255,255,.06)" stroke={gold} strokeOpacity=".5" strokeWidth="1"/>
+        <rect x="8" y="8" width="44" height="72" rx="4" fill="none" stroke={gold} strokeOpacity=".28" strokeWidth=".8"/>
+        <g stroke={gold} strokeOpacity=".85" strokeWidth="1.1" strokeLinecap="round">
+          {rays.map((r,i)=><line key={i} x1={r.x1} y1={r.y1} x2={r.x2} y2={r.y2}/>)}
+        </g>
+        <circle cx="30" cy="38" r="9.5" fill="none" stroke={gold} strokeOpacity=".9" strokeWidth="1.1"/>
+        <circle cx="30" cy="38" r="6.4" fill="none" stroke={gold} strokeOpacity=".4" strokeWidth=".6"/>
+        <circle cx="30" cy="38" r="3.2" fill={gold} fillOpacity=".95"/>
+        {[45,135,225,315].map((d,i)=>{
+          const a = d*Math.PI/180;
+          return <g key={i}>{spark(30+20.5*Math.cos(a), 38+20.5*Math.sin(a))}</g>;
+        })}
+      </svg>
+    </>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   === 壹 · 今日（首页）===
+   完全复刻 index.html 的 ScreenB：黄昏眉题 / 品牌 / 问候 / 徽章 /
+   太阳牌玻璃卡 / 星光树洞 / CTA / 暗玻璃 tabbar
+   ═══════════════════════════════════════════════════════════════ */
+function ScreenToday(){
+  const starsB=[[26,120],[58,106],[90,126],[160,110],[210,122],[240,100],[268,128],[200,190],[250,200]];
+  return (
+    <ScreenShell>
+      <div className="sun"/>
+      <div className="aura"/>
+      <Stars pts={starsB}/>
+      <div className="brand">
+        <div className="eyebrow">黄昏时分 · 与自己相遇</div>
+        <div className="logo">星光映照</div>
+        <div className="greet">暮色正好，适合翻开今天的心情</div>
+        <div className="badge"><span className="dot"/><span>今日运势待开启</span></div>
+      </div>
+      <div className="cardwrap">
+        <div className="card">
+          <div className="inner">
+            <div className="orb"/>
+            <div>
+              <div className="title">The Sun</div>
+              <div className="subtitle">太阳牌 · 活力</div>
+            </div>
+            <div className="hint">轻触卡片<small>开启今日指引</small></div>
+          </div>
+        </div>
+      </div>
+      <div className="treepanel">
+        <div className="t-label">星光树洞</div>
+        <div className="t-text">今天的塔罗启示：星币王牌，新的开始正在发芽</div>
+        <div className="t-go">和月塔罗师聊聊 →</div>
+      </div>
+      <div className="cta">开启今日指引</div>
+      <div className="tabbar">
+        {TABS.map(t=>
+          <div key={t.key} className={"tab"+(t.key==='home'?' on':'')}>
+            {t.key==='home' ? <span className="pill">映照</span> : <Icon name={t.ic}/>}
+          </div>)}
+      </div>
+    </ScreenShell>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   === 贰 · 洗牌（选牌）===
+   净手洗牌 · 凭直觉选三张 · 3×3 金色太阳牌背（可点选，至多三张，
+   已选卡片金边浮起 + 金点标记），CTA 随选择状态切换文案
+   ═══════════════════════════════════════════════════════════════ */
+function ScreenShuffle(){
+  const [sel,setSel] = useState([]);
+  const [flipping,setFlipping] = useState(false);
+  const pick = (i)=>{
+    if(sel.includes(i)){ setSel(sel.filter(x=>x!==i)); return; }
+    if(sel.length>=3) return;
+    setSel([...sel,i]);
+  };
+  const go = ()=>{
+    if(sel.length===3 && !flipping){
+      setFlipping(true);
+      setTimeout(()=>setFlipping(false),1200);
+    }
+  };
+  const hint = sel.length===0 ? '点选三张，第一张代表过去'
+    : sel.length<3 ? `已选 ${sel.length} 张 · 第一张代表过去`
+    : '三张已就位 · 翻开在即';
+  const label = flipping ? '翻开中…' : (sel.length===3 ? '翻开牌面' : '开始洗牌');
+  const stars=[[24,98],[62,86],[104,106],[150,92],[202,104],[244,86],[274,112]];
+  return (
+    <ScreenShell>
+      <div className="sun"/>
+      <div className="aura"/>
+      <Stars pts={stars}/>
+      <div className="b-head">
+        <div className="t">净手 · 洗牌</div>
+        <div className="s">凭直觉选三张牌</div>
+      </div>
+      <div className="b-grid">
+        {Array.from({length:9},(_,i)=>(
+          <div key={i} className={"backcard"+(sel.includes(i)?' sel':'')} onClick={()=>pick(i)}>
+            <CardBack/>
+          </div>
+        ))}
+      </div>
+      <div className="b-hint">{hint}</div>
+      <div className="cta shuf-cta" onClick={go}>{label}</div>
+      <div className="tabbar tab-close">
+        {TABS.map(t=>
+          <div key={t.key} className={"tab"+(t.key==='home'?' on':'')}>
+            {t.key==='home' ? <span className="pill">映照</span> : <Icon name={t.ic}/>}
+          </div>)}
+      </div>
+    </ScreenShell>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   === 叁 · 读牌中（loading）===
+   暮色更沉（duskveil 压暗），中央玻璃卡 3D 缓缓翻面
+   （牌背 → 星币王牌 The Sun），金色光晕随翻面呼吸，
+   三点思考动画 + 细金线进度条
+   ═══════════════════════════════════════════════════════════════ */
+function ScreenReading(){
+  const stars=[[28,110],[66,96],[120,112],[170,100],[224,112],[252,96],[150,190],[232,200]];
+  return (
+    <ScreenShell>
+      <div className="duskveil"/>
+      <div className="sun"/>
+      <div className="aura"/>
+      <Stars pts={stars}/>
+      <div className="read-title">月塔罗师正在解读…</div>
+      <div className="flip-stage">
+        <div className="flip-glow"/>
+        <div className="flip-card">
+          <div className="face face-back"><CardBack/></div>
+          <div className="face face-front">
+            <div className="f-inner">
+              <div className="f-orb"/>
+              <div>
+                <div className="f-title">星币王牌</div>
+                <div className="f-sub">The Sun · 新开始</div>
+              </div>
+              <div className="f-cap"/>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="think-row">
+        <div className="think-dots"><span/><span/><span/></div>
+        <div className="think-text">黄昏的光落在星币上…</div>
+      </div>
+      <div className="progress"><div className="fill"/></div>
+    </ScreenShell>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   === 肆 · 解读（结果页）===
+   今日指引 · 大牌面（星币王牌，玻璃卡 + 金色光球同款质感）/
+   解读文玻璃面板（墨色衬线）/ 感情·事业·提示三胶囊 /
+   双按钮：存为卡片（可点按切换）+ 和月塔罗师聊聊
+   ═══════════════════════════════════════════════════════════════ */
+function ScreenResult(){
+  const [saved,setSaved] = useState(false);
+  const stars=[[28,110],[70,96],[120,112],[170,100],[224,112],[252,96]];
+  return (
+    <ScreenShell>
+      <div className="sun"/>
+      <div className="aura"/>
+      <Stars pts={stars}/>
+      <div className="res-top">今日指引 · 2026年8月6日</div>
+      <div className="res-card">
+        <div className="card">
+          <div className="inner">
+            <div className="orb"/>
+            <div>
+              <div className="title">星币王牌</div>
+              <div className="subtitle">The Sun · 新开始</div>
+            </div>
+            <div className="hint">黄昏已至<small>第一枚金币已在掌中</small></div>
+          </div>
+        </div>
+      </div>
+      <div className="reading">
+        <div className="r-label">今日解读</div>
+        <div className="r-text"><b>星币王牌</b>落于今日——新的开始正在发芽。日落之前，属于你的第一枚金币即将浮现。</div>
+      </div>
+      <div className="res-tags">
+        <div className="tag-pill">感情</div>
+        <div className="tag-pill">事业</div>
+        <div className="tag-pill">提示</div>
+      </div>
+      <div className="res-btns">
+        <div className={"btn-ghost"+(saved?' done':'')} onClick={()=>setSaved(true)}>
+          {saved ? '已存为卡片' : '存为卡片'}
+        </div>
+        <div className="btn-main">和月塔罗师聊聊 <span className="arrow">→</span></div>
+      </div>
+    </ScreenShell>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   === 伍 · 星光树洞（聊天）===
+   返回 + 标题导航，与月塔罗师对话：AI 玻璃气泡（金色月牙头像），
+   用户高透明白玻璃气泡；底部玻璃输入框 + 渐变发送键（可实发消息，
+   AI 稍候回话），无 tabbar
+   ═══════════════════════════════════════════════════════════════ */
+function ScreenChat(){
+  const replies = [
+    '我听见了。黄昏会把答案，轻轻放在你手里。',
+    '不必着急。月亮会在你睡熟时，替你数清星光。',
+    '星币王牌说：先种下种子，其余交给时间。',
+  ];
+  const [msgs,setMsgs] = useState([
+    {who:'ai', text:'今晚的月亮很轻，像一句没说完的话。你心里，可有一件想放下的事？'},
+    {who:'me', text:'有点乱。想求一张牌，看看最近的方向。'},
+    {who:'ai', text:'月亮听见了。星币王牌正从黄昏里升起——新的开始，正在你脚下发芽。'},
+  ]);
+  const [draft,setDraft] = useState('');
+  const [ri,setRi] = useState(0);
+  const listRef = useRef(null);
+  useEffect(()=>{
+    if(listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
+  },[msgs]);
+  const send = ()=>{
+    const t = draft.trim();
+    if(!t) return;
+    setMsgs(m=>[...m,{who:'me',text:t}]);
+    setDraft('');
+    const reply = replies[ri % replies.length];
+    setRi(ri+1);
+    setTimeout(()=>setMsgs(m=>[...m,{who:'ai',text:reply}]),900);
+  };
+  const stars=[[26,120],[66,106],[150,110],[214,122],[248,102],[120,210],[262,190]];
+  return (
+    <ScreenShell>
+      <div className="sun"/>
+      <div className="aura"/>
+      <Stars pts={stars}/>
+      <div className="chat-nav">
+        <div className="back-btn">
+          <svg viewBox="0 0 12 20"><path d="M10 2 2 10l8 8" stroke="#221836" strokeWidth="2.4" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        </div>
+        <div className="chat-title">星光树洞 · 月塔罗师</div>
+      </div>
+      <div className="chat-list" ref={listRef}>
+        {msgs.map((m,i)=>(
+          <div key={i} className={"msg "+(m.who==='ai'?'ai':'me')}>
+            {m.who==='ai' && (
+              <div className="m-avatar">
+                <svg viewBox="0 0 24 24"><path d="M20.5 13.6a8.8 8.8 0 1 1-10.1-10.1 7.2 7.2 0 0 0 10.1 10.1z" fill="#F5D682"/></svg>
+              </div>
+            )}
+            <div className="bubble">{m.text}</div>
+          </div>
+        ))}
+      </div>
+      <div className="chat-input">
+        <input className="field" placeholder="说给月亮听…" value={draft}
+          onChange={e=>setDraft(e.target.value)}
+          onKeyDown={e=>{ if(e.key==='Enter') send(); }}/>
+        <div className={"send-btn"+(draft.trim()?'':' off')} onClick={send}>
+          <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z" fill="#fff"/></svg>
+        </div>
+      </div>
+    </ScreenShell>
+  );
+}
+
+/* ── 画布：五屏并排 ── */
+function App(){
+  const zones = [
+    {n:'壹 · 今日', d:'黄昏首页 · 太阳牌待启', el:<ScreenToday/>},
+    {n:'贰 · 洗牌', d:'九张牌背 · 凭直觉选三', el:<ScreenShuffle/>},
+    {n:'叁 · 读牌中', d:'月塔罗师 · 翻牌一刻', el:<ScreenReading/>},
+    {n:'肆 · 解读', d:'星币王牌 · 今日指引', el:<ScreenResult/>},
+    {n:'伍 · 星光树洞', d:'与月塔罗师夜谈', el:<ScreenChat/>},
+  ];
+  return (
+    <div className="stage">
+      <h1>星光映照 · 暮色玻璃</h1>
+      <div className="sub">黄昏五幕 · 从翻开今日，到与月夜谈</div>
+      <div className="row">
+        {zones.map(z=>
+          <div key={z.n} className="card-zone">
+            <div className="zoom">{z.el}</div>
+            <div className="zone-name">{z.n}</div>
+            <div className="zone-desc">{z.d}</div>
+          </div>)}
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
