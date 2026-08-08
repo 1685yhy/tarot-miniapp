@@ -101,37 +101,7 @@
     <text class="ts-life">{{teachingLife}}</text>
   </view>
 
-  <!-- ===== 今日心情（P2-2：上移到教学区之前，紧随翻牌） ===== -->
-  <view class="diary-section {{showTeaching ? 'diary-section--visible' : ''}}">
-    <view class="divider"></view>
-
-    <view wx:if="{{diarySaved}}" class="diary-saved-state">
-      <text class="diary-saved-text">今日心情已记录</text>
-    </view>
-
-    <view wx:else class="diary-entry-area">
-      <view class="diary-entry-header">
-        <image class="diary-entry-icon" src="/images/icons/diary_64.png" mode="aspectFit" lazy-load aria-label="今日心情" />
-        <text class="diary-entry-title">今日心情</text>
-      </view>
-      <textarea
-        class="diary-input"
-        placeholder="这张牌让你想到了什么？记录此刻的感受..."
-        value="{{diaryText}}"
-        bindinput="onDiaryInput"
-        maxlength="500"
-      />
-      <text class="diary-char-count">{{diaryText.length}}/500</text>
-      <button bindtap="onDiarySave"
-        class="btn btn-primary btn--full btn--sm"
-        disabled="{{diarySaving || !diaryText.trim()}}"
-      >
-        {{diarySaving ? '保存中...' : '保存心情'}}
-      </button>
-    </view>
-  </view>
-
-  <!-- ===== Teaching area (revealed after flip, 默认折叠「详解 ▾」) ===== -->
+  <!-- ===== Teaching area (revealed after flip, 详解区紧跟牌面小知识) ===== -->
   <view class="teaching-area {{showTeaching ? 'teaching-area--visible' : ''}}">
 
     <!-- 折叠头：详解 ▾（点击展开） -->
@@ -223,6 +193,36 @@
         </view>
       </view>
     </view>
+    </view>
+  </view>
+
+  <!-- ===== 今日心情（详解之后，记录此刻感受） ===== -->
+  <view class="diary-section {{showTeaching ? 'diary-section--visible' : ''}}">
+    <view class="divider"></view>
+
+    <view wx:if="{{diarySaved}}" class="diary-saved-state">
+      <text class="diary-saved-text">今日心情已记录</text>
+    </view>
+
+    <view wx:else class="diary-entry-area">
+      <view class="diary-entry-header">
+        <image class="diary-entry-icon" src="/images/icons/diary_64.png" mode="aspectFit" lazy-load aria-label="今日心情" />
+        <text class="diary-entry-title">今日心情</text>
+      </view>
+      <textarea
+        class="diary-input"
+        placeholder="这张牌让你想到了什么？记录此刻的感受..."
+        value="{{diaryText}}"
+        bindinput="onDiaryInput"
+        maxlength="500"
+      />
+      <text class="diary-char-count">{{diaryText.length}}/500</text>
+      <button bindtap="onDiarySave"
+        class="btn btn-primary btn--full btn--sm"
+        disabled="{{diarySaving || !diaryText.trim()}}"
+      >
+        {{diarySaving ? '保存中...' : '保存心情'}}
+      </button>
     </view>
   </view>
 
