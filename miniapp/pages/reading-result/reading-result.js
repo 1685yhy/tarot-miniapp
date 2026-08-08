@@ -218,15 +218,27 @@ Page({
      --------------------------------------------------------------- */
 
   _startStages() {
-    // Immersive mode: a single "正在解读..." pulsing state. It lasts at
-    // most IMMERSIVE_MAX_MS — after that the result appears the moment
-    // the API response arrives (no artificial delay added).
+    // Loading progression: rotate stage copy every ~6s so the 20-40s AI
+    // wait feels alive instead of frozen ("正在抽牌 → 星光凝思 → 解牌成文").
     this._immersiveStarted = true;
     this.setData({ loadingStage: 1 });
     this._stageTimer1 = setTimeout(() => {
       if (this._destroyed) return;
       this._tryShowResult();
     }, IMMERSIVE_MAX_MS);
+    // Rotate loading-stage copy (does not affect result timing)
+    this._stageRotateTimer = setInterval(() => {
+      if (this._destroyed) { this._clearStageRotate(); return; }
+      const next = (this.data.loadingStage % 3) + 1;
+      this.setData({ loadingStage: next });
+    }, 6000);
+  },
+
+  _clearStageRotate() {
+    if (this._stageRotateTimer) {
+      clearInterval(this._stageRotateTimer);
+      this._stageRotateTimer = null;
+    }
   },
 
   /* ---------------------------------------------------------------
@@ -439,6 +451,7 @@ Page({
   _clearStageTimers() {
     if (this._stageTimer1) { clearTimeout(this._stageTimer1); this._stageTimer1 = null; }
     if (this._quickMinTimer) { clearTimeout(this._quickMinTimer); this._quickMinTimer = null; }
+    this._clearStageRotate();
   },
 
   /** Animate drawn cards appearing one by one using wx.createAnimation stagger */

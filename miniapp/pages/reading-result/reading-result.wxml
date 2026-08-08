@@ -31,7 +31,7 @@
           <view class="pulse-core"></view>
         </view>
         <text class="stage-title">正在解读...</text>
-        <text class="stage-sub">星光正在为你凝聚答案</text>
+        <text class="stage-sub">{{loadingStage === 1 ? '星光正在洗牌' : (loadingStage === 2 ? '星塔罗师正在凝思' : '解读正在落笔成文')}}</text>
       </view>
     </block>
 
