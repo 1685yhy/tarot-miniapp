@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>星光映照 · 完整页面流 · 3 Tab 全流程</title>
-<meta name="description" content="星光映照塔罗小程序 — 今日 × 神谕 × 我的 三 Tab 完整页面流，19 屏全流程交互（含星座引导与出生信息录入），一个主角原则。E3 奶油疗愈语言。">
+<meta name="description" content="星光映照塔罗小程序 — 今日 × 神谕 × 我的 三 Tab 完整页面流，16+ 屏全流程交互，一个主角原则。E3 奶油疗愈语言。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500&family=Noto+Serif+SC:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
@@ -15,8 +15,6 @@
    视觉：E3 奶油疗愈（#FAF6EF / 雾粉 #E8C4BE / 细金 #C9A97C / 衬线）
    路由：React state 页面栈（主屏 ↔ 二级页 前进后退 + TabBar 切换）
    页 04 能量详情：今日屏能量注脚可点 → 4 维度走心解读，chips 页内切换
-   页 17 星座引导：首次打开（无星座记录）→ 12 星座选择 → 进今日屏（可跳过）
-   页 18 出生信息：可选进阶（日期/时间/城市）→ 二期月亮/上升；设置可改星座
    插画资产：assets/web/ 真实水彩（内联 base64）
    ═══════════════════════════════════════════════════════════════ */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -670,101 +668,6 @@ textarea,input,button{font-family:inherit}
 .set-row .set-go{color:var(--ink-faint);font-size:13px;font-family:var(--sans)}
 .set-row.danger .set-n{color:var(--pink-ink)}
 
-/* ═══════════════════════════════════════════════════════════════
-   今日屏星座徽章 → 可点击（点开可改星座 · 未设置时引导补全）
-   ═══════════════════════════════════════════════════════════════ */
-.zodiac{cursor:pointer;position:relative}
-.zodiac:active{opacity:.65}
-.zodiac::after{content:'';position:absolute;inset:-13px -9px;border-radius:12px}
-
-/* ═══════════════════════════════════════════════════════════════
-   页 17 · 星座引导（首次 onboarding）+ 星座选择页（共用网格）
-   12 星座卡片网格（4 列 · 点击金边高亮 · ≥44px 目标）
-   ═══════════════════════════════════════════════════════════════ */
-.wel-hero{position:relative;z-index:2;text-align:center;margin-top:28px}
-.wel-hero .wh-en{font-family:var(--num);font-size:9.5px;letter-spacing:6px;color:var(--gold-deep)}
-.wel-hero h2{font-size:18px;letter-spacing:4px;font-weight:500;margin-top:9px;line-height:1.5;color:var(--ink)}
-.wel-hero h2 em{font-style:normal;color:var(--pink-ink)}
-.wel-hero p{font-family:var(--sans);font-size:11.5px;color:var(--ink-faint);letter-spacing:1.5px;margin-top:9px;line-height:1.75}
-.zgrid{position:relative;z-index:2;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 18px 0}
-.zcard{
-  position:relative;background:var(--cream-hi);border:.5px solid var(--line-soft);border-radius:14px;
-  box-shadow:var(--hi),var(--shadow);cursor:pointer;user-select:none;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
-  padding:9px 2px 8px;min-height:64px;
-  transition:transform .13s ease,border-color .13s ease,box-shadow .13s ease;
-}
-.zcard:active{transform:scale(.94)}
-.zcard .zc-emoji{font-size:19px;line-height:1.2}
-.zcard .zc-name{font-size:11px;letter-spacing:1px;color:var(--ink)}
-.zcard .zc-dates{font-family:var(--num);font-size:8px;letter-spacing:.5px;color:var(--ink-faint)}
-.zcard.sel{
-  border:1.5px solid var(--gold-deep);
-  box-shadow:0 8px 20px rgba(176,143,82,.22),var(--hi);
-}
-.zcard.sel .zc-name{color:var(--gold-deep);font-weight:500}
-.zcard .zc-ok{
-  position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;
-  background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#FFFDF8;
-  font-size:8px;display:none;align-items:center;justify-content:center;
-  box-shadow:0 2px 6px rgba(176,143,82,.4);
-}
-.zcard.sel .zc-ok{display:flex}
-.wel-foot{position:relative;z-index:2;margin:14px 18px 0}
-.skip-link{
-  display:flex;align-items:center;justify-content:center;height:44px;cursor:pointer;
-  font-family:var(--sans);font-size:11.5px;color:var(--ink-faint);letter-spacing:2px;user-select:none;
-}
-.skip-link:active{opacity:.6}
-.skip-link b{font-weight:400;color:var(--gold-deep);margin:0 2px}
-
-/* ═══════════════════════════════════════════════════════════════
-   页 18 · 出生信息（进阶可选 · 月亮/上升 二期）
-   ═══════════════════════════════════════════════════════════════ */
-.fp-hero{position:relative;z-index:2;text-align:center;margin-top:8px}
-.fp-hero h3{font-size:16.5px;letter-spacing:3.5px;font-weight:500;color:var(--ink)}
-.fp-hero h3 em{font-style:normal;color:var(--pink-ink)}
-.fp-hero p{font-family:var(--sans);font-size:11px;color:var(--ink-faint);letter-spacing:1.5px;margin-top:7px;line-height:1.7}
-.bf-row{margin-top:14px}
-.bf-label{font-family:var(--sans);font-size:11px;letter-spacing:2px;color:var(--gold-deep);margin-bottom:7px;display:flex;align-items:center;gap:5px}
-.bf-label .opt{color:var(--ink-faint);letter-spacing:1px;font-size:10px}
-.bf-date{display:flex;gap:8px}
-.bf-sel{position:relative;flex:1}
-.bf-sel::after{
-  content:'▾';position:absolute;right:11px;top:50%;transform:translateY(-50%);
-  font-size:9px;color:var(--gold-deep);pointer-events:none;
-}
-.bf-sel select{
-  width:100%;height:44px;border-radius:13px;appearance:none;-webkit-appearance:none;
-  background:var(--cream-hi);border:.5px solid var(--line-soft);box-shadow:var(--hi);
-  padding:0 12px;font-family:var(--serif);font-size:12.5px;letter-spacing:1px;color:var(--ink);outline:none;
-}
-.bf-sel select:focus{border-color:rgba(201,169,124,.55)}
-.bf-derive{font-family:var(--sans);font-size:11px;color:var(--ink-faint);letter-spacing:1px;margin-top:6px}
-.bf-input{
-  width:100%;height:44px;border-radius:13px;background:var(--cream-hi);
-  border:.5px solid var(--line-soft);box-shadow:var(--hi);
-  padding:0 13px;font-family:var(--sans);font-size:12.5px;color:var(--ink);outline:none;
-}
-.bf-input::placeholder{color:var(--ink-faint)}
-.bf-input:focus{border-color:rgba(201,169,124,.55)}
-.bf-note{
-  display:flex;align-items:flex-start;gap:8px;margin-top:16px;
-  background:rgba(201,169,124,.07);border:.5px solid rgba(201,169,124,.25);border-radius:14px;
-  padding:11px 13px;font-family:var(--sans);font-size:11px;color:var(--ink-soft);line-height:1.7;letter-spacing:.3px;
-}
-.bf-note .ln-ic{font-size:11px;color:var(--gold-deep);flex-shrink:0;margin-top:1px}
-.birth-sum{
-  background:var(--cream-hi);border:.5px solid var(--line-soft);border-radius:18px;
-  box-shadow:var(--shadow),var(--hi);padding:13px 15px 14px;margin-top:12px;
-}
-.birth-sum .bs-t{font-family:var(--sans);font-size:10.5px;letter-spacing:2.5px;color:var(--gold-deep);display:flex;align-items:center;gap:6px}
-.birth-sum .bs-row{display:flex;align-items:center;padding:9px 0;border-top:.5px dashed rgba(201,169,124,.3)}
-.birth-sum .bs-row:first-of-type{border-top:none;padding-top:8px}
-.birth-sum .bs-l{width:62px;flex-shrink:0;font-family:var(--sans);font-size:11px;color:var(--ink-faint);letter-spacing:1px}
-.birth-sum .bs-v{flex:1;font-size:12.5px;letter-spacing:1px;color:var(--ink)}
-.birth-sum .bs-v i{font-style:normal;font-family:var(--sans);font-size:10.5px;color:var(--ink-faint);letter-spacing:.5px}
-
 @media(prefers-reduced-motion:reduce){
   .float,.halo,.sp,.mount,.toast,.cres,.cres::after,.wish-seal,.flipIn,.anim{animation:none!important}
 }
@@ -855,29 +758,6 @@ const TABS = [
   {key:'me',     name:'我的', ic:'user', tip:'我的 · 星盘与收藏'},
 ];
 
-/* ── 十二星座（key/name/emoji 与小程序 zodiacList 完全一致 · 补日期区间） ── */
-const ZODIACS = [
-  {key:'aries',      name:'白羊座', emoji:'♈', dates:'3.21-4.19'},
-  {key:'taurus',     name:'金牛座', emoji:'♉', dates:'4.20-5.20'},
-  {key:'gemini',     name:'双子座', emoji:'♊', dates:'5.21-6.21'},
-  {key:'cancer',     name:'巨蟹座', emoji:'♋', dates:'6.22-7.22'},
-  {key:'leo',        name:'狮子座', emoji:'♌', dates:'7.23-8.22'},
-  {key:'virgo',      name:'处女座', emoji:'♍', dates:'8.23-9.22'},
-  {key:'libra',      name:'天秤座', emoji:'♎', dates:'9.23-10.23'},
-  {key:'scorpio',    name:'天蝎座', emoji:'♏', dates:'10.24-11.22'},
-  {key:'sagittarius',name:'射手座', emoji:'♐', dates:'11.23-12.21'},
-  {key:'capricorn',  name:'摩羯座', emoji:'♑', dates:'12.22-1.19'},
-  {key:'aquarius',   name:'水瓶座', emoji:'♒', dates:'1.20-2.18'},
-  {key:'pisces',     name:'双鱼座', emoji:'♓', dates:'2.19-3.20'},
-];
-/* 由出生月日推导星座（原型算法 · 二期接入真实星盘计算） */
-function zodiacFromDate(m,d){
-  const rules=[[1,20,'aquarius'],[2,19,'pisces'],[3,21,'aries'],[4,20,'taurus'],[5,21,'gemini'],[6,22,'cancer'],[7,23,'leo'],[8,23,'virgo'],[9,23,'libra'],[10,24,'scorpio'],[11,23,'sagittarius'],[12,22,'capricorn']];
-  let key='capricorn';
-  rules.forEach(r=>{if(m>r[0]||(m===r[0]&&d>=r[1]))key=r[2];});
-  return key;
-}
-
 function TabBar({tab,goTab}){
   return (
     <div className="tabbar">
@@ -906,10 +786,9 @@ function Nav({title}){
    === 页 01 · 今日主屏 ===（已认可版 · 牌是绝对主角）
    点击牌 → 翻牌动画 → 抽牌后状态
    点击明日之牌 → 小弹层
-   星座徽章（右上）← 首次引导/设置选择，state 传入，点击可改
    ═══════════════════════════════════════════════════════════ */
 function TodayMain(){
-  const {push,goTab,show,zodiac} = useContext(Ctx);
+  const {push,goTab,show} = useContext(Ctx);
   const [flipping,setFlipping] = useState(false);
   const [sheet,setSheet] = useState(false);
   const doFlip=()=>{
@@ -923,13 +802,13 @@ function TodayMain(){
       <div className="wash" style={{width:200,height:200,right:-60,top:-44,background:'#E8C4BE',opacity:.30}}/>
       <div className="wash" style={{width:180,height:180,left:-70,top:368,background:'#C9A97C',opacity:.15}}/>
 
-      {/* 顶部：品牌 · 日期（左）｜星座徽章（右，极小不抢戏 · 点击可改星座） */}
+      {/* 顶部：品牌 · 日期（左）｜星座徽章（右，极小不抢戏） */}
       <div className="topbar">
         <div>
           <div className="brand">星光映照</div>
           <div className="date-row"><span className="gold-dot"/><span>AUG 8 · SAT · 2026</span></div>
         </div>
-        <div className="zodiac" onClick={()=>push('zodiac')}>{zodiac? zodiac.emoji+' '+zodiac.name : '选择星座 ✦'}</div>
+        <div className="zodiac">♌ 狮子座</div>
       </div>
 
       {/* 天象小字：一行 · 注脚 */}
@@ -1548,7 +1427,7 @@ function Result(){
    连续天数大数字 + 牌运曲线 + 一句话 + 日记/许愿/签到/设置
    ═══════════════════════════════════════════════════════════ */
 function MeMain(){
-  const {push,goTab,birth} = useContext(Ctx);
+  const {push,goTab} = useContext(Ctx);
   return (
     <div className="screen anim" data-screen-label="10-me-main">
       <WxCapsule/>
@@ -1613,13 +1492,6 @@ function MeMain(){
           <div className="mt-ic">⚙</div>
           <div><div className="mt-n">设置</div><div className="mt-d">收藏 · 隐私</div></div>
         </div>
-      </div>
-
-      {/* 进阶可选：完善星盘（月亮/上升 · 二期） */}
-      <div className="me-tile" style={{gridColumn:'1 / -1',margin:'10px 18px 0'}} onClick={()=>push('birth')}>
-        <div className="mt-ic">✧</div>
-        <div><div className="mt-n">完善我的星盘</div><div className="mt-d">{birth? '月亮 · 上升 · 已完善':'月亮 · 上升 · 二期解锁'}</div></div>
-        <span style={{marginLeft:'auto',color:'var(--ink-faint)',fontSize:'13px',fontFamily:'var(--sans)'}}>›</span>
       </div>
 
       <TabBar tab="me" goTab={goTab}/>
@@ -1918,20 +1790,17 @@ function Checkin(){
 }
 
 /* ═══════════════════════════════════════════════════════════
-   === 页 16 · 设置 ===（次要页 · 简化 · 新增星盘两项）
-   我的星座（♌ 狮子座）→ 星座选择页可改 ｜ 完善出生信息 → 页 18
+   === 页 16 · 设置 ===（次要页 · 简化）
    ═══════════════════════════════════════════════════════════ */
 function Settings(){
-  const {show,push,zodiac,birth} = useContext(Ctx);
+  const {show} = useContext(Ctx);
   const rows=[
-    {ic:(zodiac? zodiac.emoji : '✧'), label:'我的星座',    val:(zodiac? zodiac.name : '未设置'), route:'zodiac'},
-    {ic:'☾',                          label:'完善出生信息', val:(birth? '已完善' : '未填写'),   route:'birth'},
-    {ic:'🃏', label:'我的卡牌收藏', val:'23 / 78',  tip:'我的卡牌收藏 · 23 / 78'},
-    {ic:'🔔', label:'消息提醒',     val:'已开启',   tip:'消息提醒 · 已开启'},
-    {ic:'🛡', label:'隐私与安全',   val:'',         tip:'隐私与安全 · 数据仅用于星座计算，绝不外传'},
-    {ic:'✉', label:'意见反馈',     val:'',         tip:'意见反馈 · 星光会认真听 ✦'},
-    {ic:'☽', label:'关于星光映照', val:'v1.3.0',   tip:'关于星光映照 · v1.3.0'},
-    {ic:'🧹', label:'清除缓存',     val:'4.2 MB',   tip:'缓存已清理 · 星光依然亮着 ✦'},
+    ['🃏','我的卡牌收藏','23 / 78'],
+    ['🔔','消息提醒','已开启'],
+    ['🛡','隐私与安全',''],
+    ['✉','意见反馈',''],
+    ['☽','关于星光映照','v1.3.0'],
+    ['🧹','清除缓存','4.2 MB'],
   ];
   return (
     <div className="screen anim page" data-screen-label="16-settings">
@@ -1941,10 +1810,10 @@ function Settings(){
       <div className="pbody">
         <div className="card-soft" style={{padding:'2px 14px',marginTop:'6px'}}>
           {rows.map((r,i)=>(
-            <div key={i} className="set-row" onClick={()=>r.route? push(r.route) : show(r.tip)}>
-              <div className="set-ic">{r.ic}</div>
-              <div className="set-n">{r.label}</div>
-              {r.val && <div className="set-v">{r.val}</div>}
+            <div key={i} className="set-row" onClick={()=>show(r[0]==='🧹'?'缓存已清理 · 星光依然亮着 ✦':r[1])}>
+              <div className="set-ic">{r[0]}</div>
+              <div className="set-n">{r[1]}</div>
+              {r[2] && <div className="set-v">{r[2]}</div>}
               <div className="set-go">›</div>
             </div>))}
         </div>
@@ -1958,191 +1827,17 @@ function Settings(){
 }
 
 /* ═══════════════════════════════════════════════════════════
-   === 页 17 · 星座引导 ===（首次 onboarding · 今日屏之前）
-   首次打开（无星座记录）→ 此页；选星座 → 开始我的星光之旅
-   跳过「先随便逛逛」也能进 · 之后设置里可补
-   ═══════════════════════════════════════════════════════════ */
-function Welcome(){
-  const {beginJourney,skipJourney} = useContext(Ctx);
-  const [sel,setSel] = useState(null);
-  return (
-    <div className="screen anim" data-screen-label="17-welcome-zodiac">
-      <WxCapsule/>
-      <div className="wash" style={{width:210,height:210,right:-64,top:-46,background:'#E8C4BE',opacity:.32}}/>
-      <div className="wash" style={{width:190,height:190,left:-70,top:392,background:'#C9A97C',opacity:.16}}/>
-
-      {/* 标题：一句话说明「为什么问星座」 */}
-      <div className="wel-hero">
-        <div className="wh-en">STARLIT WELCOME</div>
-        <h2>初次见面，<br/>告诉我你的星座 <em>✦</em></h2>
-        <p>星光会根据你的星座<br/>为你准备专属的今日能量</p>
-      </div>
-
-      {/* 12 星座网格（4 列 · 选中金边高亮） */}
-      <div className="zgrid">
-        {ZODIACS.map(z=>(
-          <div key={z.key} className={"zcard"+(sel&&sel.key===z.key? ' sel':'')} onClick={()=>setSel(z)}>
-            <span className="zc-emoji">{z.emoji}</span>
-            <span className="zc-name">{z.name}</span>
-            <span className="zc-dates">{z.dates}</span>
-            <span className="zc-ok">✓</span>
-          </div>))}
-      </div>
-
-      {/* 底部：开始（未选置灰）+ 跳过 */}
-      <div className="wel-foot">
-        <div className={"cta"+(sel? '':' off')} onClick={()=>sel && beginJourney(sel)}>开始我的星光之旅 →</div>
-        <div className="skip-link" onClick={skipJourney}>也可以<b>先随便逛逛</b> ✦</div>
-      </div>
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════
-   === 页 · 我的星座 ===（设置/今日徽章入口 · 可改 · 共用网格）
-   ═══════════════════════════════════════════════════════════ */
-function ZodiacPick(){
-  const {pop,show,zodiac,setZodiac} = useContext(Ctx);
-  const [sel,setSel] = useState(zodiac);
-  return (
-    <div className="screen anim page" data-screen-label="zodiac-pick">
-      <WxCapsule/>
-      <div className="wash" style={{width:170,height:170,right:-60,top:-36,background:'#C9A97C',opacity:.14}}/>
-      <Nav title="我的星座"/>
-      <div className="pbody">
-        <div className="fp-hero">
-          <h3>星光记下你的星座 <em>✦</em></h3>
-          <p>今日能量与牌语解读，会随星座轻轻调整</p>
-        </div>
-        <div className="zgrid" style={{marginTop:'14px'}}>
-          {ZODIACS.map(z=>(
-            <div key={z.key} className={"zcard"+(sel&&sel.key===z.key? ' sel':'')} onClick={()=>setSel(z)}>
-              <span className="zc-emoji">{z.emoji}</span>
-              <span className="zc-name">{z.name}</span>
-              <span className="zc-dates">{z.dates}</span>
-              <span className="zc-ok">✓</span>
-            </div>))}
-        </div>
-        <div className={"cta"+(sel? '':' off')} onClick={()=>{if(sel){setZodiac(sel);show('已更新为 '+sel.name+' ✦');pop();}}}>保存</div>
-      </div>
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════
-   === 页 18 · 出生信息 ===（进阶可选 · 月亮/上升 二期解锁）
-   设置/我的页「完善我的星盘」进入 · 已填 → 摘要 + 修改
-   ═══════════════════════════════════════════════════════════ */
-function Birth(){
-  const {show,birth,setBirth,zodiac,setZodiac} = useContext(Ctx);
-  const init = birth? birth.date.split('-') : ['1996','08','08'];
-  const [editing,setEditing] = useState(birth==null);
-  const [y,setY] = useState(init[0]);
-  const [m,setM] = useState(parseInt(init[1],10));
-  const [d,setD] = useState(parseInt(init[2],10));
-  const [tm,setTm] = useState(birth? birth.time : '');
-  const [city,setCity] = useState(birth? birth.city : '');
-  const years=[]; for(let i=2026;i>=1940;i--)years.push(i);
-  const zk = zodiacFromDate(m,d);
-  const zobj = ZODIACS.find(x=>x.key===zk);
-  const save=()=>{
-    const nb={date:y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0'),time:tm.trim(),city:city.trim(),zodiac:zk};
-    setBirth(nb);
-    if(!zodiac && zobj){setZodiac(zobj);show('星盘已保存 · 已为你记下'+zobj.name+' ✦');}
-    else show('星盘已保存 · 月亮与上升将在二期点亮 ✦');
-    setEditing(false);
-  };
-  const fmtDate = birth? birth.date.split('-').map((x,i)=>x+(i===0? '年':i===1? '月':'日')).join('') : '';
-  return (
-    <div className="screen anim page" data-screen-label="18-birth-info">
-      <WxCapsule/>
-      <div className="wash" style={{width:170,height:170,right:-60,top:-36,background:'#E8C4BE',opacity:.24}}/>
-      <Nav title="完善星盘"/>
-      <div className="pbody">
-        <div className="fp-hero">
-          <h3>完善你的星盘 <em>✦</em></h3>
-          <p>可选 · 填了才能解锁月亮与上升（二期）</p>
-        </div>
-
-        {/* 已填 → 摘要 + 修改 */}
-        {!editing && birth && (
-          <div className="birth-sum">
-            <div className="bs-t">✦ 星盘 · 已完善</div>
-            <div className="bs-row">
-              <span className="bs-l">出生日期</span>
-              <span className="bs-v">{fmtDate} · {(ZODIACS.find(x=>x.key===birth.zodiac)||{}).emoji} {(ZODIACS.find(x=>x.key===birth.zodiac)||{}).name}</span>
-            </div>
-            <div className="bs-row"><span className="bs-l">出生时间</span><span className="bs-v">{birth.time? birth.time : <i>未填写（可选）</i>}</span></div>
-            <div className="bs-row"><span className="bs-l">出生城市</span><span className="bs-v">{birth.city? birth.city : <i>未填写（可选）</i>}</span></div>
-            <div className="cta ghost" style={{marginTop:'12px'}} onClick={()=>setEditing(true)}>修改</div>
-          </div>
-        )}
-
-        {/* 填写表单 */}
-        {editing && (<div>
-          <div className="bf-row">
-            <div className="bf-label">出生日期 <span className="opt">· 必填</span></div>
-            <div className="bf-date">
-              <div className="bf-sel">
-                <select value={y} onChange={e=>setY(e.target.value)}>
-                  {years.map(yr=><option key={yr} value={yr}>{yr}年</option>)}
-                </select>
-              </div>
-              <div className="bf-sel">
-                <select value={m} onChange={e=>setM(parseInt(e.target.value,10))}>
-                  {Array.from({length:12},(_,i)=>i+1).map(mm=><option key={mm} value={mm}>{mm}月</option>)}
-                </select>
-              </div>
-              <div className="bf-sel">
-                <select value={d} onChange={e=>setD(parseInt(e.target.value,10))}>
-                  {Array.from({length:31},(_,i)=>i+1).map(dd=><option key={dd} value={dd}>{dd}日</option>)}
-                </select>
-              </div>
-            </div>
-            <div className="bf-derive">日期将自动对应星座：{zobj? zobj.emoji+' '+zobj.name : '—'}</div>
-          </div>
-
-          <div className="bf-row">
-            <div className="bf-label">出生时间 <span className="opt">· 可选</span></div>
-            <input className="bf-input" placeholder="例如 14:30" value={tm} onChange={e=>setTm(e.target.value)} maxLength={5}/>
-          </div>
-
-          <div className="bf-row">
-            <div className="bf-label">出生城市 <span className="opt">· 可选</span></div>
-            <input className="bf-input" placeholder="例如 北京" value={city} onChange={e=>setCity(e.target.value)} maxLength={12}/>
-          </div>
-
-          <div className="bf-note">
-            <span className="ln-ic">✦</span>
-            <span>填得越全，星光越懂你<br/>可选 · 仅用于星座计算，绝不外传</span>
-          </div>
-
-          <div className="cta" onClick={save}>保存</div>
-        </div>)}
-      </div>
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════
    路由：Tab + 页面栈 + Toast + 小弹层
-   #hash 直达：welcome（首次引导 · 未设置时自动出现）/
-   today / today:flip / today:detail /
+   #hash 直达：today / today:flip / today:detail /
    today:energy:love/career/social/health / oracle /
    oracle:element:0-2 / oracle:spreads / oracle:ask / oracle:result /
-   me / me:trend / me:diary / me:wish / me:review / me:checkin /
-   me:settings / me:zodiac（改星座） / birth（完善出生信息）
-   首次打开模拟：welcomeDone=false（无星座记录）→ 页 17 引导
+   me / me:trend / me:diary / me:wish / me:review / me:checkin / me:settings
    ═══════════════════════════════════════════════════════════ */
 function App(){
   const [tab,setTab] = useState('today');
   const [stack,setStack] = useState([]);
   const [toast,setToast] = useState('');
   const [pass,setPass] = useState({spread:'three_card',question:'他/她今天在想我吗',persona:'wise_moon',element:0});
-  /* ── 星座录入状态：zodiac=null 视为未设置；welcomeDone 模拟首次引导已过 ── */
-  const [zodiac,setZodiac] = useState(null);
-  const [welcomeDone,setWelcomeDone] = useState(false);
-  const [birth,setBirth] = useState(null);
 
   const show = t=>{setToast(t);clearTimeout(show._t);show._t=setTimeout(()=>setToast(''),2000);};
   const push = k=>setStack(s=>[...s,k]);
@@ -2152,16 +1847,11 @@ function App(){
     const tip = TABS.find(x=>x.key===t).tip;
     show(tip);
   };
-  /* 引导完成：选星座 → 记录（模拟本地存储）→ 进今日屏 */
-  const beginJourney = z=>{setZodiac(z);setWelcomeDone(true);setTab('today');setStack([]);show('已记住，'+z.name+' ✦');};
-  const skipJourney = ()=>{setWelcomeDone(true);setTab('today');setStack([]);show('先随便逛逛吧 · 星座随时可在「设置」里补 ✦');};
 
   useEffect(()=>{
     const apply=()=>{
       const h=location.hash.replace(/^#/,'');
       if(!h)return;
-      if(h==='welcome'){setTab('welcome');setStack([]);return;}
-      if(h==='birth'){setTab('me');setStack(['birth']);return;}
       const idx=h.indexOf(':');
       let t = idx<0?h:h.slice(0,idx);
       if(!['today','oracle','me'].includes(t))t='today';
@@ -2175,15 +1865,10 @@ function App(){
     return ()=>window.removeEventListener('hashchange',apply);
   },[]);
 
-  const ctx = {push,pop,goTab,show,pass,setPass,zodiac,setZodiac,birth,setBirth,beginJourney,skipJourney};
+  const ctx = {push,pop,goTab,show,pass,setPass};
   let view;
-  /* 首次打开（无星座记录）→ 星座引导；其他深链直达可跳过引导方便演示 */
-  const h0=(location.hash||'').replace(/^#/,'');
-  const explicitDeep = h0!=='' && h0!=='welcome' && h0!=='today';
-  if(!welcomeDone && !explicitDeep){
-    view=<Welcome key="welcome"/>;
-  }else if(stack.length===0){
-    if(tab==='today'||tab==='welcome') view=<TodayMain key="t"/>;
+  if(stack.length===0){
+    if(tab==='today') view=<TodayMain key="t"/>;
     else if(tab==='oracle') view=<OracleMain key="o"/>;
     else view=<MeMain key="m"/>;
   }else{
@@ -2201,8 +1886,6 @@ function App(){
     else if(k==='review') view=<Review key="review"/>;
     else if(k==='checkin') view=<Checkin key="checkin"/>;
     else if(k==='settings') view=<Settings key="settings"/>;
-    else if(k==='zodiac') view=<ZodiacPick key="zodiac"/>;   /* 改星座 */
-    else if(k==='birth') view=<Birth key="birth"/>;           /* 出生信息 */
   }
 
   return (
@@ -2221,12 +1904,12 @@ function Stage(){
     <div className="stage">
       <h1>星光映照</h1>
       <div className="sub">STARLIT — 今日 × 神谕 × 我的 · 完整页面流</div>
-      <div className="meta">19 屏 · 一个主角原则 · 全部页面可点击 · 点一点，走一遍星光</div>
+      <div className="meta">17 屏 · 一个主角原则 · 全部页面可点击 · 点一点，走一遍星光</div>
       <div className="scale-box">
         <div className="phone-holder"><App/></div>
       </div>
       <div className="hashlist">
-        #welcome（首次引导 · 选星座进今日） · #today · #today:flip · #today:detail · #today:energy:love/career/social/health · #oracle · #oracle:element:0/1/2 · #oracle:spreads · #oracle:ask · #oracle:result · #me · #me:trend · #me:diary · #me:wish · #me:review · #me:checkin · #me:settings · #me:zodiac（改星座） · #birth（完善出生信息）
+        #today · #today:flip · #today:detail · #today:energy:love/career/social/health · #oracle · #oracle:element:0/1/2 · #oracle:spreads · #oracle:ask · #oracle:result · #me · #me:trend · #me:diary · #me:wish · #me:review · #me:checkin · #me:settings
       </div>
       <div className="note">
         每一页只有一个<b>主角</b>，其余皆为注脚与入口。<br/>
