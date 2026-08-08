@@ -9,7 +9,9 @@
     "pages/energy-detail/energy-detail",
     "pages/encyclopedia/encyclopedia",
     "pages/about/about",
-    "pages/legal/legal"
+    "pages/legal/legal",
+    "pages/wish/wish",
+    "pages/review/review"
   ],
   "subPackages": [
     {

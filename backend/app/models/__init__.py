@@ -10,6 +10,8 @@ from app.models.community import Topic, Post
 from app.models.push_subscription import PushSubscription
 from app.models.performance import PerformanceEvent
 from app.models.horoscope import HoroscopeHistory
+from app.models.wish import Wish
+from app.models.review import MoonReview
 
 __all__ = [
     "User",
@@ -28,4 +30,6 @@ __all__ = [
     "PushSubscription",
     "PerformanceEvent",
     "HoroscopeHistory",
+    "Wish",
+    "MoonReview",
 ]

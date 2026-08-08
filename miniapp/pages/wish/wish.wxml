@@ -1,0 +1,116 @@
+<!-- pages/wish/wish.wxml — 新月许愿（原型页 13） -->
+<view class="page">
+  <view class="stars-layer"></view>
+
+  <!-- ===== 加载 / 错误 ===== -->
+  <view wx:if="{{pageError && !moonLine}}" class="error-state">
+    <text class="error-text">月光暂时迷路了</text>
+    <text class="error-hint">{{pageError}}</text>
+    <button class="btn-ghost" bindtap="onRetry">重新连接</button>
+  </view>
+
+  <block wx:else>
+    <!-- ===== 月相仪式区（主角） ===== -->
+    <view class="wish-stage anim-fade-up anim-stagger-1">
+      <view class="crescent">
+        <view class="crescent-glow"></view>
+      </view>
+      <text class="phase-line">{{moonLine || '月亮正在为你点亮…'}}</text>
+      <text class="wish-title">新月许愿</text>
+      <text class="wish-sub">写下愿望，交给月光保管</text>
+    </view>
+
+    <!-- ===== 输入态 ===== -->
+    <view wx:if="{{stage == 'input'}}" class="wish-input-zone anim-fade-up anim-stagger-2">
+      <view class="chip-row">
+        <view
+          wx:for="{{cats}}"
+          wx:key="*this"
+          class="chip {{cat == item ? 'chip--on' : ''}}"
+          data-cat="{{item}}"
+          bindtap="onPickCat"
+        >{{item}}</view>
+      </view>
+
+      <textarea
+        class="wish-textarea"
+        value="{{text}}"
+        maxlength="100"
+        placeholder="许一个{{cat}}的愿望…"
+        placeholder-class="wish-placeholder"
+        bindinput="onInput"
+        auto-height
+        fixed
+      ></textarea>
+      <text class="wish-count">{{text.length}}/100</text>
+
+      <button class="cta-btn" bindtap="onSubmit" loading="{{submitting}}" disabled="{{submitting}}">
+        <text>交给月光 ✦</text>
+      </button>
+      <text class="wish-moon-note">许愿不收费 · 月亮不设限</text>
+
+      <!-- 归档列表（已写计数） -->
+      <view class="archive-section">
+        <view class="archive-head">
+          <text class="archive-title">我的愿望</text>
+          <text class="archive-count">{{activeCount}}/{{10}} 生长中</text>
+        </view>
+        <view wx:if="{{listLoading}}" class="archive-empty">
+          <text class="archive-empty-text">月光正在清点…</text>
+        </view>
+        <view wx:elif="{{wishes.length == 0}}" class="archive-empty">
+          <text class="archive-empty-text">还没有愿望交给月光</text>
+          <text class="archive-empty-hint">新月前后，愿望最容易生根</text>
+        </view>
+        <view wx:else>
+          <view class="wish-card" wx:for="{{wishes}}" wx:key="id">
+            <view class="wish-card-top">
+              <text class="wish-status {{item.statusCls}}">{{item.statusLabel}}</text>
+              <text class="wish-date">{{item.dateLabel}}</text>
+              <text class="wish-delete" data-id="{{item.id}}" catchtap="onDeleteWish">✕</text>
+            </view>
+            <text class="wish-card-text">{{item.content}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- ===== 成功态 ===== -->
+    <view wx:else class="wish-done-zone anim-fade-up anim-stagger-2">
+      <view class="wish-seal">✦</view>
+      <text class="wish-done-title">你的愿望已交给月光</text>
+      <text class="wish-done-sub">{{blessing || '星光已替你收好，满月时月亮会把回响带回来'}}</text>
+
+      <view class="wish-ticket" wx:if="{{doneWish}}">
+        <view class="wish-ticket-stamp">月</view>
+        <text class="wish-ticket-text">{{doneWish.content}}</text>
+        <text class="wish-ticket-date">{{doneWish.ticketLabel}} / {{moonLine}}</text>
+      </view>
+
+      <text class="wish-moon-note wish-moon-note--done">满月时，月亮会把回响带回来</text>
+      <button class="cta-btn cta-btn--ghost" bindtap="onGoReview">查看我的满月复盘 →</button>
+      <button class="link-btn" bindtap="onWriteAnother">再写一个</button>
+
+      <!-- 归档列表（成功态也展示） -->
+      <view class="archive-section">
+        <view class="archive-head">
+          <text class="archive-title">我的愿望</text>
+          <text class="archive-count">{{activeCount}}/{{10}} 生长中</text>
+        </view>
+        <view wx:if="{{wishes.length == 0}}" class="archive-empty">
+          <text class="archive-empty-text">还没有愿望交给月光</text>
+        </view>
+        <view wx:else>
+          <view class="wish-card" wx:for="{{wishes}}" wx:key="id">
+            <view class="wish-card-top">
+              <text class="wish-status {{item.statusCls}}">{{item.statusLabel}}</text>
+              <text class="wish-date">{{item.dateLabel}}</text>
+              <text class="wish-delete" data-id="{{item.id}}" catchtap="onDeleteWish">✕</text>
+            </view>
+            <text class="wish-card-text">{{item.content}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

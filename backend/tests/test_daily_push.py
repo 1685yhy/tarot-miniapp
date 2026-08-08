@@ -127,6 +127,77 @@ def test_push_loop_exits_when_template_unconfigured(client: TestClient, monkeypa
     assert result is None
 
 
+# ══════════════════════════════════════════════════════════════
+# 开发 04 · 月相推送事件
+# ══════════════════════════════════════════════════════════════
+
+
+def test_moon_event_new_moon_eve():
+    """新月前一天 → 新月许愿事件（明日新月，准备好愿望了吗 ✦）。"""
+    # 方案定义的新月日：2026-08-13 → 前一天 2026-08-12 触发
+    event = daily_push.get_moon_push_event(datetime(2026, 8, 12, 21, 30, tzinfo=BEIJING_TZ).date())
+    assert event is not None
+    assert event["kind"] == "new_moon_eve"
+    assert "新月" in event["content"]
+    assert event["page"] == "pages/wish/wish"
+
+
+def test_moon_event_full_moon_day():
+    """满月当天 → 满月复盘事件（满月之夜，来复盘你的愿望 ✦）。"""
+    # 方案定义/真实月偏食日：2026-08-28 是满月
+    event = daily_push.get_moon_push_event(datetime(2026, 8, 28, 21, 30, tzinfo=BEIJING_TZ).date())
+    assert event is not None
+    assert event["kind"] == "full_moon"
+    assert "复盘" in event["content"]
+    assert event["page"] == "pages/review/review"
+
+
+def test_moon_event_none_on_normal_days():
+    """普通日子（非新月前夜、非满月）→ 无月相事件。"""
+    event = daily_push.get_moon_push_event(datetime(2026, 8, 9, 21, 30, tzinfo=BEIJING_TZ).date())
+    assert event is None
+
+
+def test_moon_push_skipped_when_template_unconfigured(client: TestClient, monkeypatch):
+    """月相事件日 + 模板未配置 → skipped_config（与每日一牌一致，不崩溃）。"""
+    _reset_state(monkeypatch)
+    now = datetime(2026, 8, 28, 21, 30, tzinfo=BEIJING_TZ)  # 满月当天
+    result = _send_if_due(now)
+    assert result["status"] == "skipped_config"
+
+
+def test_moon_push_not_due_before_21(client: TestClient, monkeypatch):
+    """月相事件日 + 未到 21:00 → not_due。"""
+    _reset_state(monkeypatch)
+    monkeypatch.setattr(settings, "WX_TEMPLATE_DAILY_CARD", "TEST_TMPL")
+    now = datetime(2026, 8, 28, 20, 0, tzinfo=BEIJING_TZ)
+    result = _send_if_due(now)
+    assert result["status"] == "not_due"
+
+
+def test_moon_push_sends_moon_message_on_full_moon(client: TestClient, monkeypatch):
+    """满月当天 21:30 + 模板已配置 + 有订阅 → 发送月相复盘消息（替代每日一牌）。"""
+    _reset_state(monkeypatch)
+    monkeypatch.setattr(settings, "WX_TEMPLATE_DAILY_CARD", "TEST_TMPL")
+    user_id = "00000000-0000-0000-0000-0000000000e1"
+    asyncio.run(_insert_subscription(user_id, "o_moon_openid_001"))
+
+    # 满月当天（2026-08-28）→ 走 moon 分支；token 获取失败计数 failed，但不崩溃。
+    # （同文件其他用例的订阅会叠加，故 failed >= 1 而非精确值）
+    result = _send_if_due(datetime(2026, 8, 28, 21, 30, tzinfo=BEIJING_TZ))
+    assert result["status"] == "sent"
+    assert result["failed"] >= 1  # 微信 token 不可用（测试环境），发送本身被尝试
+    assert daily_push._last_sent_date == "2026-08-28"
+
+
+def test_moon_event_alignment_with_api():
+    """推送月相判定与 /moon/phase 同源（确定性一致）。"""
+    from app.services.moon import moon_phase_on
+    full_day = datetime(2026, 8, 28, 21, 30, tzinfo=BEIJING_TZ).date()
+    assert moon_phase_on(full_day)["phase"] == "full_moon"
+    assert daily_push.get_moon_push_event(full_day)["kind"] == "full_moon"
+
+
 def test_push_card_matches_daily_card_endpoint(client: TestClient):
     """晚间推送选牌与 /cards/daily 完全一致（同一用户同一天同一张牌）."""
     headers = _auth_headers(client)

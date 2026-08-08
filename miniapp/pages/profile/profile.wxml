@@ -42,53 +42,90 @@
       </button>
     </view>
 
-    <!-- ============ 我的星光之旅 ============ -->
-    <view class="journey-card anim-fade-up anim-stagger-2">
-      <view class="journey-header">
-        <image src="/images/icons/star_64.png" mode="aspectFit" class="journey-header-icon" aria-label="星光之旅" />
-        <text class="journey-title">✦ 我的星光之旅</text>
+    <!-- ============ 主角：星光记录卡（开发 04 · 连续天数大数字 + 迷你牌运曲线） ============ -->
+    <view class="record-card anim-fade-up anim-stagger-2" bindtap="onGoFortuneTrend" role="button" aria-label="查看星光记录与牌运曲线" hover-class="card-pressed">
+      <view class="record-card-top">
+        <text class="record-card-label">星光记录</text>
+        <text class="record-card-badge" wx:if="{{recordLevel}}">{{recordLevel}}</text>
+        <text class="record-card-badge" wx:else>星光旅人</text>
       </view>
-      <view class="journey-grid">
-        <view class="journey-item">
-          <view class="journey-num-row">
-            <text class="journey-num">{{streak}}</text>
-            <text class="journey-unit">天</text>
-          </view>
-          <text class="journey-label">连续打卡</text>
+      <view class="record-card-main">
+        <text class="record-card-num">{{streak}}<text class="record-card-num-unit">天连续</text></text>
+        <view class="record-card-text">
+          <text class="record-card-line1">本月解读 {{fortuneTotal}} 次 · {{fortuneMood}}</text>
+          <text class="record-card-line2">你已与星光同行 {{streak}} 天，星光正在累积</text>
         </view>
-        <view class="journey-item">
-          <view class="journey-num-row">
-            <text class="journey-num">{{collectionCount}}</text>
-            <text class="journey-unit">/ 78 张牌</text>
-          </view>
-          <text class="journey-label">已收集</text>
+      </view>
+      <!-- 迷你牌运曲线（30 根柱 · 归一化高度） -->
+      <view class="record-spark" wx:if="{{sparkBars.length > 0}}">
+        <view class="spark-bar {{item.active ? 'spark-bar--on' : ''}}" wx:for="{{sparkBars}}" wx:key="index" style="height: {{item.h}}%;"></view>
+      </view>
+      <view class="record-stats">
+        <view class="record-stat">
+          <text class="record-stat-num">{{totalReadings}}</text>
+          <text class="record-stat-label">解读</text>
         </view>
-        <view class="journey-item">
-          <view class="journey-num-row">
-            <text class="journey-num">{{totalReadings}}</text>
-            <text class="journey-unit">次</text>
-          </view>
-          <text class="journey-label">累计解读</text>
+        <view class="record-stat">
+          <text class="record-stat-num">{{diaryCount}}</text>
+          <text class="record-stat-label">日记</text>
         </view>
-        <view class="journey-item">
-          <view class="journey-num-row">
-            <text class="journey-num">{{diaryCount}}</text>
-            <text class="journey-unit">篇</text>
-          </view>
-          <text class="journey-label">日记</text>
+        <view class="record-stat">
+          <text class="record-stat-num">{{wishCount}}</text>
+          <text class="record-stat-label">愿望</text>
+        </view>
+        <view class="record-stat">
+          <text class="record-stat-num">{{collectionCount}}/78</text>
+          <text class="record-stat-label">收藏</text>
         </view>
       </view>
     </view>
+    <view class="record-curve-link anim-fade-up anim-stagger-2" bindtap="onGoFortuneTrend" role="button" aria-label="查看牌运曲线">
+      <text>牌运曲线 · 近 30 天 {{sparkActive}} 天有星光 →</text>
+    </view>
 
-    <!-- ============ 我的牌运 — 牌运曲线入口（留存 · 个人数据资产） ============ -->
-    <view class="fortune-entry-card anim-fade-up anim-stagger-2" bindtap="onGoFortuneTrend" role="button" aria-label="查看我的牌运" hover-class="card-pressed">
-      <view class="fortune-entry-header">
-        <image src="/images/icons/star_64.png" mode="aspectFit" class="fortune-entry-icon" aria-label="牌运" />
-        <text class="fortune-entry-title">✦ 我的牌运</text>
+    <!-- ============ 注脚入口（开发 04 · 日记 3 小卡 + 签到/收藏/设置） ============ -->
+    <view class="me-grid anim-fade-up anim-stagger-3">
+      <view class="me-tile" bindtap="onGoDiary" role="button" aria-label="我的日记" hover-class="tile-pressed">
+        <view class="me-tile-icon"><text class="me-tile-emoji">📖</text></view>
+        <view class="me-tile-text">
+          <text class="me-tile-name">我的日记</text>
+          <text class="me-tile-desc">{{diaryCount}} 篇星光感悟</text>
+        </view>
       </view>
-      <view class="fortune-entry-row">
-        <text class="fortune-entry-desc">近 30 天解读 {{fortuneTotal}} 次 · {{fortuneMood}}</text>
-        <text class="fortune-entry-arrow">→</text>
+      <view class="me-tile" bindtap="onGoWish" role="button" aria-label="新月许愿" hover-class="tile-pressed">
+        <view class="me-tile-icon"><text class="me-tile-emoji">🌙</text></view>
+        <view class="me-tile-text">
+          <text class="me-tile-name">新月许愿</text>
+          <text class="me-tile-desc">{{wishTileDesc}}</text>
+        </view>
+      </view>
+      <view class="me-tile" bindtap="onGoReview" role="button" aria-label="满月复盘" hover-class="tile-pressed">
+        <view class="me-tile-icon"><text class="me-tile-emoji">🌕</text></view>
+        <view class="me-tile-text">
+          <text class="me-tile-name">满月复盘</text>
+          <text class="me-tile-desc">{{reviewTileDesc}}</text>
+        </view>
+      </view>
+      <view class="me-tile" bindtap="onGoCheckin" role="button" aria-label="每日签到" hover-class="tile-pressed">
+        <view class="me-tile-icon"><text class="me-tile-emoji">✦</text></view>
+        <view class="me-tile-text">
+          <text class="me-tile-name">每日签到</text>
+          <text class="me-tile-desc">连续 {{streak}} 天</text>
+        </view>
+      </view>
+      <view class="me-tile" bindtap="onGoFavorites" role="button" aria-label="收藏卡牌" hover-class="tile-pressed">
+        <view class="me-tile-icon"><text class="me-tile-emoji">✧</text></view>
+        <view class="me-tile-text">
+          <text class="me-tile-name">收藏卡牌</text>
+          <text class="me-tile-desc">{{collectionCount}} / 78 张</text>
+        </view>
+      </view>
+      <view class="me-tile" bindtap="onGoSettingsSection" role="button" aria-label="设置" hover-class="tile-pressed">
+        <view class="me-tile-icon"><text class="me-tile-emoji">⚙</text></view>
+        <view class="me-tile-text">
+          <text class="me-tile-name">设置</text>
+          <text class="me-tile-desc">推送 · 音效 · 隐私</text>
+        </view>
       </view>
     </view>
 
@@ -259,7 +296,7 @@
         <image wx:if="{{yearEndReminderEnabled}}" class="menu-arrow-img" src="/images/icons/star_64.png" mode="aspectFit" aria-label="报告提醒开启" />
         <text wx:else class="menu-arrow">○</text>
       </view>
-      <view class="menu-section-title anim-fade-up anim-stagger-7">
+      <view id="settings-section" class="menu-section-title anim-fade-up anim-stagger-7">
         <text class="menu-section-label">设置</text>
       </view>
       <view class="menu-item anim-slide-up anim-stagger-7" bindtap="onToggleSound" role="button" aria-label="切换音效开关">

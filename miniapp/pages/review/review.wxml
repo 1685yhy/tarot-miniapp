@@ -1,0 +1,76 @@
+<!-- pages/review/review.wxml — 满月复盘（原型页 14） -->
+<view class="page">
+  <view class="stars-layer"></view>
+
+  <!-- ===== 加载 / 错误 ===== -->
+  <view wx:if="{{loading}}" class="loading-wrap">
+    <view class="loading-moon"></view>
+    <text class="loading-text">月亮正在整理你的愿望…</text>
+  </view>
+
+  <view wx:elif="{{pageError}}" class="error-state">
+    <text class="error-text">复盘暂时无法生成</text>
+    <text class="error-hint">{{pageError}}</text>
+    <button class="btn-ghost" bindtap="onRetry">重新连接</button>
+  </view>
+
+  <!-- ===== 内容 ===== -->
+  <block wx:else>
+    <!-- 满月仪式头 -->
+    <view class="moon-head anim-fade-up anim-stagger-1">
+      <view class="full-moon">
+        <view class="full-moon-glow"></view>
+      </view>
+      <text class="moon-phase-line">🌕 满月 · 愿望回望</text>
+    </view>
+
+    <!-- 空态：还没有愿望/日记 -->
+    <view wx:if="{{!review.has_data}}" class="review-empty anim-fade-up anim-stagger-2">
+      <text class="review-empty-title">月光还没有收到你的愿望</text>
+      <text class="review-empty-hint">新月时写下愿望、平时记几行日记，满月之夜月亮就会为你复盘</text>
+      <button class="cta-btn" bindtap="onGoWish">去新月许愿 ✦</button>
+    </view>
+
+    <!-- ===== 主角：AI 复盘卡 ===== -->
+    <view wx:else class="review-card anim-fade-up anim-stagger-2">
+      <view class="review-card-head">
+        <text class="review-card-title">满月复盘 · 愿望回望</text>
+        <text class="review-card-sub">{{review.date_range}} · 月亮替你保管的这些天</text>
+      </view>
+
+      <!-- 愿望回望三态 -->
+      <view class="rv-status" wx:for="{{review.wishes}}" wx:key="index">
+        <view class="rv-icon {{item.statusCls}}">
+          <text>{{item.statusIcon}}</text>
+        </view>
+        <view class="rv-text">
+          <text class="rv-wish">{{item.content}}</text>
+          <text class="rv-status-label">{{item.statusLabel}}</text>
+          <text class="rv-note" wx:if="{{item.note}}">{{item.note}}</text>
+        </view>
+      </view>
+
+      <!-- AI 复盘文 -->
+      <view class="rv-essay">
+        <text>{{review.review}}</text>
+      </view>
+
+      <!-- tips -->
+      <view class="rv-tips" wx:if="{{review.tips.length > 0}}">
+        <text class="rv-tips-label">月光留给你</text>
+        <view class="rv-tip" wx:for="{{review.tips}}" wx:key="index">
+          <text class="rv-tip-dot">✦</text>
+          <text class="rv-tip-text">{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作区 -->
+    <view wx:if="{{review.has_data}}" class="review-actions anim-fade-up anim-stagger-3">
+      <button class="cta-btn cta-btn--pink" bindtap="onShare">分享复盘 ✦</button>
+      <button class="link-btn" bindtap="onRegenerate" loading="{{regenerating}}" disabled="{{regenerating}}">
+        <text>{{regenerating ? '月光正在重新整理…' : '重新生成复盘'}}</text>
+      </button>
+    </view>
+  </block>
+</view>

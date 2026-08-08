@@ -112,6 +112,14 @@ Page({
     fortuneTotal: 0,
     fortuneMood: '',
 
+    // 开发 04 · 星光记录卡（主角）：迷你牌运曲线 + 等级 + 愿望/月相
+    sparkBars: [],          // 近 30 天解读次数迷你柱（高度百分比）
+    sparkActive: 0,         // 有解读记录的天数
+    recordLevel: '',        // 等级名（星辰学徒…）
+    wishCount: 0,           // 愿望总数
+    wishTileDesc: '',       // 新月许愿 tile 描述（新月日期）
+    reviewTileDesc: '',     // 满月复盘 tile 描述（满月日期）
+
     // AI 周回顾 — 星光周报分享长图
     showWeeklyPoster: false,
     weeklyReportData: null,
@@ -169,10 +177,11 @@ Page({
     this.setData({ pageLoading: true });
     try {
       const user = await checkLogin();
-      const [status, history, shareStats] = await Promise.all([
+      const [status, history, shareStats, taskStatus] = await Promise.all([
         request('/membership/status'),
         request('/readings/history?page=1&page_size=20'),
         request('/share/stats?days=365'),
+        request('/tasks/status').catch(() => null),
       ]);
       // Subtle entrance chime
       sound.playPageEnterSound();
@@ -180,13 +189,6 @@ Page({
       // Load invite rewards from share stats
       const inviteRewards = shareStats?.free_deep_readings || 0;
 
-      // 我的星光之旅 — streak (same local source as the home daily card)
-      let storedStreak = 0;
-      try {
-        storedStreak = wx.getStorageSync('streak') || 0;
-      } catch (_e) {
-        storedStreak = 0;
-      }
       // 已收集 N/78 张牌 — collection spans the full 78-card encyclopedia
       let collectionCount = 0;
       try {
@@ -195,6 +197,13 @@ Page({
       } catch (_e) {
         collectionCount = 0;
       }
+
+      // 开发 04 · 星光记录卡：连续天数以 /tasks/status 为准，本地缓存兜底
+      let recordStreak = (taskStatus && taskStatus.streak) || 0;
+      if (!recordStreak) {
+        try { recordStreak = wx.getStorageSync('streak') || 0; } catch (_e) { recordStreak = 0; }
+      }
+      const recordLevel = (taskStatus && taskStatus.level && taskStatus.level.current_level) || '';
 
       this.setData({
         user,
@@ -210,7 +219,8 @@ Page({
         })),
         inviteRewards,
         historyTotal: history.total || (history.items ? history.items.length : 0),
-        streak: storedStreak,
+        streak: recordStreak,
+        recordLevel,
         collectionCount,
         totalReadings: history.total || (history.items ? history.items.length : 0),
         pageLoading: false,
@@ -233,24 +243,74 @@ Page({
 
     // 我的牌运 — 入口摘要（独立请求，失败静默降级，不影响整页）
     this._loadFortuneTrend();
+
+    // 开发 04 · 星光记录卡：愿望数 + 月相（独立请求，失败静默降级）
+    this._loadWishesAndMoon();
   },
 
-  /** 拉取牌运曲线摘要（近 30 天解读次数 + 一句话总结） */
+  /** 拉取牌运曲线摘要（近 30 天解读次数 + 一句话总结 + 迷你曲线） */
   async _loadFortuneTrend() {
     try {
       const data = await request('/readings/fortune-trend?days=30');
+      // 迷你牌运曲线：近 30 天每日解读次数 → 归一化柱高（星光记录卡主角）
+      const rawTrend = data.trend || [];
+      const maxCount = rawTrend.reduce((m, t) => Math.max(m, t.count || 0), 0) || 1;
+      const sparkBars = rawTrend.map(t => ({
+        h: Math.max(6, Math.round(((t.count || 0) / maxCount) * 100)),
+        active: (t.count || 0) > 0,
+      }));
+      const sparkActive = sparkBars.filter(b => b.active).length;
       this.setData({
         fortuneTotal: data.total_readings || 0,
         fortuneMood: data.mood || '星光同行',
+        sparkBars,
+        sparkActive,
       });
     } catch (_err) {
       // Silent degrade — 入口卡显示默认值
     }
   },
 
+  /** 开发 04 · 愿望数 + 月相（新月许愿/满月复盘 tile 描述） */
+  async _loadWishesAndMoon() {
+    const [wishRes, moonRes] = await Promise.allSettled([
+      request('/wishes'),
+      request('/moon/phase'),
+    ]);
+    const wishCount = (wishRes.status === 'fulfilled' && wishRes.value) ? (wishRes.value.total || 0) : 0;
+    let wishTileDesc = '';
+    let reviewTileDesc = '';
+    if (moonRes.status === 'fulfilled' && moonRes.value) {
+      const m = moonRes.value;
+      const nm = (m.next_new_moon || '').slice(5).replace('-', '.');
+      const fm = (m.next_full_moon || '').slice(5).replace('-', '.');
+      wishTileDesc = `新月 ${nm} · 现在 ${m.emoji}`;
+      reviewTileDesc = `满月 ${fm} 来复盘`;
+    } else {
+      wishTileDesc = '交给月光保管 ✦';
+      reviewTileDesc = '满月时月亮会回应';
+    }
+    this.setData({ wishCount, wishTileDesc, reviewTileDesc });
+  },
+
   /** 进入「我的牌运」页（牌运曲线 · 个人数据资产） */
   onGoFortuneTrend() {
     wx.navigateTo({ url: '/pages/fortune-trend/fortune-trend' });
+  },
+
+  /** 开发 04 · 新月许愿 */
+  onGoWish() {
+    wx.navigateTo({ url: '/pages/wish/wish' });
+  },
+
+  /** 开发 04 · 满月复盘 */
+  onGoReview() {
+    wx.navigateTo({ url: '/pages/review/review' });
+  },
+
+  /** 设置 tile → 平滑滚到页面「设置」分区 */
+  onGoSettingsSection() {
+    wx.pageScrollTo({ selector: '#settings-section', duration: 320 });
   },
 
   _loadFavoriteCount() {

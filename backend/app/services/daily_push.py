@@ -5,6 +5,9 @@
   TEMPLATE_DAILY_CARD 的用户推送「今晚之牌」：当天每日一牌的牌名 + 一句牌语。
 - 牌面按「用户 id + 日期」hash 确定性选取（与 /cards/daily 同一逻辑，
   见 services/daily_card.py），保证用户收到的就是当天白天看到的那张牌。
+- 月相事件优先（开发 04）：新月前 1 天推送「明日新月，准备好愿望了吗 ✦」
+  （页面 pages/wish/wish）；满月当天推送「满月之夜，来复盘你的愿望 ✦」
+  （页面 pages/review/review）。复用同一订阅列表与模板。
 - 模板 ID 从 settings（WX_TEMPLATE_DAILY_CARD）读取；未配置时记 error 日志
   并跳过（服务不崩溃，也不向微信发请求）。
 - 已发送日期记在内存 + data/daily_push_state.json（best-effort 持久化，
@@ -87,6 +90,50 @@ def _first_keyword(card: TarotCard) -> str:
     return first[:20] or "查看今日指引"
 
 
+def get_moon_push_event(today: date) -> dict | None:
+    """返回今天的月相推送事件（开发 04），无事件返回 None。
+
+    - 新月前 1 天（明天是新月日）→ 「明日新月，准备好愿望了吗 ✦」→ pages/wish/wish
+    - 满月当天 → 「满月之夜，来复盘你的愿望 ✦」→ pages/review/review
+    - 其他日期 → None（走常规每日一牌）
+
+    月相判定与 /moon/phase 同一确定性算法（services/moon.py），
+    推送、页面展示、许愿记录完全同源。
+    """
+    from app.services.moon import moon_phase_on, next_new_moon_after
+
+    phase = moon_phase_on(today)["phase"]
+    if phase == "full_moon":
+        return {
+            "kind": "full_moon",
+            "title": "满月复盘",
+            "content": "满月之夜，来复盘你的愿望 ✦",
+            "page": "pages/review/review",
+        }
+    if next_new_moon_after(today) == today + timedelta(days=1):
+        return {
+            "kind": "new_moon_eve",
+            "title": "新月许愿",
+            "content": "明日新月，准备好愿望了吗 ✦",
+            "page": "pages/wish/wish",
+        }
+    return None
+
+
+def build_moon_push_data(event: dict, today: date) -> dict[str, dict[str, str]]:
+    """构建月相事件的模板数据（复用每日一牌模板字段：thing1/thing2/date3/thing4）。"""
+    return {
+        "thing1": {"value": _truncate_str(event["title"], 20)},
+        "thing2": {"value": _truncate_str(event["content"], 20)},
+        "date3": {"value": today.strftime("%Y.%m.%d")},
+        "thing4": {"value": "点击开启 ✦"},
+    }
+
+
+def _truncate_str(value: str, max_len: int = 20) -> str:
+    return value if len(value) <= max_len else value[:max_len]
+
+
 async def send_daily_push_if_due(db: AsyncSession, now: datetime | None = None) -> dict:
     """到 21:00（北京时间）且今天未发送时，向订阅用户推送「今晚之牌」。
 
@@ -150,22 +197,31 @@ async def send_daily_push_if_due(db: AsyncSession, now: datetime | None = None) 
         return {"status": "no_subscribers"}
 
     template_id = resolve_template_id(TEMPLATE_DAILY_CARD)
+
+    # ── 月相事件优先（开发 04）：新月前夜 / 满月之夜 ──
+    moon_event = get_moon_push_event(now.date())
+
     sent = 0
     failed = 0
     for sub in subs[:1000]:  # 微信单模板每小时上限 1000 条
         try:
-            card = pick_daily_card(cards, sub.user_id)
-            data = build_daily_card_data(
-                card_name=card.name_zh,
-                keyword=_first_keyword(card),
-                date_str=today_str.replace("-", "."),
-                hint="今晚之牌 · 点击查看牌面详解",
-            )
+            if moon_event:
+                data = build_moon_push_data(moon_event, now.date())
+                page = moon_event["page"]
+            else:
+                card = pick_daily_card(cards, sub.user_id)
+                data = build_daily_card_data(
+                    card_name=card.name_zh,
+                    keyword=_first_keyword(card),
+                    date_str=today_str.replace("-", "."),
+                    hint="今晚之牌 · 点击查看牌面详解",
+                )
+                page = "pages/daily-card/daily-card"
             resp = await send_subscribe_message(
                 openid=sub.openid,
                 template_id=template_id,
                 data=data,
-                page="pages/daily-card/daily-card",
+                page=page,
             )
             if resp.get("errcode") == 0:
                 sent += 1
