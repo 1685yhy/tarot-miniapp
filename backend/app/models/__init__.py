@@ -9,6 +9,7 @@ from app.models.checkin import CheckIn
 from app.models.community import Topic, Post
 from app.models.push_subscription import PushSubscription
 from app.models.performance import PerformanceEvent
+from app.models.horoscope import HoroscopeHistory
 
 __all__ = [
     "User",
@@ -26,4 +27,5 @@ __all__ = [
     "Post",
     "PushSubscription",
     "PerformanceEvent",
+    "HoroscopeHistory",
 ]

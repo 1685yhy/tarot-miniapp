@@ -30,6 +30,12 @@ class User(Base):
     share_count: Mapped[int] = mapped_column(Integer, default=0)
     free_deep_readings: Mapped[int] = mapped_column(Integer, default=0)
     reward_tier: Mapped[int] = mapped_column(Integer, default=0)
+    # ── 星座能量（星光映照）──
+    # zodiac: 12 星座 key（aries/taurus/...）；birth_* 二期星盘计算用，先存
+    zodiac: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    birth_date: Mapped[str | None] = mapped_column(String(16), nullable=True)  # YYYY-MM-DD
+    birth_time: Mapped[str | None] = mapped_column(String(16), nullable=True)  # HH:MM 或 HH:MM:SS
+    birth_city: Mapped[str | None] = mapped_column(String(64), nullable=True)
     # Auth: bumped on logout/account-deletion to invalidate previously issued JWTs
     token_version: Mapped[int] = mapped_column(Integer, default=0)
     # Daily AI-extras quota (reinterpret / diary AI), reset when the day changes
