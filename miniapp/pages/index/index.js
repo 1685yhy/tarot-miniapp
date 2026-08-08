@@ -501,10 +501,13 @@ Page({
       const zodiacSign = this.data.zodiacSign;
       const card = await request('/cards/daily', { data: { zodiac: zodiacSign } });
       card.imagePath = computeImagePath(card, IMAGE_BASE);
-      this.setData({ dailyCard: card, drawingLoading: false });
+      this.setData({ dailyCard: card, drawingLoading: false, dailyCardFlipped: true });
       wx.hideLoading();
       // 保存到globalData供详情页使用
       getApp().globalData.dailyCard = card;
+      // 同步翻牌标记：daily-card 页据此自动显示牌面（否则跳转过去只见牌背）
+      const today = getTodayStr();
+      wx.setStorageSync('daily_card_flipped_date', today);
       // Analytics: daily card draw completed
       analytics.trackDailyDraw();
       // Daily habit loop: update streak + show reflection prompt
