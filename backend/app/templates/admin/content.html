@@ -138,7 +138,7 @@ editForm.addEventListener('submit', async (e) => {
     try {
         const resp = await fetch(`/admin/content/${editingCardId}`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json', 'X-Admin-User-Id': '{{ admin.id }}'},
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(data),
         });
         const result = await resp.json();
