@@ -55,6 +55,26 @@
     </main>
 
 </div>
-{% block scripts %}{% endblock %}
+{% block scripts %}
+<script>
+// Admin API helper: sends the JWT from ?token= or localStorage.
+// Access: <domain>/admin?token=<JWT>  (token = a super-admin login token)
+const ADMIN_TOKEN = (() => {
+  const q = new URLSearchParams(window.location.search);
+  const t = q.get('token');
+  if (t) { try { localStorage.setItem('admin_token', t); } catch (e) {} return t; }
+  try { return localStorage.getItem('admin_token') || ''; } catch (e) { return ''; }
+})();
+async function adminFetch(url, opts = {}) {
+  opts.headers = Object.assign({}, opts.headers, { 'Authorization': 'Bearer ' + ADMIN_TOKEN });
+  const res = await fetch(url, opts);
+  if (res.status === 401 || res.status === 403) {
+    alert('管理后台鉴权失败：请通过 <域名>/admin?token=<登录JWT> 访问');
+  }
+  return res;
+}
+</script>
+{% endblock %}
+
 </body>
 </html>

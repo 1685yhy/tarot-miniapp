@@ -1094,10 +1094,11 @@ function drawSharePoster(canvasId, opts) {
 
     // Load QR code from backend
     // We use wx.downloadFile for broad domain compatibility.
-    // Invite mode: the QR carries the invite code in its scene string
-    // (scene ≤ 32 chars: "invite_code=STAR-XXXX") — when a friend scans it,
-    // the mini-program launches with options.query.scene = "invite_code=STAR-XXXX".
-    let qrUrl = BASE_URL + '/share/wxa-code?path=' + encodeURIComponent('pages/index/index') + '&width=280';
+    // NOTE: tabbar pages cannot be used as the wxacode `path` (WeChat rejects
+    // them with 41030) — use a real non-tabbar page and pass the invite code
+    // through the `scene` param instead. On scan, the mini-program launches
+    // pages/share-center/share-center with options.query.scene carrying the code.
+    let qrUrl = BASE_URL + '/share/wxa-code?path=' + encodeURIComponent('pages/share-center/share-center') + '&width=280';
     if (isInviteMode) {
       qrUrl += '&scene=' + encodeURIComponent('invite_code=' + inviteCode);
     }

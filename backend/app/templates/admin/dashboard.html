@@ -93,9 +93,9 @@ async function triggerBackup() {
     status.textContent = '正在执行备份...';
     status.className = 'backup-status';
     try {
-        const res = await fetch('/admin/backup', {
+        const res = await adminFetch('/admin/backup', {
             method: 'POST',
-            headers: { 'X-Admin-User-Id': '{{ admin.id }}' },
+            headers: {},
         });
         const data = await res.json();
         if (data.ok) {
