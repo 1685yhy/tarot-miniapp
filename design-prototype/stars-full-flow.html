@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>星光映照 · 完整页面流 · 3 Tab 全流程</title>
-<meta name="description" content="星光映照塔罗小程序 — 今日 × 神谕 × 我的 三 Tab 完整页面流，15+ 屏全流程交互，一个主角原则。E3 奶油疗愈语言。">
+<meta name="description" content="星光映照塔罗小程序 — 今日 × 神谕 × 我的 三 Tab 完整页面流，16+ 屏全流程交互，一个主角原则。E3 奶油疗愈语言。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500&family=Noto+Serif+SC:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
@@ -14,6 +14,7 @@
    设计铁律：每一页只有一个主角，其余都是注脚与入口。
    视觉：E3 奶油疗愈（#FAF6EF / 雾粉 #E8C4BE / 细金 #C9A97C / 衬线）
    路由：React state 页面栈（主屏 ↔ 二级页 前进后退 + TabBar 切换）
+   页 04 能量详情：今日屏能量注脚可点 → 4 维度走心解读，chips 页内切换
    插画资产：assets/web/ 真实水彩（内联 base64）
    ═══════════════════════════════════════════════════════════════ */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -284,6 +285,63 @@ textarea,input,button{font-family:inherit}
 .do-card{border:1px dashed rgba(176,143,82,.55);border-radius:16px;padding:13px 14px;margin-top:10px;background:rgba(201,169,124,.07)}
 .do-card .dq{font-size:12.5px;letter-spacing:.5px;line-height:1.8;color:var(--ink-soft)}
 .do-card .dq-label{font-family:var(--sans);font-size:10.5px;letter-spacing:3px;color:var(--gold-deep);margin-bottom:5px;display:flex;align-items:center;gap:6px}
+
+/* ═══════════════════════════════════════════════════════════════
+   页 04 · 能量详情（主角=当前维度解读）
+   今日屏能量注脚 → 点击进入；chips 页内切换维度
+   ═══════════════════════════════════════════════════════════════ */
+/* 今日屏能量注脚 → 可点击项（hover 反馈） */
+.energy{gap:5px}
+.energy .eg.go{cursor:pointer;padding:2px 4px;margin:0 -2px;border-radius:7px;transition:background .15s ease}
+.energy .eg.go:hover{background:rgba(201,169,124,.18)}
+.energy .eg.go:active{background:rgba(201,169,124,.32)}
+/* 维度切换 chips（4 个 · 选中态随维度色调） */
+.e-chips{display:flex;gap:6px;margin-top:6px}
+.e-chip{
+  flex:1;height:32px;border-radius:999px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--sans);font-size:11px;letter-spacing:1.5px;color:var(--ink-faint);
+  background:var(--cream-hi);border:.5px solid rgba(201,169,124,.22);
+  cursor:pointer;user-select:none;transition:transform .15s ease,box-shadow .15s ease;
+}
+.e-chip:active{transform:scale(.96)}
+.e-chip.on{color:#FFFDF8;border-color:transparent;font-weight:500;box-shadow:0 3px 10px rgba(61,58,54,.14)}
+/* 能量主角卡：大数字 + 渐变能量条 */
+.e-hero{
+  background:var(--cream-hi);border:.5px solid var(--line-soft);border-radius:20px;
+  box-shadow:var(--shadow),var(--hi);padding:18px 16px 14px;margin-top:12px;text-align:center;
+}
+.e-hero .e-top{display:flex;align-items:baseline;justify-content:center;gap:8px}
+.e-hero .e-name{font-size:15px;letter-spacing:3px;color:var(--ink)}
+.e-hero .e-en{font-family:var(--num);font-size:9px;letter-spacing:3px;color:var(--ink-faint)}
+.e-hero .e-num{font-family:var(--num);font-size:54px;line-height:1.1;margin-top:4px;font-weight:500}
+.e-hero .e-num small{font-size:13px;letter-spacing:2px;margin-left:4px;color:var(--ink-faint);font-family:var(--sans)}
+.e-bar{height:8px;border-radius:999px;margin:10px 10px 0;position:relative;overflow:visible}
+.e-bar .fill{height:100%;border-radius:999px;position:relative;box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
+.e-bar .fill::after{
+  content:'';position:absolute;right:-1px;top:50%;transform:translateY(-50%);
+  width:14px;height:14px;border-radius:50%;background:var(--cream-hi);
+  border:2px solid rgba(255,255,255,.95);box-shadow:0 1px 4px rgba(61,58,54,.28);
+}
+.e-note{font-family:var(--sans);font-size:10px;color:var(--ink-faint);letter-spacing:1.5px;margin-top:10px}
+/* 走心解读（主角文案） */
+.e-read .para{
+  font-family:var(--sans);font-size:12px;line-height:1.95;letter-spacing:.4px;
+  color:var(--ink-soft);margin-bottom:10px;
+}
+.e-read .para:last-of-type{margin-bottom:12px}
+.e-read .para.p1{color:var(--ink);font-family:var(--serif);font-size:12.5px;letter-spacing:.6px}
+.e-read .line{
+  font-family:var(--serif);font-size:13px;letter-spacing:1px;line-height:1.8;color:var(--gold-deep);
+  padding:11px 14px;border-radius:14px;background:rgba(201,169,124,.08);
+  border:.5px solid rgba(201,169,124,.25);text-align:center;
+}
+.e-read .line::before{content:'✦ ';color:var(--gold)}
+/* 与今日牌的关联：一行小字 */
+.e-card-link{
+  text-align:center;font-family:var(--sans);font-size:10.5px;color:var(--gold-deep);
+  letter-spacing:1.5px;margin-top:12px;line-height:1.9;
+}
+.e-card-link b{font-weight:500;color:var(--ink-soft);letter-spacing:1px}
 
 /* ═══════════════════════════════════════════════════════════════
    页 05 · 神谕主屏（主角=三要素）
@@ -783,17 +841,17 @@ function TodayMain(){
       </div>
       <div className="card-phrase">有些答案，会在月光里慢慢清晰</div>
 
-      {/* 能量注脚：一行 · 细金（牌的补充，不是并列功能） */}
+      {/* 能量注脚：一行 · 细金（牌的补充，不是并列功能）｜每一项可点击 → 能量详情 */}
       <div className="energy">
         <span className="eg-label">今日能量</span>
         <span className="sep"/>
-        <span className="eg">爱情 <i>81</i></span>
+        <span className="eg go" onClick={()=>push('energy:love')}>爱情 <i>81</i></span>
         <span className="sep"/>
-        <span className="eg">事业 <i>73</i></span>
+        <span className="eg go" onClick={()=>push('energy:career')}>事业 <i>73</i></span>
         <span className="sep"/>
-        <span className="eg">人际 <i>64</i></span>
+        <span className="eg go" onClick={()=>push('energy:social')}>人际 <i>64</i></span>
         <span className="sep"/>
-        <span className="eg">健康 <i>57</i></span>
+        <span className="eg go" onClick={()=>push('energy:health')}>健康 <i>57</i></span>
       </div>
 
       {/* 联动解读：牌 × 天象（主角的展开） */}
@@ -953,6 +1011,123 @@ function CardDetail(){
           <div className="dq-label">✦ 30 秒小事</div>
           <div className="dq">今晚抬头看月亮 30 秒，在心里说一句：『我看到你了。』</div>
         </div>
+
+        <div className="cta ghost" onClick={pop}>回到今日</div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
+   === 页 04 · 能量详情 ===（主角=当前维度解读）
+   今日屏能量注脚 → 点击进入；chips 页内切换维度
+   文案结构：认领开头 → 为什么今天这样 → 温柔提示 → 金句收尾
+   红线：不预测 / 不恐吓 / 不命运定性 / 健康只说照顾自己
+   ═══════════════════════════════════════════════════════════ */
+const ENERGY = {
+  love:{
+    key:'love', name:'爱情', en:'LOVE', score:81, level:'高',
+    bar:'linear-gradient(90deg,#D8BC94,#B08F52)', track:'rgba(176,143,82,.14)',
+    num:'#B08F52', chip:'#A87F47',
+    note:'受今日月亮牌影响 · 满月能量加持，情绪丰沛',
+    catch:'你习惯把感情放得比工作重——这没什么不好。能认真对待心里那份柔软的人，运气不会差到哪里去。',
+    why:'今晚满月照进双鱼，情绪像涨潮的海，一波一波涌上来。你不是变脆弱了，是感知的闸门被月光推开——敏感，是今天的超能力。',
+    tip:'今天适合把想说的话写下来，而不是憋在心里。想他的时候就承认想他，不必假装云淡风轻。',
+    line:'爱自己的方式是：允许今天想他，也允许明天不想。',
+    do30:'今晚睡前，把最想对一个人说的话写进日记，不用发出去——写完，就是回应。',
+    card:'月亮牌的朦胧 × 满月之夜——话说不出口的时候，先听自己的心。'
+  },
+  career:{
+    key:'career', name:'事业', en:'CAREER', score:73, level:'中高',
+    bar:'linear-gradient(90deg,#D6CFC0,#A29A8B)', track:'rgba(138,132,120,.15)',
+    num:'#8A8478', chip:'#7A7467',
+    note:'受今日权杖能量影响 · 稳步推进的一天',
+    catch:'你不是没有野心，只是习惯把力气花在别人看不见的地方——这恰恰是你走得稳的原因。',
+    why:'今天的权杖能量像一炉烧旺的柴火，不喧哗，却持续发热。满月的余晖正落在你的案头：适合把想了很久的一件事，落地成今天的第一步。',
+    tip:'今天适合把「必须做」和「可以缓」分开写成两张清单。先做掉「必须做」里的第一件，剩下的，让它们安安静静排队就好。',
+    line:'真正的前进不是跑赢所有人，而是比昨天的自己，多走一步。',
+    do30:'现在拿出纸，写下「必须做」的三件事，只完成第一件——完成后，认真夸自己一句。',
+    card:'月亮牌让方向朦胧，权杖让脚步诚实——方向看不清时，先把脚下的路走稳。'
+  },
+  social:{
+    key:'social', name:'人际', en:'SOCIAL', score:64, level:'中',
+    bar:'linear-gradient(90deg,#AFC2D1,#7E97AB)', track:'rgba(126,151,171,.16)',
+    num:'#7E97AB', chip:'#6F8CA2',
+    note:'受水逆余波影响 · 旧人旧事浮现，先观察再靠近',
+    catch:'你对关系其实很敏锐——谁走近了、谁疏远了，你都感觉得到，只是很多时候，选择不说。',
+    why:'水逆的余波还没完全退去，旧人旧事像退潮后露出的贝壳，安静地躺在沙滩上。这不是要你回头，而是让你看清：哪些值得捡起，哪些只是路过。',
+    tip:'今天适合先观察，再靠近。别人的话听七分，留三分给自己想；想发出去的消息，先放半小时再决定。',
+    line:'真正合拍的关系，不需要你用力留住。',
+    do30:'打开通讯录，给一位久未联系、却偶尔会想起的人，发一句「最近好吗」。',
+    card:'月亮牌的朦胧，正好替你挡住那些急着要看清的眼神。'
+  },
+  health:{
+    key:'health', name:'健康', en:'HEALTH', score:57, level:'偏低',
+    bar:'linear-gradient(90deg,#A7BACB,#6E8799)', track:'rgba(110,135,153,.16)',
+    num:'#6E8799', chip:'#5F7A8E',
+    note:'温柔提醒 · 睡眠与休息，是今天的功课',
+    catch:'你最近真的很拼——这一点，身体比你更清楚。它不会说话，只会用「累」来轻轻敲门。',
+    why:'满月之夜，睡眠容易变浅，心思却容易变重。不是身体出了什么问题，是它在提醒：该把「再撑一撑」换成「歇一歇」了。',
+    tip:'今天比平时早半小时上床，手机放远一点。如果觉得累，就把「累」写下来——写出来的疲惫，会轻一半。',
+    line:'照顾自己不是偷懒，是让明天的你，还有力气爱这个世界。',
+    do30:'现在放下手机，做三次很慢很长的呼吸，让肩膀先松下来。',
+    card:'月亮牌今夜轻轻盖在你身上——月光知道，你需要休息。'
+  }
+};
+
+function EnergyDetail({dim}){
+  const {pop} = useContext(Ctx);
+  const [cur,setCur] = useState(ENERGY[dim]?dim:'love');
+  const dd = ENERGY[cur];
+  return (
+    <div className="screen anim page" data-screen-label={'04-energy-'+dd.key}>
+      <WxCapsule/>
+      <div className="wash" style={{width:190,height:190,right:-60,top:-40,background:'#E8C4BE',opacity:.22}}/>
+      <div className="wash" style={{width:160,height:160,left:-60,top:360,background:'#C9A97C',opacity:.12}}/>
+
+      <Nav title={'今日能量 · '+dd.name}/>
+
+      <div className="pbody">
+        {/* 维度切换 chips：页内切换，不退出页面 */}
+        <div className="e-chips">
+          {Object.keys(ENERGY).map(k=>
+            <div key={k} className={'e-chip'+(k===cur?' on':'')}
+                 style={k===cur?{background:ENERGY[k].chip}:null}
+                 onClick={()=>setCur(k)}>{ENERGY[k].name}</div>)}
+        </div>
+
+        {/* 主角：大数字 + 渐变能量条（数值可解释） */}
+        <div className="e-hero">
+          <div className="e-top">
+            <span className="e-name">{dd.name}能量</span>
+            <span className="e-en">{dd.en}</span>
+          </div>
+          <div className="e-num" style={{color:dd.num}}>{dd.score}<small>分</small></div>
+          <div className="e-bar" style={{background:dd.track}}>
+            <div className="fill" style={{width:dd.score+'%',background:dd.bar}}/>
+          </div>
+          <div className="e-note">{dd.note}</div>
+        </div>
+
+        {/* 走心解读：认领 → 为什么 → 温柔提示 → 金句 */}
+        <div className="sec-label">走心解读</div>
+        <div className="card-soft">
+          <div className="e-read">
+            <div className="para p1">{dd.catch}</div>
+            <div className="para">{dd.why}</div>
+            <div className="para">{dd.tip}</div>
+            <div className="line">{dd.line}</div>
+          </div>
+        </div>
+
+        {/* 30 秒小事：行动层（细金卡） */}
+        <div className="do-card">
+          <div className="dq-label">✦ 30 秒小事</div>
+          <div className="dq">{dd.do30}</div>
+        </div>
+
+        {/* 与今日牌的关联：一行小字 */}
+        <div className="e-card-link"><b>今日月亮牌</b> × {dd.name}能量<br/>{dd.card}</div>
 
         <div className="cta ghost" onClick={pop}>回到今日</div>
       </div>
@@ -1653,7 +1828,8 @@ function Settings(){
 
 /* ═══════════════════════════════════════════════════════════
    路由：Tab + 页面栈 + Toast + 小弹层
-   #hash 直达：today / today:flip / today:detail / oracle /
+   #hash 直达：today / today:flip / today:detail /
+   today:energy:love/career/social/health / oracle /
    oracle:element:0-2 / oracle:spreads / oracle:ask / oracle:result /
    me / me:trend / me:diary / me:wish / me:review / me:checkin / me:settings
    ═══════════════════════════════════════════════════════════ */
@@ -1703,6 +1879,7 @@ function App(){
     else if(k==='spreads') view=<Spreads key="spreads"/>;
     else if(k==='ask') view=<Ask key="ask"/>;
     else if(k==='result') view=<Result key="result"/>;
+    else if(k.indexOf('energy:')===0) view=<EnergyDetail key={k} dim={k.split(':')[1]}/>;
     else if(k==='trend') view=<Trend key="trend"/>;
     else if(k==='diary') view=<Diary key="diary"/>;
     else if(k==='wish') view=<Wish key="wish"/>;
@@ -1727,12 +1904,12 @@ function Stage(){
     <div className="stage">
       <h1>星光映照</h1>
       <div className="sub">STARLIT — 今日 × 神谕 × 我的 · 完整页面流</div>
-      <div className="meta">16 屏 · 一个主角原则 · 全部页面可点击 · 点一点，走一遍星光</div>
+      <div className="meta">17 屏 · 一个主角原则 · 全部页面可点击 · 点一点，走一遍星光</div>
       <div className="scale-box">
         <div className="phone-holder"><App/></div>
       </div>
       <div className="hashlist">
-        #today · #today:flip · #today:detail · #oracle · #oracle:element:0/1/2 · #oracle:spreads · #oracle:ask · #oracle:result · #me · #me:trend · #me:diary · #me:wish · #me:review · #me:checkin · #me:settings
+        #today · #today:flip · #today:detail · #today:energy:love/career/social/health · #oracle · #oracle:element:0/1/2 · #oracle:spreads · #oracle:ask · #oracle:result · #me · #me:trend · #me:diary · #me:wish · #me:review · #me:checkin · #me:settings
       </div>
       <div className="note">
         每一页只有一个<b>主角</b>，其余皆为注脚与入口。<br/>
