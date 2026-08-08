@@ -262,3 +262,43 @@ page {
   color: var(--e3-ink-faint);
   letter-spacing: 2rpx;
 }
+
+/* ── 开发 05：真实星盘增强（角色名行 · 近似徽章 · 权益提示 · 引导按钮）── */
+.el-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14rpx;
+  margin-top: 16rpx;
+}
+.el-chip {
+  font-family: var(--e3-sans);
+  font-size: 18rpx;
+  color: var(--e3-gold-deep);
+  background: rgba(201, 169, 124, 0.16);
+  border-radius: 999rpx;
+  padding: 2rpx 12rpx;
+  letter-spacing: 1rpx;
+}
+.el-approx {
+  font-family: var(--e3-sans);
+  font-size: 17rpx;
+  color: var(--e3-ink-faint);
+  border: 1rpx solid rgba(176, 170, 156, 0.5);
+  border-radius: 999rpx;
+  padding: 0 10rpx;
+}
+.pc-head {
+  text-align: center;
+}
+.pc-entitle {
+  display: block;
+  font-family: var(--e3-sans);
+  font-size: 20rpx;
+  color: var(--e3-pink-ink);
+  letter-spacing: 1rpx;
+  margin: 4rpx 0 12rpx;
+}
+.empty-cta {
+  margin-top: 28rpx;
+}

@@ -13,6 +13,7 @@ from app.config import settings
 from app.api import auth, cards, chat, diary, membership, orders, readings, report, share, tasks, community, admin, notify, wishes
 from app.api.wishes import moon_router, review_router
 from app.api.horoscope import router as horoscope_router, profile_router as user_profile_router
+from app.api.birthchart import router as birthchart_router
 from app.api.ws import router as ws_router
 from app.api.monitor import router as monitor_router
 from app.middleware.metrics import MetricsMiddleware
@@ -95,6 +96,7 @@ app.include_router(moon_router)
 app.include_router(review_router)
 app.include_router(horoscope_router)
 app.include_router(user_profile_router)
+app.include_router(birthchart_router)
 app.include_router(monitor_router)
 app.include_router(admin.router)
 app.include_router(ws_router)

@@ -1,5 +1,5 @@
 <!-- pages/oracle/oracle.wxml -->
-<!-- 神谕主屏（简版）：星图三要素（主角）· 深度报告占位 · 牌阵馆 · 百科 -->
+<!-- 神谕主屏（简版）：星图三要素（真实计算 · 开发 05）· 深度报告入口 · 牌阵馆 · 百科 -->
 
 <view class="page">
   <view class="wash wash-pink"></view>
@@ -29,27 +29,37 @@
     <text class="oh-p">你的光芒，由三颗星写就</text>
   </view>
 
-  <!-- 主角：三要素卡（点击 → 三要素详情页） -->
+  <!-- 主角：三要素卡（真实星盘 · 未点亮 → 出生信息引导） -->
   <view
-    class="ele-card"
+    class="ele-card {{item.locked ? 'ele-card-locked' : ''}}"
     wx:for="{{elements}}" wx:key="key"
     bindtap="onGoElement" data-key="{{item.key}}"
-    role="button" aria-label="查看{{item.name}}详情"
+    role="button" aria-label="{{item.locked ? item.line : '查看' + item.name + '详情'}}"
     hover-class="ele-card-pressed"
   >
-    <view class="ele-ic"><text>{{item.sign}}</text></view>
+    <view class="ele-ic {{item.locked ? 'ele-ic-locked' : ''}}"><text>{{item.icon}}</text></view>
     <view class="ele-tx">
-      <text class="ele-n">{{item.name}}</text>
-      <text class="ele-l">{{item.line}}</text>
+      <view class="ele-n-row">
+        <text class="ele-n {{item.locked ? 'ele-n-locked' : ''}}">{{item.name}}</text>
+        <text class="ele-approx" wx:if="{{item.approx}}">近似</text>
+      </view>
+      <text class="ele-l {{item.locked ? 'ele-l-locked' : ''}}">{{item.line}}</text>
     </view>
     <text class="ele-go">›</text>
   </view>
 
-  <!-- 深度报告占位入口（二期解锁） -->
-  <view class="deep-pill" bindtap="onDeepReport" role="button" aria-label="深度星图报告（二期解锁）" hover-class="deep-pill-pressed">
+  <!-- 未填出生信息的全局引导（三要素全部未点亮时） -->
+  <view class="need-birth" wx:if="{{needsBirth}}" bindtap="onGoElement" data-key="sun" hover-class="need-birth-pressed" role="button" aria-label="完善出生信息，点亮星盘">
+    <text class="need-birth-ic">✦</text>
+    <text class="need-birth-tx">完善出生信息，点亮你的太阳与月亮</text>
+    <text class="need-birth-go">去填写 →</text>
+  </view>
+
+  <!-- 深度报告入口（会员免费 / 19.9 解锁） -->
+  <view class="deep-pill" bindtap="onDeepReport" role="button" aria-label="深度星图报告" hover-class="deep-pill-pressed">
     <text class="deep-pill-ic">✦</text>
     <text class="deep-pill-tx">深度星图报告 · 结合出生时刻的更深你</text>
-    <text class="deep-pill-go">二期解锁 →</text>
+    <text class="deep-pill-go">会员免费 →</text>
   </view>
 
   <!-- 牌阵馆（6 卡入口：4 网格 + 2 行宽卡 · 与原型页 07 一致） -->
@@ -93,7 +103,7 @@
       <text>卡牌百科</text>
       <text class="entry-arrow">→</text>
     </view>
-    <view class="entry-pill entry-pill-ghost" bindtap="onDeepReport" role="button" aria-label="深度报告（二期）" hover-class="entry-pill-pressed">
+    <view class="entry-pill entry-pill-ghost" bindtap="onDeepReport" role="button" aria-label="深度报告" hover-class="entry-pill-pressed">
       <text>深度报告</text>
       <text class="entry-arrow">✦</text>
     </view>

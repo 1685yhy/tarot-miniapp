@@ -5,6 +5,8 @@
     "pages/profile/profile",
     "pages/zodiac-welcome/zodiac-welcome",
     "pages/birth-info/birth-info",
+    "pages/birthchart/birthchart",
+    "pages/birthchart-report/birthchart-report",
     "pages/element-detail/element-detail",
     "pages/energy-detail/energy-detail",
     "pages/encyclopedia/encyclopedia",

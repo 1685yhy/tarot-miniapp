@@ -1359,4 +1359,209 @@ function _drawDiaryCard(ctx, canvas, W, H, dpr, entry, resolve) {
   });
 }
 
-module.exports = { drawSharePoster, generateDiaryCard };
+// =====================================================================
+//  Birthchart Report Poster — drawBirthchartPoster
+// =====================================================================
+
+/**
+ * Generate a share poster for the birth-chart deep report (开发 05).
+ *
+ * Layout (3:4 portrait, E3 cream palette):
+ *   品牌头 → 昵称 → 标题「我的本命星盘」→ 日月升三行（图标+星座+一句话）
+ *   → 性格金句摘录（character 段首 2~3 行）→ 小程序码 → 品牌尾
+ *
+ * @param {string} canvasId - Canvas node id
+ * @param {Object} opts
+ * @param {Object} opts.context   - Page `this`（SelectorQuery 作用域）
+ * @param {Array}  opts.elements  - [{icon, displayName, line, approx}] 三要素
+ * @param {string} opts.quote     - 深度报告性格底色摘录
+ * @param {string} opts.nickname  - 用户昵称（可空）
+ * @param {string} opts.dateText  - 生成日期（可空，如 "2026.08.09"）
+ * @param {Function} opts.onSuccess - 回调(tempFilePath)
+ * @param {Function} opts.onError   - 回调(Error)
+ */
+function drawBirthchartPoster(canvasId, opts) {
+  const { context, elements, quote, nickname, dateText, onSuccess, onError } = opts || {};
+  if (!context || !canvasId) {
+    if (onError) onError(new Error('Missing required params: context / canvasId'));
+    return;
+  }
+
+  const sysInfo = wx.getSystemInfoSync();
+  const W = sysInfo.screenWidth || 375;
+  const dpr = sysInfo.pixelRatio || 2;
+  const H = Math.round(W / TARGET_ASPECT); // 3:4 portrait
+
+  const query = wx.createSelectorQuery().in(context);
+  query.select('#' + canvasId).fields({ node: true, size: true }).exec(function (res) {
+    if (!res || !res[0] || !res[0].node) {
+      if (onError) onError(new Error('Canvas node not found'));
+      return;
+    }
+
+    const canvas = res[0].node;
+    const ctx = canvas.getContext('2d');
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.scale(dpr, dpr);
+
+    // ── 1. Background ──
+    const gradient = ctx.createLinearGradient(0, 0, 0, H);
+    gradient.addColorStop(0, C_BG_TOP);
+    gradient.addColorStop(0.5, C_BG_MID);
+    gradient.addColorStop(1, C_BG_BOT);
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, W, H);
+    _drawStars(ctx, W);
+
+    // ── 2. Brand header ──
+    const headerBottom = _drawHeader(ctx, W, nickname);
+    let y = headerBottom + Math.round(W * 0.030);
+
+    // ── 3. Title ──
+    ctx.save();
+    ctx.fillStyle = C_GOLD_INK;
+    ctx.font = `bold ${Math.round(W * 0.058)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText('我的本命星盘', W / 2, y);
+    y += Math.round(W * 0.088);
+    if (dateText) {
+      ctx.fillStyle = C_MUTED;
+      ctx.font = `${Math.round(W * 0.028)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+      ctx.fillText(dateText, W / 2, y);
+      y += Math.round(W * 0.050);
+    }
+    ctx.restore();
+
+    // ── 4. Three element rows ──
+    const rowX = Math.round(W * 0.10);
+    const rowW = W - rowX * 2;
+    const rowH = Math.round(W * 0.115);
+    const gap = Math.round(W * 0.022);
+    (elements || []).slice(0, 3).forEach(function (el) {
+      _roundRect(ctx, rowX, y, rowW, rowH, Math.round(W * 0.02));
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(201, 169, 124, 0.40)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Icon
+      ctx.save();
+      ctx.fillStyle = C_GOLD_INK;
+      ctx.font = `${Math.round(W * 0.052)}px "PingFang SC", sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(el.icon || '✦', rowX + Math.round(W * 0.06), y + rowH / 2);
+      ctx.restore();
+
+      // Name
+      ctx.save();
+      ctx.fillStyle = C_WHITE;
+      ctx.font = `bold ${Math.round(W * 0.032)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.fillText(el.displayName || '', rowX + Math.round(W * 0.12), y + Math.round(W * 0.022));
+      ctx.restore();
+
+      // Line (approx tag + one-liner, ellipsis to one line)
+      ctx.save();
+      ctx.fillStyle = C_MUTED;
+      ctx.font = `${Math.round(W * 0.026)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      let line = el.line || '';
+      const approxTag = el.approx ? '近似 · ' : '';
+      const maxW = rowW - Math.round(W * 0.15);
+      ctx.fillText(_ellipsis(ctx, approxTag + line, maxW), rowX + Math.round(W * 0.12), y + Math.round(W * 0.064));
+      ctx.restore();
+
+      y += rowH + gap;
+    });
+
+    // ── 5. Quote from the report ──
+    y += Math.round(W * 0.012);
+    const quoteX = rowX;
+    const quoteMaxW = rowW;
+    ctx.save();
+    ctx.fillStyle = C_GOLD_INK;
+    ctx.globalAlpha = 0.95;
+    ctx.font = `${Math.round(W * 0.027)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    if (quote) {
+      const lines = _wrapText(ctx, `「${quote}」`, quoteMaxW);
+      lines.slice(0, 3).forEach(function (ln) {
+        ctx.fillText(ln, quoteX, y);
+        y += Math.round(W * 0.040);
+      });
+    }
+    ctx.restore();
+
+    // ── 6. QR + footer ──
+    let qrY = y + Math.round(W * 0.020);
+    const qrSize = Math.round(W * QR_SIZE_RATIO);
+    let qrImg = null;
+    let qrLoaded = false;
+
+    const qrUrl = BASE_URL + '/share/wxa-code?path=' + encodeURIComponent('pages/birthchart/birthchart') + '&width=280';
+    wx.downloadFile({
+      url: qrUrl,
+      success: function (dlRes) {
+        if (dlRes.statusCode !== 200) { qrLoaded = true; _finish(); return; }
+        const q = canvas.createImage();
+        q.onload = function () { qrImg = q; qrLoaded = true; _finish(); };
+        q.onerror = function () { qrLoaded = true; _finish(); };
+        q.src = dlRes.tempFilePath;
+      },
+      fail: function () { qrLoaded = true; _finish(); },
+    });
+    setTimeout(function () { if (!qrLoaded) { qrLoaded = true; _finish(); } }, 5000);
+
+    function _drawQR() {
+      const qrX = Math.round((W - qrSize) / 2);
+      const qrAreaY = qrY;
+      ctx.save();
+      _roundRect(ctx, qrX, qrAreaY, qrSize, qrSize, 6);
+      ctx.clip();
+      if (qrImg) ctx.drawImage(qrImg, qrX, qrAreaY, qrSize, qrSize);
+      ctx.restore();
+      ctx.save();
+      _roundRect(ctx, qrX, qrAreaY, qrSize, qrSize, 6);
+      ctx.strokeStyle = 'rgba(201, 169, 124, 0.50)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.restore();
+      ctx.save();
+      ctx.fillStyle = C_MUTED;
+      ctx.font = `${Math.round(W * 0.026)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText('扫码 · 看看你的星盘', W / 2, qrAreaY + qrSize + 4);
+      ctx.restore();
+    }
+
+    function _finish() {
+      _drawQR();
+      _drawFooter(ctx, W, H - Math.round(W * 0.045), '星光映照 · 本命星盘');
+      wx.canvasToTempFilePath({
+        canvas: canvas,
+        success: function (res2) { if (onSuccess) onSuccess(res2.tempFilePath); },
+        fail: function (err) { if (onError) onError(err); },
+      }, context);
+    }
+  });
+}
+
+/** 单行省略号（canvas 无 measureText 截断辅助） */
+function _ellipsis(ctx, text, maxWidth) {
+  if (ctx.measureText(text).width <= maxWidth) return text;
+  let t = text;
+  while (t.length > 1 && ctx.measureText(t + '…').width > maxWidth) {
+    t = t.slice(0, -1);
+  }
+  return t + '…';
+}
+
+module.exports = { drawSharePoster, generateDiaryCard, drawBirthchartPoster };

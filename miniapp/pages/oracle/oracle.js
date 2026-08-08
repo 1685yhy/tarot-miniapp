@@ -1,8 +1,8 @@
 // pages/oracle/oracle.js
-// 神谕主屏（简版）：星图三要素卡（点击 → 详情页）+ 深度报告占位 + 牌阵馆 6 卡 + 百科入口
-// 深度内容（三要素详情页）见 pages/element-detail/
+// 神谕主屏（简版）：星图三要素卡（真实星盘计算 · 开发 05）+ 深度报告入口 + 牌阵馆 + 百科
+// 数据：GET /user/birthchart（utils/birthchart 缓存层）；缺失 → birth-info 引导
 const { getZodiacBadge } = require('../../utils/energy');
-const { ELEMENTS } = require('../../utils/elements');
+const { fetchBirthchart, getCachedChart, missingHint } = require('../../utils/birthchart');
 const analytics = require('../../utils/analytics');
 
 /**
@@ -32,13 +32,22 @@ function moonPhase() {
   return phases[idx] || '上弦月';
 }
 
+/** 未点亮占位卡（未填出生日期时三张卡统一引导） */
+const PLACEHOLDER_CARDS = [
+  { key: 'sun', icon: '☀', name: '太阳 · 未点亮', line: '填写出生日期，点亮你的核心动力', locked: true },
+  { key: 'moon', icon: '☽', name: '月亮 · 未点亮', line: '月亮落在哪一宫，等你来揭晓', locked: true },
+  { key: 'rising', icon: '✦', name: '上升 · 未点亮', line: '补全出生时间解锁上升 ✦', locked: true },
+];
+
 Page({
   data: {
     dateText: '',
     moonPhase: '',
     zodiacBadge: '',
-    elements: ELEMENTS,
-    spreads: SPREADS,
+    elements: [],       // 真实三要素卡（缺失 → 占位/锁卡）
+    needsBirth: false,  // 未填出生日期 → 点击引导
+    lockedRising: false,
+    hintText: '',
   },
 
   onLoad() {
@@ -54,21 +63,69 @@ Page({
     if (badge !== this.data.zodiacBadge) {
       this.setData({ zodiacBadge: badge });
     }
+    this._loadChart();
   },
 
-  /** 三要素卡：点击 → 三要素详情页（主角=该要素） */
+  /** 拉取真实星盘三要素（本地缓存先渲染，再异步刷新） */
+  async _loadChart() {
+    const cached = getCachedChart();
+    if (cached && (cached.sun || cached.moon || cached.rising)) {
+      this._render(cached);
+    }
+    const chart = await fetchBirthchart({ force: true });
+    this._render(chart);
+  },
+
+  _render(chart) {
+    if (!chart) return;
+    const elements = [];
+    const hint = missingHint(chart);
+    const needsBirth = !chart.birth || !chart.birth.date;
+
+    if (needsBirth) {
+      this.setData({ elements: PLACEHOLDER_CARDS, needsBirth: true, lockedRising: false, hintText: hint.text });
+      return;
+    }
+    ['sun', 'moon', 'rising'].forEach((role) => {
+      const el = chart[role];
+      if (!el) return;
+      elements.push({
+        key: role,
+        icon: el.icon,
+        name: el.displayName,
+        line: el.line,
+        approx: el.approx,
+        locked: false,
+      });
+    });
+    this.setData({
+      elements,
+      needsBirth: false,
+      lockedRising: !!hint.route && !chart.rising,
+      hintText: hint.text,
+    });
+  },
+
+  /** 三要素卡：真实卡 → 详解页；未点亮/锁卡 → 出生信息引导 */
   onGoElement(e) {
     const key = e.currentTarget.dataset.key;
     if (!key) return;
+    const el = this.data.elements.find((x) => x.key === key);
     try { wx.vibrateShort({ type: 'light' }); } catch (err) { /* silent */ }
+    if (!el || el.locked || !this.data.elements.length) {
+      // 未点亮（未填出生日期）→ 出生信息引导
+      analytics.trackEvent('oracle_element_to_birth_info', { element: key });
+      wx.navigateTo({ url: '/pages/birth-info/birth-info' });
+      return;
+    }
     analytics.trackEvent('oracle_element_detail_open', { element: key });
-    wx.navigateTo({ url: `/pages/element-detail/element-detail?key=${key}` });
+    wx.navigateTo({ url: `/pages/element-detail/element-detail?key=${key}&from=oracle` });
   },
 
-  /** 深度星图报告：占位入口（二期） */
+  /** 深度星图报告：二期已上线（会员免费 / 19.9 解锁） */
   onDeepReport() {
-    analytics.trackEvent('oracle_deep_report_placeholder', {});
-    wx.showToast({ title: '深度星图报告 · 二期解锁 ✦', icon: 'none', duration: 2000 });
+    analytics.trackEvent('oracle_deep_report_enter', {});
+    wx.navigateTo({ url: '/pages/birthchart-report/birthchart-report' });
   },
 
   /** 牌阵馆卡片 → 提问页 */

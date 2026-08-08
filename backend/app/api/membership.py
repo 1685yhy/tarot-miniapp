@@ -31,6 +31,8 @@ async def membership_status(user: User = Depends(get_current_user)):
         # P0-1: standalone annual-report purchase entitlement (frontend
         # merges this into its cached user via checkLogin({refresh:true}))
         "annual_report_paid": user.annual_report_paid,
+        # 开发 05: standalone birth-chart report purchase entitlement
+        "birthchart_paid": user.birthchart_paid,
         "free_quota": {
             "daily_readings": settings.FREE_DAILY_READINGS,
             "daily_chats": settings.FREE_CHAT_MESSAGES,

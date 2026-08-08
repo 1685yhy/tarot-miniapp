@@ -204,6 +204,8 @@ async def update_birth(
     db: AsyncSession = Depends(get_db),
 ):
     """保存出生信息（二期星盘计算用，先存储；birth_date 需 YYYY-MM-DD 且为过去日期）。"""
+    import re
+
     if body.birth_date:
         try:
             bd = date_cls.fromisoformat(body.birth_date)
@@ -213,9 +215,16 @@ async def update_birth(
             raise HTTPException(status_code=400, detail="birth_date 应为过去日期")
         user.birth_date = body.birth_date
     if body.birth_time is not None:
-        user.birth_time = body.birth_time
+        if not re.match(r"^\d{1,2}:\d{2}(?::\d{2})?$", body.birth_time.strip()):
+            raise HTTPException(status_code=400, detail="birth_time 格式应为 HH:MM 或 HH:MM:SS")
+        user.birth_time = body.birth_time.strip()
     if body.birth_city is not None:
-        user.birth_city = body.birth_city
+        user.birth_city = body.birth_city.strip()
+
+    # 开发 05：出生信息变化 → 星盘三要素/深度报告缓存失效（指纹失配自动重算）
+    user.birthchart_json = None
+    user.birthchart_report = None
+
     return ProfileUpdateResponse(
         birth_date=user.birth_date,
         birth_time=user.birth_time,

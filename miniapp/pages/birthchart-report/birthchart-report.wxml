@@ -1,0 +1,100 @@
+<!-- pages/birthchart-report/birthchart-report.wxml -->
+<!-- 本命星盘深度报告（开发 05）：性格底色/关系模式/年度主题/牌面建议 -->
+
+<view class="page">
+
+  <!-- 检查中 / 生成中 -->
+  <view class="center-state" wx:if="{{state === 'checking' || state === 'loading'}}">
+    <view class="orbit-spin"><text>✦</text></view>
+    <text class="state-tx">{{state === 'checking' ? '星光正在汇聚...' : 'AI 正在为你书写深度星图报告...'}}</text>
+    <text class="state-sub">性格底色 · 关系模式 · 年度主题 · 牌面建议</text>
+  </view>
+
+  <!-- 付费墙 -->
+  <view class="paywall" wx:elif="{{state === 'paywall'}}">
+    <view class="wash wash-pink"></view>
+    <view class="wash wash-gold"></view>
+    <view class="pw-head">
+      <text class="pw-en">DEEP REPORT</text>
+      <text class="pw-h2">深度星图报告</text>
+      <text class="pw-p">AI 结合你的出生时刻 · 更深的你</text>
+    </view>
+
+    <view class="pw-card">
+      <view class="pw-row" wx:for="{{sections}}" wx:key="key">
+        <text class="pw-ic">{{item.icon}}</text>
+        <view class="pw-tx">
+          <text class="pw-n">{{item.title}}</text>
+          <text class="pw-d">{{item.desc}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="pw-price">
+      <text class="pw-price-num">19.9</text>
+      <text class="pw-price-yuan"> 元 · 一次解锁，永续查看</text>
+    </view>
+    <view class="pw-benefit" wx:if="{{isMember}}">
+      <text class="pw-benefit-tx">✦ 你已是会员，报告免费生成</text>
+    </view>
+
+    <button class="pw-btn" bindtap="onUnlock" disabled="{{purchasing}}" hover-class="pw-btn-pressed" aria-label="19.9元解锁深度星图报告">
+      {{purchasing ? '处理中...' : (isMember ? '会员免费生成报告' : '19.9 元解锁报告 ✦')}}
+    </button>
+    <text class="pw-note">仅用于星盘解读 · 绝不外传</text>
+  </view>
+
+  <!-- 报告正文 -->
+  <view class="report" wx:elif="{{state === 'report' && report}}">
+    <view class="wash wash-pink"></view>
+    <view class="wash wash-gold"></view>
+
+    <view class="rp-head">
+      <text class="rp-en">DEEP REPORT</text>
+      <text class="rp-h2">你的深度星图报告</text>
+      <text class="rp-p">{{report.generated_at ? report.generated_at.slice(0, 10) : ''}} · 一次生成 · 永续查看</text>
+    </view>
+
+    <view class="rp-section" wx:for="{{sections}}" wx:key="key">
+      <view class="rp-sec-head">
+        <text class="rp-sec-ic">{{item.icon}}</text>
+        <view>
+          <text class="rp-sec-title">{{item.title}}</text>
+          <text class="rp-sec-desc">{{item.desc}}</text>
+        </view>
+      </view>
+      <view class="rp-body">
+        <text class="rp-text" user-select>{{report[item.key]}}</text>
+      </view>
+    </view>
+
+    <view class="rp-actions">
+      <view class="rp-btn rp-btn-primary" bindtap="onSharePoster" hover-class="rp-btn-pressed" role="button" aria-label="生成分享图">
+        <text>✦ 分享我的星盘</text>
+      </view>
+      <view class="rp-btn rp-btn-ghost" bindtap="onGoElements" hover-class="rp-btn-pressed" role="button" aria-label="回到本命星盘">
+        <text>回到星盘</text>
+      </view>
+    </view>
+
+    <!-- 分享图海报（隐藏 canvas + 预览层） -->
+    <canvas type="2d" id="birthchart-poster" class="poster-canvas"></canvas>
+    <view class="poster-mask" wx:if="{{showSharePoster}}" catchtap="onClosePoster">
+      <view class="poster-wrap" catchtap="">
+        <image class="poster-img" src="{{sharePosterPath}}" mode="widthFix" bindtap="onPreviewPoster" />
+        <view class="poster-btns">
+          <button class="poster-btn poster-btn-save" bindtap="onSavePoster">保存到相册</button>
+          <button class="poster-btn poster-btn-close" bindtap="onClosePoster">关闭</button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 错误态 -->
+  <view class="center-state" wx:elif="{{state === 'error'}}">
+    <text class="state-tx">{{errorMsg || '出错了，请稍后重试'}}</text>
+    <view class="rp-btn rp-btn-primary retry-btn" bindtap="onRetry" hover-class="rp-btn-pressed" role="button" aria-label="重试">
+      <text>重试</text>
+    </view>
+  </view>
+</view>

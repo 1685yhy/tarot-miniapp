@@ -1,0 +1,62 @@
+<!-- pages/birthchart/birthchart.wxml -->
+<!-- 本命星盘（开发 05）：三要素水彩卡 · 缺失提示 · 深度报告入口 -->
+
+<view class="page">
+  <view class="wash wash-pink"></view>
+  <view class="wash wash-gold"></view>
+
+  <!-- 标题 -->
+  <view class="bc-head">
+    <text class="oh-en">BIRTH CHART</text>
+    <text class="oh-h2">本命星盘</text>
+    <text class="oh-p">你的光芒，由三颗星写就</text>
+  </view>
+
+  <!-- 缺失引导（未填出生日期） -->
+  <view class="need-birth" wx:if="{{needBirth}}" bindtap="onGoBirthInfo" hover-class="need-birth-pressed" role="button" aria-label="完善出生信息，点亮星盘">
+    <text class="need-birth-ic">✦</text>
+    <text class="need-birth-tx">完善出生日期，点亮你的太阳与月亮</text>
+    <text class="need-birth-go">去填写 →</text>
+  </view>
+
+  <!-- 三要素水彩卡 -->
+  <view
+    class="ele-card {{item.key === 'rising' ? 'ele-card-rising' : (item.key === 'moon' ? 'ele-card-moon' : 'ele-card-sun')}}"
+    wx:for="{{cards}}" wx:key="key"
+    bindtap="onGoDetail" data-key="{{item.key}}"
+    role="button" aria-label="查看{{item.name}}详解"
+    hover-class="ele-card-pressed"
+  >
+    <view class="ele-ic"><text>{{item.icon}}</text></view>
+    <view class="ele-tx">
+      <view class="ele-n-row">
+        <text class="ele-n">{{item.name}}</text>
+        <text class="ele-chip">{{item.label}}</text>
+        <text class="ele-approx" wx:if="{{item.approx}}">近似</text>
+      </view>
+      <text class="ele-l">{{item.line}}</text>
+    </view>
+    <text class="ele-go">›</text>
+  </view>
+
+  <!-- 上升未解锁（缺出生时间） -->
+  <view class="ele-card ele-card-locked" wx:if="{{lockedRising}}" bindtap="onGoBirthInfo" hover-class="ele-card-pressed" role="button" aria-label="{{lockedRising.text}}">
+    <view class="ele-ic ele-ic-locked"><text>{{lockedRising.icon}}</text></view>
+    <view class="ele-tx">
+      <text class="ele-n ele-n-locked">上升 · 未解锁</text>
+      <text class="ele-l ele-l-locked">{{lockedRising.text}}</text>
+    </view>
+    <text class="ele-go">›</text>
+  </view>
+
+  <!-- 深度报告入口 -->
+  <view class="deep-pill" bindtap="onDeepReport" hover-class="deep-pill-pressed" role="button" aria-label="深度星图报告">
+    <text class="deep-pill-ic">✦</text>
+    <text class="deep-pill-tx">深度星图报告 · 结合出生时刻的更深你</text>
+    <text class="deep-pill-go">会员免费 →</text>
+  </view>
+
+  <view class="bc-note" wx:if="{{message}}">
+    <text class="bc-note-tx">{{message}}</text>
+  </view>
+</view>

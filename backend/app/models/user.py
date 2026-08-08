@@ -36,6 +36,13 @@ class User(Base):
     birth_date: Mapped[str | None] = mapped_column(String(16), nullable=True)  # YYYY-MM-DD
     birth_time: Mapped[str | None] = mapped_column(String(16), nullable=True)  # HH:MM 或 HH:MM:SS
     birth_city: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    # 开发 05：本命星盘三要素 + 深度报告付费
+    # birthchart_paid：购买 birthchart_report 商品后置位（独立于会员）
+    birthchart_paid: Mapped[bool] = mapped_column(Boolean, default=False)
+    # birthchart_json：三要素 AI 文案缓存（含指纹，出生信息变化时失效）
+    birthchart_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # birthchart_report：深度报告缓存（首次生成后复用；重新生成需再付费或会员）
+    birthchart_report: Mapped[str | None] = mapped_column(Text, nullable=True)
     # Auth: bumped on logout/account-deletion to invalidate previously issued JWTs
     token_version: Mapped[int] = mapped_column(Integer, default=0)
     # Daily AI-extras quota (reinterpret / diary AI), reset when the day changes

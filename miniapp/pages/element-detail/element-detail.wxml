@@ -1,5 +1,5 @@
 <!-- pages/element-detail/element-detail.wxml -->
-<!-- 三要素详情（主角=该要素）：天赋 / 阴影 / 今年主题 + 深度报告三档占位 -->
+<!-- 三要素详情（主角=该要素）：天赋 / 阴影 / 今年主题 + 深度报告三档入口 -->
 
 <view class="page" wx:if="{{loaded && el}}">
   <view class="wash wash-pink"></view>
@@ -8,7 +8,11 @@
   <!-- 主角：该要素 -->
   <view class="el-hero">
     <view class="el-big"><text>{{el.sign}}</text></view>
-    <text class="el-h3">{{el.name}}</text>
+    <view class="el-name-row">
+      <text class="el-h3">{{el.name}}</text>
+      <text class="el-chip">{{el.label}}</text>
+      <text class="el-approx" wx:if="{{el.approx}}">近似</text>
+    </view>
     <text class="el-line">{{el.line}}</text>
   </view>
 
@@ -37,14 +41,17 @@
     <text class="el-para el-para-theme">{{el.theme}}</text>
   </view>
 
-  <!-- 深度报告付费占位（注脚层 · 19.9 / 29.9 / 39.9 三档） -->
+  <!-- 深度报告入口（注脚层 · 19.9 / 29.9 / 39.9 三档 · 开发 05 已上线） -->
   <view class="price-card">
-    <text class="pc-t">深度星图报告</text>
-    <text class="pc-s">AI 结合你的出生时刻 · 更深的你</text>
+    <view class="pc-head">
+      <text class="pc-t">深度星图报告</text>
+      <text class="pc-s">AI 结合你的出生时刻 · 更深的你</text>
+      <text class="pc-entitle" wx:if="{{isMember || birthchartPaid}}">{{isMember ? '✦ 会员免费 · 报告已解锁' : '✦ 已解锁 · 直接查看报告'}}</text>
+    </view>
     <view
       class="tier-row" wx:for="{{tiers}}" wx:key="name"
       bindtap="onTierTap" data-idx="{{index}}"
-      role="button" aria-label="解锁{{item.name}}，{{item.price}}元（二期上线）"
+      role="button" aria-label="解锁{{item.name}}，{{item.price}}元"
       hover-class="tier-row-pressed"
     >
       <view class="tier-n">
@@ -52,12 +59,30 @@
         <text class="tier-desc">{{item.desc}}</text>
       </view>
       <text class="tier-price">{{item.price}}<text class="tier-yuan"> 元</text></text>
-      <view class="tier-btn"><text>解锁</text></view>
+      <view class="tier-btn"><text>{{isMember || birthchartPaid ? '查看' : '解锁'}}</text></view>
     </view>
   </view>
 
   <view class="cta cta-ghost" bindtap="onBack" role="button" aria-label="回到神谕" hover-class="cta-pressed">
     <text>回到神谕</text>
+  </view>
+</view>
+
+<!-- 该要素未解锁（缺出生时间 → 上升） -->
+<view wx:elif="{{loaded && locked}}" class="empty-state">
+  <text class="empty-text">上升 · 未解锁</text>
+  <text class="empty-hint">{{lockedText}}</text>
+  <view class="cta empty-cta" bindtap="onGoBirthInfo" role="button" aria-label="去完善出生信息" hover-class="cta-pressed">
+    <text>去完善 ✦</text>
+  </view>
+</view>
+
+<!-- 未填出生信息（整盘未点亮） -->
+<view wx:elif="{{loaded && needsBirth}}" class="empty-state">
+  <text class="empty-text">星图尚未点亮</text>
+  <text class="empty-hint">填写出生日期，点亮你的太阳与月亮</text>
+  <view class="cta empty-cta" bindtap="onGoBirthInfo" role="button" aria-label="去填写出生信息" hover-class="cta-pressed">
+    <text>去填写 ✦</text>
   </view>
 </view>
 

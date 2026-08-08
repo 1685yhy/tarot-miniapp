@@ -240,6 +240,11 @@ async def payment_callback(
         # /report/annual access (independent of membership).
         user.annual_report_paid = True
 
+    elif order.product_type == "birthchart_report":
+        # 开发 05: standalone birth-chart deep-report purchase unlocks
+        # POST /user/birthchart/report (independent of membership).
+        user.birthchart_paid = True
+
     await db.flush()
     return {"code": "SUCCESS"}
 
