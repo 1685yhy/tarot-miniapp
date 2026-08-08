@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星光映照 · 3 Tab 结构 · 塔罗 × 星座融合原型</title>
+<meta name="description" content="星光映照塔罗小程序 — 3 Tab 结构：今日 / 神谕 / 我的。首页单一主动作（能量+牌合一），星座能量是今日仪式的一部分，星盘沉入神谕当底牌。E3 奶油疗愈语言 + 真实水彩插画">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@300;400;500&family=Noto+Serif+SC:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   星光映照 · 3 Tab 结构 · 塔罗 × 星座融合原型 v3
+   调研铁律落地：
+   · 3 Tab：今日 / 神谕 / 我的（具体不抽象，Tab 文案 ≤4 字）
+   · 星座不单独成板块——星座能量是「今日仪式」的个性化底色
+   · 首页只有一个主动作：今日仪式（能量+牌合一），不堆平行入口
+   · 星盘放「神谕」当底牌：星盘定底牌，塔罗看当下
+   · 无抽象命名（不用探索/发现/记录/更多）；专业术语只在神谕 Tab 内
+   视觉：E3 奶油疗愈（#FAF6EF / 雾粉 #E8C4BE / 细金 #C9A97C / 墨 #3D3A36）
+   插画：assets/web/*.jpg 真实水彩资产
+   ═══════════════════════════════════════════════════════════════ */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:#29231E;font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;-webkit-font-smoothing:antialiased;color:#EFE4D6}
+#root{min-height:100%}
+::selection{background:rgba(232,196,190,.45)}
+*{scrollbar-width:none}
+*::-webkit-scrollbar{display:none}
+img{-webkit-user-drag:none;user-select:none}
+
+/* ── 画布 ── */
+.stage{max-width:1600px;margin:0 auto;padding:44px 24px 88px}
+.stage h1{font-family:'Noto Serif SC',serif;font-weight:500;font-size:30px;text-align:center;letter-spacing:14px;color:#F0E2D0;margin-bottom:10px}
+.stage .sub{text-align:center;font-size:11px;color:rgba(201,169,124,.85);letter-spacing:4px;margin-bottom:6px}
+.stage .meta{text-align:center;font-size:11.5px;color:rgba(239,228,214,.35);letter-spacing:1px;margin-bottom:40px}
+.grid{display:flex;flex-wrap:wrap;gap:46px 30px;justify-content:center;align-items:flex-start}
+.zone{display:flex;flex-direction:column;align-items:center}
+.zoom{transition:transform .25s cubic-bezier(.2,.7,.3,1)}
+.zoom:hover{transform:scale(1.03)}
+.cap{margin-top:14px;font-family:'Noto Serif SC',serif;font-size:13px;letter-spacing:3px;color:rgba(240,226,208,.85)}
+.cap-sub{margin-top:4px;font-size:11px;letter-spacing:1px;color:rgba(240,226,208,.38)}
+@media(max-width:760px){.grid{flex-direction:column;align-items:center}}
+
+/* ═══════════════════ E3 · 奶油疗愈基元 ═══════════════════ */
+.sys-e3{
+  --cream:#FAF6EF; --cream-hi:#FFFDF8; --paper:#F2ECDF;
+  --pink:#E8C4BE; --pink-deep:#DCA9A1; --pink-ink:#B08A82;
+  --gold:#C9A97C; --gold-deep:#B08F52;
+  --line:rgba(201,169,124,.28); --line-soft:rgba(201,169,124,.38);
+  --lav:#D8D2E4;
+  --ink:#3D3A36; --ink-soft:#8A8478; --ink-faint:#B0AA9C;
+  --serif:'Noto Serif SC',serif;
+  --sans:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+  --hand:'Ma Shan Zheng','Noto Serif SC',cursive;
+  --num:'EB Garamond','Noto Serif SC',serif;
+  --shadow:0 2px 10px rgba(61,58,54,.06);
+  --hi:inset 0 1px 0 rgba(255,255,255,.6);
+  --cardline:0 0 0 1px rgba(201,169,124,.32),0 10px 26px rgba(61,58,54,.14),var(--hi);
+  /* 能量语汇：雾蓝（低）/ 月白（中）/ 暖金（高） */
+  --mist:#B9CBD9; --mist-deep:#7C93A8;
+}
+.sys-e3.screen{
+  background:var(--cream);color:var(--ink);position:relative;overflow:hidden;
+  font-family:var(--serif);
+}
+.sys-e3 .wash{position:absolute;border-radius:50%;pointer-events:none;filter:blur(38px);z-index:0}
+.wxcapsule{
+  position:absolute;top:13px;right:8px;z-index:30;display:flex;gap:4px;pointer-events:none;
+}
+.wxcapsule .cap{
+  width:40px;height:32px;border-radius:7px;
+  background:rgba(255,253,248,.92);border:0.5px solid rgba(201,169,124,.3);
+  box-shadow:0 2px 6px rgba(61,58,54,.05);
+  display:flex;align-items:center;justify-content:center;
+}
+.wxcapsule .cap svg{fill:#3D3A36}
+.wxcapsule .cap:first-child{flex-direction:column;gap:3px}
+.wxcapsule .cap:first-child span{display:block;width:3px;height:3px;border-radius:50%;background:#3D3A36}
+.wxcapsule .cap .circle{width:15px;height:15px;border-radius:50%;border:1.5px solid #3D3A36}
+.pad{position:relative;z-index:2}
+.microlabel{font-family:var(--sans);font-weight:400;font-size:11px;color:rgba(201,169,124,.9);letter-spacing:4px;line-height:1.4}
+.brand{font-family:var(--serif);font-weight:500;font-size:17px;color:var(--ink);letter-spacing:7px;margin-top:4px;line-height:1.3}
+.gold-dot{display:inline-block;width:3px;height:3px;border-radius:50%;background:var(--gold);flex-shrink:0}
+.date-row{display:flex;align-items:center;gap:7px;font-family:var(--num);font-size:12px;color:var(--ink-soft);letter-spacing:1.5px;margin-top:8px}
+.h-title{font-family:var(--serif);font-weight:500;font-size:21px;letter-spacing:3px;color:var(--ink)}
+.h-sub{font-family:var(--sans);font-size:11px;color:var(--ink-soft);letter-spacing:2px;margin-top:4px}
+.pill{
+  display:inline-flex;align-items:center;gap:5px;height:21px;padding:0 12px;border-radius:999px;
+  background:var(--cream-hi);border:1px solid rgba(201,169,124,.4);color:#8A8478;
+  font-family:var(--sans);font-size:11px;letter-spacing:2.5px;
+}
+.pill-lav{background:var(--lav);border-color:rgba(201,169,124,.28);color:#5F5A74}
+.hint-line{margin-top:6px;text-align:center;font-family:var(--sans);font-size:11px;color:var(--ink-faint);letter-spacing:1px}
+.num{font-family:var(--num);font-style:normal}
+.art{
+  position:relative;overflow:hidden;border-radius:16px;
+  border:1px solid var(--line);
+  box-shadow:var(--cardline);
+  background:var(--cream-hi);
+}
+.art::after{
+  content:'';position:absolute;inset:0 0 auto 0;height:38%;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,253,248,.32),rgba(255,253,248,0));
+  border-radius:16px 16px 0 0;
+}
+.art img{width:100%;height:100%;object-fit:cover;display:block}
+.art-ph{
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(160deg,#F4EDE0,#EFE6D8);
+  border:1px dashed rgba(201,169,124,.5);border-radius:inherit;
+  font-family:var(--sans);font-size:11px;color:var(--ink-faint);letter-spacing:2px;text-align:center;padding:10px;
+}
+.toast{
+  position:absolute;left:50%;transform:translateX(-50%);bottom:86px;z-index:60;
+  background:rgba(61,58,54,.94);color:#FFF8EE;font-family:var(--sans);font-size:12px;letter-spacing:1px;
+  padding:10px 18px;border-radius:999px;box-shadow:0 6px 18px rgba(61,58,54,.3);
+  animation:toastin 1.9s ease forwards;pointer-events:none;white-space:nowrap;
+}
+@keyframes toastin{0%{opacity:0;transform:translateX(-50%) translateY(10px)}12%{opacity:1;transform:translateX(-50%) translateY(0)}78%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-6px)}}
+.hint-flower img{width:100%;height:100%;object-fit:cover;display:block}
+.spark{position:absolute;z-index:25;pointer-events:none;animation:burst .75s ease-out forwards}
+@keyframes burst{0%{transform:translate(0,0) scale(.3) rotate(0);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(1.15) rotate(170deg);opacity:0}}
+
+/* ── TabBar（三栏 · 今日 / 神谕 / 我的） ── */
+.tabbar{
+  position:absolute;left:14px;right:14px;bottom:10px;z-index:20;height:52px;border-radius:20px;
+  display:flex;align-items:center;justify-content:space-around;
+  background:rgba(255,253,248,.68);border:1px solid rgba(201,169,124,.22);
+  box-shadow:var(--shadow);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+}
+.tab{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:64px;height:52px;justify-content:center;font-family:var(--sans);font-size:11px;color:var(--ink-faint);letter-spacing:2px;cursor:pointer;transition:color .2s ease,transform .15s ease}
+.tab:active{transform:scale(.94)}
+.tab.on{color:var(--ink);font-weight:500}
+.tab .tdot{width:3.5px;height:3.5px;border-radius:50%;background:transparent}
+.tab.on .tdot{background:var(--gold)}
+
+/* ═══════════════ Tab 1 · 今日 · 顶部 ─ 星座金徽章 + 天象徽章 ═══════════════ */
+.zodiac{
+  display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 10px;border-radius:999px;
+  background:linear-gradient(135deg,#F0E3C8,#E8D7B6);border:1px solid rgba(201,169,124,.5);
+  color:#7A6238;font-family:var(--serif);font-size:12px;letter-spacing:2px;margin-left:auto;
+  box-shadow:var(--hi);flex-shrink:0;
+}
+.zodiac b{font-weight:500;font-size:14px;line-height:1}
+.moonbadge{
+  display:flex;align-items:center;justify-content:center;gap:5px;margin-top:7px;
+  height:22px;border-radius:999px;background:var(--lav);border:1px solid rgba(201,169,124,.3);
+  color:#5F5A74;font-family:var(--sans);font-size:11px;letter-spacing:1.5px;width:fit-content;margin-left:auto;margin-right:auto;
+  padding:0 12px;
+}
+
+/* ═══════════════ Tab 1 · 今日仪式 ─ 能量 + 牌 合一（单一主动作） ═══════════════ */
+.ritual{
+  position:relative;margin-top:8px;border-radius:20px;
+  background:linear-gradient(170deg,#FFFDF8,#F7F0E2);
+  border:1px solid var(--line-soft);
+  box-shadow:var(--cardline);
+  padding:10px 11px 10px;
+}
+.ritual::before{
+  content:'';position:absolute;top:0;left:18px;right:18px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,169,124,.6),transparent);
+}
+.ritual-head{display:flex;align-items:baseline;gap:8px}
+.ritual-head .t{font-family:var(--serif);font-size:15px;letter-spacing:2.5px;color:var(--ink)}
+.ritual-head .s{font-family:var(--sans);font-size:11px;color:var(--ink-faint);letter-spacing:2px}
+.ritual-head .bar{flex:1;height:1px;background:rgba(201,169,124,.25)}
+.egrid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:7px}
+.ecell{
+  background:var(--cream-hi);border:1px solid var(--line);border-radius:13px;
+  padding:6px 9px 7px;box-shadow:var(--hi);cursor:default;
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+.ecell:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(61,58,54,.09),var(--hi)}
+.e-head{display:flex;align-items:baseline;justify-content:space-between}
+.e-label{font-family:var(--sans);font-size:11px;color:var(--ink-soft);letter-spacing:2px;line-height:1.3}
+.e-val{font-size:16px;color:var(--ink);letter-spacing:.5px;line-height:1.2}
+.e-val small{font-size:11px;color:var(--ink-faint);margin-left:1px;font-family:var(--sans)}
+.ebar{margin-top:5px;height:6px;border-radius:999px;overflow:hidden}
+.ebar-fill{height:100%;border-radius:999px;transition:width .5s ease,filter .2s ease}
+.ecell:hover .ebar-fill{filter:brightness(1.08)}
+.e-line{font-family:var(--sans);font-size:11px;margin-top:3px;letter-spacing:.5px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* 每日一牌 · 仪式内唯一主动作 */
+.daily{display:flex;gap:10px;margin-top:7px;align-items:stretch}
+.daily-art{
+  width:86px;height:112px;border-radius:14px;overflow:hidden;cursor:pointer;flex-shrink:0;
+  border:1px solid var(--line);box-shadow:var(--cardline);
+  transition:transform .2s ease,box-shadow .2s ease;position:relative;
+}
+.daily-art:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(61,58,54,.14),var(--hi)}
+.daily-art:active{transform:scale(.97)}
+.daily-art img{width:100%;height:100%;object-fit:cover;object-position:55% 50%}
+.daily-info{flex:1;display:flex;flex-direction:column;justify-content:center;gap:5px;min-width:0}
+.daily-name{font-family:var(--serif);font-size:14px;color:var(--ink);letter-spacing:2px}
+.daily-msg{font-family:var(--sans);font-size:11px;color:var(--ink-soft);line-height:1.7;letter-spacing:.5px}
+.daily-act{
+  display:inline-flex;align-items:center;gap:5px;width:fit-content;height:22px;padding:0 11px;border-radius:999px;
+  background:var(--cream-hi);border:1px solid rgba(201,169,124,.45);color:#8A6F4E;
+  font-family:var(--sans);font-size:11px;letter-spacing:1.5px;cursor:pointer;
+}
+/* 联动解读条 · 牌 × 星（渐进入场） */
+.link{
+  margin-top:7px;border-radius:12px;padding:7px 10px;cursor:pointer;
+  background:linear-gradient(120deg,#F6EAD2,#F1DFBF);border:1px solid rgba(201,169,124,.42);
+  display:flex;align-items:center;gap:9px;
+  animation:linkin .9s ease 1s both;
+}
+@keyframes linkin{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:translateY(0)}}
+.link .lk-tag{
+  flex-shrink:0;font-family:var(--sans);font-size:11px;color:#7A6238;letter-spacing:1px;
+  background:rgba(255,253,248,.75);border:1px solid rgba(201,169,124,.4);border-radius:999px;padding:2px 8px;
+}
+.link p{flex:1;font-family:var(--serif);font-size:12px;color:#6B5B48;line-height:1.6;letter-spacing:.5px;min-width:0}
+.link .lk-star{flex-shrink:0;animation:twinkle 2.4s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.18)}}
+/* 明日之牌 · 细金小条 */
+.tomorrow{
+  margin-top:7px;height:46px;display:flex;align-items:center;gap:9px;border-radius:13px;
+  background:linear-gradient(120deg,#FBF3E2,#F7ECCE);border:1px solid rgba(201,169,124,.45);
+  box-shadow:var(--hi);padding:0 11px;cursor:pointer;
+  transition:transform .18s ease;
+}
+.tomorrow:active{transform:scale(.97)}
+.tom-thumb{width:24px;height:34px;border-radius:6px;overflow:hidden;border:1px solid rgba(201,169,124,.4);flex-shrink:0;box-shadow:var(--shadow)}
+.tom-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.tom-txt{flex:1;display:flex;flex-direction:column;gap:1px;min-width:0}
+.tom-txt b{font-family:var(--sans);font-size:11px;color:var(--ink-faint);letter-spacing:2.5px;font-weight:400}
+.tom-txt span{font-family:var(--serif);font-size:12.5px;color:var(--ink);letter-spacing:1.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tom-arrow{font-family:var(--num);font-size:20px;color:var(--gold-deep);line-height:1;flex-shrink:0}
+
+/* ═══════════════ Tab 2 · 神谕 ─ 底牌与深挖 ═══════════════ */
+.sec-title{display:flex;align-items:baseline;gap:8px;margin-top:10px}
+.sec-title .t{font-family:var(--serif);font-size:14px;letter-spacing:2.5px;color:var(--ink)}
+.sec-title .s{font-family:var(--sans);font-size:11px;color:var(--ink-faint);letter-spacing:1.5px}
+.sec-title .bar{flex:1;height:1px;background:rgba(201,169,124,.25)}
+/* 三要素翻面卡 */
+.tri-card{height:58px;perspective:900px;cursor:pointer;margin-top:7px}
+.tri-inner{
+  position:relative;width:100%;height:100%;transition:transform .6s cubic-bezier(.3,.7,.3,1);
+  transform-style:preserve-3d;
+}
+.tri-card.flip .tri-inner{transform:rotateY(180deg)}
+.tri-face{
+  position:absolute;inset:0;border-radius:15px;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  display:flex;align-items:center;gap:11px;padding:0 12px;
+  border:1px solid var(--line);box-shadow:var(--shadow),var(--hi);
+}
+.tri-front{background:var(--cream-hi)}
+.tri-ic{width:42px;height:42px;flex-shrink:0;border-radius:11px;overflow:hidden}
+.tri-ic.moon{border-radius:50%;border:1px solid rgba(201,169,124,.4);box-shadow:var(--shadow),var(--hi)}
+.tri-ic img{width:100%;height:100%;object-fit:cover;display:block}
+.tri-ic svg{width:100%;height:100%;display:block}
+.tri-info{display:flex;flex-direction:column;gap:2px;min-width:0}
+.tri-name{font-family:var(--serif);font-size:13.5px;color:var(--ink);letter-spacing:2px;white-space:nowrap}
+.tri-sub{font-family:var(--sans);font-size:11px;color:var(--ink-faint);letter-spacing:2px}
+.tri-hint{margin-left:auto;flex-shrink:0;font-family:var(--sans);font-size:11px;color:var(--gold-deep);letter-spacing:1.5px;display:flex;align-items:center;gap:4px}
+.tri-hint i{font-style:normal;font-size:13px;display:inline-block;animation:hintspin 2.6s ease-in-out infinite}
+@keyframes hintspin{0%,100%{transform:rotate(0)}50%{transform:rotate(14deg)}}
+.tri-back{transform:rotateY(180deg);background:linear-gradient(160deg,#FFF9EC,#F5ECDA)}
+.tri-back .bk-ic{flex-shrink:0;font-size:16px;color:var(--gold-deep)}
+.tri-back p{font-family:var(--serif);font-size:12.5px;color:#6B5B48;letter-spacing:1px;line-height:1.6}
+/* 牌阵馆 */
+.spread-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}
+.spread-card{
+  border-radius:14px;background:var(--cream-hi);border:1px solid var(--line);
+  box-shadow:var(--hi);padding:8px 10px 9px;cursor:pointer;
+  transition:transform .15s ease,box-shadow .15s ease;
+}
+.spread-card:active{transform:scale(.955);box-shadow:0 3px 8px rgba(61,58,54,.09)}
+.spread-top{display:flex;align-items:center;gap:8px}
+.spread-ic{
+  width:28px;height:28px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  background:#F7EFDE;border:1px solid rgba(201,169,124,.35);
+}
+.spread-name{font-family:var(--serif);font-size:13px;color:var(--ink);letter-spacing:1.5px}
+.spread-sub{font-family:var(--sans);font-size:11px;color:var(--ink-faint);margin-top:3px;letter-spacing:.5px;line-height:1.4}
+/* 百科 */
+.ency{
+  margin-top:8px;height:46px;border-radius:14px;background:var(--cream-hi);
+  border:1px solid var(--line);box-shadow:var(--hi);
+  display:flex;align-items:center;gap:11px;padding:0 13px;cursor:pointer;
+  transition:transform .15s ease;
+}
+.ency:active{transform:scale(.97)}
+.ency-ic{width:32px;height:32px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F0E3C8,#E8D7B6);border:1px solid rgba(201,169,124,.4)}
+.ency-txt{flex:1;display:flex;flex-direction:column;gap:1px;min-width:0}
+.ency-txt b{font-family:var(--serif);font-size:13px;color:var(--ink);letter-spacing:2px;font-weight:500}
+.ency-txt span{font-family:var(--sans);font-size:11px;color:var(--ink-faint);letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ency .chev{font-family:var(--num);font-size:20px;color:var(--gold-deep);flex-shrink:0}
+
+/* ═══════════════ Tab 3 · 我的 ─ 记录与收纳 ═══════════════ */
+.ucard{
+  display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:18px;
+  background:var(--cream-hi);border:1px solid var(--line);box-shadow:var(--cardline);cursor:pointer;
+  transition:transform .15s ease;
+}
+.ucard:active{transform:scale(.97)}
+.avatar{width:52px;height:52px;border-radius:50%;overflow:hidden;flex-shrink:0;border:1px solid rgba(201,169,124,.45);box-shadow:var(--shadow),var(--hi)}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.u-name{font-family:var(--serif);font-size:15px;color:var(--ink);letter-spacing:2px}
+.u-sub{font-family:var(--sans);font-size:11px;color:var(--ink-faint);margin-top:3px;letter-spacing:1px}
+.u-mem{
+  margin-left:auto;flex-shrink:0;font-family:var(--sans);font-size:11px;letter-spacing:1px;
+  color:#7A6238;background:linear-gradient(135deg,#F0E3C8,#E8D7B6);
+  border:1px solid rgba(201,169,124,.5);border-radius:999px;padding:5px 10px;box-shadow:var(--hi);
+}
+.u-chev{font-family:var(--num);font-size:20px;color:var(--gold);margin-left:8px;flex-shrink:0}
+/* 今日仪式记录 · 连续天数 + 牌运曲线 */
+.streak{
+  margin-top:8px;display:flex;align-items:center;gap:12px;border-radius:16px;
+  background:var(--cream-hi);border:1px solid var(--line);box-shadow:var(--shadow),var(--hi);
+  padding:10px 13px;cursor:pointer;transition:transform .15s ease;
+}
+.streak:active{transform:scale(.97)}
+.streak-left{display:flex;align-items:baseline;gap:4px;flex-shrink:0}
+.streak-left .big{font-family:var(--num);font-size:26px;color:var(--gold-deep);line-height:1}
+.streak-left .unit{font-family:var(--sans);font-size:11px;color:var(--ink-soft);letter-spacing:1px}
+.streak-txt{display:flex;flex-direction:column;gap:2px;min-width:0;flex-shrink:0}
+.streak-txt b{font-family:var(--serif);font-size:13px;color:var(--ink);letter-spacing:2px;font-weight:500}
+.streak-txt span{font-family:var(--sans);font-size:11px;color:var(--ink-faint);letter-spacing:1px;white-space:nowrap}
+.streak-chart{flex:1;min-width:0;height:46px;display:flex;flex-direction:column;justify-content:flex-end}
+.streak-chart svg{width:100%;height:100%;display:block}
+.streak-chart span{font-family:var(--sans);font-size:11px;color:var(--ink-faint);letter-spacing:1px;margin-top:-1px}
+/* 日记 · 许愿 / 复盘入口 */
+.diary{
+  margin-top:8px;border-radius:16px;background:var(--cream-hi);
+  border:1px solid var(--line);box-shadow:var(--shadow),var(--hi);
+  padding:4px 0 5px;
+}
+.diary-head{display:flex;align-items:baseline;gap:8px;padding:7px 13px 3px}
+.diary-head .t{font-family:var(--serif);font-size:14px;letter-spacing:2.5px;color:var(--ink)}
+.diary-head .s{font-family:var(--sans);font-size:11px;color:var(--ink-faint);letter-spacing:1.5px}
+.diary-head .bar{flex:1;height:1px;background:rgba(201,169,124,.25)}
+.d-row{
+  display:flex;align-items:center;gap:9px;height:48px;padding:0 13px;cursor:pointer;
+  transition:transform .12s ease,background .15s ease;
+}
+.d-row:active{transform:scale(.98);background:rgba(232,196,190,.1)}
+.d-ic{
+  width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--line);overflow:hidden;
+}
+.d-ic img{width:100%;height:100%;object-fit:cover;display:block}
+.d-txt{flex:1;display:flex;flex-direction:column;gap:1px;min-width:0}
+.d-txt b{font-family:var(--serif);font-size:13px;color:var(--ink);letter-spacing:1.5px;font-weight:500}
+.d-txt span{font-family:var(--sans);font-size:11px;color:var(--ink-faint);letter-spacing:.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.d-tag{
+  flex-shrink:0;font-family:var(--sans);font-size:11px;letter-spacing:1px;border-radius:999px;padding:3px 10px;
+}
+.d-tag.wish{background:rgba(216,210,228,.32);color:#6E6676;border:1px solid rgba(216,210,228,.6)}
+.d-tag.review{background:rgba(201,169,124,.18);color:#8A6F4E;border:1px solid rgba(201,169,124,.4)}
+.d-tag.book{background:rgba(232,196,190,.22);color:#8A6A62;border:1px solid rgba(232,196,190,.55)}
+/* 功能四格 */
+.func-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:8px}
+.func-tile{
+  height:60px;border-radius:14px;background:var(--cream-hi);border:1px solid var(--line);
+  box-shadow:var(--hi);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  cursor:pointer;transition:transform .15s ease;
+}
+.func-tile:active{transform:scale(.94)}
+.func-tile span{font-family:var(--sans);font-size:11px;color:var(--ink-soft);letter-spacing:1px}
+
+/* ── 牌语弹窗 ── */
+.mask{
+  position:absolute;inset:0;z-index:50;background:rgba(61,58,54,.42);
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  display:flex;align-items:center;justify-content:center;padding:0 30px;
+  animation:fadein .25s ease;
+}
+@keyframes fadein{0%{opacity:0}100%{opacity:1}}
+.msg-card{
+  width:232px;border-radius:22px;background:var(--cream);
+  border:1px solid rgba(201,169,124,.35);box-shadow:0 18px 44px rgba(61,58,54,.28);
+  padding:18px 18px 16px;text-align:center;position:relative;
+  animation:popin .4s cubic-bezier(.2,.8,.3,1.15) both;
+}
+@keyframes popin{0%{opacity:0;transform:translateY(16px) scale(.96)}100%{opacity:1;transform:translateY(0) scale(1)}}
+.msg-art{width:66px;height:99px;margin:0 auto;border-radius:12px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--cardline)}
+.msg-art img{width:100%;height:100%;object-fit:cover;display:block;object-position:55% 50%}
+.msg-title{font-family:var(--serif);font-size:15px;color:var(--ink);margin-top:11px;letter-spacing:2px}
+.msg-body{font-family:var(--sans);font-size:12px;color:var(--ink-soft);margin-top:7px;line-height:1.8;letter-spacing:.5px}
+.msg-body em{font-style:normal;color:var(--pink-ink)}
+.msg-btn{
+  margin-top:13px;height:44px;border-radius:999px;cursor:pointer;
+  background:var(--pink);color:#5C4A3A;box-shadow:var(--shadow),var(--hi);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:13px;letter-spacing:2.5px;
+  transition:transform .15s ease;
+}
+.msg-btn:active{transform:scale(.96)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z=="></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1=="></script>
+<script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js" crossorigin integrity="sha384-x/ilTFv/u/eu6YSmkFDZl5V5Mm/pkxxcVv2cVJOrr1J0rvILhMvRBCy6yA75wYBj"></script>
+<script type="text/babel" data-presets="env,react">
+const {useState,useEffect,useRef} = React;
+
+/* ═══════════════════════════════════════════════════════════
+   星光映照 · 3 Tab 结构（今日 / 神谕 / 我的）
+   真实水彩插画资产 + E3 奶油疗愈语言
+   ═══════════════════════════════════════════════════════════ */
+
+const ASSETS = {
+  moon:   'assets/web/moon-card.jpg',      // 月亮+安睡兔子水彩
+  back:   'assets/web/card-back.jpg',      // 金线月星纹牌背
+  flower: 'assets/web/hint-flower.jpg',    // 淡粉水彩小花
+};
+
+function Art({src, alt, className='', style, lazy=true, ph='插画'}) {
+  const [err, setErr] = useState(false);
+  if (err) {
+    return <div className="art-ph" style={style}><span>{alt || ph}</span></div>;
+  }
+  return <img src={src} alt={alt||ph} className={className} style={style}
+    loading={lazy?'lazy':undefined} onError={()=>setErr(true)} draggable="false"/>;
+}
+
+/* ── 微信胶囊 ── */
+function WxCapsule(){
+  return (
+    <div className="wxcapsule">
+      <div className="cap"><span/><span/><span/></div>
+      <div className="cap"><div className="circle"/></div>
+    </div>
+  );
+}
+
+/* ── 四芒星光 ── */
+const STAR_PATH='M0,-7 C1.2,-3 3,-1.2 7,0 C3,1.2 1.2,3 0,7 C-1.2,3 -3,1.2 -7,0 C-3,-1.2 -1.2,-3 0,-7 Z';
+const Spark=({x=0,y=0,s=1,fill='#D8C4A0',op=0.7,r=0,style})=>(
+  <svg width={10*s} height={10*s} viewBox="-8 -8 16 16" style={style}>
+    <path d={STAR_PATH} transform={`scale(${s}) rotate(${r})`} fill={fill} opacity={op}/>
+  </svg>
+);
+
+/* ── 通用 UI 图标（非插画） ── */
+const Icon = ({name,color,size=20}) => {
+  const c = color||'currentColor';
+  const paths = {
+    sun:<><circle cx="10" cy="10" r="3.3" fill="none" stroke={c} strokeWidth="1.6"/><path d="M10 2.6v2M10 15.4v2M2.6 10h2M15.4 10h2M5.2 5.2l1.4 1.4M13.4 13.4l1.4 1.4M14.8 5.2l-1.4 1.4M6.6 13.4l-1.4 1.4" stroke={c} strokeWidth="1.6" strokeLinecap="round"/></>,
+    star:<path d="M10 2.6c.9 3.5 2.9 5.5 6.4 6.4-3.5.9-5.5 2.9-6.4 6.4-.9-3.5-2.9-5.5-6.4-6.4 3.5-.9 5.5-2.9 6.4-6.4z" fill="none" stroke={c} strokeWidth="1.6" strokeLinejoin="round"/>,
+    user:<><circle cx="10" cy="7.5" r="3.2" fill="none" stroke={c} strokeWidth="1.6"/><path d="M4.5 17c.8-3 3-4.6 5.5-4.6s4.7 1.6 5.5 4.6" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round"/></>,
+    heart:<path d="M10 16.4S4.2 12.4 4.2 8.6C4.2 6.6 5.8 5 7.8 5c1.1 0 2 .5 2.2 1.3C10.2 5.5 11.1 5 12.2 5c2 0 3.6 1.6 3.6 3.6 0 3.8-5.8 7.8-5.8 7.8z" fill="none" stroke={c} strokeWidth="1.6" strokeLinejoin="round"/>,
+    book:<><path d="M4 4.5h7.5V17H4z" fill="none" stroke={c} strokeWidth="1.6" strokeLinejoin="round"/><path d="M11.5 5h5V17h-5" fill="none" stroke={c} strokeWidth="1.6" strokeLinejoin="round"/></>,
+    cal:<><rect x="3.5" y="5" width="13" height="11.5" rx="2.2" fill="none" stroke={c} strokeWidth="1.5"/><path d="M3.5 8.6h13M7.3 3.4v3M12.7 3.4v3" stroke={c} strokeWidth="1.5" strokeLinecap="round"/></>,
+    set:<><path d="M2.5 6.2h8.4"/><circle cx="13" cy="6.2" r="1.7" fill="none" stroke={c} strokeWidth="1.4"/><path d="M2.5 13.8h3.4"/><circle cx="8" cy="13.8" r="1.7" fill="none" stroke={c} strokeWidth="1.4"/><path d="M11.6 13.8h5.9" stroke={c} strokeWidth="1.4" strokeLinecap="round"/></>,
+    crown:<path d="M4.4 13.8 3 7.2l3.7 2.4L10 4.6l3.3 5 3.7-2.4-1.4 6.6zM4 15.8h12" fill="none" stroke={c} strokeWidth="1.5" strokeLinejoin="round"/>,
+    cres:<path d="M14.6 4.2A6.2 6.2 0 1 0 15.8 15.6a5 5 0 0 1-1.2-11.4z" fill="none" stroke={c} strokeWidth="1.6" strokeLinejoin="round"/>,
+    chev:<path d="M7.5 4.5 13 10l-5.5 5.5" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>,
+  };
+  return <svg width={size} height={size} viewBox="0 0 20 20">{paths[name]}</svg>;
+};
+
+/* ── 牌阵小图标 ── */
+const SpIcon = ({name}) => {
+  const c='#8A6F4E';
+  const p = {
+    three:<><rect x="3.2" y="5.2" width="9" height="11.6" rx="1.8" fill="none" stroke={c} strokeWidth="1.5"/><rect x="7.8" y="3.2" width="9" height="11.6" rx="1.8" fill="none" stroke={c} strokeWidth="1.5" transform="translate(0 0)"/></>,
+    lover:<path d="M10 16.4S4.2 12.4 4.2 8.6C4.2 6.6 5.8 5 7.8 5c1.1 0 2 .5 2.2 1.3C10.2 5.5 11.1 5 12.2 5c2 0 3.6 1.6 3.6 3.6 0 3.8-5.8 7.8-5.8 7.8z" fill="none" stroke={c} strokeWidth="1.5" strokeLinejoin="round"/>,
+    work:<><rect x="3" y="6.6" width="14" height="9" rx="2" fill="none" stroke={c} strokeWidth="1.5"/><path d="M7.5 6.6V5.6a2.5 2.5 0 0 1 5 0v1M3 10.2h14" stroke={c} strokeWidth="1.5"/></>,
+    coin:<><circle cx="10" cy="10" r="6.6" fill="none" stroke={c} strokeWidth="1.5"/><circle cx="10" cy="10" r="4" fill="none" stroke={c} strokeWidth="1.3"/><path d="M7.9 7.1 10 10.4l2.1-3.3M10 10.4v3.4" stroke={c} strokeWidth="1.3" strokeLinecap="round"/></>,
+  };
+  return <svg width="17" height="17" viewBox="0 0 20 20">{p[name]}</svg>;
+};
+
+/* ── 太阳 / 天秤 徽记（神谕 Tab 内小图标） ── */
+const SVG_DEFS = (
+  <defs>
+    <linearGradient id="sunG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stopColor="#F6DFA6"/><stop offset=".55" stopColor="#E3C08F"/><stop offset="1" stopColor="#C9A97C"/>
+    </linearGradient>
+    <radialGradient id="scaleG" cx=".4" cy=".35" r=".9">
+      <stop offset="0" stopColor="#F2E9D6"/><stop offset="1" stopColor="#E3D5BC"/>
+    </radialGradient>
+  </defs>
+);
+function SunIcon(){
+  return (
+    <svg viewBox="0 0 84 84" className="tri-ic">
+      {SVG_DEFS}
+      <circle cx="42" cy="42" r="22" fill="url(#sunG)"/>
+      <circle cx="37" cy="37" r="8" fill="#FBF0D5" opacity=".55"/>
+      <path d="M42 10v7M42 67v7M10 42h7M67 42h7M18.7 18.7l5 5M60.3 60.3l5 5M65.3 18.7l-5 5M23.7 60.3l-5 5" stroke="#DDBE84" strokeWidth="4.6" strokeLinecap="round"/>
+    </svg>
+  );
+}
+function ScalesIcon(){
+  return (
+    <svg viewBox="0 0 84 84" className="tri-ic">
+      {SVG_DEFS}
+      <circle cx="42" cy="42" r="32" fill="url(#scaleG)" opacity=".95"/>
+      <path d="M42 17v36" stroke="#B08F52" strokeWidth="1.9" strokeLinecap="round"/>
+      <path d="M27 24h30" stroke="#B08F52" strokeWidth="1.9" strokeLinecap="round"/>
+      <path d="M27 24l-7.5 7.5M57 24l7.5 7.5" stroke="#B08F52" strokeWidth="1.6" strokeLinecap="round"/>
+      <path d="M14 31.5a7 8 0 0 0 14 0z" fill="#EFE4C8" stroke="#B08F52" strokeWidth="1.5" strokeLinejoin="round"/>
+      <path d="M56 31.5a7 8 0 0 0 14 0z" fill="#EFE4C8" stroke="#B08F52" strokeWidth="1.5" strokeLinejoin="round"/>
+      <path d="M42 53l-3.2 5.2h6.4z" fill="#B08F52"/>
+    </svg>
+  );
+}
+
+/* ── TabBar：今日 / 神谕 / 我的 ── */
+const TABS = [
+  {key:'today',  name:'今日', ic:'sun'},
+  {key:'oracle', name:'神谕', ic:'star'},
+  {key:'mine',   name:'我的', ic:'user'},
+];
+function TabBar({active,onTab}){
+  return (
+    <div className="tabbar">
+      {TABS.map(t=>
+        <div key={t.key} className={"tab"+(active===t.key?' on':'')} onClick={()=>onTab&&onTab(t.key)}>
+          <Icon name={t.ic} color={active===t.key?'#8A6F4E':'#B0AA9C'} size={20}/>
+          <span>{t.name}</span>
+          <span className="tdot"/>
+        </div>)}
+    </div>
+  );
+}
+
+/* ── Toast ── */
+function useToast(){
+  const [toast,setToast]=useState('');
+  const show=(t)=>{setToast(t);setTimeout(()=>setToast(''),1900);};
+  return [toast,show];
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Tab 1 · 今日 ── 今日仪式（能量 + 牌 合一）
+   ═══════════════════════════════════════════════════════════ */
+const E4 = [
+  {k:'事业',v:73,lv:'high',line:'想法很多，先落地'},
+  {k:'爱情',v:81,lv:'high',line:'主动一点，会发光'},
+  {k:'人际',v:64,lv:'mid', line:'给旧友一句问候'},
+  {k:'健康',v:57,lv:'low', line:'午后晒晒太阳'},
+];
+const ELV = {
+  high:{track:'rgba(201,169,124,.2)',  grad:'linear-gradient(90deg,#E8CB9B,#C9A97C)', t:'#8A6F4E'},
+  mid: {track:'rgba(201,169,124,.16)', grad:'linear-gradient(90deg,#F0E7D7,#E0D2B8)', t:'#8A8478'},
+  low: {track:'rgba(185,203,217,.28)', grad:'linear-gradient(90deg,#C6D6E2,#A9BFD1)', t:'#5C7180'},
+};
+function EnergyCell({k,v,lv,line}){
+  const c=ELV[lv];
+  return (
+    <div className="ecell">
+      <div className="e-head">
+        <span className="e-label">{k}</span>
+        <span className="e-val num">{v}<small>%</small></span>
+      </div>
+      <div className="ebar" style={{background:c.track}}>
+        <div className="ebar-fill" style={{width:v+'%',background:c.grad}}/>
+      </div>
+      <div className="e-line" style={{color:c.t}}>{line}</div>
+    </div>
+  );
+}
+
+function ScreenToday({onTab, demoRef}){
+  const [toast,show]=useToast();
+  const [modal,setModal]=useState(false);
+  if(demoRef)demoRef.current={openModal:()=>setModal(true)};
+  return (
+    <div className="sys-e3 screen" style={{width:300,height:640,borderRadius:34,boxShadow:'0 30px 60px rgba(0,0,0,.55)'}} data-screen-label="s1-today">
+      <WxCapsule/>
+      <div className="wash" style={{width:200,height:200,right:-70,top:-50,background:'#E8C4BE',opacity:.3}}/>
+      <div className="wash" style={{width:180,height:180,left:-80,top:360,background:'#C9A97C',opacity:.16}}/>
+      <div className="hint-flower" style={{position:'absolute',right:0,bottom:64,width:100,height:92,zIndex:1,pointerEvents:'none',opacity:.32,transform:'scaleX(-1) rotate(-7deg)',borderRadius:12,overflow:'hidden'}}>
+        <Art src={ASSETS.flower} alt="淡粉水彩小花" lazy={false} ph="小花"/>
+      </div>
+      <div className="pad" style={{padding:'20px 18px 0'}}>
+        <div className="microlabel">STARLIT · 每日仪式</div>
+        <div className="brand">星光映照</div>
+        <div className="date-row">
+          <span className="gold-dot"/>
+          <span>AUG 8 · SATURDAY · 2026</span>
+          <span className="zodiac"><b>♌</b>狮子座</span>
+        </div>
+        <div className="moonbadge">🌙 满月 · 月亮在双鱼</div>
+
+        {/* 今日仪式 · 能量+牌合一 · 单一主动作 */}
+        <div className="ritual">
+          <div className="ritual-head">
+            <span className="t">今日仪式</span>
+            <span className="s">能量 × 今日一牌</span>
+            <span className="bar"/>
+            <Spark s={0.42} fill="#C9A97C" op={0.6}/>
+          </div>
+          {/* 个性化底色：星座能量 4 格 */}
+          <div className="egrid">
+            {E4.map(e=><EnergyCell key={e.k} {...e}/>)}
+          </div>
+          {/* 每日一牌 · 唯一主动作 */}
+          <div className="daily">
+            <div className="daily-art" onClick={()=>setModal(true)}>
+              <Art src={ASSETS.moon} alt="月亮与安睡兔子的水彩插画" lazy={false}/>
+              <Spark s={0.38} fill="#C9A97C" op={0.6} style={{position:'absolute',right:6,top:6,zIndex:3}}/>
+            </div>
+            <div className="daily-info">
+              <div className="daily-name">月亮牌</div>
+              <div className="daily-msg">允许情绪自然流动<br/>今晚不评判自己</div>
+              <div className="daily-act" onClick={()=>setModal(true)}>点击翻牌 · 看今日牌语</div>
+            </div>
+          </div>
+          {/* 联动解读条 · 牌 × 星 */}
+          <div className="link" onClick={()=>show('联动解读 · 满月之夜，先观察谁在出牌')}>
+            <span className="lk-tag">牌 × 星</span>
+            <p>权杖五的纷争 × 天蝎今日的低调能量——先观察谁在出牌</p>
+            <span className="lk-star"><Spark s={0.5} fill="#B08F52" op={0.9}/></span>
+          </div>
+        </div>
+
+        {/* 明日之牌 · 细金小条 */}
+        <div className="tomorrow" onClick={()=>show('明日之牌 · 隐士 · 内在的灯')}>
+          <div className="tom-thumb"><Art src={ASSETS.back} alt="明日牌背" ph="牌背"/></div>
+          <div className="tom-txt"><b>明日之牌</b><span>隐士 · 内在的灯</span></div>
+          <span className="tom-arrow">›</span>
+        </div>
+      </div>
+
+      <TabBar active="today" onTab={onTab}/>
+
+      {/* 牌语弹窗 */}
+      {modal&&(
+        <div className="mask" onClick={()=>setModal(false)}>
+          <div className="msg-card" onClick={e=>e.stopPropagation()}>
+            <div className="msg-art"><Art src={ASSETS.moon} alt="月亮牌水彩" lazy={false}/></div>
+            <div className="msg-title">今日牌语 · 月亮</div>
+            <div className="msg-body">
+              月亮牌今日降临——<em>允许情绪自然流动，今晚不评判自己</em>。<br/>
+              联动牌意 · 权杖五的纷争仍在半路，你只需安静地看。
+            </div>
+            <div className="msg-btn" onClick={()=>setModal(false)}>收下这束月光</div>
+          </div>
+        </div>
+      )}
+      {toast&&<div className="toast">{toast}</div>}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Tab 2 · 神谕 ── 底牌与深挖（星盘定底牌 · 塔罗看当下）
+   ═══════════════════════════════════════════════════════════ */
+const TRI = [
+  {key:'sun',  ic:<SunIcon/>,    name:'太阳 · 狮子座', sub:'核心动力',     back:'天生聚光灯体质，爱要爱得张扬'},
+  {key:'moon', name:'月亮 · 双鱼座', sub:'情绪底色',   back:'情绪像海，需要温柔的岸'},
+  {key:'rise', ic:<ScalesIcon/>, name:'上升 · 天秤座', sub:'他人眼中的我', back:'初见让人如沐春风'},
+];
+const SPREADS = [
+  {k:'三牌',   ic:'three', sub:'过去 · 现在 · 未来',   toast:'三牌阵 · 凭直觉选三张，月光替你排好位置'},
+  {k:'恋人三角',ic:'lover', sub:'看清一段关系的三个人', toast:'恋人三角 · 你 · 对方 · 这段关系'},
+  {k:'事业',   ic:'work',  sub:'下一步该往哪走',       toast:'事业牌阵 · 职场下一步怎么走'},
+  {k:'财运',   ic:'coin',  sub:'最近的钱景与机会',     toast:'财运牌阵 · 机会在慢慢靠近'},
+];
+function ScreenOracle({onTab, demoRef}){
+  const [toast,show]=useToast();
+  const [flips,setFlips]=useState([false,false,false]);
+  if(demoRef)demoRef.current={flip:()=>setFlips(f=>[f[0],!f[1],f[2]])};
+  return (
+    <div className="sys-e3 screen" style={{width:300,height:640,borderRadius:34,boxShadow:'0 30px 60px rgba(0,0,0,.55)'}} data-screen-label="s2-oracle">
+      <WxCapsule/>
+      <div className="wash" style={{width:200,height:200,right:-70,top:-50,background:'#E8C4BE',opacity:.26}}/>
+      <div className="wash" style={{width:180,height:180,left:-80,top:420,background:'#D8D2E4',opacity:.2}}/>
+      <div className="pad" style={{padding:'34px 20px 0'}}>
+        <div className="microlabel" style={{textAlign:'center'}}>ORACLE · 神谕</div>
+        <div className="h-title" style={{textAlign:'center',marginTop:6,lineHeight:1.3}}>神谕 · 了解你的底牌</div>
+        <div className="h-sub" style={{textAlign:'center'}}>星盘定底牌 · 塔罗看当下</div>
+
+        {/* 本命星盘三要素 · 免费解读 */}
+        <div className="sec-title">
+          <span className="t">本命星盘</span>
+          <span className="s">你的三重底色 · 点一下翻面</span>
+          <span className="bar"/>
+        </div>
+        {TRI.map((t,i)=>
+          <div key={t.key} className={"tri-card"+(flips[i]?' flip':'')} onClick={()=>{const f=[...flips];f[i]=!f[i];setFlips(f);}}>
+            <div className="tri-inner">
+              <div className="tri-face tri-front">
+                {t.ic
+                  ? <div className="tri-ic">{t.ic}</div>
+                  : <div className="tri-ic moon"><Art src={ASSETS.moon} alt="月亮水彩" ph="月"/></div>}
+                <div className="tri-info">
+                  <span className="tri-name">{t.name}</span>
+                  <span className="tri-sub">{t.sub}</span>
+                </div>
+                <span className="tri-hint"><i>↻</i>翻面看</span>
+              </div>
+              <div className="tri-face tri-back">
+                <span className="bk-ic">✦</span>
+                <p>{t.back}</p>
+              </div>
+            </div>
+          </div>)}
+
+        {/* 牌阵馆 */}
+        <div className="sec-title">
+          <span className="t">牌阵馆</span>
+          <span className="s">四个经典阵</span>
+          <span className="bar"/>
+        </div>
+        <div className="spread-grid">
+          {SPREADS.map(s=>
+            <div key={s.k} className="spread-card" onClick={()=>show(s.toast)}>
+              <div className="spread-top">
+                <div className="spread-ic"><SpIcon name={s.ic}/></div>
+                <span className="spread-name">{s.k}</span>
+              </div>
+              <div className="spread-sub">{s.sub}</div>
+            </div>)}
+        </div>
+
+        {/* 百科 */}
+        <div className="ency" onClick={()=>show('78 张牌图鉴 · 今晚从月亮牌开始读')}>
+          <div className="ency-ic"><Icon name="book" color="#8A6F4E" size={18}/></div>
+          <div className="ency-txt">
+            <b>百科 · 78 张牌</b>
+            <span>从 0 号愚人到 78 号星币十 · 每张都有插画与故事</span>
+          </div>
+          <span className="chev">›</span>
+        </div>
+        <div className="hint-line">底牌每天陪你 · 塔罗照见当下</div>
+      </div>
+
+      <TabBar active="oracle" onTab={onTab}/>
+      {toast&&<div className="toast">{toast}</div>}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Tab 3 · 我的 ── 记录与收纳
+   ═══════════════════════════════════════════════════════════ */
+function MiniChart({uid}){
+  const id='curve'+uid;
+  return (
+    <svg viewBox="0 0 116 42" aria-label="牌运曲线">
+      <defs>
+        <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#C9A97C" stopOpacity=".3"/>
+          <stop offset="1" stopColor="#C9A97C" stopOpacity="0"/>
+        </linearGradient>
+      </defs>
+      <path d="M2 34 C16 30 24 33 36 27 S58 30 70 19 S92 22 102 12 S112 13 114 8" fill="none" stroke="#C9A97C" strokeWidth="1.7" strokeLinecap="round"/>
+      <path d="M2 34 C16 30 24 33 36 27 S58 30 70 19 S92 22 102 12 S112 13 114 8 L114 42 L2 42 Z" fill={`url(#${id})`}/>
+      <circle cx="36" cy="27" r="2" fill="#FFFDF8" stroke="#C9A97C" strokeWidth="1.3"/>
+      <circle cx="70" cy="19" r="2" fill="#FFFDF8" stroke="#C9A97C" strokeWidth="1.3"/>
+      <circle cx="114" cy="8" r="3" fill="#FFFDF8" stroke="#B08F52" strokeWidth="1.7"/>
+    </svg>
+  );
+}
+function ScreenMine({onTab, uid, demoRef}){
+  const [toast,show]=useToast();
+  if(demoRef)demoRef.current={showStreak:()=>show('牌运曲线 · 这 12 天的月亮都在变亮')};
+  return (
+    <div className="sys-e3 screen" style={{width:300,height:640,borderRadius:34,boxShadow:'0 30px 60px rgba(0,0,0,.55)'}} data-screen-label="s3-mine">
+      <WxCapsule/>
+      <div className="wash" style={{width:200,height:200,right:-70,top:-50,background:'#E8C4BE',opacity:.26}}/>
+      <div className="wash" style={{width:180,height:180,left:-80,top:430,background:'#C9A97C',opacity:.14}}/>
+      <div className="pad" style={{padding:'40px 18px 0'}}>
+        {/* 用户卡 */}
+        <div className="ucard" onClick={()=>show('小满 · 狮子座 · 出生于 7月25日')}>
+          <div className="avatar"><Art src={ASSETS.moon} alt="用户头像 · 月亮水彩" lazy={false}/></div>
+          <div>
+            <div className="u-name">小满</div>
+            <div className="u-sub">狮子座 · 出生于 7月25日</div>
+          </div>
+          <span className="u-mem">月卡会员</span>
+          <span className="u-chev">›</span>
+        </div>
+
+        {/* 今日仪式记录 · 连续天数 + 牌运曲线 */}
+        <div className="streak" onClick={()=>show('牌运曲线 · 这 12 天的月亮都在变亮')}>
+          <div className="streak-left">
+            <span className="big num">12</span>
+            <span className="unit">天</span>
+          </div>
+          <div className="streak-txt">
+            <b>连续仪式</b>
+            <span>每天翻牌 · 月光见证</span>
+          </div>
+          <div className="streak-chart">
+            <MiniChart uid={uid}/>
+            <span>牌运曲线</span>
+          </div>
+        </div>
+
+        {/* 日记 · 许愿 / 复盘入口 */}
+        <div className="diary">
+          <div className="diary-head">
+            <span className="t">日记</span>
+            <span className="s">许愿与复盘 · 都在这里</span>
+            <span className="bar"/>
+          </div>
+          <div className="d-row" onClick={()=>show('新月许愿 · 月光替你收着愿望')}>
+            <div className="d-ic" style={{background:'rgba(216,210,228,.35)'}}><Icon name="cres" color="#6E6676" size={16}/></div>
+            <div className="d-txt"><b>新月许愿</b><span>8月1日 · 3 个愿望在生长</span></div>
+            <span className="d-tag wish">生长中</span>
+          </div>
+          <div className="d-row" onClick={()=>show('满月复盘 · 月光照亮这一个月')}>
+            <div className="d-ic"><Art src={ASSETS.moon} alt="满月水彩" ph="月"/></div>
+            <div className="d-txt"><b>满月复盘</b><span>8月8日 · 满月之夜已复盘</span></div>
+            <span className="d-tag review">已生成</span>
+          </div>
+          <div className="d-row" onClick={()=>show('我的日记 · 37 篇心情')}>
+            <div className="d-ic" style={{background:'rgba(232,196,190,.3)'}}><Icon name="book" color="#8A6A62" size={16}/></div>
+            <div className="d-txt"><b>我的日记</b><span>37 篇心情 · 月光替你保管</span></div>
+            <span className="d-tag book">37 篇</span>
+          </div>
+        </div>
+
+        {/* 功能四格 */}
+        <div className="func-grid">
+          <div className="func-tile" onClick={()=>show('已签到 · 连续第 12 天')}><Icon name="cal" color="#8A6F4E" size={20}/><span>签到</span></div>
+          <div className="func-tile" onClick={()=>show('收藏 · 喜欢的牌与解读都在这里')}><Icon name="heart" color="#B08A82" size={20}/><span>收藏</span></div>
+          <div className="func-tile" onClick={()=>show('设置 · 生日与每日提醒')}><Icon name="set" color="#8A8478" size={20}/><span>设置</span></div>
+          <div className="func-tile" onClick={()=>show('月卡会员 · 有效期至 9月30日')}><Icon name="crown" color="#B08F52" size={20}/><span>会员</span></div>
+        </div>
+      </div>
+
+      <TabBar active="mine" onTab={onTab}/>
+      {toast&&<div className="toast">{toast}</div>}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
+   手机壳 · 一个真实 App：Tab 可点击切换
+   ═══════════════════════════════════════════════════════════ */
+function Phone({initTab, uid}){
+  const [tab,setTab]=useState(initTab);
+  const demoRef=useRef(null);
+  if(tab==='today')   return <ScreenToday   onTab={setTab} demoRef={demoRef}/>;
+  if(tab==='oracle')  return <ScreenOracle  onTab={setTab} demoRef={demoRef}/>;
+  return <ScreenMine  onTab={setTab} uid={uid} demoRef={demoRef}/>;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   画布 · 三屏并排（每屏代表一个 Tab 状态 · 可点击切换）
+   ═══════════════════════════════════════════════════════════ */
+function Stage(){
+  const zones=[
+    {l:'01 · 今日', d:'今日仪式 · 能量与牌合一 · 首页唯一主动作', el:<Phone key="p1" initTab="today" uid={1}/>},
+    {l:'02 · 神谕', d:'星盘定底牌 · 塔罗看当下 · 术语只在此屏',   el:<Phone key="p2" initTab="oracle" uid={2}/>},
+    {l:'03 · 我的', d:'仪式记录 · 日记收纳 · 许愿与复盘入口',     el:<Phone key="p3" initTab="mine" uid={3}/>},
+  ];
+  return (
+    <div className="stage">
+      <h1>星 光 映 照</h1>
+      <div className="sub">3 Tab 结构 · 塔罗 × 星座融合 · 原型 v3</div>
+      <div className="meta">调研铁律落地：3 Tab 具体命名 · 首页单一主动作（能量+牌合一）· 星座能量是今日仪式的底色 · 星盘沉入神谕当底牌 · 无抽象命名</div>
+      <div className="grid">
+        {zones.map(z=>
+          <div key={z.l} className="zone">
+            <div className="zoom">{z.el}</div>
+            <div className="cap">{z.l}</div>
+            <div className="cap-sub">{z.d}</div>
+          </div>)}
+      </div>
+    </div>
+  );
+}
+
+/* ── 自检：每屏内容高度 + 真实插画加载 + 字体 ── */
+function App(){
+  const hm=(location.hash||'').match(/^#(d?)([1-3])$/);
+  const demo=!!hm&&hm[1]==='d';
+  const want=hm?parseInt(hm[2],10):0;
+
+  useEffect(()=>{
+    if(!demo)return;
+    const t=setTimeout(()=>{
+      const screen=document.querySelector('[data-screen-label]');
+      if(!screen)return;
+      if(want===1){const a=screen.querySelector('.daily-art');if(a)a.click();}
+      if(want===2){const c=screen.querySelectorAll('.tri-card')[1];if(c)c.click();}
+      if(want===3){const s=screen.querySelector('.streak');if(s)s.click();}
+    },1000);
+    return ()=>clearTimeout(t);
+  },[demo,want]);
+
+  useEffect(()=>{
+    const audit=()=>{
+      const res=[];
+      document.querySelectorAll('[data-screen-label]').forEach(el=>{
+        const sr=el.getBoundingClientRect();
+        let maxB=0,worst=null,ov=[];
+        el.querySelectorAll('*').forEach(n=>{
+          const st=getComputedStyle(n);
+          if(st.position==='static'||st.position==='relative'){
+            const r=n.getBoundingClientRect();
+            if(r.bottom-sr.top>maxB){maxB=r.bottom-sr.top;worst=n;}
+            if(r.bottom-sr.top>el.clientHeight+4&&ov.length<6)ov.push(n.tagName+'.'+String(n.getAttribute('class')||'').slice(0,24)+'@'+Math.round(r.bottom-sr.top));
+          }
+        });
+        res.push(el.getAttribute('data-screen-label')+':flowB='+Math.round(maxB)+'/'+el.clientHeight+' worst<'+(worst?worst.tagName+'.'+String(worst.getAttribute('class')||'').slice(0,24):'none')+'> ov['+ov.join(' ')+']');
+      });
+      const imgs=[...document.querySelectorAll('img')];
+      const imgInfo=imgs.map(i=>{
+        const ok=i.complete?(i.naturalWidth>0?'OK':'X'):'...';
+        return (i.getAttribute('src')||'').split('/').pop()+':'+ok;
+      }).join(',');
+      const box=document.getElementById('check-result');
+      if(box)box.textContent='CHECK|'+res.join('|')+'|imgs('+imgInfo+')|fontSerif:'+document.fonts.check('16px "Noto Serif SC"')+'|fontHand:'+document.fonts.check('16px "Ma Shan Zheng"');
+    };
+    const t=setTimeout(audit,900);
+    const t2=setTimeout(audit,3000);
+    if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>setTimeout(audit,600));
+    return ()=>{clearTimeout(t);clearTimeout(t2);};
+  },[]);
+
+  if(want>=1&&want<=3){
+    const keys=['today','oracle','mine'];
+    return (
+      <div>
+        <div id="check-result" style={{display:'none'}}/>
+        <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'#29231E',padding:'26px'}}>
+          <Phone key={'solo'+want} initTab={keys[want-1]} uid={want}/>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div>
+      <div id="check-result" style={{display:'none'}}/>
+      <Stage/>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
