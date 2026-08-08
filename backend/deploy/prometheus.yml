@@ -1,0 +1,24 @@
+# ============================================================
+# Prometheus 采集配置 —— 星光映照后端 (tarot-miniapp)
+# ============================================================
+# 后端 /metrics 端点已用 prometheus-client 输出标准文本格式：
+#   http_requests_total / http_request_duration_seconds / http_errors_total
+#
+# 注意：本文件只交付配置，不要在生产环境安装 Prometheus（资源考量）。
+# 如需采集，建议先在本机 / 运维机验证，再考虑独立采集节点或云托管
+# （如腾讯云 Prometheus 托管版，免维护）。
+# ============================================================
+
+global:
+  scrape_interval: 15s      # 全局采集间隔
+  evaluation_interval: 15s   # 告警规则评估间隔（本配置无告警规则）
+
+scrape_configs:
+  - job_name: tarot-backend
+    metrics_path: /metrics
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['127.0.0.1:8000']
+        labels:
+          app: tarot-miniapp
+          env: dev   # 生产环境请改为 prod

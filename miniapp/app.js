@@ -2,6 +2,7 @@ const { checkLogin } = require('./utils/auth');
 const { BASE_URL, request } = require('./utils/api');
 const perf = require('./utils/performance');
 const analytics = require('./utils/analytics');
+const errorReport = require('./utils/error-report');
 
 /** 试用存储键名 */
 const TRIAL_STORAGE_KEY = 'trial_expiry';
@@ -41,6 +42,18 @@ App({
 
     // === DEV: 自动化页面测试入口 ===
     this._initDevTestEntry();
+  },
+
+  // === 前端错误静默上报：script error / 未捕获的 Promise 拒绝 ===
+  onError(err) {
+    // 微信传入的是错误信息字符串（也可能带 message/stack）
+    errorReport.reportError(err);
+  },
+
+  onUnhandledRejection(res) {
+    // res = { reason }，reason 可能是 Error / string / object
+    const reason = (res && res.reason) || '';
+    errorReport.reportError(reason);
   },
 
   /** 开发环境自动化页面测试 */

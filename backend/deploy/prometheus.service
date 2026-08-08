@@ -1,0 +1,53 @@
+# ============================================================
+# Prometheus systemd unit —— 星光映照后端指标采集（可选）
+# ============================================================
+# 【重要】按项目约束，生产环境不安装 Prometheus（资源考量）。
+# 本 unit 仅供本地开发 / 独立运维机验证采集链路时使用。
+#
+# 【安装步骤（本地验证用，非生产）】
+#   1. 安装 Prometheus（单二进制）：
+#        wget https://github.com/prometheus/prometheus/releases/download/v2.53.0/prometheus-2.53.0.linux-amd64.tar.gz
+#        tar -xzf prometheus-2.53.0.linux-amd64.tar.gz
+#        sudo cp prometheus-2.53.0.linux-amd64/prometheus /usr/local/bin/
+#        sudo chmod +x /usr/local/bin/prometheus
+#   2. 创建运行用户与数据目录：
+#        sudo useradd --no-create-home --shell /usr/sbin/nologin prometheus
+#        sudo mkdir -p /etc/prometheus /var/lib/prometheus
+#        sudo cp deploy/prometheus.yml /etc/prometheus/prometheus.yml
+#        sudo chown -R prometheus:prometheus /var/lib/prometheus
+#   3. 安装本 unit 并启动：
+#        sudo cp deploy/prometheus.service /etc/systemd/system/prometheus.service
+#        sudo systemctl daemon-reload
+#        sudo systemctl enable --now prometheus
+#   4. 验证：
+#        curl http://127.0.0.1:9090/-/healthy          # Prometheus 自身健康
+#        curl 'http://127.0.0.1:9090/api/v1/targets'    # 查看 target 抓取状态（up）
+#        # 后端指标需先启动 uvicorn（后端默认监听 8000），然后：
+#        curl http://127.0.0.1:8000/metrics             # 应输出 Prometheus 文本格式
+#
+# 【可选：常见告警】Grafana 面板导入 prometheus 官方 Node/Go 模板即可。
+# ============================================================
+
+[Unit]
+Description=Prometheus metrics collector for tarot-miniapp backend
+Documentation=https://prometheus.io/docs/introduction/overview/
+After=network.target
+
+[Service]
+Type=simple
+User=prometheus
+Group=prometheus
+ExecStart=/usr/local/bin/prometheus \
+    --config.file=/etc/prometheus/prometheus.yml \
+    --storage.tsdb.path=/var/lib/prometheus \
+    --web.listen-address=127.0.0.1:9090
+Restart=on-failure
+RestartSec=5s
+# 小机器资源限制：1 个采集 target 用不到多少内存，兜底防泄漏
+MemoryMax=512M
+LimitNOFILE=65536
+# 安全加固：不暴露到公网，只监听本机
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

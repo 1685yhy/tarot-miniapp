@@ -8,6 +8,7 @@ from app.models.share_log import ShareLog, Invite
 from app.models.checkin import CheckIn
 from app.models.community import Topic, Post
 from app.models.push_subscription import PushSubscription
+from app.models.performance import PerformanceEvent
 
 __all__ = [
     "User",
@@ -24,4 +25,5 @@ __all__ = [
     "Topic",
     "Post",
     "PushSubscription",
+    "PerformanceEvent",
 ]

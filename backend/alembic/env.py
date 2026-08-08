@@ -16,7 +16,7 @@ from app.db.database import Base
 # Import ALL models so Alembic can detect them for autogenerate
 from app.models import (
     User, TarotCard, Reading, DrawnCard, ChatMessage,
-    Order, DiaryEntry, ShareLog, CheckIn, CardTeaching
+    Order, DiaryEntry, ShareLog, CheckIn, CardTeaching, PerformanceEvent
 )
 
 # this is the Alembic Config object

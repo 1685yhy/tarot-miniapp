@@ -3,7 +3,7 @@ import time
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from app.api.monitor import HTTP_REQUESTS, HTTP_LATENCY
+from app.api.monitor import HTTP_REQUESTS, HTTP_LATENCY, HTTP_ERRORS
 
 
 class MetricsMiddleware(BaseHTTPMiddleware):
@@ -19,6 +19,8 @@ class MetricsMiddleware(BaseHTTPMiddleware):
 
         status = str(response.status_code)
         HTTP_REQUESTS.labels(method=method, endpoint=path, status=status).inc()
+        if response.status_code >= 400:
+            HTTP_ERRORS.labels(method=method, endpoint=path, status=status).inc()
         HTTP_LATENCY.observe(duration)
 
         return response
