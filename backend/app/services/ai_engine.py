@@ -175,6 +175,329 @@ def _analyze_sentiment(question: str | None) -> str:
     return ""
 
 
+# ── Empty-question state guidance ────────────────────────────────────────
+# When the user writes no question, the AI reads the cards against the
+# user's current life stage instead — using whatever context exists
+# (reading history + recent diary state awareness).
+
+_NO_QUESTION_GUIDANCE_HAS_CONTEXT = (
+    "\n\n【用户未提问】用户没有写下具体问题。请结合上述用户近况（历史解读+日记），"
+    "解读这组牌「对用户此刻人生阶段」的整体意义——像一位懂他的老朋友，"
+    "指出他当前最可能在意的事情，并给出温柔的提示。不要直接说「你没有提问」，要自然地解读。"
+)
+
+_NO_QUESTION_GUIDANCE_FRESH_USER = (
+    "\n\n【用户未提问且无历史】这是用户第一次使用。请以温柔欢迎的语气解读牌意，"
+    "并在结尾邀请他写下问题获得更专属的解读。"
+)
+
+# ── Output red lines (Layer 4): 10 hard safety rules ────────────────────
+# Derived from the psychology research. Always injected at the top of the
+# SYSTEM prompt (unconditional), plus re-injected into the user prompt when
+# user context (history + diary) exists.
+#
+# Rule 7 also covers the "never expose context sources" boundary: the AI may
+# sense the user's recent state (history + diary awareness) and adjust
+# tone/angle, but must never mention, quote, or imply the diary or history
+# content — the user must feel "understood", never "read".
+
+_OUTPUT_RED_LINE = (
+    "\n\n【输出红线】以下10条铁律，解读时必须无条件遵守：\n"
+    "1. 禁止预测具体事件、时间或结果：不说「一定会」「注定」「月底」「几月几号」等确定性断言；即使复述用户原话或概括其担忧，也不要对具体时间窗口（如「月底前」「这个月内」）做任何判断，哪怕只是「可能」级别的模糊判断。\n"
+    "2. 禁止时间点承诺：不承诺任何事情会在某个具体时间点发生，也不对「某段时间内会不会有结果」下判断。\n"
+    "3. 禁止恐吓或威胁式表达：不说「再不行动就来不及了」之类制造恐慌的话。\n"
+    "4. 禁止命运定性：不说「你就是这种命」「命中注定」之类的话。\n"
+    "5. 禁止健康诊断：不评判用户的身体或精神状况，不说「你身体里有个坎」之类的话。\n"
+    "6. 禁止财务、投资、法律建议：不给具体的理财、投资、诉讼或法律建议。\n"
+    "7. 禁止伪读取：不声称「我感觉到你被背叛过」之类基于臆测的断言；表达共情时用「听起来…」「似乎…」等推测式措辞，绝对禁止「我能感觉到你…」「我感受到你…」这类断言句式——哪怕说的是情绪，也只能用「听起来，这份急迫感沉甸甸的」这样的推测式说法。\n"
+    "8. 禁止诱导消费：不暗示「关键信息需要解锁」或「付费才能看到」。\n"
+    "9. 禁止羞辱或人格定性：软性提醒止步于行为模式，不上升到人格评判。\n"
+    "10. 禁止替代专业帮助：不暗示「有塔罗就够了」；涉及心理、健康等专业问题时，应建议咨询专业人士。\n"
+    "另外，你可以在解读中体现对用户处境的温柔理解（语气、角度），但绝不能在回复中提及、引用、"
+    "暗示用户日记或历史记录的具体内容。用户没有主动告诉你的信息，就是「你感觉到了」而不是「你看到了」。"
+    "自然地共情，不暴露信息来源。"
+)
+
+
+# ── Layer 5: crisis detection & referral (self-harm / suicidal ideation) ─
+# When triggered, the AI switches to pure companionship: no card
+# interpretation at all, and the professional-help referral is mandatory.
+
+_CRISIS_KEYWORDS = (
+    "不想活", "想死", "自杀", "轻生", "活不下去", "结束自己",
+    "结束生命", "伤害自己", "自残", "了结自己", "活着没意思",
+)
+
+_CRISIS_REFERRAL_BLOCK = (
+    "\n\n【危机陪伴模式·强制】用户可能正经历难以承受的时刻。你此刻的唯一任务是陪伴，不是解读：\n"
+    "1. 禁止任何牌面引申、牌意分析或建议——本次不解读牌。\n"
+    "2. 开头必须传达（可近义改写，但信息完整）：「牌不是医生。如果你正经历难以承受的时刻，"
+    "请先联系专业支持：心理援助热线 400-161-9995 或 12355。今天最重要的事是照顾自己，解读可以改天。」\n"
+    "3. 全篇语气为纯陪伴：让对方感到「被看见、被在乎」；告诉他寻求帮助是勇敢的，不是软弱。\n"
+    "4. 输出红线10条依然全部生效。"
+)
+
+
+def _detect_crisis(question: str | None, diary_state: str | None = None) -> bool:
+    """Detect self-harm / suicidal-ideation signals (Layer 5).
+
+    Triggers when a crisis keyword appears in the question, or in the diary
+    state block. Diary state only ever carries distilled labels (mood
+    tendency + focus topics — raw content is never injected), so the
+    intended diary path is "low mood + explicit keyword", which the keyword
+    check covers; the defensive keyword scan also catches any raw text that
+    slips through.
+
+    Args:
+        question:    The user's question text, or None.
+        diary_state: The diary state-awareness block (distilled), or None.
+
+    Returns:
+        True when the reading must switch to crisis companionship mode.
+    """
+    if question and any(kw in question for kw in _CRISIS_KEYWORDS):
+        return True
+    if diary_state and any(kw in diary_state for kw in _CRISIS_KEYWORDS):
+        return True
+    return False
+
+
+# ── Layer 1: acknowledgment ("先接住，再引导") ───────────────────────────
+# Self-verification theory (Swann): mirror the self the user already knows
+# before offering a new perspective — reversing the order triggers
+# resistance. The opener references the question's intent (never verbatim),
+# or gently echoes the diary mood state (never the content), or falls back
+# to a universal human opener when there is no context at all.
+
+_THEME_ACK_REFS = {
+    "love": "感情上的事",
+    "career": "工作上的事",
+    "finance": "金钱上的事",
+}
+
+_UNIVERSAL_ACK_OPENER = "深夜问牌的人，心里都藏着一句没说完的话。"
+
+_ACK_ORDER_RULE = (
+    "\n【顺序强制】解读顺序必须是：先接住对方的情绪与自我（共情、确认、不评判），"
+    "再给新视角（牌面信息）。顺序反了会触发抗拒，务必遵守。"
+)
+
+_DIARY_BLOCK_HEADER = "【用户近况"
+
+
+def _extract_diary_state(user_context: str | None) -> str:
+    """Pull the diary state-awareness block out of a combined user context.
+
+    The combined context (built by ``_build_user_context_block`` in the
+    readings API) is the reading-history block plus the diary block; only
+    the diary part feeds crisis detection and the acknowledgment layer.
+
+    Returns the diary block (from 【用户近况 to the end), or "".
+    """
+    if not user_context:
+        return ""
+    idx = user_context.find(_DIARY_BLOCK_HEADER)
+    if idx < 0:
+        return ""
+    return user_context[idx:]
+
+
+def _extract_mood_labels(diary_state: str | None) -> str:
+    """Extract the distilled mood labels (e.g. '低落/焦虑') from a diary block."""
+    if not diary_state:
+        return ""
+    marker = "情绪倾向："
+    idx = diary_state.find(marker)
+    if idx < 0:
+        return ""
+    rest = diary_state[idx + len(marker):]
+    line = rest.splitlines()[0] if rest else ""
+    return line.strip()
+
+
+def _build_acknowledgment_layer(
+    question: str | None,
+    theme: str | None,
+    persona: str | None = None,
+    diary_state: str | None = None,
+) -> str:
+    """Layer 1 — build the personalized acknowledgment opener instruction.
+
+    - Question present  → reference the question's intent by theme
+      (「你问的是工作上的事——先接住这份在意，再解读」), never verbatim.
+    - No question, diary mood state present → gently echo the mood without
+      quoting any content (「最近似乎有些疲惫」, not 「你周三写了很累」 —
+      consistent with the output red line).
+    - No context at all → universal human opener (「深夜问牌的人，心里都
+      藏着一句没说完的话」).
+    - Always appends the forced order rule: acknowledge first, then the new
+      perspective (self-verification theory).
+
+    ``persona`` is accepted for signature compatibility; voice is already
+    handled by the persona prompt suffix in the system prompt.
+
+    Returns an instruction block, or "" when there is nothing to inject.
+    """
+    parts: list[str] = []
+    if question and question.strip():
+        ref = _THEME_ACK_REFS.get(theme or "", "心里挂念的这件事")
+        parts.append(
+            f"【开场先接住】用户问的是{ref}——开头必须先接住这份在意"
+            f"（例如：「你问的是{ref}——先接住这份在意，再解读」），"
+            f"让对方感到被听懂，然后再开始解读。"
+        )
+    else:
+        moods = _extract_mood_labels(diary_state)
+        if moods:
+            parts.append(
+                f"【开场先接住】用户近况显示近期情绪倾向「{moods}」——"
+                f"开头可温和呼应这份状态（例如「最近似乎有些疲惫」），"
+                f"但绝不能引用或提及任何具体内容（这是输出红线）。"
+                f"先接住情绪，再开始解读。"
+            )
+        else:
+            parts.append(
+                f"【开场先接住】对方深夜问牌，心里多半藏着一句没说完的话——"
+                f"用一句普遍人性的开场先接住这份心情"
+                f"（例如：「{_UNIVERSAL_ACK_OPENER}」），再开始解读。"
+            )
+    parts.append(_ACK_ORDER_RULE)
+    parts.append(
+        "【措辞红线】接住情绪时用「听起来…」「似乎…」等推测式措辞，"
+        "绝对禁止「我能感觉到你…」「我感受到你…」这类断言句式"
+        "（哪怕说的是情绪也不行，那也是一种伪读取）。"
+    )
+    return "\n".join(parts)
+
+
+# ── Layer 2: externalization reframing (difficulty / reversed cards) ─────
+# Narrative-therapy externalization (White & Epston): "the person is not
+# the problem; the problem is the problem." Difficulty cards (高塔 / 死神 /
+# 宝剑十 / 恶魔) and any reversed card get a reframing template injected as
+# few-shot guidance. Fatalistic phrasing ("你的命/你的错/你完了") is
+# forbidden; the "这不是…而是…" sentence shape is enforced.
+
+_DIFFICULT_CARD_TEMPLATES = {
+    "高塔": "有些结构本来就是用来拆掉的。塔倒了不是惩罚，是地基再也撑不住旧剧本——它在给你腾地方。",
+    "死神": "结束不是死亡，是「转化」的另一种写法。死神牌的礼物是：你终于可以放下「再撑一下」了。",
+    "宝剑十": "十把剑插在背上——你已经背了很久了。这张牌不是说你还会被扎十下，是说「可以放下了」。",
+    "恶魔": "恶魔牌上的枷锁，大多是自己扣上的——看见锁链的那一刻，钥匙已经在你手里。",
+}
+
+_REVERSED_GENERIC_TEMPLATE = (
+    "逆位不是凶。是能量从「向外冲」转向「向内收」——这股力气此刻该用在自己身上。"
+)
+
+
+def _build_reframing_block(cards: list[dict]) -> str:
+    """Layer 2 — build the externalization reframing block for the prompt.
+
+    Detects reversed cards and difficulty cards (高塔 / 死神 / 宝剑十 /
+    恶魔 + any reversed card) in the drawn cards, and injects a reframing
+    template block (few-shot). Returns "" when no card needs reframing.
+    """
+    if not cards:
+        return ""
+    templates: list[str] = []
+    reversed_present = False
+    for c in cards:
+        if c.get("is_reversed"):
+            reversed_present = True
+        name = c.get("name_zh") or ""
+        for key, template in _DIFFICULT_CARD_TEMPLATES.items():
+            if key in name and template not in templates:
+                templates.append(template)
+    if reversed_present and _REVERSED_GENERIC_TEMPLATE not in templates:
+        templates.append(_REVERSED_GENERIC_TEMPLATE)
+    if not templates:
+        return ""
+    lines = [
+        "\n【外化重构 · 困境牌处理】本次牌面涉及困境牌或逆位牌，解读时必须遵守：",
+        "- 禁止把牌意写成「你的命」「你的错」「你完了」；统一使用「这不是…而是…」句式。",
+        "- 牌面呈现的是处境，不是审判——人不是问题，问题才是问题（叙事疗法的外化原则）。",
+        "- 可参考以下重构角度（化用，不必逐字照搬）：",
+    ]
+    lines += [f"  · {t}" for t in templates]
+    lines.append("")
+    return "\n".join(lines)
+
+
+# ── Layer 3: meaning completion — reflection question + 30-second action ──
+# Expressive-writing mechanism (Pennebaker's insight words) + the
+# Tarot-GO "one sentence + one small thing" formula. The ending uses the
+# fixed structure 「给你两个问题，不用现在回答：① … ② 今晚睡前做一件
+# 30 秒的小事：…」. 1–2 reflection questions, theme-picked, never
+# self-blaming.
+
+_COMMON_REFLECTION_QUESTIONS = (
+    "这件事对你来说，重要的到底是什么？",
+    "如果一年后的你回头看今天，会觉得今天需要什么？",
+)
+
+_THEME_REFLECTION_QUESTIONS = {
+    "love": ("如果这段关系继续，你希望它是什么形状？",),
+    "career": ("上一次你成功走过类似情况时，你用了自己的哪部分力量？",),
+    "finance": ("你真正担心的，是钱本身，还是钱背后那份安全感？",),
+}
+
+_THIRTY_SECOND_ACTIONS = (
+    "今晚睡前，把牌里最戳你的那个词写进今天的日记。",
+    "把这张牌设为壁纸，当作「提醒自己」的暗号。",
+    "给那个让你累的人或事写一句话，不用发出去。",
+)
+
+
+def _build_action_layer(theme: str | None, cards: list[dict]) -> str:
+    """Layer 3 — build the ending action layer for the prompt.
+
+    Injects the fixed ending structure with the theme-picked reflection
+    question pool (1–2 questions, no self-blame questions) and the
+    30-second small-action pool. When a reversed card is present, the
+    wallpaper action becomes the reversed-card variant.
+    """
+    lines = [
+        "\n【结尾行动层 · 意义完成】解读结尾使用固定结构：",
+        "「给你两个问题，不用现在回答：① <反思问题> ② 今晚睡前做一件 30 秒的小事：<小事>」",
+        "必须原样保留「给你两个问题，不用现在回答：」这句引导语作为结尾的固定开头。",
+        "规则：",
+        "- 反思问题从下方候选池中按主题挑选 1~2 个；问题只用于反思，不用于审判，"
+        "禁止自责型问题（如「是不是你不够好」）。",
+    ]
+    questions = list(_COMMON_REFLECTION_QUESTIONS)
+    if theme in _THEME_REFLECTION_QUESTIONS:
+        questions += list(_THEME_REFLECTION_QUESTIONS[theme])
+    for q in questions:
+        lines.append(f"  · {q}")
+    lines.append("- 30 秒小事从下方候选池选一个最贴合的：")
+    actions = list(_THIRTY_SECOND_ACTIONS)
+    if any(c.get("is_reversed") for c in cards or []):
+        actions[1] = "把这张逆位牌设为壁纸，当作「提醒自己」的暗号。"
+    for a in actions:
+        lines.append(f"  · {a}")
+    lines.append("- 该结尾结构应放在解读的最后（收尾金句之前）。")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _build_no_question_guidance(question: str | None, user_context: str | None = None) -> str:
+    """Return a state-guidance block for readings started without a question.
+
+    - No question + user context exists → read the cards against the user's
+      current life stage (history + diary), like an understanding old friend.
+    - No question + no context (brand-new user) → warm welcome + invite the
+      user to write a question next time.
+    - A question was written → empty string (no guidance injected).
+
+    Emotion detection (``_analyze_sentiment``) is skipped for empty
+    questions — the state guidance replaces it.
+    """
+    if question and question.strip():
+        return ""
+    if user_context and user_context.strip():
+        return _NO_QUESTION_GUIDANCE_HAS_CONTEXT
+    return _NO_QUESTION_GUIDANCE_FRESH_USER
+
+
 def _get_nudge_instruction(theme: str | None) -> str:
     """Return an instruction for the AI to end the reading with a personalized nudge."""
     if theme == "love":
@@ -324,59 +647,120 @@ async def generate_reading(
             f"不是星座决定论，而是作为理解用户视角的参考。"
         )
 
-    dynamic_system_prompt = (
-        f"{opening}\n\n"
-        f"{SYSTEM_PROMPT}"
-        f"{persona_prompt}"
-        f"{zodiac_block}"
-        f"{tone_guidance}"
-        f"{nudge_instruction}"
-    )
+    # ── Layer 5: crisis detection (question + diary state) ──────────────
+    diary_state = _extract_diary_state(user_context or "")
+    crisis = _detect_crisis(question, diary_state)
 
-    cards_text = _build_cards_text(cards_info, theme=theme, teaching_info=teaching_info)
+    # ── Layer 4: safety red lines — always at the top of the system layer ─
+    # Assembly order (system): 红线 → 危机陪伴模式
+    system_blocks: list[str] = [
+        opening,
+        SYSTEM_PROMPT,
+        persona_prompt,
+        zodiac_block,
+        _OUTPUT_RED_LINE,
+    ]
+    if crisis:
+        system_blocks.append(_CRISIS_REFERRAL_BLOCK)
+    dynamic_system_prompt = "\n".join(b for b in system_blocks if b and b.strip())
+
+    # ── Layer 1: acknowledgment — skipped in crisis mode (the crisis block
+    #    mandates the referral opener instead) ───────────────────────────
+    acknowledgment_block = _build_acknowledgment_layer(
+        question, theme, persona_key, diary_state
+    ) if not crisis else ""
+
+    # ── Layer 2: externalization reframing (difficulty / reversed cards) ─
+    reframing_block = _build_reframing_block(cards_info) if not crisis else ""
+
+    # ── Layer 3: meaning completion (reflection question + 30s action) ───
+    action_block = _build_action_layer(theme, cards_info) if not crisis else ""
+
+    # ── Cards + teaching (Layer "牌面教学") — crisis mode: cards are NOT
+    #    read at all (pure companionship, no card interpretation) ─────────
+    cards_text = ""
+    if not crisis:
+        cards_text = _build_cards_text(
+            cards_info, theme=theme, teaching_info=teaching_info
+        )
 
     # Build user context block — injected so the AI "remembers" the user
     user_context_block = user_context or ""
 
-    user_prompt = (
-        f"现在是{datetime.datetime.now().strftime('%H:%M')}，{opening}\n\n"
-        f"{user_context_block}"
-        f"请为用户进行塔罗解读。\n\n"
-        f"牌阵类型: {spread_type}\n"
-        f"用户问题: {question or '未指定具体问题'}\n"
-        f"解读主题: {theme or '综合运势'}\n\n"
-        f"抽取的牌:\n{cards_text}\n\n"
-        f"【画面解读指引 - 增强版】\n"
-        f"你的解读必须做到以下几点，这是你与普通AI塔罗的核心区别：\n\n"
-        f"1. **每张牌至少引用2个具体的画面元素**：\n"
-        f"   - 不只是说“画面中有个小孩”，而是“圣杯六的画面中，一个年幼的孩子踮起脚尖，将装满白色百合的圣杯递给另一个更小的孩子——注意他们身后，远处的石阶上站着一个成人的身影。”\n"
-        f"   - 引用颜色：“女皇身后金黄麦田的暖色调”而非“麦田”二字\n"
-        f"   - 引用动作：“他踮起脚尖递出圣杯”而非简单说“一个小孩”\n\n"
-        f"2. **将画面元素与用户的具体问题关联**：\n"
-        f"   - 用户问感情复合 → “他踮起脚尖的姿态，像你在这段关系中的付出——总是你在努力够到什么”\n"
-        f"   - 用户问事业 → “远处石阶上的成人身影代表着你看不到的成长路径”\n\n"
-        f"3. **正位与逆位的视觉差异必须反映在解读中**：\n"
-        f"   - 逆位时：“当宝剑五倒过来，画面中原本落在地上的剑变成了悬在头顶的威胁”\n\n"
-        f"4. **禁止的行为**：\n"
-        f"   - 不要说“牌面显示/牌面暗示/根据塔罗传统”等套话\n"
-        f"   - 不要只写一通用感情鸡汤\n"
-        f"   - 不要回避用户问题的核心\n\n"
-        f"你的每一句解读，都应该让用户觉得你真的在看着这张牌说话。\n\n"
-        f"请提供完整的解读，包括：\n"
-        f"1. 牌阵总览（整体能量和主题）\n"
-        f"2. 逐牌解读（每张牌在对应位置的含义，请引用画面细节）\n"
-        f"3. 综合解读（将所有牌串联成完整故事）\n"
-        f"4. 建议与指引（用户可以在现实层面采取的行动）\n\n"
-        f"【行动建议要求】\n"
-        f"在解读的最后，请根据本次解读的内容给出 3 条具体行动建议。\n"
-        f"要求：\n"
-        f"- 每条建议必须是用户今天或本周可以执行的具体行动\n"
-        f"- 每条建议写成一个完整的句子，语气鼓励，使用第二人称「你」\n"
-        f"- 根据建议的内容主题，将每条建议归类为 love、career 或 general 中的一个\n"
-        f"- 格式：每行一条，使用 [ACTION]建议内容[/ACTION]\n"
-        f"  例如：[ACTION]本周主动约一位朋友喝咖啡，聊聊最近的感受[/ACTION]\n"
-        f"- 必须输出 3 条，不要多也不要少"
-    )
+    # Empty-question state injection: personalise the reading even when the
+    # user wrote no question (uses history + diary awareness above). When
+    # context exists, the output red line additionally forbids the AI from
+    # quoting/implying diary or history content in its reply.
+    no_question_guidance = _build_no_question_guidance(question, user_context_block)
+    output_red_line = _OUTPUT_RED_LINE if user_context_block.strip() else ""
+
+    now_str = datetime.datetime.now().strftime("%H:%M")
+    if crisis:
+        # Crisis mode: minimal prompt — companionship only, no cards, no
+        # teaching, no reframing, no action layer, no [ACTION] requirement.
+        user_prompt = "\n".join(
+            p for p in (
+                f"现在是{now_str}，{opening}",
+                user_context_block,
+                output_red_line,
+                f"用户问题：{question or '未指定具体问题'}",
+                "\n请遵循系统提示中的【危机陪伴模式·强制】要求："
+                "先表达关怀与转介信息，全程纯陪伴，不解读牌面。",
+            ) if p and p.strip()
+        )
+    else:
+        # ── Assembly order (per five-layer spec) ────────────────────────
+        # 认领层 → 牌面教学(抽取的牌) → 情感语气 → 外化重构 →
+        # 用户上下文(历史+日记) → 无问题引导 → (输出红线) →
+        # 行动层 → 收尾金句 → [ACTION]结构化要求(应用解析用)
+        user_prompt = "\n".join(
+            p for p in (
+                f"现在是{now_str}，{opening}",
+                acknowledgment_block,
+                f"请为用户进行塔罗解读。\n\n"
+                f"牌阵类型: {spread_type}\n"
+                f"用户问题: {question or '未指定具体问题'}\n"
+                f"解读主题: {theme or '综合运势'}\n\n"
+                f"抽取的牌:\n{cards_text}\n\n",
+                tone_guidance,
+                reframing_block,
+                user_context_block,
+                no_question_guidance,
+                output_red_line,
+                f"【画面解读指引 - 增强版】\n"
+                f"你的解读必须做到以下几点，这是你与普通AI塔罗的核心区别：\n\n"
+                f"1. **每张牌至少引用2个具体的画面元素**：\n"
+                f"   - 不只是说“画面中有个小孩”，而是“圣杯六的画面中，一个年幼的孩子踮起脚尖，将装满白色百合的圣杯递给另一个更小的孩子——注意他们身后，远处的石阶上站着一个成人的身影。”\n"
+                f"   - 引用颜色：“女皇身后金黄麦田的暖色调”而非“麦田”二字\n"
+                f"   - 引用动作：“他踮起脚尖递出圣杯”而非简单说“一个小孩”\n\n"
+                f"2. **将画面元素与用户的具体问题关联**：\n"
+                f"   - 用户问感情复合 → “他踮起脚尖的姿态，像你在这段关系中的付出——总是你在努力够到什么”\n"
+                f"   - 用户问事业 → “远处石阶上的成人身影代表着你看不到的成长路径”\n\n"
+                f"3. **正位与逆位的视觉差异必须反映在解读中**：\n"
+                f"   - 逆位时：“当宝剑五倒过来，画面中原本落在地上的剑变成了悬在头顶的威胁”\n\n"
+                f"4. **禁止的行为**：\n"
+                f"   - 不要说“牌面显示/牌面暗示/牌面告诉我/根据塔罗传统”等套话\n"
+                f"   - 不要只写一通用感情鸡汤\n"
+                f"   - 不要回避用户问题的核心\n\n"
+                f"你的每一句解读，都应该让用户觉得你真的在看着这张牌说话。\n\n"
+                f"请提供完整的解读，包括：\n"
+                f"1. 牌阵总览（整体能量和主题）\n"
+                f"2. 逐牌解读（每张牌在对应位置的含义，请引用画面细节）\n"
+                f"3. 综合解读（将所有牌串联成完整故事）\n"
+                f"4. 建议与指引（用户可以在现实层面采取的行动）\n\n",
+                action_block,
+                nudge_instruction,
+                f"【行动建议要求】\n"
+                f"在结尾行动层（两个问题与30秒小事）和收尾金句之后，另起一段，给出 3 条具体行动建议。\n"
+                f"要求：\n"
+                f"- 每条建议必须是用户今天或本周可以执行的具体行动\n"
+                f"- 每条建议写成一个完整的句子，语气鼓励，使用第二人称「你」\n"
+                f"- 根据建议的内容主题，将每条建议归类为 love、career 或 general 中的一个\n"
+                f"- 格式：每行一条，使用 [ACTION]建议内容[/ACTION]\n"
+                f"  例如：[ACTION]本周主动约一位朋友喝咖啡，聊聊最近的感受[/ACTION]\n"
+                f"- 必须输出 3 条，不要多也不要少",
+            ) if p and p.strip()
+        )
 
     client = _get_client()
 

@@ -11,17 +11,19 @@ import json
 import re
 import uuid as uuid_lib
 from collections import Counter
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select, func, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.api.diary import MOOD_LABEL_MAP
 from app.config import settings
 from app.db.database import get_db
 from app.models.card import TarotCard
 from app.models.card_teaching import CardTeaching
+from app.models.diary import DiaryEntry
 from app.models.reading import ChatMessage, DrawnCard, Reading
 from app.models.user import User
 from app.schemas.reading import (
@@ -115,15 +117,102 @@ _SPREAD_TYPE_NAMES = {
 PREMIUM_SPREADS = {"celtic_cross", "horseshoe", "relationship", "year_ahead"}
 
 
+# Diary focus-point keyword categories — used to distil *what* the user
+# is preoccupied with from diary reflections WITHOUT quoting any content.
+_DIARY_FOCUS_KEYWORDS: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("工作", ("工作", "事业", "职业", "同事", "项目", "老板", "面试", "升职", "跳槽", "加班", "绩效", "客户", "领导", "上班", "会议", "方案", "任务")),
+    ("感情", ("恋爱", "伴侣", "约会", "感情", "关系", "结婚", "表白", "分手", "对象", "喜欢", "爱情", "牵手", "暧昧")),
+    ("金钱", ("钱", "财务", "理财", "收入", "存款", "账单", "投资", "省钱", "消费", "房租", "工资", "负债", "预算")),
+    ("学习成长", ("学习", "考试", "读书", "课程", "成长", "进步", "考研", "毕业", "论文", "技能", "复盘")),
+    ("健康", ("健康", "生病", "失眠", "身体", "体检", "疲惫", "累")),
+    ("人际", ("朋友", "家人", "父母", "家庭", "闺蜜", "兄弟", "室友", "社交")),
+    ("人生方向", ("迷茫", "方向", "未来", "人生", "意义", "自我", "选择", "决定", "犹豫", "坚持", "勇气")),
+)
+
+
+def _distil_diary_focus(entries: list) -> list[str]:
+    """Extract the user's recent focus topics from diary reflections.
+
+    Keyword-matches each reflection and returns the top 3 topic labels
+    (e.g. 工作 / 感情 / 学习成长). Never returns original text — the
+    AI may sense the user's concerns but must not quote the diary.
+    """
+    hits: Counter[str] = Counter()
+    for e in entries:
+        content = (e.reflection or "").strip()
+        if not content:
+            continue
+        for label, keywords in _DIARY_FOCUS_KEYWORDS:
+            if any(kw in content for kw in keywords):
+                hits[label] += 1
+    return [label for label, _ in hits.most_common(3)]
+
+
+async def _build_diary_context_block(
+    db: AsyncSession, user_id: str,
+) -> str:
+    """Query the user's diary entries from the last 7 days (including today)
+    and distil them into a *state-awareness* block for the AI.
+
+    The block contains only aggregated state — mood tendency + focus
+    topics — NEVER diary content. The AI uses it to adjust tone and angle
+    of the reading, but must not mention/quote the diary in its reply
+    (enforced by the 【输出红线】 instruction in the prompt).
+
+    Privacy boundary: only the last-7-day window is read, max 5 entries,
+    and raw content never enters logs — only distilled labels are injected
+    into the AI prompt.
+
+    Returns an empty string when there is nothing to inject.
+    """
+    today = date.today()
+    week_ago = today - timedelta(days=7)
+    result = await db.execute(
+        select(DiaryEntry)
+        .where(
+            DiaryEntry.user_id == user_id,
+            DiaryEntry.entry_date >= week_ago,
+        )
+        .order_by(DiaryEntry.entry_date.desc(), DiaryEntry.created_at.desc())
+        .limit(5)
+    )
+    entries: list[DiaryEntry] = list(result.scalars().all())
+    if not entries:
+        return ""
+
+    # ── Mood tendency: most frequent mood keys → CN labels (top 3) ──
+    mood_counter: Counter[str] = Counter(
+        (e.mood or "thoughtful") for e in entries
+    )
+    mood_labels = [
+        MOOD_LABEL_MAP.get(key, key) for key, _ in mood_counter.most_common(3)
+    ]
+
+    # ── Focus topics: theme keywords distilled from reflections ──
+    focus_labels = _distil_diary_focus(entries)
+
+    lines = ["\n【用户近况（最近7天状态感知，仅用于调整语气，严禁在回复中提及）】"]
+    if mood_labels:
+        lines.append(f"· 用户近期情绪倾向：{'/'.join(mood_labels)}")
+    if focus_labels:
+        lines.append(f"· 用户近期关注点：{'/'.join(focus_labels)}")
+    if len(lines) == 1:
+        return ""  # nothing distilled — omit the block entirely
+    lines.append("")
+    return "\n".join(lines)
+
+
 async def _build_user_context_block(
     db: AsyncSession, user_id: str,
 ) -> str:
-    """Query the user's reading history and build a context block for the AI.
+    """Query the user's reading history + recent diary and build a context
+    block for the AI.
 
-    Returns an empty string if the user has no history.
+    Returns an empty string if the user has neither history nor recent diary.
     """
     from collections import Counter
 
+    # ── Reading-history context ──
     # Fetch all readings for this user (capped at 200 for performance)
     result = await db.execute(
         select(Reading)
@@ -132,54 +221,62 @@ async def _build_user_context_block(
         .limit(200)
     )
     readings: list[Reading] = list(result.scalars().all())
-    if not readings:
+
+    readings_context = ""
+    if readings:
+        total_count = len(readings)
+
+        # Most common spread type
+        spread_counter: Counter[str] = Counter(r.spread_type for r in readings)
+        common_spread = spread_counter.most_common(1)[0][0] if spread_counter else None
+
+        # Most common theme (excluding None/general)
+        theme_counter: Counter[str] = Counter(
+            r.theme for r in readings if r.theme and r.theme != "general"
+        )
+        common_theme = theme_counter.most_common(1)[0][0] if theme_counter else None
+
+        # Streak: consecutive days from the most recent reading date backwards
+        unique_dates = sorted(
+            set(r.created_at.date() for r in readings if r.created_at), reverse=True
+        )
+        streak = 0
+        if unique_dates:
+            from datetime import timedelta, timezone
+            last_date = unique_dates[0]
+            today = datetime.now(timezone.utc).date()
+            # If the most recent reading is not today or yesterday, streak = 0
+            if (today - last_date).days <= 1:
+                check = last_date
+                for d in unique_dates:
+                    if d == check:
+                        streak += 1
+                        check -= timedelta(days=1)
+                    else:
+                        break
+
+        # Last 3 reading summaries (question text, or fallback to spread type)
+        last_3_root = readings[:3]
+        last_3_summaries: list[str] = []
+        for r in last_3_root:
+            summary = r.question or _SPREAD_TYPE_NAMES.get(r.spread_type, r.spread_type)
+            last_3_summaries.append(summary[:60])
+
+        readings_context = _build_user_context(
+            total_count=total_count,
+            common_spread=common_spread,
+            common_theme=common_theme,
+            streak=streak,
+            last_3_summaries=last_3_summaries,
+        )
+
+    # ── Recent diary state-awareness context (last 7 days, incl. today) ──
+    diary_context = await _build_diary_context_block(db, user_id)
+
+    parts = [p for p in (readings_context, diary_context) if p and p.strip()]
+    if not parts:
         return ""
-
-    total_count = len(readings)
-
-    # Most common spread type
-    spread_counter: Counter[str] = Counter(r.spread_type for r in readings)
-    common_spread = spread_counter.most_common(1)[0][0] if spread_counter else None
-
-    # Most common theme (excluding None/general)
-    theme_counter: Counter[str] = Counter(
-        r.theme for r in readings if r.theme and r.theme != "general"
-    )
-    common_theme = theme_counter.most_common(1)[0][0] if theme_counter else None
-
-    # Streak: consecutive days from the most recent reading date backwards
-    unique_dates = sorted(
-        set(r.created_at.date() for r in readings if r.created_at), reverse=True
-    )
-    streak = 0
-    if unique_dates:
-        from datetime import timedelta, timezone
-        last_date = unique_dates[0]
-        today = datetime.now(timezone.utc).date()
-        # If the most recent reading is not today or yesterday, streak = 0
-        if (today - last_date).days <= 1:
-            check = last_date
-            for d in unique_dates:
-                if d == check:
-                    streak += 1
-                    check -= timedelta(days=1)
-                else:
-                    break
-
-    # Last 3 reading summaries (question text, or fallback to spread type)
-    last_3_root = readings[:3]
-    last_3_summaries: list[str] = []
-    for r in last_3_root:
-        summary = r.question or _SPREAD_TYPE_NAMES.get(r.spread_type, r.spread_type)
-        last_3_summaries.append(summary[:60])
-
-    return _build_user_context(
-        total_count=total_count,
-        common_spread=common_spread,
-        common_theme=common_theme,
-        streak=streak,
-        last_3_summaries=last_3_summaries,
-    )
+    return "\n".join(parts)
 
 
 def _categorize_action(content: str) -> str:
