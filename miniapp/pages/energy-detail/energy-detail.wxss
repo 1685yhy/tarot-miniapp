@@ -1,0 +1,373 @@
+/* pages/energy-detail/energy-detail.wxss — E3 能量详情（与原型页 04 一致） */
+page {
+  --e3-cream: #FAF6EF;
+  --e3-cream-hi: #FFFDF8;
+  --e3-paper: #F2ECDF;
+  --e3-pink: #E8C4BE;
+  --e3-pink-ink: #B08A82;
+  --e3-gold: #C9A97C;
+  --e3-gold-deep: #B08F52;
+  --e3-line-soft: rgba(201, 169, 124, 0.38);
+  --e3-ink: #3D3A36;
+  --e3-ink-soft: #8A8478;
+  --e3-ink-faint: #B0AA9C;
+  --e3-shadow: 0 4rpx 20rpx rgba(61, 58, 54, 0.06);
+  --e3-hi: inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
+  --e3-serif: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif CJK SC', 'Noto Serif SC', serif;
+  --e3-sans: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+  background: #FAF6EF;
+  color: #3D3A36;
+  font-family: var(--e3-serif);
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.page {
+  min-height: 100vh;
+  padding: 16rpx 36rpx calc(40rpx + env(safe-area-inset-bottom));
+  position: relative;
+  box-sizing: border-box;
+  background: #FAF6EF;
+  overflow: hidden;
+}
+
+.wash {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+.wash-pink {
+  top: -170rpx;
+  right: -190rpx;
+  width: 560rpx;
+  height: 560rpx;
+  background: radial-gradient(circle, rgba(232, 196, 190, 0.42) 0%, rgba(232, 196, 190, 0) 66%);
+}
+.wash-gold {
+  left: -200rpx;
+  top: 680rpx;
+  width: 500rpx;
+  height: 500rpx;
+  background: radial-gradient(circle, rgba(201, 169, 124, 0.22) 0%, rgba(201, 169, 124, 0) 66%);
+}
+
+/* ── 维度切换 chips（4 个 · 选中态随维度色调） ── */
+.e-chips {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: 12rpx;
+  margin-top: 12rpx;
+}
+.e-chip {
+  flex: 1;
+  height: 64rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--e3-sans);
+  font-size: 22rpx;
+  letter-spacing: 3rpx;
+  color: var(--e3-ink-faint);
+  background: var(--e3-cream-hi);
+  border: 1rpx solid rgba(201, 169, 124, 0.22);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.e-chip-pressed {
+  transform: scale(0.96);
+}
+.e-chip-on {
+  color: #FFFDF8;
+  border-color: transparent;
+  font-weight: 500;
+  box-shadow: 0 6rpx 20rpx rgba(61, 58, 54, 0.14);
+}
+
+/* ── 能量主角卡：大数字 + 渐变能量条 ── */
+.e-hero {
+  position: relative;
+  z-index: 2;
+  background: var(--e3-cream-hi);
+  border: 1rpx solid rgba(201, 169, 124, 0.3);
+  border-radius: 40rpx;
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+  padding: 36rpx 32rpx 28rpx;
+  margin-top: 24rpx;
+  text-align: center;
+}
+.e-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 16rpx;
+}
+.e-name {
+  font-size: 30rpx;
+  letter-spacing: 6rpx;
+  color: var(--e3-ink);
+}
+.e-en {
+  font-family: var(--e3-serif);
+  font-size: 18rpx;
+  letter-spacing: 6rpx;
+  color: var(--e3-ink-faint);
+}
+.e-num {
+  font-family: var(--e3-serif);
+  font-size: 108rpx;
+  line-height: 1.1;
+  margin-top: 8rpx;
+  font-weight: 500;
+}
+.e-num-small {
+  font-size: 26rpx;
+  letter-spacing: 4rpx;
+  margin-left: 8rpx;
+  color: var(--e3-ink-faint);
+  font-family: var(--e3-sans);
+}
+.e-bar {
+  height: 16rpx;
+  border-radius: 999rpx;
+  margin: 20rpx 20rpx 0;
+  position: relative;
+  overflow: visible;
+}
+.e-bar-fill {
+  height: 100%;
+  border-radius: 999rpx;
+  position: relative;
+  box-shadow: inset 0 2rpx 0 rgba(255, 255, 255, 0.4);
+  transition: width 0.5s ease;
+}
+.e-bar-fill::after {
+  content: '';
+  position: absolute;
+  right: -2rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28rpx;
+  height: 28rpx;
+  border-radius: 50%;
+  background: var(--e3-cream-hi);
+  border: 4rpx solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2rpx 8rpx rgba(61, 58, 54, 0.28);
+}
+.e-note {
+  display: block;
+  font-family: var(--e3-sans);
+  font-size: 20rpx;
+  color: var(--e3-ink-faint);
+  letter-spacing: 3rpx;
+  margin-top: 20rpx;
+}
+
+/* ── 走心解读（主角文案） ── */
+.sec-label {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  font-family: var(--e3-sans);
+  font-size: 22rpx;
+  letter-spacing: 5rpx;
+  color: var(--e3-gold-deep);
+  margin: 32rpx 0 16rpx;
+}
+.sec-line {
+  width: 28rpx;
+  height: 2rpx;
+  background: rgba(201, 169, 124, 0.5);
+}
+.card-soft {
+  position: relative;
+  z-index: 2;
+  background: var(--e3-cream-hi);
+  border: 1rpx solid rgba(201, 169, 124, 0.38);
+  border-radius: 32rpx;
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+  padding: 26rpx 28rpx;
+  margin-bottom: 18rpx;
+}
+.e-read-para {
+  display: block;
+  font-family: var(--e3-sans);
+  font-size: 24rpx;
+  line-height: 1.95;
+  letter-spacing: 1rpx;
+  color: var(--e3-ink-soft);
+  margin-bottom: 20rpx;
+}
+.e-read-p1 {
+  color: var(--e3-ink);
+  font-family: var(--e3-serif);
+  font-size: 25rpx;
+  letter-spacing: 1rpx;
+}
+.e-read-line {
+  font-family: var(--e3-serif);
+  font-size: 26rpx;
+  letter-spacing: 2rpx;
+  line-height: 1.8;
+  color: var(--e3-gold-deep);
+  padding: 22rpx 28rpx;
+  border-radius: 28rpx;
+  background: rgba(201, 169, 124, 0.08);
+  border: 1rpx solid rgba(201, 169, 124, 0.25);
+  text-align: center;
+}
+
+/* ── 为什么今天这样（真实 factors 解释链） ── */
+.e-why {
+  position: relative;
+  background: rgba(232, 196, 190, 0.14);
+  border: 1rpx solid rgba(176, 138, 130, 0.28);
+  border-radius: 26rpx;
+  padding: 20rpx 24rpx;
+  margin-bottom: 20rpx;
+}
+.e-why-label {
+  display: block;
+  font-family: var(--e3-sans);
+  font-size: 19rpx;
+  letter-spacing: 5rpx;
+  color: var(--e3-pink-ink);
+}
+.e-why-line {
+  display: block;
+  font-family: var(--e3-serif);
+  font-size: 27rpx;
+  letter-spacing: 1rpx;
+  color: var(--e3-ink);
+  margin-top: 10rpx;
+  line-height: 1.7;
+}
+.e-why-note {
+  display: block;
+  font-family: var(--e3-sans);
+  font-size: 21rpx;
+  color: var(--e3-ink-soft);
+  margin-top: 8rpx;
+  letter-spacing: 1rpx;
+  line-height: 1.7;
+}
+.e-why-empty .e-why-note {
+  margin-top: 10rpx;
+}
+
+/* ── 降级提示（mock / 离线缓存） ── */
+.e-source {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  margin-top: 20rpx;
+}
+.e-source text {
+  font-family: var(--e3-sans);
+  font-size: 19rpx;
+  color: var(--e3-ink-faint);
+  letter-spacing: 2rpx;
+}
+.e-source-pressed {
+  opacity: 0.6;
+}
+
+/* ── 30 秒小事（细金卡） ── */
+.do-card {
+  position: relative;
+  z-index: 2;
+  border: 2rpx dashed rgba(176, 143, 82, 0.55);
+  border-radius: 32rpx;
+  padding: 26rpx 28rpx;
+  margin-top: 20rpx;
+  background: rgba(201, 169, 124, 0.07);
+}
+.dq-label {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  font-family: var(--e3-sans);
+  font-size: 21rpx;
+  letter-spacing: 6rpx;
+  color: var(--e3-gold-deep);
+  margin-bottom: 10rpx;
+}
+.dq-text {
+  display: block;
+  font-size: 25rpx;
+  letter-spacing: 1rpx;
+  line-height: 1.8;
+  color: var(--e3-ink-soft);
+}
+
+/* ── 与今日牌的关联：一行小字 ── */
+.e-card-link {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  font-family: var(--e3-sans);
+  font-size: 21rpx;
+  color: var(--e3-gold-deep);
+  letter-spacing: 3rpx;
+  margin-top: 24rpx;
+  line-height: 1.9;
+  display: flex;
+  flex-direction: column;
+}
+.e-card-name {
+  font-weight: 500;
+  color: var(--e3-ink-soft);
+  letter-spacing: 2rpx;
+}
+.e-card-line {
+  color: var(--e3-ink-faint);
+  letter-spacing: 1rpx;
+}
+
+/* ── CTA / 空态 ── */
+.cta {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 88rpx;
+  border-radius: 999rpx;
+  margin-top: 28rpx;
+  font-size: 25rpx;
+  letter-spacing: 6rpx;
+  transition: transform 0.15s ease;
+}
+.cta-pressed {
+  transform: scale(0.975);
+}
+.cta-ghost {
+  background: transparent;
+  border: 1rpx solid rgba(201, 169, 124, 0.38);
+  color: var(--e3-gold-deep);
+  box-shadow: var(--e3-hi);
+}
+.empty-state {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+  margin-top: 120rpx;
+}
+.empty-text {
+  font-size: 30rpx;
+  letter-spacing: 4rpx;
+  color: var(--e3-ink);
+}
+.empty-hint {
+  font-family: var(--e3-sans);
+  font-size: 22rpx;
+  color: var(--e3-ink-faint);
+  letter-spacing: 2rpx;
+}

@@ -4,12 +4,18 @@ const { checkLogin } = require('../../utils/auth');
 const { request, BASE_URL } = require('../../utils/api');
 
 const PAGES = [
-  { name: '首页', path: '/pages/index/index', isTab: true,
-    checks: ['image','text','greeting','dailyCard','spreads','explainer'] },
-  { name: '百科', path: '/pages/encyclopedia/encyclopedia', isTab: true,
-    checks: ['image','list','search','filter'] },
+  { name: '今日', path: '/pages/index/index', isTab: true,
+    checks: ['image','text','greeting','dailyCard','energy','zodiac'] },
+  { name: '神谕', path: '/pages/oracle/oracle', isTab: true,
+    checks: ['image','text','element','spreads'] },
   { name: '我的', path: '/pages/profile/profile', isTab: true,
     checks: ['avatar','stat','menu','login'] },
+  { name: '百科', path: '/pages/encyclopedia/encyclopedia', isTab: false,
+    checks: ['image','list','search','filter'] },
+  { name: '星座引导', path: '/pages/zodiac-welcome/zodiac-welcome', isTab: false,
+    checks: ['image','text'] },
+  { name: '能量详情', path: '/pages/energy-detail/energy-detail', isTab: false,
+    checks: ['image','text'] },
   { name: '签到', path: '/pages/checkin/checkin', checks: ['image','btn','level'] },
   { name: '会员', path: '/pages/membership/membership', checks: ['image','price','cmp','plan'] },
   { name: '占卜', path: '/pages/reading/reading', checks: ['spread','mode','persona','image'] },

@@ -1,0 +1,68 @@
+<!-- pages/element-detail/element-detail.wxml -->
+<!-- 三要素详情（主角=该要素）：天赋 / 阴影 / 今年主题 + 深度报告三档占位 -->
+
+<view class="page" wx:if="{{loaded && el}}">
+  <view class="wash wash-pink"></view>
+  <view class="wash wash-gold"></view>
+
+  <!-- 主角：该要素 -->
+  <view class="el-hero">
+    <view class="el-big"><text>{{el.sign}}</text></view>
+    <text class="el-h3">{{el.name}}</text>
+    <text class="el-line">{{el.line}}</text>
+  </view>
+
+  <!-- 三段：天赋 / 阴影 / 今年主题 -->
+  <view class="sec-label">
+    <view class="sec-line"></view>
+    <text class="sec-text">你的天赋</text>
+  </view>
+  <view class="card-soft">
+    <text class="el-para">{{el.talent}}</text>
+  </view>
+
+  <view class="sec-label">
+    <view class="sec-line"></view>
+    <text class="sec-text">你的阴影</text>
+  </view>
+  <view class="card-soft">
+    <text class="el-para">{{el.shadow}}</text>
+  </view>
+
+  <view class="sec-label">
+    <view class="sec-line"></view>
+    <text class="sec-text">今年主题</text>
+  </view>
+  <view class="card-soft">
+    <text class="el-para el-para-theme">{{el.theme}}</text>
+  </view>
+
+  <!-- 深度报告付费占位（注脚层 · 19.9 / 29.9 / 39.9 三档） -->
+  <view class="price-card">
+    <text class="pc-t">深度星图报告</text>
+    <text class="pc-s">AI 结合你的出生时刻 · 更深的你</text>
+    <view
+      class="tier-row" wx:for="{{tiers}}" wx:key="name"
+      bindtap="onTierTap" data-idx="{{index}}"
+      role="button" aria-label="解锁{{item.name}}，{{item.price}}元（二期上线）"
+      hover-class="tier-row-pressed"
+    >
+      <view class="tier-n">
+        <text class="tier-name">{{item.name}}</text>
+        <text class="tier-desc">{{item.desc}}</text>
+      </view>
+      <text class="tier-price">{{item.price}}<text class="tier-yuan"> 元</text></text>
+      <view class="tier-btn"><text>解锁</text></view>
+    </view>
+  </view>
+
+  <view class="cta cta-ghost" bindtap="onBack" role="button" aria-label="回到神谕" hover-class="cta-pressed">
+    <text>回到神谕</text>
+  </view>
+</view>
+
+<!-- 空态兜底 -->
+<view wx:else class="empty-state">
+  <text class="empty-text">星图尚未点亮</text>
+  <text class="empty-hint">回到神谕页重新进入</text>
+</view>

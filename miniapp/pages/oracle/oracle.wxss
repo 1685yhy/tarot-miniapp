@@ -1,0 +1,411 @@
+/* pages/oracle/oracle.wxss — E3 神谕主屏（与原型页 05 一致 · 简版） */
+page {
+  --e3-cream: #FAF6EF;
+  --e3-cream-hi: #FFFDF8;
+  --e3-paper: #F2ECDF;
+  --e3-pink: #E8C4BE;
+  --e3-pink-ink: #B08A82;
+  --e3-gold: #C9A97C;
+  --e3-gold-deep: #B08F52;
+  --e3-line-soft: rgba(201, 169, 124, 0.38);
+  --e3-ink: #3D3A36;
+  --e3-ink-soft: #8A8478;
+  --e3-ink-faint: #B0AA9C;
+  --e3-shadow: 0 4rpx 20rpx rgba(61, 58, 54, 0.06);
+  --e3-hi: inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
+  --e3-serif: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif CJK SC', 'Noto Serif SC', serif;
+  --e3-sans: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+  background: #FAF6EF;
+  color: #3D3A36;
+  font-family: var(--e3-serif);
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.page {
+  min-height: 100vh;
+  padding: 0 36rpx calc(40rpx + env(safe-area-inset-bottom));
+  position: relative;
+  box-sizing: border-box;
+  background: #FAF6EF;
+  overflow: hidden;
+}
+
+.wash {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+.wash-pink {
+  top: -170rpx;
+  right: -190rpx;
+  width: 600rpx;
+  height: 600rpx;
+  background: radial-gradient(circle, rgba(232, 196, 190, 0.5) 0%, rgba(232, 196, 190, 0) 66%);
+}
+.wash-gold {
+  left: -200rpx;
+  top: 760rpx;
+  width: 520rpx;
+  height: 520rpx;
+  background: radial-gradient(circle, rgba(201, 169, 124, 0.26) 0%, rgba(201, 169, 124, 0) 66%);
+}
+
+/* ── 顶部 ── */
+.topbar {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-top: 36rpx;
+}
+.tb-left {
+  display: flex;
+  flex-direction: column;
+}
+.brand {
+  font-family: var(--e3-serif);
+  font-weight: 500;
+  font-size: 30rpx;
+  color: var(--e3-ink);
+  letter-spacing: 8rpx;
+}
+.date-row {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-top: 8rpx;
+}
+.gold-dot {
+  width: 6rpx;
+  height: 6rpx;
+  border-radius: 50%;
+  background: var(--e3-gold);
+  flex-shrink: 0;
+}
+.date-text {
+  font-family: var(--e3-serif);
+  font-size: 20rpx;
+  color: var(--e3-ink-faint);
+  letter-spacing: 2rpx;
+}
+.zodiac-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 44rpx;
+  padding: 12rpx 22rpx;
+  margin: -8rpx -14rpx 0 0;
+  border-radius: 999rpx;
+  background: var(--e3-cream-hi);
+  border: 1rpx solid rgba(201, 169, 124, 0.38);
+  box-shadow: var(--e3-hi);
+  flex-shrink: 0;
+}
+.zodiac-badge--empty {
+  border: 1rpx dashed rgba(201, 169, 124, 0.5);
+}
+.zodiac-badge:active {
+  opacity: 0.65;
+}
+.zodiac-badge-text {
+  font-family: var(--e3-sans);
+  font-size: 20rpx;
+  color: var(--e3-gold-deep);
+  letter-spacing: 2rpx;
+  white-space: nowrap;
+}
+
+/* ── 标题：注脚，不抢戏 ── */
+.oracle-head {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  margin-top: 48rpx;
+}
+.oh-en {
+  font-family: var(--e3-serif);
+  font-size: 19rpx;
+  letter-spacing: 12rpx;
+  color: var(--e3-gold-deep);
+}
+.oh-h2 {
+  display: block;
+  font-size: 40rpx;
+  letter-spacing: 10rpx;
+  font-weight: 500;
+  margin-top: 12rpx;
+}
+.oh-p {
+  display: block;
+  margin-top: 14rpx;
+  font-family: var(--e3-sans);
+  font-size: 23rpx;
+  color: var(--e3-ink-faint);
+  letter-spacing: 4rpx;
+}
+
+/* ── 主角：三要素卡（点击 → 详情页） ── */
+.ele-card {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  margin: 20rpx 0 0;
+  background: var(--e3-cream-hi);
+  border: 1rpx solid rgba(201, 169, 124, 0.3);
+  border-radius: 36rpx;
+  padding: 22rpx 26rpx;
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+  transition: transform 0.14s ease;
+}
+.ele-card-pressed {
+  transform: scale(0.98);
+}
+.ele-ic {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: linear-gradient(145deg, rgba(232, 196, 190, 0.5), rgba(201, 169, 124, 0.3));
+  border: 1rpx solid rgba(201, 169, 124, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  color: var(--e3-pink-ink);
+}
+.ele-tx {
+  flex: 1;
+  min-width: 0;
+}
+.ele-n {
+  display: block;
+  font-size: 28rpx;
+  letter-spacing: 4rpx;
+  color: var(--e3-ink);
+}
+.ele-l {
+  display: block;
+  font-family: var(--e3-sans);
+  font-size: 22rpx;
+  color: var(--e3-ink-soft);
+  line-height: 1.55;
+  margin-top: 6rpx;
+  letter-spacing: 1rpx;
+}
+.ele-go {
+  color: var(--e3-ink-faint);
+  font-size: 30rpx;
+  font-family: var(--e3-sans);
+  flex-shrink: 0;
+}
+
+/* ── 深度报告占位 ── */
+.deep-pill {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  margin-top: 24rpx;
+  padding: 24rpx 26rpx;
+  border-radius: 32rpx;
+  background: rgba(201, 169, 124, 0.07);
+  border: 1rpx dashed rgba(176, 143, 82, 0.5);
+}
+.deep-pill-pressed {
+  opacity: 0.7;
+}
+.deep-pill-ic {
+  font-size: 26rpx;
+  color: var(--e3-gold-deep);
+  flex-shrink: 0;
+}
+.deep-pill-tx {
+  flex: 1;
+  font-family: var(--e3-sans);
+  font-size: 22rpx;
+  color: var(--e3-ink-soft);
+  letter-spacing: 1rpx;
+}
+.deep-pill-go {
+  font-family: var(--e3-sans);
+  font-size: 19rpx;
+  color: var(--e3-ink-faint);
+  letter-spacing: 2rpx;
+  flex-shrink: 0;
+}
+
+/* ── 牌阵馆 ── */
+.section-label {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20rpx;
+  margin-top: 44rpx;
+}
+.sec-line {
+  width: 64rpx;
+  height: 2rpx;
+  background: rgba(201, 169, 124, 0.5);
+}
+.sec-text {
+  font-family: var(--e3-sans);
+  font-size: 22rpx;
+  letter-spacing: 6rpx;
+  color: var(--e3-gold-deep);
+}
+.spread-grid {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18rpx;
+  margin-top: 20rpx;
+}
+.spread-card {
+  position: relative;
+  background: var(--e3-cream-hi);
+  border: 1rpx solid rgba(201, 169, 124, 0.3);
+  border-radius: 34rpx;
+  padding: 26rpx 24rpx;
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+  transition: transform 0.14s ease;
+}
+.spread-card-pressed {
+  transform: scale(0.97);
+}
+.spread-tag {
+  position: absolute;
+  top: 18rpx;
+  right: 18rpx;
+  font-family: var(--e3-sans);
+  font-size: 18rpx;
+  letter-spacing: 2rpx;
+  color: var(--e3-gold-deep);
+  background: rgba(201, 169, 124, 0.12);
+  border: 1rpx solid rgba(201, 169, 124, 0.3);
+  padding: 2rpx 12rpx;
+  border-radius: 999rpx;
+}
+.spread-tag-free {
+  color: var(--e3-pink-ink);
+  background: rgba(232, 196, 190, 0.2);
+  border-color: rgba(176, 138, 130, 0.35);
+}
+.spread-ic {
+  display: block;
+  font-size: 38rpx;
+  margin-top: 6rpx;
+}
+.spread-n {
+  display: block;
+  font-size: 27rpx;
+  letter-spacing: 3rpx;
+  color: var(--e3-ink);
+  margin-top: 12rpx;
+}
+.spread-d {
+  display: block;
+  font-family: var(--e3-sans);
+  font-size: 21rpx;
+  color: var(--e3-ink-soft);
+  margin-top: 6rpx;
+  letter-spacing: 1rpx;
+  line-height: 1.5;
+}
+
+/* ── 牌阵馆 · 行宽卡（二择一 / 凯尔特十字） ── */
+.spread-wide-list {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+  margin-top: 18rpx;
+}
+.spread-wide {
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+  background: var(--e3-cream-hi);
+  border: 1rpx solid rgba(201, 169, 124, 0.3);
+  border-radius: 34rpx;
+  padding: 22rpx 26rpx;
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+  transition: transform 0.14s ease;
+  min-height: 116rpx;
+  box-sizing: border-box;
+}
+.spread-wide-t {
+  flex: 1;
+  min-width: 0;
+}
+.spread-wide .spread-n {
+  margin-top: 0;
+  display: inline;
+}
+.spread-tag-inline {
+  display: inline-block;
+  margin-left: 12rpx;
+  vertical-align: 2rpx;
+  font-family: var(--e3-sans);
+  font-size: 17rpx;
+  letter-spacing: 2rpx;
+  color: var(--e3-gold-deep);
+  background: rgba(201, 169, 124, 0.12);
+  border: 1rpx solid rgba(201, 169, 124, 0.3);
+  padding: 2rpx 12rpx;
+  border-radius: 999rpx;
+}
+.spread-wide .spread-d {
+  margin-top: 8rpx;
+}
+.spread-wide-go {
+  color: var(--e3-ink-faint);
+  font-size: 30rpx;
+  font-family: var(--e3-sans);
+  flex-shrink: 0;
+}
+
+/* ── 注脚入口 ── */
+.entry-row {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  gap: 18rpx;
+  margin-top: 28rpx;
+}
+.entry-pill {
+  flex: 1;
+  height: 88rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  background: var(--e3-cream-hi);
+  border: 1rpx solid rgba(201, 169, 124, 0.3);
+  font-family: var(--e3-sans);
+  font-size: 23rpx;
+  letter-spacing: 3rpx;
+  color: var(--e3-gold-deep);
+  box-shadow: var(--e3-hi);
+}
+.entry-pill-pressed {
+  transform: scale(0.97);
+}
+.entry-pill-ghost {
+  background: transparent;
+  border: 1rpx dashed rgba(201, 169, 124, 0.45);
+}
+.entry-arrow {
+  color: var(--e3-ink-soft);
+  font-size: 22rpx;
+}

@@ -1,8 +1,13 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/encyclopedia/encyclopedia",
+    "pages/oracle/oracle",
     "pages/profile/profile",
+    "pages/zodiac-welcome/zodiac-welcome",
+    "pages/birth-info/birth-info",
+    "pages/element-detail/element-detail",
+    "pages/energy-detail/energy-detail",
+    "pages/encyclopedia/encyclopedia",
     "pages/about/about",
     "pages/legal/legal"
   ],
@@ -75,15 +80,15 @@
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "映照",
-        "iconPath": "/images/tabbar/home.png",
-        "selectedIconPath": "/images/tabbar/home-active.png"
+        "text": "今日",
+        "iconPath": "/images/tabbar/today.png",
+        "selectedIconPath": "/images/tabbar/today-active.png"
       },
       {
-        "pagePath": "pages/encyclopedia/encyclopedia",
-        "text": "百科",
-        "iconPath": "/images/tabbar/encyclopedia.png",
-        "selectedIconPath": "/images/tabbar/encyclopedia-active.png"
+        "pagePath": "pages/oracle/oracle",
+        "text": "神谕",
+        "iconPath": "/images/tabbar/oracle.png",
+        "selectedIconPath": "/images/tabbar/oracle-active.png"
       },
       {
         "pagePath": "pages/profile/profile",
@@ -97,6 +102,10 @@
     "pages/index/index": {
       "network": "all",
       "packages": ["pages/daily-card/", "pages/reading/", "pages/reading-result/", "pages/checkin/"]
+    },
+    "pages/oracle/oracle": {
+      "network": "all",
+      "packages": ["pages/reading/"]
     },
     "pages/encyclopedia/encyclopedia": {
       "network": "all",

@@ -1,5 +1,5 @@
 <!-- pages/index/index.wxml -->
-<!-- 星光映照 · E3 奶油疗愈版（真实水彩插画） -->
+<!-- 星光映照 · 今日屏（牌为主角）· E3 奶油疗愈版（真实水彩插画） -->
 
 <!-- 日期格式化（装饰性日期行 · 与原型 date-row 对应） -->
 <wxs module="d">
@@ -17,16 +17,8 @@ module.exports = { fmtDate: fmtDate };
   <view class="skeleton skeleton--circle" style="margin:120rpx auto 40rpx"></view>
   <view class="skeleton skeleton--text" style="width:60%;margin:0 auto"></view>
   <view class="skeleton skeleton--text-sm" style="width:40%;margin:12rpx auto 60rpx"></view>
-  <view class="skeleton skeleton--block" style="width:480rpx;height:680rpx;margin:0 auto 40rpx;border-radius:32rpx;"></view>
+  <view class="skeleton skeleton--block" style="width:460rpx;height:660rpx;margin:0 auto 40rpx;border-radius:32rpx;"></view>
   <view class="skeleton skeleton--text" style="width:30%;margin-bottom:20rpx"></view>
-  <view class="skeleton-grid-3">
-    <view class="skeleton skeleton--card-sm"></view>
-    <view class="skeleton skeleton--card-sm"></view>
-    <view class="skeleton skeleton--card-sm"></view>
-    <view class="skeleton skeleton--card-sm"></view>
-    <view class="skeleton skeleton--card-sm"></view>
-    <view class="skeleton skeleton--card-sm"></view>
-  </view>
 </view>
 
 <!-- ===== 错误状态 ===== -->
@@ -44,280 +36,154 @@ module.exports = { fmtDate: fmtDate };
   <view class="wash wash-pink"></view>
   <view class="wash wash-gold"></view>
 
-  <!-- ===== Zone 1: 首屏 ===== -->
-  <view class="hero-zone">
-    <!-- 右下角淡粉水彩小花点缀（真实资产 · 50% 透明 · 从CTA后探出） -->
-    <view class="hint-flower">
-      <image class="hint-flower-img" src="/assets/web/hint-flower.jpg" mode="aspectFill" aria-label="淡粉水彩小花" />
-    </view>
+  <!-- 右下角淡粉水彩小花点缀（真实资产 · 从底部探出） -->
+  <view class="hint-flower">
+    <image class="hint-flower-img" src="/assets/web/hint-flower.jpg" mode="aspectFill" aria-label="淡粉水彩小花" />
+  </view>
 
-    <!-- E3 顶部 — 微字 / 品牌 / 日期 / 问候语 / 每日状态徽章 -->
-    <view class="e3-head anim-fade-in-up-1">
-      <text class="microlabel">STARLIT · 每日一牌</text>
+  <!-- ===== 顶部：品牌 · 日期（左）｜星座徽章（右，极小不抢戏 · 点击可改星座） ===== -->
+  <view class="topbar anim-fade-in-up-1">
+    <view class="tb-left">
       <text class="brand">星光映照</text>
       <view class="date-row">
         <view class="gold-dot"></view>
         <text class="date-text">{{d.fmtDate()}}</text>
       </view>
-
-      <!-- v2.1: Time-of-day greeting（保留现有逻辑 · 视觉降级为一行小字） -->
-      <text wx:if="{{greetingText}}" class="greeting-text anim-greeting-fade" key="{{greetingAnimKey}}">{{greetingText}}</text>
-
-      <!-- Daily reminder badge（保留现有逻辑 · 提醒徽章改静态，不脉冲） -->
-      <view wx:if="{{hasDrawnToday}}" class="daily-updated-badge anim-slide-up">✓ 今日运势已更新</view>
-      <view wx:elif="{{showReminder && !dailyCard}}" class="daily-reminder-badge">今日运势待开启</view>
     </view>
-
-    <!-- 中央大牌面 — 真实月亮水彩牌（2:3 竖卡 cover 裁切） -->
-    <view class="daily-card-area anim-fade-in-up-2">
-
-      <!-- BEFORE DRAW — 月亮牌静候轻触 -->
-      <view class="daily-card-wrap paint-wrap {{!hasDrawnToday && !dailyCard ? 'card-ready' : ''}}" wx:if="{{!dailyCard && !dailyCardRestoring}}" bindtap="drawDailyCard" animation="{{cardAnimData}}" role="button" aria-label="翻开今日之牌">
-        <view class="painting art card-featured">
-          <!-- Ripple effect container（保留 rippleActive 逻辑） -->
-          <view class="ripple-box">
-            <view class="ripple-circle {{rippleActive?'ripple-run':''}}"></view>
-          </view>
-          <!-- 真实月亮水彩大牌面（600×600 原图 cover 裁 2:3） -->
-          <image class="paint-img" src="/assets/web/moon-card.jpg" mode="aspectFill" aria-label="月亮与安睡兔子的水彩插画" />
-          <!-- 金色微光点缀 -->
-          <text class="paint-spark">✦</text>
-          <!-- 轻触提示（shaking 逻辑保留 · 卡面即唯一 CTA） -->
-          <view class="card-body {{shaking?'card-shake':''}}">
-            <text class="card-hint-big">轻触翻开今日牌面</text>
-            <text class="card-hint-sm">开启今日指引</text>
-          </view>
-        </view>
-      </view>
-
-      <!-- RESTORING — 重新拉取今日牌面时的骨架 -->
-      <view class="daily-card-wrap paint-wrap" wx:elif="{{dailyCardRestoring}}">
-        <view class="painting art daily-card-panel">
-          <view class="skeleton skeleton--block" style="width:440rpx;height:660rpx;margin:0 auto 24rpx;border-radius:32rpx;"></view>
-          <view class="skeleton skeleton--title" style="width:40%;margin:0 auto 12rpx;"></view>
-          <view class="skeleton skeleton--text-sm" style="width:55%;margin:0 auto;"></view>
-        </view>
-      </view>
-
-      <!-- AFTER DRAW — 已抽牌面：真实牌面 + 牌名 + CTA -->
-      <view class="daily-card-wrap paint-wrap {{dailyCardFlipped ? 'daily-card--flipped' : ''}}" wx:else bindtap="onDailyCardTap" data-today-flipped="{{dailyCardFlipped}}" role="button" aria-label="查看今日卡牌详解">
-        <view class="painting art daily-card-panel">
-          <!-- Sparkle particles（仅未学习时） -->
-          <view wx:if="{{!dailyCardFlipped}}" class="sparkle-field">
-            <view class="sparkle s1"></view>
-            <view class="sparkle s2"></view>
-            <view class="sparkle s3"></view>
-          </view>
-
-          <!-- 牌面缩略（cover 裁 2:3） -->
-          <view class="daily-card-thumb-wrap {{dailyCardImgError ? 'daily-card-thumb-error' : ''}}">
-            <image wx:if="{{dailyCard.imagePath && !dailyCardImgError}}" class="daily-card-thumb" src="{{dailyCard.imagePath}}" mode="aspectFill" binderror="onDailyCardImgError" aria-label="今日塔罗 — {{dailyCard.name_cn || dailyCard.name_zh || '每日一牌'}}" />
-            <view wx:elif="{{dailyCardImgError}}" class="daily-card-thumb-fallback">
-              <text class="thumb-fallback-name">{{dailyCard.name_zh}}</text>
-            </view>
-            <view wx:else class="daily-card-thumb-fallback">
-              <!-- no image path yet -->
-            </view>
-          </view>
-
-          <!-- Flipped badge -->
-          <view wx:if="{{dailyCardFlipped}}" class="daily-card-badge">已学习 ✓</view>
-        </view>
-
-        <!-- 牌名（衬线） -->
-        <text class="title-4 daily-card-name">{{dailyCard.name_zh}}</text>
-
-        <!-- CTA text -->
-        <!-- UX 修复: 痛点#1 — 抽牌文案更明确地指向详解 -->
-        <text wx:if="{{!dailyCardFlipped}}" class="body-sm daily-card-cta">查看今日详解 ✦</text>
-        <text wx:else class="body-xs daily-card-revisit">点击回顾今日学习</text>
-
-        <!-- UX 修复: 痛点#1 — 今日牌语小知识卡（抽牌后牌面下方直接可见 1-2 句解读） -->
-        <view wx:if="{{dailyCardSnippet}}" class="daily-snippet-card">
-          <text class="daily-snippet-label">今日牌语 ✦</text>
-          <text class="daily-snippet-text">{{dailyCardSnippet}}</text>
-        </view>
-      </view>
-
-      <!-- 每日一牌打卡 — 保存今日卡牌（保留现有逻辑） -->
-      <view wx:if="{{dailyCard && dailyCardFlipped}}" class="daily-share-link" bindtap="onShareDailyCard" role="button" aria-label="保存今日卡牌">
-        <text>保存今日卡牌 ✦</text>
-      </view>
-
-      <!-- 明日之牌预告 — 回流钩子（抽牌后显示 · 不展示具体牌面，制造期待） -->
-      <view wx:if="{{dailyCard}}" class="tomorrow-hint" bindtap="onTomorrowHintTap" role="button" aria-label="明日之牌预告">
-        <text class="tomorrow-hint-text">明日之牌 · 待明日揭晓</text>
-      </view>
-
+    <view class="zodiac-badge" wx:if="{{zodiacBadge}}" bindtap="onGoZodiac" role="button" aria-label="点击修改星座 {{zodiacBadge}}">
+      <text class="zodiac-badge-text">{{zodiacBadge}}</text>
     </view>
-
-    <!-- 牌下衬线牌语 -->
-    <view class="phrase anim-fade-in-up-2" wx:if="{{!dailyCard && !dailyCardRestoring}}">
-      <text class="phrase-text">月亮牌 · 今晚允许自己慢下来</text>
-    </view>
-
-  </view>
-
-  <!-- ===== Zone 2: 滚动区 ===== -->
-
-  <!-- 牌阵（唯一主 CTA 之后 · 首屏可见 · 标题行右侧带免费次数小字） -->
-  <view class="section anim-fade-in-up-3">
-    <view class="spread-head-row">
-      <view class="section-head">
-        <view class="sec-line"></view>
-        <view class="sec-dot"></view>
-        <text class="section-title">选择牌阵</text>
-        <view class="sec-dot"></view>
-        <view class="sec-line"></view>
-      </view>
-      <!-- 免费次数小字（并入标题行右侧 · 保留原数据绑定） -->
-      <view wx:if="{{!isMember}}" class="spread-quota">
-        <text wx:if="{{freeReadingsUsed < freeReadingsTotal}}" class="quota-text">今日免费 {{freeReadingsUsed}}/{{freeReadingsTotal}}</text>
-        <text wx:elif="{{freeReadingsUsed >= freeReadingsTotal}}" class="quota-text quota-text--exhausted">今日次数已用完</text>
-      </view>
-    </view>
-    <view class="spread-grid-2">
-      <view class="card-interactive spread-card" bindtap="navigateToReading" data-type="three_card" animation="{{spreadAnimData[0]}}" role="button" aria-label="选择三牌占卜牌阵" hover-class="card-pressed" hover-stay-time="60">
-        <view class="spread-tag spread-tag-free">免费</view>
-        <image class="spread-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" lazy-load aria-label="三牌占卜" />
-        <text class="body-sm">三牌占卜</text>
-        <text class="body-xs">过去·现在·未来</text>
-      </view>
-      <view class="card-interactive spread-card" bindtap="navigateToReading" data-type="triangle" animation="{{spreadAnimData[1]}}" role="button" aria-label="选择恋人三角牌阵" hover-class="card-pressed" hover-stay-time="60">
-        <view class="spread-tag spread-tag-premium">会员</view>
-        <image class="spread-icon" src="/images/icons/theme_love_64.png" mode="aspectFit" lazy-load aria-label="恋人三角" />
-        <text class="body-sm">恋人三角</text>
-        <text class="body-xs">感情关系深度解读</text>
-        <view class="spread-theme-chip spread-theme-chip--love">爱情</view>
-      </view>
-      <view class="card-interactive spread-card" bindtap="navigateToReading" data-type="celtic_cross" animation="{{spreadAnimData[2]}}" role="button" aria-label="选择凯尔特十字牌阵" hover-class="card-pressed" hover-stay-time="60">
-        <view class="spread-tag spread-tag-premium">会员</view>
-        <image class="spread-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" lazy-load aria-label="凯尔特十字" />
-        <text class="body-sm">凯尔特十字</text>
-        <text class="body-xs">全方位综合解牌</text>
-      </view>
-      <view class="card-interactive spread-card" bindtap="navigateToReading" data-type="career" animation="{{spreadAnimData[3]}}" role="button" aria-label="选择事业牌阵" hover-class="card-pressed" hover-stay-time="60">
-        <view class="spread-tag spread-tag-premium">会员</view>
-        <image class="spread-icon" src="/images/icons/theme_career_64.png" mode="aspectFit" lazy-load aria-label="事业牌阵" />
-        <text class="body-sm">事业牌阵</text>
-        <text class="body-xs">职场方向与机遇</text>
-        <view class="spread-theme-chip spread-theme-chip--career">事业</view>
-      </view>
-    </view>
-    <view class="card-interactive more-spreads" bindtap="goToAllSpreads" animation="{{spreadAnimData[4]}}" role="button" aria-label="查看更多牌阵" hover-class="card-pressed" hover-stay-time="60">
-      <text class="more-text anim-gentle-pulse">查看更多 · 共10种牌阵</text>
-      <text class="more-arrow">→</text>
-    </view>
-
-    <!-- 耗尽态：补充解读次数（单入口 · 绑定会员页） -->
-    <view wx:if="{{!isMember && freeReadingsUsed >= freeReadingsTotal}}" class="refill-quota-btn" bindtap="onGoMembership" role="button" aria-label="补充解读次数" hover-class="refill-quota-btn--pressed" hover-stay-time="80">
-      <text class="refill-quota-text">补充解读次数 ✦</text>
+    <view class="zodiac-badge zodiac-badge--empty" wx:else bindtap="onGoZodiac" role="button" aria-label="选择你的星座">
+      <text class="zodiac-badge-text">选择星座 ✦</text>
     </view>
   </view>
 
-  <!-- 今日快捷 — 树洞 / 记录今天 / 继续解读（三合一紧凑横排） -->
-  <view class="quick-entry-row anim-fade-in-up-3">
-    <view class="quick-entry-card" bindtap="onGoCommunity" role="button" aria-label="进入星光树洞" hover-class="card-pressed" hover-stay-time="60">
-      <view class="quick-entry-icon">
-        <text class="quick-entry-emoji">🕊️</text>
-      </view>
-      <text class="quick-entry-label">星光树洞</text>
-    </view>
-    <view class="quick-entry-card" bindtap="onGoDiary" role="button" aria-label="记录今天" hover-class="card-pressed" hover-stay-time="60">
-      <view class="quick-entry-icon">
-        <image class="quick-entry-img" src="/images/icons/diary_64.png" mode="aspectFit" lazy-load aria-label="记录今天" />
-      </view>
-      <text class="quick-entry-label">记录今天</text>
-    </view>
-    <view wx:if="{{pendingReading}}" class="quick-entry-card" bindtap="onContinueReading" role="button" aria-label="继续上次未完成的解读" hover-class="card-pressed" hover-stay-time="60">
-      <view class="quick-entry-icon">
-        <image class="quick-entry-img" src="/images/icons/star_64.png" mode="aspectFit" lazy-load aria-label="继续解读" />
-      </view>
-      <text class="quick-entry-label">继续解读</text>
-    </view>
+  <!-- 天象小字：一行 · 注脚 -->
+  <view class="sky-note">
+    <text class="sky-moon">☾</text>
+    <text class="sky-note-text">{{skyNote}}</text>
   </view>
 
-  <!-- ===== 3-Step Onboarding Overlay (v2.1) — 保留全部逻辑与类名 ===== -->
-  <view class="onboarding-overlay {{showOnboarding ? 'onboarding-overlay--visible' : ''}}">
-    <view class="onboarding-card">
+  <!-- ===== 中央绝对主角：大牌面 ===== -->
+  <view class="card-zone anim-fade-in-up-2">
 
-      <!-- All 3 info steps shown together -->
-      <view class="onboarding-all-steps">
-        <view class="onboarding-step-mini">
-          <view class="onboarding-emoji-wrap"><text class="onboarding-emoji">✨</text></view>
-          <view class="onboarding-step-mini-text">
-            <text class="onboarding-step-mini-title">每日一牌</text>
-            <text class="onboarding-step-mini-desc">轻触卡片，获得今日专属指引</text>
-          </view>
+    <!-- BEFORE DRAW — 月亮牌静候轻触（唯一 CTA） -->
+    <view class="mat-wrap {{!hasDrawnToday && !dailyCard ? 'card-ready' : ''}}" wx:if="{{!dailyCard && !dailyCardRestoring}}" bindtap="drawDailyCard" animation="{{cardAnimData}}" role="button" aria-label="翻开今日之牌">
+      <view class="mat art-main">
+        <view class="ripple-box">
+          <view class="ripple-circle {{rippleActive?'ripple-run':''}}"></view>
         </view>
-        <view class="onboarding-step-mini">
-          <view class="onboarding-emoji-wrap"><text class="onboarding-emoji">🔮</text></view>
-          <view class="onboarding-step-mini-text">
-            <text class="onboarding-step-mini-title">牌阵解读</text>
-            <text class="onboarding-step-mini-desc">选择牌阵，AI为您深度解读</text>
-          </view>
-        </view>
-        <view class="onboarding-step-mini">
-          <view class="onboarding-emoji-wrap"><text class="onboarding-emoji">🌟</text></view>
-          <view class="onboarding-step-mini-text">
-            <text class="onboarding-step-mini-title">选择你的星座</text>
-            <text class="onboarding-step-mini-desc">选填 — 让每日运势更贴合你的星象</text>
-          </view>
+        <image class="art-img" src="/assets/web/moon-card.jpg" mode="aspectFill" aria-label="月亮与安睡兔子的水彩插画" />
+        <text class="paint-spark">✦</text>
+        <view class="card-body {{shaking?'card-shake':''}}">
+          <text class="card-hint-big">轻触翻开今日牌面</text>
+          <text class="card-hint-sm">开启今日指引</text>
         </view>
       </view>
+    </view>
 
-      <!-- Zodiac grid -->
-      <view class="zodiac-grid">
-        <view
-          class="zodiac-item"
-          wx:for="{{zodiacList}}"
-          wx:key="key"
-          wx:for-item="z"
-          bindtap="onSelectZodiac" role="button" aria-label="选择星座 {{z.name}}"
-          data-sign="{{z.name}}"
-        >
-          <text class="zodiac-item-emoji">{{z.emoji}}</text>
-          <text class="zodiac-item-name">{{z.name}}</text>
-        </view>
+    <!-- RESTORING — 重新拉取今日牌面时的骨架 -->
+    <view class="mat-wrap" wx:elif="{{dailyCardRestoring}}">
+      <view class="mat art-main">
+        <view class="skeleton skeleton--block" style="width:100%;height:100%;border-radius:26rpx;"></view>
       </view>
+    </view>
 
-      <view class="zodiac-skip" bindtap="onSkipZodiac" role="button" aria-label="跳过星座选择">
-        <text class="zodiac-skip-text">跳过，开始使用</text>
+    <!-- AFTER DRAW — 已抽牌面：真实牌面 -->
+    <view class="mat-wrap {{dailyCardFlipped ? 'daily-card--flipped' : ''}}" wx:else bindtap="onDailyCardTap" data-today-flipped="{{dailyCardFlipped}}" role="button" aria-label="查看今日卡牌详解">
+      <view class="mat art-main">
+        <view class="sparkle-field" wx:if="{{!dailyCardFlipped}}">
+          <view class="sparkle s1"></view>
+          <view class="sparkle s2"></view>
+          <view class="sparkle s3"></view>
+        </view>
+        <view class="art-thumb-wrap {{dailyCardImgError ? 'art-thumb-error' : ''}}">
+          <image wx:if="{{dailyCard.imagePath && !dailyCardImgError}}" class="art-img" src="{{dailyCard.imagePath}}" mode="aspectFill" binderror="onDailyCardImgError" aria-label="今日塔罗 — {{dailyCard.name_zh || dailyCard.name_cn || '每日一牌'}}" />
+          <view wx:elif="{{dailyCardImgError}}" class="art-thumb-fallback">
+            <text class="thumb-fallback-name">{{dailyCard.name_zh}}</text>
+          </view>
+          <view wx:else class="art-thumb-fallback"></view>
+        </view>
+        <view wx:if="{{dailyCardFlipped}}" class="flip-badge">已学习 ✓</view>
       </view>
     </view>
   </view>
 
-  <!-- ===== 塔罗简介 — 沉浸式浮层（保留全部逻辑与类名） ===== -->
-  <view class="tarot-overlay {{showTarotOverlay ? 'tarot-overlay--visible' : ''}}" bindtap="closeTarotOverlay" role="button" aria-label="关闭塔罗简介">
-    <view class="tarot-overlay-content" catchtap="">
-      <!-- Star particles inside the card -->
-      <view class="tarot-overlay-stars">
-        <view class="to-star s1"></view>
-        <view class="to-star s2"></view>
-        <view class="to-star s3"></view>
-        <view class="to-star s4"></view>
-        <view class="to-star s5"></view>
-        <view class="to-star s6"></view>
-      </view>
+  <!-- ===== 牌名 + 今日牌语（主角的注脚） ===== -->
+  <view class="card-name anim-fade-in-up-2" wx:if="{{dailyCard}}">
+    <text class="card-name-cn">{{dailyCard.name_zh}}</text>
+    <view class="card-name-dot"></view>
+    <text class="card-name-en" wx:if="{{dailyCard.name_en}}">{{dailyCard.name_en}}</text>
+  </view>
+  <view class="card-name anim-fade-in-up-2" wx:else>
+    <text class="card-name-cn">月亮牌</text>
+    <view class="card-name-dot"></view>
+    <text class="card-name-en">THE MOON</text>
+  </view>
+  <view class="card-phrase anim-fade-in-up-2">
+    <text>{{cardPhrase}}</text>
+  </view>
 
-      <!-- Central glowing card icon -->
-      <view class="tarot-overlay-icon">
-        <view class="to-card-icon">
-          <text class="to-card-emoji">🔮</text>
-        </view>
-      </view>
-
-      <!-- Title -->
-      <text class="tarot-overlay-title">什么是塔罗？</text>
-
-      <!-- Body text -->
-      <text class="tarot-overlay-body">塔罗不是预测命运的工具，而是一面镜子——帮你看见自己内心已经知道、却未说出口的东西。每张牌都是一扇窗，照见你此刻的心境、困惑与可能。星光映照，陪你遇见自己。</text>
-
-      <!-- Button -->
-      <view class="tarot-overlay-btn" bindtap="closeTarotOverlay" role="button" aria-label="关闭塔罗简介">
-        <text>开始探索 ✦</text>
-      </view>
+  <!-- ===== 能量注脚：一行 · 极淡细金条（牌的补充，不是并列功能）｜4 项均可点击 → 能量详情 ===== -->
+  <view class="energy anim-fade-in-up-2" wx:if="{{energyItems.length > 0}}">
+    <text class="eg-label">今日能量</text>
+    <view class="eg-sep"></view>
+    <view class="eg {{item.hot ? 'eg-hot' : ''}}" wx:for="{{energyItems}}" wx:key="key"
+          bindtap="onEnergyTap" data-dim="{{item.key}}" role="button" aria-label="查看{{item.name}}能量详情 {{item.score}}分" hover-class="eg-pressed">
+      <text class="eg-name">{{item.name}}</text>
+      <text class="eg-score">{{item.score}}</text>
     </view>
+  </view>
+
+  <!-- ===== 联动解读：牌 × 天象（主角的展开） ===== -->
+  <view class="link anim-fade-in-up-2">
+    <text class="link-line1">{{linkLine1}}</text>
+    <text class="link-line2">{{linkLine2}}</text>
+  </view>
+
+  <!-- ===== 明日之牌预告 — 回流钩子（制造期待 · 不展示牌面 · 未抽牌也可见） ===== -->
+  <view class="tomorrow" bindtap="onTomorrowHintTap" role="button" aria-label="明日之牌预告" hover-class="trow-pressed">
+    <view class="tline"></view>
+    <view class="trow">
+      <text class="t-lock">✦</text>
+      <text class="t-text">明日之牌 · 待明日揭晓</text>
+    </view>
+  </view>
+
+  <!-- ===== 抽牌后动作：查看详解（主角的展开入口） ===== -->
+  <view wx:if="{{dailyCard}}" class="after-row">
+    <view class="see-detail" bindtap="onDailyCardTap" role="button" aria-label="查看今日卡牌详解" hover-class="card-pressed">
+      <text>查看详解 →</text>
+    </view>
+    <view class="daily-share-link" bindtap="onShareDailyCard" role="button" aria-label="保存今日卡牌">
+      <text>保存今日卡牌 ✦</text>
+    </view>
+  </view>
+
+  <!-- ===== 底部一行入口（保留功能 · 降权为注脚） ===== -->
+  <view class="foot-entry-row anim-fade-in-up-3">
+    <view class="foot-entry" bindtap="onGoOracle" role="button" aria-label="进入神谕选择牌阵" hover-class="card-pressed">
+      <text class="foot-entry-emoji">🔮</text>
+      <text class="foot-entry-label">占卜 · 牌阵</text>
+    </view>
+    <view class="foot-entry" bindtap="onGoCommunity" role="button" aria-label="进入星光树洞" hover-class="card-pressed">
+      <text class="foot-entry-emoji">🕊️</text>
+      <text class="foot-entry-label">星光树洞</text>
+    </view>
+    <view class="foot-entry" bindtap="onGoDiary" role="button" aria-label="记录今天" hover-class="card-pressed">
+      <text class="foot-entry-emoji">✎</text>
+      <text class="foot-entry-label">记录今天</text>
+    </view>
+    <view wx:if="{{pendingReading}}" class="foot-entry" bindtap="onContinueReading" role="button" aria-label="继续上次未完成的解读" hover-class="card-pressed">
+      <text class="foot-entry-emoji">✦</text>
+      <text class="foot-entry-label">继续解读</text>
+    </view>
+  </view>
+
+  <!-- 免费次数小字（并入注脚 · 保留原数据绑定） -->
+  <view wx:if="{{!isMember && dailyCard}}" class="quota-line">
+    <text wx:if="{{freeReadingsUsed < freeReadingsTotal}}" class="quota-text">今日免费解读 {{freeReadingsUsed}}/{{freeReadingsTotal}}</text>
+    <text wx:elif="{{freeReadingsUsed >= freeReadingsTotal}}" class="quota-text quota-text--exhausted" bindtap="onGoMembership">今日次数已用完 · 补充 →</text>
   </view>
 
   <!-- ===== 每日一牌打卡海报（保留） ===== -->

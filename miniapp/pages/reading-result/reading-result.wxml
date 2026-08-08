@@ -131,6 +131,12 @@
         </view>
       </view>
 
+      <!-- 开发 03：今日能量关联 — 解读与今日能量同频（一行小字 · 接口失败隐藏） -->
+      <view class="energy-link" wx:if="{{energyLink}}">
+        <text class="energy-link-text">☾ {{energyLink}}</text>
+      </view>
+
+
       <!-- ==========================================================
            6. ACTION SUGGESTIONS — Actionable checklist cards
            ========================================================== -->

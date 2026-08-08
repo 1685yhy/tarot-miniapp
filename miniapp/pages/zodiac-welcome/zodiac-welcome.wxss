@@ -1,0 +1,250 @@
+/* pages/zodiac-welcome/zodiac-welcome.wxss — E3 星座引导（与原型页 17 一致） */
+page {
+  --e3-cream: #FAF6EF;
+  --e3-cream-hi: #FFFDF8;
+  --e3-paper: #F2ECDF;
+  --e3-pink: #E8C4BE;
+  --e3-pink-ink: #B08A82;
+  --e3-gold: #C9A97C;
+  --e3-gold-deep: #B08F52;
+  --e3-line-soft: rgba(201, 169, 124, 0.38);
+  --e3-ink: #3D3A36;
+  --e3-ink-soft: #8A8478;
+  --e3-ink-faint: #B0AA9C;
+  --e3-shadow: 0 4rpx 20rpx rgba(61, 58, 54, 0.06);
+  --e3-hi: inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
+  --e3-serif: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif CJK SC', 'Noto Serif SC', serif;
+  --e3-sans: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+  background: #FAF6EF;
+  color: #3D3A36;
+  font-family: var(--e3-serif);
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.page {
+  min-height: 100vh;
+  padding: 0 36rpx calc(40rpx + env(safe-area-inset-bottom));
+  position: relative;
+  box-sizing: border-box;
+  background: #FAF6EF;
+  overflow: hidden;
+}
+
+.wash {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+.wash-pink {
+  top: -170rpx;
+  right: -190rpx;
+  width: 620rpx;
+  height: 620rpx;
+  background: radial-gradient(circle, rgba(232, 196, 190, 0.55) 0%, rgba(232, 196, 190, 0) 66%);
+}
+.wash-gold {
+  left: -210rpx;
+  top: 760rpx;
+  width: 540rpx;
+  height: 540rpx;
+  background: radial-gradient(circle, rgba(201, 169, 124, 0.28) 0%, rgba(201, 169, 124, 0) 66%);
+}
+
+/* ── 二级页顶栏（改星座模式 · 胶囊避让） ── */
+.nav {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  padding: 30rpx 6rpx 0 0;
+}
+.nav-back {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+  min-width: 120rpx;
+  height: 88rpx;
+  flex-shrink: 0;
+  border-radius: 16rpx;
+}
+.nav-back-pressed {
+  opacity: 0.6;
+}
+.nav-back-arrow {
+  font-size: 40rpx;
+  color: var(--e3-ink-soft);
+  line-height: 1;
+  margin-top: -6rpx;
+}
+.nav-back-text {
+  font-family: var(--e3-sans);
+  font-size: 24rpx;
+  color: var(--e3-ink-soft);
+  letter-spacing: 1rpx;
+}
+.nav-title {
+  flex: 1;
+  text-align: center;
+  font-size: 30rpx;
+  letter-spacing: 5rpx;
+  color: var(--e3-ink);
+  margin-right: 150rpx;
+  white-space: nowrap;
+}
+
+/* ── 标题 ── */
+.wel-hero {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  margin-top: 48rpx;
+}
+.wh-en {
+  font-family: var(--e3-serif);
+  font-size: 19rpx;
+  letter-spacing: 12rpx;
+  color: var(--e3-gold-deep);
+}
+.wh-title {
+  margin-top: 18rpx;
+}
+.wh-h2 {
+  display: block;
+  font-size: 36rpx;
+  letter-spacing: 8rpx;
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--e3-ink);
+}
+.wh-h2 em {
+  font-style: normal;
+  color: var(--e3-pink-ink);
+}
+.wh-p {
+  display: block;
+  margin-top: 18rpx;
+  font-family: var(--e3-sans);
+  font-size: 23rpx;
+  color: var(--e3-ink-faint);
+  letter-spacing: 3rpx;
+  line-height: 1.75;
+  white-space: pre-line;
+}
+
+/* ── 12 星座网格（4 列 · 选中金边高亮） ── */
+.zgrid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16rpx;
+  margin-top: 32rpx;
+}
+.zcard {
+  position: relative;
+  background: var(--e3-cream-hi);
+  border: 1rpx solid rgba(201, 169, 124, 0.24);
+  border-radius: 28rpx;
+  box-shadow: var(--e3-hi), var(--e3-shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6rpx;
+  padding: 18rpx 4rpx 16rpx;
+  min-height: 128rpx;
+  transition: transform 0.13s ease, border-color 0.13s ease, box-shadow 0.13s ease;
+}
+.zcard-pressed {
+  transform: scale(0.94);
+}
+.zcard-sel {
+  border: 3rpx solid var(--e3-gold-deep);
+  box-shadow: 0 16rpx 40rpx rgba(176, 143, 82, 0.22), var(--e3-hi);
+}
+.zc-emoji {
+  font-size: 38rpx;
+  line-height: 1.2;
+}
+.zc-name {
+  font-size: 22rpx;
+  letter-spacing: 2rpx;
+  color: var(--e3-ink);
+}
+.zcard-sel .zc-name {
+  color: var(--e3-gold-deep);
+  font-weight: 500;
+}
+.zc-dates {
+  font-family: var(--e3-serif);
+  font-size: 16rpx;
+  letter-spacing: 1rpx;
+  color: var(--e3-ink-faint);
+}
+.zc-ok {
+  position: absolute;
+  top: -10rpx;
+  right: -10rpx;
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--e3-gold), var(--e3-gold-deep));
+  color: #FFFDF8;
+  font-size: 16rpx;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 12rpx rgba(176, 143, 82, 0.4);
+}
+.zc-ok-on {
+  display: flex;
+}
+
+/* ── 底部：确认 + 跳过 ── */
+.wel-foot {
+  position: relative;
+  z-index: 2;
+  margin-top: 28rpx;
+}
+.cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 92rpx;
+  border-radius: 999rpx;
+  background: linear-gradient(135deg, var(--e3-gold), var(--e3-gold-deep));
+  color: #FFFDF8;
+  font-size: 28rpx;
+  letter-spacing: 6rpx;
+  box-shadow: 0 12rpx 32rpx rgba(176, 143, 82, 0.35), var(--e3-hi);
+  transition: transform 0.15s ease;
+}
+.cta-pressed {
+  transform: scale(0.975);
+}
+.cta-off {
+  background: var(--e3-paper);
+  color: var(--e3-ink-faint);
+  box-shadow: none;
+}
+.skip-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 88rpx;
+  font-family: var(--e3-sans);
+  font-size: 23rpx;
+  color: var(--e3-ink-faint);
+  letter-spacing: 4rpx;
+}
+.skip-link:active {
+  opacity: 0.6;
+}
+.skip-bold {
+  font-weight: 400;
+  color: var(--e3-gold-deep);
+  margin: 0 6rpx;
+}

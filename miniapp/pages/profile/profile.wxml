@@ -92,6 +92,37 @@
       </view>
     </view>
 
+    <!-- ============ 我的星象（第一阶段：星座可改 · 出生信息可选） ============ -->
+    <view class="menu-section anim-fade-up anim-stagger-2">
+      <view class="menu-section-title">
+        <text class="menu-section-label">我的星象</text>
+      </view>
+      <view class="menu-item anim-slide-up anim-stagger-1" bindtap="onGoZodiac" role="button" aria-label="修改我的星座" hover-class="card-pressed">
+        <view class="menu-icon-wrap">
+          <text class="menu-icon-text">✦</text>
+        </view>
+        <view class="menu-content">
+          <text class="menu-title">我的星座</text>
+          <text class="menu-desc">今日能量与牌语，随星座轻轻调整</text>
+        </view>
+        <text class="menu-value" wx:if="{{zodiacBadge}}">{{zodiacBadge}}</text>
+        <text class="menu-value menu-value--empty" wx:else>未设置</text>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-item anim-slide-up anim-stagger-2" bindtap="onGoBirthInfo" role="button" aria-label="完善出生信息" hover-class="card-pressed">
+        <view class="menu-icon-wrap">
+          <text class="menu-icon-text">☽</text>
+        </view>
+        <view class="menu-content">
+          <text class="menu-title">完善出生信息</text>
+          <text class="menu-desc">填了才能解锁月亮与上升（二期）</text>
+        </view>
+        <text class="menu-value" wx:if="{{birthInfo}}">已完善</text>
+        <text class="menu-value menu-value--empty" wx:else>未填写</text>
+        <text class="menu-arrow">›</text>
+      </view>
+    </view>
+
     <!-- ============ 会员权益卡片 ============ -->
     <view class="benefits-card anim-fade-up anim-stagger-3" wx:if="{{memberStatus && memberStatus.is_member}}">
       <view class="benefits-card-header">

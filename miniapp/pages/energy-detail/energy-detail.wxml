@@ -1,0 +1,93 @@
+<!-- pages/energy-detail/energy-detail.wxml -->
+<!-- 能量详情：大数字 + 能量条 + 走心解读 + 30秒小事 + 牌关联（chips 切维度） -->
+
+<view class="page">
+  <view class="wash wash-pink"></view>
+  <view class="wash wash-gold"></view>
+
+  <!-- 维度切换 chips：页内切换，不退出页面 -->
+  <view class="e-chips" wx:if="{{dims.length > 0}}">
+    <view
+      class="e-chip {{dimKey === item.key ? 'e-chip-on' : ''}}"
+      style="{{dimKey === item.key ? 'background:' + dd.chip : ''}}"
+      wx:for="{{dims}}" wx:key="key"
+      bindtap="onSwitchDim" data-key="{{item.key}}"
+      role="button" aria-label="切换到{{item.name}}维度"
+      hover-class="e-chip-pressed"
+    >
+      <text>{{item.name}}</text>
+    </view>
+  </view>
+
+  <!-- 主角：大数字 + 渐变能量条（数值可解释） -->
+  <view class="e-hero" wx:if="{{dd}}">
+    <view class="e-top">
+      <text class="e-name">{{dd.name}}能量</text>
+      <text class="e-en">{{dd.en}}</text>
+    </view>
+    <view class="e-num" style="color:{{dd.num}}">{{dd.score}}<text class="e-num-small">分</text></view>
+    <view class="e-bar" style="background:{{dd.track}}">
+      <view class="e-bar-fill" style="width:{{dd.score}}%;background:{{dd.bar}}"></view>
+    </view>
+    <text class="e-note">{{dd.note}}</text>
+  </view>
+
+  <!-- 走心解读：认领 → 为什么今天这样（factors）→ 温柔提示 → 金句 -->
+  <view wx:if="{{dd}}">
+    <view class="sec-label">
+      <view class="sec-line"></view>
+      <text>走心解读</text>
+    </view>
+    <view class="card-soft">
+      <!-- 认领层：真实 summary（接口今日总评） -->
+      <text class="e-read-para e-read-p1">{{dd.catch}}</text>
+
+      <!-- 为什么今天这样：真实 factors（如「满月 +6 · 圣杯六 +2」） -->
+      <view class="e-why" wx:if="{{dd.factors.length > 0}}">
+        <text class="e-why-label">为什么今天这样</text>
+        <text class="e-why-line">{{dd.factorsText}}</text>
+        <text class="e-why-note" wx:if="{{dd.astralNote}}">{{dd.astralNote}}</text>
+      </view>
+      <view class="e-why e-why-empty" wx:elif="{{dd.astralNote}}">
+        <text class="e-why-label">为什么今天这样</text>
+        <text class="e-why-note">{{dd.astralNote}}</text>
+      </view>
+
+      <!-- 温柔提示：真实 tip（接口 30 秒微行动） -->
+      <text class="e-read-para">{{dd.tip}}</text>
+      <view class="e-read-line">
+        <text>{{dd.line}}</text>
+      </view>
+    </view>
+
+    <!-- 30 秒小事：行动层（细金卡） -->
+    <view class="do-card">
+      <view class="dq-label">
+        <text>✦ 30 秒小事</text>
+      </view>
+      <text class="dq-text">{{dd.do30}}</text>
+    </view>
+
+    <!-- 与今日牌的关联：一行小字 -->
+    <view class="e-card-link">
+      <text><text class="e-card-name">今日{{todayCardName}}</text> × {{dd.name}}能量</text>
+      <text class="e-card-line">{{cardLinkText()}}</text>
+    </view>
+
+    <!-- 降级提示：非实时接口数据时可点击重新获取（不阻塞主流程） -->
+    <view class="e-source" wx:if="{{energySource && energySource !== 'api'}}" bindtap="onRefreshEnergy" role="button" aria-label="重新获取今日能量" hover-class="e-source-pressed">
+      <text wx:if="{{energySource === 'mock'}}">· 示例能量 · 点击重新获取</text>
+      <text wx:else>· 离线能量缓存 · 点击重新获取</text>
+    </view>
+
+    <view class="cta cta-ghost" bindtap="onBack" role="button" aria-label="回到今日" hover-class="cta-pressed">
+      <text>回到今日</text>
+    </view>
+  </view>
+
+  <!-- 空态兜底（数据未就绪） -->
+  <view wx:else class="empty-state">
+    <text class="empty-text">能量尚未点亮</text>
+    <text class="empty-hint">回到今日屏翻牌后即可查看</text>
+  </view>
+</view>

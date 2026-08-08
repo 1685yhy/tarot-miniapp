@@ -28,6 +28,7 @@
 const { request, getFriendlyError } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
 const { playCardDrawSound } = require('../../utils/sound');
+const { fetchTodayEnergy } = require('../../utils/energy');
 const analytics = require('../../utils/analytics');
 
 /** Get free daily readings limit from member status (or fallback) */
@@ -139,6 +140,9 @@ Page({
     questionSamples: ['最近的工作发展如何？', '我和TA的关系走向？', '这段迷茫期该如何度过？'],
     questionFocus: false,
     recommendedPersona: null,
+
+    /* 开发 03：能量上下文联动 — 提问页顶部「今日能量」小字（真实接口） */
+    energyHint: '',
   },
 
   onLoad(options) {
@@ -241,6 +245,23 @@ Page({
 
     // 加载免费次数信息
     this._loadFreeReadings();
+    // 开发 03：能量上下文联动（读真实接口 · 失败静默隐藏小字）
+    this._loadEnergyHint();
+  },
+
+  /** 今日能量小字：「今日能量：爱情 81 · 事业 73」（接口失败静默隐藏） */
+  async _loadEnergyHint() {
+    try {
+      const data = await fetchTodayEnergy();
+      const byKey = {};
+      (data.items || []).forEach((i) => { byKey[i.key] = i.score; });
+      if (byKey.love === undefined && byKey.career === undefined) return;
+      const love = byKey.love !== undefined ? byKey.love : '·';
+      const career = byKey.career !== undefined ? byKey.career : '·';
+      this.setData({ energyHint: `今日能量：爱情 ${love} · 事业 ${career}` });
+    } catch (_err) {
+      // 静默隐藏，不打扰提问主流程
+    }
   },
 
   onShow() {
@@ -627,39 +648,54 @@ Page({
       return;
     }
 
-    /* UX 修复: 痛点#4 — 空问题引导：弹确认，确认后允许"不写问题纯抽牌"，取消则留在提问页 */
-    if (!this.data.question || !this.data.question.trim()) {
-      const proceed = await new Promise((resolve) => {
+    /* UX: 单弹窗温柔引导 — 无论写没写问题都只弹一次。
+       已写问题 → 一次次数确认（会员版保留"会员可无限次解读"文案）；
+       未写问题 → 一次温柔引导，「直接听牌意」立即开始，不再追加次数弹窗，
+       「先写一句」留在提问页并聚焦输入框。 */
+    const hasQuestion = !!(this.data.question && this.data.question.trim());
+
+    if (hasQuestion) {
+      // ── 已写问题：一次确认（含消耗次数文案）──
+      const isMember = this.data.isMember;
+      const used = this.data.freeReadingsUsed || 0;
+      const total = this.data.freeReadingsTotal || _getFreeReadingsLimit();
+      const confirmContent = isMember
+        ? '会员可无限次解读，确定要继续吗？'
+        : `将消耗 1 次免费解读机会（今日 ${used}/${total}），确定要继续吗？`;
+
+      const confirmed = await new Promise((resolve) => {
         wx.showModal({
-          title: '不写问题直接抽牌？',
-          content: '写下一个问题，星光才能为你解读 ✦ 也可以不写，纯粹抽牌聆听牌意',
-          confirmText: '直接抽牌',
-          cancelText: '我来写',
+          title: '今日解读机会 · 确定开始吗？',
+          content: confirmContent,
+          confirmText: '确定',
+          cancelText: '取消',
           success: (res) => resolve(res.confirm),
         });
       });
-      if (!proceed) return;
-    }
 
-    // Show confirmation dialog before consuming reading quota
-    const isMember = this.data.isMember;
-    const used = this.data.freeReadingsUsed || 0;
-    const total = this.data.freeReadingsTotal || _getFreeReadingsLimit();
-    const confirmContent = isMember
-      ? '会员可无限次解读，确定要继续吗？'
-      : `将消耗 1 次免费解读机会（今日 ${used}/${total}），确定要继续吗？`;
-
-    const confirmed = await new Promise((resolve) => {
-      wx.showModal({
-        title: '确认开始解读',
-        content: confirmContent,
-        confirmText: '确定',
-        cancelText: '取消',
-        success: (res) => resolve(res.confirm),
+      if (!confirmed) return;
+    } else {
+      // ── 未写问题：一次温柔引导 ──
+      const startNow = await new Promise((resolve) => {
+        wx.showModal({
+          title: '给星光一句话，解读会更懂你 ✦',
+          content: '写下一个问题，星光能更懂你此刻的心事。也可以不写，先听听牌意。',
+          confirmText: '直接听牌意',
+          cancelText: '先写一句',
+          success: (res) => resolve(res.confirm),
+        });
       });
-    });
 
-    if (!confirmed) return;
+      if (!startNow) {
+        // 「先写一句」= 留在提问页，聚焦输入框（questionFocus 机制复用 onSampleTap）
+        this.setData({ questionFocus: true });
+        this._setTimer(() => {
+          if (this.data.questionFocus) this.setData({ questionFocus: false });
+        }, 1200);
+        return;
+      }
+      // 「直接听牌意」= 直接开始，次数消耗在开始逻辑里照常，不额外打扰
+    }
 
     // Analytics: funnel step
     analytics.funnel('reading_started', { spread: selectedSpread.key, theme: this.data.theme || 'general' });

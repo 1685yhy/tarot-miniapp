@@ -1243,3 +1243,35 @@
   letter-spacing: 4rpx;
   opacity: 0.85;
 }
+
+/* ============================================================
+   我的星象（第一阶段）— 星座徽章 + 出生信息入口
+   ============================================================ */
+.menu-icon-text {
+  width: 48rpx;
+  height: 48rpx;
+  line-height: 48rpx;
+  text-align: center;
+  font-size: 34rpx;
+  color: var(--color-gold-dark, #A98B5F);
+  background: rgba(201, 169, 124, 0.12);
+  border-radius: 14rpx;
+  border: 1rpx solid rgba(201, 169, 124, 0.25);
+}
+.menu-value {
+  font-size: 22rpx;
+  color: var(--color-gold-dark, #A98B5F);
+  letter-spacing: 1rpx;
+  margin-left: var(--spacing-sm);
+  white-space: nowrap;
+}
+.menu-value--empty {
+  color: var(--color-text-tertiary, #6E6A96);
+  opacity: 0.85;
+}
+
+/* 按压反馈（hover-class 复用） */
+.card-pressed {
+  transform: scale(0.98);
+  opacity: 0.9;
+}

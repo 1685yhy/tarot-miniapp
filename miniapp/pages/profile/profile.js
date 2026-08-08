@@ -4,6 +4,7 @@ const { request, getFriendlyError } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
 const { computeImagePath, findCard } = require('../../utils/cards');
 const sound = require('../../utils/sound');
+const { getZodiacBadge } = require('../../utils/energy');
 
 // 三位塔罗师信息（与 backend ai_personas.py 保持一致）
 const PERSONA_INFO = {
@@ -116,6 +117,10 @@ Page({
     weeklyReportData: null,
     weeklyCardImage: '',
     weeklyLoading: false,
+
+    // 我的星象：星座徽章 + 出生信息（前端改造第一阶段）
+    zodiacBadge: '',
+    birthInfo: null,       // { date, time, city, zodiac }
   },
 
   // —— History card image loading ——
@@ -135,6 +140,8 @@ Page({
 
   async onShow() {
     await this.loadData();
+    // 我的星象：从 storage 同步星座徽章与出生信息
+    this._loadStarProfile();
     // Sync sound state from sound module
     this.setData({
       soundEnabled: sound.sfxEnabled,
@@ -395,6 +402,26 @@ Page({
     }
   },
 
+  /** 我的星象：同步星座徽章 + 出生信息（storage 为准） */
+  _loadStarProfile() {
+    let birthInfo = null;
+    try { birthInfo = wx.getStorageSync('birth_info') || null; } catch (e) { /* silent */ }
+    this.setData({
+      zodiacBadge: getZodiacBadge(),
+      birthInfo,
+    });
+  },
+
+  /** 我的星座（可改）→ 复用星座网格页（change 模式） */
+  onGoZodiac() {
+    wx.navigateTo({ url: '/pages/zodiac-welcome/zodiac-welcome?from=change' });
+  },
+
+  /** 完善出生信息（日期自动推导星座） */
+  onGoBirthInfo() {
+    wx.navigateTo({ url: '/pages/birth-info/birth-info' });
+  },
+
   onGoMembership() {
     wx.navigateTo({ url: '/pages/membership/membership' });
   },
@@ -409,10 +436,10 @@ Page({
   },
 
   onGoFavorites() {
-    // Use globalData to signal favorites filter since switchTab doesn't support query params
+    // Use globalData to signal favorites filter (百科已改为普通页面，navigateTo 进入)
     const app = getApp();
     app.globalData.showCardFavorites = true;
-    wx.switchTab({ url: '/pages/encyclopedia/encyclopedia' });
+    wx.navigateTo({ url: '/pages/encyclopedia/encyclopedia' });
   },
 
   onGoDiary() {

@@ -1,0 +1,58 @@
+<!-- pages/zodiac-welcome/zodiac-welcome.wxml -->
+<!-- 首次 onboarding（牌为主角之前）· 12 星座网格 + 可跳过 + 选中金边高亮 -->
+
+<!-- 改星座模式：顶部返回栏（胶囊避让） -->
+<view class="page">
+  <view class="wash wash-pink"></view>
+  <view class="wash wash-gold"></view>
+
+  <view class="nav" wx:if="{{isChange}}">
+    <view class="nav-back" bindtap="onBack" role="button" aria-label="返回" hover-class="nav-back-pressed">
+      <text class="nav-back-arrow">‹</text>
+      <text class="nav-back-text">返回</text>
+    </view>
+    <text class="nav-title">我的星座</text>
+  </view>
+
+  <!-- 标题：一句话说明「为什么问星座」 -->
+  <view class="wel-hero">
+    <text class="wh-en" wx:if="{{!isChange}}">STARLIT WELCOME</text>
+    <text class="wh-en" wx:else>MY ZODIAC</text>
+    <view class="wh-title" wx:if="{{!isChange}}">
+      <text class="wh-h2">初次见面，</text>
+      <text class="wh-h2">告诉我你的星座 <em>✦</em></text>
+    </view>
+    <view class="wh-title" wx:else>
+      <text class="wh-h2">星光记下你的星座 <em>✦</em></text>
+    </view>
+    <text class="wh-p" wx:if="{{!isChange}}">星光会根据你的星座\n为你准备专属的今日能量</text>
+    <text class="wh-p" wx:else>今日能量与牌语解读，会随星座轻轻调整</text>
+  </view>
+
+  <!-- 12 星座网格（4 列 · 选中金边高亮 · ≥44rpx 目标） -->
+  <view class="zgrid">
+    <view
+      class="zcard {{selected === z.name ? 'zcard-sel' : ''}}"
+      wx:for="{{zodiacs}}" wx:for-item="z" wx:key="key"
+      bindtap="onSelect" data-name="{{z.name}}"
+      role="button" aria-label="选择 {{z.name}}（{{z.dates}}）"
+      hover-class="zcard-pressed"
+    >
+      <text class="zc-emoji">{{z.emoji}}</text>
+      <text class="zc-name">{{z.name}}</text>
+      <text class="zc-dates">{{z.dates}}</text>
+      <view class="zc-ok {{selected === z.name ? 'zc-ok-on' : ''}}">✓</view>
+    </view>
+  </view>
+
+  <!-- 底部：确认（未选置灰）+ 跳过 -->
+  <view class="wel-foot">
+    <view class="cta {{selected ? '' : 'cta-off'}}" bindtap="onConfirm" role="button" aria-label="{{isChange ? '保存星座' : '开始我的星光之旅'}}" hover-class="cta-pressed">
+      <text wx:if="{{!isChange}}">开始我的星光之旅 →</text>
+      <text wx:else>保存</text>
+    </view>
+    <view class="skip-link" wx:if="{{!isChange}}" bindtap="onSkip" role="button" aria-label="跳过星座选择">
+      <text>也可以</text><text class="skip-bold">先随便逛逛</text><text>✦</text>
+    </view>
+  </view>
+</view>

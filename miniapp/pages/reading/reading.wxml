@@ -151,6 +151,11 @@
         <text class="text-dim mt-xs">{{selectedSpread.desc}}</text>
       </view>
 
+      <!-- 开发 03：能量上下文联动 — 提问页顶部今日能量小字（真实接口 · 失败隐藏） -->
+      <view class="energy-hint anim-fade-up anim-stagger-1" wx:if="{{energyHint}}">
+        <text class="energy-hint-text">☾ {{energyHint}}</text>
+      </view>
+
       <!-- ===== Step 2 引导气泡 ===== -->
       <view class="onboarding-bubble-wrap {{showOnboarding && onboardingStep === 2 ? 'bubble-visible' : ''}}">
         <view class="onboarding-bubble" bindtap="onNextOnboarding" role="button" aria-label="下一步，继续引导">

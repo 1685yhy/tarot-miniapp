@@ -6,6 +6,7 @@ const { computeImagePath, pngFallbackPath } = require('../../utils/cards');
 const { createAnim, staggeredEntrance } = require('../../utils/animate');
 const { playPageEnterSound, playCardFlipSound, startAmbientSound, stopAmbientSound } = require('../../utils/sound');
 const analytics = require('../../utils/analytics');
+const { ENERGY, ENERGY_KEYS, getSkyNote, getZodiacBadge, fetchTodayEnergy } = require('../../utils/energy');
 
 /** Get free daily readings limit from member status (or fallback) */
 function _getFreeReadingsLimit() {
@@ -117,7 +118,16 @@ Page({
 
     // v2.1: Zodiac sign onboarding
     zodiacSign: '',
+    zodiacBadge: '',
     dailyCardImgError: false,
+
+    // 今日屏（牌为主角）：天象小字 / 能量注脚 / 联动解读
+    skyNote: '',
+    energyItems: [],
+    cardPhrase: '',
+    linkLine1: '',
+    linkLine2: '',
+
     zodiacList: [
       { key: 'aries', name: '白羊座', emoji: '♈' },
       { key: 'taurus', name: '金牛座', emoji: '♉' },
@@ -151,6 +161,12 @@ Page({
     // Always load page content (bubble floats on top, not a full-screen block)
     try {
       await checkLogin();
+      // 首次使用（未选星座）→ 星座引导页；选完/跳过回到今日
+      const zodiacDone = wx.getStorageSync('zodiac_onboarding_done');
+      if (!zodiacDone) {
+        wx.redirectTo({ url: '/pages/zodiac-welcome/zodiac-welcome' });
+        return;
+      }
       this.setData({ pageLoading: false });
       this._initDailyState();
       this._loadFreeReadings();
@@ -184,8 +200,10 @@ Page({
     // v2.1: Refresh zodiac from storage (user might update elsewhere)
     const storedZodiac = wx.getStorageSync('zodiac_sign') || '';
     if (storedZodiac !== this.data.zodiacSign) {
-      this.setData({ zodiacSign: storedZodiac });
+      this.setData({ zodiacSign: storedZodiac, zodiacBadge: getZodiacBadge() });
     }
+    // 今日屏星象数据（天象小字 / 能量注脚）—— 徽章改动后与星座无关，但日期跨天后刷新
+    this._refreshStarData(this.data.dailyCard);
     this._loadTasks();
     // Load community topic title for home entry
     this._loadCommunityTopic();
@@ -507,6 +525,9 @@ Page({
       card.imagePath = computeImagePath(card, IMAGE_BASE);
       this.setData({ dailyCard: card, drawingLoading: false, dailyCardFlipped: true });
       wx.hideLoading();
+      // 今日屏（牌为主角）：记录今日牌名供能量详情页关联
+      try { wx.setStorageSync('today_card_name', card.name_zh || ''); } catch (e) { /* silent */ }
+      this._refreshStarData(card);
       /* UX 修复: 痛点#1 — 抽牌成功后拉取今日牌语（teaching snippet） */
       this._loadDailyCardSnippet(card.id);
       // 保存到globalData供详情页使用
@@ -690,7 +711,7 @@ Page({
 
     // v2.1: Load stored zodiac sign
     const storedZodiac = wx.getStorageSync('zodiac_sign') || '';
-    this.setData({ zodiacSign: storedZodiac });
+    this.setData({ zodiacSign: storedZodiac, zodiacBadge: getZodiacBadge() });
 
     // Check if it's annual report season (Dec-Jan)
     const currentMonth = new Date().getMonth() + 1;
@@ -700,20 +721,6 @@ Page({
         isAnnualReportSeason: true,
         annualReportYear: currentMonth === 1 ? currentYear - 1 : currentYear,
       });
-    }
-
-    // Onboarding flow — simplified: show all 3 steps, auto-dismiss after 5s
-    const zodiacCompleted = wx.getStorageSync('zodiac_onboarding_done');
-    if (!this._onboardingCompleted && !zodiacCompleted) {
-      this.setData({ showOnboarding: true, onboardingStep: 0 });
-      this._onboardingTimer = setTimeout(() => {
-        if (this.data.showOnboarding) {
-          wx.setStorageSync('onboarding_completed', true);
-          wx.setStorageSync('zodiac_onboarding_done', true);
-          wx.removeStorageSync('onboarding_step');
-          this.setData({ showOnboarding: false, onboardingStep: 0 });
-        }
-      }, 5000);
     }
 
     // Check for pending reading to show recovery card
@@ -740,6 +747,7 @@ Page({
     const app = getApp();
     if (app.globalData.dailyCard) {
       this.setData({ dailyCard: app.globalData.dailyCard });
+      this._refreshStarData(app.globalData.dailyCard);
       /* UX 修复: 痛点#1 — 恢复牌面时同步拉取今日牌语 */
       this._loadDailyCardSnippet(app.globalData.dailyCard.id);
       return;
@@ -752,6 +760,8 @@ Page({
         card.imagePath = computeImagePath(card, IMAGE_BASE);
         app.globalData.dailyCard = card;
         this.setData({ dailyCard, dailyCardRestoring: false });
+        try { wx.setStorageSync('today_card_name', card.name_zh || ''); } catch (e) { /* silent */ }
+        this._refreshStarData(card);
         /* UX 修复: 痛点#1 — 恢复牌面时同步拉取今日牌语 */
         this._loadDailyCardSnippet(card.id);
       } catch (_err) {
@@ -778,11 +788,61 @@ Page({
         ? `${firstSymbol}：${lifeConn}`
         : (firstSymbol || lifeConn || '');
       if (!snippet) return;
-      this.setData({ dailyCardSnippet: snippet });
+      this.setData({ dailyCardSnippet: snippet, cardPhrase: snippet });
     } catch (_err) {
       /* UX 修复: 痛点#1 — 失败静默隐藏（不打扰主流程） */
       this.setData({ dailyCardSnippet: null });
     }
+  },
+
+  /* ---------------------------------------------------------------
+     今日屏（牌为主角）· 星象数据
+     数据源：GET /horoscope/daily（真实接口 · energy/factors/astral/tarot/summary/tip）
+     降级：接口失败 → 本地缓存 → mock 兜底（fetchTodayEnergy 内部处理，不白屏）
+     --------------------------------------------------------------- */
+  async _refreshStarData(card) {
+    const data = await fetchTodayEnergy();
+    const sky = getSkyNote(); // 仅作兜底文案
+    const energyItems = data.items && data.items.length ? data.items : ENERGY_KEYS.map((k) => ({
+      key: k,
+      name: ENERGY[k].name,
+      score: ENERGY[k].score,
+      hot: false,
+    }));
+    const cardName = (card && (card.name_zh || card.name_cn)) || '月亮牌';
+    // 天象：接口 astral.label（如「节气 · 立秋 · 月亮在摩羯」）→ 兜底 mock 天象
+    const astralLabel = (data.astral && data.astral.label) || sky.text;
+    const phaseLabel = `${astralLabel.split('·')[0].trim()}之夜`;
+    const hotKey = energyItems.find((i) => i.hot) || energyItems[0];
+    // 联动解读：接口 summary（今日总评）→ 兜底 mock tip 首句
+    const summary = data.summary || (ENERGY[hotKey.key].tip || '').split('。')[0] + '。';
+    this.setData({
+      skyNote: astralLabel,
+      energyItems,
+      linkLine1: `${cardName}的朦胧 × ${phaseLabel}`,
+      linkLine2: card ? summary : '今晚允许自己慢下来，月亮会替你照路。',
+      cardPhrase: card ? (this.data.dailyCardSnippet || data.tip || ENERGY[hotKey.key].line || '有些答案，会在月光里慢慢清晰')
+                       : '今晚允许自己慢下来',
+    });
+  },
+
+  /** 星座徽章 → 修改星座（复用 onboarding 网格页 · change 模式返回） */
+  onGoZodiac() {
+    wx.navigateTo({ url: '/pages/zodiac-welcome/zodiac-welcome?from=change' });
+  },
+
+  /** 能量注脚 → 能量详情页（chips 页内切维度） */
+  onEnergyTap(e) {
+    const dim = e.currentTarget.dataset.dim;
+    if (!dim) return;
+    analytics.trackEvent('energy_detail_open', { dim });
+    wx.navigateTo({ url: `/pages/energy-detail/energy-detail?dim=${dim}` });
+  },
+
+  /** 占卜入口（降权）→ 神谕 Tab 牌阵馆 */
+  onGoOracle() {
+    analytics.trackEvent('go_oracle', { source: 'today_foot_entry' });
+    wx.switchTab({ url: '/pages/oracle/oracle' });
   },
 
   onUnload() {

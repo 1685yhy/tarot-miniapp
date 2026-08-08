@@ -1,12 +1,10 @@
 /* ============================================================
-   首页 — 星光映照 · E3 奶油疗愈版（真实水彩插画）
-   奶油米白 #FAF6EF / 莫兰迪雾粉 #E8C4BE / 细金 #C9A97C / 墨 #3D3A36
-   真实插画资产 assets/web/*.jpg，代码只做排版与氛围
+   今日屏 — 星光映照 · 牌为主角（E3 奶油疗愈版）
+   奶油米白 #FAF6EF / 细金 #C9A97C / 雾粉 #E8C4BE / 墨 #3D3A36
+   结构：顶部徽章 → 大牌面（主角）→ 牌名+牌语 → 能量注脚（可点）
+        → 联动解读 → 明日预告 → 降权入口
    ============================================================ */
 
-/* -----------------------------------------------------------
-   E3 DESIGN TOKENS（页面级，不污染全局变量）
-   ----------------------------------------------------------- */
 page {
   --e3-cream: #FAF6EF;
   --e3-cream-hi: #FFFDF8;
@@ -15,34 +13,31 @@ page {
   --e3-pink-deep: #DCA9A1;
   --e3-pink-ink: #B08A82;
   --e3-gold: #C9A97C;
-  --e3-gold-deep: #8A6B3D;
+  --e3-gold-deep: #B08F52;
   --e3-line: rgba(201, 169, 124, 0.28);
   --e3-line-soft: rgba(201, 169, 124, 0.38);
-  --e3-lav: #D8D2E4;
   --e3-ink: #3D3A36;
   --e3-ink-soft: #8A8478;
-  --e3-ink-faint: #6E6A96;
+  --e3-ink-faint: #B0AA9C;
   --e3-shadow: 0 4rpx 20rpx rgba(61, 58, 54, 0.06);
   --e3-hi: inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
-  --e3-cardline: 0 0 0 1rpx rgba(201, 169, 124, 0.32), 0 20rpx 52rpx rgba(61, 58, 54, 0.14), inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
   --e3-serif: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif CJK SC', 'Noto Serif SC', serif;
   --e3-sans: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
 
-  /* 覆盖全局深色底 —— 只改外观，不动全局设计变量 */
   background: #FAF6EF;
   color: #3D3A36;
-  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-family: var(--e3-serif);
   font-size: 28rpx;
   line-height: 1.6;
 }
 
 /* -----------------------------------------------------------
-   0. PAGE 容器（三种状态共用）
+   0. PAGE 容器
    ----------------------------------------------------------- */
 .page {
   min-height: 100vh;
-  padding: 0 50rpx 56rpx;
-  padding-bottom: calc(56rpx + env(safe-area-inset-bottom));
+  padding: 0 40rpx 60rpx;
+  padding-bottom: calc(60rpx + env(safe-area-inset-bottom));
   position: relative;
   box-sizing: border-box;
   background: #FAF6EF;
@@ -58,128 +53,83 @@ page {
   z-index: 0;
 }
 .wash-pink {
-  top: -140rpx;
-  right: -160rpx;
+  top: -160rpx;
+  right: -180rpx;
   width: 560rpx;
   height: 560rpx;
-  background: radial-gradient(circle, rgba(232, 196, 190, 0.50) 0%, rgba(232, 196, 190, 0) 66%);
+  background: radial-gradient(circle, rgba(232, 196, 190, 0.5) 0%, rgba(232, 196, 190, 0) 66%);
 }
 .wash-gold {
-  left: -180rpx;
-  top: 700rpx;
+  left: -200rpx;
+  top: 760rpx;
   width: 500rpx;
   height: 500rpx;
-  background: radial-gradient(circle, rgba(201, 169, 124, 0.28) 0%, rgba(201, 169, 124, 0) 66%);
+  background: radial-gradient(circle, rgba(201, 169, 124, 0.26) 0%, rgba(201, 169, 124, 0) 66%);
 }
 
-/* 右下角淡粉水彩小花（真实资产 · 50% 透明 · 从CTA后探出 · 首屏固定区域） */
+/* 右下角淡粉水彩小花（真实资产 · 50% 透明 · 从底部探出） */
 .hint-flower {
   position: absolute;
-  right: 0;
-  bottom: 36rpx;
+  right: -20rpx;
+  bottom: 40rpx;
   width: 300rpx;
-  height: 276rpx;
-  z-index: 1;
+  height: 240rpx;
+  opacity: 0.45;
+  z-index: 0;
   pointer-events: none;
-  opacity: 0.5;
-  transform: scaleX(-1) rotate(-7deg);
 }
 .hint-flower-img {
   width: 100%;
   height: 100%;
-  border-radius: 24rpx;
-  display: block;
+  border-radius: 30rpx;
 }
 
 /* -----------------------------------------------------------
-   1. 入场动画（与旧版类名一致）
+   1. 入场动画
    ----------------------------------------------------------- */
 .anim-fade-in-up-1 {
   animation: page-fade-up 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 .anim-fade-in-up-2 {
   opacity: 0;
-  animation: page-fade-up 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.25s forwards;
+  animation: page-fade-up 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s forwards;
 }
 .anim-fade-in-up-3 {
   opacity: 0;
-  animation: page-fade-up 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.5s forwards;
+  animation: page-fade-up 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s forwards;
 }
 @keyframes page-fade-up {
   0% { opacity: 0; transform: translateY(30rpx); }
   100% { opacity: 1; transform: translateY(0); }
 }
 
-.anim-greeting-fade {
-  animation: greeting-fade-in 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-@keyframes greeting-fade-in {
-  0% { opacity: 0; transform: translateY(8rpx); }
-  100% { opacity: 0.9; transform: translateY(0); }
-}
-
-.anim-slide-up {
-  opacity: 0;
-  animation: slideUp 0.35s ease-out forwards;
-}
-@keyframes slideUp {
-  0% { opacity: 0; transform: translateY(30rpx); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-.anim-gentle-pulse {
-  animation: gentlePulse 2s ease-in-out infinite;
-}
-@keyframes gentlePulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.03); }
-}
-
 /* -----------------------------------------------------------
-   2. ZONE 1 — E3 顶部（微字 / 品牌 / 日期 / 问候 / 徽章）
+   2. 顶部：品牌 · 日期（左）｜星座徽章（右 · 极小不抢戏）
    ----------------------------------------------------------- */
-.hero-zone {
+.topbar {
   position: relative;
-  z-index: 2;
+  z-index: 3;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-top: 36rpx;
+}
+.tb-left {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding-top: 40rpx;
 }
-
-.e3-head {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* 微字 STARLIT · 每日一牌 */
-.microlabel {
-  font-family: var(--e3-sans);
-  font-size: 22rpx;
-  font-weight: 400;
-  color: var(--e3-gold-deep);
-  letter-spacing: 10rpx;
-  display: block;
-}
-
-/* 品牌 星光映照（衬线宽字距） */
 .brand {
   font-family: var(--e3-serif);
   font-weight: 500;
-  font-size: 52rpx;
+  font-size: 30rpx;
   color: var(--e3-ink);
-  letter-spacing: 16rpx;
-  margin-top: 12rpx;
-  display: block;
+  letter-spacing: 8rpx;
 }
-
-/* 日期行 */
 .date-row {
   display: flex;
   align-items: center;
-  gap: 14rpx;
-  margin-top: 18rpx;
+  gap: 10rpx;
+  margin-top: 8rpx;
 }
 .gold-dot {
   width: 6rpx;
@@ -190,181 +140,156 @@ page {
 }
 .date-text {
   font-family: var(--e3-serif);
-  font-size: 22rpx;
-  color: var(--e3-ink-soft);
-  letter-spacing: 3rpx;
-}
-
-/* 问候语（v2.1 逻辑保留 · 压缩为日期下的一行小字） */
-.greeting-text {
-  display: block;
-  font-family: var(--e3-serif);
-  font-size: 24rpx;
-  color: var(--e3-ink-soft);
-  letter-spacing: 2rpx;
-  margin-top: 10rpx;
-  opacity: 0.85;
-  line-height: 1.5;
-  position: relative;
-  z-index: 1;
-}
-
-/* 每日状态徽章（逻辑保留） */
-.daily-updated-badge,
-.daily-reminder-badge {
-  display: inline-block;
-  margin-top: 18rpx;
-  padding: 8rpx 26rpx;
   font-size: 20rpx;
-  font-weight: 500;
+  color: var(--e3-ink-faint);
+  letter-spacing: 2rpx;
+}
+
+/* 星座徽章：极淡细金胶囊 · ≥44rpx 点击区（用 padding 放大热区） */
+.zodiac-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 44rpx;
+  padding: 12rpx 22rpx;
+  margin: -8rpx -14rpx 0 0;
   border-radius: 999rpx;
-  letter-spacing: 3rpx;
   background: var(--e3-cream-hi);
-  border: 1rpx solid var(--e3-line-soft);
+  border: 1rpx solid rgba(201, 169, 124, 0.38);
   box-shadow: var(--e3-hi);
+  flex-shrink: 0;
 }
-.daily-updated-badge {
-  color: var(--e3-pink-ink);
+.zodiac-badge--empty {
+  border: 1rpx dashed rgba(201, 169, 124, 0.5);
 }
-.daily-reminder-badge {
-  color: var(--e3-ink-soft);
-  opacity: 0.85;
+.zodiac-badge:active {
+  opacity: 0.65;
+}
+.zodiac-badge-text {
+  font-family: var(--e3-sans);
+  font-size: 20rpx;
+  color: var(--e3-gold-deep);
+  letter-spacing: 2rpx;
+  white-space: nowrap;
 }
 
 /* -----------------------------------------------------------
-   3. 中央大牌面（2:3 竖卡 · cover 裁切 · 细金描边 · 顶部高光）
+   3. 天象小字：一行 · 注脚
    ----------------------------------------------------------- */
-.daily-card-area {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-top: 30rpx;
-  width: 100%;
-}
-
-.paint-wrap {
+.sky-note {
   position: relative;
-  margin: 0 auto;
-  width: 480rpx;
   z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  margin-top: 14rpx;
 }
-/* 旧类名保留（结构沿用） */
-.daily-card-wrap {
-  position: relative;
+.sky-moon {
+  font-size: 24rpx;
+  color: var(--e3-gold);
+  transform: rotate(-18deg);
 }
-.art {
-  position: relative;
-  overflow: hidden;
+.sky-note-text {
+  font-family: var(--e3-sans);
+  font-size: 22rpx;
+  color: var(--e3-ink-faint);
+  letter-spacing: 3rpx;
 }
 
-/* 待开启状态：细金描边轻柔呼吸 */
-.card-ready .painting {
-  animation: floaty 5.5s ease-in-out infinite, ready-breathe 2.6s ease-in-out infinite;
+/* -----------------------------------------------------------
+   4. 中央绝对主角：大牌面（2:3 竖卡）
+   ----------------------------------------------------------- */
+.card-zone {
+  position: relative;
+  z-index: 2;
+  margin-top: 8rpx;
+  display: flex;
+  justify-content: center;
+}
+
+/* 牌托（奶油描边 + 深影） */
+.mat-wrap {
+  padding: 12rpx;
+  border-radius: 38rpx;
+  background: var(--e3-cream-hi);
+  border: 1rpx solid rgba(201, 169, 124, 0.34);
+  box-shadow: 0 28rpx 64rpx rgba(61, 58, 54, 0.14), 0 0 0 1rpx rgba(201, 169, 124, 0.16), var(--e3-hi);
+  transition: transform 0.18s ease;
+}
+.mat-wrap:active {
+  transform: scale(0.965);
+}
+.card-ready {
+  animation: ready-breathe 3.6s ease-in-out infinite;
 }
 @keyframes ready-breathe {
-  0%, 100% { box-shadow: 0 0 0 1rpx rgba(201, 169, 124, 0.32), 0 20rpx 52rpx rgba(61, 58, 54, 0.14), inset 0 1rpx 0 rgba(255, 255, 255, 0.6); }
-  50% { box-shadow: 0 0 0 2rpx rgba(201, 169, 124, 0.6), 0 20rpx 52rpx rgba(61, 58, 54, 0.16), inset 0 1rpx 0 rgba(255, 255, 255, 0.6); }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8rpx); }
 }
 
-/* 真实插画卡（圆角裁剪 · 细金描边 · 极浅阴影 · 顶部高光） */
-/* E3 装裱: 首页 — 奶油卡底 + 细金描边 + 顶部高光 + 内缩 12rpx 奶油边距（画框装裱） */
-.painting {
+.mat {
   position: relative;
-  width: 480rpx;
-  height: 720rpx;
-  border-radius: 32rpx;
+  width: 380rpx;
+  height: 540rpx;
+  border-radius: 26rpx;
   overflow: hidden;
-  border: 1rpx solid var(--e3-line);
-  box-shadow: var(--e3-cardline);
-  background: var(--e3-cream-hi);
-  padding: 12rpx;
-  box-sizing: border-box;
-  animation: floaty 5.5s ease-in-out infinite;
+  border: 1rpx solid rgba(201, 169, 124, 0.3);
 }
-.painting::after {
+.mat::after {
   content: '';
   position: absolute;
-  top: 0;
   left: 0;
   right: 0;
-  height: 38%;
+  top: 0;
+  height: 34%;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(255, 253, 248, 0.32), rgba(255, 253, 248, 0));
-  border-radius: 32rpx 32rpx 0 0;
   z-index: 2;
+  background: linear-gradient(180deg, rgba(255, 253, 248, 0.3), rgba(255, 253, 248, 0));
 }
-@keyframes floaty {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12rpx); }
-}
-
-/* 覆盖全局 .card-featured 深色样式 */
-/* E3 装裱: 首页 — 保持奶油装裱内缩（勿重置为 0） */
-.painting.card-featured {
-  background: var(--e3-cream-hi);
-  border-color: var(--e3-line);
-  box-shadow: var(--e3-cardline);
-  padding: 12rpx;
-  border-radius: 32rpx;
-}
-
-/* E3 装裱: 首页 — 牌面内缩 12rpx，四边留出奶油边距，圆角与内边距匹配 */
-.paint-img {
-  position: absolute;
-  top: 12rpx;
-  left: 12rpx;
-  width: calc(100% - 24rpx);
-  height: calc(100% - 24rpx);
-  border-radius: 20rpx;
+.art-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 42%;
   display: block;
-  z-index: 0;
 }
-
-/* 金色微光点缀（对应原型 Spark） */
 .paint-spark {
   position: absolute;
-  right: 28rpx;
-  top: 30rpx;
-  font-size: 30rpx;
-  color: var(--e3-gold);
+  right: 34rpx;
+  top: 40rpx;
   z-index: 3;
-  opacity: 0.7;
-  animation: spark-twinkle-soft 2.6s ease-in-out infinite;
-  pointer-events: none;
+  color: rgba(255, 253, 248, 0.85);
+  font-size: 30rpx;
+  animation: spark-twinkle-soft 4.2s ease-in-out infinite;
 }
 @keyframes spark-twinkle-soft {
-  0%, 100% { opacity: 0.3; transform: scale(0.9) rotate(0deg); }
-  50% { opacity: 0.9; transform: scale(1.15) rotate(20deg); }
+  0%, 100% { opacity: 0.35; transform: scale(0.85) rotate(0); }
+  50% { opacity: 0.9; transform: scale(1.15) rotate(14deg); }
 }
 
-/* 轻触提示（悬浮于牌面底部） */
+/* 未抽牌提示（牌面即唯一 CTA） */
 .card-body {
   position: absolute;
-  left: 50%;
-  bottom: 36rpx;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 3;
+  padding: 44rpx 0 52rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6rpx;
-  padding: 14rpx 40rpx;
-  background: rgba(255, 253, 248, 0.82);
-  border: 1rpx solid rgba(201, 169, 124, 0.3);
-  border-radius: 999rpx;
-  box-shadow: var(--e3-shadow);
-  white-space: nowrap;
+  gap: 10rpx;
+  background: linear-gradient(180deg, rgba(250, 246, 239, 0) 0%, rgba(250, 246, 239, 0.82) 60%);
 }
 .card-hint-big {
   font-family: var(--e3-serif);
-  font-size: 28rpx;
+  font-size: 34rpx;
+  letter-spacing: 6rpx;
   color: var(--e3-ink);
-  letter-spacing: 3rpx;
 }
 .card-hint-sm {
   font-family: var(--e3-sans);
-  font-size: 20rpx;
+  font-size: 22rpx;
   color: var(--e3-ink-soft);
   letter-spacing: 3rpx;
 }
@@ -372,1066 +297,407 @@ page {
   animation: card-shake-fx 0.15s ease-out;
 }
 @keyframes card-shake-fx {
-  0%, 100% { transform: translateX(-50%); }
-  15% { transform: translateX(calc(-50% - 3rpx)); }
-  30% { transform: translateX(calc(-50% + 3rpx)); }
-  45% { transform: translateX(calc(-50% - 2rpx)); }
-  60% { transform: translateX(calc(-50% + 2rpx)); }
-  75% { transform: translateX(calc(-50% - 1rpx)); }
-  90% { transform: translateX(calc(-50% + 1rpx)); }
+  0% { transform: translateX(0); }
+  30% { transform: translateX(-6rpx); }
+  60% { transform: translateX(6rpx); }
+  100% { transform: translateX(0); }
 }
 
-/* Ripple（保留 rippleActive 逻辑） */
+/* 波纹反馈（保留 rippleActive 逻辑） */
 .ripple-box {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
+  inset: 0;
+  z-index: 2;
   overflow: hidden;
-  border-radius: inherit;
-  z-index: 4;
+  pointer-events: none;
 }
 .ripple-circle {
   position: absolute;
-  top: 50%;
   left: 50%;
-  width: 16rpx;
-  height: 16rpx;
-  margin: -8rpx 0 0 -8rpx;
-  background: rgba(201, 169, 124, 0.35);
+  top: 50%;
+  width: 0;
+  height: 0;
+  margin: 0;
   border-radius: 50%;
-  transform: scale(0.05);
+  background: rgba(255, 253, 248, 0.5);
   opacity: 0;
 }
 .ripple-run {
   animation: ripple-expand 0.15s ease-out forwards;
 }
 @keyframes ripple-expand {
-  0% { transform: scale(0.05); opacity: 1; }
-  100% { transform: scale(40); opacity: 0; }
+  0% { opacity: 0.7; width: 0; height: 0; margin: 0; }
+  100% {
+    opacity: 0;
+    width: 720rpx;
+    height: 720rpx;
+    margin: -360rpx;
+  }
 }
 
-/* 抽牌后：牌面（保留逻辑与类名；宽高由 .painting 决定，勿覆盖） */
-.daily-card-panel {
-  position: relative;
-}
-
-/* E3 装裱: 首页 — 圆角随装裱内缩调整（32rpx − 12rpx 内边距 = 20rpx） */
-.daily-card-thumb-wrap {
-  width: 100%;
-  height: 100%;
-  border-radius: 20rpx;
-  overflow: hidden;
-  position: relative;
-  z-index: 1;
-}
-.daily-card-thumb {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-.daily-card-thumb-wrap.daily-card-thumb-error {
-  background: linear-gradient(160deg, #F4EDE0, #EFE6D8);
-  border: 1rpx dashed var(--e3-line-soft);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.daily-card-thumb-fallback {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.thumb-fallback-name {
-  font-family: var(--e3-serif);
-  font-size: 24rpx;
-  font-weight: 500;
-  color: var(--e3-ink-soft);
-  text-align: center;
-  letter-spacing: 3rpx;
-  padding: 14rpx 24rpx;
-  background: rgba(255, 253, 248, 0.85);
-  border: 1rpx solid var(--e3-line);
-  border-radius: 12rpx;
-  max-width: 80%;
-  line-height: 1.5;
-}
-
-/* 已学习徽章（牌面左上角） */
-.daily-card-badge {
+/* 抽牌后：已学习徽章 + 星尘 */
+.flip-badge {
   position: absolute;
+  right: 20rpx;
   top: 20rpx;
-  left: 20rpx;
   z-index: 3;
-  display: inline-block;
-  padding: 8rpx 22rpx;
-  font-size: 20rpx;
-  font-weight: 500;
-  color: var(--e3-pink-ink);
-  background: rgba(255, 253, 248, 0.92);
-  border: 1rpx solid var(--e3-line-soft);
+  padding: 6rpx 18rpx;
   border-radius: 999rpx;
-  letter-spacing: 3rpx;
-  box-shadow: var(--e3-shadow);
+  background: rgba(250, 246, 239, 0.92);
+  border: 1rpx solid rgba(201, 169, 124, 0.4);
+  font-family: var(--e3-sans);
+  font-size: 18rpx;
+  color: var(--e3-gold-deep);
+  letter-spacing: 2rpx;
 }
-
-/* 星光粒子（仅未学习时） */
 .sparkle-field {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
+  z-index: 2;
   pointer-events: none;
-  z-index: 3;
-  overflow: hidden;
-  border-radius: inherit;
 }
 .sparkle {
   position: absolute;
-  width: 4rpx;
-  height: 4rpx;
-  background: var(--e3-gold);
+  width: 10rpx;
+  height: 10rpx;
   border-radius: 50%;
-  opacity: 0;
-  box-shadow: 0 0 6rpx 2rpx rgba(201, 169, 124, 0.25);
+  background: rgba(255, 253, 248, 0.9);
+  animation: sparkle-float 2.6s ease-in-out infinite;
 }
-.s1 { top: 15%; left: 8%;  animation: sparkle-float 3.2s ease-in-out 0.3s infinite; }
-.s2 { top: 22%; left: 88%; animation: sparkle-float 3.8s ease-in-out 0.9s infinite; }
-.s3 { top: 70%; left: 10%; animation: sparkle-float 2.8s ease-in-out 0.1s infinite; }
+.sparkle.s1 { left: 30%; top: 22%; }
+.sparkle.s2 { left: 68%; top: 30%; animation-delay: 0.9s; }
+.sparkle.s3 { left: 46%; top: 12%; animation-delay: 1.6s; }
 @keyframes sparkle-float {
-  0%, 100% { opacity: 0; transform: translateY(12rpx) scale(0.4); }
-  25% { opacity: 0.3; transform: translateY(-6rpx) scale(1.1); }
-  50% { opacity: 0.15; transform: translateY(-12rpx) scale(0.7); }
-  75% { opacity: 0.25; transform: translateY(-2rpx) scale(0.9); }
+  0%, 100% { opacity: 0.25; transform: translateY(0); }
+  50% { opacity: 0.95; transform: translateY(-14rpx); }
 }
 
-/* 牌名与 CTA（抽牌后） */
-.title-4 {
-  font-weight: 500;
-  line-height: 1.3;
+/* 牌图失败兜底 */
+.art-thumb-wrap {
+  position: absolute;
+  inset: 0;
 }
-.daily-card-name {
-  display: block;
-  font-family: var(--e3-serif);
-  font-size: 36rpx;
-  font-weight: 500;
-  color: var(--e3-ink);
-  letter-spacing: 4rpx;
-  margin-top: 22rpx;
-  text-align: center;
-}
-.daily-card-cta {
-  display: block;
-  font-size: 22rpx;
-  color: var(--e3-ink-faint);
-  letter-spacing: 2rpx;
-  margin-top: 8rpx;
-  text-align: center;
-}
-.daily-card-revisit {
-  display: block;
-  font-size: 22rpx;
-  color: var(--e3-ink-faint);
-  letter-spacing: 2rpx;
-  margin-top: 8rpx;
-  text-align: center;
-}
-
-/* UX 修复: 痛点#1 — 今日牌语小知识卡（E3 奶油卡 + 细金描边 + 衬线小字） */
-.daily-snippet-card {
-  margin: 20rpx auto 0;
-  padding: 18rpx 28rpx;
-  width: 480rpx;
-  box-sizing: border-box;
-  background: var(--e3-cream-hi);
-  border: 1rpx solid var(--e3-line);
-  border-radius: 20rpx;
-  box-shadow: var(--e3-shadow);
-  display: flex;
-  flex-direction: column;
-  gap: 6rpx;
-}
-.daily-snippet-label {
-  font-size: 20rpx;
-  font-weight: 500;
-  color: var(--e3-gold-deep);
-  letter-spacing: 2rpx;
-}
-.daily-snippet-text {
-  font-family: var(--e3-serif);
-  font-size: 24rpx;
-  color: var(--e3-ink-soft);
-  line-height: 1.6;
-  letter-spacing: 1rpx;
-}
-
-/* 保存今日卡牌（弱化为小字链接） */
-.daily-share-link {
+.art-thumb-fallback {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 16rpx;
-  padding: 12rpx 0;
-  position: relative;
-  z-index: 2;
+  background: linear-gradient(160deg, #F6EFE2, #EFE3CD);
 }
-.daily-share-link text {
-  font-size: 20rpx;
-  font-weight: 400;
-  color: var(--e3-ink-faint);
-  letter-spacing: 2rpx;
-  opacity: 0.7;
-  padding: 6rpx 24rpx;
-  border-bottom: 1rpx dashed rgba(201, 169, 124, 0.35);
-}
-.daily-share-link:active text {
-  opacity: 1;
-  color: var(--e3-pink-ink);
-}
-
-/* -----------------------------------------------------------
-   3c. 明日之牌预告 — 回流钩子（衬线小字 · 墨灰 #8A8478 · 细金描边 · E3）
-   ----------------------------------------------------------- */
-.tomorrow-hint {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 22rpx;
-  padding: 12rpx 24rpx;
-  border: 1rpx solid var(--e3-line-soft);
-  border-radius: 16rpx;
-  background: rgba(255, 253, 248, 0.62);
-  box-shadow: var(--e3-shadow);
-  position: relative;
-  z-index: 2;
-}
-.tomorrow-hint-text {
+.thumb-fallback-name {
   font-family: var(--e3-serif);
-  font-size: 24rpx;
-  color: var(--e3-ink-soft); /* #8A8478 墨灰 */
-  letter-spacing: 3rpx;
-}
-.tomorrow-hint:active {
-  background: rgba(232, 196, 190, 0.22);
-}
-
-/* -----------------------------------------------------------
-   4. 牌语 + CTA
-   ----------------------------------------------------------- */
-.phrase {
-  margin-top: 26rpx;
-  text-align: center;
-  position: relative;
-  z-index: 2;
-}
-.phrase-text {
-  font-family: var(--e3-serif);
-  font-size: 30rpx;
+  font-size: 40rpx;
+  letter-spacing: 8rpx;
   color: var(--e3-ink);
-  letter-spacing: 3rpx;
-  line-height: 1.6;
 }
 
-.cta-row {
-  margin-top: 30rpx;
-  display: flex;
-  justify-content: center;
+/* -----------------------------------------------------------
+   5. 牌名 + 今日牌语（主角的注脚）
+   ----------------------------------------------------------- */
+.card-name {
   position: relative;
   z-index: 3;
-}
-
-/* CTA — 哑光雾粉实心 + 深棕字（覆盖全局 .btn/.btn-primary） */
-.btn {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: center;
-  position: relative;
+  gap: 18rpx;
+  margin-top: 16rpx;
 }
-.btn-primary {
-  min-width: 420rpx;
-  height: 104rpx;
-  padding: 0 70rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999rpx;
-  background: var(--e3-pink);
-  color: var(--color-btn-pink-ink);
+.card-name-cn {
   font-family: var(--e3-serif);
   font-weight: 500;
-  font-size: 30rpx;
-  letter-spacing: 8rpx;
-  text-indent: 8rpx; /* 抵消末字间距，视觉居中 */
-  box-shadow: var(--e3-shadow), var(--e3-hi);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
-  box-sizing: border-box;
-}
-.btn-primary--pressed {
-  transform: scale(0.965);
-  box-shadow: 0 2rpx 10rpx rgba(61, 58, 54, 0.08), var(--e3-hi);
-}
-
-/* -----------------------------------------------------------
-   5. ZONE 2 — 入口卡片（星光树洞 / 恢复 / 记录今天）
-   ----------------------------------------------------------- */
-.card-pressed {
-  transform: scale(0.97);
-}
-
-/* 覆盖全局 .card-interactive 深色样式 */
-.card-interactive {
-  background: var(--e3-cream-hi);
-  border: 1rpx solid var(--e3-line);
-  border-radius: 28rpx;
-  padding: 28rpx 32rpx;
-  box-shadow: var(--e3-shadow);
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
-}
-
-.community-entry-card,
-.diary-entry-card,
-.pending-reading-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.community-entry-card {
-  border-color: var(--e3-line-soft);
-}
-
-.diary-entry-left,
-.pending-reading-left {
-  display: flex;
-  align-items: center;
-  gap: 20rpx;
-  min-width: 0;
-  flex: 1;
-}
-
-/* 星光树洞图标（粉雾圆底） */
-.community-entry-icon {
-  width: 88rpx;
-  height: 88rpx;
-  background: rgba(232, 196, 190, 0.42);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  border: 1rpx solid rgba(201, 169, 124, 0.25);
-}
-.community-entry-emoji {
   font-size: 40rpx;
-}
-
-/* 通用小图标 */
-.diary-entry-icon {
-  width: 88rpx;
-  height: 88rpx;
-  flex-shrink: 0;
-}
-.pending-reading-icon-wrap {
-  width: 88rpx;
-  height: 88rpx;
-  background: rgba(232, 196, 190, 0.42);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  border: 1rpx solid rgba(201, 169, 124, 0.25);
-}
-.pending-reading-icon {
-  width: 48rpx;
-  height: 48rpx;
-  display: block;
-}
-
-/* 文字 */
-.body-sm {
-  font-size: 26rpx;
-  font-weight: 500;
+  letter-spacing: 6rpx;
   color: var(--e3-ink);
-  letter-spacing: 1rpx;
-  line-height: 1.5;
 }
-.body-xs {
-  font-size: 22rpx;
-  color: var(--e3-ink-soft);
-  line-height: 1.5;
-}
-.community-entry-label,
-.pending-reading-label,
-.diary-entry-label {
-  display: block;
-  font-family: var(--e3-serif);
-  font-size: 28rpx;
-  letter-spacing: 2rpx;
-}
-.community-entry-hint,
-.pending-reading-hint,
-.diary-entry-hint {
-  display: block;
-  margin-top: 6rpx;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  max-width: 380rpx;
-}
-.diary-entry-arrow,
-.pending-reading-arrow {
-  font-size: 28rpx;
-  color: var(--e3-ink-faint);
-  flex-shrink: 0;
-  margin-left: 16rpx;
-}
-
-/* -----------------------------------------------------------
-   6. 免费次数提示
-   ----------------------------------------------------------- */
-.free-quota-bar {
-  margin: 30rpx 0 6rpx;
-  text-align: center;
-  padding: 16rpx 32rpx;
-}
-.quota-text {
-  font-size: 20rpx;
-  color: var(--e3-ink-faint);
-  letter-spacing: 2rpx;
-  line-height: 1.6;
-}
-.quota-text--exhausted {
-  color: var(--e3-pink-ink);
-  font-weight: 500;
-}
-
-/* -----------------------------------------------------------
-   7. 牌阵区
-   ----------------------------------------------------------- */
-.section {
-  margin-top: 34rpx;
-}
-
-.section-head {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12rpx;
-  margin-bottom: 26rpx;
-}
-
-/* 牌阵区标题行 — 居中标题 + 右侧免费次数小字（P0-1 重构） */
-.spread-head-row {
-  position: relative;
-  margin-bottom: 26rpx;
-}
-.spread-head-row .section-head {
-  margin-bottom: 0;
-}
-.spread-quota {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  max-width: 40%;
-}
-.spread-quota .quota-text {
-  font-size: 20rpx;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  letter-spacing: 1rpx;
-}
-.sec-line {
-  width: 70rpx;
-  height: 1rpx;
-  background: rgba(201, 169, 124, 0.35);
-}
-.sec-dot {
+.card-name-dot {
   width: 6rpx;
   height: 6rpx;
   border-radius: 50%;
-  background: rgba(201, 169, 124, 0.55);
+  background: var(--e3-gold);
 }
-.section-title {
+.card-name-en {
   font-family: var(--e3-serif);
-  font-size: 32rpx;
-  font-weight: 500;
-  color: var(--e3-ink);
+  font-size: 20rpx;
   letter-spacing: 8rpx;
-  display: block;
+  color: var(--e3-gold-deep);
+  text-transform: uppercase;
 }
-
-.spread-grid-2 {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24rpx;
-}
-.spread-grid-2 > .card-interactive {
-  width: calc((100% - 24rpx) / 2);
-  box-sizing: border-box;
-}
-
-/* 牌阵卡 */
-.spread-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.card-phrase {
   position: relative;
-  padding: 40rpx 20rpx 34rpx;
-  gap: 10rpx;
-}
-.spread-card .body-sm {
-  font-family: var(--e3-serif);
-  font-size: 28rpx;
-  letter-spacing: 2rpx;
-}
-.spread-card .body-xs {
-  font-size: 20rpx;
-  letter-spacing: 1rpx;
-}
-
-.spread-icon {
-  width: 56rpx;
-  height: 56rpx;
-  display: block;
-  margin: 0 auto 14rpx;
-  opacity: 0.9;
-}
-
-/* 免费 / 会员标签 */
-.spread-tag {
-  position: absolute;
-  top: 14rpx;
-  right: 14rpx;
-  font-size: 20rpx;
-  font-weight: 500;
-  padding: 4rpx 14rpx;
-  border-radius: 999rpx;
-  line-height: 1.5;
-  letter-spacing: 1rpx;
-  z-index: 2;
-  pointer-events: none;
-}
-.spread-tag-free {
-  color: #8A6F4E;
-  background: rgba(201, 169, 124, 0.14);
-}
-.spread-tag-premium {
-  color: var(--color-btn-pink-ink);
-  background: var(--e3-pink);
-}
-
-/* 主题小标签 */
-.spread-theme-chip {
-  display: inline-block;
+  z-index: 3;
+  text-align: center;
   margin-top: 8rpx;
-  padding: 2rpx 14rpx;
-  font-size: 20rpx;
-  font-weight: 500;
-  border-radius: 999rpx;
+  font-size: 27rpx;
+  letter-spacing: 2rpx;
+  color: var(--e3-ink-soft);
   line-height: 1.6;
-  letter-spacing: 1rpx;
-}
-.spread-theme-chip--love {
-  color: var(--e3-pink-ink);
-  background: rgba(232, 196, 190, 0.35);
-}
-.spread-theme-chip--career {
-  color: #7A8F74;
-  background: rgba(159, 184, 154, 0.30);
 }
 
-/* 查看更多 */
-.more-spreads {
+/* -----------------------------------------------------------
+   6. 能量注脚：一行 · 极淡细金条（4 项均可点击）
+   ----------------------------------------------------------- */
+.energy {
+  position: relative;
+  z-index: 3;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12rpx;
-  margin-top: 24rpx;
-  padding: 26rpx 32rpx;
-  border-radius: 28rpx;
-  background: var(--e3-cream-hi);
-  border: 1rpx dashed var(--e3-line-soft);
-  box-shadow: none;
-}
-.more-text {
-  font-family: var(--e3-serif);
-  font-size: 26rpx;
-  font-weight: 500;
-  color: var(--e3-ink-soft);
-  letter-spacing: 2rpx;
-}
-.more-arrow {
-  font-size: 26rpx;
-  color: var(--e3-ink-faint);
-  transition: transform 0.15s ease;
-}
-.card-interactive:active .more-arrow {
-  transform: translateX(6rpx);
-}
-
-/* 耗尽态：补充解读次数（小号胶囊按钮 · 单入口） */
-.refill-quota-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 26rpx auto 0;
-  padding: 18rpx 48rpx;
+  margin: 16rpx 10rpx 0;
+  height: 52rpx;
   border-radius: 999rpx;
-  background: var(--e3-cream-hi);
-  border: 1rpx solid rgba(201, 169, 124, 0.45);
-  box-shadow: var(--e3-shadow), var(--e3-hi);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  width: fit-content;
+  background: rgba(201, 169, 124, 0.08);
+  border: 1rpx solid rgba(201, 169, 124, 0.2);
 }
-.refill-quota-btn--pressed {
-  transform: scale(0.96);
-  box-shadow: 0 2rpx 10rpx rgba(61, 58, 54, 0.08), var(--e3-hi);
+.eg-label {
+  font-family: var(--e3-sans);
+  font-size: 19rpx;
+  color: var(--e3-gold);
+  letter-spacing: 4rpx;
 }
-.refill-quota-text {
+.eg-sep {
+  width: 6rpx;
+  height: 6rpx;
+  border-radius: 50%;
+  background: rgba(201, 169, 124, 0.45);
+  flex-shrink: 0;
+}
+.eg {
+  display: flex;
+  align-items: baseline;
+  gap: 4rpx;
+  padding: 10rpx 8rpx;
+  margin: 0 -4rpx;
+  border-radius: 12rpx;
+  font-family: var(--e3-sans);
+  font-size: 19rpx;
+  color: var(--e3-ink-soft);
+  letter-spacing: 1rpx;
+  white-space: nowrap;
+}
+.eg-pressed {
+  background: rgba(201, 169, 124, 0.32);
+}
+.eg-hot {
+  color: var(--e3-pink-ink);
+}
+.eg-score {
   font-family: var(--e3-serif);
-  font-size: 24rpx;
-  font-weight: 500;
+  font-style: normal;
+  font-size: 22rpx;
   color: var(--e3-gold-deep);
-  letter-spacing: 3rpx;
+}
+.eg-hot .eg-score {
+  color: var(--e3-pink-ink);
 }
 
 /* -----------------------------------------------------------
-   7b. 今日快捷 — 三合一紧凑横排（树洞 / 记录今天 / 继续解读）
+   7. 联动解读：牌 × 天象（主角的展开）
    ----------------------------------------------------------- */
-.quick-entry-row {
+.link {
+  position: relative;
+  z-index: 3;
+  margin-top: 14rpx;
+  text-align: center;
   display: flex;
-  gap: 20rpx;
-  margin-top: 30rpx;
+  flex-direction: column;
+  gap: 4rpx;
 }
-.quick-entry-card {
+.link-line1 {
+  font-size: 25rpx;
+  letter-spacing: 2rpx;
+  color: var(--e3-ink);
+}
+.link-line2 {
+  font-family: var(--e3-sans);
+  font-size: 24rpx;
+  letter-spacing: 1rpx;
+  color: var(--e3-ink-soft);
+  line-height: 1.6;
+}
+
+/* -----------------------------------------------------------
+   8. 明日之牌预告（回流钩子）
+   ----------------------------------------------------------- */
+.tomorrow {
+  position: relative;
+  z-index: 6;
+  margin-top: 10rpx;
+}
+.tline {
+  width: 264rpx;
+  border-top: 1rpx dashed rgba(201, 169, 124, 0.4);
+  margin: 0 auto;
+}
+.trow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  margin-top: 12rpx;
+  height: 76rpx;
+  border-radius: 16rpx;
+}
+.trow-pressed {
+  opacity: 0.6;
+}
+.t-lock {
+  font-size: 24rpx;
+  color: var(--e3-gold);
+}
+.t-text {
+  font-family: var(--e3-serif);
+  font-size: 21rpx;
+  color: var(--e3-gold);
+  letter-spacing: 5rpx;
+}
+
+/* -----------------------------------------------------------
+   9. 抽牌后动作：查看详解 / 保存今日卡牌
+   ----------------------------------------------------------- */
+.after-row {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  margin-top: 8rpx;
+}
+.see-detail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 88rpx;
+  border-radius: 999rpx;
+  border: 1rpx solid var(--e3-line-soft);
+  background: var(--e3-cream-hi);
+  font-size: 25rpx;
+  letter-spacing: 6rpx;
+  color: var(--e3-gold-deep);
+  box-shadow: var(--e3-hi);
+}
+.see-detail:active {
+  transform: scale(0.975);
+}
+.daily-share-link {
+  text-align: center;
+  font-size: 21rpx;
+  color: var(--e3-ink-faint);
+  letter-spacing: 4rpx;
+  height: 64rpx;
+  line-height: 64rpx;
+}
+
+/* -----------------------------------------------------------
+   10. 底部降权入口（占卜 / 树洞 / 记录今天 · 注脚）
+   ----------------------------------------------------------- */
+.foot-entry-row {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  gap: 18rpx;
+  margin-top: 36rpx;
+  justify-content: center;
+}
+.foot-entry {
   flex: 1;
-  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 14rpx;
-  padding: 30rpx 12rpx 26rpx;
+  gap: 8rpx;
+  padding: 20rpx 0 16rpx;
+  border-radius: 22rpx;
   background: var(--e3-cream-hi);
-  border: 1rpx solid var(--e3-line);
-  border-radius: 24rpx;
-  box-shadow: var(--e3-shadow);
-  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  border: 1rpx solid rgba(201, 169, 124, 0.22);
+  box-shadow: var(--e3-shadow), var(--e3-hi);
 }
-.quick-entry-icon {
-  width: 76rpx;
-  height: 76rpx;
-  border-radius: 50%;
-  background: rgba(232, 196, 190, 0.42);
-  border: 1rpx solid rgba(201, 169, 124, 0.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.foot-entry:active {
+  transform: scale(0.97);
 }
-.quick-entry-emoji {
-  font-size: 36rpx;
-  line-height: 1;
+.foot-entry-emoji {
+  font-size: 34rpx;
+  color: var(--e3-gold-deep);
 }
-.quick-entry-img {
-  width: 40rpx;
-  height: 40rpx;
-  display: block;
-}
-.quick-entry-label {
-  font-family: var(--e3-serif);
-  font-size: 24rpx;
-  color: var(--e3-ink);
+.foot-entry-label {
+  font-family: var(--e3-sans);
+  font-size: 20rpx;
+  color: var(--e3-ink-soft);
   letter-spacing: 2rpx;
+}
+
+/* 免费次数小字（注脚） */
+.quota-line {
+  position: relative;
+  z-index: 3;
   text-align: center;
-  white-space: nowrap;
+  margin-top: 18rpx;
+}
+.quota-text {
+  font-family: var(--e3-sans);
+  font-size: 19rpx;
+  color: var(--e3-ink-faint);
+  letter-spacing: 2rpx;
+}
+.quota-text--exhausted {
+  color: var(--e3-pink-ink);
+  padding: 10rpx 20rpx;
 }
 
 /* -----------------------------------------------------------
-   8. 加载骨架（奶油版）
+   11. 加载骨架 / 错误状态（保留原有类名与视觉）
    ----------------------------------------------------------- */
 .skeleton {
-  background: linear-gradient(90deg, var(--e3-paper) 25%, rgba(255, 253, 248, 0.75) 37%, var(--e3-paper) 63%);
+  background: linear-gradient(90deg, #F2ECDF 25%, #FAF6EF 50%, #F2ECDF 75%);
   background-size: 400% 100%;
-  animation: shimmer-sweep 1.8s ease-in-out infinite;
-  border-radius: 12rpx;
+  animation: shimmer-sweep 1.4s ease infinite;
 }
 @keyframes shimmer-sweep {
-  0% { background-position: 100% 50%; }
-  100% { background-position: 0 50%; }
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
 }
 .skeleton--circle {
-  width: 100rpx;
-  height: 100rpx;
+  width: 120rpx;
+  height: 120rpx;
   border-radius: 50%;
 }
 .skeleton--text {
-  height: 28rpx;
-  width: 100%;
-  margin-bottom: 16rpx;
+  height: 32rpx;
+  border-radius: 12rpx;
 }
 .skeleton--text-sm {
   height: 24rpx;
-  width: 100%;
-  margin-bottom: 16rpx;
-}
-.skeleton--title {
-  height: 36rpx;
-  width: 60%;
-  margin-bottom: 16rpx;
+  border-radius: 10rpx;
 }
 .skeleton--block {
-  height: 200rpx;
-  border-radius: 24rpx;
-}
-.skeleton--card-sm {
-  height: 140rpx;
-  border-radius: 24rpx;
-}
-.skeleton-grid-3 {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24rpx;
-}
-.skeleton-grid-3 > .skeleton--card-sm {
-  width: calc((100% - 48rpx) / 3);
+  border-radius: 32rpx;
 }
 
-/* -----------------------------------------------------------
-   9. 错误状态（E3 奶油版）
-   ----------------------------------------------------------- */
 .error-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 160rpx 32rpx 80rpx;
-  text-align: center;
+  min-height: 70vh;
+  gap: 24rpx;
 }
 .error-text {
   font-family: var(--e3-serif);
-  font-size: 40rpx;
-  font-weight: 500;
+  font-size: 34rpx;
   color: var(--e3-ink);
-  margin-bottom: 16rpx;
-  display: block;
   letter-spacing: 4rpx;
 }
 .error-hint {
+  font-family: var(--e3-sans);
   font-size: 24rpx;
-  color: var(--e3-ink-soft);
-  margin-bottom: 48rpx;
-  display: block;
-  line-height: 1.6;
-}
-
-/* 错误页重试按钮（覆盖全局 .btn-ghost） */
-button.btn-ghost {
-  background: var(--e3-cream-hi);
-  color: var(--e3-ink-soft);
-  border: 1rpx solid var(--e3-line-soft);
-  border-radius: 999rpx;
-  padding: 0 56rpx;
-  height: 88rpx;
-  line-height: 88rpx;
-  font-size: 26rpx;
-  font-weight: 500;
-  letter-spacing: 3rpx;
-  box-shadow: var(--e3-shadow);
-}
-button.btn-ghost::after {
-  border: none;
-}
-button.btn-ghost:active {
-  transform: scale(0.96);
-  color: var(--e3-ink);
-}
-
-/* -----------------------------------------------------------
-   10. 引导浮层（onboarding · 保留全部逻辑与类名）
-   ----------------------------------------------------------- */
-.onboarding-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(250, 246, 239, 0.96);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 48rpx;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-.onboarding-overlay--visible {
-  opacity: 1;
-  pointer-events: auto;
-}
-.onboarding-card {
-  position: relative;
-  width: 100%;
-  max-width: 620rpx;
-  background: var(--e3-cream-hi);
-  border: 1rpx solid var(--e3-line);
-  border-radius: 32rpx;
-  padding: 48rpx 40rpx 36rpx;
+  color: var(--e3-ink-faint);
   text-align: center;
-  box-shadow: 0 16rpx 60rpx rgba(61, 58, 54, 0.14), var(--e3-hi);
-  animation: overlay-enter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-@keyframes overlay-enter {
-  0% { opacity: 0; transform: scale(0.92); }
-  100% { opacity: 1; transform: scale(1); }
+  padding: 0 40rpx;
 }
 
-.onboarding-all-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 26rpx;
-  margin-bottom: 34rpx;
-}
-.onboarding-step-mini {
-  display: flex;
-  align-items: center;
-  gap: 22rpx;
-  text-align: left;
-}
-.onboarding-emoji-wrap {
-  width: 88rpx;
-  height: 88rpx;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(232, 196, 190, 0.42);
-  border: 1rpx solid rgba(201, 169, 124, 0.25);
-  flex-shrink: 0;
-}
-.onboarding-emoji {
-  font-size: 40rpx;
-}
-.onboarding-step-mini-text {
-  display: flex;
-  flex-direction: column;
-  gap: 6rpx;
-}
-.onboarding-step-mini-title {
-  font-family: var(--e3-serif);
-  font-size: 30rpx;
-  font-weight: 500;
-  color: var(--e3-ink);
-  letter-spacing: 3rpx;
-  display: block;
-}
-.onboarding-step-mini-desc {
-  font-size: 22rpx;
-  color: var(--e3-ink-soft);
-  letter-spacing: 1rpx;
-  display: block;
-}
-
-.zodiac-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 16rpx;
-  margin: 34rpx 0 20rpx;
-  width: 100%;
-  max-width: 520rpx;
-}
-.zodiac-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: calc((100% - 32rpx) / 3);
-  padding: 18rpx 8rpx;
-  background: rgba(201, 169, 124, 0.07);
-  border: 1rpx solid rgba(201, 169, 124, 0.22);
-  border-radius: 20rpx;
-  box-sizing: border-box;
-  transition: transform 0.2s ease-out, background 0.2s ease-out, border-color 0.2s ease-out;
-}
-.zodiac-item:active {
-  background: rgba(232, 196, 190, 0.35);
-  border-color: rgba(201, 169, 124, 0.45);
-  transform: scale(0.95);
-}
-.zodiac-item-emoji {
-  font-size: 36rpx;
-  display: block;
-  margin-bottom: 6rpx;
-}
-.zodiac-item-name {
-  font-size: 20rpx;
-  color: var(--e3-ink-soft);
-  letter-spacing: 1rpx;
-  display: block;
-}
-
-.zodiac-skip {
-  display: inline-block;
-  padding: 12rpx 24rpx;
-}
-.zodiac-skip-text {
-  font-size: 22rpx;
-  color: var(--e3-ink-soft);
-  letter-spacing: 2rpx;
-  border-bottom: 1rpx dashed rgba(201, 169, 124, 0.5);
-}
-
-/* -----------------------------------------------------------
-   11. 塔罗简介浮层（保留全部逻辑与类名）
-   ----------------------------------------------------------- */
-.tarot-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(250, 246, 239, 0.96);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 48rpx;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-.tarot-overlay--visible {
-  opacity: 1;
-  pointer-events: auto;
-}
-.tarot-overlay-content {
-  position: relative;
-  width: 100%;
-  max-width: 620rpx;
-  background: var(--e3-cream-hi);
-  border: 1rpx solid var(--e3-line);
-  border-radius: 32rpx;
-  padding: 56rpx 44rpx 44rpx;
-  text-align: center;
-  overflow: hidden;
-  box-shadow: 0 16rpx 60rpx rgba(61, 58, 54, 0.14), var(--e3-hi);
-  animation: overlay-enter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-.tarot-overlay-stars {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: hidden;
-  border-radius: inherit;
-}
-.to-star {
-  position: absolute;
-  width: 4rpx;
-  height: 4rpx;
-  background: var(--e3-gold);
-  border-radius: 50%;
-  opacity: 0;
-  box-shadow: 0 0 6rpx 2rpx rgba(201, 169, 124, 0.2);
-}
-.to-star.s1 { top: 12%; left: 10%; animation: sparkle-float 3.2s ease-in-out 0.3s infinite; }
-.to-star.s2 { top: 18%; left: 85%; animation: sparkle-float 3.8s ease-in-out 0.9s infinite; }
-.to-star.s3 { top: 75%; left: 8%; animation: sparkle-float 2.8s ease-in-out 0.1s infinite; }
-.to-star.s4 { top: 70%; left: 88%; animation: sparkle-float 3.5s ease-in-out 1.6s infinite; }
-.to-star.s5 { top: 85%; left: 45%; animation: sparkle-float 4.2s ease-in-out 2.2s infinite; }
-.to-star.s6 { top: 30%; left: 50%; animation: sparkle-float 2.6s ease-in-out 0.7s infinite; }
-
-.tarot-overlay-icon {
-  position: relative;
-  margin-bottom: 28rpx;
-}
-.to-card-icon {
-  width: 112rpx;
-  height: 112rpx;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(232, 196, 190, 0.42);
-  border: 1rpx solid rgba(201, 169, 124, 0.25);
-  border-radius: 50%;
-  position: relative;
-  z-index: 1;
-}
-.to-card-emoji {
-  font-size: 48rpx;
-}
-.tarot-overlay-title {
-  display: block;
-  font-family: var(--e3-serif);
-  font-size: 40rpx;
-  font-weight: 500;
-  color: var(--e3-ink);
-  line-height: 1.3;
-  letter-spacing: 6rpx;
-  margin-bottom: 20rpx;
-  position: relative;
-  z-index: 1;
-}
-.tarot-overlay-body {
-  display: block;
-  font-size: 24rpx;
-  color: var(--e3-ink-soft);
-  line-height: 1.9;
-  letter-spacing: 2rpx;
-  position: relative;
-  z-index: 1;
+/* 按压反馈（hover-class 复用） */
+.card-pressed {
+  transform: scale(0.97);
   opacity: 0.92;
-}
-.tarot-overlay-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 36rpx auto 0;
-  padding: 0 64rpx;
-  height: 96rpx;
-  background: var(--e3-pink);
-  border-radius: 999rpx;
-  color: var(--color-btn-pink-ink);
-  font-family: var(--e3-serif);
-  font-size: 28rpx;
-  font-weight: 500;
-  letter-spacing: 6rpx;
-  text-indent: 6rpx;
-  box-shadow: var(--e3-shadow), var(--e3-hi);
-  position: relative;
-  z-index: 1;
-  transition: transform 0.15s ease;
-  max-width: 340rpx;
-  width: 100%;
-}
-.tarot-overlay-btn:active {
-  transform: scale(0.96);
-}
-
-/* -----------------------------------------------------------
-   12. 无障碍：减少动效
-   ----------------------------------------------------------- */
-@media (prefers-reduced-motion: reduce) {
-  view, text, image, button, scroll-view, swiper, swiper-item, canvas {
-    animation-duration: 0s !important;
-    animation-delay: 0s !important;
-    transition-duration: 0s !important;
-  }
-  .sparkle-field .sparkle { opacity: 0; }
-  .to-star { animation: none !important; opacity: 0.08; }
-  .tarot-overlay-content { animation: none; }
 }

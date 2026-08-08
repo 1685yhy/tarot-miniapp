@@ -189,7 +189,8 @@ Page({
   },
 
   onGoBack() {
-    wx.switchTab({ url: '/pages/encyclopedia/encyclopedia' });
+    // 百科已改为普通页面（3 Tab 改造后）
+    wx.navigateBack({ delta: 1 });
   },
 
   /** Toggle card favorite (local storage) */

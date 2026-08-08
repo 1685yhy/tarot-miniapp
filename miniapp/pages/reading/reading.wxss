@@ -377,6 +377,22 @@ page {
 }
 
 /* ==============================
+   开发 03 · 能量上下文联动（提问页顶部小字）
+   ============================== */
+.energy-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: -12rpx 0 20rpx;
+  min-height: 44rpx;
+}
+.energy-hint-text {
+  font-size: 22rpx;
+  color: var(--color-text-tertiary);
+  letter-spacing: 2rpx;
+}
+
+/* ==============================
    Question box — premium stationery
    ============================== */
 .question-box {

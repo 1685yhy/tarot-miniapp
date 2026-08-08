@@ -566,6 +566,22 @@
   margin-bottom: var(--spacing-xl);
 }
 
+/* ================================================================
+   开发 03 · 今日能量关联 — 解读与今日能量同频（一行小字）
+   ================================================================ */
+.energy-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: -20rpx 0 32rpx;
+  min-height: 44rpx;
+}
+.energy-link-text {
+  font-size: 23rpx;
+  color: var(--color-text-tertiary);
+  letter-spacing: 2rpx;
+}
+
 /* ---- Letter Body Container — hero card ---- */
 .letter-body {
   background: rgba(201, 169, 124, 0.12);

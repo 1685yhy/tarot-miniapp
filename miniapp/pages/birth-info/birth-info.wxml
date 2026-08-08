@@ -1,0 +1,81 @@
+<!-- pages/birth-info/birth-info.wxml -->
+<!-- 出生信息（可选 · 日期自动推导星座） -->
+
+<view class="page">
+  <view class="wash wash-pink"></view>
+  <view class="wash wash-gold"></view>
+
+  <view class="fp-hero">
+    <text class="fp-h3">完善你的星盘 <em>✦</em></text>
+    <text class="fp-p">可选 · 填了才能解锁月亮与上升（二期）</text>
+  </view>
+
+  <!-- ===== 已填 → 摘要 + 修改 ===== -->
+  <view wx:if="{{!editing && saved}}" class="birth-sum">
+    <text class="bs-t">✦ 星盘 · 已完善</text>
+    <view class="bs-row">
+      <text class="bs-l">出生日期</text>
+      <text class="bs-v">{{fmtDate(saved.date)}} · {{zodiacName(saved.zodiac)}}</text>
+    </view>
+    <view class="bs-row">
+      <text class="bs-l">出生时间</text>
+      <text class="bs-v" wx:if="{{saved.time}}">{{saved.time}}</text>
+      <text class="bs-v bs-v-opt" wx:else>未填写（可选）</text>
+    </view>
+    <view class="bs-row">
+      <text class="bs-l">出生城市</text>
+      <text class="bs-v" wx:if="{{saved.city}}">{{saved.city}}</text>
+      <text class="bs-v bs-v-opt" wx:else>未填写（可选）</text>
+    </view>
+    <view class="cta cta-ghost" bindtap="onEdit" role="button" aria-label="修改出生信息" hover-class="cta-pressed">
+      <text>修改</text>
+    </view>
+  </view>
+
+  <!-- ===== 填写表单 ===== -->
+  <view wx:if="{{editing}}">
+    <view class="bf-row">
+      <view class="bf-label">
+        <text>出生日期</text>
+        <text class="bf-opt">· 必填</text>
+      </view>
+      <view class="bf-date">
+        <picker class="bf-sel" mode="selector" range="{{years}}" value="{{yearIndex}}" bindchange="onYearChange">
+          <view class="bf-sel-box">{{year}}年</view>
+        </picker>
+        <picker class="bf-sel" mode="selector" range="{{months}}" value="{{monthIndex}}" bindchange="onMonthChange">
+          <view class="bf-sel-box">{{month}}月</view>
+        </picker>
+        <picker class="bf-sel" mode="selector" range="{{days}}" value="{{dayIndex}}" bindchange="onDayChange">
+          <view class="bf-sel-box">{{day}}日</view>
+        </picker>
+      </view>
+      <text class="bf-derive" wx:if="{{derived}}">日期将自动对应星座：{{derived.emoji}} {{derived.name}}</text>
+    </view>
+
+    <view class="bf-row">
+      <view class="bf-label">
+        <text>出生时间</text>
+        <text class="bf-opt">· 可选</text>
+      </view>
+      <input class="bf-input" placeholder="例如 14:30" value="{{time}}" maxlength="5" bindinput="onTimeInput" />
+    </view>
+
+    <view class="bf-row">
+      <view class="bf-label">
+        <text>出生城市</text>
+        <text class="bf-opt">· 可选</text>
+      </view>
+      <input class="bf-input" placeholder="例如 北京" value="{{city}}" maxlength="12" bindinput="onCityInput" />
+    </view>
+
+    <view class="bf-note">
+      <text class="bf-note-ic">✦</text>
+      <text class="bf-note-tx">填得越全，星光越懂你\n可选 · 仅用于星座计算，绝不外传</text>
+    </view>
+
+    <view class="cta" bindtap="onSave" role="button" aria-label="保存出生信息" hover-class="cta-pressed">
+      <text>保存</text>
+    </view>
+  </view>
+</view>

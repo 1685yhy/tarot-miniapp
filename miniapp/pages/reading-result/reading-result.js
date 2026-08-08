@@ -3,6 +3,7 @@ const { request, getFriendlyError } = require('../../utils/api');
 const { cardEnter } = require('../../utils/animate');
 const { computeImagePath, pngFallbackPath } = require('../../utils/cards');
 const { playCardRevealSound } = require('../../utils/sound');
+const { fetchTodayEnergy } = require('../../utils/energy');
 const analytics = require('../../utils/analytics');
 const { checkLogin } = require('../../utils/auth');
 
@@ -109,6 +110,9 @@ Page({
 
     // Task 4: Reflection question
     reflectionQuestion: '',
+
+    // 开发 03：今日能量关联（解读主题 ↔ 今日能量同频一行）
+    energyLink: '',
 
     // Task 2.7: A/B test — first-paid deep reading price
     priceTestBucket: '9.9',   // '9.9' | '19.9' — set in onLoad from openid hash
@@ -421,6 +425,8 @@ Page({
       this._animateCardReveal();
       // Play reveal sound when reading result appears
       try { playCardRevealSound(); } catch(e) {}
+      // 开发 03：今日能量关联（异步 · 失败静默隐藏）
+      this._loadEnergyLink(reading);
 
       // ── Onboarding Step 3: hint next to action items ──
       const onboardingCompleted = wx.getStorageSync('onboarding_completed');
@@ -441,6 +447,33 @@ Page({
       }
     } else if (this._cachedError) {
       this.setData({ pageLoading: false, pageError: this._cachedError });
+    }
+  },
+
+  /* ---------------------------------------------------------------
+     开发 03 · 今日能量关联
+     解读主题 ↔ 今日能量同频：love→爱情 / career→事业 / finance→事业(财运) / general→当日最高
+     例：「今日爱情能量 81——牌意与能量同频」（接口失败静默隐藏）
+     --------------------------------------------------------------- */
+  async _loadEnergyLink(reading) {
+    if (!reading) return;
+    try {
+      const data = await fetchTodayEnergy();
+      const byKey = {};
+      (data.items || []).forEach((i) => { byKey[i.key] = i.score; });
+      let key = '';
+      const theme = reading.theme || '';
+      if (theme === 'love') key = 'love';
+      else if (theme === 'career' || theme === 'finance') key = 'career';
+      else if (data.items && data.items.length) {
+        key = data.items.reduce((a, b) => (b.score > a.score ? b : a), data.items[0]).key;
+      }
+      const dimName = { love: '爱情', career: '事业', social: '人际', health: '健康' }[key] || '';
+      const score = byKey[key];
+      if (!dimName || score === undefined) return;
+      this.setData({ energyLink: `今日${dimName}能量 ${score}——牌意与能量同频` });
+    } catch (_err) {
+      // 静默隐藏，不打扰解读结果
     }
   },
 
