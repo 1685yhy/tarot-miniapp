@@ -1020,13 +1020,15 @@ Page({
     const saved = wx.getStorageSync('saved_readings') || [];
     if (saved.includes(reading.id)) {
       this.setData({ isSaved: true });
-      wx.showToast({ title: '已收藏', icon: 'success' });
+      /* UX 修复: 痛点#5 — 收藏为本地存储，toast 明确说明存放位置 */
+      wx.showToast({ title: '已收藏（保存在本机）', icon: 'success' });
       return;
     }
     saved.push(reading.id);
     wx.setStorageSync('saved_readings', saved);
     this.setData({ isSaved: true });
-    wx.showToast({ title: '已收藏', icon: 'success' });
+    /* UX 修复: 痛点#5 — 收藏为本地存储，toast 明确说明存放位置 */
+    wx.showToast({ title: '已收藏（保存在本机）', icon: 'success' });
   },
 
   onUnsaveReading() {

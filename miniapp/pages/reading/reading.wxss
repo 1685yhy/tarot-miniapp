@@ -460,6 +460,51 @@ page {
 }
 
 /* ==============================
+   UX 修复: 痛点#4 — 示例问题引导 chips
+   ============================== */
+.sample-question-wrap {
+  margin: -8rpx 0 var(--spacing-lg);
+}
+
+.sample-question-hint {
+  display: block;
+  text-align: center;
+  font-size: var(--font-size-caption);
+  color: var(--color-lavender-dark);
+  letter-spacing: 1rpx;
+  margin-bottom: 16rpx;
+  opacity: 0.85;
+}
+
+.sample-question-chips {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.sample-question-chip {
+  padding: 10rpx 24rpx;
+  background: rgba(201, 169, 124, 0.08);
+  border: 1rpx solid rgba(201, 169, 124, 0.28);
+  border-radius: 999rpx;
+  transition: transform 0.15s ease-out, background 0.15s ease-out, border-color 0.15s ease-out;
+}
+
+.sample-question-chip:active {
+  transform: scale(0.95);
+  background: rgba(201, 169, 124, 0.16);
+  border-color: var(--color-gold-dark);
+}
+
+.sample-question-chip-text {
+  font-size: var(--font-size-caption);
+  color: var(--color-gold-dark);
+  letter-spacing: 1rpx;
+  white-space: nowrap;
+}
+
+/* ==============================
    Enhanced question prompt
    ============================== */
 .question-prompt {
@@ -1272,6 +1317,27 @@ page {
   box-sizing: border-box;
   min-height: 140rpx;
   min-width: 80rpx;
+  /* UX 修复: 痛点#4 — 为"推荐"小标签提供定位上下文 */
+  position: relative;
+  overflow: visible;
+}
+
+/* UX 修复: 痛点#4 — 解读师"推荐"小标签（E3 细金胶囊） */
+.persona-reco-tag {
+  position: absolute;
+  top: 8rpx;
+  right: 8rpx;
+  padding: 2rpx 14rpx;
+  background: rgba(201, 169, 124, 0.14);
+  border: 1rpx solid rgba(201, 169, 124, 0.42);
+  border-radius: 999rpx;
+}
+
+.persona-reco-text {
+  font-size: 18rpx;
+  color: var(--color-gold-dark);
+  letter-spacing: 1rpx;
+  white-space: nowrap;
 }
 
 .persona-card:active {

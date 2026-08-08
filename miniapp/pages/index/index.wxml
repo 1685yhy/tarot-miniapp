@@ -128,8 +128,15 @@ module.exports = { fmtDate: fmtDate };
         <text class="title-4 daily-card-name">{{dailyCard.name_zh}}</text>
 
         <!-- CTA text -->
-        <text wx:if="{{!dailyCardFlipped}}" class="body-sm daily-card-cta">点击学习这张牌 ✦</text>
+        <!-- UX 修复: 痛点#1 — 抽牌文案更明确地指向详解 -->
+        <text wx:if="{{!dailyCardFlipped}}" class="body-sm daily-card-cta">查看今日详解 ✦</text>
         <text wx:else class="body-xs daily-card-revisit">点击回顾今日学习</text>
+
+        <!-- UX 修复: 痛点#1 — 今日牌语小知识卡（抽牌后牌面下方直接可见 1-2 句解读） -->
+        <view wx:if="{{dailyCardSnippet}}" class="daily-snippet-card">
+          <text class="daily-snippet-label">今日牌语 ✦</text>
+          <text class="daily-snippet-text">{{dailyCardSnippet}}</text>
+        </view>
       </view>
 
       <!-- 每日一牌打卡 — 保存今日卡牌（保留现有逻辑） -->

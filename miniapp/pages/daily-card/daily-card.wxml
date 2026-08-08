@@ -99,6 +99,12 @@
     </view>
     <text class="ts-symbol">{{teachingSymbol}}</text>
     <text class="ts-life">{{teachingLife}}</text>
+    <!-- UX 修复: 痛点#2 — 个性化关键词胶囊（keywords_upright 渲染为胶囊标签行，详解折叠时也可见） -->
+    <view wx:if="{{cardKeywordsList.length > 0}}" class="snippet-keywords">
+      <view class="keyword-tag" wx:for="{{cardKeywordsList}}" wx:key="index" wx:for-item="kw">
+        <text class="keyword-tag-text">{{kw}}</text>
+      </view>
+    </view>
   </view>
 
   <!-- ===== Teaching area (revealed after flip, 详解区紧跟牌面小知识) ===== -->

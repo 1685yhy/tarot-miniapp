@@ -88,6 +88,9 @@ Page({
     dailyShareCardName: '',
     dailyShareCardDate: '',
 
+    /* UX 修复: 痛点#1 — 首页抽牌后直接展示的"今日牌语"（teaching snippet，失败静默隐藏） */
+    dailyCardSnippet: null,
+
     // Annual report season flag (Dec-Jan)
     isAnnualReportSeason: false,
     annualReportYear: new Date().getFullYear(),
@@ -465,7 +468,8 @@ Page({
 
   async drawDailyCard() {
     if (this.data.drawingLoading) return;
-    this.setData({ drawingLoading: true });
+    /* UX 修复: 痛点#1 — 重新抽牌时清空旧牌语，避免残留 */
+    this.setData({ drawingLoading: true, dailyCardSnippet: null });
 
     // --- wx.createAnimation 3-step sequence (when enabled) ---
     // Replaces the CSS-only shake+ripple with native animation.
@@ -503,6 +507,8 @@ Page({
       card.imagePath = computeImagePath(card, IMAGE_BASE);
       this.setData({ dailyCard: card, drawingLoading: false, dailyCardFlipped: true });
       wx.hideLoading();
+      /* UX 修复: 痛点#1 — 抽牌成功后拉取今日牌语（teaching snippet） */
+      this._loadDailyCardSnippet(card.id);
       // 保存到globalData供详情页使用
       getApp().globalData.dailyCard = card;
       // 同步翻牌标记：daily-card 页据此自动显示牌面（否则跳转过去只见牌背）
@@ -734,6 +740,8 @@ Page({
     const app = getApp();
     if (app.globalData.dailyCard) {
       this.setData({ dailyCard: app.globalData.dailyCard });
+      /* UX 修复: 痛点#1 — 恢复牌面时同步拉取今日牌语 */
+      this._loadDailyCardSnippet(app.globalData.dailyCard.id);
       return;
     }
     if (this.data.hasDrawnToday) {
@@ -744,9 +752,36 @@ Page({
         card.imagePath = computeImagePath(card, IMAGE_BASE);
         app.globalData.dailyCard = card;
         this.setData({ dailyCard, dailyCardRestoring: false });
+        /* UX 修复: 痛点#1 — 恢复牌面时同步拉取今日牌语 */
+        this._loadDailyCardSnippet(card.id);
       } catch (_err) {
         this.setData({ dailyCardRestoring: false });
       }
+    }
+  },
+
+  /* ---------------------------------------------------------------
+     UX 修复: 痛点#1 — 首页今日牌语（teaching snippet：symbols 第一个 + life_connection）
+     --------------------------------------------------------------- */
+
+  /** 抽牌/恢复成功后拉取 teaching snippet 并 setData；任何失败静默隐藏，不阻塞主流程 */
+  async _loadDailyCardSnippet(cardId) {
+    if (!cardId) return;
+    try {
+      const teaching = await request(`/cards/${cardId}/teaching`);
+      if (!teaching) return;
+      const firstSymbol = teaching.symbols && teaching.symbols.length > 0
+        ? (teaching.symbols[0].name || teaching.symbols[0].symbol || '')
+        : '';
+      const lifeConn = teaching.life_connection || '';
+      const snippet = (firstSymbol && lifeConn)
+        ? `${firstSymbol}：${lifeConn}`
+        : (firstSymbol || lifeConn || '');
+      if (!snippet) return;
+      this.setData({ dailyCardSnippet: snippet });
+    } catch (_err) {
+      /* UX 修复: 痛点#1 — 失败静默隐藏（不打扰主流程） */
+      this.setData({ dailyCardSnippet: null });
     }
   },
 

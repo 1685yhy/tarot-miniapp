@@ -134,6 +134,11 @@ Page({
     // Persona intro overlay (first-time experience)
     showPersonaIntro: false,
     introPersona: null,
+
+    /* UX 修复: 痛点#4 — 示例问题引导 chips + 输入框聚焦标记 + 解读师推荐 */
+    questionSamples: ['最近的工作发展如何？', '我和TA的关系走向？', '这段迷茫期该如何度过？'],
+    questionFocus: false,
+    recommendedPersona: null,
   },
 
   onLoad(options) {
@@ -188,6 +193,8 @@ Page({
           displayThemes: displayThemes,
           question: restoredQuestion,
           selectedPersona: restoredPersona || DEFAULT_PERSONA,
+          /* UX 修复: 痛点#4 — 按初始主题推荐解读师 */
+          recommendedPersona: this._computeRecommendedPersona(theme),
           showQuestionInput: !spread.premium,
           // Flash fix: keep pageLoading true for premium spreads until membership check
           pageLoading: !!spread.premium,
@@ -358,6 +365,8 @@ Page({
       themeHint: themeHint,
       displayThemes: displayThemes,
       selectedPersona: DEFAULT_PERSONA,
+      /* UX 修复: 痛点#4 — 按初始主题推荐解读师 */
+      recommendedPersona: this._computeRecommendedPersona(theme),
       showQuestionInput: true,
       showPersonaFirst: false,
     });
@@ -393,7 +402,31 @@ Page({
     }
     // General spread: no hint needed
 
-    this.setData({ theme: newTheme, themeHint });
+    /* UX 修复: 痛点#4 — 切换主题时同步更新解读师推荐 */
+    this.setData({
+      theme: newTheme,
+      themeHint,
+      recommendedPersona: this._computeRecommendedPersona(newTheme),
+    });
+  },
+
+  /** UX 修复: 痛点#4 — 示例问题 chips：点击填入提问框并聚焦 */
+  onSampleTap(e) {
+    const sample = e.currentTarget.dataset.sample;
+    if (!sample) return;
+    this.setData({ question: sample, questionFocus: true });
+    try { wx.vibrateShort({ type: 'light' }); } catch(e) {}
+    // 重置 focus 标记，保证再次点击示例可再次触发聚焦
+    this._setTimer(() => {
+      if (this.data.questionFocus) this.setData({ questionFocus: false });
+    }, 1200);
+  },
+
+  /** UX 修复: 痛点#4 — 按主题推荐解读师（love→温和的星，career/finance→智慧的月，general→无推荐） */
+  _computeRecommendedPersona(theme) {
+    if (theme === 'love') return 'gentle_star';
+    if (theme === 'career' || theme === 'finance') return 'wise_moon';
+    return null;
   },
 
   onPersonaTap(e) {
@@ -454,6 +487,8 @@ Page({
       theme: '',
       themeHint: '',
       selectedPersona: DEFAULT_PERSONA,
+      /* UX 修复: 痛点#4 — 返回选牌阵时清除解读师推荐标记 */
+      recommendedPersona: null,
     });
   },
 
@@ -478,6 +513,8 @@ Page({
         theme: '',
         themeHint: '',
         selectedPersona: DEFAULT_PERSONA,
+        /* UX 修复: 痛点#4 — 重置时清除解读师推荐标记 */
+        recommendedPersona: null,
       });
     }
   },
@@ -588,6 +625,20 @@ Page({
     } catch (err) {
       wx.showToast({ title: '请先登录', icon: 'none' });
       return;
+    }
+
+    /* UX 修复: 痛点#4 — 空问题引导：弹确认，确认后允许"不写问题纯抽牌"，取消则留在提问页 */
+    if (!this.data.question || !this.data.question.trim()) {
+      const proceed = await new Promise((resolve) => {
+        wx.showModal({
+          title: '不写问题直接抽牌？',
+          content: '写下一个问题，星光才能为你解读 ✦ 也可以不写，纯粹抽牌聆听牌意',
+          confirmText: '直接抽牌',
+          cancelText: '我来写',
+          success: (res) => resolve(res.confirm),
+        });
+      });
+      if (!proceed) return;
     }
 
     // Show confirmation dialog before consuming reading quota

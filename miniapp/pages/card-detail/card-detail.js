@@ -203,7 +203,8 @@ Page({
       wx.showToast({ title: '已取消收藏', icon: 'none' });
     } else {
       favs.push(card.id);
-      wx.showToast({ title: '已收藏 ✦', icon: 'none' });
+      /* UX 修复: 痛点#5 — 收藏为本地存储，toast 明确说明存放位置 */
+      wx.showToast({ title: '已收藏（保存在本机）', icon: 'none' });
     }
     wx.setStorageSync('favorite_cards', favs);
   },

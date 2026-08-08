@@ -170,11 +170,31 @@
           placeholder="把你想问的写在这里..."
           maxlength="500"
           value="{{question}}"
+          focus="{{questionFocus}}"
           bindinput="onQuestionInput"
         />
         <view class="question-footer">
           <text class="hint-text">星光会倾听每一个字 ✦</text>
           <text class="char-counter {{question.length >= 450 ? 'counter-warning' : ''}}">{{question.length}}/500</text>
+        </view>
+      </view>
+
+      <!-- UX 修复: 痛点#4 — 示例问题引导 chips（不知道问什么时一键填入） -->
+      <view class="sample-question-wrap anim-fade-up anim-stagger-2" wx:if="{{questionSamples.length > 0}}">
+        <text class="sample-question-hint">不知道问什么？试试这些</text>
+        <view class="sample-question-chips">
+          <view
+            class="sample-question-chip"
+            wx:for="{{questionSamples}}"
+            wx:key="index"
+            wx:for-item="sample"
+            bindtap="onSampleTap"
+            data-sample="{{sample}}"
+            role="button"
+            aria-label="使用示例问题 {{sample}}"
+          >
+            <text class="sample-question-chip-text">{{sample}}</text>
+          </view>
         </view>
       </view>
 
@@ -206,6 +226,10 @@
           <view wx:for="{{personas}}" wx:key="key"
             class="persona-card {{selectedPersona === item.key ? 'persona-active' : ''}}"
             bindtap="onPersonaTap" data-persona="{{item.key}}" role="button" aria-label="选择{{item.name}}解读师">
+            <!-- UX 修复: 痛点#4 — 按主题推荐解读师（细金胶囊小标签） -->
+            <view wx:if="{{recommendedPersona === item.key}}" class="persona-reco-tag">
+              <text class="persona-reco-text">推荐 ✦</text>
+            </view>
             <text class="persona-icon">{{item.icon}}</text>
             <view class="persona-text-wrap">
               <text class="persona-name">{{item.name}}</text>

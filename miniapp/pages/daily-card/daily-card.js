@@ -77,7 +77,11 @@ Page({
     streakHint: '',
 
     // P2-2: teaching area folded by default ("详解 ▾")
-    teachingExpanded: false,
+    /* UX 修复: 痛点#1 — 详解默认展开，翻牌后完整解读直接可见（与 reading-result 页一致） */
+    teachingExpanded: true,
+
+    /* UX 修复: 痛点#2 — 卡牌关键词（keywords_upright）拆分为胶囊数组，供牌面小知识区渲染 */
+    cardKeywordsList: [],
   },
 
   async onLoad() {
@@ -99,8 +103,13 @@ Page({
       const card = await request('/cards/daily', { data: { zodiac: storedZodiac } });
       card.imagePath = computeImagePath(card, IMAGE_BASE);
 
+      /* UX 修复: 痛点#2 — 拆分关键词为胶囊数组（过滤后端附加的星座上下文行） */
+      const cardKeywordsList = this._splitCardKeywords(card.keywords_upright);
+
       this.setData({
         dailyCard: card,
+        /* UX 修复: 痛点#2 — 关键词胶囊数据 */
+        cardKeywordsList,
         pageLoading: false,
         // If already flipped today, show face-up immediately
         isFlipped: alreadyFlipped,
@@ -121,6 +130,16 @@ Page({
   },
 
   // ---- Teaching data ----
+
+  /** UX 修复: 痛点#2 — 拆分卡牌关键词为胶囊数组（兼容中英文分隔符，过滤后端附加的星座上下文注释行） */
+  _splitCardKeywords(raw) {
+    if (typeof raw !== 'string' || !raw.trim()) return [];
+    return raw
+      .split(/[,，、\n]/)
+      .map(s => s.trim())
+      .filter(Boolean)
+      .filter(s => !s.includes('【星座参考】') && !s.includes('用户星座'));
+  },
 
   async _loadTeaching(cardId) {
     this.setData({ teachingLoading: true, teachingError: null });

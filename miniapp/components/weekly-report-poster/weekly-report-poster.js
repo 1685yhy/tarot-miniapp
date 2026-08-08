@@ -585,8 +585,10 @@ Component({
         }
 
         // Load QR (mini-program code) from backend
+        /* UX 修复: 痛点#3 — tabbar 页不能生成小程序码（微信返回 41030，静默降级成无码图）；
+           改用非 tabbar 的 share-center 页（与已修复的 canvas-poster 对齐） */
         wx.downloadFile({
-          url: BASE_URL + '/share/wxa-code?path=' + encodeURIComponent('pages/index/index') + '&width=280',
+          url: BASE_URL + '/share/wxa-code?path=' + encodeURIComponent('pages/share-center/share-center') + '&width=280',
           success: (dlRes) => {
             if (dlRes.statusCode !== 200) {
               qrImageLoaded = true;
