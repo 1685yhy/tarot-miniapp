@@ -467,3 +467,32 @@ def test_tarot_card_same_as_cards_daily(client: TestClient):
     daily_card = client.get("/cards/daily", headers=headers)
     assert horoscope.status_code == 200 and daily_card.status_code == 200
     assert horoscope.json()["tarot"]["name"] == daily_card.json()["name_zh"]
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 开发06 · 输入校验加固：birth_time 范围 / birth_city 长度
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def test_birth_time_out_of_range_rejected(client: TestClient):
+    """25:99 等非法时刻必须 400（原先只查格式不查范围，已修复）。"""
+    token = _login(client)
+    headers = _auth(token)
+
+    for bad in ("25:99", "24:00", "12:60", "08:30:70", "99:00"):
+        resp = client.post("/user/birth", json={"birth_time": bad}, headers=headers)
+        assert resp.status_code == 400, f"birth_time={bad} 应 400，实际 {resp.status_code}: {resp.text}"
+
+    for good in ("23:59", "0:00", "08:30", "06:15:30"):
+        resp = client.post("/user/birth", json={"birth_time": good}, headers=headers)
+        assert resp.status_code == 200, f"birth_time={good} 应 200，实际 {resp.status_code}: {resp.text}"
+
+
+def test_birth_city_overlong_rejected(client: TestClient):
+    """birth_city 超过 100 字 → 400。"""
+    token = _login(client)
+    headers = _auth(token)
+    resp = client.post("/user/birth", json={"birth_city": "城" * 101}, headers=headers)
+    assert resp.status_code == 400, resp.text
+    resp = client.post("/user/birth", json={"birth_city": "北京"}, headers=headers)
+    assert resp.status_code == 200, resp.text

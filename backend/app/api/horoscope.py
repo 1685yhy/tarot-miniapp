@@ -215,11 +215,19 @@ async def update_birth(
             raise HTTPException(status_code=400, detail="birth_date 应为过去日期")
         user.birth_date = body.birth_date
     if body.birth_time is not None:
-        if not re.match(r"^\d{1,2}:\d{2}(?::\d{2})?$", body.birth_time.strip()):
+        raw = body.birth_time.strip()
+        m = re.fullmatch(r"(\d{1,2}):(\d{2})(?::(\d{2}))?", raw)
+        if not m:
             raise HTTPException(status_code=400, detail="birth_time 格式应为 HH:MM 或 HH:MM:SS")
-        user.birth_time = body.birth_time.strip()
+        hh, mm, ss = int(m.group(1)), int(m.group(2)), int(m.group(3) or 0)
+        if hh > 23 or mm > 59 or ss > 59:
+            raise HTTPException(status_code=400, detail="birth_time 时间不合法（时 0-23，分 0-59，秒 0-59）")
+        user.birth_time = raw
     if body.birth_city is not None:
-        user.birth_city = body.birth_city.strip()
+        city = body.birth_city.strip()
+        if len(city) > 100:
+            raise HTTPException(status_code=400, detail="birth_city 最长 100 字")
+        user.birth_city = city
 
     # 开发 05：出生信息变化 → 星盘三要素/深度报告缓存失效（指纹失配自动重算）
     user.birthchart_json = None
