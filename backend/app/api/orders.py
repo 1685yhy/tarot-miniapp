@@ -58,7 +58,12 @@ async def create_order(
 
         from app.services.session_key import decrypt_session_key
 
-        session_key = decrypt_session_key(user.session_key_encrypted)
+        try:
+            session_key = decrypt_session_key(user.session_key_encrypted)
+        except Exception:
+            # 密文损坏/密钥变更/版本不符等 — 视为登录凭证缺失, 返回 400 引导重新登录
+            logger.warning("decrypt_session_key failed for user %s", user.id, exc_info=True)
+            session_key = None
         if not session_key:
             raise HTTPException(status_code=400, detail="登录凭证缺失,请重新登录")
 
@@ -348,7 +353,7 @@ async def order_status(
         raise HTTPException(status_code=403, detail="无权查看该订单")
     # xpay 远程状态查询（remote=true 时向微信虚拟支付查询，不回退本地权益）
     if order.pay_channel == "xpay" and (request.query_params.get("remote") == "true"):
-        from app.services.xpay_api import query_order
+        from app.services.xpay_api import XPAY_STATUS_TO_LOCAL, query_order
 
         try:
             remote = await query_order(
@@ -360,14 +365,9 @@ async def order_status(
             remote = None
         remote_state = None
         if remote:
-            state = remote.get("state")
-            # 微信 xpay 状态: 3=已支付 4=已发货 5=已退款 6=已取消
-            if state in (3, 4):
-                remote_state = "paid"
-            elif state == 5:
-                remote_state = "refunded"
-            elif state == 6:
-                remote_state = "cancelled"
+            # 小程序虚拟支付官方契约: 状态在 order.status (3/4=已支付 5/8=已退款 6=已取消)
+            state = (remote.get("order") or {}).get("status")
+            remote_state = XPAY_STATUS_TO_LOCAL.get(state)
 
         # 远程已退款 → 本地标记 refunded（权益已发放的订单永不回退状态）
         if remote_state == "refunded" and order.status not in ("paid",):

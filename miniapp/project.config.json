@@ -37,6 +37,14 @@
       {
         "type": "file",
         "value": "images/app_icon_144.png"
+      },
+      {
+        "type": "folder",
+        "value": "images/cards_new"
+      },
+      {
+        "type": "folder",
+        "value": "images/cards_new_thumb"
       }
     ],
     "include": []

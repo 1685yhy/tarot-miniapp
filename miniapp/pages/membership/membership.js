@@ -2,6 +2,7 @@
 const { request, getFriendlyError } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
 const analytics = require('../../utils/analytics');
+const { startPay, isComingSoonError, showComingSoonModal } = require('../../utils/pay');
 
 const TRIAL_STORAGE_KEY = 'trial_expiry';
 const TRIAL_MEMBER_KEY = 'is_trial_member';
@@ -289,34 +290,9 @@ Page({
       });
       wx.hideLoading();
 
-      // Check if payment is configured
-      if (!order.payment_params) {
-        this.setData({ purchasing: false });
-        analytics.trackPurchaseFail(product, 'payment_not_configured');
-        wx.showModal({
-          title: '支付未配置',
-          content: '微信支付商户尚未配置完成。请先在服务器 .env 中配置 WECHAT_MCH_ID 和 WECHAT_API_KEY_V3。',
-          showCancel: false,
-        });
-        return;
-      }
-
-      // Call WeChat Pay JSAPI
-      const params = order.payment_params;
-      if (!params) {
-        this.setData({ purchasing: false });
-        analytics.trackPurchaseFail(product, 'invalid_payment_params');
-        wx.showToast({ title: '支付参数错误', icon: 'none' });
-        return;
-      }
-
-      wx.requestPayment({
-        timeStamp: params.timeStamp,
-        nonceStr: params.nonceStr,
-        package: params.package,
-        // NOTE: 如果后端签名仍使用 MD5，需要同步升级到 HMAC-SHA256
-        signType: params.signType || 'HMAC-SHA256',
-        paySign: params.paySign,
+      // 统一支付入口：xpay 虚拟支付 / 旧 JSAPI 双通道（P0-1）
+      startPay(order, {
+        product,
         success: () => {
           // Analytics: purchase completed
           analytics.trackPurchaseComplete(product, product.price, abExtra);
@@ -330,18 +306,26 @@ Page({
         },
         fail: (err) => {
           this.setData({ purchasing: false });
-          if (err.errMsg && err.errMsg.includes('cancel')) {
+          if (err.reason === 'user_cancel') {
             analytics.trackPurchaseFail(product, 'user_cancel');
             wx.showToast({ title: '支付已取消', icon: 'none' });
+          } else if (err.reason === 'coming_soon') {
+            // 商品即将上线 → 降级弹窗（不进失败漏斗）
+            showComingSoonModal();
           } else {
             analytics.trackPurchaseFail(product, 'payment_failed');
-            wx.showToast({ title: '支付失败，请重试', icon: 'none' });
+            wx.showToast({ title: err.message || '支付失败，请重试', icon: 'none' });
           }
         },
       });
     } catch (err) {
       this.setData({ purchasing: false });
       wx.hideLoading();
+      if (isComingSoonError(err)) {
+        // 400「该商品即将上线」→ 降级弹窗（不进失败漏斗）
+        showComingSoonModal();
+        return;
+      }
       analytics.trackPurchaseFail(product, 'order_failed');
       wx.showToast({ title: '下单失败', icon: 'none' });
     }

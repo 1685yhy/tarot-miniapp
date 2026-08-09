@@ -78,6 +78,58 @@ def _xpay_deliver_xml(openid: str, out_trade_no: str, env: str = "0", amount: st
     )
 
 
+def _enable_safe_mode(monkeypatch, key_43: str | None = None) -> str:
+    """切到安全模式(验 msg_signature + AES 解密), 返回测试用的 EncodingAESKey。"""
+    key_43 = key_43 or base64.b64encode(os.urandom(32)).decode()[:43]
+    monkeypatch.setattr(settings, "WX_MSG_TOKEN", MSG_TOKEN)
+    monkeypatch.setattr(settings, "WX_MSG_ENCODING_AES_KEY", key_43)
+    monkeypatch.setattr(settings, "WX_MSG_ENCRYPT_MODE", "safe")
+    return key_43
+
+
+def _post_deliver_safe(client: TestClient, xml: str, key_43: str,
+                       ts: str = "1700000002", nonce: str = "nonce_safe"):
+    """安全模式推送 xpay 发货事件(正确 msg_signature + AES 密文)。"""
+    encrypt = _wechat_encrypt(xml, key_43)
+    msg_signature = verify_msg_signature(MSG_TOKEN, ts, nonce, encrypt)
+    return client.post(
+        f"/wechat/msg?timestamp={ts}&nonce={nonce}&msg_signature={msg_signature}",
+        content=f"<xml><Encrypt><![CDATA[{encrypt}]]></Encrypt></xml>",
+        headers={"Content-Type": "text/xml"},
+    )
+
+
+async def _fake_token() -> str:
+    return "FAKE_ACCESS_TOKEN"
+
+
+def _capture_http_client(holder: dict, captured: dict):
+    """构造捕获 httpx.AsyncClient.post 参数的假客户端。holder["data"] 为每次响应体。"""
+
+    class _FakeResp:
+        def json(self):
+            return holder["data"]
+
+    class _FakeClient:
+        def __init__(self, *a, **k):
+            pass
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *a):
+            return False
+
+        async def post(self, url, **kwargs):
+            captured["url"] = url
+            captured["params"] = kwargs.get("params")
+            captured["content"] = kwargs.get("content")
+            captured["headers"] = kwargs.get("headers")
+            return _FakeResp()
+
+    return _FakeClient
+
+
 async def _get_user(openid: str) -> User:
     async with async_session() as s:
         result = await s.execute(select(User).where(User.openid == openid))
@@ -218,9 +270,9 @@ def test_wechat_msg_echostr_verification(client: TestClient, monkeypatch):
 # ---------------------------------------------------------------------------
 
 
-def test_xpay_deliver_notify_fulfills_once(client: TestClient, monkeypatch):
-    """同一 xpay 发货事件两次: 权益只发一次, 发货回执只调一次。"""
-    monkeypatch.setattr(settings, "WX_MSG_ENCRYPT_MODE", "plain")
+def test_xpay_deliver_notify_retry_acks_but_grants_once(client: TestClient, monkeypatch):
+    """同一发货事件两次(微信重试): 权益只发一次, 发货回执每次都补发(微信侧幂等)。"""
+    key_43 = _enable_safe_mode(monkeypatch)
     openid = f"xpay_deliver_{uuid.uuid4().hex[:8]}"
     asyncio.run(_seed_user(openid))
     order_no = f"TAROT{uuid.uuid4().hex[:12].upper()}"
@@ -235,15 +287,15 @@ def test_xpay_deliver_notify_fulfills_once(client: TestClient, monkeypatch):
     monkeypatch.setattr("app.services.xpay_api.notify_provide_goods", fake_notify_provide_goods)
 
     xml = _xpay_deliver_xml(openid, order_no)
-    for _ in range(2):
-        resp = client.post("/wechat/msg", content=xml, headers={"Content-Type": "text/xml"})
+    for i in range(2):
+        resp = _post_deliver_safe(client, xml, key_43, ts=str(1700000000 + i), nonce=f"nonce_{i}")
         assert resp.status_code == 200
         assert resp.text == "success"
 
-    assert len(calls) == 1, "发货回执应只调用一次"
+    assert len(calls) == 2, "同一事件两次: 发货回执重发两次(微信侧幂等)"
     assert calls[0]["out_trade_no"] == order_no
     assert calls[0]["env"] == 0
-    assert calls[0]["openid"] == openid
+    assert "openid" not in calls[0], "官方契约请求体仅 {order_id, env}"
 
     user = asyncio.run(_get_user(openid))
     assert (user.paid_readings_balance or 0) == 1, "权益只发放一次"
@@ -256,10 +308,7 @@ def test_xpay_deliver_notify_fulfills_once(client: TestClient, monkeypatch):
 
 def test_xpay_deliver_notify_safe_mode_encrypted(client: TestClient, monkeypatch):
     """安全模式(加密+msg_signature 验签)下 xpay 事件同样能处理。"""
-    key_43 = base64.b64encode(os.urandom(32)).decode()[:43]
-    monkeypatch.setattr(settings, "WX_MSG_TOKEN", MSG_TOKEN)
-    monkeypatch.setattr(settings, "WX_MSG_ENCODING_AES_KEY", key_43)
-    monkeypatch.setattr(settings, "WX_MSG_ENCRYPT_MODE", "safe")
+    key_43 = _enable_safe_mode(monkeypatch)
 
     openid = f"xpay_safe_{uuid.uuid4().hex[:8]}"
     asyncio.run(_seed_user(openid))
@@ -272,15 +321,7 @@ def test_xpay_deliver_notify_safe_mode_encrypted(client: TestClient, monkeypatch
     monkeypatch.setattr("app.services.xpay_api.notify_provide_goods", fake_notify_provide_goods)
 
     plain_xml = _xpay_deliver_xml(openid, order_no, amount="990")
-    encrypt = _wechat_encrypt(plain_xml, key_43)
-    ts, nonce = "1700000002", "nonce_safe"
-    msg_signature = verify_msg_signature(MSG_TOKEN, ts, nonce, encrypt)
-
-    resp = client.post(
-        f"/wechat/msg?timestamp={ts}&nonce={nonce}&msg_signature={msg_signature}",
-        content=f"<xml><Encrypt><![CDATA[{encrypt}]]></Encrypt></xml>",
-        headers={"Content-Type": "text/xml"},
-    )
+    resp = _post_deliver_safe(client, plain_xml, key_43)
     assert resp.status_code == 200
     assert resp.text == "success"
 
@@ -291,16 +332,41 @@ def test_xpay_deliver_notify_safe_mode_encrypted(client: TestClient, monkeypatch
 
     # 错误 msg_signature → 403
     bad = client.post(
-        f"/wechat/msg?timestamp={ts}&nonce={nonce}&msg_signature=beef",
-        content=f"<xml><Encrypt><![CDATA[{encrypt}]]></Encrypt></xml>",
+        f"/wechat/msg?timestamp=1700000002&nonce=nonce_safe&msg_signature=beef",
+        content=f"<xml><Encrypt><![CDATA[{_wechat_encrypt(plain_xml, key_43)}]]></Encrypt></xml>",
         headers={"Content-Type": "text/xml"},
     )
     assert bad.status_code == 403
 
 
+def test_xpay_deliver_rejected_in_plain_mode(client: TestClient, monkeypatch):
+    """明文模式(plain)下 xpay 事件直接 403 拒绝 — 无验签/解密, 伪造回调可刷权益。"""
+    monkeypatch.setattr(settings, "WX_MSG_ENCRYPT_MODE", "plain")
+    openid = f"xpay_plain_{uuid.uuid4().hex[:8]}"
+    asyncio.run(_seed_user(openid))
+    order_no = f"TAROT{uuid.uuid4().hex[:12].upper()}"
+    asyncio.run(_create_order(openid, order_no))
+
+    calls = []
+
+    async def fake_notify_provide_goods(**kwargs):
+        calls.append(kwargs)
+        return {"errcode": 0, "errmsg": "ok"}
+
+    monkeypatch.setattr("app.services.xpay_api.notify_provide_goods", fake_notify_provide_goods)
+
+    xml = _xpay_deliver_xml(openid, order_no)
+    resp = client.post("/wechat/msg", content=xml, headers={"Content-Type": "text/xml"})
+    assert resp.status_code == 403
+    assert calls == [], "plain 模式拒绝 xpay 事件, 不得发权益/回执"
+    assert asyncio.run(_order_by_no(order_no)).status == "pending"
+    user = asyncio.run(_get_user(openid))
+    assert (user.paid_readings_balance or 0) == 0
+
+
 def test_xpay_deliver_notify_rejects_openid_mismatch(client: TestClient, monkeypatch):
     """通知 OpenId 与订单归属用户不一致 → 400, 不发权益。"""
-    monkeypatch.setattr(settings, "WX_MSG_ENCRYPT_MODE", "plain")
+    key_43 = _enable_safe_mode(monkeypatch)
     openid = f"xpay_mismatch_{uuid.uuid4().hex[:8]}"
     asyncio.run(_seed_user(openid))
     order_no = f"TAROT{uuid.uuid4().hex[:12].upper()}"
@@ -314,14 +380,64 @@ def test_xpay_deliver_notify_rejects_openid_mismatch(client: TestClient, monkeyp
     monkeypatch.setattr("app.services.xpay_api.notify_provide_goods", fake_notify_provide_goods)
 
     xml = _xpay_deliver_xml("someone_else_openid", order_no)
-    resp = client.post("/wechat/msg", content=xml, headers={"Content-Type": "text/xml"})
+    resp = _post_deliver_safe(client, xml, key_43)
     assert resp.status_code == 400
     assert calls == []
     assert asyncio.run(_order_by_no(order_no)).status == "pending"
 
 
+def test_xpay_deliver_notify_env_mismatch_rejected(client: TestClient, monkeypatch):
+    """通知 env 与订单 env 不一致 → 400 拒绝, 不发权益。"""
+    key_43 = _enable_safe_mode(monkeypatch)
+    openid = f"xpay_env_{uuid.uuid4().hex[:8]}"
+    asyncio.run(_seed_user(openid))
+    order_no = f"TAROT{uuid.uuid4().hex[:12].upper()}"
+    asyncio.run(_create_order(openid, order_no, env=0))
+
+    calls = []
+
+    async def fake_notify_provide_goods(**kwargs):
+        calls.append(kwargs)
+
+    monkeypatch.setattr("app.services.xpay_api.notify_provide_goods", fake_notify_provide_goods)
+
+    # 订单 env=0, 通知 env=1 → 环境不匹配
+    xml = _xpay_deliver_xml(openid, order_no, env="1")
+    resp = _post_deliver_safe(client, xml, key_43)
+    assert resp.status_code == 400
+    assert calls == []
+    assert asyncio.run(_order_by_no(order_no)).status == "pending"
+    user = asyncio.run(_get_user(openid))
+    assert (user.paid_readings_balance or 0) == 0
+
+
+def test_xpay_deliver_notify_refunded_order_no_fulfill(client: TestClient, monkeypatch):
+    """已退款订单的迟到发货通知: 不发权益, 也不补发回执。"""
+    key_43 = _enable_safe_mode(monkeypatch)
+    openid = f"xpay_refunded_{uuid.uuid4().hex[:8]}"
+    asyncio.run(_seed_user(openid))
+    order_no = f"TAROT{uuid.uuid4().hex[:12].upper()}"
+    asyncio.run(_create_order(openid, order_no, status="refunded"))
+
+    calls = []
+
+    async def fake_notify_provide_goods(**kwargs):
+        calls.append(kwargs)
+        return {"errcode": 0, "errmsg": "ok"}
+
+    monkeypatch.setattr("app.services.xpay_api.notify_provide_goods", fake_notify_provide_goods)
+
+    xml = _xpay_deliver_xml(openid, order_no)
+    resp = _post_deliver_safe(client, xml, key_43)
+    assert resp.status_code == 200
+    assert calls == [], "已退款订单不发货、不补发回执"
+    assert asyncio.run(_order_by_no(order_no)).status == "refunded"
+    user = asyncio.run(_get_user(openid))
+    assert (user.paid_readings_balance or 0) == 0
+
+
 def test_wechat_msg_ignores_non_xpay_event(client: TestClient, monkeypatch):
-    """非 xpay 事件静默返回 success。"""
+    """非 xpay 事件静默返回 success(plain 模式不受影响)。"""
     monkeypatch.setattr(settings, "WX_MSG_ENCRYPT_MODE", "plain")
     xml = "<xml><ToUserName><![CDATA[gh_test]]></ToUserName><Event><![CDATA[other_event]]></Event></xml>"
     resp = client.post("/wechat/msg", content=xml, headers={"Content-Type": "text/xml"})
@@ -425,16 +541,21 @@ def test_create_order_xpay_params_full(client: TestClient, monkeypatch):
 
 
 def test_order_status_remote_query_and_mapping(client: TestClient, monkeypatch):
+    """remote 查询按官方契约: 请求体 {openid, env, order_id} + query 带 pay_sig,
+    order.status 3/4→paid 5/8→refunded 6→cancelled, 权益不回退。"""
     monkeypatch.setattr(settings, "PAY_CHANNEL", "xpay")
+    monkeypatch.setattr(settings, "WX_XPAY_APPKEY_PROD", APP_KEY_PROD)
+    monkeypatch.setattr(settings, "WX_XPAY_APPKEY_SANDBOX", APP_KEY_SANDBOX)
+    monkeypatch.setattr("app.services.xpay_api.get_access_token", _fake_token)
+
+    holder = {"data": {"errcode": 0, "errmsg": "ok", "order": {"status": 4}}}
+    captured = {}
+    monkeypatch.setattr(httpx, "AsyncClient", _capture_http_client(holder, captured))
+
     openid = f"xpay_remote_{uuid.uuid4().hex[:8]}"
     asyncio.run(_seed_user(openid))
     order_no = f"TAROT{uuid.uuid4().hex[:12].upper()}"
     asyncio.run(_create_order(openid, order_no))
-
-    async def fake_query_order(**kwargs):
-        return {"errcode": 0, "errmsg": "ok", "state": 4}  # 已发货
-
-    monkeypatch.setattr("app.services.xpay_api.query_order", fake_query_order)
 
     # 需要一个能查看该订单的 token —— 直接给该用户签发
     from app.utils.auth import create_token
@@ -451,11 +572,20 @@ def test_order_status_remote_query_and_mapping(client: TestClient, monkeypatch):
     assert data["status"] == "pending"
     assert data["paid"] is False
 
-    # 远程已退款 → 本地 refunded, 但权益不回退
-    async def fake_query_refunded(**kwargs):
-        return {"errcode": 0, "errmsg": "ok", "state": 5}
+    # ── 官方契约断言: 请求体 {openid, env, order_id}, query 带 pay_sig ──
+    assert captured["url"].endswith("/xpay/query_order")
+    assert captured["params"]["access_token"] == "FAKE_ACCESS_TOKEN"
+    body = json.loads(captured["content"])
+    assert body == {"openid": openid, "env": 0, "order_id": order_no}
+    expected_sig = hmac.new(
+        APP_KEY_PROD.encode(),  # env=0 → 正式 AppKey
+        f"xpay/query_order&{captured['content']}".encode(),
+        hashlib.sha256,
+    ).hexdigest()
+    assert captured["params"]["pay_sig"] == expected_sig
 
-    monkeypatch.setattr("app.services.xpay_api.query_order", fake_query_refunded)
+    # 远程已退款(5) → 本地 refunded, 但权益不回退
+    holder["data"] = {"errcode": 0, "errmsg": "ok", "order": {"status": 5}}
     resp = client.get(f"/orders/{order_no}/status?remote=true", headers=auth)
     data = resp.json()
     assert data["status"] == "refunded"
@@ -463,11 +593,13 @@ def test_order_status_remote_query_and_mapping(client: TestClient, monkeypatch):
     order = asyncio.run(_order_by_no(order_no))
     assert order.refund_status == "refunded"
 
-    # 远程已支付但本地已 paid(权益已发) → 永不回退
-    async def fake_query_cancelled(**kwargs):
-        return {"errcode": 0, "errmsg": "ok", "state": 6}
+    # 退款完成(8) → 同样映射 refunded
+    holder["data"] = {"errcode": 0, "errmsg": "ok", "order": {"status": 8}}
+    resp = client.get(f"/orders/{order_no}/status?remote=true", headers=auth)
+    assert resp.json()["remote_state"] == "refunded"
 
-    monkeypatch.setattr("app.services.xpay_api.query_order", fake_query_cancelled)
+    # 远程已取消但本地已 paid(权益已发) → 永不回退
+    holder["data"] = {"errcode": 0, "errmsg": "ok", "order": {"status": 6}}
 
     async def _mark_paid():
         async with async_session() as s:
@@ -478,6 +610,110 @@ def test_order_status_remote_query_and_mapping(client: TestClient, monkeypatch):
     asyncio.run(_mark_paid())
     resp = client.get(f"/orders/{order_no}/status?remote=true", headers=auth)
     assert resp.json()["status"] == "paid", "已发放权益的订单不可被远程状态回退"
+
+
+def test_xpay_notify_provide_goods_official_contract(client: TestClient, monkeypatch):
+    """发货回执按官方契约: 请求体 {order_id, env} + query 带 pay_sig(env=0 → PROD AppKey)。"""
+    key_43 = _enable_safe_mode(monkeypatch)
+    monkeypatch.setattr(settings, "WX_XPAY_APPKEY_PROD", APP_KEY_PROD)
+    monkeypatch.setattr(settings, "WX_XPAY_APPKEY_SANDBOX", APP_KEY_SANDBOX)
+    monkeypatch.setattr("app.services.xpay_api.get_access_token", _fake_token)
+
+    holder = {"data": {"errcode": 0, "errmsg": "ok"}}
+    captured = {}
+    monkeypatch.setattr(httpx, "AsyncClient", _capture_http_client(holder, captured))
+
+    openid = f"xpay_notify_{uuid.uuid4().hex[:8]}"
+    asyncio.run(_seed_user(openid))
+    order_no = f"TAROT{uuid.uuid4().hex[:12].upper()}"
+    asyncio.run(_create_order(openid, order_no))
+
+    resp = _post_deliver_safe(client, _xpay_deliver_xml(openid, order_no), key_43)
+    assert resp.status_code == 200
+    assert resp.text == "success"
+
+    assert captured["url"].endswith("/xpay/notify_provide_goods")
+    body = json.loads(captured["content"])
+    assert body == {"order_id": order_no, "env": 0}
+    expected_sig = hmac.new(
+        APP_KEY_PROD.encode(),  # env=0 → 正式 AppKey
+        f"xpay/notify_provide_goods&{captured['content']}".encode(),
+        hashlib.sha256,
+    ).hexdigest()
+    assert captured["params"]["pay_sig"] == expected_sig
+
+    user = asyncio.run(_get_user(openid))
+    assert (user.paid_readings_balance or 0) == 1
+
+
+def test_xpay_refund_order_official_contract(monkeypatch):
+    """refund_order 官方 10 参: openid/order_id/refund_order_id/left_fee/refund_fee/
+    refund_reason/biz_meta/req_from/env + query pay_sig(env=1 → SANDBOX AppKey)。"""
+    monkeypatch.setattr(settings, "WX_XPAY_APPKEY_SANDBOX", APP_KEY_SANDBOX)
+    monkeypatch.setattr("app.services.xpay_api.get_access_token", _fake_token)
+
+    holder = {"data": {"errcode": 0, "errmsg": "ok"}}
+    captured = {}
+    monkeypatch.setattr(httpx, "AsyncClient", _capture_http_client(holder, captured))
+
+    from app.services.xpay_api import refund_order
+
+    asyncio.run(refund_order(
+        openid="og-test-openid",
+        env=1,
+        out_trade_no="TAROTREFUND0001",
+        refund_order_id="R20260809001",
+        left_fee=990,
+        refund_fee=990,
+        refund_reason=3,
+        biz_meta='{"channel":"xpay","note":"用户主动退款"}',
+        req_from=2,
+    ))
+
+    assert captured["url"].endswith("/xpay/refund_order")
+    body = json.loads(captured["content"])
+    assert body == {
+        "openid": "og-test-openid",
+        "env": 1,
+        "order_id": "TAROTREFUND0001",
+        "refund_order_id": "R20260809001",
+        "left_fee": 990,
+        "refund_fee": 990,
+        "refund_reason": 3,
+        "biz_meta": '{"channel":"xpay","note":"用户主动退款"}',
+        "req_from": 2,
+    }
+    expected_sig = hmac.new(
+        APP_KEY_SANDBOX.encode(),  # env=1 → 沙箱 AppKey
+        f"xpay/refund_order&{captured['content']}".encode(),
+        hashlib.sha256,
+    ).hexdigest()
+    assert captured["params"]["pay_sig"] == expected_sig
+
+
+def test_create_order_corrupt_session_key_400(client: TestClient, monkeypatch):
+    """session_key 密文损坏 → POST /orders 返回 400 登录凭证缺失(不 500)。"""
+    monkeypatch.setattr(settings, "PAY_CHANNEL", "xpay")
+    monkeypatch.setattr(settings, "WX_XPAY_OFFER_ID", OFFER_ID)
+    monkeypatch.setattr(settings, "XPAY_PRODUCT_MAP", json.dumps({"single_reading": "1001"}))
+
+    login = _dev_login(client)
+    user_id = login["user"]["id"]
+
+    async def _set_corrupt():
+        async with async_session() as s:
+            user = (await s.execute(select(User).where(User.id == user_id))).scalar_one()
+            user.session_key_encrypted = "v1:not-base64:!!"
+            await s.commit()
+    asyncio.run(_set_corrupt())
+
+    resp = client.post(
+        "/orders",
+        json={"product_type": "single_reading"},
+        headers={"Authorization": f"Bearer {login['token']}"},
+    )
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "登录凭证缺失,请重新登录"
 
 
 # ---------------------------------------------------------------------------

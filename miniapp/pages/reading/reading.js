@@ -30,6 +30,7 @@ const { checkLogin } = require('../../utils/auth');
 const { playCardDrawSound } = require('../../utils/sound');
 const { fetchTodayEnergy } = require('../../utils/energy');
 const analytics = require('../../utils/analytics');
+const { startPay, isComingSoonError, showComingSoonModal } = require('../../utils/pay');
 
 /** Get free daily readings limit from member status (or fallback) */
 function _getFreeReadingsLimit() {
@@ -595,21 +596,9 @@ Page({
       });
       wx.hideLoading();
 
-      if (!order.payment_params) {
-        wx.showModal({
-          title: '支付未配置',
-          content: '微信支付商户尚未配置完成。请先在服务器 .env 中配置微信支付参数。',
-          showCancel: false,
-        });
-        return;
-      }
-
-      wx.requestPayment({
-        timeStamp: order.payment_params.timeStamp,
-        nonceStr: order.payment_params.nonceStr,
-        package: order.payment_params.package,
-        signType: order.payment_params.signType || 'HMAC-SHA256',
-        paySign: order.payment_params.paySign,
+      // 统一支付入口：xpay 虚拟支付 / 旧 JSAPI 双通道（P0-1）
+      startPay(order, {
+        product,
         success: () => {
           wx.showToast({ title: '购买成功！继续解读', icon: 'success' });
           // 刷新用户信息，更新剩余次数
@@ -622,15 +611,23 @@ Page({
           }
         },
         fail: (err) => {
-          if (err.errMsg && err.errMsg.includes('cancel')) {
+          if (err.reason === 'user_cancel') {
             wx.showToast({ title: '支付已取消', icon: 'none' });
+          } else if (err.reason === 'coming_soon') {
+            // 商品即将上线 → 降级弹窗
+            showComingSoonModal();
           } else {
-            wx.showToast({ title: '支付失败，请重试', icon: 'none' });
+            wx.showToast({ title: err.message || '支付失败，请重试', icon: 'none' });
           }
         },
       });
     } catch (err) {
       wx.hideLoading();
+      if (isComingSoonError(err)) {
+        // 400「该商品即将上线」→ 降级弹窗
+        showComingSoonModal();
+        return;
+      }
       wx.showToast({ title: '下单失败', icon: 'none' });
     }
   },

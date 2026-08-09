@@ -7,6 +7,7 @@ const { checkLogin } = require('../../utils/auth');
 const { fetchBirthchart } = require('../../utils/birthchart');
 const { drawBirthchartPoster } = require('../../utils/canvas-poster');
 const analytics = require('../../utils/analytics');
+const { startPay, isComingSoonError, showComingSoonModal } = require('../../utils/pay');
 
 const PRODUCT = 'birthchart_report';
 
@@ -117,23 +118,9 @@ Page({
       });
       wx.hideLoading();
 
-      if (!order.payment_params) {
-        this.setData({ purchasing: false });
-        wx.showModal({
-          title: '支付未配置',
-          content: '微信支付商户尚未配置完成，请稍后再试。',
-          showCancel: false,
-        });
-        return;
-      }
-
-      const params = order.payment_params;
-      wx.requestPayment({
-        timeStamp: params.timeStamp,
-        nonceStr: params.nonceStr,
-        package: params.package,
-        signType: params.signType || 'HMAC-SHA256',
-        paySign: params.paySign,
+      // 统一支付入口：xpay 虚拟支付 / 旧 JSAPI 双通道（P0-1）
+      startPay(order, {
+        product: { id: PRODUCT },
         success: () => {
           this.setData({ purchasing: false, birthchartPaid: true });
           analytics.trackPurchaseComplete({ id: PRODUCT }, 19.9, {});
@@ -142,18 +129,26 @@ Page({
         },
         fail: (err) => {
           this.setData({ purchasing: false });
-          if (err.errMsg && err.errMsg.includes('cancel')) {
+          if (err.reason === 'user_cancel') {
             analytics.trackPurchaseFail({ id: PRODUCT }, 'user_cancel');
             wx.showToast({ title: '支付已取消', icon: 'none' });
+          } else if (err.reason === 'coming_soon') {
+            // 商品即将上线 → 降级弹窗（不进失败漏斗）
+            showComingSoonModal();
           } else {
             analytics.trackPurchaseFail({ id: PRODUCT }, 'payment_failed');
-            wx.showToast({ title: '支付失败，请重试', icon: 'none' });
+            wx.showToast({ title: err.message || '支付失败，请重试', icon: 'none' });
           }
         },
       });
     } catch (err) {
       this.setData({ purchasing: false });
       wx.hideLoading();
+      if (isComingSoonError(err)) {
+        // 400「该商品即将上线」→ 降级弹窗（不进失败漏斗）
+        showComingSoonModal();
+        return;
+      }
       analytics.trackPurchaseFail({ id: PRODUCT }, 'order_failed');
       if (err.statusCode === 503) {
         // 微信支付商户未开通 JSAPI 权限 → 明确提示

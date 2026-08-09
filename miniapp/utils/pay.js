@@ -24,10 +24,14 @@ const GENERIC_FAIL_MESSAGE = '支付失败，请重试';
 
 /**
  * 解析 xpay 错误码：优先取 err.errCode，兼容仅 errMsg 带码的情况。
- * 虚拟支付错误码参考：
- *   -15002 outTradeNo 重复（订单可能已支付）→ 查单兜底
- *   -15006 用户取消
- *   -15009 道具未发布 → 商品即将上线
+ * 虚拟支付错误码参考（官方码表）：
+ *   -2        用户取消 → user_cancel
+ *   -15002    outTradeNo 重复（订单可能已支付）→ 查单兜底
+ *   -15005    支付签名错误（登录态/签名异常）→ 支付异常提示
+ *   -15006    支付签名校验失败 → 支付异常提示
+ *   -15007    支付签名数据错误 → 支付异常提示
+ *   -15009    代币未发布 → 支付异常提示
+ *   -15010    道具未发布 → 商品即将上线（coming_soon）
  */
 function parseXpayErrCode(err) {
   if (!err) return null;
@@ -136,10 +140,15 @@ function startPay(order, { product, success, fail } = {}) {
           });
           return;
         }
-        if (code === -15006) {
+        if (code === -2) {
+          // 用户取消支付
           callFail(fail, '支付已取消', 'user_cancel', code);
-        } else if (code === -15009) {
+        } else if (code === -15010) {
+          // 道具未发布 → 商品即将上线（降级弹窗，不进失败漏斗）
           callFail(fail, '商品即将上线，敬请期待', 'coming_soon', code);
+        } else if (code === -15005 || code === -15006 || code === -15007 || code === -15009) {
+          // 签名/登录态/代币异常 → 引导重新登录或稍后重试
+          callFail(fail, '支付出现异常，请重新登录后再试', 'payment_failed', code);
         } else {
           callFail(fail, GENERIC_FAIL_MESSAGE, 'payment_failed', code);
         }

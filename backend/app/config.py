@@ -72,7 +72,7 @@ class Settings(BaseSettings):
     XPAY_PRODUCT_MAP: str = "{}"
     WX_MSG_TOKEN: str = ""
     WX_MSG_ENCODING_AES_KEY: str = ""
-    WX_MSG_ENCRYPT_MODE: str = "plain"  # plain / compatible / safe
+    WX_MSG_ENCRYPT_MODE: str = "safe"  # plain / compatible / safe（默认 safe：plain 无验签, xpay 事件一律拒绝）
 
     # Rate limiting
     RATE_LIMIT_MAX_REQUESTS: int = 60

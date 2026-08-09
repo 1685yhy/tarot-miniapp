@@ -1,7 +1,9 @@
 """订单权益发放 — 支付回调(JSAPI)与 xpay 发货通知共用的唯一实现。
 
-``fulfill_order`` 是幂等的: 订单已 paid 时直接返回 False(不重复发权益),
-返回 True 表示本次实际发放了权益并更新订单状态。
+``fulfill_order`` 是幂等的: 仅 status==pending 的订单允许履约 —
+已 paid 是重复回调(返回 False 不重复发权益), refunded/cancelled
+不发货(防止退款后迟到的回调补发权益)。返回 True 表示本次实际发放了
+权益并更新订单状态。
 """
 
 import logging
@@ -38,7 +40,8 @@ async def fulfill_order(
         True when benefits were granted in this call, False when the order
         was already fulfilled (idempotent no-op).
     """
-    if order.status == "paid":
+    if order.status != "pending":
+        # 仅 pending 履约: paid=幂等重复回调, refunded/cancelled=不发货
         return False
 
     txn_meta = txn_meta or {}

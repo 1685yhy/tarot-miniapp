@@ -4,11 +4,14 @@
 - GET  /api/wechat/msg — URL 验证(echostr),sha1(sorted([token,timestamp,nonce]))
   与 signature 比对
 - POST /api/wechat/msg — 按 WX_MSG_ENCRYPT_MODE 处理:
-  * plain       → 直接解析 XML
+  * plain       → 直接解析 XML(xpay 事件一律 403 拒绝: 无验签/解密, 伪造可刷权益)
   * compatible  → 验 msg_signature + AES-256-CBC 解密(取 Encrypt 节点)
   * safe        → 同上(密文是整个 body)
-  event=xpay_goods_deliver_notify → 校验归属/金额 → 发放权益 → 发货回执
-  (notify_provide_goods) → 返回 "success"。非 xpay 事件静默返回 success。
+  event=xpay_goods_deliver_notify → 校验归属/环境/金额 → 幂等发放权益 →
+  补发发货回执(notify_provide_goods, 失败仅记日志, 不阻塞回调结果) → 返回 "success"。
+  按官方契约, 回调返回 success 即视为发货完成; notify_provide_goods 仅是
+  推送失败时的补发手段, 已 paid 订单的重复回调同样会补发(微信侧幂等)。
+  非 xpay 事件静默返回 success。
 """
 
 import base64
@@ -163,6 +166,13 @@ async def receive_message(
 
     parsed = _parse_xml(xml_text)
     event = parsed.get("Event")
+    if mode == "plain" and event == XPAY_DELIVER_EVENT:
+        # 明文模式无验签/解密,伪造回调可刷权益 → 直接拒绝(P1-1)
+        logger.warning(
+            "xpay deliver notify rejected in plain mode (WX_MSG_ENCRYPT_MODE=plain) — "
+            "no signature/decryption, refusing to fulfill"
+        )
+        raise HTTPException(status_code=403, detail="消息推送未启用安全模式")
     if event != XPAY_DELIVER_EVENT:
         # 非 xpay 事件(如普通推送/其它回调): 静默确认,不处理
         logger.info("ignoring non-xpay event: %r", event)
@@ -215,26 +225,34 @@ async def _handle_xpay_deliver(parsed: dict, db: AsyncSession) -> None:
 
     env = int(env_raw) if str(env_raw).isdigit() else None
 
-    # ── 幂等发放权益; 已发放(paid)时本次不再处理 ──
+    # ── 环境校验(P2): 通知 env 必须与订单 env 一致(防沙箱/正式串单) ──
+    if env is not None and order.env is not None and int(env) != int(order.env):
+        logger.warning(
+            "xpay deliver env mismatch for order %s: got %s, expected %s",
+            out_trade_no, env, order.env,
+        )
+        raise HTTPException(status_code=400, detail="支付环境不匹配")
+
+    # ── 幂等发放权益; 仅 pending 订单履约: 已 paid(重复回调)不重复发放,
+    #    refunded/cancelled 不发货(P2) ──
     fulfilled = await fulfill_order(
         db, order, user,
         txn_meta={"channel": "xpay", "env": env},
     )
-    if not fulfilled:
-        return
 
-    # ── 发货回执(必须调用,否则微信会重试/超时) ──
-    from app.services.xpay_api import notify_provide_goods
+    # ── 发货回执(补发): 回调返回 success 即视为发货完成, 这里再主动通知微信已发货。
+    #    微信侧幂等 —— 首次与已 paid 的重复回调都补发(P1-2); 失败仅记日志,
+    #    不阻塞回调结果(不再按"强制步骤"返回 502 让微信重推)。
+    #    refunded/cancelled 订单不补发。──
+    if fulfilled or order.status == "paid":
+        from app.services.xpay_api import notify_provide_goods
 
-    try:
-        await notify_provide_goods(
-            out_trade_no=order.order_no,
-            env=env if env is not None else settings.WX_XPAY_ENV,
-            openid=openid,
-        )
-    except RuntimeError as exc:
-        logger.error("notify_provide_goods failed for %s: %s", order.order_no, exc)
-        # 回执失败 → 返回非 success,让微信按策略重推
-        raise HTTPException(status_code=502, detail="发货回执失败")
+        try:
+            await notify_provide_goods(
+                out_trade_no=order.order_no,
+                env=env if env is not None else int(settings.WX_XPAY_ENV or 0),
+            )
+        except RuntimeError as exc:
+            logger.error("notify_provide_goods failed for %s: %s", order.order_no, exc)
 
     logger.info("Order %s fulfilled via xpay deliver notify (env=%s)", order.order_no, env)
