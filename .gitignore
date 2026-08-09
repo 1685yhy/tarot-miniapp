@@ -24,3 +24,14 @@ miniapp/images/cards_v3/
 upload_result.json
 dev-assets/
 private.*.key
+
+# 本地验证临时文件
+/shots/
+/mcp_drive.js
+/shot_index.js
+/verify_fixes.js
+*.db.bak-*
+backend/tarot_test.db.bak-*
+
+# 本地验证临时脚本
+/dev03-verify*.js
