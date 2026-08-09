@@ -91,7 +91,11 @@ Page({
   },
 
   onDayChange(e) {
-    this.setData({ dayIndex: Number(e.detail.value) });
+    // 回归修复：day 必须随选择器同步更新（原实现只更新 dayIndex，
+    // 导致保存的出生日期永远用初始默认日，改生日后星座/日期均不正确）
+    const dayIndex = Number(e.detail.value);
+    const day = dayIndex + 1;
+    this.setData({ day, dayIndex });
     this._syncDays();
     this._updateDerived();
   },

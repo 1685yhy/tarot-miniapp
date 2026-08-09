@@ -1,7 +1,7 @@
 import uuid
 from decimal import Decimal
 from datetime import datetime, timezone
-from sqlalchemy import String, DateTime, Integer, ForeignKey, DECIMAL
+from sqlalchemy import Integer, String, DateTime, ForeignKey, DECIMAL
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.mysql import CHAR
 from app.db.database import Base
@@ -18,5 +18,10 @@ class Order(Base):
     status: Mapped[str] = mapped_column(String(16), default="pending")  # pending/paid/refunded/cancelled
     paid_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
+    # xpay 虚拟支付字段（回归修复：外部还原丢失的 WIP 集成，按 alembic a5f6b7c8d9e0 恢复）
+    pay_channel: Mapped[str | None] = mapped_column(String(16), nullable=True)  # jsapi / xpay
+    env: Mapped[int | None] = mapped_column(Integer, nullable=True)  # xpay 环境: 0=正式 1=沙箱
+    delivered_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)  # xpay 发货回执时间
+    refund_status: Mapped[str | None] = mapped_column(String(16), nullable=True)  # refunded 等
 
     user: Mapped["User"] = relationship(back_populates="orders")

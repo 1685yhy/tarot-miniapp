@@ -62,6 +62,18 @@ class Settings(BaseSettings):
     WX_TEMPLATE_MEMBER_EXPIRE: str = ""
     WX_TEMPLATE_ANNUAL_REPORT: str = ""
 
+    # 虚拟支付 (xpay) + 小程序消息推送（回归修复：.env 已配置但这些字段缺失，
+    # 在 pydantic-settings extra='forbid' 下导致整个后端无法启动/测试无法收集）
+    WX_XPAY_OFFER_ID: str = ""
+    WX_XPAY_APPKEY_SANDBOX: str = ""
+    WX_XPAY_APPKEY_PROD: str = ""
+    PAY_CHANNEL: str = "jsapi"  # xpay(虚拟支付) / jsapi(旧微信支付)
+    WX_XPAY_ENV: int = 0        # 0=正式 1=沙箱
+    XPAY_PRODUCT_MAP: str = "{}"
+    WX_MSG_TOKEN: str = ""
+    WX_MSG_ENCODING_AES_KEY: str = ""
+    WX_MSG_ENCRYPT_MODE: str = "plain"  # plain / compatible / safe
+
     # Rate limiting
     RATE_LIMIT_MAX_REQUESTS: int = 60
     RATE_LIMIT_WINDOW_SECONDS: int = 60

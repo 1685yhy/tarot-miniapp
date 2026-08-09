@@ -520,7 +520,7 @@
     visible="{{showWeeklyPoster}}"
     weeklyData="{{weeklyReportData}}"
     cardImagePath="{{weeklyCardImage}}"
-    nickname="{{user.nickname}}"
+    nickname="{{user.nickname || '星光旅人'}}"
     bind:close="onCloseWeeklyPoster"
     bind:share="onShareWeeklyPoster"
   />

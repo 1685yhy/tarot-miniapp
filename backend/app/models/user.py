@@ -14,6 +14,8 @@ class User(Base):
     unionid: Mapped[str | None] = mapped_column(String(128), nullable=True)
     nickname: Mapped[str | None] = mapped_column(String(64), nullable=True)
     avatar_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    # xpay 前端签名用的 session_key（AES-GCM 加密落库，回归修复：按 alembic a5f6b7c8d9e0 恢复）
+    session_key_encrypted: Mapped[str | None] = mapped_column(String(512), nullable=True)
     is_member: Mapped[bool] = mapped_column(Boolean, default=False)
     member_expires_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     free_readings_today: Mapped[int] = mapped_column(Integer, default=0)

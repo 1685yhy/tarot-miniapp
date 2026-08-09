@@ -292,3 +292,35 @@ def _b64decode(s: str) -> bytes:
     if padding != 4:
         s += "=" * padding
     return _b64.b64decode(s)
+
+
+# ---------------------------------------------------------------------------
+# xpay 虚拟支付客户端签名（回归修复：此前未提交的 WIP 改动被外部还原，
+# 依据 tests/test_xpay.py 的手算断言恢复这两个函数）
+# ---------------------------------------------------------------------------
+
+
+def sign_xpay_params(app_key: str, sign_data: str) -> str:
+    """paySig = HMAC-SHA256(AppKey, 'requestVirtualPayment&' + signData)，小写 hex。
+
+    对应微信虚拟支付 requestVirtualPayment 接口的 paySig 字段。
+    """
+    import hashlib
+    import hmac
+
+    return hmac.new(
+        app_key.encode(),
+        f"requestVirtualPayment&{sign_data}".encode(),
+        hashlib.sha256,
+    ).hexdigest()
+
+
+def sign_xpay_signature(session_key: str, sign_data: str) -> str:
+    """signature = HMAC-SHA256(session_key, signData)，小写 hex。
+
+    对应微信虚拟支付客户端的 signature 字段（session_key 不解码、直接作为密钥）。
+    """
+    import hashlib
+    import hmac
+
+    return hmac.new(session_key.encode(), sign_data.encode(), hashlib.sha256).hexdigest()

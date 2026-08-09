@@ -13,7 +13,7 @@
   <!-- Canvas (hidden from view, used for drawing) -->
   <canvas
     type="2d"
-    id="shareCanvas"
+    id="{{canvasId}}"
     class="sp-canvas"
     style="width: {{canvasW}}px; height: {{canvasH}}px;"
   ></canvas>

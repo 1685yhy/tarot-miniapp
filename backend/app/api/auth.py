@@ -80,6 +80,14 @@ async def wx_login(req: UserLoginRequest, db: AsyncSession = Depends(get_db)):
         db.add(user)
         await db.flush()
 
+    # 保存 session_key(xpay 前端签名 signature 的密钥材料), AES-GCM 加密落库
+    session_key = wx_data.get("session_key")
+    if session_key:
+        from app.services.session_key import encrypt_session_key
+
+        user.session_key_encrypted = encrypt_session_key(session_key)
+        await db.flush()
+
     token = create_token(user.id, user.token_version)
     return LoginResponse(token=token, user=UserResponse.model_validate(user))
 
@@ -122,6 +130,7 @@ async def delete_me(
     user.unionid = None
     user.nickname = "已注销用户"
     user.avatar_url = None
+    user.session_key_encrypted = None  # xpay 签名密钥一并清除
     user.invite_code = None
     user.is_member = False
     user.member_expires_at = None

@@ -22,6 +22,7 @@ class CreateOrderResponse(BaseModel):
     amount: Decimal
     product_name: str
     payment_params: dict | None = None  # wx.requestPayment payload
+    xpay_params: dict | None = None  # xpay 虚拟支付参数（PAY_CHANNEL=xpay 时返回）
 
 
 class PaymentCallbackRequest(BaseModel):

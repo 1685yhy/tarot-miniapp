@@ -48,6 +48,7 @@ Page({
     needsBirth: false,  // 未填出生日期 → 点击引导
     lockedRising: false,
     hintText: '',
+    spreads: SPREADS,   // 牌阵馆 6 卡（回归修复：开发05重构时误删 data 绑定，导致牌阵馆空白）
   },
 
   onLoad() {

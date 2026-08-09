@@ -170,6 +170,13 @@ Page({
     const text = this.data.inputText.trim();
     if (!text || this.data.sending) return;
 
+    // 回归修复：无 readingId 直接进入聊天页时禁止发送，
+    // 避免发往 /readings//chat 的 405 无效请求
+    if (!this.data.readingId) {
+      wx.showToast({ title: '请从解读结果页进入追问', icon: 'none' });
+      return;
+    }
+
     // Analytics: track each sent message
     analytics.trackEvent('chat_message', { readingId: this.data.readingId });
 

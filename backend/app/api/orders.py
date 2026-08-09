@@ -18,7 +18,13 @@ from app.db.database import get_db
 from app.models.order import Order
 from app.models.user import User
 from app.schemas.order import CreateOrderRequest, CreateOrderResponse
-from app.services.payment import PRODUCTS, create_order_params, generate_order_no
+from app.services.payment import (
+    PRODUCTS,
+    create_order_params,
+    generate_order_no,
+    sign_xpay_params,
+    sign_xpay_signature,
+)
 from app.utils.auth import get_current_user, utc_aware
 
 logger = logging.getLogger(__name__)
@@ -36,6 +42,83 @@ async def create_order(
     product = PRODUCTS.get(body.product_type)
     if not product:
         raise HTTPException(status_code=400, detail="无效的商品类型")
+
+    # xpay 虚拟支付通道（回归修复：按 tests/test_xpay.py 契约恢复）
+    if settings.PAY_CHANNEL == "xpay":
+        try:
+            product_map = json.loads(settings.XPAY_PRODUCT_MAP or "{}") or {}
+        except Exception:
+            product_map = {}
+        product_id = product_map.get(body.product_type)
+        if not product_id:
+            # 虚拟支付道具未配置 → 前端展示「商品即将上线」降级提示
+            raise HTTPException(status_code=400, detail="该商品即将上线,敬请期待")
+        if not user.session_key_encrypted:
+            raise HTTPException(status_code=400, detail="登录凭证缺失,请重新登录")
+
+        from app.services.session_key import decrypt_session_key
+
+        session_key = decrypt_session_key(user.session_key_encrypted)
+        if not session_key:
+            raise HTTPException(status_code=400, detail="登录凭证缺失,请重新登录")
+
+        app_key = (
+            settings.WX_XPAY_APPKEY_PROD
+            if settings.WX_XPAY_ENV == 0
+            else settings.WX_XPAY_APPKEY_SANDBOX
+        )
+        order_no = generate_order_no()
+        env = int(settings.WX_XPAY_ENV or 0)
+        goods_price = int(round(product["price"] * 100))
+
+        sign_data = json.dumps(
+            {
+                "offerId": settings.WX_XPAY_OFFER_ID,
+                "buyQuantity": 1,
+                "env": env,
+                "currencyType": "CNY",
+                "productId": product_id,
+                "goodsPrice": goods_price,
+                "outTradeNo": order_no,
+                "attach": body.product_type,
+            },
+            separators=(",", ":"),
+        )
+
+        order = Order(
+            user_id=user.id,
+            order_no=order_no,
+            product_type=body.product_type,
+            amount=product["price"],
+            status="pending",
+            pay_channel="xpay",
+            env=env,
+        )
+        db.add(order)
+        await db.flush()
+
+        xpay_params = {
+            "mode": "short_series_goods",
+            "offerId": settings.WX_XPAY_OFFER_ID,
+            "buyQuantity": 1,
+            "env": env,
+            "currencyType": "CNY",
+            "productId": product_id,
+            "goodsPrice": goods_price,
+            "outTradeNo": order_no,
+            "attach": body.product_type,
+            "signData": sign_data,
+            "paySig": sign_xpay_params(app_key, sign_data),
+            "signature": sign_xpay_signature(session_key, sign_data),
+        }
+        return CreateOrderResponse(
+            order_id=order.id,
+            order_no=order.order_no,
+            amount=order.amount,
+            product_name=product["name"],
+            payment_params=None,
+            xpay_params=xpay_params,
+        )
 
     order = Order(
         user_id=user.id,
@@ -252,6 +335,7 @@ async def payment_callback(
 @router.get("/{order_no}/status")
 async def order_status(
     order_no: str,
+    request: Request,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -262,6 +346,46 @@ async def order_status(
         raise HTTPException(status_code=404, detail="订单不存在")
     if order.user_id != user.id:
         raise HTTPException(status_code=403, detail="无权查看该订单")
+    # xpay 远程状态查询（remote=true 时向微信虚拟支付查询，不回退本地权益）
+    if order.pay_channel == "xpay" and (request.query_params.get("remote") == "true"):
+        from app.services.xpay_api import query_order
+
+        try:
+            remote = await query_order(
+                out_trade_no=order.order_no,
+                env=order.env if order.env is not None else int(settings.WX_XPAY_ENV or 0),
+                openid=user.openid,
+            )
+        except Exception:
+            remote = None
+        remote_state = None
+        if remote:
+            state = remote.get("state")
+            # 微信 xpay 状态: 3=已支付 4=已发货 5=已退款 6=已取消
+            if state in (3, 4):
+                remote_state = "paid"
+            elif state == 5:
+                remote_state = "refunded"
+            elif state == 6:
+                remote_state = "cancelled"
+
+        # 远程已退款 → 本地标记 refunded（权益已发放的订单永不回退状态）
+        if remote_state == "refunded" and order.status not in ("paid",):
+            order.refund_status = "refunded"
+            order.status = "refunded"
+            await db.flush()
+
+        return {
+            "order_no": order.order_no,
+            "status": order.status,
+            "paid": order.status == "paid",
+            "amount": float(order.amount),
+            "product_type": order.product_type,
+            "paid_at": order.paid_at,
+            "remote": True,
+            "remote_state": remote_state,
+        }
+
     return {
         "order_no": order.order_no,
         "status": order.status,

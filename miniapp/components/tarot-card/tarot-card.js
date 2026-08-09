@@ -32,9 +32,13 @@ Component({
     cardImgError: false,
   },
 
+  // 回归修复: observer 只能监听「输入」属性(nameZh/nameEn/cardNumber)。
+  // 原实现同时监听了 cardType/imagePath —— 而 resolveCard 内部会 setData 这两个字段,
+  // 导致 observer→resolveCard→setData→observer 无限递归, 在真机/模拟器上都会
+  // 卡死页面(灰屏+JS线程冻结)。
   observers: {
-    'nameZh, cardType, nameEn, cardNumber, imagePath': function (nzh, ct, ne, cn, ip) {
-      this.resolveCard(nzh, ct, ne, cn, ip);
+    'nameZh, nameEn, cardNumber': function (nzh, ne, cn) {
+      this.resolveCard(nzh, this.properties.cardType, ne, cn, this.properties.imagePath);
     },
   },
 

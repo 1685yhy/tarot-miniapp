@@ -147,6 +147,30 @@ Component({
     isDrawing: false,
     canvasW: 0,
     canvasH: 0,
+    // 回归修复：同一页面可能出现多个 share-poster 实例（解读结果页「分享海报」
+    // + 「送好友一张牌」），若共用固定 canvas id "shareCanvas" 会导致渲染线程
+    // 崩溃(白屏/灰屏+JS 冻结)。每个实例生成唯一 canvas id。
+    canvasId: '',
+  },
+
+  lifetimes: {
+    attached() {
+      if (!this.data.canvasId) {
+        this.setData({
+          canvasId: 'shareCanvas_' + Date.now().toString(36) + '_' + Math.floor(Math.random() * 1e6).toString(36),
+        });
+      }
+    },
+    // 懒挂载场景（父页面 wx:if 仅在 visible 为 true 时才创建本组件）：
+    // 组件挂载时 visible 已是 true，property observer 不会触发（observer 只监听变化），
+    // 需要在组件就绪后主动绘制。
+    ready() {
+      if (this.properties.visible && !this._drewOnMount) {
+        this._drewOnMount = true;
+        this._initCanvasSize();
+        this._drawPoster();
+      }
+    },
   },
 
   methods: {
@@ -197,7 +221,7 @@ Component({
 
       this.setData({ isDrawing: true, drawError: false });
 
-      drawSharePoster('shareCanvas', {
+      drawSharePoster(this.data.canvasId, {
         context: this,
         mode: mode || 'reading',
         cardImagePath: cardImagePath || '',
