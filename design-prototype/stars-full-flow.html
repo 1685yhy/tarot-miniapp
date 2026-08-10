@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>星光映照 · 完整页面流 · 3 Tab 全流程</title>
-<meta name="description" content="星光映照塔罗小程序 — 今日 × 神谕 × 我的 三 Tab 完整页面流，19 屏全流程交互（含星座引导与出生信息录入），一个主角原则。E3 奶油疗愈语言。">
+<meta name="description" content="星光映照塔罗小程序 — 今日 × 神谕 × 我的 三 Tab 完整页面流，21 屏全流程交互（含解读加载、星光会员、星座引导与出生信息录入），一个主角原则。E3 奶油疗愈语言。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500&family=Noto+Serif+SC:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
@@ -12,11 +12,14 @@
 /* ═══════════════════════════════════════════════════════════════
    星光映照 · 完整页面流
    设计铁律：每一页只有一个主角，其余都是注脚与入口。
-   视觉：E3 奶油疗愈（#FAF6EF / 雾粉 #E8C4BE / 细金 #C9A97C / 衬线）
+   视觉：E3 奶油疗愈（#FAF6EF / 雾粉 #E8C4BE / 细金 #A98B5F 点缀 / 暖金 #8A6B3D CTA）
    路由：React state 页面栈（主屏 ↔ 二级页 前进后退 + TabBar 切换）
    页 04 能量详情：今日屏能量注脚可点 → 4 维度走心解读，chips 页内切换
+   页 06 星盘报告：深度星图报告卡（含 SVG 圆形星盘示意）+ 会员入口
    页 17 星座引导：首次打开（无星座记录）→ 12 星座选择 → 进今日屏（可跳过）
    页 18 出生信息：可选进阶（日期/时间/城市）→ 二期月亮/上升；设置可改星座
+   解读加载页：提问 → 星光洗牌（光球+三点呼吸+3 结果卡骨架）→ 自动进解读结果
+   会员页：年度/月度/特惠 三方案 · 双 CTA 暖金统一 · 月度可点选
    插画资产：assets/web/ 真实水彩（内联 base64）
    ═══════════════════════════════════════════════════════════════ */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -30,12 +33,12 @@ textarea,input,button{font-family:inherit}
 /* ── 展示舞台（暗底 · 单屏居中） ── */
 .stage{max-width:1100px;margin:0 auto;padding:48px 24px 90px;text-align:center}
 .stage h1{font-family:'Noto Serif SC',serif;font-weight:500;font-size:28px;letter-spacing:10px;color:#F0E2D0;margin-bottom:8px}
-.stage .sub{font-size:11px;color:rgba(201,169,124,.85);letter-spacing:4px;margin-bottom:8px}
+.stage .sub{font-size:11px;color:rgba(169,139,95,.85);letter-spacing:4px;margin-bottom:8px}
 .stage .meta{font-size:11px;color:rgba(239,228,214,.32);letter-spacing:1px;margin-bottom:42px}
 .stage .hashlist{font-size:10.5px;color:rgba(239,228,214,.4);letter-spacing:1px;line-height:2;margin-top:30px}
 .stage .note{margin-top:36px;font-family:'Noto Serif SC',serif;font-size:12.5px;color:rgba(240,226,208,.55);letter-spacing:2px;line-height:2.1}
 .stage .note b{color:#E8C4BE;font-weight:500}
-.stage .note em{font-style:normal;color:rgba(201,169,124,.9)}
+.stage .note em{font-style:normal;color:rgba(169,139,95,.9)}
 .scale-box{width:390px;height:832px;margin:0 auto;position:relative}
 .scale-box .phone-holder{position:absolute;left:0;top:0;transform:scale(1.3);transform-origin:top left;width:300px;height:640px}
 
@@ -43,8 +46,8 @@ textarea,input,button{font-family:inherit}
 .sys-e3{
   --cream:#FAF6EF; --cream-hi:#FFFDF8; --paper:#F2ECDF;
   --pink:#E8C4BE; --pink-deep:#DCA9A1; --pink-ink:#B08A82;
-  --gold:#C9A97C; --gold-deep:#B08F52;
-  --line:rgba(201,169,124,.28); --line-soft:rgba(201,169,124,.38);
+  --gold:#A98B5F; --gold-deep:#8A6B3D;  /* 细金(点缀) · 暖金(CTA/强调 4.59:1) */
+  --line:rgba(169,139,95,.28); --line-soft:rgba(169,139,95,.38);
   --ink:#3D3A36; --ink-soft:#8A8478; --ink-faint:#B0AA9C;
   --serif:'Noto Serif SC',serif;
   --sans:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
@@ -69,7 +72,7 @@ textarea,input,button{font-family:inherit}
 }
 .wxcapsule .cap{
   width:40px;height:32px;border-radius:7px;
-  background:rgba(255,253,248,.92);border:0.5px solid rgba(201,169,124,.3);
+  background:rgba(255,253,248,.92);border:0.5px solid rgba(169,139,95,.3);
   box-shadow:0 2px 6px rgba(61,58,54,.05);
   display:flex;align-items:center;justify-content:center;
 }
@@ -86,13 +89,13 @@ textarea,input,button{font-family:inherit}
 }
 .nav .back:active{opacity:.6}
 .nav .nt{flex:1;text-align:center;font-size:15px;letter-spacing:2.5px;color:var(--ink);margin-right:56px;white-space:nowrap}
-.pbody{position:relative;z-index:2;flex:1;overflow-y:auto;scrollbar-width:none;padding:2px 18px 26px}
+.pbody{position:relative;z-index:2;flex:1;overflow-y:auto;scrollbar-width:none;padding:2px 18px calc(30px + env(safe-area-inset-bottom))}
 .pbody::-webkit-scrollbar{display:none}
 .page{position:absolute;inset:0;display:flex;flex-direction:column}
 
 /* ── 通用小块 ── */
 .sec-label{font-family:var(--sans);font-size:11px;letter-spacing:2.5px;color:var(--gold-deep);margin:16px 0 8px;display:flex;align-items:center;gap:6px}
-.sec-label::before{content:'';width:14px;height:1px;background:rgba(201,169,124,.5)}
+.sec-label::before{content:'';width:14px;height:1px;background:rgba(169,139,95,.5)}
 .card-soft{
   background:var(--cream-hi);border:.5px solid var(--line-soft);border-radius:16px;
   box-shadow:var(--shadow),var(--hi);padding:13px 14px;margin-bottom:9px;
@@ -104,13 +107,13 @@ textarea,input,button{font-family:inherit}
 /* ── 主 CTA（44px+ 点击目标） ── */
 .cta{
   display:flex;align-items:center;justify-content:center;gap:7px;height:46px;border-radius:999px;
-  background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#FFFDF8;
+  background:var(--gold-deep);color:#FFFDF8; /* 暖金填充 + 奶油白字 */
   font-family:var(--serif);font-size:14px;letter-spacing:3px;cursor:pointer;
-  box-shadow:0 6px 16px rgba(176,143,82,.35),var(--hi);user-select:none;
+  box-shadow:0 6px 16px rgba(138,107,61,.35),var(--hi);user-select:none;
   transition:transform .15s ease,opacity .15s ease;margin-top:12px;
 }
 .cta:active{transform:scale(.975)}
-.cta.off{background:var(--paper);color:var(--ink-faint);box-shadow:none;pointer-events:none}
+.cta.off{background:var(--gold-deep);color:#FFFDF8;opacity:.55;box-shadow:none;pointer-events:none}
 .cta.ghost{background:transparent;border:1px solid var(--line-soft);color:var(--gold-deep);box-shadow:none;height:44px}
 .cta.pink{background:linear-gradient(135deg,var(--pink-deep),var(--pink-ink));box-shadow:0 6px 16px rgba(176,138,130,.32)}
 .cta.done{background:var(--paper);color:var(--ink-faint);box-shadow:none}
@@ -119,7 +122,7 @@ textarea,input,button{font-family:inherit}
 .tabbar{
   position:absolute;left:14px;right:14px;bottom:8px;height:52px;border-radius:20px;z-index:5;
   display:flex;align-items:center;justify-content:space-around;
-  background:var(--cream-hi);border:.5px solid rgba(201,169,124,.26);
+  background:var(--cream-hi);border:.5px solid rgba(169,139,95,.26);
   box-shadow:var(--shadow),var(--hi);
 }
 .tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex:1;height:100%;cursor:pointer;user-select:none}
@@ -150,7 +153,7 @@ textarea,input,button{font-family:inherit}
 @keyframes sheetUp{0%{opacity:0;transform:translateY(24px)}100%{opacity:1;transform:translateY(0)}}
 .sheet .s-title{font-size:16px;letter-spacing:4px;color:var(--ink);margin-top:12px}
 .sheet .s-sub{font-family:var(--sans);font-size:12px;color:var(--ink-soft);letter-spacing:1px;margin-top:8px;line-height:1.7}
-.sheet .s-btn{height:44px;border-radius:999px;background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#FFFDF8;font-size:13.5px;letter-spacing:3px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-top:18px;box-shadow:0 6px 16px rgba(176,143,82,.3)}
+.sheet .s-btn{height:44px;border-radius:999px;background:var(--gold-deep);color:#FFFDF8;font-size:13.5px;letter-spacing:3px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-top:18px;box-shadow:0 6px 16px rgba(138,107,61,.3)}
 .sheet .s-btn:active{transform:scale(.975)}
 .sheet .s-tag{font-family:var(--sans);font-size:10px;letter-spacing:3px;color:var(--gold-deep);margin-top:12px}
 
@@ -163,7 +166,7 @@ textarea,input,button{font-family:inherit}
 .gold-dot{display:inline-block;width:3px;height:3px;border-radius:50%;background:var(--gold);flex-shrink:0}
 .zodiac{
   display:inline-flex;align-items:center;height:18px;padding:0 9px;border-radius:999px;
-  background:var(--cream-hi);border:.5px solid rgba(201,169,124,.38);
+  background:var(--cream-hi);border:.5px solid rgba(169,139,95,.38);
   font-family:var(--sans);font-size:9.5px;color:var(--gold-deep);letter-spacing:1.5px;
   margin-top:2px;box-shadow:var(--hi);user-select:none;
 }
@@ -174,7 +177,7 @@ textarea,input,button{font-family:inherit}
 .card-zone{position:relative;z-index:2;height:291px;margin-top:5px}
 .halo{
   position:absolute;left:50%;top:50%;width:212px;height:212px;transform:translate(-50%,-50%);
-  background:radial-gradient(closest-side,rgba(201,169,124,.30),rgba(201,169,124,0) 72%);
+  background:radial-gradient(closest-side,rgba(169,139,95,.30),rgba(169,139,95,0) 72%);
   animation:haloBreathe 6s ease-in-out infinite;
 }
 @keyframes haloBreathe{0%,100%{opacity:.72;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.06)}}
@@ -189,15 +192,15 @@ textarea,input,button{font-family:inherit}
 .flip3d{perspective:900px}
 .mat{
   padding:6px;border-radius:19px;background:var(--cream-hi);cursor:pointer;
-  border:1px solid rgba(201,169,124,.34);
-  box-shadow:0 14px 32px rgba(61,58,54,.14),0 0 0 .5px rgba(201,169,124,.16),var(--hi);
+  border:1px solid rgba(169,139,95,.34);
+  box-shadow:0 14px 32px rgba(61,58,54,.14),0 0 0 .5px rgba(169,139,95,.16),var(--hi);
   transition:transform .18s ease;
 }
 .mat:active{transform:scale(.965)}
 .mat.go{transform:rotateY(180deg);transition:transform .62s cubic-bezier(.35,.1,.25,1)}
 .art{
   position:relative;width:190px;height:270px;border-radius:13px;overflow:hidden;
-  border:.5px solid rgba(201,169,124,.3);transform-style:preserve-3d;
+  border:.5px solid rgba(169,139,95,.3);transform-style:preserve-3d;
 }
 .art::after{content:'';position:absolute;left:0;right:0;top:0;height:34%;pointer-events:none;z-index:2;background:linear-gradient(180deg,rgba(255,253,248,.30),rgba(255,253,248,0))}
 .art img{width:100%;height:100%;object-fit:cover;object-position:50% 42%;display:block;backface-visibility:hidden}
@@ -214,10 +217,10 @@ textarea,input,button{font-family:inherit}
 .energy{
   position:relative;z-index:3;display:flex;align-items:center;justify-content:center;gap:7px;
   margin:8px 14px 0;height:26px;border-radius:999px;
-  background:rgba(201,169,124,.08);border:.5px solid rgba(201,169,124,.2);
+  background:rgba(169,139,95,.08);border:.5px solid rgba(169,139,95,.2);
 }
 .energy .eg-label{font-family:var(--sans);font-size:9.5px;color:var(--gold);letter-spacing:2px}
-.energy .sep{width:3px;height:3px;border-radius:50%;background:rgba(201,169,124,.45);flex-shrink:0}
+.energy .sep{width:3px;height:3px;border-radius:50%;background:rgba(169,139,95,.45);flex-shrink:0}
 .energy .eg{font-family:var(--sans);font-size:9.5px;color:var(--ink-soft);letter-spacing:.5px;white-space:nowrap}
 .energy .eg i{font-family:var(--num);font-style:normal;font-size:11px;color:var(--gold-deep);margin-left:2px}
 .energy .eg.hot{color:var(--pink-ink)}
@@ -228,7 +231,7 @@ textarea,input,button{font-family:inherit}
 .link em{font-style:normal;color:var(--pink-ink)}
 .link .x{font-family:var(--num);color:var(--gold-deep);font-size:13px;margin:0 2px}
 .tomorrow{position:relative;z-index:6;margin-top:4px}
-.tline{width:132px;border-top:1px dashed rgba(201,169,124,.4);margin:0 auto}
+.tline{width:132px;border-top:1px dashed rgba(169,139,95,.4);margin:0 auto}
 .trow{
   display:flex;align-items:center;justify-content:center;gap:6px;margin-top:6px;
   font-family:var(--serif);font-size:10.5px;color:var(--gold);letter-spacing:2.5px;cursor:pointer;
@@ -237,7 +240,7 @@ textarea,input,button{font-family:inherit}
 .trow:active{opacity:.6}
 .mini-card{
   width:96px;height:134px;border-radius:11px;margin:2px auto 0;
-  background:linear-gradient(160deg,#F6EFE2,#EFE3CD);border:.5px solid rgba(201,169,124,.45);
+  background:linear-gradient(160deg,#F6EFE2,#EFE3CD);border:.5px solid rgba(169,139,95,.45);
   box-shadow:0 10px 22px rgba(61,58,54,.16),var(--hi);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
 }
@@ -272,19 +275,19 @@ textarea,input,button{font-family:inherit}
    页 03 · 牌语详解（主角=牌意教学）
    ═══════════════════════════════════════════════════════════════ */
 .detail-hero{display:flex;align-items:center;gap:14px;background:var(--cream-hi);border:.5px solid var(--line-soft);border-radius:18px;padding:12px 14px;box-shadow:var(--shadow),var(--hi);margin-top:6px}
-.detail-hero .dh-art{width:66px;height:98px;border-radius:9px;overflow:hidden;border:.5px solid rgba(201,169,124,.35);flex-shrink:0;position:relative}
+.detail-hero .dh-art{width:66px;height:98px;border-radius:9px;overflow:hidden;border:.5px solid rgba(169,139,95,.35);flex-shrink:0;position:relative;background:var(--paper)}
 .detail-hero .dh-art img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;display:block}
 .detail-hero .dh-name{font-size:17px;letter-spacing:2.5px;color:var(--ink)}
 .detail-hero .dh-en{font-family:var(--num);font-size:9.5px;letter-spacing:3.5px;color:var(--gold-deep);margin-top:3px}
 .detail-hero .dh-line{font-family:var(--sans);font-size:11.5px;color:var(--ink-soft);line-height:1.65;margin-top:7px;letter-spacing:.3px}
 .sym-row{display:flex;gap:11px;align-items:flex-start;padding:9px 0}
-.sym-row .sym-ic{width:30px;height:30px;border-radius:10px;background:rgba(201,169,124,.12);border:.5px solid rgba(201,169,124,.28);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;color:var(--gold-deep)}
+.sym-row .sym-ic{width:30px;height:30px;border-radius:10px;background:rgba(169,139,95,.12);border:.5px solid rgba(169,139,95,.28);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;color:var(--gold-deep)}
 .sym-row .sym-t{font-size:12px;letter-spacing:1px;color:var(--ink);margin-bottom:2px}
 .sym-row .sym-d{font-family:var(--sans);font-size:11.5px;line-height:1.65;color:var(--ink-soft);text-align:left /* 排版: 正文左对齐 */}
 .ask-card{background:rgba(232,196,190,.16);border:.5px solid rgba(176,138,130,.35);border-radius:16px;padding:13px 14px;margin-top:14px}
 .ask-card .aq{font-size:12.5px;letter-spacing:.5px;line-height:1.8;color:var(--pink-ink);text-align:left /* 排版: 正文左对齐 */}
 .ask-card .aq-label{font-family:var(--sans);font-size:10.5px;letter-spacing:3px;color:var(--pink-deep);margin-bottom:5px;display:flex;align-items:center;gap:6px}
-.do-card{border:1px dashed rgba(176,143,82,.55);border-radius:16px;padding:13px 14px;margin-top:10px;background:rgba(201,169,124,.07)}
+.do-card{border:1px dashed rgba(138,107,61,.55);border-radius:16px;padding:13px 14px;margin-top:10px;background:rgba(169,139,95,.07)}
 .do-card .dq{font-size:12.5px;letter-spacing:.5px;line-height:1.8;color:var(--ink-soft);text-align:left /* 排版: 正文左对齐 */}
 .do-card .dq-label{font-family:var(--sans);font-size:10.5px;letter-spacing:3px;color:var(--gold-deep);margin-bottom:5px;display:flex;align-items:center;gap:6px}
 
@@ -295,14 +298,14 @@ textarea,input,button{font-family:inherit}
 /* 今日屏能量注脚 → 可点击项（hover 反馈） */
 .energy{gap:5px}
 .energy .eg.go{cursor:pointer;padding:2px 4px;margin:0 -2px;border-radius:7px;transition:background .15s ease}
-.energy .eg.go:hover{background:rgba(201,169,124,.18)}
-.energy .eg.go:active{background:rgba(201,169,124,.32)}
+.energy .eg.go:hover{background:rgba(169,139,95,.18)}
+.energy .eg.go:active{background:rgba(169,139,95,.32)}
 /* 维度切换 chips（4 个 · 选中态随维度色调） */
 .e-chips{display:flex;gap:6px;margin-top:6px}
 .e-chip{
   flex:1;height:32px;border-radius:999px;display:flex;align-items:center;justify-content:center;
   font-family:var(--sans);font-size:11px;letter-spacing:1.5px;color:var(--ink-faint);
-  background:var(--cream-hi);border:.5px solid rgba(201,169,124,.22);
+  background:var(--cream-hi);border:.5px solid rgba(169,139,95,.22);
   cursor:pointer;user-select:none;transition:transform .15s ease,box-shadow .15s ease;
 }
 .e-chip:active{transform:scale(.96)}
@@ -334,8 +337,8 @@ textarea,input,button{font-family:inherit}
 .e-read .para.p1{color:var(--ink);font-family:var(--serif);font-size:12.5px;letter-spacing:.6px}
 .e-read .line{
   font-family:var(--serif);font-size:13px;letter-spacing:1px;line-height:1.8;color:var(--gold-deep);
-  padding:11px 14px;border-radius:14px;background:rgba(201,169,124,.08);
-  border:.5px solid rgba(201,169,124,.25);text-align:center;
+  padding:11px 14px;border-radius:14px;background:rgba(169,139,95,.08);
+  border:.5px solid rgba(169,139,95,.25);text-align:center;
 }
 .e-read .line::before{content:'✦ ';color:var(--gold)}
 /* 与今日牌的关联：一行小字 */
@@ -349,26 +352,38 @@ textarea,input,button{font-family:inherit}
    页 05 · 神谕主屏（主角=三要素）
    ═══════════════════════════════════════════════════════════════ */
 .oracle-head{position:relative;z-index:3;text-align:center;margin-top:26px}
-.oracle-head .oh-en{font-family:var(--num);font-size:9.5px;letter-spacing:6px;color:var(--gold-deep)}
+.oracle-head .oh-en{font-family:var(--num);font-size:9.5px;letter-spacing:6px;color:var(--gold)} /* 眉题：细金 */
 .oracle-head h2{font-size:20px;letter-spacing:5px;font-weight:500;margin-top:6px}
-.oracle-head p{font-family:var(--sans);font-size:11.5px;color:var(--ink-faint);letter-spacing:2px;margin-top:7px}
+.oracle-head p{font-family:var(--sans);font-size:11.5px;color:var(--ink-soft);letter-spacing:2px;margin-top:7px}
 .ele-card{
   position:relative;z-index:3;display:flex;align-items:center;gap:12px;
   background:var(--cream-hi);border:.5px solid var(--line-soft);border-radius:18px;
   padding:11px 13px;margin:10px 18px 0;cursor:pointer;box-shadow:var(--shadow),var(--hi);
-  transition:transform .15s ease;
+  transition:transform .15s ease;min-height:72px; /* 三卡等高 */
 }
 .ele-card:active{transform:scale(.98)}
 .ele-card .ele-ic{
   width:44px;height:44px;border-radius:50%;flex-shrink:0;
-  background:linear-gradient(145deg,rgba(232,196,190,.5),rgba(201,169,124,.3));
-  border:.5px solid rgba(201,169,124,.4);
+  background:linear-gradient(145deg,rgba(232,196,190,.5),rgba(169,139,95,.3));
+  border:.5px solid rgba(169,139,95,.4);
   display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--pink-ink);
 }
 .ele-card .ele-tx{flex:1;min-width:0}
 .ele-card .ele-n{font-size:14px;letter-spacing:2px;color:var(--ink);text-align:left /* 排版: 正文左对齐 */}
 .ele-card .ele-l{font-family:var(--sans);font-size:11px;color:var(--ink-soft);line-height:1.55;margin-top:3px;letter-spacing:.3px;text-align:left /* 排版: 正文左对齐 */}
-.ele-card .ele-go{color:var(--ink-faint);font-size:15px;font-family:var(--sans);flex-shrink:0}
+.ele-card .ele-go{color:var(--gold);font-size:16px;font-family:var(--sans);flex-shrink:0} /* 箭头：细金 */
+/* 会员徽章（金描边 + 深金字） */
+.ele-card .ele-badge{
+  display:inline-block;margin-left:7px;vertical-align:1px;
+  font-family:var(--sans);font-size:9px;letter-spacing:1.5px;color:var(--gold-deep);
+  border:.5px solid var(--gold-deep);border-radius:999px;padding:1px 6px;
+}
+/* 深度星图报告推广卡：与两张要素卡等高等底 */
+.ele-card.promo{
+  background:linear-gradient(160deg,#FFFDF8,rgba(169,139,95,.09));
+  border-color:rgba(169,139,95,.45);
+}
+.ele-card.promo .ele-ic{background:linear-gradient(145deg,rgba(169,139,95,.28),rgba(138,107,61,.4));color:#FFFDF8;font-size:17px}
 .entry-row{position:relative;z-index:3;display:flex;gap:9px;margin:14px 18px 0}
 .entry-pill{
   flex:1;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:6px;
@@ -376,7 +391,7 @@ textarea,input,button{font-family:inherit}
   font-family:var(--sans);font-size:11.5px;letter-spacing:1.5px;color:var(--gold-deep);box-shadow:var(--hi);
 }
 .entry-pill:active{transform:scale(.97)}
-.entry-pill b{color:var(--ink-soft);font-weight:400}
+.entry-pill b{color:var(--gold);font-weight:400} /* 箭头：细金 */
 
 /* ═══════════════════════════════════════════════════════════════
    页 06 · 三要素详情（主角=该要素）
@@ -384,53 +399,76 @@ textarea,input,button{font-family:inherit}
 .el-hero{position:relative;z-index:2;text-align:center;margin-top:14px}
 .el-hero .el-big{
   width:72px;height:72px;border-radius:50%;margin:0 auto;
-  background:radial-gradient(circle at 32% 28%,rgba(232,196,190,.55),rgba(201,169,124,.32));
-  border:.5px solid rgba(201,169,124,.45);
+  background:radial-gradient(circle at 32% 28%,rgba(232,196,190,.55),rgba(169,139,95,.32));
+  border:.5px solid rgba(169,139,95,.45);
   display:flex;align-items:center;justify-content:center;font-size:32px;color:var(--pink-ink);
   box-shadow:0 12px 26px rgba(176,138,130,.22),var(--hi);
   animation:haloBreathe 6s ease-in-out infinite;
 }
 .el-hero h3{font-size:19px;letter-spacing:4px;margin-top:12px;font-weight:500}
 .el-hero .el-line{font-family:var(--sans);font-size:11.5px;color:var(--ink-soft);letter-spacing:1px;margin-top:7px}
-.price-card{background:var(--cream-hi);border:.5px solid rgba(176,143,82,.4);border-radius:18px;padding:4px 14px 12px;margin-top:10px;box-shadow:var(--shadow)}
-.price-card .pc-t{font-size:13px;letter-spacing:2px;color:var(--ink);text-align:center;margin:10px 0 4px}
-.price-card .pc-s{font-family:var(--sans);font-size:10.5px;color:var(--ink-faint);text-align:center;letter-spacing:1.5px;margin-bottom:6px}
-.tier-row{display:flex;align-items:center;gap:10px;padding:9px 2px;border-top:.5px solid rgba(201,169,124,.18)}
+.price-card{background:var(--cream-hi);border:.5px solid rgba(138,107,61,.4);border-radius:18px;padding:4px 14px 12px;margin-top:10px;box-shadow:var(--shadow)}
+.price-card .pc-t{font-size:13px;letter-spacing:2px;color:var(--ink);font-weight:600;text-align:center;margin:10px 0 4px} /* 标题：墨加粗 */
+.price-card .pc-s{font-family:var(--sans);font-size:10.5px;color:var(--ink-soft);text-align:center;letter-spacing:1.5px;margin-bottom:6px}
+/* 深度星图报告 · 圆形星盘示意（纯 SVG 圆形星盘 · 原型示意，最终实现走美术资产规则） */
+.pc-chart{width:88px;height:88px;margin:10px auto 2px;border-radius:50%;
+  background:var(--cream);border:.5px solid rgba(169,139,95,.45);
+  box-shadow:var(--hi),0 4px 12px rgba(61,58,54,.05);display:flex;align-items:center;justify-content:center}
+.pc-chart svg{display:block}
+/* 星盘报告屏（页 06）正文提为墨色 10.5:1 */
+.el-body .card-soft p{color:var(--ink)}
+/* 会员入口（深度星图报告卡下方） */
+.mem-link{
+  margin-top:12px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;
+  background:var(--cream-hi);border:.5px solid var(--line-soft);box-shadow:var(--hi);cursor:pointer;
+  font-family:var(--sans);font-size:11.5px;letter-spacing:1.5px;color:var(--gold-deep);
+}
+.mem-link:active{transform:scale(.98)}
+.mem-link b{font-weight:500;color:var(--ink)}
+.tier-row{display:flex;align-items:center;gap:10px;padding:9px 2px;border-top:.5px solid rgba(169,139,95,.18)}
 .tier-row .tier-n{flex:1;min-width:0}
 .tier-row .tier-n b{font-size:12.5px;letter-spacing:1px;color:var(--ink);font-weight:500;text-align:left /* 排版: 正文左对齐 */}
 .tier-row .tier-n span{display:block;font-family:var(--sans);font-size:10.5px;color:var(--ink-faint);margin-top:2px;letter-spacing:.3px;text-align:left /* 排版: 正文左对齐 */}
 .tier-row .tier-p{font-family:var(--num);font-size:16px;color:var(--gold-deep);font-style:normal}
 .tier-row .tier-p small{font-size:10px;font-family:var(--sans)}
-.tier-row .tier-btn{width:56px;height:34px;border-radius:999px;background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#FFFDF8;font-size:11px;letter-spacing:1px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.tier-row .tier-btn{width:56px;height:34px;border-radius:999px;background:var(--gold-deep);color:#FFFDF8;font-size:11px;letter-spacing:1px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
 .tier-row .tier-btn:active{transform:scale(.95)}
 
 /* ═══════════════════════════════════════════════════════════════
    页 07 · 牌阵选择（主角=牌阵网格）
    ═══════════════════════════════════════════════════════════════ */
-.spread-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:6px}
+.spread-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:6px;align-items:stretch}
 .spread-card{
-  position:relative;background:var(--cream-hi);border:.5px solid var(--line-soft);border-radius:17px;
-  padding:13px 12px;cursor:pointer;box-shadow:var(--shadow),var(--hi);transition:transform .14s ease;
+  position:relative;background:var(--cream-hi);border:.5px solid rgba(169,139,95,.45);border-radius:17px;
+  padding:13px 12px;cursor:pointer;box-shadow:0 12px 26px rgba(61,58,54,.13),var(--hi);transition:transform .14s ease;
+  display:flex;flex-direction:column;height:100%; /* 两列卡等高 */
 }
 .spread-card:active{transform:scale(.97)}
-.spread-card.sel{border:1.5px solid var(--gold);box-shadow:0 8px 20px rgba(176,143,82,.18),var(--hi)}
+.spread-card.sel{border:1.5px solid var(--gold);box-shadow:0 8px 20px rgba(138,107,61,.18),var(--hi)}
 .spread-card .sc-ic{font-size:19px}
 .spread-card .sc-n{font-size:13.5px;letter-spacing:1.5px;color:var(--ink);margin-top:6px;text-align:left /* 排版: 正文左对齐 */}
-.spread-card .sc-d{font-family:var(--sans);font-size:11px;color:var(--ink-soft);margin-top:3px;letter-spacing:.3px;line-height:1.5;text-align:left /* 排版: 正文左对齐 */}
+.spread-card .sc-d{font-family:var(--sans);font-size:11px;color:var(--ink-soft);margin-top:auto;padding-top:7px;letter-spacing:.3px;line-height:1.5;text-align:left /* 排版: 正文左对齐 */}
 .spread-card .sc-tag{
   position:absolute;top:9px;right:9px;font-family:var(--sans);font-size:9px;letter-spacing:1px;
-  color:var(--gold-deep);background:rgba(201,169,124,.12);border:.5px solid rgba(201,169,124,.3);
+  color:var(--gold-deep);background:rgba(169,139,95,.08);border:.5px solid var(--gold-deep); /* 金描边 + 深金字 */
   padding:1px 6px;border-radius:999px;
 }
-.spread-card .sc-ok{position:absolute;top:9px;right:9px;width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#FFFDF8;font-size:10px;display:flex;align-items:center;justify-content:center}
-.spread-wide{display:flex;align-items:center;gap:11px;background:var(--cream-hi);border:.5px solid var(--line-soft);border-radius:17px;padding:11px 13px;margin-top:9px;cursor:pointer;box-shadow:var(--shadow),var(--hi);height:58px}
+.spread-card .sc-ok{position:absolute;top:9px;right:9px;width:18px;height:18px;border-radius:50%;background:var(--gold-deep);color:#FFFDF8;font-size:10px;display:flex;align-items:center;justify-content:center}
+.spread-wide{display:flex;align-items:center;gap:11px;background:var(--cream-hi);border:.5px solid rgba(169,139,95,.45);border-radius:17px;padding:11px 13px;margin-top:9px;cursor:pointer;box-shadow:0 10px 22px rgba(61,58,54,.11),var(--hi);height:58px}
 .spread-wide:active{transform:scale(.98)}
 .spread-wide.sel{border:1.5px solid var(--gold)}
 .spread-wide .sc-ic{font-size:18px}
 .spread-wide .sc-t{flex:1}
 .spread-wide .sc-n{font-size:13px;letter-spacing:1.5px;color:var(--ink);text-align:left /* 排版: 正文左对齐 */}
 .spread-wide .sc-d{font-family:var(--sans);font-size:10.5px;color:var(--ink-soft);margin-top:2px;text-align:left /* 排版: 正文左对齐 */}
-.spread-wide .sc-ok{width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#FFFDF8;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.spread-wide .sc-ok{width:18px;height:18px;border-radius:50%;background:var(--gold-deep);color:#FFFDF8;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* 牌阵屏底部固定 CTA 栏（暖金填充 · 含 safe-area） */
+.spread-bar{
+  position:absolute;left:0;right:0;bottom:0;z-index:8;
+  padding:10px 18px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(250,246,239,0),var(--cream) 60%);
+}
+.spread-bar .cta{margin:0}
 
 /* ═══════════════════════════════════════════════════════════════
    页 08 · 占卜提问（主角=问题输入）
@@ -445,14 +483,14 @@ textarea,input,button{font-family:inherit}
   resize:none;outline:none;margin-top:12px;text-align:left /* 排版: 正文左对齐 */
 }
 .ask-input::placeholder{color:var(--ink-faint)}
-.ask-input:focus{border-color:rgba(201,169,124,.55)}
+.ask-input:focus{border-color:rgba(169,139,95,.55)}
 .chip-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
 .chip{
   height:32px;padding:0 12px;border-radius:999px;display:flex;align-items:center;cursor:pointer;
-  background:var(--cream-hi);border:.5px solid rgba(201,169,124,.3);
+  background:var(--cream-hi);border:.5px solid rgba(169,139,95,.3);
   font-family:var(--sans);font-size:11px;color:var(--ink-soft);letter-spacing:.5px;box-shadow:var(--hi);
 }
-.chip:active{background:rgba(201,169,124,.14)}
+.chip:active{background:rgba(169,139,95,.14)}
 .persona-row{
   display:flex;align-items:center;gap:11px;background:var(--cream-hi);border:.5px solid var(--line-soft);
   border-radius:15px;padding:9px 12px;margin-top:8px;cursor:pointer;box-shadow:var(--hi);height:56px;
@@ -462,8 +500,8 @@ textarea,input,button{font-family:inherit}
 .persona-row .p-t{flex:1}
 .persona-row .p-n{font-size:12.5px;letter-spacing:1.5px;color:var(--ink);text-align:left /* 排版: 正文左对齐 */}
 .persona-row .p-d{font-family:var(--sans);font-size:10.5px;color:var(--ink-faint);margin-top:2px;letter-spacing:.5px;text-align:left /* 排版: 正文左对齐 */}
-.persona-row .p-ck{width:17px;height:17px;border-radius:50%;border:1px solid rgba(201,169,124,.45);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:transparent}
-.persona-row.sel .p-ck{background:linear-gradient(135deg,var(--gold),var(--gold-deep));border:none;color:#FFFDF8}
+.persona-row .p-ck{width:17px;height:17px;border-radius:50%;border:1px solid rgba(169,139,95,.45);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:transparent}
+.persona-row.sel .p-ck{background:var(--gold-deep);border:none;color:#FFFDF8}
 .quota-note{position:relative;z-index:2;text-align:center;font-family:var(--sans);font-size:10.5px;color:var(--ink-faint);letter-spacing:1.5px;margin-top:12px}
 
 /* ═══════════════════════════════════════════════════════════════
@@ -471,7 +509,7 @@ textarea,input,button{font-family:inherit}
    ═══════════════════════════════════════════════════════════════ */
 .result-cards{display:flex;gap:10px;justify-content:center;margin-top:8px}
 .res-card{width:72px;cursor:default}
-.res-card .rc-art{width:72px;height:104px;border-radius:10px;overflow:hidden;border:.5px solid rgba(201,169,124,.4);box-shadow:0 8px 18px rgba(61,58,54,.12),var(--hi);position:relative;margin:0 auto}
+.res-card .rc-art{width:72px;height:104px;border-radius:10px;overflow:hidden;border:.5px solid rgba(169,139,95,.4);box-shadow:0 8px 18px rgba(61,58,54,.12),var(--hi);position:relative;margin:0 auto}
 .res-card .rc-art img{width:100%;height:100%;object-fit:cover;display:block}
 .res-card .rc-pos{text-align:center;font-family:var(--sans);font-size:10px;color:var(--gold-deep);letter-spacing:2px;margin-top:6px}
 .res-card .rc-n{text-align:center;font-size:11.5px;letter-spacing:1px;color:var(--ink);margin-top:2px}
@@ -481,12 +519,12 @@ textarea,input,button{font-family:inherit}
 .reading-para{margin-top:12px}
 .reading-para h4{font-size:12.5px;letter-spacing:1.5px;color:var(--gold-deep);margin-bottom:5px;font-weight:500}
 .reading-para p{font-family:var(--sans);font-size:11.5px;line-height:1.8;color:var(--ink-soft);letter-spacing:.3px;text-align:left /* 排版: 正文左对齐 */}
-.action-card{border:1px dashed rgba(176,143,82,.55);border-radius:16px;padding:13px 14px;margin-top:12px;background:rgba(201,169,124,.07)}
+.action-card{border:1px dashed rgba(138,107,61,.55);border-radius:16px;padding:13px 14px;margin-top:12px;background:rgba(169,139,95,.07)}
 .action-card .aq2{font-size:12.5px;line-height:1.9;color:var(--ink-soft);letter-spacing:.5px;text-align:left /* 排版: 正文左对齐 */}
 .action-card .aq2-label{font-family:var(--sans);font-size:10.5px;letter-spacing:3px;color:var(--gold-deep);margin-bottom:5px;display:flex;align-items:center;gap:6px}
 .result-actions{display:flex;gap:9px;margin-top:14px}
 .result-actions .ra{flex:1;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:5px;font-size:12.5px;letter-spacing:2px;cursor:pointer;background:var(--cream-hi);border:.5px solid var(--line-soft);color:var(--gold-deep);box-shadow:var(--hi)}
-.result-actions .ra.pri{background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#FFFDF8;border:none;box-shadow:0 6px 16px rgba(176,143,82,.3)}
+.result-actions .ra.pri{background:var(--gold-deep);color:#FFFDF8;border:none;box-shadow:0 6px 16px rgba(138,107,61,.3)}
 .result-actions .ra:active{transform:scale(.97)}
 .save-note{position:relative;z-index:2;text-align:center;font-family:var(--sans);font-size:10.5px;color:var(--ink-faint);letter-spacing:2px;margin-top:12px;cursor:pointer}
 .save-note:active{opacity:.6}
@@ -495,14 +533,14 @@ textarea,input,button{font-family:inherit}
    页 10 · 我的主屏（主角=星光记录卡）
    ═══════════════════════════════════════════════════════════════ */
 .avatar-chip{display:flex;align-items:center;gap:7px}
-.avatar-chip .av{width:34px;height:34px;border-radius:50%;background:linear-gradient(145deg,#E8C4BE,#C9A97C);border:.5px solid rgba(201,169,124,.5);display:flex;align-items:center;justify-content:center;color:#FFFDF8;font-size:15px;box-shadow:var(--hi)}
+.avatar-chip .av{width:34px;height:34px;border-radius:50%;background:linear-gradient(145deg,#E8C4BE,#A98B5F);border:.5px solid rgba(169,139,95,.5);display:flex;align-items:center;justify-content:center;color:#FFFDF8;font-size:15px;box-shadow:var(--hi)}
 .avatar-chip .av-t{text-align:left}
 .avatar-chip .av-n{font-size:12.5px;letter-spacing:1px;color:var(--ink)}
 .avatar-chip .av-l{font-family:var(--sans);font-size:9.5px;color:var(--gold-deep);letter-spacing:1.5px;margin-top:2px}
 .record-card{
   position:relative;z-index:2;margin:24px 18px 0;border-radius:22px;overflow:hidden;
-  background:linear-gradient(165deg,#FFFDF8,var(--paper));
-  border:.5px solid rgba(201,169,124,.4);box-shadow:0 16px 34px rgba(61,58,54,.1),var(--hi);
+  background:var(--cream-hi); /* 统计 chips 底色统一白卡同色 */
+  border:.5px solid rgba(169,139,95,.4);box-shadow:0 16px 34px rgba(61,58,54,.1),var(--hi);
   padding:16px 17px 13px;cursor:pointer;
 }
 .record-card .rc-top{display:flex;justify-content:space-between;align-items:center}
@@ -514,7 +552,7 @@ textarea,input,button{font-family:inherit}
 .record-main .rm-tx{flex:1;padding-bottom:5px}
 .record-main .rm-t1{font-size:12px;letter-spacing:2px;color:var(--ink-soft)}
 .record-main .rm-t2{font-family:var(--sans);font-size:11px;color:var(--ink-faint);margin-top:4px;letter-spacing:.5px;line-height:1.5}
-.record-stats{display:flex;border-top:.5px dashed rgba(201,169,124,.4);margin-top:13px;padding-top:10px}
+.record-stats{display:flex;border-top:.5px dashed rgba(169,139,95,.4);margin-top:13px;padding-top:10px}
 .record-stats .rs{flex:1;text-align:center}
 .record-stats .rs b{display:block;font-family:var(--num);font-size:17px;color:var(--gold-deep);font-weight:400}
 .record-stats .rs span{font-family:var(--sans);font-size:10px;color:var(--ink-faint);letter-spacing:2px}
@@ -525,7 +563,7 @@ textarea,input,button{font-family:inherit}
   display:flex;align-items:center;gap:10px;padding:0 13px;height:58px;cursor:pointer;box-shadow:var(--shadow),var(--hi);
 }
 .me-tile:active{transform:scale(.97)}
-.me-tile .mt-ic{width:32px;height:32px;border-radius:10px;background:rgba(232,196,190,.32);border:.5px solid rgba(176,138,130,.3);display:flex;align-items:center;justify-content:center;color:var(--pink-ink);font-size:14px;flex-shrink:0}
+.me-tile .mt-ic{width:32px;height:32px;border-radius:10px;background:rgba(169,139,95,.10);border:.5px solid rgba(169,139,95,.28);display:flex;align-items:center;justify-content:center;color:var(--gold-deep);font-size:14px;flex-shrink:0} /* 入口图标：统一金系细线 */
 .me-tile .mt-n{font-size:12.5px;letter-spacing:1.5px;color:var(--ink);text-align:left /* 排版: 正文左对齐 */}
 .me-tile .mt-d{font-family:var(--sans);font-size:9.5px;color:var(--ink-faint);margin-top:2px;letter-spacing:.5px;text-align:left /* 排版: 正文左对齐 */}
 
@@ -547,7 +585,7 @@ textarea,input,button{font-family:inherit}
 .bar-row .bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--pink),var(--gold))}
 .bar-row .bar-p{width:34px;text-align:right;font-family:var(--num);font-size:11.5px;color:var(--gold-deep);flex-shrink:0}
 .suit-row{display:flex;align-items:center;gap:9px;padding:6px 0}
-.suit-row .su-ic{width:30px;height:30px;border-radius:9px;background:rgba(201,169,124,.1);border:.5px solid rgba(201,169,124,.25);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.suit-row .su-ic{width:30px;height:30px;border-radius:9px;background:rgba(169,139,95,.1);border:.5px solid rgba(169,139,95,.25);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
 .suit-row .su-t{flex:1}
 .suit-row .su-n{font-size:12px;letter-spacing:1.5px;color:var(--ink);text-align:left /* 排版: 正文左对齐 */}
 .suit-row .su-p{font-family:var(--sans);font-size:10px;color:var(--ink-faint);margin-top:2px;text-align:left /* 排版: 正文左对齐 */}
@@ -567,16 +605,16 @@ textarea,input,button{font-family:inherit}
 .entry-card{background:var(--cream-hi);border:.5px solid var(--line-soft);border-radius:18px;padding:13px 14px;margin-top:10px;box-shadow:var(--shadow),var(--hi)}
 .entry-card .ec-top{display:flex;align-items:center;gap:8px}
 .entry-card .ec-date{font-family:var(--num);font-size:12.5px;color:var(--ink-soft);letter-spacing:1px}
-.entry-card .ec-card{font-size:11px;color:var(--gold-deep);letter-spacing:1.5px;background:rgba(201,169,124,.12);border:.5px solid rgba(201,169,124,.3);border-radius:999px;padding:2px 9px}
+.entry-card .ec-card{font-size:11px;color:var(--gold-deep);letter-spacing:1.5px;background:rgba(169,139,95,.12);border:.5px solid rgba(169,139,95,.3);border-radius:999px;padding:2px 9px}
 .entry-card .ec-mood{font-size:12px;margin-left:auto;letter-spacing:1px;color:var(--ink-soft);font-family:var(--sans)}
 .entry-card .ec-body{font-family:var(--sans);font-size:12px;line-height:1.8;color:var(--ink-soft);letter-spacing:.3px;margin-top:9px;text-align:left /* 排版: 正文左对齐 */}
-.entry-card .ec-line{width:100%;height:1px;background:repeating-linear-gradient(90deg,rgba(201,169,124,.35) 0 5px,transparent 5px 9px);margin-top:10px}
+.entry-card .ec-line{width:100%;height:1px;background:repeating-linear-gradient(90deg,rgba(169,139,95,.35) 0 5px,transparent 5px 9px);margin-top:10px}
 .entry-card .ec-re{font-family:var(--sans);font-size:10.5px;color:var(--ink-faint);margin-top:7px;letter-spacing:.5px;text-align:left /* 排版: 正文左对齐 */}
 .fab{
   position:absolute;right:18px;bottom:22px;z-index:20;width:52px;height:52px;border-radius:50%;
-  background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#FFFDF8;font-size:22px;
+  background:var(--gold-deep);color:#FFFDF8;font-size:22px;
   display:flex;align-items:center;justify-content:center;cursor:pointer;
-  box-shadow:0 10px 24px rgba(176,143,82,.4);user-select:none;
+  box-shadow:0 10px 24px rgba(138,107,61,.4);user-select:none;
 }
 .fab:active{transform:scale(.93)}
 
@@ -584,9 +622,9 @@ textarea,input,button{font-family:inherit}
    页 13 · 新月许愿（主角=许愿仪式）
    ═══════════════════════════════════════════════════════════════ */
 .wish-stage{position:relative;z-index:2;text-align:center;margin-top:22px}
-.cres{position:relative;width:76px;height:76px;border-radius:50%;margin:0 auto;background:radial-gradient(circle at 32% 30%,#E8C4BE,#C9A97C);box-shadow:0 0 46px rgba(201,169,124,.55);animation:cresGlow 4s ease-in-out infinite}
+.cres{position:relative;width:76px;height:76px;border-radius:50%;margin:0 auto;background:radial-gradient(circle at 32% 30%,#E8C4BE,#A98B5F);box-shadow:0 0 46px rgba(169,139,95,.55);animation:cresGlow 4s ease-in-out infinite}
 .cres::after{content:'';position:absolute;width:76px;height:76px;border-radius:50%;background:var(--cream);left:46px;top:-6px;transform:rotate(-12deg);animation:cresSway 7s ease-in-out infinite}
-@keyframes cresGlow{0%,100%{box-shadow:0 0 34px rgba(201,169,124,.4)}50%{box-shadow:0 0 56px rgba(201,169,124,.62)}}
+@keyframes cresGlow{0%,100%{box-shadow:0 0 34px rgba(169,139,95,.4)}50%{box-shadow:0 0 56px rgba(169,139,95,.62)}}
 @keyframes cresSway{0%,100%{transform:rotate(-18deg)}50%{transform:rotate(-4deg)}}
 .wish-phase{font-family:var(--sans);font-size:10.5px;letter-spacing:3px;color:var(--gold-deep);margin-top:16px}
 .wish-title{font-size:21px;letter-spacing:6px;margin-top:7px;color:var(--ink);font-weight:500}
@@ -597,19 +635,19 @@ textarea,input,button{font-family:inherit}
   font-size:12.5px;letter-spacing:.5px;color:var(--ink);line-height:1.7;resize:none;outline:none;margin-top:14px;text-align:left /* 排版: 正文左对齐 */
 }
 .wish-input::placeholder{color:var(--ink-faint)}
-.wish-input:focus{border-color:rgba(201,169,124,.55)}
+.wish-input:focus{border-color:rgba(169,139,95,.55)}
 .wish-count{text-align:right;font-family:var(--num);font-size:10.5px;color:var(--ink-faint);margin-top:5px}
 .wish-moon-note{font-family:var(--sans);font-size:10.5px;color:var(--ink-faint);letter-spacing:1.5px;text-align:center;margin-top:11px}
 .wish-done{position:relative;z-index:2;text-align:center;margin-top:34px;animation:riseIn .6s cubic-bezier(.2,.7,.3,1) both}
-.wish-seal{width:54px;height:54px;border-radius:50%;margin:0 auto;background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#FFFDF8;font-size:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 7px rgba(201,169,124,.15),0 10px 24px rgba(176,143,82,.35);animation:cresGlow 4s ease-in-out infinite}
+.wish-seal{width:54px;height:54px;border-radius:50%;margin:0 auto;background:var(--gold-deep);color:#FFFDF8;font-size:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 7px rgba(169,139,95,.15),0 10px 24px rgba(138,107,61,.35);animation:cresGlow 4s ease-in-out infinite}
 .wish-done h3{font-size:19px;letter-spacing:5px;margin-top:16px}
 .wish-done .wd-sub{font-family:var(--sans);font-size:11.5px;color:var(--ink-faint);letter-spacing:2px;margin-top:8px}
 .wish-card{
   width:200px;margin:20px auto 0;border-radius:17px;padding:18px 16px;
-  background:linear-gradient(165deg,#FFFDF8,var(--paper));border:.5px solid rgba(201,169,124,.45);
+  background:linear-gradient(165deg,#FFFDF8,var(--paper));border:.5px solid rgba(169,139,95,.45);
   box-shadow:0 14px 30px rgba(61,58,54,.12),var(--hi);position:relative;
 }
-.wish-card .wc-stamp{position:absolute;top:12px;right:12px;width:24px;height:24px;border-radius:50%;border:1px solid rgba(176,143,82,.55);color:var(--gold-deep);font-size:10px;display:flex;align-items:center;justify-content:center;transform:rotate(14deg)}
+.wish-card .wc-stamp{position:absolute;top:12px;right:12px;width:24px;height:24px;border-radius:50%;border:1px solid rgba(138,107,61,.55);color:var(--gold-deep);font-size:10px;display:flex;align-items:center;justify-content:center;transform:rotate(14deg)}
 .wish-card .wc-t{font-size:12.5px;line-height:1.9;color:var(--ink);letter-spacing:.5px}
 .wish-card .wc-d{font-family:var(--sans);font-size:9.5px;color:var(--ink-faint);letter-spacing:1.5px;margin-top:10px}
 .wish-back{position:relative;z-index:2;text-align:center;margin-top:20px;font-size:11.5px;color:var(--gold-deep);letter-spacing:2.5px;cursor:pointer;height:40px;line-height:40px}
@@ -618,19 +656,19 @@ textarea,input,button{font-family:inherit}
 /* ═══════════════════════════════════════════════════════════════
    页 14 · 满月复盘（主角=AI 复盘卡）
    ═══════════════════════════════════════════════════════════════ */
-.review-card{background:linear-gradient(170deg,#FFFDF8,var(--paper));border:.5px solid rgba(201,169,124,.42);border-radius:22px;padding:17px 16px;margin-top:10px;box-shadow:0 16px 34px rgba(61,58,54,.1),var(--hi);position:relative;overflow:hidden}
+.review-card{background:linear-gradient(170deg,#FFFDF8,var(--paper));border:.5px solid rgba(169,139,95,.42);border-radius:22px;padding:17px 16px;margin-top:10px;box-shadow:0 16px 34px rgba(61,58,54,.1),var(--hi);position:relative;overflow:hidden}
 .review-card .rv-t{text-align:center}
 .review-card .rv-t h3{font-size:16px;letter-spacing:4px;color:var(--ink);font-weight:500}
 .review-card .rv-t p{font-family:var(--sans);font-size:10.5px;color:var(--ink-faint);letter-spacing:2px;margin-top:5px}
-.rv-status{display:flex;align-items:flex-start;gap:10px;margin-top:14px;padding:9px 0;border-top:.5px dashed rgba(201,169,124,.35)}
+.rv-status{display:flex;align-items:flex-start;gap:10px;margin-top:14px;padding:9px 0;border-top:.5px dashed rgba(169,139,95,.35)}
 .rv-status .rv-ic{width:24px;height:24px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:2px}
-.rv-status .rv-ic.ok{background:rgba(176,143,82,.18);color:var(--gold-deep);border:.5px solid rgba(176,143,82,.4)}
+.rv-status .rv-ic.ok{background:rgba(138,107,61,.18);color:var(--gold-deep);border:.5px solid rgba(138,107,61,.4)}
 .rv-status .rv-ic.go{background:rgba(232,196,190,.3);color:var(--pink-ink);border:.5px solid rgba(176,138,130,.35)}
 .rv-status .rv-ic.no{background:rgba(176,170,156,.18);color:var(--ink-faint);border:.5px solid rgba(176,170,156,.35)}
 .rv-status .rv-tx{flex:1}
 .rv-status .rv-w{font-size:12.5px;letter-spacing:1px;color:var(--ink);text-align:left /* 排版: 正文左对齐 */}
 .rv-status .rv-n{font-family:var(--sans);font-size:11px;color:var(--ink-soft);line-height:1.65;margin-top:3px;letter-spacing:.3px;text-align:left /* 排版: 正文左对齐 */}
-.rv-essay{font-family:var(--sans);font-size:12px;line-height:2;color:var(--ink-soft);letter-spacing:.4px;margin-top:12px;padding-top:13px;border-top:.5px dashed rgba(201,169,124,.35);text-align:center}
+.rv-essay{font-family:var(--sans);font-size:12px;line-height:2;color:var(--ink-soft);letter-spacing:.4px;margin-top:12px;padding-top:13px;border-top:.5px dashed rgba(169,139,95,.35);text-align:center}
 .rv-essay b{color:var(--pink-ink);font-weight:500}
 
 /* ═══════════════════════════════════════════════════════════════
@@ -645,13 +683,13 @@ textarea,input,button{font-family:inherit}
 .check-ring .cr-s{position:absolute;right:2px;top:2px;width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--pink-deep),var(--pink-ink));color:#FFFDF8;font-size:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px rgba(176,138,130,.35);z-index:3}
 .check-cal{display:flex;gap:6px;margin-top:18px}
 .check-cal .cc{flex:1;height:52px;border-radius:13px;background:var(--cream-hi);border:.5px solid var(--line-soft);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;box-shadow:var(--hi)}
-.check-cal .cc.done{background:rgba(201,169,124,.14);border-color:rgba(201,169,124,.45)}
+.check-cal .cc.done{background:rgba(169,139,95,.14);border-color:rgba(169,139,95,.45)}
 .check-cal .cc.today{border:1.5px solid var(--gold-deep)}
 .check-cal .cc span{font-family:var(--sans);font-size:9.5px;color:var(--ink-faint);letter-spacing:1px}
 .check-cal .cc b{font-family:var(--num);font-size:13px;font-weight:400;color:var(--ink)}
 .check-cal .cc.done b{color:var(--gold-deep)}
 .check-lv{display:flex;align-items:center;gap:11px;margin-top:18px;background:var(--cream-hi);border:.5px solid var(--line-soft);border-radius:17px;padding:12px 14px;box-shadow:var(--shadow),var(--hi)}
-.check-lv .lv-badge{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#FFFDF8;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;box-shadow:0 6px 14px rgba(176,143,82,.3)}
+.check-lv .lv-badge{width:38px;height:38px;border-radius:12px;background:var(--gold-deep);color:#FFFDF8;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;box-shadow:0 6px 14px rgba(138,107,61,.3)}
 .check-lv .lv-t{flex:1}
 .check-lv .lv-n{font-size:12.5px;letter-spacing:1.5px;color:var(--ink);text-align:left /* 排版: 正文左对齐 */}
 .check-lv .lv-d{font-family:var(--sans);font-size:10.5px;color:var(--ink-faint);margin-top:3px;letter-spacing:.5px;text-align:left /* 排版: 正文左对齐 */}
@@ -661,10 +699,10 @@ textarea,input,button{font-family:inherit}
 /* ═══════════════════════════════════════════════════════════════
    页 16 · 设置（简化的次要页）
    ═══════════════════════════════════════════════════════════════ */
-.set-row{display:flex;align-items:center;gap:11px;height:54px;padding:0 4px;border-bottom:.5px solid rgba(201,169,124,.18);cursor:pointer}
+.set-row{display:flex;align-items:center;gap:11px;height:54px;padding:0 4px;border-bottom:.5px solid rgba(169,139,95,.18);cursor:pointer}
 .set-row:active{opacity:.6}
 .set-row:last-child{border-bottom:none}
-.set-row .set-ic{width:30px;height:30px;border-radius:9px;background:rgba(201,169,124,.12);border:.5px solid rgba(201,169,124,.25);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--gold-deep);flex-shrink:0}
+.set-row .set-ic{width:30px;height:30px;border-radius:9px;background:rgba(169,139,95,.12);border:.5px solid rgba(169,139,95,.25);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--gold-deep);flex-shrink:0}
 .set-row .set-n{flex:1;font-size:12.5px;letter-spacing:1.5px;color:var(--ink);text-align:left /* 排版: 正文左对齐 */}
 .set-row .set-v{font-family:var(--sans);font-size:11px;color:var(--ink-faint);letter-spacing:.5px;text-align:left /* 排版: 正文左对齐 */}
 .set-row .set-go{color:var(--ink-faint);font-size:13px;font-family:var(--sans)}
@@ -681,42 +719,43 @@ textarea,input,button{font-family:inherit}
    页 17 · 星座引导（首次 onboarding）+ 星座选择页（共用网格）
    12 星座卡片网格（4 列 · 点击金边高亮 · ≥44px 目标）
    ═══════════════════════════════════════════════════════════════ */
-.wel-hero{position:relative;z-index:2;text-align:center;margin-top:28px}
+.wel-hero{position:relative;z-index:2;text-align:center;margin-top:36px}
 .wel-hero .wh-en{font-family:var(--num);font-size:9.5px;letter-spacing:6px;color:var(--gold-deep)}
-.wel-hero h2{font-size:18px;letter-spacing:4px;font-weight:500;margin-top:9px;line-height:1.5;color:var(--ink)}
+.wel-hero h2{font-size:19px;letter-spacing:4px;font-weight:500;margin-top:10px;line-height:1.55;color:var(--ink)}
 .wel-hero h2 em{font-style:normal;color:var(--pink-ink)}
-.wel-hero p{font-family:var(--sans);font-size:11.5px;color:var(--ink-faint);letter-spacing:1.5px;margin-top:9px;line-height:1.75}
-.zgrid{position:relative;z-index:2;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 18px 0}
+.wel-hero p{font-family:var(--sans);font-size:11.5px;color:var(--ink-soft);letter-spacing:1.5px;margin-top:10px;line-height:1.8}
+.zgrid{position:relative;z-index:2;display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:18px 18px 0}
 .zcard{
   position:relative;background:var(--cream-hi);border:.5px solid var(--line-soft);border-radius:14px;
   box-shadow:var(--hi),var(--shadow);cursor:pointer;user-select:none;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
-  padding:9px 2px 8px;min-height:64px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  padding:10px 2px 9px;min-height:78px;
   transition:transform .13s ease,border-color .13s ease,box-shadow .13s ease;
 }
 .zcard:active{transform:scale(.94)}
-.zcard .zc-emoji{font-size:19px;line-height:1.2}
-.zcard .zc-name{font-size:11px;letter-spacing:1px;color:var(--ink)}
+.zcard .zc-emoji{font-size:20px;line-height:1.2}
+.zcard .zc-name{font-size:11.5px;letter-spacing:1px;color:var(--ink)}
 .zcard .zc-dates{font-family:var(--num);font-size:8px;letter-spacing:.5px;color:var(--ink-faint)}
 .zcard.sel{
   border:1.5px solid var(--gold-deep);
-  box-shadow:0 8px 20px rgba(176,143,82,.22),var(--hi);
+  box-shadow:0 8px 20px rgba(138,107,61,.22),var(--hi);
 }
 .zcard.sel .zc-name{color:var(--gold-deep);font-weight:500}
 .zcard .zc-ok{
   position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;
-  background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#FFFDF8;
+  background:var(--gold-deep);color:#FFFDF8;
   font-size:8px;display:none;align-items:center;justify-content:center;
-  box-shadow:0 2px 6px rgba(176,143,82,.4);
+  box-shadow:0 2px 6px rgba(138,107,61,.4);
 }
 .zcard.sel .zc-ok{display:flex}
-.wel-foot{position:relative;z-index:2;margin:14px 18px 0}
+.wel-foot{position:relative;z-index:2;margin:20px 18px 0}
 .skip-link{
-  display:flex;align-items:center;justify-content:center;height:44px;cursor:pointer;
-  font-family:var(--sans);font-size:11.5px;color:var(--ink-faint);letter-spacing:2px;user-select:none;
+  display:flex;align-items:center;justify-content:center;height:46px;cursor:pointer;
+  font-family:var(--sans);font-size:11.5px;color:var(--ink-soft);letter-spacing:2px;user-select:none;
+  text-decoration:underline;text-decoration-color:rgba(138,132,120,.55);text-underline-offset:4px; /* 跳过入口：ink-soft + 下划线 */
 }
 .skip-link:active{opacity:.6}
-.skip-link b{font-weight:400;color:var(--gold-deep);margin:0 2px}
+.skip-link b{font-weight:400;color:inherit;margin:0 2px}
 
 /* ═══════════════════════════════════════════════════════════════
    页 18 · 出生信息（进阶可选 · 月亮/上升 二期）
@@ -739,7 +778,7 @@ textarea,input,button{font-family:inherit}
   background:var(--cream-hi);border:.5px solid var(--line-soft);box-shadow:var(--hi);
   padding:0 12px;font-family:var(--serif);font-size:12.5px;letter-spacing:1px;color:var(--ink);outline:none;text-align:left /* 排版: 正文左对齐 */
 }
-.bf-sel select:focus{border-color:rgba(201,169,124,.55)}
+.bf-sel select:focus{border-color:rgba(169,139,95,.55)}
 .bf-derive{font-family:var(--sans);font-size:11px;color:var(--ink-faint);letter-spacing:1px;margin-top:6px}
 .bf-input{
   width:100%;height:44px;border-radius:13px;background:var(--cream-hi);
@@ -747,10 +786,10 @@ textarea,input,button{font-family:inherit}
   padding:0 13px;font-family:var(--sans);font-size:12.5px;color:var(--ink);outline:none;text-align:left /* 排版: 正文左对齐 */
 }
 .bf-input::placeholder{color:var(--ink-faint)}
-.bf-input:focus{border-color:rgba(201,169,124,.55)}
+.bf-input:focus{border-color:rgba(169,139,95,.55)}
 .bf-note{
   display:flex;align-items:flex-start;gap:8px;margin-top:16px;
-  background:rgba(201,169,124,.07);border:.5px solid rgba(201,169,124,.25);border-radius:14px;
+  background:rgba(169,139,95,.07);border:.5px solid rgba(169,139,95,.25);border-radius:14px;
   padding:11px 13px;font-family:var(--sans);font-size:11px;color:var(--ink-soft);line-height:1.7;letter-spacing:.3px;text-align:left /* 排版: 正文左对齐 */
 }
 .bf-note .ln-ic{font-size:11px;color:var(--gold-deep);flex-shrink:0;margin-top:1px}
@@ -759,14 +798,119 @@ textarea,input,button{font-family:inherit}
   box-shadow:var(--shadow),var(--hi);padding:13px 15px 14px;margin-top:12px;
 }
 .birth-sum .bs-t{font-family:var(--sans);font-size:10.5px;letter-spacing:2.5px;color:var(--gold-deep);display:flex;align-items:center;gap:6px}
-.birth-sum .bs-row{display:flex;align-items:center;padding:9px 0;border-top:.5px dashed rgba(201,169,124,.3)}
+.birth-sum .bs-row{display:flex;align-items:center;padding:9px 0;border-top:.5px dashed rgba(169,139,95,.3)}
 .birth-sum .bs-row:first-of-type{border-top:none;padding-top:8px}
 .birth-sum .bs-l{width:62px;flex-shrink:0;font-family:var(--sans);font-size:11px;color:var(--ink-faint);letter-spacing:1px;text-align:left /* 排版: 正文左对齐 */}
 .birth-sum .bs-v{flex:1;font-size:12.5px;letter-spacing:1px;color:var(--ink);text-align:left /* 排版: 正文左对齐 */}
 .birth-sum .bs-v i{font-style:normal;font-family:var(--sans);font-size:10.5px;color:var(--ink-faint);letter-spacing:.5px}
 
+/* ═══════════════════════════════════════════════════════════════
+   解读加载页（提问 → 洗牌 → 结果）
+   光球 + 墨色标题「星光正在为你洗牌…」三点呼吸 + 3 张结果卡骨架
+   ═══════════════════════════════════════════════════════════════ */
+.load-body{display:flex;flex-direction:column;align-items:center;padding-top:14px}
+.load-orb{
+  position:relative;z-index:2;width:92px;height:92px;border-radius:50%;
+  background:radial-gradient(circle at 32% 28%,rgba(232,196,190,.72),rgba(169,139,95,.5));
+  border:.5px solid rgba(169,139,95,.5);
+  display:flex;align-items:center;justify-content:center;color:#FFFDF8;font-size:30px;
+  box-shadow:0 14px 34px rgba(138,107,61,.26),var(--hi);
+  animation:orbPulse 2.4s ease-in-out infinite;margin-top:22px; /* 光球上移 */
+}
+@keyframes orbPulse{0%,100%{transform:scale(1);box-shadow:0 14px 34px rgba(138,107,61,.22),var(--hi)}50%{transform:scale(1.05);box-shadow:0 18px 44px rgba(138,107,61,.34),var(--hi)}}
+.load-title{position:relative;z-index:2;font-size:15px;letter-spacing:3px;color:var(--ink);margin-top:14px;display:flex;align-items:center} /* 与光球间距收拢 */
+.load-title .ld-dots{display:inline-flex;gap:4px;margin-left:7px;padding-top:2px}
+.load-title .ld-dots i{width:4px;height:4px;border-radius:50%;background:var(--gold-deep);display:inline-block;animation:dotBreathe 1.3s ease-in-out infinite}
+.load-title .ld-dots i:nth-child(2){animation-delay:.2s}
+.load-title .ld-dots i:nth-child(3){animation-delay:.4s}
+@keyframes dotBreathe{0%,100%{opacity:.4;transform:translateY(0)}50%{opacity:1;transform:translateY(-2.5px)}}
+.load-sub{position:relative;z-index:2;font-family:var(--sans);font-size:11px;color:var(--ink-soft);letter-spacing:2px;margin-top:8px}
+/* 3 张结果卡骨架（ink-soft 级可见度） */
+.load-cards{position:relative;z-index:2;display:flex;gap:10px;justify-content:center;margin-top:30px}
+.sk-card{width:72px}
+.sk-card .sk-art{width:72px;height:104px;border-radius:10px;background:rgba(138,132,120,.18);border:.5px solid rgba(138,132,120,.14)}
+.sk-card .sk-line{height:8px;border-radius:99px;background:rgba(138,132,120,.18);margin:7px auto 0}
+.sk-card .sk-line.w60{width:60%}
+.sk-card .sk-line.w40{width:40%}
+.load-cards .sk-card{animation:skPulse 1.8s ease-in-out infinite}
+.load-cards .sk-card:nth-child(2){animation-delay:.25s}
+.load-cards .sk-card:nth-child(3){animation-delay:.5s}
+@keyframes skPulse{0%,100%{opacity:1}50%{opacity:.6}}
+.load-foot{position:relative;z-index:2;margin-top:26px;font-family:var(--sans);font-size:10.5px;color:var(--ink-faint);letter-spacing:2px}
+
+/* ═══════════════════════════════════════════════════════════════
+   星光会员页（年度 / 月度 / 特惠 · 双 CTA 暖金统一 · 月度可点选）
+   ═══════════════════════════════════════════════════════════════ */
+.mem-hero{position:relative;z-index:2;text-align:center;margin-top:8px}
+.mem-seal{
+  width:58px;height:58px;border-radius:50%;margin:0 auto;
+  background:radial-gradient(circle at 32% 28%,rgba(232,196,190,.6),rgba(169,139,95,.42));
+  border:.5px solid rgba(169,139,95,.5);
+  display:flex;align-items:center;justify-content:center;color:#FFFDF8;font-size:22px;
+  box-shadow:0 10px 24px rgba(138,107,61,.22),var(--hi);
+}
+.mem-hero .mem-h{font-size:19px;letter-spacing:5px;margin-top:12px;font-weight:500;color:var(--ink)}
+.mem-hero .mem-s{font-family:var(--sans);font-size:11.5px;color:var(--ink-soft);letter-spacing:2px;margin-top:7px}
+/* 免费试用横幅 */
+.mem-trial{
+  position:relative;z-index:2;display:flex;align-items:center;gap:12px;margin-top:16px;
+  background:rgba(232,196,190,.16);border:.5px solid rgba(176,138,130,.35);border-radius:17px;
+  padding:12px 14px;
+}
+.mem-trial .mt-t{font-size:13px;letter-spacing:1.5px;color:var(--ink)}
+.mem-trial .mt-s{font-family:var(--sans);font-size:10.5px;color:var(--ink-soft);letter-spacing:.5px;margin-top:3px}
+.mem-trial .mt-x{flex:1}
+.mem-btn{
+  flex-shrink:0;height:36px;padding:0 16px;border-radius:999px;
+  background:var(--gold-deep);color:#FFFDF8; /* 暖金填充统一 */
+  font-family:var(--sans);font-size:11px;letter-spacing:1.5px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  box-shadow:0 4px 12px rgba(138,107,61,.28),var(--hi);
+}
+.mem-btn:active{transform:scale(.96)}
+/* 方案卡 */
+.mem-card{
+  position:relative;z-index:2;margin-top:10px;border-radius:18px;padding:13px 14px 14px;
+  background:var(--cream-hi);border:.5px solid rgba(169,139,95,.4);
+  box-shadow:var(--shadow),var(--hi);cursor:pointer;transition:transform .14s ease,border-color .14s ease;
+}
+.mem-card:active{transform:scale(.98)}
+.mem-card.sel{border:1.5px solid var(--gold-deep);box-shadow:0 8px 20px rgba(138,107,61,.16),var(--hi)} /* 选择态：暖金描边 */
+.mem-card .mc-top{display:flex;align-items:baseline;gap:8px}
+.mem-card .mc-name{font-size:14px;letter-spacing:2px;color:var(--ink)}
+.mem-card .mc-badge{
+  font-family:var(--sans);font-size:9px;letter-spacing:1.5px;color:#FFFDF8;
+  background:var(--gold-deep);border-radius:999px;padding:2px 8px;
+}
+.mem-card .mc-price{font-family:var(--num);font-size:30px;line-height:1.25;color:var(--gold-deep);margin-top:6px}
+.mem-card .mc-price small{font-size:11px;font-family:var(--sans);color:var(--ink-soft);letter-spacing:1px;margin:0 2px}
+.mem-card .mc-sub{font-family:var(--sans);font-size:10.5px;color:var(--ink-soft);letter-spacing:.5px;margin-top:3px}
+.mem-card .mc-row{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.mem-card .mc-benefit{font-family:var(--sans);font-size:10.5px;color:var(--gold-deep);letter-spacing:.5px}
+.mem-card .mc-btn{width:88px;height:34px;border-radius:999px;background:var(--gold-deep);color:#FFFDF8;font-size:11px;letter-spacing:1px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 10px rgba(138,107,61,.25)}
+.mem-card .mc-btn:active{transform:scale(.95)}
+/* 特惠会员（一行小卡） */
+.mem-student{
+  position:relative;z-index:2;display:flex;align-items:center;gap:8px;margin-top:10px;
+  background:var(--cream-hi);border:.5px dashed rgba(138,107,61,.5);border-radius:15px;
+  padding:10px 13px;cursor:pointer;
+}
+.mem-student .ms-n{font-size:12px;letter-spacing:1.5px;color:var(--ink);flex-shrink:0}
+.mem-student .ms-s{font-family:var(--sans);font-size:10px;color:var(--ink-faint);letter-spacing:1px;flex:1}
+.mem-student .ms-p{font-family:var(--num);font-size:14px;color:var(--gold-deep);flex-shrink:0}
+.mem-student .ms-p s{font-size:10px;color:var(--ink-faint);margin-right:3px}
+.mem-student .ms-go{flex-shrink:0;font-family:var(--sans);font-size:10.5px;color:var(--gold-deep);letter-spacing:1px}
+.mem-cmp{
+  position:relative;z-index:2;display:flex;align-items:center;justify-content:center;gap:6px;
+  margin-top:14px;height:40px;cursor:pointer;
+  font-family:var(--sans);font-size:11px;color:var(--gold-deep);letter-spacing:2px;
+}
+.mem-cmp:active{opacity:.6}
+.mem-note{position:relative;z-index:2;text-align:center;margin-top:8px;font-family:var(--sans);font-size:10px;color:var(--ink-faint);letter-spacing:1px}
+
 @media(prefers-reduced-motion:reduce){
-  .float,.halo,.sp,.mount,.toast,.cres,.cres::after,.wish-seal,.flipIn,.anim{animation:none!important}
+  .float,.halo,.sp,.mount,.toast,.cres,.cres::after,.wish-seal,.flipIn,.anim,
+  .load-orb,.load-title .ld-dots i,.load-cards .sk-card{animation:none!important}
 }
 </style>
 </head>
@@ -803,22 +947,22 @@ function WxCapsule(){
 /* ── 新月（天象小图标 · 细金） ── */
 const Crescent = () => (
   <svg width="11" height="11" viewBox="0 0 20 20" aria-hidden="true">
-    <path d="M14.5 3.4a6.6 6.6 0 1 0 0 13.2 5.3 5.3 0 0 1 0-13.2z" fill="#C9A97C"/>
+    <path d="M14.5 3.4a6.6 6.6 0 1 0 0 13.2 5.3 5.3 0 0 1 0-13.2z" fill="#A98B5F"/>
   </svg>
 );
 
 /* ── 四芒星（牌角光点） ── */
 const Spark = ({size=12}) => (
   <svg width={size} height={size} viewBox="0 0 20 20" aria-hidden="true">
-    <path d="M10 1.5l2.1 6.4 6.4 2.1-6.4 2.1-2.1 6.4-2.1-6.4-6.4-2.1 6.4-2.1z" fill="#C9A97C"/>
+    <path d="M10 1.5l2.1 6.4 6.4 2.1-6.4 2.1-2.1 6.4-2.1-6.4-6.4-2.1 6.4-2.1z" fill="#A98B5F"/>
   </svg>
 );
 
 /* ── 锁（明日预告） ── */
 const Lock = () => (
   <svg width="9" height="9" viewBox="0 0 20 20" aria-hidden="true">
-    <rect x="5" y="9.5" width="10" height="8" rx="2" fill="none" stroke="#C9A97C" strokeWidth="1.5"/>
-    <path d="M7.5 9.5V7a2.5 2.5 0 0 1 5 0v2.5" fill="none" stroke="#C9A97C" strokeWidth="1.5"/>
+    <rect x="5" y="9.5" width="10" height="8" rx="2" fill="none" stroke="#A98B5F" strokeWidth="1.5"/>
+    <path d="M7.5 9.5V7a2.5 2.5 0 0 1 5 0v2.5" fill="none" stroke="#A98B5F" strokeWidth="1.5"/>
   </svg>
 );
 
@@ -847,6 +991,33 @@ const Icon = ({name,color,size=19}) => {
           </g>,
   };
   return <svg width={size} height={size} viewBox="0 0 20 20">{paths[name]}</svg>;
+};
+
+/* ── 「我的」入口细线图标（金或墨色 · 统一 1.5 线宽） ── */
+const MeIcon = ({name,size=15}) => {
+  const c='currentColor';
+  const paths = {
+    book: <g fill="none" stroke={c} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round">
+            <path d="M10 5.4C8.6 4.2 6.8 3.8 4.8 4.4V15c2-.6 3.8-.2 5.2 1 1.4-1.2 3.2-1.6 5.2-1V4.4c-2-.6-3.8-.2-5.2 1z"/>
+            <path d="M10 5.4v10.6"/>
+          </g>,
+    moon: <g fill="none" stroke={c} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round">
+            <path d="M13.4 3.6a6.3 6.3 0 1 0 3 12.1 5.1 5.1 0 0 1-3-12.1z"/>
+            <path d="M13.9 8.6l.7 1.5 1.5.7-1.5.7-.7 1.5-.7-1.5-1.5-.7 1.5-.7z" fill={c} stroke="none"/>
+          </g>,
+    spark: <g fill="none" stroke={c} strokeWidth="1.5" strokeLinejoin="round">
+             <path d="M10 3.2l1.8 5 5 1.8-5 1.8-1.8 5-1.8-5-5-1.8 5-1.8z"/>
+           </g>,
+    gear: <g fill="none" stroke={c} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round">
+            <circle cx="10" cy="10" r="2.7"/>
+            <path d="M10 2.6v2M10 15.4v2M2.6 10h2M15.4 10h2M4.8 4.8l1.4 1.4M13.8 13.8l1.4 1.4M15.2 4.8l-1.4 1.4M6.2 13.8l-1.4 1.4"/>
+          </g>,
+    compass: <g fill="none" stroke={c} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round">
+              <circle cx="10" cy="10" r="6.4"/>
+              <path d="M12.7 7.3l-1.7 3.7-3.7 1.7 1.7-3.7z"/>
+            </g>,
+  };
+  return <svg width={size} height={size} viewBox="0 0 20 20" fill="none">{paths[name]}</svg>;
 };
 
 const TABS = [
@@ -883,7 +1054,7 @@ function TabBar({tab,goTab}){
     <div className="tabbar">
       {TABS.map(t=>
         <div key={t.key} className={"tab"+(t.key===tab?' on':'')} onClick={()=>goTab(t.key)}>
-          <Icon name={t.ic} color={t.key===tab?'#8A6F4E':'#B0AA9C'}/>
+          <Icon name={t.ic} color={t.key===tab?'#8A6B3D':'#B0AA9C'}/>
           <span>{t.name}</span>
           <span className="tdot"/>
         </div>)}
@@ -921,7 +1092,7 @@ function TodayMain(){
     <div className="screen anim" data-screen-label="01-today-main">
       <WxCapsule/>
       <div className="wash" style={{width:200,height:200,right:-60,top:-44,background:'#E8C4BE',opacity:.30}}/>
-      <div className="wash" style={{width:180,height:180,left:-70,top:368,background:'#C9A97C',opacity:.15}}/>
+      <div className="wash" style={{width:180,height:180,left:-70,top:368,background:'#A98B5F',opacity:.15}}/>
 
       {/* 顶部：品牌 · 日期（左）｜星座徽章（右，极小不抢戏 · 点击可改星座） */}
       <div className="topbar">
@@ -1014,7 +1185,7 @@ function DrawnCard(){
     <div className="screen anim page" data-screen-label="02-drawn-card">
       <WxCapsule/>
       <div className="wash" style={{width:190,height:190,right:-60,top:-40,background:'#E8C4BE',opacity:.28}}/>
-      <div className="wash" style={{width:160,height:160,left:-60,top:330,background:'#C9A97C',opacity:.14}}/>
+      <div className="wash" style={{width:160,height:160,left:-60,top:330,background:'#A98B5F',opacity:.14}}/>
       <Nav title="今日之牌"/>
       <div className="pbody">
         {/* 主角：牌面 */}
@@ -1078,7 +1249,8 @@ function CardDetail(){
       <Nav title="牌语详解"/>
       <div className="pbody">
         <div className="detail-hero">
-          <div className="dh-art"><img src={MOON} alt="月亮牌水彩插画"/></div>
+          {/* 牌面图：真实牌面 URL 优先（用户反馈「图没显示」的修复验证），加载失败回退内联水彩 */}
+          <div className="dh-art"><img src="https://xingxiang.chat/images/cards_thumb/cups_00_ace_of_cups.webp" alt="圣杯王牌水彩插画" onError={e=>{e.currentTarget.onerror=null;e.currentTarget.src=MOON;}}/></div>
           <div>
             <div className="dh-name">月亮牌</div>
             <div className="dh-en">THE MOON</div>
@@ -1148,8 +1320,8 @@ function CardDetail(){
 const ENERGY = {
   love:{
     key:'love', name:'爱情', en:'LOVE', score:81, level:'高',
-    bar:'linear-gradient(90deg,#D8BC94,#B08F52)', track:'rgba(176,143,82,.14)',
-    num:'#B08F52', chip:'#A87F47',
+    bar:'linear-gradient(90deg,#A98B5F,#8A6B3D)', track:'rgba(138,107,61,.14)',
+    num:'#8A6B3D', chip:'#8A6B3D',
     note:'受今日月亮牌影响 · 满月能量加持，情绪丰沛',
     catch:'你习惯把感情放得比工作重——这没什么不好。能认真对待心里那份柔软的人，运气不会差到哪里去。',
     why:'今晚满月照进双鱼，情绪像涨潮的海，一波一波涌上来。你不是变脆弱了，是感知的闸门被月光推开——敏感，是今天的超能力。',
@@ -1204,7 +1376,7 @@ function EnergyDetail({dim}){
     <div className="screen anim page" data-screen-label={'04-energy-'+dd.key}>
       <WxCapsule/>
       <div className="wash" style={{width:190,height:190,right:-60,top:-40,background:'#E8C4BE',opacity:.22}}/>
-      <div className="wash" style={{width:160,height:160,left:-60,top:360,background:'#C9A97C',opacity:.12}}/>
+      <div className="wash" style={{width:160,height:160,left:-60,top:360,background:'#A98B5F',opacity:.12}}/>
 
       <Nav title={'今日能量 · '+dd.name}/>
 
@@ -1281,7 +1453,7 @@ function OracleMain(){
     <div className="screen anim" data-screen-label="05-oracle-main">
       <WxCapsule/>
       <div className="wash" style={{width:200,height:200,right:-60,top:-40,background:'#E8C4BE',opacity:.28}}/>
-      <div className="wash" style={{width:170,height:170,left:-66,top:400,background:'#C9A97C',opacity:.13}}/>
+      <div className="wash" style={{width:170,height:170,left:-66,top:400,background:'#A98B5F',opacity:.13}}/>
 
       <div className="topbar">
         <div>
@@ -1295,11 +1467,11 @@ function OracleMain(){
       <div className="oracle-head">
         <div className="oh-en">ORACLE</div>
         <h2>星图三要素</h2>
-        <p>你的光芒，由三颗星写就</p>
+        <p>太阳与月亮，先行照见</p>
       </div>
 
-      {/* 主角：三要素卡 */}
-      {ELEMENTS.map((e,i)=>
+      {/* 主角：三要素卡（太阳 · 月亮 · 深度报告推广 · 三卡等高） */}
+      {ELEMENTS.slice(0,2).map((e,i)=>
         <div key={i} className="ele-card" onClick={()=>push('element:'+i)}>
           <div className="ele-ic">{e.sign}</div>
           <div className="ele-tx">
@@ -1308,6 +1480,14 @@ function OracleMain(){
           </div>
           <div className="ele-go">›</div>
         </div>)}
+      <div className="ele-card promo" onClick={()=>push('element:2')}>
+        <div className="ele-ic">{ELEMENTS[2].sign}</div>
+        <div className="ele-tx">
+          <div className="ele-n">{ELEMENTS[2].name}<span className="ele-badge">会员</span></div>
+          <div className="ele-l">太阳与月亮之外 · 完整星盘报告解锁</div>
+        </div>
+        <div className="ele-go">›</div>
+      </div>
 
       {/* 注脚入口：牌阵馆 · 卡牌百科 */}
       <div className="entry-row">
@@ -1325,14 +1505,14 @@ function OracleMain(){
    天赋 / 阴影 / 今年主题 + 深度报告付费入口 19.9-39.9
    ═══════════════════════════════════════════════════════════ */
 function ElementDetail({idx}){
-  const {show} = useContext(Ctx);
+  const {show,push} = useContext(Ctx);
   const e = ELEMENTS[idx||0];
   return (
     <div className="screen anim page" data-screen-label="06-element-detail">
       <WxCapsule/>
       <div className="wash" style={{width:180,height:180,right:-60,top:-36,background:'#E8C4BE',opacity:.25}}/>
       <Nav title={e.name}/>
-      <div className="pbody">
+      <div className="pbody el-body">
         {/* 主角：该要素 */}
         <div className="el-hero">
           <div className="el-big">{e.sign}</div>
@@ -1349,6 +1529,25 @@ function ElementDetail({idx}){
 
         {/* 深度报告付费入口（注脚层） */}
         <div className="price-card">
+          {/* 圆形星盘示意：奶油底 + 细金线条（原型示意 · 最终实现走美术资产规则） */}
+          <div className="pc-chart">
+            <svg width="80" height="80" viewBox="0 0 100 100" aria-hidden="true">
+              <circle cx="50" cy="50" r="46" fill="#FAF6EF" stroke="#A98B5F" strokeOpacity=".5" strokeWidth=".8"/>
+              <circle cx="50" cy="50" r="33" fill="none" stroke="#A98B5F" strokeOpacity=".28" strokeWidth=".6"/>
+              <circle cx="50" cy="50" r="17" fill="none" stroke="#A98B5F" strokeOpacity=".28" strokeWidth=".6"/>
+              <path d="M50 4v92M4 50h92" stroke="#A98B5F" strokeOpacity=".2" strokeWidth=".6"/>
+              <path d="M50 50L14 14M50 50l36-36M50 50L14 86M50 50l36 36" stroke="#A98B5F" strokeOpacity=".22" strokeWidth=".5"/>
+              <circle cx="50" cy="50" r="2" fill="#8A6B3D"/>
+              <circle cx="63" cy="29" r="2.2" fill="#8A6B3D"/>
+              <circle cx="33" cy="25" r="1.6" fill="#A98B5F"/>
+              <circle cx="71" cy="63" r="1.6" fill="#A98B5F"/>
+              <circle cx="29" cy="67" r="1.8" fill="#8A6B3D"/>
+              <text x="50" y="12.5" fontSize="7.5" fill="#8A6B3D" textAnchor="middle" fontFamily="serif">♌</text>
+              <text x="91" y="53" fontSize="7.5" fill="#8A6B3D" textAnchor="middle" fontFamily="serif">☽</text>
+              <text x="50" y="94.5" fontSize="7.5" fill="#8A6B3D" textAnchor="middle" fontFamily="serif">♉</text>
+              <text x="9" y="53" fontSize="7.5" fill="#8A6B3D" textAnchor="middle" fontFamily="serif">☀</text>
+            </svg>
+          </div>
           <div className="pc-t">深度星图报告</div>
           <div className="pc-s">AI 结合你的出生时刻 · 更深的你</div>
           <div className="tier-row">
@@ -1367,6 +1566,9 @@ function ElementDetail({idx}){
             <div className="tier-btn" onClick={()=>show('已解锁年度星运指南 ✦')}>解锁</div>
           </div>
         </div>
+
+        {/* 会员入口：全部报告免费生成 */}
+        <div className="mem-link" onClick={()=>push('membership')}>开通<b>星光会员</b> · 全部报告免费生成 →</div>
       </div>
     </div>
   );
@@ -1391,9 +1593,9 @@ function Spreads(){
   return (
     <div className="screen anim page" data-screen-label="07-spreads">
       <WxCapsule/>
-      <div className="wash" style={{width:180,height:180,right:-60,top:-36,background:'#C9A97C',opacity:.16}}/>
+      <div className="wash" style={{width:180,height:180,right:-60,top:-36,background:'#A98B5F',opacity:.16}}/>
       <Nav title="牌阵馆"/>
-      <div className="pbody">
+      <div className="pbody" style={{paddingBottom:'calc(100px + env(safe-area-inset-bottom))'}}>
         <div style={{textAlign:'center',fontFamily:'var(--sans)',fontSize:'11px',color:'var(--ink-faint)',letterSpacing:'2px',marginTop:'6px'}}>选一个牌阵，为你的问题找到形状</div>
 
         {/* 主角：牌阵网格 */}
@@ -1410,12 +1612,15 @@ function Spreads(){
           <div key={s.k} className={"spread-wide"+(sel===s.k?' sel':'')} onClick={()=>setSel(s.k)}>
             <div className="sc-ic">{s.ic}</div>
             <div className="sc-t">
-              <div className="sc-n">{s.name} {s.tag && <span style={{fontFamily:'var(--sans)',fontSize:'9px',color:'var(--gold-deep)',border:'0.5px solid rgba(201,169,124,.4)',borderRadius:'99px',padding:'1px 6px',marginLeft:'4px'}}>{s.tag}</span>}</div>
+              <div className="sc-n">{s.name} {s.tag && <span style={{fontFamily:'var(--sans)',fontSize:'9px',color:'var(--gold-deep)',background:'rgba(169,139,95,.08)',border:'0.5px solid var(--gold-deep)',borderRadius:'99px',padding:'1px 6px',marginLeft:'4px'}}>{s.tag}</span>}</div>
               <div className="sc-d">{s.desc}</div>
             </div>
             {sel===s.k && <div className="sc-ok">✓</div>}
           </div>))}
+      </div>
 
+      {/* 底部固定 CTA 栏：暖金填充 + 奶油白字（列表已留 24px+ 余量） */}
+      <div className="spread-bar">
         <div className="cta" onClick={()=>{setPass(p=>({...p,spread:sel}));push('ask');}}>开始提问</div>
       </div>
     </div>
@@ -1442,7 +1647,7 @@ function Ask(){
   const start=()=>{
     if(!q.trim()){show('写下一句话，星光才知道要照哪里 ✦');return;}
     setPass(x=>({...x,question:q.trim(),persona:p}));
-    push('result');
+    push('loading'); /* 先进解读加载屏：星光正在为你洗牌… */
   };
   return (
     <div className="screen anim page" data-screen-label="08-ask">
@@ -1480,6 +1685,43 @@ function Ask(){
 }
 
 /* ═══════════════════════════════════════════════════════════
+   === 解读加载页 ===（提问后 · 自动进解读结果）
+   光球呼吸 + 墨色「星光正在为你洗牌…」三点呼吸 + 3 张结果卡骨架
+   ═══════════════════════════════════════════════════════════ */
+function LoadingReading(){
+  const {pop,push} = useContext(Ctx);
+  useEffect(()=>{
+    const t=setTimeout(()=>{pop();push('result');},2400);
+    return ()=>clearTimeout(t);
+  },[]);
+  return (
+    <div className="screen anim page" data-screen-label="loading-reading">
+      <WxCapsule/>
+      <div className="wash" style={{width:190,height:190,right:-60,top:-40,background:'#E8C4BE',opacity:.26}}/>
+      <div className="wash" style={{width:160,height:160,left:-60,top:360,background:'#A98B5F',opacity:.13}}/>
+      <Nav title="解读 · 三牌占卜"/>
+      <div className="pbody load-body">
+        {/* 主角：洗牌光球（上移 · 与标题间距收拢） */}
+        <div className="load-orb">✦</div>
+        <div className="load-title">星光正在为你洗牌<span className="ld-dots"><i/><i/><i/></span></div>
+        <div className="load-sub">三张牌 · 正在月光下排开</div>
+
+        {/* 3 张结果卡骨架（ink-soft 级可见度） */}
+        <div className="load-cards">
+          {[0,1,2].map(i=>(
+            <div key={i} className="sk-card">
+              <div className="sk-art"/>
+              <div className="sk-line w60"/>
+              <div className="sk-line w40"/>
+            </div>))}
+        </div>
+        <div className="load-foot" style={{cursor:'pointer'}} onClick={()=>{pop();push('result');}}>轻触可跳过 →</div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
    === 页 09 · 解读结果 ===（主角=解读内容）
    三牌面 + AI 解读长文（认领层开头 / 行动层结尾）+ 追问/分享
    ═══════════════════════════════════════════════════════════ */
@@ -1496,7 +1738,7 @@ function Result(){
   return (
     <div className="screen anim page" data-screen-label="09-result">
       <WxCapsule/>
-      <div className="wash" style={{width:180,height:180,right:-60,top:-36,background:'#C9A97C',opacity:.16}}/>
+      <div className="wash" style={{width:180,height:180,right:-60,top:-36,background:'#A98B5F',opacity:.16}}/>
       <Nav title="解读 · 三牌占卜"/>
       <div className="pbody">
         {/* 三牌面：解读的引子 */}
@@ -1553,7 +1795,7 @@ function MeMain(){
     <div className="screen anim" data-screen-label="10-me-main">
       <WxCapsule/>
       <div className="wash" style={{width:200,height:200,right:-60,top:-44,background:'#E8C4BE',opacity:.28}}/>
-      <div className="wash" style={{width:170,height:170,left:-66,top:420,background:'#C9A97C',opacity:.12}}/>
+      <div className="wash" style={{width:170,height:170,left:-66,top:420,background:'#A98B5F',opacity:.12}}/>
 
       <div className="topbar">
         <div>
@@ -1583,7 +1825,7 @@ function MeMain(){
           </div>
         </div>
         <svg width="100%" height="34" viewBox="0 0 240 34" style={{display:'block',marginTop:'10px'}}>
-          <polyline points="0,26 14,22 28,24 42,17 56,20 70,14 84,18 98,10 112,15 126,9 140,13 154,7 168,11 182,5 196,9 210,4 224,8 240,3" fill="none" stroke="#C9A97C" strokeWidth="1.5" strokeLinecap="round"/>
+          <polyline points="0,26 14,22 28,24 42,17 56,20 70,14 84,18 98,10 112,15 126,9 140,13 154,7 168,11 182,5 196,9 210,4 224,8 240,3" fill="none" stroke="#A98B5F" strokeWidth="1.5" strokeLinecap="round"/>
           <circle cx="240" cy="3" r="2.5" fill="#DCA9A1"/>
         </svg>
         <div className="record-stats">
@@ -1598,26 +1840,26 @@ function MeMain(){
       {/* 注脚入口：日记 / 许愿 / 签到 / 设置 */}
       <div className="me-grid">
         <div className="me-tile" onClick={()=>push('diary')}>
-          <div className="mt-ic">📖</div>
+          <div className="mt-ic"><MeIcon name="book"/></div>
           <div><div className="mt-n">星光日记</div><div className="mt-d">9 篇 · 今日待写</div></div>
         </div>
         <div className="me-tile" onClick={()=>push('wish')}>
-          <div className="mt-ic">🌙</div>
+          <div className="mt-ic"><MeIcon name="moon"/></div>
           <div><div className="mt-n">新月许愿</div><div className="mt-d">新月 08.04</div></div>
         </div>
         <div className="me-tile" onClick={()=>push('checkin')}>
-          <div className="mt-ic">✦</div>
+          <div className="mt-ic"><MeIcon name="spark"/></div>
           <div><div className="mt-n">每日签到</div><div className="mt-d">连续 17 天</div></div>
         </div>
         <div className="me-tile" onClick={()=>push('settings')}>
-          <div className="mt-ic">⚙</div>
+          <div className="mt-ic"><MeIcon name="gear"/></div>
           <div><div className="mt-n">设置</div><div className="mt-d">收藏 · 隐私</div></div>
         </div>
       </div>
 
       {/* 进阶可选：完善星盘（月亮/上升 · 二期） */}
       <div className="me-tile" style={{gridColumn:'1 / -1',margin:'10px 18px 0'}} onClick={()=>push('birth')}>
-        <div className="mt-ic">✧</div>
+        <div className="mt-ic"><MeIcon name="compass"/></div>
         <div><div className="mt-n">完善我的星盘</div><div className="mt-d">{birth? '月亮 · 上升 · 已完善':'月亮 · 上升 · 二期解锁'}</div></div>
         <span style={{marginLeft:'auto',color:'var(--ink-faint)',fontSize:'13px',fontFamily:'var(--sans)'}}>›</span>
       </div>
@@ -1633,7 +1875,7 @@ function MeMain(){
    ═══════════════════════════════════════════════════════════ */
 const TREND = [6,4,9,12,8,10,14,11,7,9,13,16,12,15,11,14,18,15,12,16,13,17,21,18,16,20,17,19,23,21];
 const SUITS = [['权杖','🔥',42],['圣杯','💧',23],['宝剑','🌬',20],['星币','⛰',15]];
-const HOT = [['权杖骑士',5,'#C9A97C'],['圣杯九',4,'#DCA9A1'],['月亮',3,'#B0AA9C']];
+const HOT = [['权杖骑士',5,'#A98B5F'],['圣杯九',4,'#DCA9A1'],['月亮',3,'#B0AA9C']];
 
 function Trend(){
   const {show} = useContext(Ctx);
@@ -1646,7 +1888,7 @@ function Trend(){
   return (
     <div className="screen anim page" data-screen-label="11-trend">
       <WxCapsule/>
-      <div className="wash" style={{width:180,height:180,right:-60,top:-36,background:'#C9A97C',opacity:.16}}/>
+      <div className="wash" style={{width:180,height:180,right:-60,top:-36,background:'#A98B5F',opacity:.16}}/>
       <Nav title="牌运曲线 · 近30天"/>
       <div className="pbody">
         {/* 主角：曲线可视化 */}
@@ -1655,18 +1897,18 @@ function Trend(){
           <svg width="100%" height={h} viewBox={`0 0 ${w} ${h}`}>
             <defs>
               <linearGradient id="tg" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#C9A97C" stopOpacity=".34"/>
-                <stop offset="100%" stopColor="#C9A97C" stopOpacity="0"/>
+                <stop offset="0%" stopColor="#A98B5F" stopOpacity=".34"/>
+                <stop offset="100%" stopColor="#A98B5F" stopOpacity="0"/>
               </linearGradient>
             </defs>
             <path d={area} fill="url(#tg)"/>
-            <polyline points={pts} fill="none" stroke="#C9A97C" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+            <polyline points={pts} fill="none" stroke="#A98B5F" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
             <circle cx={X(26)} cy={Y(21)} r="2.8" fill="#DCA9A1"/>
-            <circle cx={X(29)} cy={Y(21)} r="2.8" fill="#C9A97C"/>
+            <circle cx={X(29)} cy={Y(21)} r="2.8" fill="#A98B5F"/>
             <text x={X(0)} y={h-2} fontSize="7" fill="#B0AA9C">07.10</text>
             <text x={X(14)} y={h-2} fontSize="7" fill="#B0AA9C">07.24</text>
             <text x={X(24)} y={h-2} fontSize="7" fill="#B0AA9C">08.03</text>
-            <text x={X(29)} y={h-2} fontSize="7" fill="#B08F52" textAnchor="end">今天</text>
+            <text x={X(29)} y={h-2} fontSize="7" fill="#8A6B3D" textAnchor="end">今天</text>
           </svg>
         </div>
 
@@ -1787,7 +2029,7 @@ function Wish(){
 
             <div className="chip-row" style={{justifyContent:'center'}}>
               {WISH_CATS.map(c=>(
-                <div key={c} className="chip" style={cat===c?{background:'rgba(201,169,124,.16)',borderColor:'rgba(201,169,124,.5)',color:'var(--gold-deep)'}:{}} onClick={()=>setCat(c)}>{c}</div>))}
+                <div key={c} className="chip" style={cat===c?{background:'rgba(169,139,95,.16)',borderColor:'rgba(169,139,95,.5)',color:'var(--gold-deep)'}:{}} onClick={()=>setCat(c)}>{c}</div>))}
             </div>
             <textarea className="wish-input" placeholder={'许一个'+cat+'的愿望…'} value={txt} onChange={e=>setTxt(e.target.value)} maxLength={60}/>
             <div className="wish-count">{txt.length}/60</div>
@@ -1829,7 +2071,7 @@ function Review(){
   return (
     <div className="screen anim page" data-screen-label="14-review">
       <WxCapsule/>
-      <div className="wash" style={{width:190,height:190,right:-60,top:-40,background:'#C9A97C',opacity:.18}}/>
+      <div className="wash" style={{width:190,height:190,right:-60,top:-40,background:'#A98B5F',opacity:.18}}/>
       <Nav title="满月复盘"/>
       <div className="pbody">
         {/* 主角：AI 复盘卡 */}
@@ -1880,7 +2122,7 @@ function Checkin(){
             <defs>
               <linearGradient id="ringG" x1="0" y1="0" x2="1" y2="1">
                 <stop offset="0%" stopColor="#E8C4BE"/>
-                <stop offset="100%" stopColor="#C9A97C"/>
+                <stop offset="100%" stopColor="#A98B5F"/>
               </linearGradient>
             </defs>
           </svg>
@@ -1936,7 +2178,7 @@ function Settings(){
   return (
     <div className="screen anim page" data-screen-label="16-settings">
       <WxCapsule/>
-      <div className="wash" style={{width:170,height:170,right:-60,top:-36,background:'#C9A97C',opacity:.14}}/>
+      <div className="wash" style={{width:170,height:170,right:-60,top:-36,background:'#A98B5F',opacity:.14}}/>
       <Nav title="设置"/>
       <div className="pbody">
         <div className="card-soft" style={{padding:'2px 14px',marginTop:'6px'}}>
@@ -1969,7 +2211,7 @@ function Welcome(){
     <div className="screen anim" data-screen-label="17-welcome-zodiac">
       <WxCapsule/>
       <div className="wash" style={{width:210,height:210,right:-64,top:-46,background:'#E8C4BE',opacity:.32}}/>
-      <div className="wash" style={{width:190,height:190,left:-70,top:392,background:'#C9A97C',opacity:.16}}/>
+      <div className="wash" style={{width:190,height:190,left:-70,top:392,background:'#A98B5F',opacity:.16}}/>
 
       {/* 标题：一句话说明「为什么问星座」 */}
       <div className="wel-hero">
@@ -2007,7 +2249,7 @@ function ZodiacPick(){
   return (
     <div className="screen anim page" data-screen-label="zodiac-pick">
       <WxCapsule/>
-      <div className="wash" style={{width:170,height:170,right:-60,top:-36,background:'#C9A97C',opacity:.14}}/>
+      <div className="wash" style={{width:170,height:170,right:-60,top:-36,background:'#A98B5F',opacity:.14}}/>
       <Nav title="我的星座"/>
       <div className="pbody">
         <div className="fp-hero">
@@ -2125,13 +2367,88 @@ function Birth(){
 }
 
 /* ═══════════════════════════════════════════════════════════
+   === 页 19 · 星光会员 ===（主角=选择方案）
+   年度 / 月度 / 特惠 三方案 · 双 CTA 暖金统一 · 月度可点选 · 底部 safe-area
+   ═══════════════════════════════════════════════════════════ */
+function Membership(){
+  const {show} = useContext(Ctx);
+  const [sel,setSel] = useState('yearly'); /* 选择态：点卡切换 */
+  return (
+    <div className="screen anim page" data-screen-label="19-membership">
+      <WxCapsule/>
+      <div className="wash" style={{width:190,height:190,right:-60,top:-40,background:'#E8C4BE',opacity:.26}}/>
+      <div className="wash" style={{width:160,height:160,left:-60,top:380,background:'#A98B5F',opacity:.13}}/>
+      <Nav title="星光会员"/>
+      <div className="pbody">
+        {/* 主角：会员身份 */}
+        <div className="mem-hero">
+          <div className="mem-seal">✦</div>
+          <div className="mem-h">星光会员</div>
+          <div className="mem-s">解锁全部牌阵 · AI 无限解读</div>
+        </div>
+
+        {/* 免费试用 */}
+        <div className="mem-trial">
+          <div className="mt-x">
+            <div className="mt-t">先体验，再决定</div>
+            <div className="mt-s">7 天免费试用 · 无需付费 · 随时取消</div>
+          </div>
+          <div className="mem-btn" onClick={()=>show('7 天免费试用已开通 ✦')}>免费试用</div>
+        </div>
+
+        <div className="sec-label">选择方案</div>
+
+        {/* 年度（推荐） */}
+        <div className={"mem-card"+(sel==='yearly'?' sel':'')} onClick={()=>setSel('yearly')}>
+          <div className="mc-top">
+            <span className="mc-name">年度会员</span>
+            <span className="mc-badge">最受欢迎</span>
+          </div>
+          <div className="mc-price"><small>¥</small>168<small>/年</small></div>
+          <div className="mc-sub">日均 ¥0.46 · 相比月度省 30%</div>
+          <div className="mc-row">
+            <span className="mc-benefit">无限解读 · 全部牌阵</span>
+            <div className="mc-btn" onClick={e=>{e.stopPropagation();show('已开通年度会员 ✦');}}>开通年度</div>
+          </div>
+        </div>
+
+        {/* 月度（可点选 · 购买入口） */}
+        <div className={"mem-card"+(sel==='monthly'?' sel':'')} onClick={()=>setSel('monthly')}>
+          <div className="mc-top">
+            <span className="mc-name">月度会员</span>
+            {sel==='monthly' && <span className="mc-badge">已选</span>}
+          </div>
+          <div className="mc-price"><small>¥</small>19.9<small>/月</small></div>
+          <div className="mc-sub">随时可续 · 随时可停</div>
+          <div className="mc-row">
+            <span className="mc-benefit">无限解读 · 全部牌阵</span>
+            <div className="mc-btn" onClick={e=>{e.stopPropagation();show('已开通月度会员 ✦');}}>开通月度</div>
+          </div>
+        </div>
+
+        {/* 特惠（一行小卡） */}
+        <div className="mem-student" onClick={()=>{setSel('monthly');show('特惠会员 · 限时 9.9/月 ✦');}}>
+          <span className="ms-n">特惠会员</span>
+          <span className="ms-s">限时特惠价</span>
+          <span className="ms-p"><s>¥19.9</s>¥9.9<small style={{fontSize:'9px',fontFamily:'var(--sans)',color:'var(--ink-faint)'}}>/月</small></span>
+          <span className="ms-go">认证开通 →</span>
+        </div>
+
+        <div className="mem-cmp" onClick={()=>show('权益对比 · 免费 vs 会员 · 正在编排 ✦')}>权益对比 <span style={{fontSize:'10px'}}>▾</span></div>
+        <div className="mem-note">开通即代表同意《会员服务协议》</div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
    路由：Tab + 页面栈 + Toast + 小弹层
    #hash 直达：welcome（首次引导 · 未设置时自动出现）/
    today / today:flip / today:detail /
    today:energy:love/career/social/health / oracle /
-   oracle:element:0-2 / oracle:spreads / oracle:ask / oracle:result /
-   me / me:trend / me:diary / me:wish / me:review / me:checkin /
-   me:settings / me:zodiac（改星座） / birth（完善出生信息）
+   oracle:element:0-2 / oracle:spreads / oracle:ask / oracle:loading（自动进结果）/
+   oracle:result / oracle:membership / me / me:trend / me:diary / me:wish /
+   me:review / me:checkin / me:settings / me:zodiac（改星座） / birth（完善出生信息）
    首次打开模拟：welcomeDone=false（无星座记录）→ 页 17 引导
    ═══════════════════════════════════════════════════════════ */
 function App(){
@@ -2193,7 +2510,9 @@ function App(){
     else if(k.indexOf('element:')===0) view=<ElementDetail key={k} idx={parseInt(k.split(':')[1])||0}/>;
     else if(k==='spreads') view=<Spreads key="spreads"/>;
     else if(k==='ask') view=<Ask key="ask"/>;
+    else if(k==='loading') view=<LoadingReading key="loading"/>; /* 解读加载：自动进结果 */
     else if(k==='result') view=<Result key="result"/>;
+    else if(k==='membership') view=<Membership key="membership"/>; /* 星光会员 */
     else if(k.indexOf('energy:')===0) view=<EnergyDetail key={k} dim={k.split(':')[1]}/>;
     else if(k==='trend') view=<Trend key="trend"/>;
     else if(k==='diary') view=<Diary key="diary"/>;
@@ -2221,12 +2540,12 @@ function Stage(){
     <div className="stage">
       <h1>星光映照</h1>
       <div className="sub">STARLIT — 今日 × 神谕 × 我的 · 完整页面流</div>
-      <div className="meta">19 屏 · 一个主角原则 · 全部页面可点击 · 点一点，走一遍星光</div>
+      <div className="meta">21 屏 · 一个主角原则 · 全部页面可点击 · 点一点，走一遍星光</div>
       <div className="scale-box">
         <div className="phone-holder"><App/></div>
       </div>
       <div className="hashlist">
-        #welcome（首次引导 · 选星座进今日） · #today · #today:flip · #today:detail · #today:energy:love/career/social/health · #oracle · #oracle:element:0/1/2 · #oracle:spreads · #oracle:ask · #oracle:result · #me · #me:trend · #me:diary · #me:wish · #me:review · #me:checkin · #me:settings · #me:zodiac（改星座） · #birth（完善出生信息）
+        #welcome（首次引导 · 选星座进今日） · #today · #today:flip · #today:detail · #today:energy:love/career/social/health · #oracle · #oracle:element:0/1/2 · #oracle:spreads · #oracle:ask · #oracle:loading（洗牌加载 · 自动进结果） · #oracle:result · #oracle:membership（星光会员） · #me · #me:trend · #me:diary · #me:wish · #me:review · #me:checkin · #me:settings · #me:zodiac（改星座） · #birth（完善出生信息）
       </div>
       <div className="note">
         每一页只有一个<b>主角</b>，其余皆为注脚与入口。<br/>

@@ -34,10 +34,19 @@
 
   <!-- ===== Card flip area ===== -->
   <view class="card-flip-section">
-    <view class="card-flip-scene
+    <!-- Bugfix: bindtap 挂在 scene 容器上（背面前 z-index 高于正面，点击正面绑定的
+         onCardTap 永远收不到事件 → 翻牌失效/牌面图永远不显示）。翻牌提示也从
+         opacity:0 的正面移出，作为 scene 子级盖在牌背上方，保证首屏可见可点。 -->
+    <view
+      class="card-flip-scene
       {{isAnimating ? 'card-flip-animating' : ''}}
       {{showGlow ? 'card-glow-revealed' : ''}}
-    ">
+    "
+      bindtap="onCardTap"
+      role="button"
+      aria-label="翻开今日塔罗牌"
+      hover-class="card-flip-pressed"
+    >
       <!-- Card back (face-down) -->
       <view class="card-face card-back {{backHidden ? 'card-face--hidden' : ''}}">
         <view class="card-back-ornament">
@@ -48,7 +57,7 @@
       </view>
 
       <!-- Card front (face-up: actual card image) -->
-      <view class="card-face card-front {{frontVisible ? 'card-face--visible' : ''}}" bindtap="onCardTap" role="button" aria-label="翻开今日塔罗牌">
+      <view class="card-face card-front {{frontVisible ? 'card-face--visible' : ''}}">
         <view class="card-img-wrap {{cardImgLoaded ? 'card-img-wrap--loaded' : ''}} {{cardImgError ? 'card-img-wrap--error' : ''}}">
           <image
             wx:if="{{!cardImgError}}"
@@ -64,13 +73,13 @@
             <text class="fallback-hint">图片暂不可用</text>
           </view>
         </view>
+      </view>
 
-        <!-- Tap hint (before flip) -->
-        <view class="card-tap-hint {{isAnimating || isFlipped ? 'card-tap-hint--hidden' : ''}}" catchtap="onCardTap">
-          <view class="card-tap-hint-inner">
-            <text class="card-tap-hint-text">轻触翻牌</text>
-            <text class="card-tap-hint-sub">今日的启示等待着你</text>
-          </view>
+      <!-- Tap hint (before flip) — scene 子级：牌背/正面之上均可见可点 -->
+      <view class="card-tap-hint {{isAnimating || isFlipped ? 'card-tap-hint--hidden' : ''}}" catchtap="onCardTap">
+        <view class="card-tap-hint-inner">
+          <text class="card-tap-hint-text">轻触翻牌</text>
+          <text class="card-tap-hint-sub">今日的启示等待着你</text>
         </view>
       </view>
     </view>

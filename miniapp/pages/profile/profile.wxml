@@ -86,21 +86,21 @@
     <!-- ============ 注脚入口（开发 04 · 日记 3 小卡 + 签到/收藏/设置） ============ -->
     <view class="me-grid anim-fade-up anim-stagger-3">
       <view class="me-tile" bindtap="onGoDiary" role="button" aria-label="我的日记" hover-class="tile-pressed">
-        <view class="me-tile-icon"><text class="me-tile-emoji">📖</text></view>
+        <view class="me-tile-icon"><text class="me-tile-emoji">✎</text></view>
         <view class="me-tile-text">
           <text class="me-tile-name">我的日记</text>
           <text class="me-tile-desc">{{diaryCount}} 篇星光感悟</text>
         </view>
       </view>
       <view class="me-tile" bindtap="onGoWish" role="button" aria-label="新月许愿" hover-class="tile-pressed">
-        <view class="me-tile-icon"><text class="me-tile-emoji">🌙</text></view>
+        <view class="me-tile-icon"><text class="me-tile-emoji">☽</text></view>
         <view class="me-tile-text">
           <text class="me-tile-name">新月许愿</text>
           <text class="me-tile-desc">{{wishTileDesc}}</text>
         </view>
       </view>
       <view class="me-tile" bindtap="onGoReview" role="button" aria-label="满月复盘" hover-class="tile-pressed">
-        <view class="me-tile-icon"><text class="me-tile-emoji">🌕</text></view>
+        <view class="me-tile-icon"><text class="me-tile-emoji">✧</text></view>
         <view class="me-tile-text">
           <text class="me-tile-name">满月复盘</text>
           <text class="me-tile-desc">{{reviewTileDesc}}</text>

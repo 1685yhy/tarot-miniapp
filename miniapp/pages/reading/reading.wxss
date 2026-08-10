@@ -1729,13 +1729,18 @@ page {
   color: var(--e3-ink-faint);
 }
 
-/* —— 牌阵卡：奶油底 + 细金描边 + 极浅阴影 + 顶部高光 —— */
+/* —— 牌阵卡：卡面 #FFFDF8 + 细金描边 + 阴影加深（原型页 07：与底色拉开层次） —— */
 .spread-card {
-  background: linear-gradient(145deg, var(--e3-cream-hi) 0%, var(--e3-paper) 100%);
-  border: 1rpx solid var(--e3-line);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: #FFFDF8;
+  border: 1rpx solid rgba(169, 139, 95, 0.45);
   border-left: 4rpx solid var(--e3-gold-deep);
   border-radius: 24rpx;
-  box-shadow: var(--e3-shadow), var(--e3-hi);
+  box-shadow: 0 12rpx 26rpx rgba(61, 58, 54, 0.13), var(--e3-hi);
+  min-height: 168rpx;
+  box-sizing: border-box;
 }
 .spread-card::before {
   background: linear-gradient(135deg, transparent 50%, rgba(201, 169, 124, 0.05));
@@ -1746,9 +1751,9 @@ page {
   border-left-color: var(--e3-gold-deep);
 }
 .spread-card.premium {
-  border-color: var(--e3-line-soft);
+  border-color: rgba(169, 139, 95, 0.55);
   border-left-color: var(--e3-gold-deep);
-  background: linear-gradient(145deg, var(--e3-cream-hi) 0%, rgba(232, 196, 190, 0.20) 100%);
+  background: linear-gradient(145deg, #FFFDF8 0%, rgba(232, 196, 190, 0.20) 100%);
 }
 .spread-card-desc,
 .spread-card-count {
@@ -1756,6 +1761,19 @@ page {
 }
 .spread-card-plainDesc {
   color: var(--e3-lav, #6E6A96);
+}
+/* 两列卡等高：描述区底部对齐 */
+.spread-card-info {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.spread-card-desc {
+  margin-top: auto;
+}
+.spread-card-meta {
+  align-self: flex-end;
+  margin-top: 8rpx;
 }
 .badge-popular {
   background: rgba(232, 196, 190, 0.40);
@@ -2040,4 +2058,33 @@ page {
 /* —— AI 解读时间提示 —— */
 .reading-time-note {
   color: var(--e3-ink-faint);
+}
+
+/* ============================================================
+   E3 改造清单 3（原型页 07）：底部主 CTA 暖金填充 + 奶油白字 + safe-area
+   ============================================================ */
+/* 「翻开牌阵」主 CTA：暖金 #8A6B3D 填充 + 奶油白字（覆盖 common .btn-primary 墨字金底） */
+.btn-primary.btn--full {
+  background: linear-gradient(135deg, #8A6B3D 0%, #6F532C 100%);
+  color: #FAF6EF;
+  box-shadow: 0 8rpx 24rpx rgba(138, 107, 61, 0.32);
+}
+.btn-primary.btn--full:active {
+  background: linear-gradient(135deg, #7A5E35 0%, #634A27 100%);
+  box-shadow: 0 4rpx 14rpx rgba(138, 107, 61, 0.28);
+}
+/* 提问页底部留出 safe-area（真机 Home 条不遮挡按钮） */
+.btn-back-spreads-wrap {
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+}
+/* 牌阵列表底部：留出固定栏高度 + 24rpx 余量 */
+.spread-grid {
+  margin-bottom: calc(120rpx + env(safe-area-inset-bottom));
+}
+/* 会员徽章：金描边 + 深金字 */
+.premium-overlay-content {
+  border: 1rpx solid rgba(169, 139, 95, 0.55);
+}
+.premium-overlay-text {
+  color: #8A6B3D;
 }

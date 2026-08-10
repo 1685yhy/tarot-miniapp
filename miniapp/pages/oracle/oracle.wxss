@@ -268,40 +268,52 @@ page {
   flex-shrink: 0;
 }
 
-/* ── 深度报告入口 ── */
+/* ── 深度报告入口：与两张要素卡等高等底（内容垂直居中）· 金徽章 + 金箭头表达推广 ── */
 .deep-pill {
   position: relative;
   z-index: 3;
   display: flex;
   align-items: center;
-  gap: 14rpx;
-  margin-top: 24rpx;
-  padding: 24rpx 26rpx;
-  border-radius: 32rpx;
-  background: rgba(201, 169, 124, 0.07);
-  border: 1rpx dashed rgba(176, 143, 82, 0.5);
+  gap: 24rpx;
+  margin: 20rpx 0 0;
+  background: linear-gradient(160deg, #FFFDF8 0%, rgba(169, 139, 95, 0.09) 100%);
+  border: 1rpx solid rgba(169, 139, 95, 0.45);
+  border-radius: 36rpx;
+  padding: 22rpx 26rpx;
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+  min-height: 132rpx;
+  box-sizing: border-box;
+  transition: transform 0.14s ease;
 }
 .deep-pill-pressed {
-  opacity: 0.7;
+  transform: scale(0.98);
 }
 .deep-pill-ic {
-  font-size: 26rpx;
-  color: var(--e3-gold-deep);
-  flex-shrink: 0;
+  font-size: 40rpx;
+  color: #FFFDF8;
+  background: linear-gradient(145deg, rgba(169, 139, 95, 0.28) 0%, rgba(138, 107, 61, 0.4) 100%);
 }
-.deep-pill-tx {
-  flex: 1;
+.deep-pill-n {
+  display: block;
+  font-size: 28rpx;
+  letter-spacing: 4rpx;
+  color: var(--e3-ink);
+}
+/* 会员徽章：金描边 + 深金字（原型 .ele-card .ele-badge） */
+.deep-pill-badge {
+  display: inline-block;
+  margin-left: 7rpx;
   font-family: var(--e3-sans);
-  font-size: 22rpx;
-  color: var(--e3-ink-soft);
-  letter-spacing: 1rpx;
+  font-size: 18rpx;
+  letter-spacing: 2rpx;
+  color: var(--e3-gold-deep);
+  border: 1rpx solid var(--e3-gold-deep);
+  border-radius: 999rpx;
+  padding: 2rpx 12rpx;
+  flex-shrink: 0;
 }
 .deep-pill-go {
-  font-family: var(--e3-sans);
-  font-size: 19rpx;
-  color: var(--e3-ink-faint);
-  letter-spacing: 2rpx;
-  flex-shrink: 0;
+  color: var(--e3-gold-deep);
 }
 
 /* ── 牌阵馆 ── */

@@ -47,9 +47,10 @@
     <view class="pricing-section">
       <text class="pricing-section-title">选择方案</text>
 
-      <!-- 年度 (推荐) -->
-      <view class="pricing-card pricing-card--rec" data-product="{{pricingYearly}}" bindtap="onPurchase" role="button" aria-label="购买年度会员">
+      <!-- 年度 (推荐) · 点卡选择态：暖金描边 + 已选标记 -->
+      <view class="pricing-card pricing-card--rec {{selectedPlan === 'yearly' ? 'pricing-card--sel' : ''}}" data-plan="yearly" bindtap="onSelectPlan" role="button" aria-label="选择年度会员">
         <view class="pricing-card-badge">最受欢迎</view>
+        <view class="pricing-card-sel-mark" wx:if="{{selectedPlan === 'yearly'}}">已选 ✓</view>
         <text class="pricing-card-name">年度会员</text>
         <view class="pricing-card-price-row">
           <text class="pricing-card-currency">¥</text>
@@ -58,18 +59,19 @@
         </view>
         <text class="pricing-card-daily">日均{{pricingYearly.displayDaily}}</text>
         <text class="pricing-card-save">{{pricingYearly.displaySavingText}}</text>
-        <button class="pricing-card-btn">开通年度</button>
+        <button class="pricing-card-btn" data-product="{{pricingYearly}}" catchtap="onPurchase">开通年度</button>
       </view>
 
-      <!-- 月度 -->
-      <view class="pricing-card" data-product="{{pricingMonthly}}" bindtap="onPurchase" role="button" aria-label="购买月度会员">
+      <!-- 月度 · 点卡选择态：暖金描边 + 已选标记（原型页 19：月度可点选 + 购买入口） -->
+      <view class="pricing-card {{selectedPlan === 'monthly' ? 'pricing-card--sel' : ''}}" data-plan="monthly" bindtap="onSelectPlan" role="button" aria-label="选择月度会员">
+        <view class="pricing-card-sel-mark" wx:if="{{selectedPlan === 'monthly'}}">已选 ✓</view>
         <text class="pricing-card-name">月度会员</text>
         <view class="pricing-card-price-row">
           <text class="pricing-card-currency">¥</text>
           <text class="pricing-card-amount">{{pricingMonthly.displayPrice}}</text>
           <text class="pricing-card-period">/月</text>
         </view>
-        <button class="pricing-card-btn pricing-card-btn--secondary">开通月度</button>
+        <button class="pricing-card-btn" data-product="{{pricingMonthly}}" catchtap="onPurchase">开通月度</button>
       </view>
 
       <!-- 特惠价（P2-3：弱化为一行小卡，支付逻辑与绑定保留） -->

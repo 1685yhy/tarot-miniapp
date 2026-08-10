@@ -100,7 +100,7 @@ page {
   position: relative;
   z-index: 2;
   text-align: center;
-  margin-top: 48rpx;
+  margin-top: 28rpx;
 }
 .wh-en {
   font-family: var(--e3-serif);
@@ -141,7 +141,7 @@ page {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16rpx;
-  margin-top: 32rpx;
+  margin-top: 24rpx;
 }
 .zcard {
   position: relative;
@@ -207,29 +207,33 @@ page {
 .wel-foot {
   position: relative;
   z-index: 2;
-  margin-top: 28rpx;
+  margin-top: 20rpx;
 }
+/* 主按钮：暖金 #8A6B3D 填充 + 奶油白字（选中后加深发光） */
 .cta {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 92rpx;
   border-radius: 999rpx;
-  background: linear-gradient(135deg, var(--e3-gold), var(--e3-gold-deep));
-  color: #FFFDF8;
+  background: linear-gradient(135deg, #8A6B3D 0%, #6F532C 100%);
+  color: #FAF6EF;
   font-size: 28rpx;
   letter-spacing: 6rpx;
-  box-shadow: 0 12rpx 32rpx rgba(176, 143, 82, 0.35), var(--e3-hi);
-  transition: transform 0.15s ease;
+  box-shadow: 0 12rpx 32rpx rgba(138, 107, 61, 0.35), 0 0 24rpx rgba(169, 139, 95, 0.25), var(--e3-hi);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 .cta-pressed {
   transform: scale(0.975);
 }
+/* 未选中：置灰但保留可见边框，形状与选中态一致 */
 .cta-off {
-  background: var(--e3-paper);
-  color: var(--e3-ink-faint);
+  background: rgba(242, 236, 223, 0.9);
+  color: rgba(61, 58, 54, 0.42);
+  border: 2rpx solid rgba(61, 58, 54, 0.14);
   box-shadow: none;
 }
+/* 跳过入口：墨灰级 + 下划线（原型页 17） */
 .skip-link {
   display: flex;
   align-items: center;
@@ -237,14 +241,18 @@ page {
   height: 88rpx;
   font-family: var(--e3-sans);
   font-size: 23rpx;
-  color: var(--e3-ink-faint);
+  color: var(--e3-ink-soft);
   letter-spacing: 4rpx;
+  text-decoration: underline;
+  text-decoration-color: rgba(138, 132, 120, 0.55);
+  text-underline-offset: 8rpx;
+  text-decoration-thickness: 2rpx;
 }
 .skip-link:active {
   opacity: 0.6;
 }
 .skip-bold {
   font-weight: 400;
-  color: var(--e3-gold-deep);
+  color: var(--e3-ink-soft);
   margin: 0 6rpx;
 }

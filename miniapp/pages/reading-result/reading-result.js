@@ -208,6 +208,9 @@ Page({
         data: data,
       });
       wx.removeStorageSync('pending_reading');
+      // 与 _load() 一致：新生成的解读也要为 drawn_cards 计算 imagePath，
+      // 否则牌面图缺失（tarot-card 只能退回 CSS 占位/缩略图）
+      this._mapCardImages(result);
       // Always cache result — even if page was hidden (onShow will pick it up)
       this._cachedReading = result;
       if (!this._destroyed) { this._tryShowResult(); }
@@ -268,12 +271,7 @@ Page({
       }
 
       // Compute image paths for each drawn card
-      if (reading && reading.drawn_cards) {
-        reading.drawn_cards = reading.drawn_cards.map(card => ({
-          ...card,
-          imagePath: computeImagePath(card, card.imageBase),
-        }));
-      }
+      this._mapCardImages(reading);
 
       this._cachedReading = reading;
       if (!this._destroyed) { this._tryShowResult(); }
@@ -281,6 +279,16 @@ Page({
       // Always cache error — even if page was hidden (onShow will pick it up)
       this._cachedError = getFriendlyError(err);
       if (!this._destroyed) { this._tryShowResult(); }
+    }
+  },
+
+  /** 为 reading.drawn_cards 计算牌面图路径（_load/_createReading/_requestDeepReading 共用） */
+  _mapCardImages(reading) {
+    if (reading && reading.drawn_cards) {
+      reading.drawn_cards = reading.drawn_cards.map(card => ({
+        ...card,
+        imagePath: computeImagePath(card, card.imageBase),
+      }));
     }
   },
 
@@ -775,7 +783,8 @@ Page({
         wx.showToast({ title: '深度解读生成失败，请重试', icon: 'none' });
         return;
       }
-      // 用深度版替换当前解读
+      // 用深度版替换当前解读（同样补齐牌面图路径）
+      this._mapCardImages(result);
       this._cachedReading = result;
       this._cachedError = null;
       this._isQuickMode = false;

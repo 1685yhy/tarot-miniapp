@@ -252,6 +252,10 @@ Page({
     wx.navigateTo({ url: '/pages/birthchart/birthchart' });
   },
 
+  onGoMembership() {
+    wx.navigateTo({ url: '/pages/membership/membership' });
+  },
+
   onRetry() {
     this._init();
   },

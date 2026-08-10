@@ -13,6 +13,8 @@ Page({
     pageLoading: true,
     pageError: null,
     purchasing: false,
+    // 购买选择态（原型页 19）：默认年度，点卡切换，按钮再购买
+    selectedPlan: 'yearly',
     isTrialActive: false,
     trialExpiryDate: null,
     trialDaysLeft: 0,
@@ -248,6 +250,13 @@ Page({
   },
 
   /** 开启 7 天免费试用 */
+  /** 点卡选择方案（不直接购买；按钮才发起支付） */
+  onSelectPlan(e) {
+    const key = e.currentTarget.dataset.plan;
+    if (key !== 'yearly' && key !== 'monthly') return;
+    this.setData({ selectedPlan: key });
+  },
+
   onStartTrial() {
     // Analytics: free trial started
     analytics.trackTrialStart();

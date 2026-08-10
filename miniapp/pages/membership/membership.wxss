@@ -1242,3 +1242,68 @@ page {
   padding: 0 var(--spacing-lg);
   font-size: var(--font-size-caption);
 }
+
+/* ============================================================
+   E3 改造清单 5（原型页 19）：
+   1) 两个主 CTA 统一 暖金填充 + 奶油白字
+   2) 月度/年度 可点选购买选择态（暖金描边 + 已选标记）
+   3) 页面底部 safe-area ≥34px
+   ============================================================ */
+.page {
+  padding-bottom: calc(68rpx + var(--safe-area-bottom, 0));
+}
+
+/* 主 CTA 统一：暖金 #8A6B3D 填充 + 奶油白字 */
+.trial-btn,
+.pricing-card-btn,
+.pack-card-btn--primary {
+  background: linear-gradient(135deg, #8A6B3D 0%, #6F532C 100%);
+  color: #FAF6EF;
+  border: none;
+  box-shadow: 0 6rpx 20rpx rgba(138, 107, 61, 0.32);
+}
+.pricing-card-btn--secondary {
+  background: linear-gradient(135deg, #8A6B3D 0%, #6F532C 100%);
+  color: #FAF6EF;
+  border: none;
+  box-shadow: 0 6rpx 20rpx rgba(138, 107, 61, 0.32);
+}
+.trial-btn:active,
+.pricing-card-btn:active,
+.pack-card-btn--primary:active,
+.pricing-card-btn--secondary:active {
+  background: linear-gradient(135deg, #7A5E35 0%, #634A27 100%);
+}
+
+/* 选择态：暖金描边 + 柔光 */
+.pricing-card--sel {
+  border: 2rpx solid #8A6B3D !important;
+  box-shadow: 0 8rpx 28rpx rgba(138, 107, 61, 0.20), var(--e3-hi) !important;
+}
+.pricing-card--sel::before {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(169, 139, 95, 0.5) 30%,
+    #8A6B3D 50%,
+    rgba(169, 139, 95, 0.5) 70%,
+    transparent 100%
+  );
+  height: 4rpx;
+}
+
+/* 已选标记：暖金胶囊 + 奶油白字 */
+.pricing-card-sel-mark {
+  position: absolute;
+  top: 18rpx;
+  right: 20rpx;
+  background: linear-gradient(135deg, #8A6B3D 0%, #6F532C 100%);
+  color: #FAF6EF;
+  font-size: 18rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  padding: 4rpx 14rpx;
+  border-radius: 999rpx;
+  box-shadow: 0 2rpx 10rpx rgba(138, 107, 61, 0.30);
+  z-index: 1;
+}

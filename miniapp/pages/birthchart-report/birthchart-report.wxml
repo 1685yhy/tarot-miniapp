@@ -55,6 +55,11 @@
       <text class="rp-p">{{report.generated_at ? report.generated_at.slice(0, 10) : ''}} · 一次生成 · 永续查看</text>
     </view>
 
+    <!-- 星盘圆图（CogView 真实生成资产 · 奶油米白底 + 细金线条圆形星盘） -->
+    <view class="rp-chart-wrap">
+      <image class="rp-chart" src="/assets/web/natal-chart.jpg" mode="aspectFit" lazy-load aria-label="你的本命星盘圆图" />
+    </view>
+
     <view class="rp-section" wx:for="{{sections}}" wx:key="key">
       <view class="rp-sec-head">
         <text class="rp-sec-ic">{{item.icon}}</text>
@@ -75,6 +80,12 @@
       <view class="rp-btn rp-btn-ghost" bindtap="onGoElements" hover-class="rp-btn-pressed" role="button" aria-label="回到本命星盘">
         <text>回到星盘</text>
       </view>
+    </view>
+
+    <!-- 开通星光会员入口（暖金按钮 → membership） -->
+    <view class="mem-link" bindtap="onGoMembership" hover-class="mem-link-pressed" role="button" aria-label="开通星光会员，解锁全部牌阵与AI无限解读">
+      <text>✦ 开通<text class="mem-link-strong">星光会员</text> · 无限解读</text>
+      <text class="mem-link-arrow">→</text>
     </view>
 
     <!-- 分享图海报（隐藏 canvas + 预览层） -->

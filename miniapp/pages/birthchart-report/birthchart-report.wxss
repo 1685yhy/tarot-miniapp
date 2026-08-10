@@ -90,7 +90,7 @@ page {
 .state-sub {
   font-family: var(--e3-sans);
   font-size: 22rpx;
-  color: var(--e3-ink-faint);
+  color: var(--e3-ink-soft);
   letter-spacing: 2rpx;
 }
 .retry-btn {
@@ -126,7 +126,7 @@ page {
   margin-top: 14rpx;
   font-family: var(--e3-sans);
   font-size: 23rpx;
-  color: var(--e3-ink-faint);
+  color: var(--e3-ink-soft);
   letter-spacing: 4rpx;
 }
 .pw-card {
@@ -173,7 +173,7 @@ page {
   display: block;
   font-family: var(--e3-sans);
   font-size: 21rpx;
-  color: var(--e3-ink-faint);
+  color: var(--e3-ink-soft);
   margin-top: 2rpx;
 }
 .pw-price {
@@ -226,7 +226,7 @@ page {
   text-align: center;
   font-family: var(--e3-sans);
   font-size: 20rpx;
-  color: var(--e3-ink-faint);
+  color: var(--e3-ink-soft);
   letter-spacing: 2rpx;
 }
 
@@ -235,6 +235,8 @@ page {
   position: relative;
   z-index: 3;
   padding-top: 40rpx;
+  /* P0：底部预留 safe-area，修复正文末尾被截断/与返回条重叠 */
+  padding-bottom: calc(68rpx + env(safe-area-inset-bottom));
 }
 .rp-head {
   text-align: center;
@@ -259,7 +261,7 @@ page {
   margin-top: 12rpx;
   font-family: var(--e3-sans);
   font-size: 21rpx;
-  color: var(--e3-ink-faint);
+  color: var(--e3-ink-soft);
   letter-spacing: 2rpx;
 }
 .rp-section {
@@ -293,12 +295,13 @@ page {
   font-size: 30rpx;
   letter-spacing: 4rpx;
   color: var(--e3-ink);
+  font-weight: 600;
 }
 .rp-sec-desc {
   display: block;
   font-family: var(--e3-sans);
   font-size: 20rpx;
-  color: var(--e3-ink-faint);
+  color: var(--e3-ink-soft);
   margin-top: 2rpx;
 }
 .rp-body {
@@ -306,11 +309,12 @@ page {
   padding-top: 20rpx;
   border-top: 1rpx solid rgba(201, 169, 124, 0.2);
 }
+/* 正文：墨色 #3D3A36（10.5:1）· 行高 ≥1.7 */
 .rp-text {
   font-family: var(--e3-sans);
   font-size: 26rpx;
   line-height: 1.9;
-  color: var(--e3-ink-soft);
+  color: var(--e3-ink);
   letter-spacing: 1rpx;
   user-select: text;
 }
@@ -319,6 +323,57 @@ page {
   display: flex;
   flex-direction: column;
   gap: 20rpx;
+}
+
+/* ── 星盘圆图（真实生成资产） ── */
+.rp-chart-wrap {
+  position: relative;
+  z-index: 3;
+  margin: 28rpx auto 0;
+  width: 480rpx;
+  height: 480rpx;
+  background: var(--e3-cream-hi);
+  border: 1rpx solid rgba(169, 139, 95, 0.4);
+  border-radius: 50%;
+  box-shadow: 0 8rpx 24rpx rgba(61, 58, 54, 0.08), inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.rp-chart {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ── 开通星光会员入口（暖金按钮 → membership） ── */
+.mem-link {
+  margin-top: 32rpx;
+  height: 96rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  background: linear-gradient(135deg, #8A6B3D 0%, #6F532C 100%);
+  color: #FAF6EF;
+  font-family: var(--e3-sans);
+  font-size: 28rpx;
+  letter-spacing: 4rpx;
+  box-shadow: 0 8rpx 24rpx rgba(138, 107, 61, 0.32);
+  transition: transform 0.14s ease;
+}
+.mem-link-pressed {
+  transform: scale(0.98);
+}
+.mem-link-strong {
+  color: #FFFDF8;
+  font-weight: 600;
+}
+.mem-link-arrow {
+  color: rgba(250, 246, 239, 0.85);
+  font-size: 26rpx;
 }
 .rp-btn {
   height: 92rpx;

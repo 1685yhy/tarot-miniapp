@@ -18,7 +18,15 @@
         <view class="qs-line qs-line-w60"></view>
         <view class="qs-line qs-line-w90"></view>
         <view class="qs-line qs-line-w80"></view>
-        <text class="quick-loading-text">正在生成解读...</text>
+        <!-- 墨色加载文案 + 三点呼吸动画（避免用户以为卡死） -->
+        <view class="quick-loading-row">
+          <text class="quick-loading-text">星光正在为你洗牌</text>
+          <view class="breath-dots">
+            <view class="breath-dot"></view>
+            <view class="breath-dot"></view>
+            <view class="breath-dot"></view>
+          </view>
+        </view>
       </view>
     </block>
 

@@ -26,7 +26,7 @@
   <view class="oracle-head">
     <text class="oh-en">ORACLE</text>
     <text class="oh-h2">星图三要素</text>
-    <text class="oh-p">你的光芒，由三颗星写就</text>
+    <text class="oh-p">太阳与月亮，先行照见</text>
   </view>
 
   <!-- 主角：三要素卡（真实星盘 · 未点亮 → 出生信息引导） -->
@@ -55,11 +55,17 @@
     <text class="need-birth-go">去填写 →</text>
   </view>
 
-  <!-- 深度报告入口（会员免费 / 19.9 解锁） -->
+  <!-- 深度报告入口（会员免费 / 19.9 解锁）· 与三要素卡等高等底 · 金徽章 + 金箭头表达推广属性 -->
   <view class="deep-pill" bindtap="onDeepReport" role="button" aria-label="深度星图报告" hover-class="deep-pill-pressed">
-    <text class="deep-pill-ic">✦</text>
-    <text class="deep-pill-tx">深度星图报告 · 结合出生时刻的更深你</text>
-    <text class="deep-pill-go">会员免费 →</text>
+    <view class="ele-ic deep-pill-ic"><text>✦</text></view>
+    <view class="ele-tx">
+      <view class="ele-n-row">
+        <text class="deep-pill-n">深度星图报告</text>
+        <text class="deep-pill-badge">会员</text>
+      </view>
+      <text class="ele-l">结合出生时刻的更深你</text>
+    </view>
+    <text class="ele-go deep-pill-go">›</text>
   </view>
 
   <!-- 牌阵馆（6 卡入口：4 网格 + 2 行宽卡 · 与原型页 07 一致） -->
