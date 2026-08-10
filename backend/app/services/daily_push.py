@@ -6,6 +6,13 @@
   推送「今日星光」：今日星光一句话（能量+星光数）+ 星象宜忌 + 星光色 + 日期。
 - 额度来源：微信一次性订阅授权（POST /notify/subscribe-grant → quota+1）；
   发送成功后 quota-1、记 last_sent_date（同日最多 1 条）。
+- 并发安全（原子认领）：发送前对每个用户执行
+  `UPDATE subscribe_quotas SET last_sent_date=:today WHERE user_id=:id
+  AND (last_sent_date IS NULL OR last_sent_date != :today)`，rowcount==1
+  才算认领成功；成功后逐条 commit（额度减扣与 last_sent_date 同事务），
+  崩溃/并发交错时同用户同日最多发 1 条。发送失败不扣额度，认领回退为
+  NULL（允许下一轮循环重试）；批标记 _morning_sent_date 仅作内存级第二道防线，
+  且仅在整批无失败时置位（有失败则保留空，让 5 分钟循环补发失败用户）。
 - 内容与今日星光卡同源：build_today_guidance（星光色/数/宜忌）+ 能量
   （优先今日 HoroscopeHistory，无则轻量 compute_energy）。
 - 时间配置：settings.SEND_TIME（默认 "07:37"）。
@@ -32,7 +39,7 @@ import logging
 import os
 from datetime import date, datetime, timedelta, timezone
 
-from sqlalchemy import or_, select
+from sqlalchemy import or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
@@ -68,7 +75,8 @@ _STATE_FILE = os.path.join(
 
 # 内存态：'YYYY-MM-DD'（北京时间）
 # _last_sent_date：21:00 晚间推送当天是否已发送
-# _morning_sent_date：7:37 星光晨讯当天是否已批量发送（逐人去重靠 SubscribeQuota.last_sent_date）
+# _morning_sent_date：7:37 星光晨讯批标记（内存级第二道防线，逐人去重靠
+#   SubscribeQuota.last_sent_date 原子认领；仅整批无失败时置位）
 _last_sent_date: str | None = None
 _morning_sent_date: str | None = None
 # 模板未配置的日志去重（每天只记一次 error，避免每 5 分钟刷屏）
@@ -233,6 +241,27 @@ async def _today_energy(db: AsyncSession, user: User, today: date) -> dict:
     return result["energy"]
 
 
+async def _release_morning_claim(db: AsyncSession, user_id: str, today: date) -> None:
+    """发送失败 → 回退认领（last_sent_date 置回 NULL），不扣额度，允许下次重试。
+
+    认领（last_sent_date=today）与发送在同一事务内：失败时把 today 回退为
+    NULL 并 commit，微信临时故障不会烧掉用户的一次性授权。
+    """
+    try:
+        await db.execute(
+            update(SubscribeQuota)
+            .where(
+                SubscribeQuota.user_id == user_id,
+                SubscribeQuota.last_sent_date == today,
+            )
+            .values(last_sent_date=None)
+        )
+        await db.commit()
+    except Exception:
+        logger.exception("7:37 星光晨讯认领回退失败：user=%s", user_id)
+        await db.rollback()
+
+
 async def send_starlight_morning_if_due(
     db: AsyncSession, now: datetime | None = None
 ) -> dict:
@@ -303,6 +332,22 @@ async def send_starlight_morning_if_due(
     sent = 0
     failed = 0
     for quota, user in rows:
+        # ── 原子认领（I-1）：并发/崩溃安全。同一用户同一天只可能被一个发送者
+        #    认领成功；rowcount==1 才继续发送，否则（已被并发认领/同日已发）
+        #    跳过——admin 端点与 7:37 定时任务交错也不会双发。──
+        claim = await db.execute(
+            update(SubscribeQuota)
+            .where(
+                SubscribeQuota.user_id == quota.user_id,
+                or_(
+                    SubscribeQuota.last_sent_date.is_(None),
+                    SubscribeQuota.last_sent_date != today,
+                ),
+            )
+            .values(last_sent_date=today)
+        )
+        if claim.rowcount != 1:
+            continue
         try:
             guidance = build_today_guidance(today, user.zodiac or None)
             energy = await _today_energy(db, user, today)
@@ -315,17 +360,32 @@ async def send_starlight_morning_if_due(
             )
             if resp.get("errcode") == 0:
                 sent += 1
-                # 成功才消耗额度（失败不扣，避免微信临时故障烧掉用户授权）
-                quota.quota_available -= 1
-                quota.last_sent_date = today
+                # 成功：额度减扣与 last_sent_date（认领已置 today）同一事务提交。
+                # 逐条 commit —— 中途崩溃只会丢弃未提交的认领，不会整批重发。
+                await db.execute(
+                    update(SubscribeQuota)
+                    .where(
+                        SubscribeQuota.user_id == quota.user_id,
+                        SubscribeQuota.quota_available > 0,
+                    )
+                    .values(quota_available=SubscribeQuota.quota_available - 1)
+                )
+                await db.commit()
             else:
+                # 微信 errcode!=0：不扣额度，认领回退为 NULL（允许下次重试）
                 failed += 1
+                await _release_morning_claim(db, quota.user_id, today)
         except Exception:
             logger.exception("7:37 星光晨讯发送失败：user=%s", quota.user_id)
             failed += 1
+            await _release_morning_claim(db, quota.user_id, today)
 
-    await db.commit()
-    _morning_sent_date = today_str
+    # 批标记仅作内存级第二道防线：整批无失败才置位（当天不再重扫）；
+    # 有失败则保持空，下一轮 5 分钟循环补发失败用户（原子认领保证不重复发送）。
+    if failed:
+        _morning_sent_date = None
+    else:
+        _morning_sent_date = today_str
     _save_state()
     logger.info("7:37 星光晨讯完成：sent=%d failed=%d", sent, failed)
     return {"status": "sent", "sent": sent, "failed": failed}

@@ -4,10 +4,14 @@
 覆盖：
 - POST /notify/subscribe-grant：auth 后 quota+1（首次 1、再次 +1）；未登录 401
 - 7:37 晨讯发送：有额度且未发过今日 → 发送成功，quota-1、last_sent_date==今天
-- 同日重复发送被跳过（批标记 _morning_sent_date + 逐人 last_sent_date 双重去重）
+- 同日重复发送被跳过（批标记 _morning_sent_date + 逐人 last_sent_date 原子认领双重去重）
+- 并发/崩溃窗口：已被认领（last_sent_date==今天）的用户即使批标记未置位也不双发
+- 发送失败（微信 errcode!=0）：不扣额度、认领回退 NULL，下一轮循环重试成功
 - quota==0 不发；未到 7:37 → not_due；模板未配置 → skipped_config
 - build_starlight_morning_data 内容含今日星光一句话（能量+星光数）/ 宜忌 / 日期 / 星光色
-- admin POST /notify/send-daily 改造为按额度消费发送（与定时任务同一逻辑）
+- admin POST /notify/send-daily：鉴权（401/403）走 HTTP；发送行为走 service 层
+  固定时间注入（08:00），不依赖真实系统时间 07:37 门
+- 防疲劳：21:00 晚间推送跳过当日已收到星光晨讯的用户（每天最多 1 条）
 """
 
 import asyncio
@@ -15,20 +19,23 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import delete, select
+from sqlalchemy import delete, select, update
 
 from app.config import settings
 from app.db.database import async_session
+from app.models.push_subscription import PushSubscription
 from app.models.subscribe_quota import SubscribeQuota
 from app.models.user import User
 from app.services import daily_push
 from app.services.energy_engine import build_today_guidance
+from app.services.push import TEMPLATE_DAILY_CARD
 from app.utils.auth import create_token
 
 # 北京时间（UTC+8）
 BEIJING_TZ = timezone(timedelta(hours=8))
 NOW_0737 = datetime(2026, 8, 10, 7, 37, tzinfo=BEIJING_TZ)
 NOW_0730 = datetime(2026, 8, 10, 7, 30, tzinfo=BEIJING_TZ)
+NOW_0800 = datetime(2026, 8, 10, 8, 0, tzinfo=BEIJING_TZ)  # 已过 7:37 门，固定注入
 TODAY = NOW_0737.date()
 
 
@@ -63,6 +70,16 @@ def _morning_send(now: datetime) -> dict:
     async def _go():
         async with async_session() as session:
             return await daily_push.send_starlight_morning_if_due(session, now)
+
+    return asyncio.run(_go())
+
+
+def _evening_send(now: datetime) -> dict:
+    """运行 send_daily_push_if_due（测试 loop 上开新会话）。"""
+
+    async def _go():
+        async with async_session() as session:
+            return await daily_push.send_daily_push_if_due(session, now)
 
     return asyncio.run(_go())
 
@@ -223,6 +240,78 @@ def test_morning_skipped_when_template_unconfigured(client: TestClient, monkeypa
     assert result["status"] == "skipped_config"
 
 
+def test_morning_send_failure_keeps_quota_and_retries(
+    client: TestClient, monkeypatch, clean_quotas
+):
+    """微信 errcode!=0 → 不扣额度、认领回退 NULL；下一轮循环重试成功。
+
+    钉住设计决策：发送失败不扣额度（微信临时故障不烧用户授权），
+    且 last_sent_date 回退为 NULL（允许补发，而非当天永远缺席）。
+    """
+    _reset_state(monkeypatch)
+    monkeypatch.setattr(settings, "WX_TEMPLATE_DAILY_CARD", "TEST_TMPL")
+    _, user_id = _new_user("morning_fail_001")
+    asyncio.run(_seed_quota(user_id, 1))
+
+    async def _fake_fail(**kwargs):
+        return {"errcode": 40003, "errmsg": "invalid openid"}
+
+    monkeypatch.setattr(daily_push, "send_subscribe_message", _fake_fail)
+
+    result = _morning_send(NOW_0737)
+    assert result["status"] == "sent"
+    assert result["sent"] == 0
+    assert result["failed"] == 1
+
+    quota = asyncio.run(_get_quota(user_id))
+    assert quota.quota_available == 1     # 失败不扣额度
+    assert quota.last_sent_date is None   # 认领已回退 → 允许重试
+
+    # 微信恢复 → 下一轮循环（批标记因有失败未置位）重试成功
+    _fake_wechat_ok(monkeypatch)
+    retry = _morning_send(NOW_0737)
+    assert retry["status"] == "sent"
+    assert retry["sent"] == 1
+    assert retry["failed"] == 0
+
+    quota2 = asyncio.run(_get_quota(user_id))
+    assert quota2.quota_available == 0
+    assert quota2.last_sent_date == TODAY
+
+
+def test_morning_claim_blocks_second_sender(
+    client: TestClient, monkeypatch, clean_quotas
+):
+    """原子认领：用户已被认领（last_sent_date==今天，并发/崩溃后状态）
+    即使批标记未置位也不重复发送、不重复扣额度。"""
+    _reset_state(monkeypatch)
+    monkeypatch.setattr(settings, "WX_TEMPLATE_DAILY_CARD", "TEST_TMPL")
+    _, user_id = _new_user("morning_claim_001")
+    asyncio.run(_seed_quota(user_id, 1))
+
+    # 模拟并发发送者已完成「认领+发送」并提交（崩溃重启后同态）
+    async def _preclaim():
+        async with async_session() as session:
+            await session.execute(
+                update(SubscribeQuota)
+                .where(SubscribeQuota.user_id == user_id)
+                .values(last_sent_date=TODAY)
+            )
+            await session.commit()
+
+    asyncio.run(_preclaim())
+
+    calls: list = []
+    _fake_wechat_ok(monkeypatch, calls)
+
+    result = _morning_send(NOW_0737)
+    assert result["status"] == "no_subscribers"
+    assert calls == []                          # 已认领 → 本发送者不再发
+    quota = asyncio.run(_get_quota(user_id))
+    assert quota.quota_available == 1           # 未重复扣额度
+    assert quota.last_sent_date == TODAY        # 认领保持
+
+
 # ══════════════════════════════════════════════════════════════
 # 消息内容构建
 # ══════════════════════════════════════════════════════════════
@@ -253,7 +342,11 @@ def test_build_starlight_morning_data_content():
 
 
 def test_trigger_daily_push_consumes_quota(client: TestClient, monkeypatch, clean_quotas):
-    """POST /notify/send-daily（super-admin）→ 与定时任务同一逻辑按额度发送。"""
+    """POST /notify/send-daily（super-admin）→ 与定时任务同一逻辑按额度发送。
+
+    鉴权（401/403）走 HTTP；发送行为直接调 service 层并注入固定 now
+    （08:00），不依赖真实系统时间——07:37 之前跑套件也不会挂。
+    """
     _reset_state(monkeypatch)
     _, admin_id = _new_user("admin_send_001")
     monkeypatch.setattr(settings, "SUPER_ADMIN_IDS", admin_id)
@@ -272,15 +365,23 @@ def test_trigger_daily_push_consumes_quota(client: TestClient, monkeypatch, clea
     resp1 = client.post("/notify/send-daily", headers={"Authorization": f"Bearer {normal_token}"})
     assert resp1.status_code == 403
 
-    token = asyncio.run(_get_token(admin_id))
-    resp2 = client.post("/notify/send-daily", headers={"Authorization": f"Bearer {token}"})
-    assert resp2.status_code == 200, resp2.text
-    assert resp2.json()["sent"] == 1
-    assert resp2.json()["failed"] == 0
+    # 发送行为：service 层固定时间（先发送，使额度与批标记就位；
+    # 随后 HTTP 调用无论真实系统时间如何都不会再发/重复扣额度）
+    result = _morning_send(NOW_0800)
+    assert result["status"] == "sent"
+    assert result["sent"] == 1
+    assert result["failed"] == 0
 
     quota = asyncio.run(_get_quota(user_id))
     assert quota.quota_available == 0
     assert quota.last_sent_date == TODAY
+
+    # super-admin 端点调用：只断言 200 + 响应结构（not_due/no_subscribers/sent 均 200）
+    token = asyncio.run(_get_token(admin_id))
+    resp2 = client.post("/notify/send-daily", headers={"Authorization": f"Bearer {token}"})
+    assert resp2.status_code == 200, resp2.text
+    assert "sent" in resp2.json()
+    assert "failed" in resp2.json()
 
 
 async def _get_token(user_id: str) -> str:
@@ -288,3 +389,83 @@ async def _get_token(user_id: str) -> str:
         result = await session.execute(select(User).where(User.id == user_id))
         user = result.scalar_one()
         return create_token(user.id, user.token_version)
+
+
+# ══════════════════════════════════════════════════════════════
+# 防疲劳：21:00 晚间推送跳过当日已收晨讯者（每天最多 1 条）
+# ══════════════════════════════════════════════════════════════
+
+
+def test_daily_push_skips_morning_recipients(
+    client: TestClient, monkeypatch, clean_quotas
+):
+    """用户 A 当日已收到星光晨讯（last_sent_date==今天）→ 21:00 晚间不再推送；
+    用户 B 未收晨讯 → 正常推送。
+
+    断言只针对本用例的两个用户（test_daily_push 先运行留下的订阅行也会被
+    选中发送，但与本用例无关）。
+    """
+    _reset_state(monkeypatch)
+    monkeypatch.setattr(settings, "WX_TEMPLATE_DAILY_CARD", "TEST_TMPL")
+    _, morning_user_id = _new_user("evening_morning_001")
+    _, fresh_user_id = _new_user("evening_fresh_001")
+
+    async def _seed():
+        async with async_session() as session:
+            # A：今日已收晨讯（quota 已扣完）
+            session.add(
+                SubscribeQuota(
+                    user_id=morning_user_id,
+                    quota_available=0,
+                    last_sent_date=TODAY,
+                )
+            )
+            # A、B 均已订阅每日一牌模板
+            session.add(
+                PushSubscription(
+                    user_id=morning_user_id,
+                    openid="o_evening_morning_001",
+                    template_id=TEMPLATE_DAILY_CARD,
+                    subscribed=True,
+                )
+            )
+            session.add(
+                PushSubscription(
+                    user_id=fresh_user_id,
+                    openid="o_evening_fresh_001",
+                    template_id=TEMPLATE_DAILY_CARD,
+                    subscribed=True,
+                )
+            )
+            await session.commit()
+
+    asyncio.run(_seed())
+
+    calls: list[str] = []
+
+    async def _fake_ok(**kwargs):
+        calls.append(kwargs["openid"])
+        return {"errcode": 0, "errmsg": "ok"}
+
+    monkeypatch.setattr(daily_push, "send_subscribe_message", _fake_ok)
+
+    try:
+        NOW_2130 = datetime(2026, 8, 10, 21, 30, tzinfo=BEIJING_TZ)
+        result = _evening_send(NOW_2130)
+        assert result["status"] == "sent"
+        assert "o_evening_morning_001" not in calls  # 已收晨讯 → 晚间跳过
+        assert "o_evening_fresh_001" in calls        # 未收晨讯 → 正常推送
+        assert result["failed"] == 0
+    finally:
+        # 清理本用例的订阅行：test_daily_push 的精确 failed 计数依赖
+        # 订阅表不被本文件残留污染（两文件执行顺序不固定）
+        async def _cleanup():
+            async with async_session() as session:
+                await session.execute(
+                    delete(PushSubscription).where(
+                        PushSubscription.user_id.in_([morning_user_id, fresh_user_id])
+                    )
+                )
+                await session.commit()
+
+        asyncio.run(_cleanup())
