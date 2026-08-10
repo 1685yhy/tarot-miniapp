@@ -159,7 +159,7 @@ async def card_info_rate_limit(request: Request) -> None:
     ``_request_key`` strategy as the global middleware; Redis when available,
     in-process sliding window otherwise).
     """
-    key = _request_key(request)
+    key = f"card_info:{_request_key(request)}"
     if not await _card_info_limiter.is_allowed(key):
         raise HTTPException(status_code=429, detail="请求过于频繁，请稍后再试")
 
