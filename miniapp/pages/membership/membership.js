@@ -52,7 +52,7 @@ Page({
     },
     pricingStudent: {
       id: 'membership_student',
-      name: '学生会员',
+      name: '特惠会员',
       price: 9.9,
       type: 'membership',
       displayPrice: '9.9',
@@ -142,7 +142,7 @@ Page({
 
     const m   = map['membership_monthly']  || { price: 19.9,  name: '月度会员' };
     const y   = map['membership_yearly']   || { price: 168,   name: '年度会员' };
-    const s   = map['membership_student']  || { price: 9.9,   name: '学生会员' };
+    const s   = map['membership_student']  || { price: 9.9,   name: '特惠会员' };
     const p3  = map['reading_pack_3']       || { price: 9.9,  name: '3次深度解读包' };
     const p10 = map['reading_pack_10']      || { price: 29.9, name: '10次深度解读包' };
     const sr  = map['single_reading']       || { price: 9.9,  name: '单次深度占卜' };

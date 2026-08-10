@@ -72,12 +72,12 @@
         <button class="pricing-card-btn pricing-card-btn--secondary">开通月度</button>
       </view>
 
-      <!-- 学生价（P2-3：弱化为一行小卡，支付逻辑与绑定保留） -->
-      <view wx:if="{{pricingStudent}}" class="pricing-card pricing-card--student pricing-card--student-mini" data-product="{{pricingStudent}}" bindtap="onPurchase" role="button" aria-label="购买学生会员">
+      <!-- 特惠价（P2-3：弱化为一行小卡，支付逻辑与绑定保留） -->
+      <view wx:if="{{pricingStudent}}" class="pricing-card pricing-card--student pricing-card--student-mini" data-product="{{pricingStudent}}" bindtap="onPurchase" role="button" aria-label="购买特惠会员">
         <view class="pricing-card-student-mini-left">
-          <image class="pricing-card-student-badge-icon" src="/images/icons/diamond_64.png" mode="aspectFit" aria-label="学生专享" />
-          <text class="pricing-card-name pricing-card-name--mini">学生会员</text>
-          <text class="pricing-card-student-sub">需学生认证</text>
+          <image class="pricing-card-student-badge-icon" src="/images/icons/diamond_64.png" mode="aspectFit" aria-label="特惠专享" />
+          <text class="pricing-card-name pricing-card-name--mini">特惠会员</text>
+          <text class="pricing-card-student-sub">限时特惠价</text>
         </view>
         <view class="pricing-card-student-mini-right">
           <view class="pricing-card-price-row">

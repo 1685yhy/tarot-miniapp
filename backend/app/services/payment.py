@@ -24,7 +24,7 @@ PRODUCTS = {
     "membership_monthly": {"name": "月度会员", "price": 19.90, "type": "membership", "cost": 0.04, "daily_readings": 10, "unlimited_chat": True},
     "membership_yearly": {"name": "年度会员", "price": 168.00, "type": "membership", "cost": 0.48, "daily_readings": 30, "unlimited_chat": True, "annual_report": True},
     "membership_lifetime": {"name": "永久会员", "price": 298.00, "type": "membership", "cost": 2.00, "daily_readings": -1, "unlimited_chat": True, "annual_report": True},
-    "membership_student": {"name": "学生会员", "price": 9.90, "type": "membership", "cost": 0.02, "daily_readings": 10, "unlimited_chat": True},
+    "membership_student": {"name": "特惠会员", "price": 9.90, "type": "membership", "cost": 0.02, "daily_readings": 10, "unlimited_chat": True},
     "annual_report": {"name": "年度运势报告", "price": 29.90, "type": "single_purchase", "cost": 0.03},
     # 开发 05：本命星盘深度报告（19.9 · 权益=birthchart_paid，独立于会员）
     "birthchart_report": {"name": "本命星盘深度报告", "price": 19.90, "type": "single_purchase", "cost": 0.05},
