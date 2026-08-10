@@ -62,6 +62,9 @@ class Settings(BaseSettings):
     WX_TEMPLATE_MEMBER_EXPIRE: str = ""
     WX_TEMPLATE_ANNUAL_REPORT: str = ""
 
+    # 星光晨讯发送时间（非整点，Task 5：每天 7:37 发送「今日星光」，额度消费制）
+    SEND_TIME: str = "07:37"
+
     # 虚拟支付 (xpay) + 小程序消息推送（回归修复：.env 已配置但这些字段缺失，
     # 在 pydantic-settings extra='forbid' 下导致整个后端无法启动/测试无法收集）
     WX_XPAY_OFFER_ID: str = ""

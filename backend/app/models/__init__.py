@@ -8,6 +8,7 @@ from app.models.share_log import ShareLog, Invite
 from app.models.checkin import CheckIn
 from app.models.community import Topic, Post
 from app.models.push_subscription import PushSubscription
+from app.models.subscribe_quota import SubscribeQuota
 from app.models.performance import PerformanceEvent
 from app.models.horoscope import HoroscopeHistory
 from app.models.wish import Wish
@@ -28,6 +29,7 @@ __all__ = [
     "Topic",
     "Post",
     "PushSubscription",
+    "SubscribeQuota",
     "PerformanceEvent",
     "HoroscopeHistory",
     "Wish",

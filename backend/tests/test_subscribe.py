@@ -1,0 +1,290 @@
+"""
+星光晨讯（Task 5）：订阅额度 + 定时发送测试。
+
+覆盖：
+- POST /notify/subscribe-grant：auth 后 quota+1（首次 1、再次 +1）；未登录 401
+- 7:37 晨讯发送：有额度且未发过今日 → 发送成功，quota-1、last_sent_date==今天
+- 同日重复发送被跳过（批标记 _morning_sent_date + 逐人 last_sent_date 双重去重）
+- quota==0 不发；未到 7:37 → not_due；模板未配置 → skipped_config
+- build_starlight_morning_data 内容含今日星光一句话（能量+星光数）/ 宜忌 / 日期 / 星光色
+- admin POST /notify/send-daily 改造为按额度消费发送（与定时任务同一逻辑）
+"""
+
+import asyncio
+from datetime import datetime, timedelta, timezone
+
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import delete, select
+
+from app.config import settings
+from app.db.database import async_session
+from app.models.subscribe_quota import SubscribeQuota
+from app.models.user import User
+from app.services import daily_push
+from app.services.energy_engine import build_today_guidance
+from app.utils.auth import create_token
+
+# 北京时间（UTC+8）
+BEIJING_TZ = timezone(timedelta(hours=8))
+NOW_0737 = datetime(2026, 8, 10, 7, 37, tzinfo=BEIJING_TZ)
+NOW_0730 = datetime(2026, 8, 10, 7, 30, tzinfo=BEIJING_TZ)
+TODAY = NOW_0737.date()
+
+
+def _new_user(openid: str) -> tuple[dict[str, str], str]:
+    """创建隔离测试用户并返回（鉴权头, user_id）。"""
+
+    async def _go() -> tuple[str, str]:
+        async with async_session() as session:
+            user = User(openid=openid, nickname="晨讯专用")
+            session.add(user)
+            await session.flush()
+            token = create_token(user.id, user.token_version)
+            await session.commit()
+            return token, user.id
+
+    token, user_id = asyncio.run(_go())
+    return {"Authorization": f"Bearer {token}"}, user_id
+
+
+def _reset_state(monkeypatch) -> None:
+    """隔离模块状态 + 状态文件（与 test_daily_push 同模式）。"""
+    monkeypatch.setattr(daily_push, "_morning_sent_date", None)
+    monkeypatch.setattr(daily_push, "_last_sent_date", None)
+    monkeypatch.setattr(daily_push, "_last_config_error_date", None)
+    monkeypatch.setattr(daily_push, "_load_state", lambda: None)
+    monkeypatch.setattr(daily_push, "_save_state", lambda: None)
+
+
+def _morning_send(now: datetime) -> dict:
+    """运行 send_starlight_morning_if_due（测试 loop 上开新会话）。"""
+
+    async def _go():
+        async with async_session() as session:
+            return await daily_push.send_starlight_morning_if_due(session, now)
+
+    return asyncio.run(_go())
+
+
+async def _seed_quota(user_id: str, quota: int) -> None:
+    async with async_session() as session:
+        session.add(SubscribeQuota(user_id=user_id, quota_available=quota))
+        await session.commit()
+
+
+async def _clean_quotas() -> None:
+    """清空 SubscribeQuota（测试共享同一 SQLite，防止前序测试的额度行干扰发送选择）。"""
+    async with async_session() as session:
+        await session.execute(delete(SubscribeQuota))
+        await session.commit()
+
+
+@pytest.fixture
+def clean_quotas():
+    """发送类用例前后清空订阅额度表（隔离用例间状态）。"""
+    asyncio.run(_clean_quotas())
+    yield
+    asyncio.run(_clean_quotas())
+
+
+async def _get_quota(user_id: str) -> SubscribeQuota | None:
+    async with async_session() as session:
+        result = await session.execute(
+            select(SubscribeQuota).where(SubscribeQuota.user_id == user_id)
+        )
+        return result.scalar_one_or_none()
+
+
+def _fake_wechat_ok(monkeypatch, calls: list | None = None) -> None:
+    """拦截微信订阅消息发送（errcode=0 成功），记录调用参数。"""
+
+    async def _fake_send(**kwargs):
+        if calls is not None:
+            calls.append(kwargs)
+        return {"errcode": 0, "errmsg": "ok"}
+
+    monkeypatch.setattr(daily_push, "send_subscribe_message", _fake_send)
+
+
+# ══════════════════════════════════════════════════════════════
+# POST /notify/subscribe-grant
+# ══════════════════════════════════════════════════════════════
+
+
+def test_grant_requires_auth(client: TestClient):
+    """未登录 → 401。"""
+    resp = client.post("/notify/subscribe-grant")
+    assert resp.status_code == 401
+
+
+def test_grant_increments_quota(client: TestClient):
+    """auth 后 quota+1：首次 1，再次授权 +1 → 2。"""
+    headers, user_id = _new_user("grant_user_001")
+
+    resp = client.post("/notify/subscribe-grant", headers=headers)
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["ok"] is True
+    assert resp.json()["quota_available"] == 1
+
+    resp2 = client.post("/notify/subscribe-grant", headers=headers)
+    assert resp2.status_code == 200
+    assert resp2.json()["quota_available"] == 2
+
+    quota = asyncio.run(_get_quota(user_id))
+    assert quota is not None
+    assert quota.quota_available == 2
+
+
+# ══════════════════════════════════════════════════════════════
+# 7:37 星光晨讯发送（按额度消费）
+# ══════════════════════════════════════════════════════════════
+
+
+def test_morning_send_consumes_quota_and_marks_date(client: TestClient, monkeypatch, clean_quotas):
+    """有额度未发过今日 → 发送成功；quota-1、last_sent_date==今天。"""
+    _reset_state(monkeypatch)
+    monkeypatch.setattr(settings, "WX_TEMPLATE_DAILY_CARD", "TEST_TMPL")
+    _, user_id = _new_user("morning_send_001")
+    asyncio.run(_seed_quota(user_id, 1))
+
+    calls: list = []
+    _fake_wechat_ok(monkeypatch, calls)
+
+    result = _morning_send(NOW_0737)
+    assert result["status"] == "sent"
+    assert result["sent"] == 1
+    assert result["failed"] == 0
+    assert len(calls) == 1
+    assert calls[0]["openid"] == "morning_send_001"
+    assert "thing1" in calls[0]["data"]  # 模板数据按 thing1/thing2/date3/thing4 组装
+
+    quota = asyncio.run(_get_quota(user_id))
+    assert quota is not None
+    assert quota.quota_available == 0
+    assert quota.last_sent_date == TODAY
+
+
+def test_morning_same_day_skip(client: TestClient, monkeypatch, clean_quotas):
+    """同日重复发送被跳过：批标记后 not_due；逐人 last_sent_date 挡住重选。"""
+    _reset_state(monkeypatch)
+    monkeypatch.setattr(settings, "WX_TEMPLATE_DAILY_CARD", "TEST_TMPL")
+    _, user_id = _new_user("morning_skip_001")
+    asyncio.run(_seed_quota(user_id, 3))  # 3 条额度 → 当天也只发 1 条
+
+    _fake_wechat_ok(monkeypatch)
+
+    first = _morning_send(NOW_0737)
+    assert first["status"] == "sent"
+    assert first["sent"] == 1
+    quota = asyncio.run(_get_quota(user_id))
+    assert quota.quota_available == 2  # 消耗 1 条，剩 2
+
+    # 同一天再跑 → 批量标记生效 → not_due
+    second = _morning_send(NOW_0737)
+    assert second["status"] == "not_due"
+
+    # 即使绕过批标记，last_sent_date==今天 → 该用户不再被选中（同日最多 1 条）
+    monkeypatch.setattr(daily_push, "_morning_sent_date", None)
+    third = _morning_send(NOW_0737)
+    assert third["status"] == "no_subscribers"
+    quota2 = asyncio.run(_get_quota(user_id))
+    assert quota2.quota_available == 2
+
+
+def test_morning_no_send_when_quota_zero(client: TestClient, monkeypatch, clean_quotas):
+    """quota==0 → 不发。"""
+    _reset_state(monkeypatch)
+    monkeypatch.setattr(settings, "WX_TEMPLATE_DAILY_CARD", "TEST_TMPL")
+    _, user_id = _new_user("morning_zero_001")
+    asyncio.run(_seed_quota(user_id, 0))
+
+    _fake_wechat_ok(monkeypatch)
+
+    result = _morning_send(NOW_0737)
+    assert result["status"] == "no_subscribers"
+
+
+def test_morning_not_due_before_0737(client: TestClient, monkeypatch, clean_quotas):
+    """07:30 未到 7:37 → not_due。"""
+    _reset_state(monkeypatch)
+    monkeypatch.setattr(settings, "WX_TEMPLATE_DAILY_CARD", "TEST_TMPL")
+    _, user_id = _new_user("morning_early_001")
+    asyncio.run(_seed_quota(user_id, 1))
+
+    result = _morning_send(NOW_0730)
+    assert result["status"] == "not_due"
+
+
+def test_morning_skipped_when_template_unconfigured(client: TestClient, monkeypatch):
+    """模板未配置（默认）→ skipped_config，不崩溃不发请求。"""
+    _reset_state(monkeypatch)
+    result = _morning_send(NOW_0737)
+    assert result["status"] == "skipped_config"
+
+
+# ══════════════════════════════════════════════════════════════
+# 消息内容构建
+# ══════════════════════════════════════════════════════════════
+
+
+def test_build_starlight_morning_data_content():
+    """data 含今日星光一句话（能量+星光数）/ 宜忌 / 日期 / 星光色。"""
+    guidance = build_today_guidance(TODAY, "leo")
+    energy = {"love": 81, "career": 73, "social": 64, "health": 57}
+    data = daily_push.build_starlight_morning_data(TODAY, guidance, energy)
+
+    joined = " ".join(v["value"] for v in data.values())
+    assert "今日星光" in data["thing1"]["value"]          # 一句话（含星光数+能量）
+    assert str(guidance["star_number"]) in joined          # 星光数
+    assert "能量" in joined                                # 能量
+    assert guidance["advice_do"] in joined                 # 宜
+    assert guidance["advice_dont"] in joined               # 忌
+    assert guidance["star_color"] in joined                # 星光色
+    assert data["date3"]["value"] == TODAY.strftime("%Y.%m.%d")
+    # 微信 thing 字段 20 字符上限
+    for field in ("thing1", "thing2", "thing4"):
+        assert len(data[field]["value"]) <= 20
+
+
+# ══════════════════════════════════════════════════════════════
+# admin trigger_daily_push（改造为按额度消费发送）
+# ══════════════════════════════════════════════════════════════
+
+
+def test_trigger_daily_push_consumes_quota(client: TestClient, monkeypatch, clean_quotas):
+    """POST /notify/send-daily（super-admin）→ 与定时任务同一逻辑按额度发送。"""
+    _reset_state(monkeypatch)
+    _, admin_id = _new_user("admin_send_001")
+    monkeypatch.setattr(settings, "SUPER_ADMIN_IDS", admin_id)
+    monkeypatch.setattr(settings, "WX_TEMPLATE_DAILY_CARD", "TEST_TMPL")
+    _, user_id = _new_user("admin_send_002")
+    asyncio.run(_seed_quota(user_id, 1))
+
+    _fake_wechat_ok(monkeypatch)
+
+    resp = client.post("/notify/send-daily", headers={"Authorization": "Bearer x"})
+    assert resp.status_code == 401  # 非法 token 拒绝
+
+    # 普通用户（非 super-admin）→ 403
+    _, normal_id = _new_user("admin_send_003")
+    normal_token = asyncio.run(_get_token(normal_id))
+    resp1 = client.post("/notify/send-daily", headers={"Authorization": f"Bearer {normal_token}"})
+    assert resp1.status_code == 403
+
+    token = asyncio.run(_get_token(admin_id))
+    resp2 = client.post("/notify/send-daily", headers={"Authorization": f"Bearer {token}"})
+    assert resp2.status_code == 200, resp2.text
+    assert resp2.json()["sent"] == 1
+    assert resp2.json()["failed"] == 0
+
+    quota = asyncio.run(_get_quota(user_id))
+    assert quota.quota_available == 0
+    assert quota.last_sent_date == TODAY
+
+
+async def _get_token(user_id: str) -> str:
+    async with async_session() as session:
+        result = await session.execute(select(User).where(User.id == user_id))
+        user = result.scalar_one()
+        return create_token(user.id, user.token_version)
