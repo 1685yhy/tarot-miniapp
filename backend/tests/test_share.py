@@ -262,3 +262,18 @@ def test_card_info_unknown_code_404(client: TestClient):
     """GET /share/card-info with an unknown invite code → 404."""
     r = client.get("/share/card-info", params={"code": "STAR-NOPE"})
     assert r.status_code == 404
+
+
+def test_card_info_rate_limited_30_per_min_per_ip(client: TestClient):
+    """Public /share/card-info caps at 30 req/min per IP (anti-enumeration).
+
+    邀请码 STAR-XXXX 空间小、接口无鉴权，若无限流可被离线枚举批量确认账号。
+    用独立 X-Forwarded-For IP 隔离本测试，不影响套件默认 key 的配额。
+    """
+    ip_headers = {"X-Forwarded-For": "203.0.113.77"}
+    for _ in range(30):
+        r = client.get("/share/card-info", params={"code": "STAR-UNKNOWN"}, headers=ip_headers)
+        assert r.status_code == 404  # 窗口内放行（查询正常执行）
+    r = client.get("/share/card-info", params={"code": "STAR-UNKNOWN"}, headers=ip_headers)
+    assert r.status_code == 429  # 第 31 次超限
+    assert "频繁" in r.json()["detail"]

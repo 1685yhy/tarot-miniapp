@@ -12,7 +12,15 @@ Page({
   },
 
   async onLoad(options) {
-    const rawScene = (options && options.scene) ? decodeURIComponent(options.scene) : '';
+    let rawScene = '';
+    try {
+      // 手工拼接/畸形 scene（如未编码的 %xx）会让 decodeURIComponent 抛
+      // URIError —— 捕获后走错误态，避免页面卡在 loading。
+      rawScene = (options && options.scene) ? decodeURIComponent(options.scene) : '';
+    } catch (e) {
+      this.setData({ loading: false, error: '名片链接不完整' });
+      return;
+    }
     const code = this._parseCode(rawScene);
 
     if (!code) {

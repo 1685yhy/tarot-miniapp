@@ -9,7 +9,8 @@ Share / viral-tracking API endpoints.
 - GET   /share/wxacode     – user's 星光名片 mini-program code (scene=invite_code,
                              env_version=trial, 7-day cache, login required)
 - GET   /share/card-info   – look up star-card profile by invite code (public,
-                             for the scan landing page)
+                             for the scan landing page; rate-limited 30/min per IP
+                             to slow offline STAR-XXXX enumeration)
 - GET   /share/zodiac-match – relationship tarot card for a zodiac pairing (fun share)
 """
 
@@ -23,6 +24,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.database import get_db
 from app.models.card import TarotCard
 from app.models.user import User
+from app.middleware.rate_limit import card_info_rate_limit
 from app.services.ai_engine import ZODIAC_CN, generate_zodiac_match
 from app.services.share import (
     get_share_stats,
@@ -236,7 +238,10 @@ async def star_card_wxacode(
     return Response(content=png_bytes, media_type="image/png")
 
 
-@router.get("/card-info")
+@router.get(
+    "/card-info",
+    dependencies=[Depends(card_info_rate_limit)],
+)
 async def star_card_info(
     code: str = Query(..., description="邀请码 STAR-XXXX"),
     db: AsyncSession = Depends(get_db),
@@ -246,6 +251,10 @@ async def star_card_info(
 
     仅返回海报上已公开的展示字段——昵称 / 星阶 / 星光值，
     不泄露任何联系方式或账号敏感信息。
+
+    安全：接口公开且按可枚举的邀请码确认账号存在，故挂 30 次/分钟/IP 的
+    独立限流（见 app.middleware.rate_limit.card_info_rate_limit），
+    在全局 60/分中间件之上进一步压低离线枚举 STAR-XXXX 的速度。
     """
     result = await db.execute(select(User).where(User.invite_code == code))
     user = result.scalar_one_or_none()

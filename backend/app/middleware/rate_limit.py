@@ -24,7 +24,7 @@ import time
 from collections import defaultdict
 
 import redis.asyncio as aioredis
-from fastapi import Request
+from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse
 
 from app.config import settings
@@ -142,6 +142,26 @@ def _request_key(request: Request) -> str:
             return f"ip:{first}"
     host = request.client.host if request.client else "unknown"
     return f"ip:{host}"
+
+
+# ── Per-endpoint stricter limiter ───────────────────────────────────────
+# The global middleware caps everything at 60 req/min, but public
+# unauthenticated endpoints that confirm existence by guessable input get a
+# tighter window to slow offline enumeration. /share/card-info confirms an
+# account exists by invite code (STAR-XXXX, small search space) → 30/min.
+_card_info_limiter = RateLimiter(max_requests=30, window_seconds=60)
+
+
+async def card_info_rate_limit(request: Request) -> None:
+    """FastAPI dependency: 30 req/min per client for GET /share/card-info.
+
+    Keys by user id for authenticated requests, else client IP (same
+    ``_request_key`` strategy as the global middleware; Redis when available,
+    in-process sliding window otherwise).
+    """
+    key = _request_key(request)
+    if not await _card_info_limiter.is_allowed(key):
+        raise HTTPException(status_code=429, detail="请求过于频繁，请稍后再试")
 
 
 async def rate_limit_middleware(request: Request, call_next):
