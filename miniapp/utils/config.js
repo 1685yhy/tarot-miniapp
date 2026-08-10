@@ -13,6 +13,6 @@ const DEV_LOGIN_KEY = 'DevKey-REDACTED';
 // 为空时，「用户协议/隐私政策」页的联系我们章节显示
 // “可通过小程序内反馈渠道联系我们”；后续有真实联系方式只改这里。
 const CONTACT_WEIXIN = '';
-const CONTACT_EMAIL = '';
+const CONTACT_EMAIL = '1685070007@qq.com';
 
 module.exports = { DEV_LOGIN_KEY, CONTACT_WEIXIN, CONTACT_EMAIL };
