@@ -6,6 +6,10 @@
   推送「今日星光」：今日星光一句话（能量+星光数）+ 星象宜忌 + 星光色 + 日期。
 - 额度来源：微信一次性订阅授权（POST /notify/subscribe-grant → quota+1）；
   发送成功后 quota-1、记 last_sent_date（同日最多 1 条）。
+- 失败退避（最终审查 F-2）：微信 errcode!=0 / 异常时认领回退照旧（不扣额度），
+  但每用户当日失败次数达 _MORNING_MAX_ATTEMPTS（3）次后，本日不再尝试该
+  用户——避免微信持续故障时每 5 分钟循环全天重试烧配额刷日志；
+  计数按日存储（user_id → (日期, 次数)），次日日期变化自动重置。
 - 并发安全（原子认领）：发送前对每个用户执行
   `UPDATE subscribe_quotas SET last_sent_date=:today WHERE user_id=:id
   AND (last_sent_date IS NULL OR last_sent_date != :today)`，rowcount==1
@@ -81,6 +85,28 @@ _last_sent_date: str | None = None
 _morning_sent_date: str | None = None
 # 模板未配置的日志去重（每天只记一次 error，避免每 5 分钟刷屏）
 _last_config_error_date: str | None = None
+
+# ── 晨讯失败退避（最终审查 F-2）：当日每用户重试上限 ──
+# 内存计数：user_id -> (失败日期'YYYY-MM-DD', 当日失败次数)。
+# 日期不等于今天时视为新的一天，自然重置；仅内存、不持久化（重启后
+# 重新计数，最多多试 3 次，无副作用）。
+_MORNING_MAX_ATTEMPTS = 3
+_morning_fail_counts: dict[str, tuple[str, int]] = {}
+
+
+def _is_morning_attempt_exhausted(user_id: str, today_str: str) -> bool:
+    """当日失败次数已达上限 → 本日不再尝试该用户。"""
+    entry = _morning_fail_counts.get(user_id)
+    return entry is not None and entry[0] == today_str and entry[1] >= _MORNING_MAX_ATTEMPTS
+
+
+def _record_morning_failure(user_id: str, today_str: str) -> None:
+    """记录一次晨讯发送失败（按用户当日计数；跨日自动重置）。"""
+    entry = _morning_fail_counts.get(user_id)
+    if entry is None or entry[0] != today_str:
+        _morning_fail_counts[user_id] = (today_str, 1)
+    else:
+        _morning_fail_counts[user_id] = (today_str, entry[1] + 1)
 
 
 def _load_state() -> None:
@@ -321,8 +347,15 @@ async def send_starlight_morning_if_due(
         .limit(1000)  # 微信单模板每小时上限 1000 条
     )
     rows = list(result.all())
+    # ── 失败退避（F-2）：当日已失败 _MORNING_MAX_ATTEMPTS 次的用户本日不再尝试。
+    #    全部用户均达上限时 rows 为空 → 落入 no_subscribers 分支并置批标记，
+    #    循环自然停止，直到次日日期变化重置计数。──
+    rows = [
+        row for row in rows
+        if not _is_morning_attempt_exhausted(row[0].user_id, today_str)
+    ]
     if not rows:
-        logger.info("7:37 星光晨讯：今日无有额度的用户，跳过")
+        logger.info("7:37 星光晨讯：今日无有额度的用户（或均已达当日重试上限），跳过")
         _morning_sent_date = today_str
         _save_state()
         return {"status": "no_subscribers"}
@@ -372,16 +405,20 @@ async def send_starlight_morning_if_due(
                 )
                 await db.commit()
             else:
-                # 微信 errcode!=0：不扣额度，认领回退为 NULL（允许下次重试）
+                # 微信 errcode!=0：不扣额度，认领回退为 NULL（允许下次重试），
+                # 但记录失败次数——当日达上限后不再尝试（F-2）
                 failed += 1
                 await _release_morning_claim(db, quota.user_id, today)
+                _record_morning_failure(quota.user_id, today_str)
         except Exception:
             logger.exception("7:37 星光晨讯发送失败：user=%s", quota.user_id)
             failed += 1
             await _release_morning_claim(db, quota.user_id, today)
+            _record_morning_failure(quota.user_id, today_str)
 
     # 批标记仅作内存级第二道防线：整批无失败才置位（当天不再重扫）；
-    # 有失败则保持空，下一轮 5 分钟循环补发失败用户（原子认领保证不重复发送）。
+    # 有失败则保持空，下一轮 5 分钟循环补发失败用户（原子认领保证不重复发送；
+    # 失败退避 F-2：当日达 3 次上限的用户会从下一轮选中集中剔除）。
     if failed:
         _morning_sent_date = None
     else:

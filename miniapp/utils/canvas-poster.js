@@ -329,29 +329,35 @@ function _drawCardLayout(ctx, W, H, data) {
   // ── Star identity chips: 星阶徽章 + 星光数 ──
   const chipH = Math.round(W * 0.070);
   const chipGap = Math.round(W * 0.028);
-  const tierText = (starTierName || '微光') + ' · 星阶';
   const stardustText = '星光 ' + (stardustTotal || 0);
   ctx.save();
   ctx.font = `${Math.round(W * 0.030)}px "PingFang SC", "Helvetica Neue", sans-serif`;
-  const tierW = ctx.measureText('✦ ' + tierText).width + Math.round(W * 0.048);
+  // 星阶徽章：starTierName 为空（如 /tasks/status 失败）时省略徽章，
+  // 绝不降级印「微光」——宁缺毋滥，避免非微光用户被错印（最终审查 F-3）。
+  const hasTier = typeof starTierName === 'string' && starTierName.trim().length > 0;
+  const tierW = hasTier
+    ? ctx.measureText('✦ ' + starTierName + ' · 星阶').width + Math.round(W * 0.048)
+    : 0;
   const sdW = ctx.measureText('✦ ' + stardustText).width + Math.round(W * 0.048);
-  const chipsW = tierW + sdW + chipGap;
+  const chipsW = tierW + sdW + (hasTier ? chipGap : 0);
   const chipsX = Math.round((W - chipsW) / 2);
   const chipY = y;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  // tier chip — 金深字，奶油表面底，细金描边
-  _roundRect(ctx, chipsX, chipY, tierW, chipH, chipH / 2);
-  ctx.fillStyle = 'rgba(255, 253, 248, 0.92)';
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(201, 169, 124, 0.55)';
-  ctx.lineWidth = 1;
-  ctx.stroke();
-  ctx.fillStyle = C_GOLD_INK;
-  ctx.font = `bold ${Math.round(W * 0.030)}px "PingFang SC", "Helvetica Neue", sans-serif`;
-  ctx.fillText('✦ ' + tierText, chipsX + tierW / 2, chipY + chipH / 2 + 1);
+  if (hasTier) {
+    // tier chip — 金深字，奶油表面底，细金描边
+    _roundRect(ctx, chipsX, chipY, tierW, chipH, chipH / 2);
+    ctx.fillStyle = 'rgba(255, 253, 248, 0.92)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(201, 169, 124, 0.55)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.fillStyle = C_GOLD_INK;
+    ctx.font = `bold ${Math.round(W * 0.030)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.fillText('✦ ' + starTierName + ' · 星阶', chipsX + tierW / 2, chipY + chipH / 2 + 1);
+  }
   // stardust chip — 深灰紫字
-  const sdX = chipsX + tierW + chipGap;
+  const sdX = chipsX + tierW + (hasTier ? chipGap : 0);
   _roundRect(ctx, sdX, chipY, sdW, chipH, chipH / 2);
   ctx.fillStyle = 'rgba(255, 253, 248, 0.92)';
   ctx.fill();

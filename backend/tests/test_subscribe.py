@@ -60,6 +60,7 @@ def _reset_state(monkeypatch) -> None:
     monkeypatch.setattr(daily_push, "_morning_sent_date", None)
     monkeypatch.setattr(daily_push, "_last_sent_date", None)
     monkeypatch.setattr(daily_push, "_last_config_error_date", None)
+    monkeypatch.setattr(daily_push, "_morning_fail_counts", {})
     monkeypatch.setattr(daily_push, "_load_state", lambda: None)
     monkeypatch.setattr(daily_push, "_save_state", lambda: None)
 
@@ -277,6 +278,50 @@ def test_morning_send_failure_keeps_quota_and_retries(
     quota2 = asyncio.run(_get_quota(user_id))
     assert quota2.quota_available == 0
     assert quota2.last_sent_date == TODAY
+
+
+def test_morning_retry_capped_3_per_day(client: TestClient, monkeypatch, clean_quotas):
+    """失败退避（最终审查 F-2）：同一用户当日最多尝试 3 次，达上限后本日
+    不再尝试该用户；次日日期变化计数自动重置。
+
+    微信持续 errcode!=0 时，认领回退照旧（不扣额度、允许修复后补发），
+    但不再每 5 分钟循环全天重试烧配额刷日志。
+    """
+    _reset_state(monkeypatch)
+    monkeypatch.setattr(settings, "WX_TEMPLATE_DAILY_CARD", "TEST_TMPL")
+    _, user_id = _new_user("morning_cap_001")
+    asyncio.run(_seed_quota(user_id, 1))
+
+    calls: list = []
+
+    async def _fake_fail(**kwargs):
+        calls.append(kwargs["openid"])
+        return {"errcode": 40003, "errmsg": "invalid openid"}
+
+    monkeypatch.setattr(daily_push, "send_subscribe_message", _fake_fail)
+
+    # ── 前 3 轮：每轮都尝试并失败（认领回退、不扣额度）──
+    for _ in range(3):
+        result = _morning_send(NOW_0737)
+        assert result["status"] == "sent"
+        assert result["failed"] == 1
+    assert len(calls) == 3
+
+    # ── 第 4 轮：当日已达上限 → 该用户被剔除，不再调用微信 ──
+    result = _morning_send(NOW_0737)
+    assert result["status"] == "no_subscribers"
+    assert len(calls) == 3  # 未再次调用微信
+
+    quota = asyncio.run(_get_quota(user_id))
+    assert quota.quota_available == 1    # 失败始终不扣额度
+    assert quota.last_sent_date is None  # 认领已回退
+
+    # ── 次日：日期变化 → 计数自然重置，重新允许尝试 ──
+    next_day = NOW_0737 + timedelta(days=1)
+    result = _morning_send(next_day)
+    assert result["status"] == "sent"
+    assert result["failed"] == 1
+    assert len(calls) == 4
 
 
 def test_morning_claim_blocks_second_sender(

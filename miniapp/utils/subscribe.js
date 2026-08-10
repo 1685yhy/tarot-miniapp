@@ -43,6 +43,14 @@ function _setSessionFlag() {
   } catch (_e) { /* 标记失败不阻塞 */ }
 }
 
+function _clearSessionFlag() {
+  // 仅内存标记：grant 上报失败时清除，允许本会话下一个触发点重试
+  try {
+    const app = getApp();
+    if (app && app.globalData) app.globalData[SESSION_FLAG_KEY] = false;
+  } catch (_e) { /* 标记失败不阻塞 */ }
+}
+
 function _getStorage(key) {
   try { return !!wx.getStorageSync(key); } catch (_e) { return false; }
 }
@@ -51,11 +59,25 @@ function _setStorage(key, val) {
   try { wx.setStorageSync(key, val); } catch (_e) {}
 }
 
-/** 授权成功后上报后端（一次性订阅额度 +1）。失败静默——不打扰用户，下次授权会再发放。 */
-function _reportGrant() {
-  request('/notify/subscribe-grant', { method: 'POST' }).catch(() => {
-    // 静默降级：额度发放失败不影响本流程，后端额度为空时晨讯不发
-  });
+/**
+ * 授权成功后上报后端（一次性订阅额度 +1）。
+ *
+ * 时序契约（最终审查 F-1）：持久标记 GRANTED_KEY / LEGACY_SUBSCRIBED_KEY
+ * 必须等 grant 请求成功后再置位——若先置位而 POST 失败，用户「以为订阅了
+ * 却收不到」。失败静默（不弹错误提示），但清除会话标记，让本会话下一个
+ * 触发点重新引导（storage 不置位，后续会话同样可再引导）。
+ *
+ * @param {Function} onSuccess - POST 成功（额度已发放）后回调
+ * @param {Function} onFailure - POST 失败（静默）后回调
+ */
+function _reportGrant(onSuccess, onFailure) {
+  request('/notify/subscribe-grant', { method: 'POST' })
+    .then(() => {
+      if (typeof onSuccess === 'function') onSuccess();
+    })
+    .catch(() => {
+      if (typeof onFailure === 'function') onFailure();
+    });
 }
 
 /**
@@ -92,13 +114,21 @@ function maybePromptSubscribe() {
         success: (r) => {
           const accepted = r[tmplId] === 'accept';
           if (accepted) {
-            _setStorage(GRANTED_KEY, true);
-            // 兼容旧「我的-设置」开关（profile.js 读取该键显示状态）
-            _setStorage(LEGACY_SUBSCRIBED_KEY, true);
             try {
               wx.showToast({ title: '订阅成功，明早见 ✦', icon: 'none', duration: 2000 });
             } catch (_e) {}
-            _reportGrant();
+            // 持久标记在 grant 成功后才置位（见 _reportGrant 时序契约）：
+            // 失败时不清 GRANTED_KEY（本就未置）、清会话标记允许本会话重试
+            _reportGrant(
+              () => {
+                _setStorage(GRANTED_KEY, true);
+                // 兼容旧「我的-设置」开关（profile.js 读取该键显示状态）
+                _setStorage(LEGACY_SUBSCRIBED_KEY, true);
+              },
+              () => {
+                _clearSessionFlag();
+              }
+            );
           } else {
             // 系统窗内选择「拒绝」/ 关闭：不再重弹
             _setStorage(REJECTED_KEY, true);

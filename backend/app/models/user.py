@@ -34,10 +34,13 @@ class User(Base):
     reward_tier: Mapped[int] = mapped_column(Integer, default=0)
     # ── 星尘 / 星阶（星光映照 P0：签到收集星尘，名片展示星阶）──
     # stardust_total：累计星尘（只增不减，签到/任务奖励写入）
-    # star_tier：星阶索引，由 stardust_total 经 app.services.stardust.tier_for 推导
-    # server_default 与迁移文件一致（SQLite/MySQL 均需非 NULL 默认值）
+    # star_tier：星阶索引，由 stardust_total 经 app.services.stardust.tier_for 推导；
+    #   NULL 表示未推导（card-info 等读取处用 tier_for(stardust_total) 兜底，
+    #   见 app/api/share.py；tasks.py 亦用 `or 0` 防御）。可空与 share.py 的
+    #   `is not None` 分支一致（最终审查 F-5 补 NULL 推导测试）。
+    # server_default 与迁移文件一致（SQLite/MySQL 均需默认值）
     stardust_total: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
-    star_tier: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    star_tier: Mapped[int | None] = mapped_column(Integer, default=0, server_default="0")
     # ── 星座能量（星光映照）──
     # zodiac: 12 星座 key（aries/taurus/...）；birth_* 二期星盘计算用，先存
     zodiac: Mapped[str | None] = mapped_column(String(16), nullable=True)

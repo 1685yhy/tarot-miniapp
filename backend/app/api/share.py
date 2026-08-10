@@ -37,8 +37,24 @@ from app.services.wxacode import get_wxacode
 from app.utils.auth import get_current_user
 
 # ── 星光名片小程序码缓存：每用户 7 天，避免高频重复调用微信接口 ──
+# 有界缓存（最终审查 F-4）：条目上限 _WXACODE_CACHE_MAX，超限时逐出最旧
+# 条目（dict 保持插入序）；已过 TTL 的条目在每次写入时惰性清理——进程内存
+# 不会随用户数无限增长。
 _WXACODE_CACHE_TTL = 7 * 24 * 3600
+_WXACODE_CACHE_MAX = 500
 _wxacode_cache: dict[str, tuple[float, bytes]] = {}
+
+
+def _prune_wxacode_cache(now: float) -> None:
+    """惰性清理：删除已过 TTL（7 天）的缓存条目。"""
+    for key in [k for k, (expires, _) in _wxacode_cache.items() if expires <= now]:
+        del _wxacode_cache[key]
+
+
+def _evict_wxacode_cache() -> None:
+    """条目数超上限时逐出最旧条目（dict 保持插入序，首键即最旧），保持缓存有界。"""
+    while len(_wxacode_cache) > _WXACODE_CACHE_MAX:
+        del _wxacode_cache[next(iter(_wxacode_cache))]
 
 router = APIRouter(prefix="/share", tags=["分享裂变"])
 
@@ -234,7 +250,9 @@ async def star_card_wxacode(
     except RuntimeError as exc:
         raise HTTPException(status_code=502, detail=str(exc))
 
+    _prune_wxacode_cache(now)  # 惰性清理过期条目（F-4）
     _wxacode_cache[user.id] = (now + _WXACODE_CACHE_TTL, png_bytes)
+    _evict_wxacode_cache()     # 超上限逐出最旧（F-4）
     return Response(content=png_bytes, media_type="image/png")
 
 

@@ -194,6 +194,48 @@ def test_wxacode_cached_7_days(client: TestClient, monkeypatch):
     assert len(calls) == 1  # cache hit — WeChat called exactly once
 
 
+def test_wxacode_cache_bounded_and_evicts_oldest(client: TestClient, monkeypatch):
+    """缓存有界（最终审查 F-4）：条目超上限时逐出最旧；过期条目惰性清理。
+
+    默认上限 500 不便断言，monkeypatch 缩小为 3：
+    - 写满 3 条后第 4 个用户写入 → 最旧条目（第一个用户）被逐出
+    - TTL 改为已过期（-1s）→ 下次写入时过期条目被清理，只留新条目
+    """
+    import app.api.share as share_api
+
+    async def fake_get_wxacode(**kwargs):
+        return _FAKE_PNG
+
+    monkeypatch.setattr(share_api, "get_wxacode", fake_get_wxacode)
+    monkeypatch.setattr(share_api, "_WXACODE_CACHE_MAX", 3)
+
+    users = []
+    for tag in ("a", "b", "c"):
+        u = _create_user(f"cap_uid_{tag}_{uuid.uuid4().hex[:8]}", f"缓存{tag}")
+        r = client.get("/share/wxacode", headers=_auth(u["token"]))
+        assert r.status_code == 200
+        users.append(u)
+    assert len(share_api._wxacode_cache) == 3
+
+    # 第 4 个用户 → 超上限，逐出最旧（第一个用户）
+    u_d = _create_user(f"cap_uid_d_{uuid.uuid4().hex[:8]}", "缓存d")
+    r = client.get("/share/wxacode", headers=_auth(u_d["token"]))
+    assert r.status_code == 200
+    assert len(share_api._wxacode_cache) == 3
+    assert users[0]["id"] not in share_api._wxacode_cache  # 最旧被逐出
+    assert u_d["id"] in share_api._wxacode_cache
+
+    # 过期条目惰性清理：把存量条目的过期时间改为过去（模拟 7 天 TTL 到期）
+    # → 下次写入时被 _prune_wxacode_cache 清除，只留新条目
+    for key in list(share_api._wxacode_cache):
+        share_api._wxacode_cache[key] = (0.0, share_api._wxacode_cache[key][1])
+    u_e = _create_user(f"cap_uid_e_{uuid.uuid4().hex[:8]}", "缓存e")
+    r = client.get("/share/wxacode", headers=_auth(u_e["token"]))
+    assert r.status_code == 200
+    assert len(share_api._wxacode_cache) == 1  # 3 条旧条目已过期被清
+    assert u_e["id"] in share_api._wxacode_cache
+
+
 def test_wxacode_service_passes_env_version(monkeypatch):
     """wxacode service must forward env_version into the getwxacodeunlimit body."""
     import app.services.wxacode as svc
@@ -256,6 +298,32 @@ def test_card_info_returns_star_profile(client: TestClient):
     assert data["star_tier"] == 1
     assert data["star_tier_name"] == "星光"
     assert data["stardust_total"] == 8
+
+
+def test_card_info_null_star_tier_derived_from_stardust(client: TestClient):
+    """star_tier=NULL 的用户：card-info 的星阶走 tier_for(stardust_total) 推导。
+
+    test_card_info_returns_star_profile 显式设 star_tier=1（命中直接读取分支），
+    本用例补上 NULL 分支（share.py `is not None` 兜底）：stardust 40 ≥ 30
+    → tier_for(40) = 2（星辉），不依赖 star_tier 字段本身。
+    """
+    user = _create_user(f"nulltier_uid_{uuid.uuid4().hex[:8]}", "推导用户")
+    code = client.get("/share/invite-code", headers=_auth(user["token"])).json()["invite_code"]
+
+    async def _bump():
+        async with async_session() as session:
+            u = await session.get(User, user["id"])
+            u.stardust_total = 40  # ≥30 阈值 → 星辉（tier 2），<100 星冠
+            u.star_tier = None     # 显式 NULL → 走 tier_for 推导分支
+            await session.commit()
+    asyncio.run(_bump())
+
+    r = client.get("/share/card-info", params={"code": code})
+    assert r.status_code == 200
+    data = r.json()
+    assert data["star_tier"] == 2
+    assert data["star_tier_name"] == "星辉"
+    assert data["stardust_total"] == 40
 
 
 def test_card_info_unknown_code_404(client: TestClient):
