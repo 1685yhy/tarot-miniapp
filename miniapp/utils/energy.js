@@ -63,6 +63,37 @@ const ENERGY = {
 
 const ENERGY_KEYS = ['love', 'career', 'social', 'health'];
 
+/* ── 今日星光卡 fallback（Task 4：接口挂了也有数据 · 与后端 energy_engine 同构）── */
+// 星光色盘（12 色暖金/细金系 · 与后端 STAR_COLORS 一致 · 仅 fallback 用）
+const STAR_COLORS = [
+  '#A98B5F', '#E8C97E', '#D9B48F', '#C7B89F',
+  '#B8A6D9', '#8FAED6', '#A8C0D9', '#9FC7A8',
+  '#7FA8B8', '#E7A8B8', '#C9A9A6', '#D6C2A0',
+];
+// 中性宜忌池（与后端 NEUTRAL_GUIDANCE 一致 · 静态文案无禁词 · 仅 fallback 用）
+const NEUTRAL_GUIDANCE = [
+  ['宜·表达心意', '忌·独自纠结'],
+  ['宜·往前一小步', '忌·计划排太满'],
+  ['宜·给自己留白', '忌·和他人比较'],
+  ['宜·温柔待己', '忌·苛责自己'],
+  ['宜·早睡早醒', '忌·过度消耗'],
+];
+
+/** fallback 星光卡（与后端同算法：同日同人恒定） */
+function buildMockStarGuidance() {
+  const todayStr = _todayStr();
+  const dateSeed = todayStr.split('').reduce((s, ch) => s + (ch >= '0' && ch <= '9' ? Number(ch) : 0), 0);
+  const zodiac = _getZodiac();
+  const mixSeed = dateSeed + (zodiac ? zodiac.split('').reduce((s, ch) => s + ch.charCodeAt(0), 0) : 0);
+  const g = NEUTRAL_GUIDANCE[dateSeed % NEUTRAL_GUIDANCE.length];
+  return {
+    star_color: STAR_COLORS[mixSeed % STAR_COLORS.length],
+    star_number: dateSeed % 9 + 1,
+    advice_do: g[0],
+    advice_dont: g[1],
+  };
+}
+
 /** 默认注脚（未抽牌时） */
 function getDefaultEnergy() {
   return ENERGY_KEYS.map((k) => ({ key: k, name: ENERGY[k].name, score: ENERGY[k].score, hot: false }));
@@ -146,6 +177,11 @@ function normalizeApi(data) {
     tarot: (data.tarot && { name: data.tarot.name, name_en: data.tarot.name_en, image: data.tarot.image }) || null,
     summary: (data && data.summary) || '',
     tip: (data && data.tip) || '',
+    // Task 4: 今日星光卡（星光色/数/宜忌）— 缺失留空，前端按字段缺失优雅隐藏
+    star_color: (data && data.star_color) || '',
+    star_number: (data && data.star_number) || '',
+    advice_do: (data && data.advice_do) || '',
+    advice_dont: (data && data.advice_dont) || '',
   };
 }
 
@@ -170,6 +206,8 @@ function normalizeMock() {
     tarot: null,
     summary: `${hot.name}能量最盛——${dd.catch}`,
     tip: dd.tip,
+    // Task 4: 星光色/数/宜忌 fallback（确定性 · 同日同人恒定）
+    ...buildMockStarGuidance(),
   };
 }
 

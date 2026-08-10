@@ -127,6 +127,12 @@ Page({
     cardPhrase: '',
     linkLine1: '',
     linkLine2: '',
+    // Task 4: 今日星光卡（星光色/数/宜忌 · 数据缺失整行隐藏）
+    starColor: '',
+    starNumber: '',
+    adviceDo: '',
+    adviceDont: '',
+    starInfoVisible: false,
 
     zodiacList: [
       { key: 'aries', name: '白羊座', emoji: '♈' },
@@ -816,6 +822,13 @@ Page({
     const hotKey = energyItems.find((i) => i.hot) || energyItems[0];
     // 联动解读：接口 summary（今日总评）→ 兜底 mock tip 首句
     const summary = data.summary || (ENERGY[hotKey.key].tip || '').split('。')[0] + '。';
+    // Task 4: 今日星光卡（星光色/数/宜忌）— 文案直接透传后端字段，不做二次加工；
+    // 任一字段缺失（旧缓存/接口未升级）→ 整行优雅隐藏
+    const starColor = data.star_color || '';
+    const starNumber = data.star_number || '';
+    const adviceDo = data.advice_do || '';
+    const adviceDont = data.advice_dont || '';
+    const starInfoVisible = !!(starColor && starNumber && adviceDo && adviceDont);
     this.setData({
       skyNote: astralLabel,
       energyItems,
@@ -823,6 +836,11 @@ Page({
       linkLine2: card ? summary : '今晚允许自己慢下来，月亮会替你照路。',
       cardPhrase: card ? (this.data.dailyCardSnippet || data.tip || ENERGY[hotKey.key].line || '有些答案，会在月光里慢慢清晰')
                        : '今晚允许自己慢下来',
+      starColor,
+      starNumber,
+      adviceDo,
+      adviceDont,
+      starInfoVisible,
     });
   },
 

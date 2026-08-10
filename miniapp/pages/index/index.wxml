@@ -135,6 +135,20 @@ module.exports = { fmtDate: fmtDate };
     </view>
   </view>
 
+  <!-- ===== 今日星光卡：星光色【色块】 · 星光数 · 星象宜忌（Task 4 · 数据缺失整行隐藏） ===== -->
+  <view class="star-guidance anim-fade-in-up-2" wx:if="{{starInfoVisible}}">
+    <text class="sg-label">星光色</text>
+    <view class="sg-swatch" style="background: {{starColor}};" aria-label="今日星光色"></view>
+    <view class="sg-sep"></view>
+    <text class="sg-text">星光数 {{starNumber}}</text>
+    <view class="sg-sep"></view>
+    <text class="sg-text">星象宜忌
+      <text class="sg-advice sg-advice--do">{{adviceDo}}</text>
+      <text class="sg-text sg-sep-inline">/</text>
+      <text class="sg-advice sg-advice--dont">{{adviceDont}}</text>
+    </text>
+  </view>
+
   <!-- ===== 联动解读：牌 × 天象（主角的展开） ===== -->
   <view class="link anim-fade-in-up-2">
     <text class="link-line1">{{linkLine1}}</text>
