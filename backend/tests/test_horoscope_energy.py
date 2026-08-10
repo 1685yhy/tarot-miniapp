@@ -12,8 +12,11 @@
 - 接口鉴权：未登录 401
 - zodiac 校验：12 合法值（兼容中文名）
 - 历史落库：horoscope_history upsert（user+date 唯一）
+- 星象宜忌引擎：build_today_guidance 4 字段/确定性/事件绑定/文案红线
+- 今日星光卡字段：/horoscope/daily 响应含 star_color/star_number/advice_do/advice_dont
 """
 
+import re
 from datetime import date
 
 from fastapi.testclient import TestClient
@@ -496,3 +499,101 @@ def test_birth_city_overlong_rejected(client: TestClient):
     assert resp.status_code == 400, resp.text
     resp = client.post("/user/birth", json={"birth_city": "北京"}, headers=headers)
     assert resp.status_code == 200, resp.text
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 开发07 · 星象宜忌引擎（今日星光卡：星光色 / 星光数 / 星象宜忌）
+# ─────────────────────────────────────────────────────────────────────────────
+
+BANNED_ADVICE_WORDS = ("必", "绝对", "改运", "化解", "转运", "注定")
+
+
+def test_guidance_returns_four_fields_with_types():
+    """build_today_guidance 返回 4 字段且类型正确。"""
+    from app.services.energy_engine import build_today_guidance
+
+    g = build_today_guidance(date(2026, 5, 20), "leo")
+    assert set(g.keys()) == {"star_color", "star_number", "advice_do", "advice_dont"}
+    assert re.fullmatch(r"#[0-9A-Fa-f]{6}", g["star_color"]), g["star_color"]
+    assert isinstance(g["star_number"], int) and 1 <= g["star_number"] <= 9
+    assert isinstance(g["advice_do"], str) and g["advice_do"]
+    assert isinstance(g["advice_dont"], str) and g["advice_dont"]
+
+
+def test_guidance_deterministic_same_date():
+    """同一日期同一输入 → 两次调用完全一致。"""
+    from app.services.energy_engine import build_today_guidance
+
+    a = build_today_guidance(date(2026, 7, 15), "libra")
+    b = build_today_guidance(date(2026, 7, 15), "libra")
+    assert a == b
+
+
+def test_guidance_event_days_bound_to_real_astronomy():
+    """新月日 / 满月日 / 水逆日 → 宜忌绑定真实天文事件且各不相同。"""
+    from app.services.energy_engine import build_today_guidance
+
+    new_moon = build_today_guidance(date(2026, 11, 5))    # 天蝎新月
+    full_moon = build_today_guidance(date(2026, 9, 27))   # 满月（水逆区间内，按优先级取满月）
+    retro = build_today_guidance(date(2026, 9, 20))       # 水逆区间
+
+    assert new_moon["advice_do"] == "宜·许下心愿"
+    assert new_moon["advice_dont"] == "忌·急于求成"
+    assert full_moon["advice_do"] == "宜·复盘整理"
+    assert full_moon["advice_dont"] == "忌·冲动决定"
+    assert retro["advice_do"] == "宜·慢下来"
+    assert retro["advice_dont"] == "忌·重大签约"
+    pairs = {
+        (new_moon["advice_do"], new_moon["advice_dont"]),
+        (full_moon["advice_do"], full_moon["advice_dont"]),
+        (retro["advice_do"], retro["advice_dont"]),
+    }
+    assert len(pairs) == 3  # 三个事件日文案互不相同
+
+
+def test_guidance_neutral_day_uses_neutral_pool():
+    """无事件日（2026-05-20）→ 文案来自中性积极池。"""
+    from app.services.energy_engine import NEUTRAL_GUIDANCE, astral_events_on, build_today_guidance
+
+    target = date(2026, 5, 20)
+    assert not astral_events_on(target)
+    g = build_today_guidance(target)
+    assert (g["advice_do"], g["advice_dont"]) in NEUTRAL_GUIDANCE
+
+
+def test_guidance_library_meets_red_line():
+    """文案库 ≥ 12 条，且不含任何禁用词（必/绝对/改运/化解/转运/注定）。"""
+    from app.services.energy_engine import STAR_GUIDANCE_LIBRARY
+
+    all_lines = [line for pair in STAR_GUIDANCE_LIBRARY for line in pair]
+    assert len(all_lines) >= 12
+    for line in all_lines:
+        for banned in BANNED_ADVICE_WORDS:
+            assert banned not in line, f"禁用词「{banned}」出现在宜忌文案: {line}"
+
+
+def test_guidance_star_number_date_only_between_1_and_9():
+    """星光数只由日期决定（1-9），同一日期不同星座不变。"""
+    from app.services.energy_engine import build_today_guidance
+
+    target = date(2026, 8, 10)
+    n_leo = build_today_guidance(target, "leo")["star_number"]
+    n_pisces = build_today_guidance(target, "pisces")["star_number"]
+    n_none = build_today_guidance(target)["star_number"]
+    assert n_leo == n_pisces == n_none
+    assert 1 <= n_leo <= 9
+
+
+def test_daily_response_includes_starlight_fields(client: TestClient):
+    """GET /horoscope/daily 响应含 星光色/星光数/星象宜忌（新月日 → 许愿文案）。"""
+    token = _login(client)
+    resp = client.get("/horoscope/daily", params={"date": "2026-11-05"}, headers=_auth(token))
+    assert resp.status_code == 200
+    data = resp.json()
+    assert re.fullmatch(r"#[0-9A-Fa-f]{6}", data["star_color"]), data["star_color"]
+    assert isinstance(data["star_number"], int) and 1 <= data["star_number"] <= 9
+    assert data["advice_do"] == "宜·许下心愿"
+    assert data["advice_dont"] == "忌·急于求成"
+    # 旧字段不受影响（向后兼容）
+    for key in ("date", "zodiac", "energy", "factors", "astral", "tarot", "summary", "tip"):
+        assert key in data

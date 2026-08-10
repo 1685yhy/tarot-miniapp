@@ -28,7 +28,7 @@ from app.schemas.horoscope import (
     ZodiacUpdate,
 )
 from app.services.daily_card import pick_daily_card
-from app.services.energy_engine import compute_energy
+from app.services.energy_engine import build_today_guidance, compute_energy
 from app.utils.auth import get_current_user
 
 router = APIRouter(prefix="/horoscope", tags=["星座能量"])
@@ -142,6 +142,9 @@ async def daily_horoscope(
         yesterday=yesterday,
     )
 
+    # ── 今日星光卡（星象宜忌引擎：星光色/星光数/宜忌，同日同人恒定）──
+    guidance = build_today_guidance(target, user.zodiac or None)
+
     # ── 历史 upsert（唯一约束 user+date）──
     hist_result = await db.execute(
         select(HoroscopeHistory).where(
@@ -180,6 +183,10 @@ async def daily_horoscope(
         ) if tarot_card else None,
         summary=result["summary"],
         tip=result["tip"],
+        star_color=guidance["star_color"],
+        star_number=guidance["star_number"],
+        advice_do=guidance["advice_do"],
+        advice_dont=guidance["advice_dont"],
     )
 
 

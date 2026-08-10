@@ -28,6 +28,11 @@ class DailyHoroscopeResponse(BaseModel):
     tarot: TarotBrief | None
     summary: str
     tip: str
+    # 今日星光卡（开发 07 · 星象宜忌引擎）
+    star_color: str
+    star_number: int
+    advice_do: str
+    advice_dont: str
 
 
 class ZodiacUpdate(BaseModel):

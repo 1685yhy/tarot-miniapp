@@ -302,6 +302,81 @@ def astral_events_on(target: date) -> list[dict]:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# 今日星光卡（Task 3 · 星象宜忌引擎）：星光色 / 星光数 / 星象宜忌
+# ─────────────────────────────────────────────────────────────────────────────
+
+# 星光色盘（12 色，暖金/细金系 + 星彩色；由日期确定性派生）
+STAR_COLORS = [
+    "#A98B5F",  # 星光金
+    "#E8C97E",  # 暖金
+    "#D9B48F",  # 沙金
+    "#C7B89F",  # 米金
+    "#B8A6D9",  # 星雾紫
+    "#8FAED6",  # 星云蓝
+    "#A8C0D9",  # 银河蓝
+    "#9FC7A8",  # 月影绿
+    "#7FA8B8",  # 海雾青
+    "#E7A8B8",  # 霞光粉
+    "#C9A9A6",  # 玫瑰金
+    "#D6C2A0",  # 月华金
+]
+
+# 天文事件 → 宜忌（绑定真实天象，有出处；全部积极开放向，禁 必/绝对/改运/化解/转运/注定）
+GUIDANCE_BY_EVENT: dict[str, tuple[str, str]] = {
+    "new_moon":           ("宜·许下心愿", "忌·急于求成"),
+    "full_moon":          ("宜·复盘整理", "忌·冲动决定"),
+    "mercury_retrograde": ("宜·慢下来", "忌·重大签约"),
+    "venus_retrograde":   ("宜·重温美好", "忌·翻旧账"),
+    "solar_eclipse":      ("宜·开启新篇", "忌·原地打转"),
+    "lunar_eclipse":      ("宜·整理内心", "忌·把话憋着"),
+    "solar_term":         ("宜·顺应节奏", "忌·熬夜透支"),
+}
+
+# 无事件日中性宜忌（随日期轮换，同样积极开放向）
+NEUTRAL_GUIDANCE: list[tuple[str, str]] = [
+    ("宜·表达心意", "忌·独自纠结"),
+    ("宜·往前一小步", "忌·计划排太满"),
+    ("宜·给自己留白", "忌·和他人比较"),
+    ("宜·温柔待己", "忌·苛责自己"),
+    ("宜·早睡早醒", "忌·过度消耗"),
+]
+
+# 宜忌文案库全集（事件 + 中性），供测试校验条数 ≥ 12 与禁用词
+STAR_GUIDANCE_LIBRARY: list[tuple[str, str]] = list(GUIDANCE_BY_EVENT.values()) + NEUTRAL_GUIDANCE
+
+
+def build_today_guidance(target: date, zodiac: str | None = None) -> dict:
+    """
+    今日星光卡数据（确定性：同日同人恒定）。
+
+    返回::
+        {
+            "star_color": "#A98B5F",   # 12 色暖金系色盘，日期（+星座）派生
+            "star_number": 7,           # 日期数字和 mod 9 + 1（1-9，仅由日期决定）
+            "advice_do": "宜·许下心愿", # 有事件按事件类型绑定，无事件用中性池轮换
+            "advice_dont": "忌·急于求成",
+        }
+    """
+    date_seed = sum(int(ch) for ch in target.isoformat() if ch.isdigit())
+    mix_seed = date_seed + (sum(ord(ch) for ch in zodiac) if zodiac else 0)
+
+    events = astral_events_on(target)
+    if events:
+        # 同日多事件 → 按展示优先级取最高者决定宜忌（与能量引擎 astral 展示一致）
+        primary = sorted(events, key=lambda e: ASTRAL_TYPE_PRIORITY.get(e["type"], 0), reverse=True)[0]
+        advice_do, advice_dont = GUIDANCE_BY_EVENT.get(primary["type"], NEUTRAL_GUIDANCE[0])
+    else:
+        advice_do, advice_dont = NEUTRAL_GUIDANCE[date_seed % len(NEUTRAL_GUIDANCE)]
+
+    return {
+        "star_color": STAR_COLORS[mix_seed % len(STAR_COLORS)],
+        "star_number": date_seed % 9 + 1,
+        "advice_do": advice_do,
+        "advice_dont": advice_dont,
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # 第 1 步：生物节律正弦
 # ─────────────────────────────────────────────────────────────────────────────
 
