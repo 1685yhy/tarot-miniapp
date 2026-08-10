@@ -45,7 +45,8 @@ class TestCheckin:
         data = resp.json()
         assert data["signed_in"] is True, "signed_in should be True"
         assert data["streak"] == 1, f"First checkin should have streak=1, got {data['streak']}"
-        assert data["reward"] == "+1 免费解读", (
+        # P0-3 缺口3：签到成功文案统一「星光馈赠」叙事（保留免费解读次数信息）
+        assert data["reward"] == "星光馈赠：+1 免费解读", (
             f"Unexpected reward message: {data['reward']}"
         )
 

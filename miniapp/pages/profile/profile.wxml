@@ -49,6 +49,11 @@
         <text class="record-card-badge" wx:if="{{recordLevel}}">{{recordLevel}}</text>
         <text class="record-card-badge" wx:else>星光旅人</text>
       </view>
+      <!-- P0-3 缺口2：星阶徽章（星阶名 + 累计星尘 + 距下一阶提示） -->
+      <view class="record-tier-row" wx:if="{{starTierName}}">
+        <text class="record-tier-badge">星阶：{{starTierName}}（星尘 {{stardustTotal}}）</text>
+        <text class="record-tier-hint" wx:if="{{tierNextName}}">距「{{tierNextName}}」还差 {{tierNeed}} 星尘</text>
+      </view>
       <view class="record-card-main">
         <text class="record-card-num">{{streak}}<text class="record-card-num-unit">天连续</text></text>
         <view class="record-card-text">
@@ -81,6 +86,35 @@
     </view>
     <view class="record-curve-link anim-fade-up anim-stagger-2" bindtap="onGoFortuneTrend" role="button" aria-label="查看牌运曲线">
       <text>牌运曲线 · 近 30 天 {{sparkActive}} 天有星光 →</text>
+    </view>
+
+    <!-- ============ 星卡收藏（P0-3 缺口1 · 7日稀有星卡 · 30日星光壁纸） ============ -->
+    <view class="star-collection anim-fade-up anim-stagger-3" wx:if="{{starCards.length > 0 || wallpapers.length > 0}}">
+      <view class="star-collection-header">
+        <text class="star-collection-title">✦ 星卡收藏</text>
+        <text class="star-collection-count">{{starCards.length + wallpapers.length}} 件藏品</text>
+      </view>
+      <scroll-view scroll-x class="star-collection-scroll" enhanced show-scrollbar="{{false}}">
+        <view class="star-collection-row">
+          <view class="star-card-item" wx:for="{{starCards}}" wx:key="card_id">
+            <view class="star-card-frame">
+              <image class="star-card-img" src="{{item.image}}" mode="aspectFit" lazy-load aria-label="稀有星卡 {{item.card_name}}" />
+            </view>
+            <text class="star-card-name">{{item.card_name}}</text>
+            <text class="star-card-meta">{{item.date}} · 正位金卡</text>
+          </view>
+          <view class="star-card-item star-wall-item" wx:for="{{wallpapers}}" wx:key="*this">
+            <view class="star-card-frame star-wall-frame">
+              <image class="star-card-img star-wall-img" src="/assets/web/moon-card.jpg" mode="aspectFill" lazy-load aria-label="星光壁纸" />
+            </view>
+            <text class="star-card-name">星光壁纸</text>
+            <text class="star-card-meta">{{item}} 达成</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+    <view class="star-collection-empty anim-fade-up anim-stagger-3" wx:else>
+      <text class="star-collection-empty-text">✦ 连续签到 7 天获得稀有星卡 · 30 天解锁星光壁纸</text>
     </view>
 
     <!-- ============ 注脚入口（开发 04 · 日记 3 小卡 + 签到/收藏/设置） ============ -->

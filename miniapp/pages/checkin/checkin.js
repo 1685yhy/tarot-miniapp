@@ -155,11 +155,21 @@ Page({
         checkingIn: false,
       });
 
+      // P0-3 缺口3：签到成功文案统一「星光馈赠」叙事（与后端响应话术同步）
+      wx.showToast({ title: '签到成功 · 获得星光馈赠', icon: 'none', duration: 2000 });
+
       // Show reward animation (with membership celebration if applicable)
-      if (result.reward_type === 'membership') {
+      if (result.collectible_type === 'star_card') {
+        const card = result.collectible || {};
+        const msg = `🎴 连续签到 ${result.streak} 天 · 获得稀有星卡「${card.card_name}」✦`;
+        this._showRewardAnim(msg, 'collectible');
+      } else if (result.collectible_type === 'wallpaper') {
+        this._showRewardAnim('🌙 连续签到 30 天 · 获得星光壁纸 ✦', 'collectible');
+      } else if (result.reward_type === 'membership') {
         const msg = `🎉 连续签到${result.streak}天！获得${result.reward_days}天会员体验 ✦`;
         this._showRewardAnim(msg, 'membership');
       } else {
+        // 后端话术「星光馈赠：+1 免费解读」→ 直接展示（保留免费解读次数信息）
         this._showRewardAnim(result.reward);
       }
 
@@ -180,7 +190,7 @@ Page({
 
   _showRewardAnim(rewardText, rewardType) {
     // Determine emoji based on reward type
-    const rewardEmoji = rewardType === 'membership' ? '👑' : '🌟';
+    const rewardEmoji = rewardType === 'membership' ? '👑' : (rewardType === 'collectible' ? '🎴' : '🌟');
 
     // Generate golden particles
     const particles = [];

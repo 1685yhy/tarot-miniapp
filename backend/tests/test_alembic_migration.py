@@ -89,3 +89,35 @@ def test_alembic_migration_chain_subscribe_quota(tmp_path, monkeypatch):
     )}
     conn.close()
     assert "subscribe_quotas" not in tables_after
+
+
+def test_alembic_migration_star_cards_wallpapers(tmp_path, monkeypatch):
+    """迁移 f5a6b7c8d9e0：users 表新增 star_cards / wallpapers 列，可升级、可回滚。"""
+    from alembic import command
+    from alembic.config import Config
+
+    from app.config import settings
+
+    db_path = tmp_path / "migration_starcards.db"
+    monkeypatch.setattr(settings, "DATABASE_URL", f"sqlite:///{db_path}")
+
+    cfg = Config(str(BACKEND_DIR / "alembic.ini"))
+
+    # ── upgrade 到 head ──
+    command.upgrade(cfg, "head")
+
+    conn = sqlite3.connect(str(db_path))
+    user_cols = {r[1] for r in conn.execute("PRAGMA table_info(users)")}
+    assert {"star_cards", "wallpapers"} <= user_cols, (
+        f"users 表应含 star_cards/wallpapers 列，实际 {sorted(user_cols)}"
+    )
+    # 新列应为可空 Text（收藏品字段，无 server_default 约束）
+    col_types = {r[1]: r[2] for r in conn.execute("PRAGMA table_info(users)")}
+    assert col_types["star_cards"] == "TEXT" and col_types["wallpapers"] == "TEXT"
+
+    # ── downgrade 回 base：两列被删除 ──
+    command.downgrade(cfg, "base")
+    user_cols_after = {r[1] for r in conn.execute("PRAGMA table_info(users)")}
+    conn.close()
+    assert "star_cards" not in user_cols_after
+    assert "wallpapers" not in user_cols_after

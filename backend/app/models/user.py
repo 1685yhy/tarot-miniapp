@@ -41,6 +41,13 @@ class User(Base):
     # server_default 与迁移文件一致（SQLite/MySQL 均需默认值）
     stardust_total: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     star_tier: Mapped[int | None] = mapped_column(Integer, default=0, server_default="0")
+    # ── 星卡收藏 / 星光壁纸（P0-3：7 日稀有星卡 · 30 日星光壁纸）──
+    # star_cards：JSON 数组字符串 [{"card_id": int, "date": "YYYY-MM-DD",
+    #   "tier": "gold", "orientation": "upright"}, ...]（收藏品，不消耗额度）
+    # wallpapers：JSON 数组字符串 ["YYYY-MM-DD", ...]（30 日壁纸达成日期）
+    # 读写统一走 app.services.star_collectibles（脏数据解析安全回退空列表）
+    star_cards: Mapped[str | None] = mapped_column(Text, nullable=True)
+    wallpapers: Mapped[str | None] = mapped_column(Text, nullable=True)
     # ── 星座能量（星光映照）──
     # zodiac: 12 星座 key（aries/taurus/...）；birth_* 二期星盘计算用，先存
     zodiac: Mapped[str | None] = mapped_column(String(16), nullable=True)

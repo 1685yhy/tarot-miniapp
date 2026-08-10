@@ -14,9 +14,20 @@ from app.db.database import get_db
 from app.models.user import User
 from app.models.checkin import CheckIn
 from app.models.reading import Reading
+from app.models.card import TarotCard
 from app.utils.auth import get_current_user, utc_aware
-from app.schemas.task import CheckInResponse, TaskStatusResponse, LevelInfo
+from app.schemas.task import CheckInResponse, TaskStatusResponse, LevelInfo, CollectibleInfo, StarCardItem
 from app.services.stardust import tier_for, tier_name
+from app.services.star_collectibles import (
+    STAR_CARD_MILESTONE,
+    WALLPAPER_MILESTONE,
+    DEFAULT_CARD_POOL,
+    grant_star_card,
+    grant_wallpaper,
+    pick_star_card_index,
+    star_cards_of,
+    wallpapers_of,
+)
 
 router = APIRouter(prefix="/tasks", tags=["签到与任务"])
 
@@ -102,10 +113,12 @@ async def checkin(user: User = Depends(get_current_user), db: AsyncSession = Dep
     )
     db.add(checkin_record)
 
-    # 4. Reward: +1 free reading
-    reward = "+1 免费解读"
+    # 4. Reward: +1 free reading（P0-3 缺口3：文案统一「星光馈赠」叙事，保留免费解读次数信息）
+    reward = "星光馈赠：+1 免费解读"
     reward_type = ""
     reward_days = 0
+    collectible_type = ""
+    collectible: CollectibleInfo | None = None
     user.free_readings_today = (user.free_readings_today or 0) + 1
 
     # 4b. 星尘奖励：签到 +1 星尘，star_tier 必须随 stardust_total 同步推导（防止展示不一致）
@@ -142,12 +155,40 @@ async def checkin(user: User = Depends(get_current_user), db: AsyncSession = Dep
                     user.member_expires_at = now + timedelta(days=milestone_days)
 
             # Mark this milestone as claimed on the current checkin record
+            # （星卡/壁纸与会员奖励共用 milestones_claimed 去重，保证不重复发放）
             if checkin_record.milestones_claimed:
                 checkin_record.milestones_claimed += f",{milestone_str}"
             else:
                 checkin_record.milestones_claimed = milestone_str
 
+            # 5b. 收藏品里程碑（P0-3 缺口1，叠加在会员奖励之上，不消耗任何额度）：
+            #     7 日 → 稀有星卡（正位金卡，78 张牌按 user_id 确定性选取）
+            #     30 日 → 星光壁纸
             reward = f"🎉 连续签到{new_streak}天！获得{milestone_days}天会员体验"
+            if new_streak == STAR_CARD_MILESTONE:
+                card_ids = (await db.execute(
+                    select(TarotCard.id).order_by(TarotCard.id)
+                )).scalars().all()
+                if not card_ids:
+                    card_ids = list(range(1, DEFAULT_CARD_POOL + 1))
+                card = await db.get(TarotCard, card_ids[pick_star_card_index(user.id, len(card_ids))])
+                record = grant_star_card(user, card.id, today.isoformat())
+                collectible = CollectibleInfo(
+                    card_id=record["card_id"],
+                    card_name=card.name_zh,
+                    card_name_en=card.name_en,
+                    date=record["date"],
+                    tier=record["tier"],
+                    orientation=record["orientation"],
+                )
+                collectible_type = "star_card"
+                reward += f" + 稀有星卡「{card.name_zh}」"
+            elif new_streak == WALLPAPER_MILESTONE:
+                date_str = grant_wallpaper(user, today.isoformat())
+                collectible = CollectibleInfo(date=date_str, tier="wallpaper")
+                collectible_type = "wallpaper"
+                reward += " + 星光壁纸"
+
             reward_type = "membership"
             reward_days = milestone_days
 
@@ -159,6 +200,8 @@ async def checkin(user: User = Depends(get_current_user), db: AsyncSession = Dep
         stardust_total=user.stardust_total,
         star_tier=user.star_tier,
         star_tier_name=tier_name(user.star_tier),
+        collectible_type=collectible_type,
+        collectible=collectible,
     )
 
 
@@ -238,6 +281,26 @@ async def task_status(user: User = Depends(get_current_user), db: AsyncSession =
     tasks = [daily_card_drawn, reading_done_today, shared_today]
     tasks_completed = sum(1 for t in tasks if t)
 
+    # 7. 星卡收藏 / 星光壁纸（P0-3 缺口1）：star_cards 附牌名，供我的页星卡收藏区渲染
+    star_cards: list[StarCardItem] = []
+    raw_cards = star_cards_of(user)
+    if raw_cards:
+        card_ids = [c["card_id"] for c in raw_cards]
+        card_rows = (await db.execute(
+            select(TarotCard).where(TarotCard.id.in_(card_ids))
+        )).scalars().all()
+        by_id = {c.id: c for c in card_rows}
+        for c in raw_cards:
+            card = by_id.get(c["card_id"])
+            star_cards.append(StarCardItem(
+                card_id=c["card_id"],
+                card_name=card.name_zh if card else "",
+                card_name_en=card.name_en if card else "",
+                date=c.get("date", ""),
+                tier=c.get("tier", "gold"),
+                orientation=c.get("orientation", "upright"),
+            ))
+
     return TaskStatusResponse(
         checked_in_today=checked_in_today,
         streak=streak,
@@ -250,4 +313,6 @@ async def task_status(user: User = Depends(get_current_user), db: AsyncSession =
         stardust_total=user.stardust_total or 0,
         star_tier=user.star_tier or 0,
         star_tier_name=tier_name(user.star_tier or 0),
+        star_cards=star_cards,
+        wallpapers=wallpapers_of(user),
     )

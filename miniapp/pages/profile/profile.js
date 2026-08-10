@@ -38,6 +38,31 @@ function computeCardImage(firstCardName) {
   return found && found.image ? found.image : '';
 }
 
+// 星阶阈值映射（与 backend app/services/stardust.py STAR_TIERS 一致：0微光/7星光/30星辉/100星冠）
+const STAR_TIERS = [
+  { threshold: 0, name: '微光' },
+  { threshold: 7, name: '星光' },
+  { threshold: 30, name: '星辉' },
+  { threshold: 100, name: '星冠' },
+];
+
+/** 当前星阶名（按累计星尘取最近阈值） */
+function currentTierName(stardust) {
+  let name = '微光';
+  for (const t of STAR_TIERS) {
+    if (stardust >= t.threshold) name = t.name;
+  }
+  return name;
+}
+
+/** 下一星阶信息（{name, need}），已到星冠返回 null */
+function nextTierInfo(stardust) {
+  for (const t of STAR_TIERS) {
+    if (stardust < t.threshold) return { name: t.name, need: t.threshold - stardust };
+  }
+  return null;
+}
+
 Page({
   data: {
     user: null,
@@ -129,6 +154,14 @@ Page({
     // 我的星象：星座徽章 + 出生信息（前端改造第一阶段）
     zodiacBadge: '',
     birthInfo: null,       // { date, time, city, zodiac }
+
+    // P0-3 星尘签到收集体系：星阶徽章（星光记录卡）+ 星卡收藏区
+    starTierName: '',      // 星阶名：微光/星光/星辉/星冠（来自 /tasks/status）
+    stardustTotal: 0,      // 累计星尘数
+    tierNextName: '',      // 下一星阶名（距下一阶提示）
+    tierNeed: 0,           // 距下一阶还差多少星尘
+    starCards: [],         // 稀有星卡收藏（card_name/date/tier + image）
+    wallpapers: [],        // 星光壁纸达成日期
   },
 
   // —— History card image loading ——
@@ -205,6 +238,14 @@ Page({
       }
       const recordLevel = (taskStatus && taskStatus.level && taskStatus.level.current_level) || '';
 
+      // P0-3 缺口2/1：星阶徽章 + 星卡收藏（后端新字段，旧后端无字段时优雅降级为空）
+      const stardustTotal = (taskStatus && taskStatus.stardust_total) || 0;
+      const next = nextTierInfo(stardustTotal);
+      const starCards = ((taskStatus && taskStatus.star_cards) || []).map(c => ({
+        ...c,
+        image: computeCardImage(c.card_name),
+      }));
+
       this.setData({
         user,
         memberStatus: status ? {
@@ -221,6 +262,13 @@ Page({
         historyTotal: history.total || (history.items ? history.items.length : 0),
         streak: recordStreak,
         recordLevel,
+        // 星阶名以后端为准（star_tier_name），旧后端无该字段时用前端映射兜底
+        starTierName: (taskStatus && taskStatus.star_tier_name) || currentTierName(stardustTotal),
+        stardustTotal,
+        tierNextName: next ? next.name : '',
+        tierNeed: next ? next.need : 0,
+        starCards,
+        wallpapers: (taskStatus && taskStatus.wallpapers) || [],
         collectionCount,
         totalReadings: history.total || (history.items ? history.items.length : 0),
         pageLoading: false,
