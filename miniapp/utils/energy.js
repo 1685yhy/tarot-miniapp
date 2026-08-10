@@ -83,8 +83,14 @@ const NEUTRAL_GUIDANCE = [
 function buildMockStarGuidance() {
   const todayStr = _todayStr();
   const dateSeed = todayStr.split('').reduce((s, ch) => s + (ch >= '0' && ch <= '9' ? Number(ch) : 0), 0);
-  const zodiac = _getZodiac();
-  const mixSeed = dateSeed + (zodiac ? zodiac.split('').reduce((s, ch) => s + ch.charCodeAt(0), 0) : 0);
+  // Task 4 修复：storage 的 zodiac_sign 是中文星座名，后端 user.zodiac 是英文 key ——
+  // 必须先映射为英文 key 再按 ASCII 求和（sum(ord(ch))，与后端 energy_engine.build_today_guidance 一致）。
+  // 否则对中文名直接求和，mod 12 后比英文 key 恒差 6 个色位，同日同人 fallback 色永远与后端不一致。
+  const zodiacKey = _zodiacKey();
+  const mixSeed = dateSeed + (zodiacKey ? zodiacKey.split('').reduce((s, ch) => s + ch.charCodeAt(0), 0) : 0);
+  // 事件日差异（已知取舍，接受此差异，不镜像事件表）：后端在星象事件日按事件类型切换宜忌文案
+  // （GUIDANCE_BY_EVENT），fallback 恒用 NEUTRAL_GUIDANCE 轮换。事件表属后端运行时天象数据，
+  // miniapp 侧不做静态镜像（禁词可控 + 零依赖）；仅保证星光色/星光数与后端一致，宜忌文案差异为预期降级。
   const g = NEUTRAL_GUIDANCE[dateSeed % NEUTRAL_GUIDANCE.length];
   return {
     star_color: STAR_COLORS[mixSeed % STAR_COLORS.length],
@@ -133,6 +139,20 @@ function _todayStr() {
 
 function _getZodiac() {
   try { return wx.getStorageSync('zodiac_sign') || ''; } catch (e) { return ''; }
+}
+
+/**
+ * storage 星座值 → 与后端一致的英文 key（后端 user.zodiac 经 normalize_zodiac 统一存英文 key，
+ * 如 'aries'；storage 的 zodiac_sign 存的是中文名，如 '白羊座'）。
+ * 兼容两种形态：中文名经 ZODIAC_BY_NAME 映射，已是 key 则原样返回；无有效值返回 ''，
+ * 与后端 `zodiac or None → sum(ord) = 0` 语义一致。
+ */
+function _zodiacKey() {
+  const raw = _getZodiac();
+  if (!raw) return '';
+  if (ZODIAC_BY_KEY[raw]) return raw; // 已是英文 key
+  const z = ZODIAC_BY_NAME[raw];      // 中文名 → key
+  return z ? z.key : '';
 }
 
 /** 分数 → 档位文案（用于详情页大数字旁的小字） */
@@ -324,6 +344,7 @@ module.exports = {
   levelOf,
   buildEnergyItems,
   fetchTodayEnergy,
+  buildMockStarGuidance,
   ZODIACS,
   ZODIAC_BY_NAME,
   ZODIAC_BY_KEY,
