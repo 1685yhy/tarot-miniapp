@@ -959,19 +959,7 @@
 }
 
 /* -----------------------------------------------------------
-   10. PUSH PROMPT ICON — image asset (replaces emoji)
-   ----------------------------------------------------------- */
-
-.push-prompt-icon {
-  width: 44rpx;
-  height: 44rpx;
-  display: block;
-  margin-right: var(--spacing-xs);
-  flex-shrink: 0;
-}
-
-/* -----------------------------------------------------------
-   11. SAFE AREA
+   10. SAFE AREA
    ----------------------------------------------------------- */
 
 .safe-bottom {

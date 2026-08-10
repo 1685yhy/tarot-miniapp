@@ -258,21 +258,6 @@
 
   <!-- Back to Home removed — native nav bar provides back button -->
 
-  <!-- ===== Push subscription prompt (one-time, gentle) ===== -->
-  <view class="push-prompt {{showPushPrompt ? 'push-prompt--visible' : ''}}" wx:if="{{showPushPrompt && !pushSubscribed}}">
-    <view class="push-prompt-card">
-      <view class="push-prompt-header">
-        <image class="push-prompt-icon" src="/images/icons/sparkle_64.png" mode="aspectFit" aria-label="每日推送提醒" />
-        <text class="push-prompt-title">每日推送提醒</text>
-      </view>
-      <text class="push-prompt-desc">每天自动推送今日塔罗牌，不错过每一份星光指引</text>
-      <view class="push-prompt-actions">
-        <button class="push-prompt-btn push-prompt-btn--accept" bindtap="onAcceptPush">开启推送 ✦</button>
-        <button class="push-prompt-btn push-prompt-btn--dismiss" bindtap="onDismissPush">暂不需要</button>
-      </view>
-    </view>
-  </view>
-
   <!-- Bottom spacer for safe area -->
   <view class="safe-bottom"></view>
 </view>

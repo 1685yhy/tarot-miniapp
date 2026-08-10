@@ -7,6 +7,7 @@ const { fetchTodayEnergy } = require('../../utils/energy');
 const analytics = require('../../utils/analytics');
 const { checkLogin } = require('../../utils/auth');
 const { startPay, isComingSoonError, showComingSoonModal } = require('../../utils/pay');
+const { maybePromptSubscribe } = require('../../utils/subscribe');
 
 // ---- Persona data (must match reading.js PERSONAS) ----
 const PERSONA_DATA = {
@@ -454,6 +455,15 @@ Page({
       if (!this.data.isMember && !shareCtaDismissed) {
         this.setData({ showShareCTA: true });
       }
+
+      // ── 星光晨讯订阅引导（Task 6）：抽牌结果页进入时弹一次 ──
+      // 幂等：模板未配置/用户已拒绝/同会话已弹过时内部自动跳过。
+      // 延迟 1.2s 让解读结果先展示，避免系统弹窗盖住牌面。
+      this._subscribeTimer = setTimeout(() => {
+        this._subscribeTimer = null;
+        if (this._destroyed) return;
+        maybePromptSubscribe();
+      }, 1200);
     } else if (this._cachedError) {
       this.setData({ pageLoading: false, pageError: this._cachedError });
     }
@@ -553,6 +563,7 @@ Page({
     this._clearStageTimers();
     if (this._onboardingTimer) { clearTimeout(this._onboardingTimer); this._onboardingTimer = null; }
     if (this._navBackTimer) { clearTimeout(this._navBackTimer); this._navBackTimer = null; }
+    if (this._subscribeTimer) { clearTimeout(this._subscribeTimer); this._subscribeTimer = null; }
   },
 
   onHide() {
@@ -560,6 +571,7 @@ Page({
     this._clearStageTimers();
     if (this._onboardingTimer) { clearTimeout(this._onboardingTimer); this._onboardingTimer = null; }
     if (this._navBackTimer) { clearTimeout(this._navBackTimer); this._navBackTimer = null; }
+    if (this._subscribeTimer) { clearTimeout(this._subscribeTimer); this._subscribeTimer = null; }
   },
 
   onShow() {

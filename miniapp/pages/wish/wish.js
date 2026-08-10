@@ -1,6 +1,7 @@
 // pages/wish/wish.js — 新月许愿（开发 04 · 星光记录为主角的「我的流」）
 // 原型页 13：月相动画 + 愿望输入 → 成功态「已交给月光」+ 愿望归档
 const { request, getFriendlyError } = require('../../utils/api');
+const { maybePromptSubscribe } = require('../../utils/subscribe');
 
 // 愿望分类 chips（只影响输入占位文案，分类随正文一起存）
 const WISH_CATS = ['事业', '感情', '健康', '其他'];
@@ -137,6 +138,12 @@ Page({
       });
       wx.vibrateShort && wx.vibrateShort({ type: 'light' });
       await this._refreshList();
+
+      // 星光晨讯订阅引导（幂等：模板未配置/已拒绝/同会话已弹过时自动跳过）
+      this._subscribeTimer = setTimeout(() => {
+        this._subscribeTimer = null;
+        maybePromptSubscribe();
+      }, 600);
     } catch (err) {
       this.setData({ submitting: false });
       wx.showToast({ title: getFriendlyError(err) || '许愿失败，请稍后再试', icon: 'none', duration: 2500 });
@@ -189,5 +196,9 @@ Page({
         activeCount: res.active_count || wishes.filter(w => w.status === 'active').length,
       });
     } catch (_err) { /* silent */ }
+  },
+
+  onUnload() {
+    if (this._subscribeTimer) { clearTimeout(this._subscribeTimer); this._subscribeTimer = null; }
   },
 });
