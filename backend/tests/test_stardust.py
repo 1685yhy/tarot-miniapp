@@ -14,6 +14,23 @@ from sqlalchemy import select
 from app.db.database import async_session
 from app.models.user import User
 from app.services.stardust import STAR_TIERS, tier_for, tier_name
+from app.utils.auth import create_token
+
+
+def _make_api_user() -> tuple[str, dict]:
+    """创建独立测试用户，返回 (openid, 认证请求头)。"""
+    openid = f"stardust-api-{uuid.uuid4().hex[:12]}"
+
+    async def _run():
+        async with async_session() as session:
+            user = User(openid=openid)
+            session.add(user)
+            await session.commit()
+            await session.refresh(user)
+            return user
+
+    user = asyncio.run(_run())
+    return openid, {"Authorization": f"Bearer {create_token(user.id, user.token_version)}"}
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -106,3 +123,68 @@ def test_tier_name_out_of_range():
     """越界星阶回退到最近合法名称。"""
     assert tier_name(99) == "星冠"
     assert tier_name(-1) == "微光"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 签到接口产出星尘/星阶（任务2）
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class TestCheckinStardust:
+    """POST /tasks/checkin 签到收集星尘、GET /tasks/status 返回星尘/星阶。"""
+
+    def test_checkin_first_time_awards_one_stardust(self, client):
+        """首次签到：stardust_total=1，star_tier=0（tier_for(1)），star_tier_name='微光'。"""
+        _openid, headers = _make_api_user()
+        resp = client.post("/tasks/checkin", headers=headers)
+        assert resp.status_code == 200, resp.text
+        data = resp.json()
+        assert data["stardust_total"] == 1, f"首次签到应 +1 星尘，got {data}"
+        assert data["star_tier"] == tier_for(1)
+        assert data["star_tier_name"] == tier_name(tier_for(1))
+
+    def test_checkin_duplicate_does_not_double_stardust(self, client):
+        """同一天第 2 次签到返回已签到，不再 +1 星尘。"""
+        _openid, headers = _make_api_user()
+        first = client.post("/tasks/checkin", headers=headers)
+        assert first.status_code == 200
+        assert first.json()["stardust_total"] == 1
+
+        second = client.post("/tasks/checkin", headers=headers)
+        assert second.status_code == 200, second.text
+        second_data = second.json()
+        assert second_data["reward"] == "今日已签到"
+        assert second_data["stardust_total"] == 1, (
+            f"重复签到不应再加星尘，got {second_data['stardust_total']}"
+        )
+
+    def test_checkin_persists_star_tier_matches_tier_for(self, client):
+        """审查断言：签到写入后库中 star_tier == tier_for(stardust_total)。"""
+        openid, headers = _make_api_user()
+        resp = client.post("/tasks/checkin", headers=headers)
+        assert resp.status_code == 200, resp.text
+
+        async def _read():
+            async with async_session() as session:
+                result = await session.execute(
+                    select(User).where(User.openid == openid)
+                )
+                return result.scalar_one()
+
+        user = asyncio.run(_read())
+        assert user.stardust_total == 1
+        assert user.star_tier == tier_for(user.stardust_total), (
+            f"star_tier({user.star_tier}) 必须等于 tier_for(stardust_total)"
+            f"({tier_for(user.stardust_total)})，防止展示不一致"
+        )
+
+    def test_status_returns_stardust_fields(self, client):
+        """GET /tasks/status 返回 stardust_total / star_tier / star_tier_name。"""
+        _openid, headers = _make_api_user()
+        client.post("/tasks/checkin", headers=headers)
+        resp = client.get("/tasks/status", headers=headers)
+        assert resp.status_code == 200, resp.text
+        data = resp.json()
+        assert data["stardust_total"] == 1
+        assert data["star_tier"] == tier_for(1)
+        assert data["star_tier_name"] == tier_name(tier_for(1))

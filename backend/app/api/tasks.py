@@ -16,6 +16,7 @@ from app.models.checkin import CheckIn
 from app.models.reading import Reading
 from app.utils.auth import get_current_user, utc_aware
 from app.schemas.task import CheckInResponse, TaskStatusResponse, LevelInfo
+from app.services.stardust import tier_for, tier_name
 
 router = APIRouter(prefix="/tasks", tags=["签到与任务"])
 
@@ -75,7 +76,12 @@ async def checkin(user: User = Depends(get_current_user), db: AsyncSession = Dep
         )
         last = latest.scalar_one_or_none()
         streak = last.streak_count if last else 0
-        return CheckInResponse(signed_in=True, streak=streak, reward="今日已签到")
+        return CheckInResponse(
+            signed_in=True, streak=streak, reward="今日已签到",
+            stardust_total=user.stardust_total or 0,
+            star_tier=user.star_tier or 0,
+            star_tier_name=tier_name(user.star_tier or 0),
+        )
 
     # 2. Calculate streak
     yesterday = today - timedelta(days=1)
@@ -101,6 +107,10 @@ async def checkin(user: User = Depends(get_current_user), db: AsyncSession = Dep
     reward_type = ""
     reward_days = 0
     user.free_readings_today = (user.free_readings_today or 0) + 1
+
+    # 4b. 星尘奖励：签到 +1 星尘，star_tier 必须随 stardust_total 同步推导（防止展示不一致）
+    user.stardust_total = (user.stardust_total or 0) + 1
+    user.star_tier = tier_for(user.stardust_total)
 
     # 5. Check streak milestones for membership reward
     if new_streak in STREAK_MILESTONES:
@@ -146,6 +156,9 @@ async def checkin(user: User = Depends(get_current_user), db: AsyncSession = Dep
     return CheckInResponse(
         signed_in=True, streak=new_streak, reward=reward,
         reward_type=reward_type, reward_days=reward_days,
+        stardust_total=user.stardust_total,
+        star_tier=user.star_tier,
+        star_tier_name=tier_name(user.star_tier),
     )
 
 
@@ -234,4 +247,7 @@ async def task_status(user: User = Depends(get_current_user), db: AsyncSession =
         shared_today=shared_today,
         tasks_completed=tasks_completed,
         tasks_total=3,
+        stardust_total=user.stardust_total or 0,
+        star_tier=user.star_tier or 0,
+        star_tier_name=tier_name(user.star_tier or 0),
     )
