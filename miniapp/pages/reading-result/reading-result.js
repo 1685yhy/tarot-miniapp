@@ -73,12 +73,14 @@ Page({
     // Staggered card entrance animations (one per drawn card)
     cardAnimData: [],
 
-    // Share poster
+    // Share poster — 星光名片样式（Task 7：星阶徽章 + 星光数 + 小程序码）
     showSharePoster: false,
     shareCardImage: '',
     shareCardName: '',
     shareKeyInsight: '',
     userNickname: '',
+    starTierName: '',
+    stardustTotal: 0,
 
     // Friend invite poster — "送好友一张牌" (both get +1 free deep reading)
     showInvitePoster: false,
@@ -984,11 +986,23 @@ Page({
     return { cardImage, cardName, keyInsight, nickname };
   },
 
-  onOpenSharePoster() {
+  /** 星光名片海报（Task 7）：附带星阶徽章 + 星光数 + 小程序码（scene=邀请码） */
+  async onOpenSharePoster() {
     const poster = this._buildPosterData();
     if (!poster) {
       wx.showToast({ title: '暂无牌面可生成海报', icon: 'none' });
       return;
+    }
+
+    // 拉取星阶/星光数（失败静默降级为 微光/0，海报仍可生成）
+    let starTierName = '';
+    let stardustTotal = 0;
+    try {
+      const t = await request('/tasks/status');
+      starTierName = (t && t.star_tier_name) || '';
+      stardustTotal = (t && t.stardust_total) || 0;
+    } catch (_err) {
+      // 静默降级
     }
 
     this.setData({
@@ -997,6 +1011,8 @@ Page({
       shareCardName: poster.cardName,
       shareKeyInsight: poster.keyInsight,
       userNickname: poster.nickname,
+      starTierName,
+      stardustTotal,
     });
   },
 

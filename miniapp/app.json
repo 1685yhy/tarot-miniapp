@@ -67,6 +67,10 @@
     {
       "root": "pages/fortune-trend/",
       "pages": ["fortune-trend"]
+    },
+    {
+      "root": "pages/card-landing/",
+      "pages": ["card-landing"]
     }
   ],
   "window": {

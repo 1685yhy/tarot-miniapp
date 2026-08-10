@@ -6,8 +6,14 @@ Share / viral-tracking API endpoints.
 - GET   /share/stats       – share analytics for the current user
 - GET   /share/invite-code – generate/return user's unique invite code
 - GET   /share/wxa-code    – generate a mini-program code image (wxacode)
+- GET   /share/wxacode     – user's 星光名片 mini-program code (scene=invite_code,
+                             env_version=trial, 7-day cache, login required)
+- GET   /share/card-info   – look up star-card profile by invite code (public,
+                             for the scan landing page)
 - GET   /share/zodiac-match – relationship tarot card for a zodiac pairing (fun share)
 """
+
+import time
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from pydantic import BaseModel
@@ -24,8 +30,13 @@ from app.services.share import (
     get_or_create_invite_code,
     process_invite,
 )
+from app.services.stardust import tier_for, tier_name
 from app.services.wxacode import get_wxacode
 from app.utils.auth import get_current_user
+
+# ── 星光名片小程序码缓存：每用户 7 天，避免高频重复调用微信接口 ──
+_WXACODE_CACHE_TTL = 7 * 24 * 3600
+_wxacode_cache: dict[str, tuple[float, bytes]] = {}
 
 router = APIRouter(prefix="/share", tags=["分享裂变"])
 
@@ -181,6 +192,74 @@ async def wxa_code(
         return Response(content=png_bytes, media_type="image/png")
     except RuntimeError as exc:
         raise HTTPException(status_code=502, detail=str(exc))
+
+
+# ---------------------------------------------------------------------------
+# 星光名片（Task 7）：小程序码 + 扫码落地页信息
+# ---------------------------------------------------------------------------
+
+
+@router.get("/wxacode")
+async def star_card_wxacode(
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    生成当前用户的星光名片小程序码（需要登录）。
+
+    调用微信 ``getwxacodeunlimit``：
+      - scene        = user.invite_code（好友扫码后落地 card-landing）
+      - page         = pages/card-landing/card-landing
+      - env_version  = trial（体验版构建即可扫码打开）
+    结果按用户缓存 7 天（内存 dict），避免重复调用微信接口。
+
+    Returns: PNG 字节流（image/png）
+    """
+    code = await get_or_create_invite_code(db, user)
+
+    now = time.time()
+    cached = _wxacode_cache.get(user.id)
+    if cached and cached[0] > now:
+        return Response(content=cached[1], media_type="image/png")
+
+    try:
+        png_bytes = await get_wxacode(
+            scene=code,
+            page="pages/card-landing/card-landing",
+            width=430,
+            env_version="trial",
+        )
+    except RuntimeError as exc:
+        raise HTTPException(status_code=502, detail=str(exc))
+
+    _wxacode_cache[user.id] = (now + _WXACODE_CACHE_TTL, png_bytes)
+    return Response(content=png_bytes, media_type="image/png")
+
+
+@router.get("/card-info")
+async def star_card_info(
+    code: str = Query(..., description="邀请码 STAR-XXXX"),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    按邀请码查星光名片信息（公开接口：扫码落地页无需登录）。
+
+    仅返回海报上已公开的展示字段——昵称 / 星阶 / 星光值，
+    不泄露任何联系方式或账号敏感信息。
+    """
+    result = await db.execute(select(User).where(User.invite_code == code))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="邀请码不存在")
+
+    tier = user.star_tier if user.star_tier is not None else tier_for(user.stardust_total or 0)
+    return {
+        "invite_code": user.invite_code,
+        "nickname": user.nickname or "一位星光旅人",
+        "star_tier": tier,
+        "star_tier_name": tier_name(tier),
+        "stardust_total": user.stardust_total or 0,
+    }
 
 
 # ---------------------------------------------------------------------------

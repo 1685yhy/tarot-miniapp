@@ -306,6 +306,143 @@ function _drawFooter(ctx, W, Y, brandText) {
 }
 
 /**
+ * Draw the "星光名片" star-card poster layout (Task 7).
+ *
+ * Layout (3:4 portrait, E3 cream palette):
+ *   - Top: brand header + nickname
+ *   - 星阶徽章 + 星光数 two pill chips (金深 on cream, gold stroke)
+ *   - The tarot card (smaller than the reading poster — 名片式)
+ *   - Card name + key insight (capped above the QR zone, max 2 lines)
+ *   - Bottom: mini-program code (from /share/wxacode, scene=邀请码)
+ *             + footer "仅供娱乐 · 星光映照"
+ *
+ * @param {Object} data - { cardImg, qrImg, cardName, keyInsight, nickname,
+ *                          starTierName, stardustTotal }
+ */
+function _drawCardLayout(ctx, W, H, data) {
+  const { cardImg, qrImg, cardName, keyInsight, starTierName, stardustTotal } = data;
+
+  // ── Header: brand + nickname ──
+  let y = _drawHeader(ctx, W, data.nickname);
+  y += Math.round(W * 0.020);
+
+  // ── Star identity chips: 星阶徽章 + 星光数 ──
+  const chipH = Math.round(W * 0.070);
+  const chipGap = Math.round(W * 0.028);
+  const tierText = (starTierName || '微光') + ' · 星阶';
+  const stardustText = '星光 ' + (stardustTotal || 0);
+  ctx.save();
+  ctx.font = `${Math.round(W * 0.030)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+  const tierW = ctx.measureText('✦ ' + tierText).width + Math.round(W * 0.048);
+  const sdW = ctx.measureText('✦ ' + stardustText).width + Math.round(W * 0.048);
+  const chipsW = tierW + sdW + chipGap;
+  const chipsX = Math.round((W - chipsW) / 2);
+  const chipY = y;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  // tier chip — 金深字，奶油表面底，细金描边
+  _roundRect(ctx, chipsX, chipY, tierW, chipH, chipH / 2);
+  ctx.fillStyle = 'rgba(255, 253, 248, 0.92)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(201, 169, 124, 0.55)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  ctx.fillStyle = C_GOLD_INK;
+  ctx.font = `bold ${Math.round(W * 0.030)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+  ctx.fillText('✦ ' + tierText, chipsX + tierW / 2, chipY + chipH / 2 + 1);
+  // stardust chip — 深灰紫字
+  const sdX = chipsX + tierW + chipGap;
+  _roundRect(ctx, sdX, chipY, sdW, chipH, chipH / 2);
+  ctx.fillStyle = 'rgba(255, 253, 248, 0.92)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(201, 169, 124, 0.55)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  ctx.fillStyle = C_MUTED;
+  ctx.font = `${Math.round(W * 0.030)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+  ctx.fillText('✦ ' + stardustText, sdX + sdW / 2, chipY + chipH / 2 + 1);
+  ctx.restore();
+  y += chipH + Math.round(W * 0.028);
+
+  // ── Tarot card (smaller — 名片式) with gold glow + border ──
+  const cardW = Math.round(W * 0.46);
+  const cardH = Math.round(cardW * CARD_ASPECT);
+  const cardX = Math.round((W - cardW) / 2);
+  const r = Math.round(cardW * 0.02);
+
+  const glowPad = Math.round(W * 0.012);
+  ctx.save();
+  ctx.fillStyle = C_GLOW;
+  _roundRect(ctx, cardX - glowPad, y - glowPad, cardW + glowPad * 2, cardH + glowPad * 2, r + glowPad);
+  ctx.fill();
+  ctx.restore();
+
+  ctx.save();
+  _roundRect(ctx, cardX, y, cardW, cardH, r);
+  ctx.clip();
+  if (cardImg) {
+    ctx.drawImage(cardImg, cardX, y, cardW, cardH);
+  } else {
+    ctx.fillStyle = C_PLACEHOLDER;
+    ctx.fillRect(cardX, y, cardW, cardH);
+  }
+  ctx.restore();
+
+  ctx.save();
+  _roundRect(ctx, cardX, y, cardW, cardH, r);
+  ctx.strokeStyle = C_GOLD;
+  ctx.lineWidth = 1.5;
+  ctx.globalAlpha = 0.75;
+  ctx.stroke();
+  ctx.restore();
+
+  y += cardH + Math.round(W * 0.028);
+
+  // ── Card name ──
+  if (cardName) {
+    ctx.save();
+    ctx.fillStyle = C_GOLD_INK;
+    ctx.font = `bold ${Math.round(W * 0.040)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(cardName, W / 2, y);
+    ctx.restore();
+    y += Math.round(W * 0.056);
+  }
+
+  // ── Key insight (wrapped, capped above the QR zone, max 2 lines) ──
+  if (keyInsight) {
+    const maxW = Math.round(W * 0.78);
+    const x = Math.round((W - maxW) / 2);
+    const fontSize = Math.round(W * 0.030);
+    const lineH = Math.round(fontSize * 1.55);
+    const qrZoneY = H - Math.round(W * 0.24);
+    const maxLines = Math.max(1, Math.min(2, Math.floor((qrZoneY - y) / lineH)));
+
+    ctx.save();
+    ctx.fillStyle = C_WHITE;
+    ctx.font = `${fontSize}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    const lines = _wrapText(ctx, keyInsight, maxW);
+    let textY = y;
+    for (let i = 0; i < Math.min(lines.length, maxLines); i++) {
+      ctx.fillText(lines[i], x, textY);
+      textY += lineH;
+    }
+    ctx.restore();
+    y = textY;
+  }
+
+  // ── QR + CTA (never overlap footer) ──
+  const qrY = Math.min(y, H - Math.round(W * 0.24));
+  _drawQRCode(ctx, W, qrY, qrImg, '扫码加入星光映照');
+
+  // ── Footer: 仅供娱乐 · 星光映照 ──
+  _drawFooter(ctx, W, H - Math.round(W * 0.040), '仅供娱乐 · 星光映照');
+}
+
+/**
  * Draw the "daily card check-in" poster layout.
  *
  * Layout (3:4 portrait):
@@ -938,7 +1075,8 @@ function _drawFortuneLayout(ctx, W, H, data) {
  * @param {string}   canvasId          - Canvas element ID
  * @param {Object}   opts              - Options object
  * @param {Object}   opts.context      - Component/page `this` (for SelectorQuery)
- * @param {string}   opts.mode         - 'reading' (default) | 'daily' | 'invite' | 'zodiac' | 'diary' | 'fortune'
+ * @param {string}   opts.mode         - 'reading' (default) | 'daily' | 'invite' | 'zodiac' | 'diary' | 'fortune' | 'card'
+ *                                      - 'card' = 星光名片（星阶徽章+星光数+小程序码）
  * @param {string}   opts.cardImagePath - Tarot card image URL
  * @param {string}   opts.cardName     - Card display name (e.g. "愚者 · The Fool")
  * @param {string}   opts.keyInsight   - Short excerpt from the interpretation
@@ -952,12 +1090,16 @@ function _drawFortuneLayout(ctx, W, H, data) {
  * @param {string}   opts.moodEmoji    - Diary mode: mood emoji drawn as the poster hero
  * @param {string}   opts.excerpt      - Diary mode: anonymized diary excerpt text
  * @param {Object}   opts.fortuneData  - Fortune mode: 牌运曲线数据（无小程序码）
+ * @param {string}   opts.starTierName - Card mode: 星阶名称（如 星辉）
+ * @param {number}   opts.stardustTotal- Card mode: 星光值（星尘总量）
  * @param {Function} opts.onSuccess    - Callback (tempFilePath)
  * @param {Function} opts.onError      - Callback (Error)
  */
 function drawSharePoster(canvasId, opts) {
-  const { context, mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak, inviteCode, zodiacSigns, moodEmoji, excerpt, fortuneData, onSuccess, onError } = opts || {};
+  const { context, mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak, inviteCode, zodiacSigns, moodEmoji, excerpt, fortuneData, starTierName, stardustTotal, onSuccess, onError } = opts || {};
   const isInviteMode = !!(mode === 'invite' && inviteCode);
+  // 星光名片海报：小程序码从 /share/wxacode 拉取（scene=邀请码、体验版可用、需登录）
+  const isCardMode = mode === 'card';
 
   if (!context || !canvasId) {
     if (onError) onError(new Error('Missing required params: context / canvasId'));
@@ -1043,6 +1185,17 @@ function drawSharePoster(canvasId, opts) {
         // ── 牌运曲线海报（个人数据资产 · 奶油底 · 金深标题 · 柱状图）──
         _drawFortuneLayout(ctx, W, H, fortuneData || {});
         _drawFooter(ctx, W, H - Math.round(W * 0.040), '星光映照 · 我的牌运');
+      } else if (mode === 'card') {
+        // ── 星光名片海报（星阶徽章 + 星光数 + 小程序码 · 仅供娱乐）──
+        _drawCardLayout(ctx, W, H, {
+          cardImg: cardImg,
+          qrImg: qrImg,
+          cardName: cardName,
+          keyInsight: keyInsight,
+          nickname: nickname,
+          starTierName: starTierName || '',
+          stardustTotal: stardustTotal || 0,
+        });
       } else {
         // ── Reading result poster (also invite mode: same layout + invite QR) ──
         // Card image
@@ -1102,8 +1255,16 @@ function drawSharePoster(canvasId, opts) {
     if (isInviteMode) {
       qrUrl += '&scene=' + encodeURIComponent('invite_code=' + inviteCode);
     }
+    // 星光名片：小程序码走登录接口（scene=邀请码 → card-landing），需带 token
+    const qrHeaders = {};
+    if (isCardMode) {
+      qrUrl = BASE_URL + '/share/wxacode';
+      const token = wx.getStorageSync('token');
+      if (token) qrHeaders.Authorization = 'Bearer ' + token;
+    }
     wx.downloadFile({
       url: qrUrl,
+      header: qrHeaders,
       success: function (dlRes) {
         if (dlRes.statusCode !== 200) {
           // QR download failed — proceed without it

@@ -1,0 +1,58 @@
+<!-- ============================================================
+     星光名片落地页 — E3 奶油疗愈明亮主题
+     好友扫码进入：展示名片卡面（昵称/星阶/星光数）+ 加入引导
+     ============================================================ -->
+
+<view class="cl-page">
+
+  <!-- 顶部装饰星（纯装饰，无信息） -->
+  <view class="cl-sky">
+    <view class="cl-star cl-star-1">✦</view>
+    <view class="cl-star cl-star-2">✦</view>
+    <view class="cl-star cl-star-3">✦</view>
+    <view class="cl-star cl-star-4">✦</view>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="cl-state" wx:if="{{loading}}">
+    <view class="cl-state-spinner"></view>
+    <text class="cl-state-text">正在点亮名片...</text>
+  </view>
+
+  <!-- 加载失败 -->
+  <view class="cl-state" wx:elif="{{error}}">
+    <text class="cl-state-text cl-state-text--err">{{error}}</text>
+  </view>
+
+  <!-- 星光名片卡面 -->
+  <view class="cl-wrap" wx:elif="{{card}}">
+    <view class="cl-card">
+      <view class="cl-card-brand">✦ 星光名片 ✦</view>
+
+      <view class="cl-avatar">✦</view>
+      <view class="cl-name">{{card.nickname}}</view>
+
+      <!-- 星阶徽章 + 星光数 -->
+      <view class="cl-tags">
+        <view class="cl-tag cl-tag--tier">
+          <text class="cl-tag-icon">✦</text>
+          <text>{{card.starTierName}} · 星阶</text>
+        </view>
+        <view class="cl-tag">
+          <text class="cl-tag-icon">✦</text>
+          <text>星光 {{card.stardustTotal}}</text>
+        </view>
+      </view>
+
+      <view class="cl-divider"></view>
+
+      <view class="cl-cta">扫码加入星光映照</view>
+      <view class="cl-cta-sub">每天一张牌 · 星光晨讯 · 塔罗日记</view>
+    </view>
+
+    <button class="cl-btn" bindtap="onGoApp">开启我的星光之旅 ✦</button>
+
+    <view class="cl-foot">仅供娱乐 · 星光映照</view>
+  </view>
+
+</view>

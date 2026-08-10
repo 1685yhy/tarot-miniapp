@@ -60,6 +60,7 @@ async def get_wxacode(
     scene: str = "",
     page: str = "pages/index/index",
     width: int = 280,
+    env_version: str = "release",
 ) -> bytes:
     """
     Generate a WeChat mini-program code (unlimited) image.
@@ -67,9 +68,11 @@ async def get_wxacode(
     Returns the raw PNG bytes.
 
     Parameters match the wxacode.getUnlimited API:
-      - scene   -- max 32 characters, visible after scanning
-      - page    -- page path, must already be published (not a draft)
-      - width   -- image width in px (280 – 1280)
+      - scene       -- max 32 characters, visible after scanning
+      - page        -- page path, must already be published (not a draft)
+      - width       -- image width in px (280 – 1280)
+      - env_version -- "release" (default) | "trial" | "develop";
+                       "trial" 让体验版构建即可扫码打开该码
     """
     token = await _get_access_token()
 
@@ -78,6 +81,7 @@ async def get_wxacode(
         "page": page,
         "width": max(280, min(width, 1280)),
         "auto_color": True,
+        "env_version": env_version if env_version in ("release", "trial", "develop") else "release",
     }
 
     url = f"https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token={token}"

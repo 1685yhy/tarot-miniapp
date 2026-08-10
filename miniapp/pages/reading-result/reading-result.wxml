@@ -289,14 +289,17 @@
   </view>
 </view>
 
-<!-- ===== SHARE POSTER ===== -->
+<!-- ===== SHARE POSTER — 星光名片样式（Task 7：星阶徽章+星光数+小程序码） ===== -->
 <share-poster
   wx:if="{{reading}}"
+  mode="card"
   visible="{{showSharePoster}}"
   cardImagePath="{{shareCardImage}}"
   cardName="{{shareCardName}}"
   keyInsight="{{shareKeyInsight}}"
   nickname="{{userNickname}}"
+  starTierName="{{starTierName}}"
+  stardustTotal="{{stardustTotal}}"
   bind:close="onCloseSharePoster"
   bind:share="onSharePosterToFriend"
 />

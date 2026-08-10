@@ -72,6 +72,21 @@
  *     bind:share="onShareFortunePosterToFriend"
  *   />
  *
+ * Usage (star card poster — mode="card", "星光名片": 星阶徽章 + 星光数 +
+ * 小程序码 from /share/wxacode, footer 仅供娱乐 · 星光映照):
+ *   <share-poster
+ *     mode="card"
+ *     visible="{{showSharePoster}}"
+ *     cardImagePath="{{shareCardImage}}"
+ *     cardName="{{shareCardName}}"
+ *     keyInsight="{{shareKeyInsight}}"
+ *     nickname="{{userNickname}}"
+ *     starTierName="{{starTierName}}"
+ *     stardustTotal="{{stardustTotal}}"
+ *     bind:close="onCloseSharePoster"
+ *     bind:share="onSharePosterToFriend"
+ *   />
+ *
  * fortuneData shape:
  *   {
  *     dateText, totalReadings, mood,
@@ -92,7 +107,15 @@ Component({
     },
     mode: {
       type: String,
-      value: 'reading', // 'reading' | 'daily' | 'invite' | 'zodiac' | 'diary' | 'fortune'
+      value: 'reading', // 'reading' | 'daily' | 'invite' | 'zodiac' | 'diary' | 'fortune' | 'card'
+    },
+    starTierName: {
+      type: String,
+      value: '', // card mode: 星阶名称（微光/星光/星辉/星冠）
+    },
+    stardustTotal: {
+      type: Number,
+      value: 0, // card mode: 星光值（星尘总量）
     },
     // type: null — 复杂嵌套对象原样传递，避免运行时将嵌套数组强转为「数字键对象」
     fortuneData: {
@@ -210,7 +233,7 @@ Component({
        Draw the poster on canvas using the utility
        --------------------------------------------------------------- */
     _drawPoster() {
-      const { mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak, inviteCode, zodiacSigns, moodEmoji, excerpt, fortuneData } = this.properties;
+      const { mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak, inviteCode, zodiacSigns, moodEmoji, excerpt, fortuneData, starTierName, stardustTotal } = this.properties;
 
       // Card image is optional in diary/fortune modes — data-only posters
       // (mood emoji + excerpt / fortune trend data) are still valid.
@@ -235,6 +258,8 @@ Component({
         moodEmoji: moodEmoji || '',
         excerpt: excerpt || '',
         fortuneData: fortuneData || {},
+        starTierName: starTierName || '',
+        stardustTotal: stardustTotal || 0,
         onSuccess: (tempFilePath) => {
           this.setData({
             previewPath: tempFilePath,
