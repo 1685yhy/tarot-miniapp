@@ -198,6 +198,12 @@ Page({
     } catch (_err) { /* silent */ }
   },
 
+  onHide() {
+    // 切 tab / 回首页触发 onHide 时同样清理订阅引导定时器，
+    // 否则 600ms 后弹窗会出现在别的页面
+    if (this._subscribeTimer) { clearTimeout(this._subscribeTimer); this._subscribeTimer = null; }
+  },
+
   onUnload() {
     if (this._subscribeTimer) { clearTimeout(this._subscribeTimer); this._subscribeTimer = null; }
   },

@@ -34,12 +34,13 @@ function _getSessionFlag() {
 }
 
 function _setSessionFlag() {
+  // 仅内存标记：`_getSessionFlag` 只读 app.globalData，不读 storage，
+  // 标记随 App 实例存活（页面销毁/重进不清除），符合「同会话最多弹 1 次」语义。
+  // （此前 storage 写入无人读取，属死代码，已移除。）
   try {
     const app = getApp();
     if (app && app.globalData) app.globalData[SESSION_FLAG_KEY] = true;
-  } catch (_e) { /* 标记失败不阻塞：storage 标记兜底 */ }
-  // 双保险：storage 里也留一份，避免纯内存标记丢失
-  try { wx.setStorageSync(SESSION_FLAG_KEY, true); } catch (_e) {}
+  } catch (_e) { /* 标记失败不阻塞 */ }
 }
 
 function _getStorage(key) {

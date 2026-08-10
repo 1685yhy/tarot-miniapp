@@ -459,6 +459,8 @@ Page({
       // ── 星光晨讯订阅引导（Task 6）：抽牌结果页进入时弹一次 ──
       // 幂等：模板未配置/用户已拒绝/同会话已弹过时内部自动跳过。
       // 延迟 1.2s 让解读结果先展示，避免系统弹窗盖住牌面。
+      // 赋值前先清掉旧定时器（_tryShowResult 可能被多次触发），防止叠加弹窗
+      if (this._subscribeTimer) { clearTimeout(this._subscribeTimer); }
       this._subscribeTimer = setTimeout(() => {
         this._subscribeTimer = null;
         if (this._destroyed) return;
