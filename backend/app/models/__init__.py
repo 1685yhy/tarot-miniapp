@@ -13,6 +13,7 @@ from app.models.performance import PerformanceEvent
 from app.models.horoscope import HoroscopeHistory
 from app.models.wish import Wish
 from app.models.review import MoonReview
+from app.models.star_monthly_review import StarMonthlyReview
 
 __all__ = [
     "User",
@@ -34,4 +35,5 @@ __all__ = [
     "HoroscopeHistory",
     "Wish",
     "MoonReview",
+    "StarMonthlyReview",
 ]

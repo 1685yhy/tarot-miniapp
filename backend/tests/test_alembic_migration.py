@@ -121,3 +121,45 @@ def test_alembic_migration_star_cards_wallpapers(tmp_path, monkeypatch):
     conn.close()
     assert "star_cards" not in user_cols_after
     assert "wallpapers" not in user_cols_after
+
+
+def test_alembic_migration_star_monthly_reviews(tmp_path, monkeypatch):
+    """迁移 94e0ea795d95：star_monthly_reviews 表（月度星光复盘缓存）可升级、可回滚。"""
+    from alembic import command
+    from alembic.config import Config
+
+    from app.config import settings
+
+    db_path = tmp_path / "migration_monthly_review.db"
+    monkeypatch.setattr(settings, "DATABASE_URL", f"sqlite:///{db_path}")
+
+    cfg = Config(str(BACKEND_DIR / "alembic.ini"))
+
+    # ── upgrade 到 head ──
+    command.upgrade(cfg, "head")
+
+    conn = sqlite3.connect(str(db_path))
+    tables = {r[0] for r in conn.execute(
+        "SELECT name FROM sqlite_master WHERE type='table'"
+    )}
+    assert "star_monthly_reviews" in tables, "star_monthly_reviews 表应已创建"
+
+    cols = {r[1] for r in conn.execute("PRAGMA table_info(star_monthly_reviews)")}
+    assert {"id", "user_id", "month", "data", "created_at", "updated_at"} <= cols, (
+        f"star_monthly_reviews 列应为 id/user_id/month/data/created_at/updated_at，实际 {sorted(cols)}"
+    )
+
+    # 唯一约束（每人每月一份复盘）—— SQLite 以 sqlite_autoindex_* 命名，
+    # 检查建表语句中带 UNIQUE 约束
+    ddl = conn.execute(
+        "SELECT sql FROM sqlite_master WHERE type='table' AND name='star_monthly_reviews'"
+    ).fetchone()[0]
+    assert "UNIQUE" in ddl.upper()
+
+    # ── downgrade 回 base：新表被删除 ──
+    command.downgrade(cfg, "base")
+    tables_after = {r[0] for r in conn.execute(
+        "SELECT name FROM sqlite_master WHERE type='table'"
+    )}
+    conn.close()
+    assert "star_monthly_reviews" not in tables_after

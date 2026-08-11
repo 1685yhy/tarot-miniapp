@@ -1,23 +1,47 @@
-"""星光手账 API —— T1-1 月历聚合 + 亮度映射。
+"""星光手账 API —— T1-1 月历聚合 + T1-2 月度复盘。
 
 数据源复用 ``diary_entries``（6 档情绪，唯一情绪数据源）；
 star_color 由 ``build_today_guidance(date, user.zodiac)`` 确定性生成，不落库。
+
+T1-2 月度复盘：缓存命中即返回（不消耗 AI 配额）；未命中聚合当月日记/卡牌/
+新满月天象 → DeepSeek 生成并落缓存；非会员与 /diary/review 共享
+FREE_DIARY_AI_DAILY 配额（生成时 +1）。
 """
 
+import json
+import logging
 from datetime import date, timedelta
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import settings
 from app.db.database import get_db
 from app.models.diary import DiaryEntry
+from app.models.star_monthly_review import StarMonthlyReview
 from app.models.user import User
-from app.schemas.journal import JournalCalendarResponse
-from app.services.journal import journal_days_for, month_stats
+from app.schemas.journal import (
+    MONTH_PATTERN,
+    JournalCalendarResponse,
+    JournalReviewRegenerateRequest,
+    JournalReviewResponse,
+    JournalSharePreviewResponse,
+)
+from app.services.journal import (
+    aggregate_month,
+    build_monthly_review,
+    journal_days_for,
+    month_stats,
+)
 from app.utils.auth import get_current_user
+from app.utils.quota import reset_ai_quota_if_new_day
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/journal", tags=["星光手账"])
+
+_QUOTA_DETAIL = "今日 AI 日记次数已用完，请开通会员或明日再来"
 
 
 async def _streak_prior_dates(
@@ -78,3 +102,170 @@ async def calendar(
     prior_dates = await _streak_prior_dates(db, user.id, start)
     stats = month_stats(days, date.today(), prior_dates=prior_dates)
     return JournalCalendarResponse(days=days, stats=stats)
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# T1-2 · 月度星光复盘（AI 生成 + 缓存 + 降级模板 + 配额共享）
+# ═══════════════════════════════════════════════════════════════════════
+
+
+async def _load_cached_review(db: AsyncSession, user_id: str, month: str) -> dict | None:
+    """读当月缓存（data JSON）；无缓存或损坏返回 None。"""
+    result = await db.execute(
+        select(StarMonthlyReview).where(
+            StarMonthlyReview.user_id == user_id,
+            StarMonthlyReview.month == month,
+        )
+    )
+    row = result.scalar_one_or_none()
+    if not row:
+        return None
+    try:
+        data = json.loads(row.data)
+    except (ValueError, TypeError):
+        return None
+    return data if isinstance(data, dict) else None
+
+
+async def _save_cached_review(
+    db: AsyncSession, user_id: str, month: str, data: dict
+) -> None:
+    """写入/覆盖当月缓存（upsert，幂等）。"""
+    result = await db.execute(
+        select(StarMonthlyReview).where(
+            StarMonthlyReview.user_id == user_id,
+            StarMonthlyReview.month == month,
+        )
+    )
+    row = result.scalar_one_or_none()
+    payload = json.dumps(data, ensure_ascii=False)
+    if row:
+        row.data = payload
+    else:
+        db.add(StarMonthlyReview(user_id=user_id, month=month, data=payload))
+
+
+async def _delete_cached_review(
+    db: AsyncSession, user_id: str, month: str
+) -> None:
+    """删除当月缓存（regenerate 撞上空月时清掉旧缓存，避免脏命中）。"""
+    result = await db.execute(
+        select(StarMonthlyReview).where(
+            StarMonthlyReview.user_id == user_id,
+            StarMonthlyReview.month == month,
+        )
+    )
+    row = result.scalar_one_or_none()
+    if row:
+        await db.delete(row)
+
+
+def _to_review_response(data: dict, cached: bool) -> JournalReviewResponse:
+    """生成态 dict → 响应模型（丢弃内部 source 标记）。"""
+    return JournalReviewResponse(
+        month=data["month"],
+        stats=data["stats"],
+        mood_series=data["mood_series"],
+        star_color_counts=data["star_color_counts"],
+        top_cards=data["top_cards"],
+        trend_summary=data["trend_summary"],
+        insight=data.get("insight"),
+        next_guide=data.get("next_guide"),
+        cached=cached,
+    )
+
+
+def _enforce_free_quota(user: User) -> None:
+    """非会员免费配额检查（与 /diary/review 同款 402 语义）。"""
+    if not user.is_member:
+        reset_ai_quota_if_new_day(user)
+        if user.diary_ai_count_today >= settings.FREE_DIARY_AI_DAILY:
+            raise HTTPException(status_code=402, detail=_QUOTA_DETAIL)
+
+
+@router.get("/review", response_model=JournalReviewResponse)
+async def monthly_review(
+    month: str = Query(..., pattern=MONTH_PATTERN, description="月份 'YYYY-MM'"),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """月度星光复盘：缓存命中即返回（不消耗 AI 配额）；未命中聚合当月日记/
+    卡牌/新满月天象 → AI 生成（trend_summary/insight/next_guide）→ 落缓存。
+
+    非会员生成时 ``diary_ai_count_today + 1``（与 /diary/review 共享配额）；
+    空月返回友好文案，不发 AI、不落缓存、不耗配额。
+    """
+    # 1) 缓存命中即返回（先于配额检查：已生成的复盘应随时可看）
+    cached = await _load_cached_review(db, user.id, month)
+    if cached is not None:
+        return _to_review_response(cached, cached=True)
+
+    # 2) 非会员配额检查（与 /diary/review 同款）
+    _enforce_free_quota(user)
+
+    # 3) 生成（含 AI 调用与降级）
+    data = await build_monthly_review(db, user.id, user.zodiac, month)
+
+    # 4) 空月不落缓存、不耗配额
+    if data["stats"]["days_recorded"] == 0:
+        return _to_review_response(data, cached=False)
+
+    # 5) 非会员生成计配额（AI 成功/降级都算一次，与 /diary/review 一致）
+    if not user.is_member:
+        user.diary_ai_count_today += 1
+
+    # 6) 落缓存（含降级结果，source=fallback）
+    await _save_cached_review(db, user.id, month, data)
+    return _to_review_response(data, cached=False)
+
+
+@router.post("/review/regenerate", response_model=JournalReviewResponse)
+async def regenerate_review(
+    body: JournalReviewRegenerateRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """手动重新生成月度复盘：覆盖当月缓存；非会员同受 FREE_DIARY_AI_DAILY 配额。"""
+    _enforce_free_quota(user)
+
+    data = await build_monthly_review(db, user.id, user.zodiac, body.month)
+
+    if data["stats"]["days_recorded"] == 0:
+        # 空月：清掉旧缓存，避免过期缓存被命中
+        await _delete_cached_review(db, user.id, body.month)
+        return _to_review_response(data, cached=False)
+
+    if not user.is_member:
+        user.diary_ai_count_today += 1
+
+    await _save_cached_review(db, user.id, body.month, data)
+    return _to_review_response(data, cached=False)
+
+
+@router.get("/review/share-preview", response_model=JournalSharePreviewResponse)
+async def review_share_preview(
+    month: str = Query(..., pattern=MONTH_PATTERN, description="月份 'YYYY-MM'"),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """分享海报数据（脱敏：无昵称、无日记原文、无 user_id）。
+
+    summary 取当月缓存中的 AI/降级摘要；无缓存时只回本地统计（summary 为空），
+    不触发 AI、不消耗配额。
+    """
+    cached = await _load_cached_review(db, user.id, month)
+    if cached is not None:
+        return JournalSharePreviewResponse(
+            month=month,
+            stats=cached["stats"],
+            star_color_counts=cached["star_color_counts"],
+            summary=cached.get("trend_summary", ""),
+        )
+
+    agg = await aggregate_month(db, user.id, user.zodiac, month)
+    return JournalSharePreviewResponse(
+        month=month,
+        stats=agg["stats"],
+        star_color_counts=agg["star_color_counts"],
+        summary="",
+    )
