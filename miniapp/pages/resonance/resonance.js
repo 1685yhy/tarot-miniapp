@@ -68,8 +68,8 @@ Page({
     // 公约弹窗
     showPact: false,
 
-    // 共鸣动效（单实例：点击的卡片内渲染上浮星点）
-    flyStar: null, // {uid, seed}
+    // 共鸣动效（单实例：仅点击的那张卡片内渲染上浮星点）
+    flyStar: null, // {key, seed}  key = 卡片实例唯一键（gidx-midx-uid，跨组同 uid 不重复渲染）
 
     // 共鸣海报
     showPoster: false,
@@ -128,6 +128,7 @@ Page({
   _applyWall(wall) {
     const groups = (wall.groups || []).map((g, gidx) => ({
       type: g.type,
+      gid: `${g.type}-${gidx}`, // 分组唯一 id：后端 type 可重复（多个同星座/同星光数/同牌组），不可作 wx:key
       label: g.label || '',
       icon: this._groupIcon(g),
       members: (g.members || []).map((m, midx) => this._memberView(m, gidx, midx)),
@@ -146,13 +147,18 @@ Page({
           imgError: false,
         }
       : null;
-    this.setData({
+    const upd = {
       activeCount: wall.active_count || 0,
       groups,
       hasGroups: groups.length > 0,
       myCard,
       hasMyCard: !!myCard,
-    });
+    };
+    // 隐身回读：wall.my_card 携带本人 visibility（T8-3 契约补充）；旧契约缺字段时保持原默认值
+    if (myCardRaw && typeof myCardRaw.visible === 'boolean') {
+      upd.visible = myCardRaw.visible;
+    }
+    this.setData(upd);
   },
 
   _memberView(m, gidx, midx) {
@@ -168,6 +174,7 @@ Page({
       tierName: m.tier_name || '',
       resonateCount: m.resonate_count || 0,
       resonatedByMe: !!m.resonated_by_me,
+      vanished: false, // give 404（目标已隐身/不存在）→ 按钮禁用态「星已远」，与 toast 一致
       imgError: false,
     };
   },
@@ -220,6 +227,11 @@ Page({
       wx.showToast({ title: '已共鸣过这颗星 ✦', icon: 'none' });
       return;
     }
+    if (member.vanished) {
+      // 目标已远去（隐身/不存在），按钮已是禁用态；兜底拦截再点
+      wx.showToast({ title: '这颗星不在夜空中 ✦', icon: 'none' });
+      return;
+    }
     if (!this.data.isLoggedIn) {
       this._promptLogin('登录后即可为同频的星送出共鸣 ✦');
       return;
@@ -244,7 +256,7 @@ Page({
       const stats = this.data.stats
         ? Object.assign({}, this.data.stats, { givenTotal: this.data.stats.givenTotal + 1 })
         : null;
-      this.setData({ groups, remainToday, stats, flyStar: { uid, seed: Date.now() } });
+      this.setData({ groups, remainToday, stats, flyStar: { key: member.key, seed: Date.now() } });
       analytics.trackEvent('resonance_give', { source: 'wall' });
       if (remainToday <= 0) {
         wx.showToast({ title: '今天已经送出 10 颗星，明天再来 ✦', icon: 'none' });
@@ -270,15 +282,27 @@ Page({
       wx.showToast({ title: msg || '今天已经送出 10 颗星，明天再来 ✦', icon: 'none' });
       this.setData({ remainToday: 0 });
     } else if (status === 404) {
-      // 目标已隐身/不存在：原样展示 + 本地置为不可再点
+      // 目标已隐身/不存在：原样展示 + 本地置「星已远」禁用态（文案与 toast 一致，非「已共鸣」）
       wx.showToast({ title: msg || '这颗星不在夜空中 ✦', icon: 'none' });
-      this._markResonated(gidx, midx);
+      this._markVanished(gidx, midx);
     } else if (status === 401) {
       wx.showToast({ title: '登录已过期，请重新登录', icon: 'none' });
       this.setData({ isLoggedIn: false });
     } else {
       wx.showToast({ title: getFriendlyError(err), icon: 'none' });
     }
+  },
+
+  /** 将某颗星本地标记为「已远去」（give 404：目标已隐身/不存在）——按钮禁用 + 文案「星已远」 */
+  _markVanished(gidx, midx) {
+    const group = this.data.groups[gidx];
+    if (!group || !group.members[midx]) return;
+    const groups = this.data.groups.slice();
+    const members = groups[gidx].members.slice();
+    if (members[midx].vanished) return;
+    members[midx] = Object.assign({}, members[midx], { vanished: true });
+    groups[gidx] = Object.assign({}, groups[gidx], { members });
+    this.setData({ groups });
   },
 
   /** 将某颗星本地标记为已共鸣（实心 + 不可再点），与服务端状态对齐 */
@@ -303,6 +327,7 @@ Page({
     const key = e.currentTarget.dataset.key;
     const groups = this.data.groups.map((g) => ({
       type: g.type,
+      gid: g.gid,
       label: g.label,
       icon: g.icon,
       members: g.members.map((m) =>

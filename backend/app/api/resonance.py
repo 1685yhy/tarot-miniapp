@@ -269,6 +269,8 @@ async def resonance_wall(
             card=WallCard(card_id=card.id, name_zh=card.name_zh),
             tier_name=tier_name(tier),
             received_today=received.get(user.id, 0),
+            # 本人隐身状态回读（前端进页用 my_card.visible 校准开关初值）
+            visible=user.resonance_visible,
         )
 
     return WallResponse(active_count=len(members), groups=groups, my_card=my_card)

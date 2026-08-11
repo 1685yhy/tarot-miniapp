@@ -117,7 +117,7 @@
 
   <!-- ===== 三分组墙（同星座 / 同星光数 / 同一张牌 + 兜底） ===== -->
   <view class="wall-groups anim-fade-in-up-3" wx:if="{{hasGroups}}">
-    <view class="wall-group" wx:for="{{groups}}" wx:for-item="group" wx:for-index="gidx" wx:key="type">
+    <view class="wall-group" wx:for="{{groups}}" wx:for-item="group" wx:for-index="gidx" wx:key="gid">
       <view class="wall-group-head">
         <view class="wall-group-icon">
           <text class="wall-group-icon-text">{{group.icon}}</text>
@@ -133,8 +133,8 @@
             wx:for-index="midx"
             wx:key="key"
           >
-            <!-- 共鸣星点上浮动效（点击后在此卡内渲染，单实例） -->
-            <view class="fly-star-layer" wx:if="{{flyStar && flyStar.uid === member.uid}}">
+            <!-- 共鸣星点上浮动效：仅点击的那张卡渲染（按卡片实例 key 匹配，跨组同 uid 不重复） -->
+            <view class="fly-star-layer" wx:if="{{flyStar && flyStar.key === member.key}}">
               <text class="fly-star fly-star--main" bindanimationend="onFlyStarEnd">✦</text>
               <text class="fly-star fly-star--sub">✦</text>
             </view>
@@ -162,17 +162,17 @@
             </view>
             <view class="star-card-actions">
               <view
-                class="give-btn {{member.resonatedByMe ? 'give-btn--done' : ''}}"
+                class="give-btn {{member.vanished ? 'give-btn--gone' : (member.resonatedByMe ? 'give-btn--done' : '')}}"
                 bindtap="onGiveResonance"
                 data-uid="{{member.uid}}"
                 data-gidx="{{gidx}}"
                 data-midx="{{midx}}"
-                hover-class="give-btn--press"
+                hover-class="{{member.vanished ? 'none' : 'give-btn--press'}}"
                 role="button"
-                aria-label="{{member.resonatedByMe ? '已共鸣过这颗星' : '送出共鸣'}}"
+                aria-label="{{member.vanished ? '这颗星不在夜空' : (member.resonatedByMe ? '已共鸣过这颗星' : '送出共鸣')}}"
               >
-                <text class="give-btn-star">{{member.resonatedByMe ? '★' : '✦'}}</text>
-                <text class="give-btn-text">{{member.resonatedByMe ? '已共鸣' : '共鸣'}}</text>
+                <text class="give-btn-star">{{member.vanished ? '✦' : (member.resonatedByMe ? '★' : '✦')}}</text>
+                <text class="give-btn-text">{{member.vanished ? '星已远' : (member.resonatedByMe ? '已共鸣' : '共鸣')}}</text>
               </view>
               <view
                 class="poster-btn"

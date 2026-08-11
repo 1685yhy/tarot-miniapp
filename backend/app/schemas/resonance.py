@@ -73,7 +73,11 @@ class WallGroup(BaseModel):
 
 
 class MyCard(BaseModel):
-    """我的今日卡片（登录可见，未登录 null；仅本人数据，可联系字段零外泄）。"""
+    """我的今日卡片（登录可见，未登录 null；仅本人数据，可联系字段零外泄）。
+
+    ``visible`` = 本人当前隐身状态（users.resonance_visible），供前端进页回读
+    开关初值（T8-4 审查 Minor2：隐身开关初始态不回读）。
+    """
 
     alias: str
     zodiac: str | None
@@ -81,6 +85,7 @@ class MyCard(BaseModel):
     card: WallCard
     tier_name: str
     received_today: int
+    visible: bool
 
 
 class WallResponse(BaseModel):

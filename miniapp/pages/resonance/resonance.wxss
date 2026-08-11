@@ -449,6 +449,17 @@ page {
   border: 1rpx solid var(--color-card-border);
   box-shadow: none;
 }
+/* 星已远（give 404：目标隐身/不存在）——禁用态，文案与 toast 一致 */
+.give-btn--gone {
+  background: var(--color-card-hover);
+  border: 1rpx dashed var(--color-card-border);
+  box-shadow: none;
+  opacity: 0.72;
+}
+.give-btn--gone .give-btn-star,
+.give-btn--gone .give-btn-text {
+  color: var(--color-text-tertiary);
+}
 .give-btn-star {
   font-size: 26rpx;
   color: #FFFDF8;

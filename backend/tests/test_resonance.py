@@ -554,6 +554,7 @@ def test_wall_my_card_when_logged_in(client: TestClient):
     assert mc["zodiac"] == "capricorn"
     assert mc["star_number"] == build_today_guidance(beijing_today(), "capricorn")["star_number"]
     assert mc["tier_name"] == "星辉", "stardust 35 → 星辉档（阈值 30）"
+    assert mc["visible"] is True, "my_card 应回读本人隐身状态（默认参与展示）"
 
     async def _cards() -> TarotCard:
         async with async_session() as session:
@@ -759,10 +760,12 @@ def test_visibility_off_immediate_effect_on_wall(client: TestClient):
     assert me not in {m["uid"] for g in after["groups"] for m in g["members"]}, (
         "隐身应立即从墙上消失"
     )
-    # 本人仍可看墙（own 可看，my_card 返回）
+    # 本人仍可看墙（own 可看，my_card 返回 + 回读隐身状态）
     own = client.get("/resonance/wall", headers=me_h)
     assert own.status_code == 200
-    assert own.json()["my_card"] is not None
+    own_mc = own.json()["my_card"]
+    assert own_mc is not None
+    assert own_mc["visible"] is False, "隐身中进页，my_card.visible 应回读 false（开关初值依据）"
 
     # 重新开启 → 回到墙上
     r2 = client.post("/resonance/visibility", json={"visible": True}, headers=me_h)
