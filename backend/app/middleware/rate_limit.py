@@ -164,6 +164,23 @@ async def card_info_rate_limit(request: Request) -> None:
         raise HTTPException(status_code=429, detail="请求过于频繁，请稍后再试")
 
 
+# ── /meet/public/{meet_id} 独立限流（T2-3）───────────────────────────────
+# 仿 card_info_rate_limit：公开接口按可枚举输入（meet_id）确认记录存在 →
+# 独立 30 次/分/IP 限流，在全局 60/分中间件之上进一步压低离线枚举。
+_meet_info_limiter = RateLimiter(max_requests=30, window_seconds=60)
+
+
+async def meet_info_rate_limit(request: Request) -> None:
+    """FastAPI dependency: 30 req/min per client for GET /meet/public/{meet_id}.
+
+    与 card_info_rate_limit 同策略（鉴权按 user、未鉴权按 IP；Redis 可用时
+    用 Redis，否则进程内滑动窗口）；key 前缀 meet_info:。
+    """
+    key = f"meet_info:{_request_key(request)}"
+    if not await _meet_info_limiter.is_allowed(key):
+        raise HTTPException(status_code=429, detail="请求过于频繁，请稍后再试")
+
+
 async def rate_limit_middleware(request: Request, call_next):
     """FastAPI middleware: reject clients exceeding 60 requests/min.
 

@@ -24,21 +24,27 @@ import hashlib
 import json
 import logging
 import re
+import time
 import uuid
 from datetime import date, datetime
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_db
+from app.middleware.rate_limit import meet_info_rate_limit
 from app.models.card import TarotCard
 from app.models.star_meeting import StarMeeting
 from app.models.user import User
 from app.schemas.meet import (
     MeetDetailResponse,
+    MeetInviteRequest,
+    MeetJoinRequest,
+    MeetJoinResponse,
     MeetListResponse,
     MeetPosterResponse,
+    MeetPublicResponse,
     QuickMeetRequest,
 )
 from app.services.birthchart import (
@@ -49,6 +55,9 @@ from app.services.birthchart import (
     sun_sign,
 )
 from app.services.compatibility import compute_compatibility
+from app.services.share import process_invite
+from app.services.stardust import tier_for, tier_name
+from app.services.wxacode import get_wxacode
 from app.utils.auth import get_current_user
 
 logger = logging.getLogger(__name__)
@@ -435,4 +444,224 @@ async def meet_poster(
             if score is not None
             else "我和TA的星光相遇了 · 看看你和谁星光相映 ✦"
         ),
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# T2-3 邀请版：/meet/invite + /meet/public/{id} + /meet/join
+# ─────────────────────────────────────────────────────────────────────────────
+# 邀请小程序码缓存：按 meet_id 缓存 7 天（与 /share/wxacode 同款有界缓存，
+# 最终审查 F-4：条目上限 _MEET_WXACODE_CACHE_MAX，超限逐出最旧；已过 TTL
+# 的条目在每次写入时惰性清理——进程内存不会随 meet 数无限增长）。
+
+_MEET_WXACODE_CACHE_TTL = 7 * 24 * 3600
+_MEET_WXACODE_CACHE_MAX = 500
+_meet_wxacode_cache: dict[str, tuple[float, bytes]] = {}
+
+
+def _prune_meet_wxacode_cache(now: float) -> None:
+    """惰性清理：删除已过 TTL（7 天）的缓存条目。"""
+    for key in [k for k, (expires, _) in _meet_wxacode_cache.items() if expires <= now]:
+        del _meet_wxacode_cache[key]
+
+
+def _evict_meet_wxacode_cache() -> None:
+    """条目数超上限时逐出最旧条目（dict 保持插入序，首键即最旧）。"""
+    while len(_meet_wxacode_cache) > _MEET_WXACODE_CACHE_MAX:
+        del _meet_wxacode_cache[next(iter(_meet_wxacode_cache))]
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POST /meet/invite — 发起人邀请好友加入（meet → pending + 小程序码 PNG）
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+@router.post("/invite")
+async def meet_invite(
+    payload: MeetInviteRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """邀请好友加入：meet → status=pending → 返回 meet-landing 小程序码 PNG。
+
+    小程序码 scene=m:{meet_id}（好友扫码落到 meet-landing 页，凭 meet_id 查
+    公开信息并加入）；按 meet_id 缓存 7 天，重复邀请命中缓存不再调微信接口。
+
+    归属：仅发起人（非发起人 404 不泄露存在性）；好友已加入后再次邀请 → 400。
+    """
+    row = await db.get(StarMeeting, payload.meet_id)
+    if row is None or row.initiator_id != user.id:
+        raise HTTPException(status_code=404, detail="相遇记录不存在")
+    if row.friend_user_id:
+        raise HTTPException(status_code=400, detail="好友已加入，无需再次邀请")
+    if row.status != "pending":
+        row.status = "pending"  # 邀请中：好友 join 后回填并完成
+        await db.flush()
+
+    now = time.time()
+    cached = _meet_wxacode_cache.get(row.id)
+    if cached and cached[0] > now:
+        return Response(content=cached[1], media_type="image/png")
+
+    try:
+        png_bytes = await get_wxacode(
+            scene=f"m:{row.id}",
+            page="pages/meet-landing/meet-landing",
+            width=430,
+            env_version="trial",
+        )
+    except RuntimeError as exc:
+        raise HTTPException(status_code=502, detail=str(exc))
+
+    _prune_meet_wxacode_cache(now)  # 惰性清理过期条目（F-4）
+    _meet_wxacode_cache[row.id] = (now + _MEET_WXACODE_CACHE_TTL, png_bytes)
+    _evict_meet_wxacode_cache()  # 超上限逐出最旧（F-4）
+    return Response(content=png_bytes, media_type="image/png")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# GET /meet/public/{meet_id} — 扫码落地页公开信息（脱敏 + 限流）
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+@router.get(
+    "/public/{meet_id}",
+    response_model=MeetPublicResponse,
+    dependencies=[Depends(meet_info_rate_limit)],
+)
+async def meet_public_info(
+    meet_id: str,
+    db: AsyncSession = Depends(get_db),
+):
+    """扫码落地页公开信息（无需登录）。
+
+    仅返回 5 个已公开展示字段：meet_id / 发起人 nickname / 星座中文名 /
+    星阶名称 / meet 状态。脱敏：无联系方式、无出生信息、无 invite_code。
+
+    安全：公开且按可枚举输入（meet_id）确认记录存在 → 挂 30 次/分/IP 的
+    meet_info_rate_limit（仿 /share/card-info），压低离线枚举。
+    """
+    row = await db.get(StarMeeting, meet_id)
+    if row is None:
+        raise HTTPException(status_code=404, detail="相遇记录不存在")
+    initiator = await db.get(User, row.initiator_id)
+    zodiac = initiator.zodiac if initiator else None
+    tier = (
+        initiator.star_tier
+        if initiator and initiator.star_tier is not None
+        else tier_for((initiator.stardust_total or 0) if initiator else 0)
+    )
+    return {
+        "meet_id": row.id,
+        "nickname": (initiator.nickname if initiator else None) or "一位星光旅人",
+        "zodiac_cn": ZODIAC_NAMES_ZH.get(zodiac or "", zodiac or "未设置"),
+        "star_tier_name": tier_name(tier),
+        "status": row.status,
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POST /meet/join — 好友加入：回填 b 三要素 + friend_user_id + 双向奖励
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+@router.post("/join", response_model=MeetJoinResponse)
+async def meet_join(
+    payload: MeetJoinRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """好友加入邀请版相遇：按好友的星座/出生信息重算合盘并回填落库。
+
+    - 仅 status=pending（已邀请）的相遇可加入；发起人自己不能加入（同人防刷）；
+      已完成（含重复加入/第三人）→ 400
+    - 回填 b 三要素 + friend_user_id + status=completed + result_json
+      （a 侧复用落库派生三要素；b 侧为好友真实信息，与 quick 同口径派生）
+    - 奖励：发起人有 invite_code 且为首次 pending→completed → process_invite
+      （双方各 +1 免费解读）。幂等双保险：join 只放行 pending 行（首完成只
+      发生一次）+ process_invite 自身校验（invitee 唯一，已接受过不重复）
+    """
+    if payload.zodiac_b not in ZODIAC_KEYS:
+        raise HTTPException(status_code=400, detail="星座参数无效，请使用 aries 等标准 key")
+    if payload.b_birth_date is not None and _parse_birth_date(payload.b_birth_date) is None:
+        raise HTTPException(status_code=400, detail="对方出生日期格式无效，应为 YYYY-MM-DD")
+    if payload.b_birth_time and not _parse_meet_time(payload.b_birth_time):
+        raise HTTPException(status_code=400, detail="对方出生时间格式无效，应为 HH:MM")
+    if payload.b_birth_date is None and payload.b_birth_time:
+        raise HTTPException(status_code=400, detail="对方出生时间需要配合出生日期一起填写")
+
+    row = await db.get(StarMeeting, payload.meet_id)
+    if row is None:
+        raise HTTPException(status_code=404, detail="相遇记录不存在")
+    if row.initiator_id == user.id:
+        raise HTTPException(status_code=400, detail="不能加入自己的相遇")
+    if row.status != "pending":
+        raise HTTPException(status_code=400, detail="该相遇未在邀请中或已完成")
+
+    # ── b 三要素（与 quick 的 b 侧同口径）──
+    b_sun = payload.zodiac_b
+    b_moon: str | None = None
+    b_rising: str | None = None
+    if payload.b_birth_date is not None:
+        b_parts = _parse_birth_date(payload.b_birth_date)
+        b_sun = sun_sign(b_parts[0], b_parts[1])
+        b_moon = moon_sign(b_parts[0], b_parts[1], payload.b_birth_time)[0]
+    if payload.b_birth_time:
+        b_rising = rising_sign(b_sun, payload.b_birth_time)
+        if b_rising is None:
+            raise HTTPException(status_code=400, detail="对方出生时间格式无效，应为 HH:MM")
+
+    # ── 合盘（a 侧复用落库三要素；T2-1 三要素加权）──
+    compat = _compute_safe(
+        a_sun=row.a_zodiac, b_sun=b_sun,
+        a_moon=row.a_moon, b_moon=b_moon,
+        a_rising=row.a_rising, b_rising=b_rising,
+    )
+
+    # ── 确定性三牌（seed 与 quick 同口径：发起人生日|好友生日|今天）──
+    initiator = await db.get(User, row.initiator_id)
+    seed_str = _meet_seed(
+        (initiator.birth_date if initiator else None) or "", payload.b_birth_date or ""
+    )
+    cards, tips = await _build_cards(db, seed_str)
+
+    result = {
+        "score": compat["score"],
+        "level_name": compat["level_name"],
+        "factors": compat["factors"],
+        "used": compat["used"],
+        "estimated": compat["estimated"],
+        "estimate_note": compat["estimate_note"],
+        "cards": cards,
+        "tips": tips,
+    }
+
+    # ── 回填 + 完成（pending→completed 只发生一次 → 奖励幂等前提）──
+    row.b_zodiac = b_sun
+    row.b_moon = b_moon
+    row.b_rising = b_rising
+    row.friend_user_id = user.id
+    row.status = "completed"
+    row.result_json = json.dumps(result, ensure_ascii=False)
+    await db.flush()
+
+    # ── 邀请奖励：发起人有 invite_code 且为首次完成（process_invite 自身幂等）──
+    reward_granted = False
+    reward_note: str | None = None
+    if initiator is not None and initiator.invite_code:
+        invite_result = await process_invite(
+            db, inviter_code=initiator.invite_code, invitee_user=user
+        )
+        reward_granted = bool(invite_result.get("success", False))
+        if not reward_granted:
+            reward_note = invite_result.get("error")
+
+    return {
+        "meet_id": row.id,
+        "relation": row.relation,
+        "a": _side(row.a_zodiac, row.a_moon, row.a_rising),
+        "b": _side(row.b_zodiac, row.b_moon, row.b_rising),
+        **result,
+        "reward_granted": reward_granted,
+        "reward_note": reward_note,
     }

@@ -112,3 +112,46 @@ class MeetPosterResponse(BaseModel):
     level_name: str | None = None
     cards: list[MeetPosterCard]
     share_text: str
+
+
+class MeetInviteRequest(BaseModel):
+    """邀请版（T2-3）：发起人邀请好友加入某次相遇。"""
+
+    meet_id: str
+
+
+class MeetJoinRequest(BaseModel):
+    """邀请版（T2-3）：好友加入——提供自己的星座（+可选出生信息提升精确度）。
+
+    b_birth_date 派生太阳/月亮（覆盖所填 zodiac_b，与 quick 同口径）；
+    b_birth_time 派生上升（需配合 b_birth_date）。
+    """
+
+    meet_id: str
+    zodiac_b: str
+    b_birth_date: str | None = None  # YYYY-MM-DD
+    b_birth_time: str | None = None  # HH:MM 或 HH:MM:SS（需配合 b_birth_date）
+
+
+class MeetPublicResponse(BaseModel):
+    """扫码落地页公开信息（T2-3）：脱敏 5 字段，无联系方式/出生信息/invite_code。
+
+    zodiac_cn 为星座中文名（如 狮子座），不出星座 key。
+    """
+
+    meet_id: str
+    nickname: str
+    zodiac_cn: str
+    star_tier_name: str
+    status: str
+
+
+class MeetJoinResponse(MeetDetailResponse):
+    """join 响应：完整结果（与 quick 同构）+ 邀请奖励状态。
+
+    reward_granted：首次完成且发起人有邀请码且双方均可奖励时为 True；
+    已接受过邀请码的好友 → False + reward_note 提示原因（幂等，不重复奖励）。
+    """
+
+    reward_granted: bool | None = None
+    reward_note: str | None = None

@@ -532,3 +532,340 @@ def test_get_meet_dirty_zodiac_no_500(client: TestClient):
 
     r2 = client.get(f"/meet/{meet_id}/poster", headers=_auth(user["token"]))
     assert r2.status_code == 200, r2.text
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# T2-3 邀请版（task-18-brief）：POST /meet/invite + GET /meet/public/{id}
+# + POST /meet/join（回填 friend_user_id + 双向奖励）
+# ═════════════════════════════════════════════════════════════════════════════
+
+_FAKE_PNG = b"\x89PNG\r\n\x1a\n" + b"fake-meet-wxacode-png"
+
+
+def _meet_row(meet_id: str) -> StarMeeting:
+    """直查 star_meetings 行（测试断言落库状态）。"""
+
+    async def _go():
+        async with async_session() as session:
+            return await session.get(StarMeeting, meet_id)
+
+    return asyncio.run(_go())
+
+
+def _user_row(user_id: str) -> User:
+    """直查 users 行（断言奖励字段）。"""
+
+    async def _go():
+        async with async_session() as session:
+            return await session.get(User, user_id)
+
+    return asyncio.run(_go())
+
+
+def _mock_wxacode(monkeypatch, calls: list) -> None:
+    """把 app.api.meet.get_wxacode 替换为 fake，calls 收集调用 kwargs。"""
+    import app.api.meet as meet_api
+
+    async def fake_get_wxacode(**kwargs):
+        calls.append(kwargs)
+        return _FAKE_PNG
+
+    monkeypatch.setattr(meet_api, "get_wxacode", fake_get_wxacode)
+
+
+def _join(client: TestClient, token: str, meet_id: str, **overrides):
+    """POST /meet/join 默认体（好友星座+出生信息），可覆盖。"""
+    base = {
+        "meet_id": meet_id,
+        "zodiac_b": "capricorn",
+        "b_birth_date": "1997-09-12",  # → 处女座（派生覆盖所填）
+        "b_birth_time": "10:00",
+    }
+    base.update(overrides)
+    return client.post("/meet/join", json=base, headers=_auth(token))
+
+
+def _new_code() -> str:
+    return f"STAR-{uuid.uuid4().hex[:4].upper()}"
+
+
+def _invite(client: TestClient, token: str, meet_id: str):
+    return client.post("/meet/invite", json={"meet_id": meet_id}, headers=_auth(token))
+
+
+# ── POST /meet/invite ──────────────────────────────────────────────────────
+
+
+def test_invite_returns_png_and_sets_pending(client: TestClient, monkeypatch):
+    """invite → image/png（scene=m:{meet_id}，meet-landing 页）+ meet 翻转为 pending。"""
+    calls: list = []
+    _mock_wxacode(monkeypatch, calls)
+    user = _new_user(f"inv_a_{uuid.uuid4().hex[:8]}", **BIRTH)
+    created = _quick(client, user["token"])
+
+    r = _invite(client, user["token"], created["meet_id"])
+    assert r.status_code == 200, r.text
+    assert r.headers["content-type"].startswith("image/png")
+    assert r.content == _FAKE_PNG
+    assert len(calls) == 1
+    kwargs = calls[0]
+    assert kwargs["scene"] == f"m:{created['meet_id']}"
+    assert kwargs["page"] == "pages/meet-landing/meet-landing"
+    assert kwargs["width"] == 430
+    assert kwargs["env_version"] == "trial"  # 体验版构建即可扫码打开
+
+    row = _meet_row(created["meet_id"])
+    assert row.status == "pending"  # 邀请中：等待好友加入
+
+
+def test_invite_repeat_hits_cache(client: TestClient, monkeypatch):
+    """重复邀请命中 7 天缓存（按 meet_id）：get_wxacode 只调 1 次。"""
+    calls: list = []
+    _mock_wxacode(monkeypatch, calls)
+    user = _new_user(f"inv_b_{uuid.uuid4().hex[:8]}", **BIRTH)
+    created = _quick(client, user["token"])
+
+    r1 = _invite(client, user["token"], created["meet_id"])
+    r2 = _invite(client, user["token"], created["meet_id"])
+    assert r1.status_code == 200 and r2.status_code == 200
+    assert r1.content == r2.content == _FAKE_PNG
+    assert len(calls) == 1  # 缓存命中——微信接口只调一次
+
+
+def test_invite_requires_auth(client: TestClient):
+    r = client.post("/meet/invite", json={"meet_id": str(uuid.uuid4())})
+    assert r.status_code == 401
+
+
+def test_invite_not_found_404(client: TestClient):
+    user = _new_user(f"inv_c_{uuid.uuid4().hex[:8]}", **BIRTH)
+    r = _invite(client, user["token"], str(uuid.uuid4()))
+    assert r.status_code == 404
+
+
+def test_invite_non_initiator_404(client: TestClient):
+    """非发起人调用 invite → 404（不泄露记录存在性）。"""
+    owner = _new_user(f"inv_d_{uuid.uuid4().hex[:8]}", **BIRTH)
+    other = _new_user(f"inv_e_{uuid.uuid4().hex[:8]}", **BIRTH)
+    created = _quick(client, owner["token"])
+    r = _invite(client, other["token"], created["meet_id"])
+    assert r.status_code == 404
+
+
+def test_invite_after_friend_joined_400(client: TestClient, monkeypatch):
+    """好友已加入（friend_user_id 已回填）→ 再次邀请 400。"""
+    _mock_wxacode(monkeypatch, [])
+    initiator = _new_user(f"inv_f_{uuid.uuid4().hex[:8]}", **BIRTH, invite_code=_new_code())
+    friend = _new_user(f"inv_g_{uuid.uuid4().hex[:8]}", zodiac="capricorn")
+    created = _quick(client, initiator["token"])
+    assert _invite(client, initiator["token"], created["meet_id"]).status_code == 200
+    rj = _join(client, friend["token"], created["meet_id"])
+    assert rj.status_code == 200, rj.text
+
+    r = _invite(client, initiator["token"], created["meet_id"])
+    assert r.status_code == 400
+
+
+# ── GET /meet/public/{meet_id}：脱敏 + 限流 ────────────────────────────────
+
+
+def test_public_meet_sanitized_no_auth(client: TestClient, monkeypatch):
+    """公开接口无需登录，只出 5 个脱敏字段，无 openid/invite_code/birth 相关键。"""
+    _mock_wxacode(monkeypatch, [])
+    initiator = _new_user(f"pub_a_{uuid.uuid4().hex[:8]}", **BIRTH, invite_code=_new_code())
+    created = _quick(client, initiator["token"])
+    assert _invite(client, initiator["token"], created["meet_id"]).status_code == 200
+
+    r = client.get(f"/meet/public/{created['meet_id']}")  # 无 Authorization
+    assert r.status_code == 200, r.text
+    data = r.json()
+    assert set(data.keys()) == {"meet_id", "nickname", "zodiac_cn", "star_tier_name", "status"}
+    assert data["meet_id"] == created["meet_id"]
+    assert data["nickname"] == "相遇测试"
+    assert data["zodiac_cn"] == "狮子座"  # 中文名，不出星座 key
+    assert data["star_tier_name"] == "微光"  # 无星尘 → 0 阶
+    assert data["status"] == "pending"
+
+    raw = json.dumps(data, ensure_ascii=False)
+    for secret in ("openid", "invite_code", "STAR-", "birth", "14:30", "1996"):
+        assert secret not in raw, f"公开接口泄露敏感内容: {secret}"
+
+
+def test_public_meet_not_found_404(client: TestClient):
+    r = client.get(f"/meet/public/{uuid.uuid4()}")
+    assert r.status_code == 404
+
+
+def test_public_meet_rate_limited_429(client: TestClient):
+    """公开接口超限 → 429（30 次/分/IP，meet_info_rate_limit）。"""
+    meet_id = str(uuid.uuid4())  # 限流在 handler 前生效，无需真实记录
+    last = None
+    for _ in range(40):
+        last = client.get(f"/meet/public/{meet_id}")
+    assert last.status_code == 429
+
+
+# ── POST /meet/join：回填 + 奖励 + 幂等 ───────────────────────────────────
+
+
+def test_join_backfills_rewards_and_both_visible(client: TestClient, monkeypatch):
+    """好友加入 → b 三要素回填 + friend_user_id + completed；双方可见；双方各 +1。"""
+    _mock_wxacode(monkeypatch, [])
+    initiator = _new_user(f"join_a_{uuid.uuid4().hex[:8]}", **BIRTH, invite_code=_new_code())
+    friend = _new_user(f"join_b_{uuid.uuid4().hex[:8]}", zodiac="capricorn")
+    created = _quick(client, initiator["token"], zodiac_b="taurus")
+    assert _invite(client, initiator["token"], created["meet_id"]).status_code == 200
+
+    r = _join(client, friend["token"], created["meet_id"])
+    assert r.status_code == 200, r.text
+    data = r.json()
+    assert data["meet_id"] == created["meet_id"]
+    assert data["a"]["zodiac"] == "leo"  # a 侧复用落库三要素
+    assert data["b"]["zodiac"] == "virgo"  # 1997-09-12 → 处女座（派生覆盖所填 capricorn）
+    assert data["b"]["sun"]["zodiac"] == "virgo"
+    assert data["b"]["moon"] and data["b"]["rising"]
+    assert isinstance(data["score"], int) and 55 <= data["score"] <= 95
+    assert data["reward_granted"] is True
+
+    # 落库回填
+    row = _meet_row(created["meet_id"])
+    assert row.status == "completed"
+    assert row.friend_user_id == friend["id"]
+    assert row.b_zodiac == "virgo" and row.b_moon and row.b_rising
+    saved = json.loads(row.result_json)
+    assert saved["score"] == data["score"]
+
+    # 双方都能 GET /meet/{id}
+    r1 = client.get(f"/meet/{created['meet_id']}", headers=_auth(initiator["token"]))
+    r2 = client.get(f"/meet/{created['meet_id']}", headers=_auth(friend["token"]))
+    assert r1.status_code == 200 and r2.status_code == 200
+    assert r2.json()["score"] == data["score"]
+
+    # 双向奖励：双方各 +1 免费解读
+    assert _user_row(initiator["id"]).free_deep_readings == 1
+    assert _user_row(friend["id"]).free_deep_readings == 1
+
+
+def test_join_repeat_and_third_party_idempotent(client: TestClient, monkeypatch):
+    """重复 join/同人二次/第三人 → 400，奖励不重复（幂等）。"""
+    _mock_wxacode(monkeypatch, [])
+    initiator = _new_user(f"join_c_{uuid.uuid4().hex[:8]}", **BIRTH, invite_code=_new_code())
+    friend = _new_user(f"join_d_{uuid.uuid4().hex[:8]}", zodiac="capricorn")
+    third = _new_user(f"join_e_{uuid.uuid4().hex[:8]}", zodiac="pisces")
+    created = _quick(client, initiator["token"])
+    assert _invite(client, initiator["token"], created["meet_id"]).status_code == 200
+
+    r1 = _join(client, friend["token"], created["meet_id"])
+    assert r1.status_code == 200 and r1.json()["reward_granted"] is True
+
+    r2 = _join(client, friend["token"], created["meet_id"])  # 同人二次
+    assert r2.status_code == 400
+    r3 = _join(client, third["token"], created["meet_id"])  # 第三人
+    assert r3.status_code == 400
+
+    assert _user_row(initiator["id"]).free_deep_readings == 1
+    assert _user_row(friend["id"]).free_deep_readings == 1
+    assert _user_row(third["id"]).free_deep_readings == 0
+
+
+def test_join_requires_auth(client: TestClient):
+    r = client.post("/meet/join", json={"meet_id": str(uuid.uuid4()), "zodiac_b": "capricorn"})
+    assert r.status_code == 401
+
+
+def test_join_not_found_404(client: TestClient):
+    user = _new_user(f"join_f_{uuid.uuid4().hex[:8]}", zodiac="capricorn")
+    r = _join(client, user["token"], str(uuid.uuid4()))
+    assert r.status_code == 404
+
+
+def test_join_own_meet_400(client: TestClient, monkeypatch):
+    """发起人不能加入自己的相遇（同人防刷）。"""
+    _mock_wxacode(monkeypatch, [])
+    user = _new_user(f"join_g_{uuid.uuid4().hex[:8]}", **BIRTH)
+    created = _quick(client, user["token"])
+    assert _invite(client, user["token"], created["meet_id"]).status_code == 200
+    r = _join(client, user["token"], created["meet_id"])
+    assert r.status_code == 400
+
+
+def test_join_not_invited_completed_meet_400(client: TestClient):
+    """从未邀请（status=completed）的相遇不可 join。"""
+    user = _new_user(f"join_h_{uuid.uuid4().hex[:8]}", **BIRTH)
+    friend = _new_user(f"join_i_{uuid.uuid4().hex[:8]}", zodiac="capricorn")
+    created = _quick(client, user["token"])
+    r = _join(client, friend["token"], created["meet_id"])
+    assert r.status_code == 400
+
+
+def test_join_invalid_params_400(client: TestClient, monkeypatch):
+    """join 入参校验与 quick 同口径：非法星座/日期/时间无日期 → 400。"""
+    _mock_wxacode(monkeypatch, [])
+    initiator = _new_user(f"join_j_{uuid.uuid4().hex[:8]}", **BIRTH)
+    friend = _new_user(f"join_k_{uuid.uuid4().hex[:8]}", zodiac="capricorn")
+    created = _quick(client, initiator["token"])
+    assert _invite(client, initiator["token"], created["meet_id"]).status_code == 200
+
+    r = _join(client, friend["token"], created["meet_id"], zodiac_b="dragon")
+    assert r.status_code == 400
+    r = _join(client, friend["token"], created["meet_id"], b_birth_date="1997-13-40")
+    assert r.status_code == 400
+    r = _join(client, friend["token"], created["meet_id"], b_birth_date=None, b_birth_time="10:00")
+    assert r.status_code == 400
+
+
+def test_join_no_invite_code_no_reward(client: TestClient, monkeypatch):
+    """发起人无 invite_code → join 正常完成但不触发奖励（reward_granted=False）。"""
+    _mock_wxacode(monkeypatch, [])
+    initiator = _new_user(f"join_l_{uuid.uuid4().hex[:8]}", **BIRTH)  # 无邀请码
+    friend = _new_user(f"join_m_{uuid.uuid4().hex[:8]}", zodiac="capricorn")
+    created = _quick(client, initiator["token"])
+    assert _invite(client, initiator["token"], created["meet_id"]).status_code == 200
+
+    r = _join(client, friend["token"], created["meet_id"])
+    assert r.status_code == 200, r.text
+    assert r.json()["reward_granted"] is False
+    assert _user_row(initiator["id"]).free_deep_readings == 0
+    assert _user_row(friend["id"]).free_deep_readings == 0
+
+
+def test_join_friend_already_used_invite_no_duplicate_reward(client: TestClient, monkeypatch):
+    """好友先前已用邀请码（invites 表有记录）→ join 完成但奖励不重复。"""
+    _mock_wxacode(monkeypatch, [])
+    inviter_code = _new_code()
+    inviter = _new_user(f"join_n_{uuid.uuid4().hex[:8]}", **BIRTH, invite_code=inviter_code)
+    initiator = _new_user(f"join_o_{uuid.uuid4().hex[:8]}", **BIRTH, invite_code=_new_code())
+    friend = _new_user(f"join_p_{uuid.uuid4().hex[:8]}", zodiac="capricorn")
+
+    # 好友先前已通过 /share/invite 接受过邀请码
+    ra = client.post("/share/invite", json={"invite_code": inviter_code}, headers=_auth(friend["token"]))
+    assert ra.status_code == 200
+
+    created = _quick(client, initiator["token"])
+    assert _invite(client, initiator["token"], created["meet_id"]).status_code == 200
+    r = _join(client, friend["token"], created["meet_id"])
+    assert r.status_code == 200, r.text
+    data = r.json()
+    assert data["reward_granted"] is False  # process_invite 幂等：不接受过邀请的 invitee
+    assert data["reward_note"]  # 提示原因
+    assert _user_row(friend["id"]).free_deep_readings == 1  # 只有 /share/invite 那次 +1
+    assert _user_row(initiator["id"]).free_deep_readings == 0
+
+
+def test_join_outputs_compliant(client: TestClient, monkeypatch):
+    """join 响应 tips / 卡牌 tip 无禁词；只输星座 → estimated=True。"""
+    _mock_wxacode(monkeypatch, [])
+    initiator = _new_user(f"join_q_{uuid.uuid4().hex[:8]}", **BIRTH, invite_code=_new_code())
+    friend = _new_user(f"join_r_{uuid.uuid4().hex[:8]}", zodiac="capricorn")
+    created = _quick(client, initiator["token"])
+    assert _invite(client, initiator["token"], created["meet_id"]).status_code == 200
+
+    r = _join(client, friend["token"], created["meet_id"], b_birth_date=None, b_birth_time=None)
+    assert r.status_code == 200, r.text
+    data = r.json()
+    assert data["b"]["moon"] is None and data["b"]["rising"] is None
+    assert data["estimated"] is True
+    texts = list(data["tips"]) + [c["tip"] for c in data["cards"]]
+    for text in texts:
+        banned = _scan_banned(text)
+        assert not banned, f"输出含禁词 {banned}: {text}"
