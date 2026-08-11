@@ -66,6 +66,15 @@ class User(Base):
     birthchart_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     # birthchart_report：深度报告缓存（首次生成后复用；重新生成需再付费或会员）
     birthchart_report: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # ── 星友圈（SDD P2 · T8-1）：隐身开关 + 脱敏星名 ──
+    # resonance_visible：默认 true（参与共鸣墙展示）；false = 一键隐身
+    #   （共鸣墙聚合处过滤，见 Task 2）。server_default 与迁移文件一致
+    #   （SQLite/MySQL 均需默认值，存量用户默认参与）。
+    # star_alias：系统生成脱敏星名（"星星·晚风"式，40 词库确定性生成），
+    #   首次访问 GET /resonance/alias 时落库（幂等）；对外展示只出星名，
+    #   真实昵称/头像永不外泄。
+    resonance_visible: Mapped[bool] = mapped_column(Boolean, default=True, server_default="1")
+    star_alias: Mapped[str | None] = mapped_column(String(16), nullable=True)
     # Auth: bumped on logout/account-deletion to invalidate previously issued JWTs
     token_version: Mapped[int] = mapped_column(Integer, default=0)
     # Daily AI-extras quota (reinterpret / diary AI), reset when the day changes
