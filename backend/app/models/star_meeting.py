@@ -30,7 +30,8 @@ class StarMeeting(Base):
         CHAR(36), ForeignKey("users.id"), index=True, nullable=False
     )
     # 好友注册后回填（裂变追踪，T2-3 /meet/join）；未参与时为 NULL
-    friend_user_id: Mapped[str | None] = mapped_column(CHAR(36), nullable=True)
+    # 索引：list 按 friend_user_id 过滤参与记录（T2-2 审查 Minor 3）
+    friend_user_id: Mapped[str | None] = mapped_column(CHAR(36), index=True, nullable=True)
     relation: Mapped[str] = mapped_column(String(16), nullable=False)  # friend|love|family|work
     # ── 双方派生星座 key（PII 最小化：不存出生日期明文）──
     a_zodiac: Mapped[str] = mapped_column(String(16), nullable=False)

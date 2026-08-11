@@ -185,14 +185,15 @@ def _parse_birth_date(value: str) -> tuple[int, int] | None:
 
 
 def _element(key: str) -> dict:
-    return {"zodiac": key, "name_zh": ZODIAC_NAMES_ZH[key]}
+    """单要素响应：脏 key（非 12 星座）name_zh 兜底为 key 本身，不 KeyError。"""
+    return {"zodiac": key, "name_zh": ZODIAC_NAMES_ZH.get(key, key)}
 
 
 def _side(zodiac: str, moon: str | None, rising: str | None) -> dict:
     """一方三要素响应结构：sun 必有；moon/rising 缺要素为 None（前端标注估算）。"""
     return {
         "zodiac": zodiac,
-        "name_zh": ZODIAC_NAMES_ZH[zodiac],
+        "name_zh": ZODIAC_NAMES_ZH.get(zodiac, zodiac),
         "sun": _element(zodiac),
         "moon": _element(moon) if moon else None,
         "rising": _element(rising) if rising else None,
@@ -362,26 +363,28 @@ async def get_meet(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """相遇结果详情：完整结果（与 quick 返回同构）。"""
+    """相遇结果详情：完整结果（与 quick 返回同构）。
+
+    防御性读取：result_json 为空或部分 JSON（T2-3 邀请行形态）时
+    结果字段为空而非 KeyError 500——与同文件 list/poster 的 .get() 口径一致。
+    """
     row = await db.get(StarMeeting, meet_id)
     if row is None:
         raise HTTPException(status_code=404, detail="相遇记录不存在")
     _check_access(row, user.id)
-    if not row.result_json:
-        raise HTTPException(status_code=404, detail="相遇结果尚未生成")
-    result = json.loads(row.result_json)
+    result = json.loads(row.result_json) if row.result_json else {}
     return {
         "meet_id": row.id,
         "relation": row.relation,
         "a": _side(row.a_zodiac, row.a_moon, row.a_rising),
         "b": _side(row.b_zodiac, row.b_moon, row.b_rising),
-        "score": result["score"],
-        "level_name": result["level_name"],
-        "factors": result["factors"],
-        "cards": result["cards"],
-        "tips": result["tips"],
-        "estimated": result["estimated"],
-        "estimate_note": result["estimate_note"],
+        "score": result.get("score"),
+        "level_name": result.get("level_name"),
+        "factors": result.get("factors"),
+        "cards": result.get("cards"),
+        "tips": result.get("tips"),
+        "estimated": result.get("estimated"),
+        "estimate_note": result.get("estimate_note"),
     }
 
 
@@ -406,6 +409,7 @@ async def meet_poster(
         raise HTTPException(status_code=404, detail="相遇记录不存在")
     _check_access(row, user.id)
     result = json.loads(row.result_json) if row.result_json else {}
+    score = result.get("score")
     initiator = await db.get(User, row.initiator_id)
     nickname = (initiator.nickname if initiator else None) or "一位星光旅人"
     return {
@@ -420,11 +424,15 @@ async def meet_poster(
             "zodiac": row.b_zodiac,
             "name_zh": ZODIAC_NAMES_ZH.get(row.b_zodiac, row.b_zodiac),
         },
-        "score": result.get("score", 0),
-        "level_name": result.get("level_name", ""),
+        "score": score,
+        "level_name": result.get("level_name"),
         "cards": [
             {"position": c["position"], "name_zh": c["name_zh"]}
             for c in result.get("cards", [])
         ],
-        "share_text": f"我和TA的星辰共鸣度是 {result.get('score', 0)} · 看看你和谁星光相映 ✦",
+        "share_text": (
+            f"我和TA的星辰共鸣度是 {score} · 看看你和谁星光相映 ✦"
+            if score is not None
+            else "我和TA的星光相遇了 · 看看你和谁星光相映 ✦"
+        ),
     }

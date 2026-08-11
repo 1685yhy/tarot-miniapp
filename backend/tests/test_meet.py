@@ -116,7 +116,7 @@ def test_quick_full_shape_and_persisted(client: TestClient):
     assert data["b"]["rising"] and data["b"]["rising"]["zodiac"] in ZODIAC_KEYS
 
     assert isinstance(data["score"], int) and 55 <= data["score"] <= 95
-    assert data["level_name"] == data["level_name"] and data["level_name"]
+    assert data["level_name"]
     assert isinstance(data["factors"], list) and data["factors"]
     assert isinstance(data["cards"], list) and len(data["cards"]) == 3
     assert isinstance(data["tips"], list) and len(data["tips"]) >= 1
@@ -426,3 +426,109 @@ def test_poster_other_user_404(client: TestClient):
     created = _quick(client, owner["token"])
     r = client.get(f"/meet/{created['meet_id']}/poster", headers=_auth(other["token"]))
     assert r.status_code == 404
+
+
+# ── 防御性读取：部分 JSON / 空结果 / 缺 score / 脏 key（T2-2 审查修复钉住）──
+
+
+def test_get_meet_partial_result_json_no_500(client: TestClient):
+    """部分 JSON 行（T2-3 邀请行形态）GET 详情 → 200，缺字段为空而非 KeyError 500。"""
+    user = _new_user(f"meet_x_{uuid.uuid4().hex[:8]}", **BIRTH)
+    created = _quick(client, user["token"])
+    partial = {"score": 66, "level_name": "星光共鸣"}  # 缺 factors/cards/tips/estimated/estimate_note
+
+    async def _patch():
+        async with async_session() as session:
+            row = await session.get(StarMeeting, created["meet_id"])
+            row.result_json = json.dumps(partial, ensure_ascii=False)
+            await session.commit()
+    asyncio.run(_patch())
+
+    r = client.get(f"/meet/{created['meet_id']}", headers=_auth(user["token"]))
+    assert r.status_code == 200, r.text
+    data = r.json()
+    assert data["score"] == 66 and data["level_name"] == "星光共鸣"
+    for key in ("factors", "cards", "tips", "estimated", "estimate_note"):
+        assert data[key] is None, f"{key} 应为空: {data[key]}"
+
+
+def test_get_meet_no_result_json_empty_fields(client: TestClient):
+    """result_json 为空（未就绪邀请行）→ 200，结果字段为空（不 404 不 500）。"""
+    user = _new_user(f"meet_y_{uuid.uuid4().hex[:8]}", **BIRTH)
+    created = _quick(client, user["token"])
+
+    async def _patch():
+        async with async_session() as session:
+            row = await session.get(StarMeeting, created["meet_id"])
+            row.result_json = None
+            await session.commit()
+    asyncio.run(_patch())
+
+    r = client.get(f"/meet/{created['meet_id']}", headers=_auth(user["token"]))
+    assert r.status_code == 200, r.text
+    data = r.json()
+    for key in ("score", "level_name", "factors", "cards", "tips", "estimated", "estimate_note"):
+        assert data[key] is None, f"{key} 应为空: {data[key]}"
+
+
+def test_poster_missing_score_omitted(client: TestClient):
+    """海报缺 score → 字段省略（None→exclude_none），不用 0 伪装；share_text 无 None。"""
+    user = _new_user(f"meet_z_{uuid.uuid4().hex[:8]}", **BIRTH)
+    created = _quick(client, user["token"], b_birth_date=None, b_birth_time=None)
+
+    async def _patch():
+        async with async_session() as session:
+            row = await session.get(StarMeeting, created["meet_id"])
+            row.result_json = '{"level_name": "星光共鸣"}'  # 缺 score
+            await session.commit()
+    asyncio.run(_patch())
+
+    r = client.get(f"/meet/{created['meet_id']}/poster", headers=_auth(user["token"]))
+    assert r.status_code == 200, r.text
+    data = r.json()
+    assert "score" not in data  # 缺 score → 省略而非伪装 0
+    assert data["level_name"] == "星光共鸣"  # 有 level_name → 正常返回
+    assert "None" not in data["share_text"] and data["share_text"]
+
+    # 两者都缺 → 全部省略
+    async def _patch_empty():
+        async with async_session() as session:
+            row = await session.get(StarMeeting, created["meet_id"])
+            row.result_json = "{}"
+            await session.commit()
+    asyncio.run(_patch_empty())
+
+    r2 = client.get(f"/meet/{created['meet_id']}/poster", headers=_auth(user["token"]))
+    assert r2.status_code == 200, r2.text
+    data2 = r2.json()
+    assert "score" not in data2 and "level_name" not in data2
+    assert data2["share_text"] and "None" not in data2["share_text"]
+
+
+def test_get_meet_dirty_zodiac_no_500(client: TestClient):
+    """脏星座 key（非 12 key 的落库行）→ 详情/海报 200，name_zh 兜底为 key（不 KeyError 500）。"""
+    user = _new_user(f"meet_w2_{uuid.uuid4().hex[:8]}", **BIRTH)
+    meet_id = str(uuid.uuid4())
+
+    async def _seed():
+        async with async_session() as session:
+            session.add(
+                StarMeeting(
+                    id=meet_id, initiator_id=user["id"], relation="friend",
+                    a_zodiac="dirty-key", a_moon="also-bad", b_zodiac="taurus",
+                    status="completed", result_json='{"score": 77, "level_name": "星光共鸣"}',
+                )
+            )
+            await session.commit()
+    asyncio.run(_seed())
+
+    r = client.get(f"/meet/{meet_id}", headers=_auth(user["token"]))
+    assert r.status_code == 200, r.text
+    data = r.json()
+    assert data["a"]["zodiac"] == "dirty-key"
+    assert data["a"]["name_zh"] == "dirty-key"  # ZODIAC_NAMES_ZH.get() 兜底
+    assert data["a"]["sun"]["name_zh"] == "dirty-key"
+    assert data["a"]["moon"]["name_zh"] == "also-bad"
+
+    r2 = client.get(f"/meet/{meet_id}/poster", headers=_auth(user["token"]))
+    assert r2.status_code == 200, r2.text

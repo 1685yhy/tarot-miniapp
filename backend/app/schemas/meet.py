@@ -51,19 +51,23 @@ class MeetCard(BaseModel):
 
 
 class MeetDetailResponse(BaseModel):
-    """quick 与详情共用的完整结果。"""
+    """quick 与详情共用的完整结果。
+
+    quick 恒返回全部字段；详情读 result_json 时结果可能未就绪（T2-3 邀请行），
+    结果字段为 Optional——缺失时为 None（前端渲染"结果尚未生成"），不 500。
+    """
 
     meet_id: str
     relation: str
     a: MeetSide
     b: MeetSide
-    score: int
-    level_name: str
-    factors: list[MeetFactor]
-    cards: list[MeetCard]
-    tips: list[str]
-    estimated: bool
-    estimate_note: str
+    score: int | None = None
+    level_name: str | None = None
+    factors: list[MeetFactor] | None = None
+    cards: list[MeetCard] | None = None
+    tips: list[str] | None = None
+    estimated: bool | None = None
+    estimate_note: str | None = None
 
 
 class MeetListItem(BaseModel):
@@ -103,7 +107,8 @@ class MeetPosterResponse(BaseModel):
     relation: str
     a: MeetPosterSide
     b: MeetPosterSide
-    score: int
-    level_name: str
+    # 结果未就绪时缺省（exclude_none 省略），不伪装 0/空串
+    score: int | None = None
+    level_name: str | None = None
     cards: list[MeetPosterCard]
     share_text: str
