@@ -95,6 +95,10 @@
     {
       "root": "pages/meet/",
       "pages": ["meet"]
+    },
+    {
+      "root": "pages/meet-landing/",
+      "pages": ["meet-landing"]
     }
   ],
   "window": {
@@ -146,6 +150,10 @@
     "pages/reading/reading": {
       "network": "all",
       "packages": ["pages/reading-result/"]
+    },
+    "pages/meet/meet": {
+      "network": "all",
+      "packages": ["pages/meet-landing/"]
     }
   },
   "style": "v2",

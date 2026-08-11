@@ -1,0 +1,331 @@
+/* ============================================================
+   meet-landing 落地页 — E3 奶油疗愈明亮主题（与 card-landing/meet 同系）
+   奶油米白 #FAF6EF · 表面 #FFFDF8 · 细金 #C9A97C · 金深 #8A6B3D · 墨 #3D3A36
+   ============================================================ */
+
+.ml-page {
+  min-height: 100vh;
+  background: var(--color-bg-gradient, linear-gradient(180deg, #FAF6EF 0%, #F7F0E3 40%, #F2ECDF 100%));
+  padding: var(--spacing-2xl, 64rpx) var(--page-padding, 32rpx) calc(var(--safe-area-bottom, 0px) + 64rpx);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── 顶部装饰星 ── */
+.ml-sky {
+  position: relative;
+  width: 100%;
+  height: 96rpx;
+  margin-bottom: var(--spacing-md, 24rpx);
+}
+
+.ml-star {
+  position: absolute;
+  color: var(--color-gold, #C9A97C);
+  opacity: 0.7;
+}
+
+.ml-star-1 { top: 8rpx;  left: 16%; font-size: 24rpx; }
+.ml-star-2 { top: 36rpx; left: 76%; font-size: 30rpx; color: var(--color-lavender-deep, #6E6A96); opacity: 0.5; }
+.ml-star-3 { top: 70rpx; left: 32%; font-size: 20rpx; opacity: 0.45; }
+
+/* ── 加载 / 错误 / 完成 状态 ── */
+.ml-state {
+  margin-top: 24vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md, 24rpx);
+  width: 100%;
+}
+
+.ml-state-spinner {
+  width: 56rpx;
+  height: 56rpx;
+  border: 4rpx solid var(--color-gold-light, #D9BC8F);
+  border-top-color: var(--color-gold-deep-ink, #8A6B3D);
+  border-radius: var(--radius-full, 50%);
+  animation: ml-spin 0.9s linear infinite;
+}
+
+@keyframes ml-spin {
+  to { transform: rotate(360deg); }
+}
+
+.ml-state-emoji {
+  font-size: 64rpx;
+  color: var(--color-gold, #C9A97C);
+}
+
+.ml-state-title {
+  color: var(--color-text-primary, #3D3A36);
+  font-size: var(--font-size-subhead, 36rpx);
+  font-weight: var(--font-weight-semibold, 600);
+}
+
+.ml-state-text {
+  color: var(--color-text-tertiary, #6E6A96);
+  font-size: var(--font-size-body, 30rpx);
+  text-align: center;
+  line-height: var(--line-height-base, 1.6);
+}
+
+/* ── 邀请卡（脱敏公开信息） ── */
+.ml-card {
+  width: 100%;
+  max-width: 620rpx;
+  background: var(--color-surface, #FFFDF8);
+  border: 2rpx solid var(--color-card-border, rgba(201, 169, 124, 0.28));
+  border-radius: var(--radius-lg, 24rpx);
+  box-shadow: var(--shadow-elevated, 0 8rpx 30rpx rgba(61, 58, 54, 0.10));
+  padding: var(--spacing-2xl, 64rpx) var(--spacing-lg, 32rpx) var(--spacing-xl, 48rpx);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ml-card-brand {
+  color: var(--color-gold-deep-ink, #8A6B3D);
+  font-size: var(--font-size-subhead, 36rpx);
+  font-weight: var(--font-weight-bold, 700);
+  letter-spacing: 6rpx;
+}
+
+.ml-inviter-avatar {
+  margin-top: var(--spacing-xl, 48rpx);
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: var(--radius-full, 50%);
+  background: var(--color-gold-glow-strong, rgba(201, 169, 124, 0.22));
+  border: 2rpx solid var(--color-gold, #C9A97C);
+  color: var(--color-gold-deep-ink, #8A6B3D);
+  font-size: 52rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ml-inviter-title {
+  margin-top: var(--spacing-lg, 32rpx);
+  color: var(--color-text-primary, #3D3A36);
+  font-size: var(--font-size-title, 44rpx);
+  font-weight: var(--font-weight-semibold, 600);
+  text-align: center;
+  line-height: var(--line-height-tight, 1.3);
+}
+
+.ml-tags {
+  margin-top: var(--spacing-lg, 32rpx);
+  display: flex;
+  gap: var(--spacing-sm, 16rpx);
+}
+
+.ml-tag {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 10rpx 28rpx;
+  border-radius: var(--radius-pill, 999rpx);
+  border: 1rpx solid var(--color-card-border-hover, rgba(201, 169, 124, 0.45));
+  background: rgba(255, 253, 248, 0.9);
+  color: var(--color-gold-deep-ink, #8A6B3D);
+  font-size: var(--font-size-caption, 24rpx);
+}
+
+.ml-tag-icon {
+  color: var(--color-gold, #C9A97C);
+  font-size: 22rpx;
+}
+
+.ml-card-sub {
+  margin-top: var(--spacing-lg, 32rpx);
+  color: var(--color-text-tertiary, #6E6A96);
+  font-size: var(--font-size-caption, 24rpx);
+  text-align: center;
+}
+
+/* ── 登录引导 ── */
+.ml-login-block {
+  margin-top: var(--spacing-xl, 48rpx);
+  width: 100%;
+  max-width: 620rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ml-login-note {
+  margin-top: var(--spacing-sm, 16rpx);
+  color: var(--color-text-tertiary, #6E6A96);
+  font-size: var(--font-size-caption, 24rpx);
+  text-align: center;
+}
+
+/* ── 表单区块（星座 12 宫格 / 出生信息） ── */
+.ml-section {
+  width: 100%;
+  max-width: 620rpx;
+  margin-top: var(--spacing-xl, 48rpx);
+}
+
+.ml-section-label {
+  display: block;
+  color: var(--color-text-secondary, #8A8478);
+  font-size: var(--font-size-body, 30rpx);
+  font-weight: var(--font-weight-medium, 500);
+  margin-bottom: var(--spacing-md, 24rpx);
+}
+
+.ml-zodiac-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm, 16rpx);
+}
+
+.ml-zodiac-cell {
+  width: calc((100% - 3 * var(--spacing-sm, 16rpx)) / 4);
+  border-radius: var(--radius-md, 16rpx);
+  border: 2rpx solid transparent;
+  padding: var(--spacing-md, 24rpx) 0 var(--spacing-sm, 16rpx);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  transition: border-color var(--duration-fast, 0.2s) var(--ease-soft, ease-out);
+}
+
+.ml-zodiac-cell--on {
+  border-color: var(--color-gold, #C9A97C);
+  background: var(--color-surface, #FFFDF8) !important;
+}
+
+.ml-zodiac-cell--press {
+  transform: scale(0.95);
+}
+
+.ml-zodiac-symbol {
+  font-size: 44rpx;
+  color: var(--color-text-primary, #3D3A36);
+}
+
+.ml-zodiac-name {
+  margin-top: 8rpx;
+  font-size: var(--font-size-caption, 24rpx);
+  color: var(--color-text-secondary, #8A8478);
+}
+
+.ml-section-caption {
+  display: block;
+  margin-top: var(--spacing-sm, 16rpx);
+  color: var(--color-text-tertiary, #6E6A96);
+  font-size: var(--font-size-caption, 24rpx);
+}
+
+/* ── 出生日期/时间 ── */
+.ml-birth-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 16rpx);
+}
+
+.ml-birth-picker {
+  flex: 1;
+}
+
+.ml-birth-item {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  padding: var(--spacing-md, 24rpx) var(--spacing-sm, 16rpx);
+  border-radius: var(--radius-md, 16rpx);
+  border: 2rpx solid var(--color-card-border, rgba(201, 169, 124, 0.28));
+  background: var(--color-surface, #FFFDF8);
+  color: var(--color-text-tertiary, #6E6A96);
+  font-size: var(--font-size-body, 30rpx);
+}
+
+.ml-birth-item--on {
+  border-color: var(--color-gold, #C9A97C);
+  color: var(--color-text-primary, #3D3A36);
+}
+
+.ml-birth-item-icon {
+  color: var(--color-gold, #C9A97C);
+  font-size: 28rpx;
+}
+
+.ml-birth-clear {
+  padding: var(--spacing-md, 24rpx) var(--spacing-sm, 16rpx);
+  border-radius: var(--radius-md, 16rpx);
+  border: 2rpx solid var(--color-card-border, rgba(201, 169, 124, 0.28));
+  background: var(--color-surface, #FFFDF8);
+}
+
+.ml-birth-clear--press {
+  opacity: 0.6;
+}
+
+.ml-birth-clear-text {
+  color: var(--color-text-link, #8A6B3D);
+  font-size: var(--font-size-caption, 24rpx);
+}
+
+/* ── CTA 按钮 ── */
+.ml-btn {
+  margin-top: var(--spacing-2xl, 64rpx);
+  width: 100%;
+  max-width: 620rpx;
+  height: 96rpx;
+  line-height: 96rpx;
+  border-radius: var(--radius-pill, 999rpx);
+  text-align: center;
+}
+
+.ml-btn--primary {
+  background: linear-gradient(135deg, #D9BC8F 0%, #C9A97C 100%);
+  box-shadow: var(--shadow-gold-button, 0 4rpx 14rpx rgba(201, 169, 124, 0.25));
+}
+
+.ml-btn--primary .ml-btn-text {
+  color: #FFFDF8;
+  font-size: var(--font-size-subhead, 36rpx);
+  font-weight: var(--font-weight-semibold, 600);
+  letter-spacing: 2rpx;
+}
+
+.ml-btn--ghost {
+  background: var(--color-surface, #FFFDF8);
+  border: 2rpx solid var(--color-gold, #C9A97C);
+  box-sizing: border-box;
+}
+
+.ml-btn--ghost .ml-btn-text {
+  color: var(--color-gold-deep-ink, #8A6B3D);
+  font-size: var(--font-size-body, 30rpx);
+  font-weight: var(--font-weight-medium, 500);
+}
+
+.ml-btn--press {
+  opacity: 0.88;
+  transform: translateY(2rpx);
+}
+
+.ml-btn--disabled {
+  opacity: 0.6;
+}
+
+/* ── 底部免责 ── */
+.ml-foot {
+  margin-top: var(--spacing-xl, 48rpx);
+  padding: 0 var(--spacing-lg, 32rpx);
+}
+
+.ml-foot-text {
+  color: var(--color-text-tertiary, #6E6A96);
+  font-size: var(--font-size-caption, 24rpx);
+  opacity: 0.8;
+  text-align: center;
+}

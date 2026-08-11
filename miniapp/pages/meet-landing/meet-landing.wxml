@@ -1,0 +1,133 @@
+<!--
+  pages/meet-landing/meet-landing.wxml —— 星辰相遇落地页（SDD P1 · T2-5）
+  好友扫码（scene=m:{meet_id}）→ 脱敏公开信息 → 选星座/出生 → 登录 → 接受相遇
+  状态：loading（拉公开信息）| invite（pending 可加入）| done（已完成）| error
+  约定：WXML 不用 .length > 0 / 三元短路表达式，所有布尔 JS 预计算（T1-5 教训）
+-->
+
+<view class="ml-page">
+
+  <!-- ══════════ 加载中 ══════════ -->
+  <view class="ml-state" wx:if="{{step === 'loading'}}">
+    <view class="ml-state-spinner"></view>
+    <text class="ml-state-text">正在点亮星光...</text>
+  </view>
+
+  <!-- ══════════ 错误态（404/接口错误，可重试） ══════════ -->
+  <view class="ml-state" wx:elif="{{step === 'error'}}">
+    <text class="ml-state-emoji">☾</text>
+    <text class="ml-state-title">星光暂时无法相遇</text>
+    <text class="ml-state-text">{{errorMsg}}</text>
+    <view class="ml-btn ml-btn--primary" bindtap="onRetry" role="button" aria-label="重新连接" hover-class="ml-btn--press">
+      <text class="ml-btn-text">重新连接</text>
+    </view>
+  </view>
+
+  <!-- ══════════ 已完成（status != pending 优雅提示） ══════════ -->
+  <view class="ml-state" wx:elif="{{step === 'done'}}">
+    <text class="ml-state-emoji">✦</text>
+    <text class="ml-state-title">这场相遇已完成</text>
+    <text class="ml-state-text" wx:if="{{hasInfo}}">{{info.nickname}} 的星辰相遇已经达成 ✦</text>
+    <view class="ml-btn ml-btn--primary" bindtap="onViewResult" role="button" aria-label="去看看结果" hover-class="ml-btn--press">
+      <text class="ml-btn-text">去看看结果</text>
+    </view>
+    <view class="ml-btn ml-btn--ghost" bindtap="onGoCreate" role="button" aria-label="发起自己的相遇" hover-class="ml-btn--press">
+      <text class="ml-btn-text">我也发起一场相遇 ✦</text>
+    </view>
+  </view>
+
+  <!-- ══════════ 邀请页（status=pending） ══════════ -->
+  <block wx:elif="{{step === 'invite'}}">
+
+    <!-- 顶部装饰星 -->
+    <view class="ml-sky">
+      <view class="ml-star ml-star-1">✦</view>
+      <view class="ml-star ml-star-2">✦</view>
+      <view class="ml-star ml-star-3">✦</view>
+    </view>
+
+    <!-- 邀请卡（脱敏公开信息） -->
+    <view class="ml-card">
+      <text class="ml-card-brand">✦ 星辰相遇邀请 ✦</text>
+      <view class="ml-inviter-avatar">✦</view>
+      <text class="ml-inviter-title">{{info.nickname}} 邀请你进行星辰相遇</text>
+      <view class="ml-tags">
+        <view class="ml-tag" wx:if="{{info.hasZodiac}}">
+          <text class="ml-tag-icon">☾</text>
+          <text>{{info.zodiacCn}}</text>
+        </view>
+        <view class="ml-tag" wx:if="{{info.hasTier}}">
+          <text class="ml-tag-icon">✦</text>
+          <text>{{info.starTierName}} · 星阶</text>
+        </view>
+      </view>
+      <text class="ml-card-sub">选好你的星座，接受这场星辰相遇</text>
+    </view>
+
+    <!-- 未登录：先微信登录（登录后展示接受表单） -->
+    <view class="ml-login-block" wx:if="{{!loggedIn}}">
+      <view class="ml-btn ml-btn--primary" bindtap="onLogin" role="button" aria-label="微信登录接受相遇" hover-class="ml-btn--press">
+        <text class="ml-btn-text">微信登录，接受相遇 ✦</text>
+      </view>
+      <text class="ml-login-note">登录后即可接受邀请，不会公开你的任何信息</text>
+    </view>
+
+    <!-- 已登录：好友出生信息 + 接受相遇 -->
+    <block wx:else>
+      <!-- 星座 12 宫格（好友 = b 侧星座） -->
+      <view class="ml-section">
+        <text class="ml-section-label">你的星座</text>
+        <view class="ml-zodiac-grid">
+          <view
+            class="ml-zodiac-cell {{item.selected ? 'ml-zodiac-cell--on' : ''}}"
+            wx:for="{{zodiacs}}"
+            wx:key="key"
+            data-key="{{item.key}}"
+            bindtap="onZodiacTap"
+            style="background: {{item.elementBg}};"
+            role="button"
+            aria-label="选择星座 {{item.name}}"
+            hover-class="ml-zodiac-cell--press"
+          >
+            <text class="ml-zodiac-symbol">{{item.emoji}}</text>
+            <text class="ml-zodiac-name">{{item.name}}</text>
+          </view>
+        </view>
+        <text class="ml-section-caption">补全出生信息能让月亮与上升落座更精确</text>
+      </view>
+
+      <!-- 可选出生日期/时间 -->
+      <view class="ml-section">
+        <text class="ml-section-label">你的出生信息（可选）</text>
+        <view class="ml-birth-row">
+          <picker class="ml-birth-picker" mode="date" start="1920-01-01" end="{{maxBirthYear}}-12-31" bindchange="onDateChange">
+            <view class="ml-birth-item {{birthDate ? 'ml-birth-item--on' : ''}}">
+              <text class="ml-birth-item-icon">☀</text>
+              <text class="ml-birth-item-label">{{birthDateLabel}}</text>
+            </view>
+          </picker>
+          <picker class="ml-birth-picker" mode="time" bindchange="onTimeChange">
+            <view class="ml-birth-item {{birthTime ? 'ml-birth-item--on' : ''}}">
+              <text class="ml-birth-item-icon">☾</text>
+              <text class="ml-birth-item-label">{{birthTimeLabel}}</text>
+            </view>
+          </picker>
+          <view class="ml-birth-clear" wx:if="{{hasBirth}}" bindtap="onClearBirth" role="button" aria-label="清除出生信息" hover-class="ml-birth-clear--press">
+            <text class="ml-birth-clear-text">清除</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 接受相遇 -->
+      <view class="ml-btn ml-btn--primary {{submitting ? 'ml-btn--disabled' : ''}}" bindtap="onAccept" role="button" aria-label="接受相遇" hover-class="ml-btn--press">
+        <text class="ml-btn-text">{{submitLabel}}</text>
+      </view>
+    </block>
+
+    <!-- 固定免责尾行 -->
+    <view class="ml-foot">
+      <text class="ml-foot-text">星辰只描述你们如何相处，不定义任何结局 · 仅供娱乐 · 星光映照</text>
+    </view>
+  </block>
+
+</view>

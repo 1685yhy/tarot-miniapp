@@ -3,7 +3,5 @@
   "navigationBarBackgroundColor": "#FAF6EF",
   "navigationBarTextStyle": "black",
   "enablePullDownRefresh": false,
-  "usingComponents": {
-    "share-poster": "/components/share-poster/share-poster"
-  }
+  "usingComponents": {}
 }

@@ -696,6 +696,16 @@ page {
   opacity: 0.6;
 }
 
+/* 6.1 合盘海报（T2-5：独立一行，双钮排不下三枚） */
+.poster-row {
+  display: flex;
+  margin-top: var(--spacing-sm);
+}
+
+.poster-row .action-btn {
+  flex: 1;
+}
+
 .back-form {
   margin-top: var(--spacing-md);
   text-align: center;

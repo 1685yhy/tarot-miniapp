@@ -143,6 +143,12 @@ Page({
     inviteQrPath: '',
     inviteSaving: false,
     saveLabel: '保存到相册',
+
+    // 合盘海报（T2-5：GET /meet/{meet_id}/poster → share-poster mode="meet"）
+    posterLoading: false,
+    posterLabel: '合盘海报',
+    posterData: null,       // 海报数据（脱敏）
+    showPoster: false,      // 海报预览弹层
   },
 
   onLoad(options) {
@@ -511,6 +517,73 @@ Page({
   onPreviewInvite() {
     if (this._qrPath) {
       wx.previewImage({ urls: [this._qrPath], current: this._qrPath });
+    }
+  },
+
+  /* ── 合盘海报（T2-5）：GET /meet/{meet_id}/poster → share-poster mode="meet" ── */
+
+  onSharePoster() {
+    if (this.data.posterLoading || !this._meetId) return;
+    this.setData({ posterLoading: true, posterLabel: '海报生成中…' });
+    wx.showLoading({ title: '生成合盘海报...', mask: true });
+
+    request(`/meet/${this._meetId}/poster`)
+      .then((res) => {
+        if (!res || !res.meet_id) {
+          throw Object.assign(new Error('海报数据异常'), { statusCode: 0 });
+        }
+        // 归一化：双人徽章 emoji 由 meet-poster.js 内部按 zodiac key 查 energy 表
+        this.setData({
+          posterData: {
+            meet_id: res.meet_id,
+            relation: res.relation || '',
+            a: res.a || {},
+            b: res.b || {},
+            score: typeof res.score === 'number' ? res.score : null,
+            level_name: res.level_name || '',
+            cards: Array.isArray(res.cards) ? res.cards.filter((c) => c && c.name_zh) : [],
+            share_text: res.share_text || '我和TA的星辰共鸣度 · 看看你和谁星光相映 ✦',
+          },
+          showPoster: true,
+          posterLoading: false,
+          posterLabel: '合盘海报',
+        });
+        wx.hideLoading();
+        analytics.trackEvent('meet_poster', { meet_id: this._meetId, score: res.score });
+      })
+      .catch((err) => {
+        this.setData({ posterLoading: false, posterLabel: '合盘海报' });
+        wx.hideLoading();
+        wx.showToast({ title: getFriendlyError(err) || '海报生成失败，请稍后重试', icon: 'none' });
+      });
+  },
+
+  onClosePoster() {
+    this.setData({ showPoster: false });
+  },
+
+  /** 海报「分享给朋友」：分享打点 + 分享奖励（fire-and-forget，与晚安卡/手账同款） */
+  onShareMeetPosterToFriend(e) {
+    const imagePath = e.detail && e.detail.imagePath;
+    if (!imagePath) return;
+    analytics.trackShare('wechat_friend', 'meet_poster');
+    const poster = this.data.posterData || {};
+    request('/share/track', {
+      method: 'POST',
+      data: { channel: 'wechat_friend', share_type: 'meet_poster', ref_id: this._meetId || '' },
+    }).then((res) => {
+      if (res && res.rewarded) {
+        wx.showToast({ title: '分享成功！奖励已发放 ✦', icon: 'success', duration: 2000 });
+      }
+    }).catch(() => {});
+    try {
+      wx.shareAppMessage({
+        imageUrl: imagePath,
+        title: poster.share_text || '我和TA的星辰共鸣度 · 看看你和谁星光相映 ✦',
+      });
+    } catch (err) {
+      // 降级：先保存海报，再从相册分享
+      wx.showToast({ title: '请先保存海报，再从相册分享', icon: 'none', duration: 2000 });
     }
   },
 

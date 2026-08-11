@@ -107,6 +107,16 @@
  *     bind:share="onShareMoonPosterToFriend"
  *   />
  *
+ * Usage (星辰相遇合盘海报 — mode="meet", E3 奶油底双人徽章 + 共鸣度 +
+ * 三牌 + 小程序码 scene=m:{meet_id} → meet-landing, footer 仅供娱乐 · 星光映照):
+ *   <share-poster
+ *     mode="meet"
+ *     visible="{{showMeetPoster}}"
+ *     meetPosterData="{{posterData}}"
+ *     bind:close="onCloseMeetPoster"
+ *     bind:share="onShareMeetPosterToFriend"
+ *   />
+ *
  * fortuneData shape:
  *   {
  *     dateText, totalReadings, mood,
@@ -124,10 +134,21 @@
  *     summary: 'AI/降级 复盘摘要',
  *     starTierName: '星光'
  *   }
+ *
+ * meetPosterData shape（来自 GET /meet/{meet_id}/poster，脱敏）:
+ *   {
+ *     meet_id, relation,
+ *     a: {zodiac, name_zh, nickname},
+ *     b: {zodiac, name_zh},
+ *     score, level_name,
+ *     cards: [{position, name_zh}],
+ *     share_text
+ *   }
  */
 const { drawSharePoster } = require('../../utils/canvas-poster');
 const { drawJournalPoster } = require('../../utils/journal-poster');
 const { drawMoonCardPoster } = require('../../utils/moon-card-poster');
+const { drawMeetPoster } = require('../../utils/meet-poster');
 
 Component({
   properties: {
@@ -138,7 +159,12 @@ Component({
     },
     mode: {
       type: String,
-      value: 'reading', // 'reading' | 'daily' | 'invite' | 'zodiac' | 'diary' | 'fortune' | 'card' | 'journal' | 'moon'
+      value: 'reading', // 'reading' | 'daily' | 'invite' | 'zodiac' | 'diary' | 'fortune' | 'card' | 'journal' | 'moon' | 'meet'
+    },
+    // meet mode: 星辰相遇合盘海报数据（脱敏）
+    meetPosterData: {
+      type: null,
+      value: {}, // { meet_id, relation, a, b, score, level_name, cards, share_text }
     },
     // journal mode: 月度星光手账海报数据（脱敏）
     journalData: {
@@ -274,7 +300,7 @@ Component({
        Draw the poster on canvas using the utility
        --------------------------------------------------------------- */
     _drawPoster() {
-      const { mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak, inviteCode, zodiacSigns, moodEmoji, excerpt, fortuneData, journalData, moonCardData, starTierName, stardustTotal } = this.properties;
+      const { mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak, inviteCode, zodiacSigns, moodEmoji, excerpt, fortuneData, journalData, moonCardData, meetPosterData, starTierName, stardustTotal } = this.properties;
 
       // 懒挂载 + visible 初始为 true 时，属性 observer 可能在 attached() 生成
       // canvasId 之前触发（部分基础库版本对初始属性值也触发 observer）——
@@ -285,14 +311,38 @@ Component({
         });
       }
 
-      // Card image is optional in diary/fortune/journal/moon modes — data-only
-      // posters (mood emoji + excerpt / fortune trend / 月度星光手账 / 月光卡晚安卡) are valid.
-      if (!cardImagePath && !cardName && mode !== 'diary' && mode !== 'fortune' && mode !== 'journal' && mode !== 'moon') {
+      // Card image is optional in diary/fortune/journal/moon/meet modes — data-only
+      // posters (mood emoji + excerpt / fortune trend / 月度星光手账 / 月光卡晚安卡 /
+      // 相遇合盘) are valid.
+      if (!cardImagePath && !cardName && mode !== 'diary' && mode !== 'fortune' && mode !== 'journal' && mode !== 'moon' && mode !== 'meet') {
         this.setData({ drawError: true });
         return;
       }
 
       this.setData({ isDrawing: true, drawError: false });
+
+      // 星辰相遇合盘海报：E3 奶油底双人徽章 + 共鸣度 + 三牌（meet-poster.js，独立绘制管线）
+      if (mode === 'meet') {
+        const mp = meetPosterData || {};
+        drawMeetPoster(this.data.canvasId, this, {
+          poster: mp,
+          onSuccess: (tempFilePath) => {
+            this.setData({
+              previewPath: tempFilePath,
+              isDrawing: false,
+              drawError: false,
+            });
+          },
+          onError: (err) => {
+            console.error('[share-poster] Meet draw error:', err);
+            this.setData({
+              drawError: true,
+              isDrawing: false,
+            });
+          },
+        });
+        return;
+      }
 
       // 月光卡晚安卡海报：深空底晚安版星光名片（moon-card-poster.js，独立绘制管线）
       if (mode === 'moon') {

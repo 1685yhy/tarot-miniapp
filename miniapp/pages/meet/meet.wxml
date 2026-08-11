@@ -225,6 +225,11 @@
         <text class="action-btn-text">分享结果</text>
       </button>
     </view>
+    <view class="poster-row">
+      <view class="action-btn action-btn--share {{posterLoading ? 'action-btn--disabled' : ''}}" bindtap="onSharePoster" role="button" aria-label="生成合盘海报" hover-class="action-btn--press">
+        <text class="action-btn-text">{{posterLabel}}</text>
+      </view>
+    </view>
     <view class="back-form" bindtap="onBackToForm" role="button" aria-label="重新计算" hover-class="back-form--press">
       <text class="back-form-text">换一个 TA 再算一次</text>
     </view>
@@ -254,5 +259,15 @@
       </view>
     </view>
   </view>
+
+  <!-- ══════════ 合盘海报弹层（T2-5 · share-poster mode="meet"） ══════════ -->
+  <share-poster
+    wx:if="{{posterData}}"
+    mode="meet"
+    visible="{{showPoster}}"
+    meetPosterData="{{posterData}}"
+    bind:close="onClosePoster"
+    bind:share="onShareMeetPosterToFriend"
+  />
 
 </view>
