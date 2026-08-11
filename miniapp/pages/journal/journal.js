@@ -115,6 +115,7 @@ Page({
     // AI 周回顾（I-1：由旧 diary 迁入，UI 与交互保持一致）
     reviewExpanded: false,
     weeklyReview: null,
+    hasMoodTrends: false, // WXML 编译环境下 wx:if 不认 .length > 0，JS 预计算（同 T1-5）
     reviewLoading: false,
     reviewError: null,
     topCard: '',
@@ -192,6 +193,18 @@ Page({
     const { year, month } = e.detail;
     this.setData({ year, month });
     this._loadCalendar(true);
+  },
+
+  // ============================================================
+  // T1-5：月度星光复盘入口（月历顶部"本月星光回顾"卡）
+  // ============================================================
+
+  onOpenMonthlyReview() {
+    const monthStr = `${this.data.year}-${pad(this.data.month)}`;
+    analytics.trackEvent('journal_review_entry', { month: monthStr });
+    wx.navigateTo({
+      url: `/pages/journal-review/journal-review?month=${monthStr}`,
+    });
   },
 
   // ============================================================
@@ -554,7 +567,11 @@ Page({
       if (review.mood_trends && review.mood_trends.length > 0) {
         review.moodTrendCurve = this._computeMoodTrendCurve(review.mood_trends);
       }
-      this.setData({ weeklyReview: review, reviewLoading: false });
+      this.setData({
+        weeklyReview: review,
+        hasMoodTrends: !!(review.mood_trends && review.mood_trends.length > 0),
+        reviewLoading: false,
+      });
     } catch (err) {
       this.setData({ reviewLoading: false, reviewError: getFriendlyError(err) });
     }

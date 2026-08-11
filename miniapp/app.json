@@ -75,6 +75,10 @@
     {
       "root": "pages/card-landing/",
       "pages": ["card-landing"]
+    },
+    {
+      "root": "pages/journal-review/",
+      "pages": ["journal-review"]
     }
   ],
   "window": {
@@ -113,7 +117,7 @@
   "preloadRule": {
     "pages/index/index": {
       "network": "all",
-      "packages": ["pages/daily-card/", "pages/reading/", "pages/reading-result/", "pages/checkin/", "pages/journal/"]
+      "packages": ["pages/daily-card/", "pages/reading/", "pages/reading-result/", "pages/checkin/", "pages/journal/", "pages/journal-review/"]
     },
     "pages/oracle/oracle": {
       "network": "all",

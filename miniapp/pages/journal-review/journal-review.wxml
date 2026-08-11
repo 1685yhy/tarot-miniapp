@@ -1,0 +1,149 @@
+<!-- pages/journal-review/journal-review.wxml —— 月度星光复盘（T1-5） -->
+<!-- 情绪曲线 + 亮暗星统计 + AI 温柔总结 + 本月星空色带 + 分享/保存手账海报 -->
+
+<view class="container">
+  <!-- E3 奶油底色氛围光斑 -->
+  <view class="wash wash-pink"></view>
+  <view class="wash wash-gold"></view>
+
+  <!-- ===== 加载骨架 ===== -->
+  <view wx:if="{{loading}}">
+    <view class="skeleton-wrap">
+      <view class="skeleton-header-area">
+        <view class="skeleton skeleton-line wide"></view>
+        <view class="skeleton skeleton-line medium"></view>
+      </view>
+      <view class="skeleton skeleton-block"></view>
+      <view class="skeleton skeleton-block short"></view>
+    </view>
+  </view>
+
+  <!-- ===== 错误状态 ===== -->
+  <view wx:elif="{{error}}" class="error-state">
+    <view class="error-card">
+      <text class="error-title">夜空暂时无法打开</text>
+      <text class="error-desc">{{error}}</text>
+      <button class="btn-retry" bindtap="onRetry">重新连接</button>
+    </view>
+  </view>
+
+  <!-- ===== 主内容 ===== -->
+  <block wx:else>
+
+    <view class="page-header">
+      <text class="page-title">月度星光复盘</text>
+      <text class="page-subtitle">{{monthLabel}} · 我的星光夜空</text>
+    </view>
+
+    <!-- ===== 空月引导 ===== -->
+    <view wx:if="{{review && review.stats.days_recorded === 0}}" class="empty-month anim-fade-up">
+      <text class="empty-month-icon">✦</text>
+      <text class="empty-month-title">夜空从不催促，星会等你</text>
+      <text class="empty-month-sub">{{review.trend_summary}}</text>
+      <button class="btn-primary empty-month-btn" bindtap="goBackToJournal">回手账，记一颗星</button>
+    </view>
+
+    <!-- ===== 复盘内容 ===== -->
+    <block wx:elif="{{review}}">
+
+      <!-- 开场叙事（AI 温柔总结 · 后端生成/降级，前端只渲染） -->
+      <view class="narrative-card anim-fade-up">
+        <text class="narrative-label">AI 星光寄语</text>
+        <text class="narrative-text">{{review.trend_summary}}</text>
+      </view>
+
+      <!-- ===== 亮暗星统计 ===== -->
+      <view class="stats-row anim-fade-up anim-stagger-1">
+        <view class="stat-item">
+          <text class="stat-num">{{review.stats.days_recorded}}</text>
+          <text class="stat-label">点亮天数</text>
+        </view>
+        <view class="stat-sep"></view>
+        <view class="stat-item">
+          <text class="stat-num stat-num--bright">{{review.stats.bright_count}}</text>
+          <text class="stat-label">亮星</text>
+        </view>
+        <view class="stat-sep"></view>
+        <view class="stat-item">
+          <text class="stat-num stat-num--dim">{{review.stats.dim_count}}</text>
+          <text class="stat-label">暗星</text>
+        </view>
+        <view class="stat-sep"></view>
+        <view class="stat-item">
+          <text class="stat-num stat-num--streak">{{brightRatioText}}</text>
+          <text class="stat-label">亮暗比例</text>
+        </view>
+      </view>
+
+      <!-- ===== 情绪曲线 ===== -->
+      <view class="section-card anim-fade-up anim-stagger-2" wx:if="{{curveText}}">
+        <text class="section-label">情绪曲线 · 星光亮度</text>
+        <text class="curve-text">{{curveText}}</text>
+        <text class="curve-caption">▁ 微暗 · ▇ 满溢（一格 = 一天）</text>
+      </view>
+
+      <!-- ===== 本月星空色带 ===== -->
+      <!-- 注意：WXML 编译环境下 wx:if 中 .length > 0 表达式不渲染，用 JS 预计算的 hasStarBand -->
+      <view class="section-card anim-fade-up anim-stagger-3" wx:if="{{hasStarBand}}">
+        <text class="section-label">本月星空色带</text>
+        <view class="star-band">
+          <view
+            wx:for="{{starBand}}" wx:key="color"
+            class="star-band-seg"
+            style="width: {{item.pct}}%; background: {{item.color}};"
+          ></view>
+        </view>
+        <view class="star-band-counts">
+          <view wx:for="{{starBand}}" wx:key="color" class="star-band-count">
+            <view class="star-band-dot" style="background: {{item.color}};"></view>
+            <text class="star-band-count-text">{{item.count}}天</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- ===== 本月高频之牌 ===== -->
+      <view class="section-card anim-fade-up anim-stagger-3" wx:if="{{hasTopCards}}">
+        <text class="section-label">本月高频之牌</text>
+        <view class="top-card-row" wx:for="{{review.top_cards}}" wx:key="name">
+          <text class="top-card-name">🃏 {{item.name}}</text>
+          <text class="top-card-count">×{{item.count}}</text>
+        </view>
+      </view>
+
+      <!-- ===== 星光洞察 ===== -->
+      <view class="section-card insight-card anim-fade-up anim-stagger-4" wx:if="{{review.insight}}">
+        <text class="section-label">星光洞察</text>
+        <text class="insight-text">{{review.insight}}</text>
+      </view>
+
+      <!-- ===== 下月指引 ===== -->
+      <view class="section-card guide-card anim-fade-up anim-stagger-4" wx:if="{{review.next_guide}}">
+        <text class="section-label">下月指引</text>
+        <text class="guide-text">{{review.next_guide}}</text>
+      </view>
+
+      <!-- ===== 操作 ===== -->
+      <view class="action-row anim-fade-up anim-stagger-5">
+        <button class="btn-secondary action-btn" bindtap="onRefreshReview" disabled="{{regenerating}}">
+          {{regenerating ? '复盘生成中…' : '⟳ 重新复盘'}}
+        </button>
+        <button class="btn-primary action-btn action-btn--primary" bindtap="onSharePoster" disabled="{{sharing}}">
+          {{sharing ? '生成中…' : '分享星光手账海报 ✦'}}
+        </button>
+      </view>
+
+    </block>
+
+  </block>
+
+  <!-- ===== 月度星光手账海报（匿名脱敏 · share-poster mode="journal"） ===== -->
+  <share-poster
+    wx:if="{{posterData}}"
+    mode="journal"
+    visible="{{showPoster}}"
+    journalData="{{posterData}}"
+    bind:close="onClosePoster"
+    bind:share="onShareJournalPosterToFriend"
+  />
+
+</view>

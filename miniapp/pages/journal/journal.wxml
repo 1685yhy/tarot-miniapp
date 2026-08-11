@@ -96,8 +96,27 @@
       <text class="empty-month-sub">今晚，为今天点一颗星，夜空就多一处光</text>
     </view>
 
+    <!-- ===== 月历顶部 · 本月星光回顾卡（T1-5 → 月度复盘页） ===== -->
+    <view
+      wx:if="{{stats && stats.days_recorded > 0}}"
+      class="month-review-entry anim-fade-up anim-stagger-1"
+      bindtap="onOpenMonthlyReview"
+      role="button"
+      aria-label="打开{{month}}月星光复盘"
+      hover-class="month-review-entry--press"
+    >
+      <view class="month-review-left">
+        <view class="month-review-icon">📖</view>
+        <view class="month-review-texts">
+          <text class="month-review-title">本月星光回顾</text>
+          <text class="month-review-sub">{{month}}月 · 点亮 {{stats.days_recorded}} 天 · AI 温柔复盘</text>
+        </view>
+      </view>
+      <text class="month-review-arrow">›</text>
+    </view>
+
     <!-- ===== 星光夜空月历（共用组件 · 星点模式） ===== -->
-    <view class="calendar-wrap anim-fade-up anim-stagger-1">
+    <view class="calendar-wrap anim-fade-up anim-stagger-2">
       <calendar
         year="{{year}}"
         month="{{month}}"
@@ -174,8 +193,8 @@
             <text class="trend-curve-text">{{weeklyReview.moodTrendCurve}}</text>
           </view>
 
-          <!-- 情绪趋势柱状图 -->
-          <view class="chart-section" wx:if="{{weeklyReview.mood_trends && weeklyReview.mood_trends.length > 0}}">
+          <!-- 情绪趋势柱状图（hasMoodTrends 为 JS 预计算；WXML 编译环境下 .length > 0 不渲染） -->
+          <view class="chart-section" wx:if="{{hasMoodTrends}}">
             <text class="review-section-label">情绪趋势</text>
             <text class="trend-summary-text">{{weeklyReview.emotional_trend_summary}}</text>
             <view class="mood-chart">

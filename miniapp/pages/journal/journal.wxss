@@ -262,6 +262,68 @@ page {
 }
 
 /* ============================================================
+   T1-5 本月星光回顾卡（月历顶部入口 → 月度复盘页）
+   ============================================================ */
+.month-review-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, rgba(201, 169, 124, 0.10) 0%, rgba(216, 210, 228, 0.10) 100%);
+  border: 1.5rpx solid var(--e3-line-soft, rgba(201, 169, 124, 0.38));
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  transition: transform 0.15s ease-out, background 0.15s ease-out;
+}
+
+.month-review-entry--press {
+  background: rgba(201, 169, 124, 0.14);
+  transform: scale(0.98);
+}
+
+.month-review-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 0;
+}
+
+.month-review-icon {
+  font-size: 40rpx;
+  line-height: 1;
+}
+
+.month-review-texts {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  min-width: 0;
+}
+
+.month-review-title {
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  color: var(--e3-gold-deep, #8A6B3D);
+  letter-spacing: 2rpx;
+}
+
+.month-review-sub {
+  font-size: var(--font-size-xs);
+  color: var(--e3-ink-soft, #8A8478);
+  letter-spacing: 1rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.month-review-arrow {
+  font-size: 44rpx;
+  color: var(--e3-gold-deep, #8A6B3D);
+  opacity: 0.7;
+  padding-left: var(--spacing-sm);
+}
+
+/* ============================================================
    月历 + 图例
    ============================================================ */
 .calendar-wrap {

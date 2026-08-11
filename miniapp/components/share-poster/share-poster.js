@@ -87,6 +87,16 @@
  *     bind:share="onSharePosterToFriend"
  *   />
  *
+ * Usage (月度星光手账海报 — mode="journal", 匿名脱敏数据 + 星阶徽章 +
+ * 小程序码 from /share/wxacode, footer 仅供娱乐 · 星光映照):
+ *   <share-poster
+ *     mode="journal"
+ *     visible="{{showPoster}}"
+ *     journalData="{{posterData}}"
+ *     bind:close="onClosePoster"
+ *     bind:share="onSharePosterToFriend"
+ *   />
+ *
  * fortuneData shape:
  *   {
  *     dateText, totalReadings, mood,
@@ -95,8 +105,18 @@
  *     suitList: [{name, count}],
  *     trend: [{date, count}]
  *   }
+ *
+ * journalData shape（来自 /journal/review/share-preview，脱敏）:
+ *   {
+ *     monthLabel: '八月',
+ *     stats: {days_recorded, bright_count, dim_count, bright_ratio},
+ *     starColorCounts: [{color, count}],
+ *     summary: 'AI/降级 复盘摘要',
+ *     starTierName: '星光'
+ *   }
  */
 const { drawSharePoster } = require('../../utils/canvas-poster');
+const { drawJournalPoster } = require('../../utils/journal-poster');
 
 Component({
   properties: {
@@ -107,7 +127,12 @@ Component({
     },
     mode: {
       type: String,
-      value: 'reading', // 'reading' | 'daily' | 'invite' | 'zodiac' | 'diary' | 'fortune' | 'card'
+      value: 'reading', // 'reading' | 'daily' | 'invite' | 'zodiac' | 'diary' | 'fortune' | 'card' | 'journal'
+    },
+    // journal mode: 月度星光手账海报数据（脱敏）
+    journalData: {
+      type: null,
+      value: {}, // { monthLabel, stats, starColorCounts, summary, starTierName }
     },
     starTierName: {
       type: String,
@@ -233,16 +258,43 @@ Component({
        Draw the poster on canvas using the utility
        --------------------------------------------------------------- */
     _drawPoster() {
-      const { mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak, inviteCode, zodiacSigns, moodEmoji, excerpt, fortuneData, starTierName, stardustTotal } = this.properties;
+      const { mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak, inviteCode, zodiacSigns, moodEmoji, excerpt, fortuneData, journalData, starTierName, stardustTotal } = this.properties;
 
-      // Card image is optional in diary/fortune modes — data-only posters
-      // (mood emoji + excerpt / fortune trend data) are still valid.
-      if (!cardImagePath && !cardName && mode !== 'diary' && mode !== 'fortune') {
+      // Card image is optional in diary/fortune/journal modes — data-only
+      // posters (mood emoji + excerpt / fortune trend / 月度星光手账) are valid.
+      if (!cardImagePath && !cardName && mode !== 'diary' && mode !== 'fortune' && mode !== 'journal') {
         this.setData({ drawError: true });
         return;
       }
 
       this.setData({ isDrawing: true, drawError: false });
+
+      // 月度星光手账海报：独立绘制管线（journal-poster.js，复用 E3 调色板）
+      if (mode === 'journal') {
+        const jd = journalData || {};
+        drawJournalPoster(this.data.canvasId, this, {
+          monthLabel: jd.monthLabel || '',
+          stats: jd.stats || {},
+          starColorCounts: jd.starColorCounts || [],
+          summary: jd.summary || '',
+          starTierName: jd.starTierName || '',
+          onSuccess: (tempFilePath) => {
+            this.setData({
+              previewPath: tempFilePath,
+              isDrawing: false,
+              drawError: false,
+            });
+          },
+          onError: (err) => {
+            console.error('[share-poster] Journal draw error:', err);
+            this.setData({
+              drawError: true,
+              isDrawing: false,
+            });
+          },
+        });
+        return;
+      }
 
       drawSharePoster(this.data.canvasId, {
         context: this,

@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "月度星光复盘",
+  "navigationBarBackgroundColor": "#FAF6EF",
+  "navigationBarTextStyle": "black",
+  "usingComponents": {
+    "share-poster": "../../components/share-poster/share-poster"
+  }
+}

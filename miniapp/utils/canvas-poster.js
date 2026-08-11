@@ -1731,4 +1731,35 @@ function _ellipsis(ctx, text, maxWidth) {
   return t + '…';
 }
 
-module.exports = { drawSharePoster, generateDiaryCard, drawBirthchartPoster };
+// ── T1-5 月度星光手账海报复用出口（加法导出，不影响既有调用方）──
+// journal-poster.js 只消费 E3 调色板常量与绘制辅助（圆角/换行/星点/头尾/码位），
+// 保证全套海报单一色彩来源，避免第二套奶油色分支漂移。
+const PALETTE = {
+  C_GOLD,
+  C_GOLD_MUTED,
+  C_GOLD_INK,
+  C_WHITE,
+  C_MUTED,
+  C_DARK,
+  C_BG_TOP,
+  C_BG_MID,
+  C_BG_BOT,
+  C_PLACEHOLDER,
+  C_GLOW,
+  C_LINE_GOLD,
+};
+
+const DRAW_HELPERS = {
+  roundRect: _roundRect,
+  wrapText: _wrapText,
+  drawStars: _drawStars,
+  drawHeader: _drawHeader,
+  drawQRCode: _drawQRCode,
+  drawFooter: _drawFooter,
+  toArray: _toArray,
+  ellipsis: _ellipsis,
+};
+
+const LAYOUT = { TARGET_ASPECT, QR_SIZE_RATIO, CARD_ASPECT };
+
+module.exports = { drawSharePoster, generateDiaryCard, drawBirthchartPoster, PALETTE, DRAW_HELPERS, LAYOUT };
