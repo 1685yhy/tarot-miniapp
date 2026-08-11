@@ -18,6 +18,7 @@ from app.models.star_word_daily import StarWordDaily
 from app.models.astral_activity_log import AstralActivityLog
 from app.models.star_meeting import StarMeeting
 from app.models.star_resonance import StarResonance
+from app.models.star_report import StarReport
 
 __all__ = [
     "User",
@@ -44,4 +45,5 @@ __all__ = [
     "AstralActivityLog",
     "StarMeeting",
     "StarResonance",
+    "StarReport",
 ]

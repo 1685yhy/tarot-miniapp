@@ -10,7 +10,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.db.database import create_all
 from app.config import settings
-from app.api import auth, astral, cards, chat, diary, journal, membership, orders, readings, report, share, tasks, community, admin, notify, wishes, wechat_msg, moon_card, meet, resonance
+from app.api import auth, astral, cards, chat, diary, journal, membership, orders, readings, report, share, tasks, community, admin, notify, wishes, wechat_msg, moon_card, meet, resonance, star_report
 from app.api.wishes import moon_router, review_router
 from app.api.horoscope import router as horoscope_router, profile_router as user_profile_router
 from app.api.birthchart import router as birthchart_router
@@ -89,6 +89,7 @@ app.include_router(orders.router)
 app.include_router(membership.router)
 app.include_router(readings.router)
 app.include_router(report.router)
+app.include_router(star_report.router)
 app.include_router(share.router)
 app.include_router(community.router)
 app.include_router(notify.router)

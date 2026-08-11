@@ -25,6 +25,7 @@ from app.models.card import TarotCard
 from app.models.diary import DiaryEntry
 from app.models.reading import Reading, DrawnCard
 from app.models.user import User
+from app.services.star_reports import get_diary_entries_for_range, get_readings_for_range
 from app.utils.auth import get_current_user
 
 logger = logging.getLogger(__name__)
@@ -548,28 +549,24 @@ async def _get_readings_for_days(
 ) -> list[Reading]:
     """Fetch readings from the last N calendar days (inclusive of today),
     with drawn cards. Aligned with `week_dates` so the poster's 7 slots
-    can render every returned entry."""
-    since = datetime.now(timezone.utc) - timedelta(days=days - 1)
-    result = await db.execute(
-        select(Reading)
-        .where(Reading.user_id == user_id, Reading.created_at >= since)
-        .options(selectinload(Reading.drawn_cards).selectinload(DrawnCard.card))
-        .order_by(Reading.created_at.asc())
-    )
-    return list(result.scalars().all())
+    can render every returned entry.
+
+    委托服务层通用区间查询（app.services.star_reports.get_readings_for_range），
+    行为等价：近 N 自然日 = [today-(N-1), today]。
+    """
+    today = date.today()
+    return await get_readings_for_range(db, user_id, today - timedelta(days=days - 1), today)
 
 
 async def _get_diary_entries_for_days(
     db: AsyncSession, user_id: str, days: int
 ) -> list[DiaryEntry]:
-    """Fetch diary entries from the last N calendar days (inclusive of today)."""
-    since = date.today() - timedelta(days=days - 1)
-    result = await db.execute(
-        select(DiaryEntry)
-        .where(DiaryEntry.user_id == user_id, DiaryEntry.entry_date >= since)
-        .order_by(DiaryEntry.entry_date.asc())
-    )
-    return list(result.scalars().all())
+    """Fetch diary entries from the last N calendar days (inclusive of today).
+
+    委托服务层通用区间查询（get_diary_entries_for_range），行为等价。
+    """
+    today = date.today()
+    return await get_diary_entries_for_range(db, user_id, today - timedelta(days=days - 1), today)
 
 
 @router.get("/weekly")
