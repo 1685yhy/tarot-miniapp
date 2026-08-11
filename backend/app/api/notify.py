@@ -3,6 +3,7 @@ Push notification subscription and sending endpoints.
 
 - ``POST /notify/subscribe`` — record a user's push subscription preference.
 - ``POST /notify/subscribe-grant`` — 星光晨讯额度发放（用户授权订阅消息后调用，quota+1）。
+- ``GET/POST /notify/preference`` — 推送槽位偏好读取/设置（morning 晨讯 / night 星语）。
 - ``POST /notify/send-daily`` — admin-triggered 星光晨讯（按额度消费发送）。
 """
 
@@ -49,6 +50,21 @@ class SubscribeResponse(BaseModel):
 class SubscribeGrantResponse(BaseModel):
     ok: bool
     quota_available: int
+
+
+class PreferenceRequest(BaseModel):
+    """推送槽位偏好设置请求体：slot = "morning"（晨讯）| "night"（星语）。"""
+
+    slot: str
+
+
+class PreferenceResponse(BaseModel):
+    slot_preference: str
+
+
+class PreferenceSetResponse(BaseModel):
+    ok: bool
+    slot_preference: str
 
 
 class SendDailyRequest(BaseModel):
@@ -145,6 +161,61 @@ async def subscribe_grant(
         "星光晨讯额度发放：user=%s quota=%d", user.id, quota.quota_available
     )
     return SubscribeGrantResponse(ok=True, quota_available=quota.quota_available)
+
+
+# ---------------------------------------------------------------------------
+# GET/POST /notify/preference — 推送槽位偏好（morning 晨讯 / night 星语）
+# ---------------------------------------------------------------------------
+
+# 合法槽位（严格匹配，非法值 400）
+SLOT_PREFERENCES = {"morning", "night"}
+
+
+@router.get("/preference", response_model=PreferenceResponse)
+async def get_slot_preference(
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """读取推送槽位偏好（设置页回显用）。无行默认 "morning"。"""
+    result = await db.execute(
+        select(SubscribeQuota).where(SubscribeQuota.user_id == user.id)
+    )
+    quota = result.scalar_one_or_none()
+    return PreferenceResponse(
+        slot_preference=quota.slot_preference if quota else "morning"
+    )
+
+
+@router.post("/preference", response_model=PreferenceSetResponse)
+async def set_slot_preference(
+    req: PreferenceRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """设置推送槽位偏好（morning 晨讯 / night 星语）。
+
+    无行则 upsert：quota_available=0 也建行，仅记偏好（不发放订阅额度）；
+    已有行则覆盖 slot_preference，不影响既有额度。
+    """
+    if req.slot not in SLOT_PREFERENCES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"非法 slot：{req.slot}（仅支持 morning/night）",
+        )
+    result = await db.execute(
+        select(SubscribeQuota).where(SubscribeQuota.user_id == user.id)
+    )
+    quota = result.scalar_one_or_none()
+    if quota:
+        quota.slot_preference = req.slot
+    else:
+        quota = SubscribeQuota(
+            user_id=user.id, quota_available=0, slot_preference=req.slot
+        )
+        db.add(quota)
+    await db.commit()
+    logger.info("推送槽位偏好设置：user=%s slot=%s", user.id, req.slot)
+    return PreferenceSetResponse(ok=True, slot_preference=req.slot)
 
 
 # ---------------------------------------------------------------------------

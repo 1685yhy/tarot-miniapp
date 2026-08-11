@@ -78,9 +78,21 @@ def test_alembic_migration_chain_subscribe_quota(tmp_path, monkeypatch):
     assert "subscribe_quotas" in tables, "subscribe_quotas 表应已创建"
 
     cols = {r[1] for r in conn.execute("PRAGMA table_info(subscribe_quotas)")}
-    assert {"user_id", "quota_available", "last_sent_date", "updated_at"} == cols, (
-        f"subscribe_quotas 列应为 user_id/quota_available/last_sent_date/updated_at，实际 {cols}"
+    assert {
+        "user_id",
+        "quota_available",
+        "last_sent_date",
+        "updated_at",
+        "slot_preference",
+    } == cols, (
+        "subscribe_quotas 列应为 user_id/quota_available/last_sent_date/"
+        f"updated_at/slot_preference（T4-1 新增槽位偏好），实际 {cols}"
     )
+    # T4-1：slot_preference 带 server_default 'morning'（存量行自动为晨讯槽位）
+    ddl = conn.execute(
+        "SELECT sql FROM sqlite_master WHERE type='table' AND name='subscribe_quotas'"
+    ).fetchone()[0]
+    assert "DEFAULT 'morning'" in ddl
 
     # ── downgrade 回 base：新表被删除 ──
     command.downgrade(cfg, "base")

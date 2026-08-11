@@ -514,3 +514,77 @@ def test_daily_push_skips_morning_recipients(
                 await session.commit()
 
         asyncio.run(_cleanup())
+
+
+# ══════════════════════════════════════════════════════════════
+# 推送槽位偏好（T4-1）：GET/POST /notify/preference
+# ══════════════════════════════════════════════════════════════
+
+
+def test_preference_get_requires_auth(client: TestClient):
+    """未登录 GET → 401。"""
+    resp = client.get("/notify/preference")
+    assert resp.status_code == 401
+
+
+def test_preference_post_requires_auth(client: TestClient):
+    """未登录 POST → 401。"""
+    resp = client.post("/notify/preference", json={"slot": "night"})
+    assert resp.status_code == 401
+
+
+def test_preference_defaults_to_morning(client: TestClient):
+    """无行 → GET 回显默认 morning（设置页首次进入）。"""
+    headers, _ = _new_user("pref_default_001")
+
+    resp = client.get("/notify/preference", headers=headers)
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["slot_preference"] == "morning"
+
+
+def test_preference_set_night_persists(client: TestClient):
+    """POST night → 持久化（无行则建行，quota_available=0 仅记偏好）；GET 回显 night。"""
+    headers, user_id = _new_user("pref_night_001")
+
+    resp = client.post("/notify/preference", json={"slot": "night"}, headers=headers)
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["ok"] is True
+    assert resp.json()["slot_preference"] == "night"
+
+    # 持久化：行存在、quota 保持 0（仅记偏好，不发放额度）、偏好为 night
+    quota = asyncio.run(_get_quota(user_id))
+    assert quota is not None
+    assert quota.quota_available == 0
+    assert quota.slot_preference == "night"
+
+    # GET 回显（新请求会话）
+    resp2 = client.get("/notify/preference", headers=headers)
+    assert resp2.status_code == 200, resp2.text
+    assert resp2.json()["slot_preference"] == "night"
+
+
+def test_preference_update_overwrites(client: TestClient):
+    """已有行 POST 覆盖偏好；不影响既有 quota_available。"""
+    headers, user_id = _new_user("pref_switch_001")
+    asyncio.run(_seed_quota(user_id, 2))
+
+    resp = client.post("/notify/preference", json={"slot": "night"}, headers=headers)
+    assert resp.status_code == 200
+    assert resp.json()["slot_preference"] == "night"
+
+    resp2 = client.post("/notify/preference", json={"slot": "morning"}, headers=headers)
+    assert resp2.status_code == 200
+    assert resp2.json()["slot_preference"] == "morning"
+
+    quota = asyncio.run(_get_quota(user_id))
+    assert quota.quota_available == 2           # 额度不受偏好设置影响
+    assert quota.slot_preference == "morning"
+
+
+def test_preference_invalid_slot_400(client: TestClient):
+    """非法 slot 值 → 400（仅接受 morning/night，严格匹配）。"""
+    headers, _ = _new_user("pref_invalid_001")
+
+    for bad in ("noon", "MORNING", "", "morning-night"):
+        resp = client.post("/notify/preference", json={"slot": bad}, headers=headers)
+        assert resp.status_code == 400, resp.text
