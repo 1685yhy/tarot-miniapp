@@ -17,6 +17,8 @@
 // 打卡：POST /astral/activity {event_key} → {ok, rewarded, stardust_total}
 //   rewarded=false = 当天已打卡（幂等，不重复 toast 奖励）；本地按日记录
 //   已打卡态，同日重进直接展示完成态
+//   当天门控：后端只认事件当天（astral_events_on）→ wish/review 按钮仅
+//   today === window.start（新月/满月当天）可用，非当天置灰显示提示
 // 约定：WXML 不用 .length > 0 表达式（T1-5 教训），所有布尔一律 JS 预计算
 
 const { request, getFriendlyError } = require('../../utils/api');
@@ -116,6 +118,7 @@ Page({
     // 打卡态
     checkedToday: false,
     checking: false,
+    checkinHint: '',        // 非当天时按钮文案：「仅 8.12 当天可点亮 ✦」
   },
 
   onLoad(options) {
@@ -142,9 +145,12 @@ Page({
   },
 
   onShareAppMessage() {
+    // 分享携带**原始事件类型**（new_moon/full_moon/mercury_retrograde/solar_eclipse…）：
+    // 接收方经 EVENT_TO_NODE 映射回同一形态，info 类事件不再退化成丢类型的
+    // type=info（T3-5 Fix：info 分享丢事件类型）
     return {
       title: `星光映照 · ${(this.data.meta && this.data.meta.title) || '星象节点'}`,
-      path: `/pages/astral-event/astral-event?type=${this.data.nodeType}`,
+      path: `/pages/astral-event/astral-event?type=${this._eventType}`,
     };
   },
 
@@ -188,6 +194,10 @@ Page({
       patch.windowText = start && end ? `${start} – ${end}` : '';
       patch.windowDaysText = win.days_left != null ? daysLeftText(win.days_left, '结束') : '';
       patch.content = data.content || '写给月亮的三行愿望';
+      // 打卡当天门控：后端 /astral/activity 只认事件当天（astral_events_on），
+      // 窗口第 2-3 天/隔天打开分享链接点击必 400 → 仅新月当天放行（T3-5 Fix）
+      patch.canCheckIn = !!(win.start && this._today === win.start);
+      patch.checkinHint = win.start ? `仅 ${start} 当天可点亮 ✦` : '仅活动当天可点亮 ✦';
     }
 
     if (type === 'wish' || type === 'review') {
@@ -200,6 +210,14 @@ Page({
       }));
       patch.hasAnyWish =
         (counts.active || 0) + (counts.grown || 0) + (counts.answered || 0) > 0;
+    }
+
+    if (type === 'review') {
+      // 复盘打卡门控同 wish：仅满月当天可点亮；满月日由后端 window.start 下发
+      const win = data.window || {};
+      const start = fmtShort(win.start);
+      patch.canCheckIn = !!(win.start && this._today === win.start);
+      patch.checkinHint = win.start ? `仅 ${start} 当天可点亮 ✦` : '仅活动当天可点亮 ✦';
     }
 
     if (type === 'mercury_guide') {
@@ -276,8 +294,9 @@ Page({
   // ============================================================
 
   async onCheckIn() {
-    const { nodeType, checking, checkedToday, allLit } = this.data;
+    const { nodeType, checking, checkedToday, allLit, canCheckIn } = this.data;
     if (checking || checkedToday) return;
+    if (!canCheckIn) return; // 当天门控：wish/review 仅事件当天、慢行期仅区间内
     if (nodeType === 'mercury_guide' && !allLit) return;
     this.setData({ checking: true });
     try {

@@ -14,6 +14,9 @@
  *      展示完成态且不再发请求；重复点击无重复 toast
  *   E. 降级：后端 500 → 错误态 + 重试恢复；未知 type → 400 错误态
  *   F. onShow 静默刷新：wish/review 返回时刷新愿望计数；慢行期不刷新（保留勾选进度）
+ *   G. T3-5 Fix 回归：wish/review 打卡「当天门控」（today === window.start，非当天
+ *      点击不发请求 + 提示含日期）、慢行清单 7 条与后端裁剪对齐、分享携带原始事件
+ *      类型（info 分享不再退化成 type=info）
  *
  * 运行：node miniapp/scripts/verify-astral-event.js
  */
@@ -80,12 +83,15 @@ const CONTENT = {
   },
   full_moon: {
     type: 'review', title: '复盘之夜',
+    // window.start = 满月日（后端 T3-5 Fix 新增：打卡当天门控比对依据）
+    window: { start: '2026-08-28', end: '2026-08-28', days_left: 17 },
     wish_counts: { active: 0, grown: 1, answered: 0 }, target_page: 'pages/review/review',
   },
   mercury_retrograde: {
     type: 'mercury_guide', title: '慢行期',
     range: { start: '2026-08-14', end: '2026-09-04', days_left: 21 },
-    items: ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛'],
+    // 7 条：与后端 MERCURY_CARE_ITEMS（8→7 裁剪后）对齐，「慢下来的 7 件小事」
+    items: ['甲', '乙', '丙', '丁', '戊', '己', '庚'],
     daily_sentence: '慢一点，也是在前进。',
   },
   solar_term: { type: 'info', notes: ['立秋之后，暑气渐收。', '宜早睡。'] },
@@ -136,6 +142,8 @@ const dash = (s) => s.replace(/–/g, '~');
   console.log('== A. wish 形态（日历页跳转 type=wish）==');
   let page = fresh();
   await page.onLoad({ type: 'wish' });
+  page._today = '2026-08-13'; // 钉死窗口第 2 天（非新月当天）
+  await page._loadContent(false);
   assert('请求事件类型 new_moon', requestCalls[0].url === '/astral/event/new_moon');
   assert('nodeType=wish', page.data.nodeType === 'wish');
   assert('windowText=8.12–8.14', dash(page.data.windowText) === '8.12 ~ 8.14', page.data.windowText);
@@ -143,18 +151,31 @@ const dash = (s) => s.replace(/–/g, '~');
   assert('hasAnyWish=true', page.data.hasAnyWish === true);
   assert('wishStatus 计数 [2,1,0]', JSON.stringify(page.data.wishStatus.map((s) => s.count)) === '[2,1,0]');
   assert('初始未打卡', page.data.checkedToday === false);
+
+  console.log('== A1. 打卡当天门控（T3-5 Fix：仅新月当天可点亮）==');
+  assert('窗口第 2 天 canCheckIn=false', page.data.canCheckIn === false, page.data.canCheckIn);
+  assert('非当天提示含日期', page.data.checkinHint === '仅 8.12 当天可点亮 ✦', page.data.checkinHint);
+  const reqs0 = requestCalls.length;
+  await page.onCheckIn();
+  assert('非当天点击不发请求', requestCalls.length === reqs0, requestCalls.length);
+  page._today = '2026-08-12'; // 新月当天 = window.start
+  await page._loadContent(false);
+  assert('新月当天 canCheckIn=true', page.data.canCheckIn === true, page.data.canCheckIn);
   const toastsBefore = toasts.length;
   await page.onCheckIn();
+  const reqsAfterPost = requestCalls.length;
   assert('POST event_key=wish', requestCalls[requestCalls.length - 1].opts.data.event_key === 'wish');
   assert('打卡后 checkedToday=true', page.data.checkedToday === true);
   assert('奖励 toast 星尘 +1', toasts.length === toastsBefore + 1 && toasts[toasts.length - 1].title.includes('星尘 +1'));
   await page.onCheckIn(); // 重复点击
-  assert('重复打卡无新请求', requestCalls.length === 2, requestCalls.length);
+  assert('重复打卡无新请求', requestCalls.length === reqsAfterPost, requestCalls.length);
   assert('重复打卡无新 toast', toasts.length === toastsBefore + 1);
 
   console.log('== A2. 同日重进 → 已打卡完成态 ==');
   page = fresh();
   await page.onLoad({ type: 'wish' });
+  page._today = '2026-08-12'; // 与 A 段打卡日一致
+  await page._loadContent(false);
   assert('重进 checkedToday=true', page.data.checkedToday === true);
 
   console.log('== B. review 形态（事件类型直达 type=full_moon）==');
@@ -165,6 +186,24 @@ const dash = (s) => s.replace(/–/g, '~');
   await page.onGoReview();
   assert('跳转 /pages/review/review', navigations.some((n) => n.url === '/pages/review/review'));
 
+  console.log('== B2. review 打卡当天门控（满月日 = 后端 window.start）==');
+  page = fresh();
+  await page.onLoad({ type: 'full_moon' });
+  page._today = '2026-08-28'; // 满月当天（mock window.start）
+  await page._loadContent(false);
+  assert('满月当天 canCheckIn=true', page.data.canCheckIn === true, page.data.canCheckIn);
+  await page.onCheckIn();
+  assert('POST event_key=review', requestCalls[requestCalls.length - 1].opts.data.event_key === 'review');
+  page = fresh();
+  await page.onLoad({ type: 'full_moon' });
+  page._today = '2026-08-11'; // 非满月日（隔天打开分享链接）
+  await page._loadContent(false);
+  assert('非满月日 canCheckIn=false', page.data.canCheckIn === false, page.data.canCheckIn);
+  assert('review 非当天提示含日期', page.data.checkinHint === '仅 8.28 当天可点亮 ✦', page.data.checkinHint);
+  const reqsR = requestCalls.length;
+  await page.onCheckIn();
+  assert('非当天点击不发请求', requestCalls.length === reqsR, requestCalls.length);
+
   console.log('== C. mercury_guide 形态 ==');
   page = fresh();
   requestCalls = [];
@@ -174,17 +213,17 @@ const dash = (s) => s.replace(/–/g, '~');
   assert('rangeText=8.14–9.4', dash(page.data.rangeText) === '8.14 ~ 9.4', page.data.rangeText);
   assert('rangeDaysText=还有 21 天结束', page.data.rangeDaysText === '还有 21 天结束');
   assert('canCheckIn=false（8.11 不在区间内）', page.data.canCheckIn === false, page.data.canCheckIn);
-  assert('totalItems=8', page.data.totalItems === 8);
+  assert('totalItems=7（与后端 8→7 裁剪对齐）', page.data.totalItems === 7);
   assert('dailySentence 有值', page.data.dailySentence === '慢一点，也是在前进。');
-  for (let i = 0; i < 8; i++) page.onToggleItem({ currentTarget: { dataset: { index: i } } });
-  assert('8 项全点亮 allLit=true', page.data.allLit === true);
-  assert('litCount=8 stars 全亮', page.data.litCount === 8 && page.data.stars.every((s) => s.lit));
+  for (let i = 0; i < 7; i++) page.onToggleItem({ currentTarget: { dataset: { index: i } } });
+  assert('7 项全点亮 allLit=true', page.data.allLit === true);
+  assert('litCount=7 stars 全亮', page.data.litCount === 7 && page.data.stars.every((s) => s.lit));
   page.onToggleItem({ currentTarget: { dataset: { index: 3 } } });
-  assert('取消一项 allLit=false', page.data.allLit === false && page.data.litCount === 7);
+  assert('取消一项 allLit=false', page.data.allLit === false && page.data.litCount === 6);
   page.onToggleItem({ currentTarget: { dataset: { index: 3 } } });
   assert('重新点亮 allLit=true', page.data.allLit === true);
   page.onToggleItem({ currentTarget: { dataset: { index: 99 } } });
-  assert('非法 index 忽略', page.data.litCount === 8);
+  assert('非法 index 忽略', page.data.litCount === 7);
 
   console.log('== C2. 区间内（模拟 today=8.20）可打卡 ==');
   page = fresh();
@@ -192,7 +231,7 @@ const dash = (s) => s.replace(/–/g, '~');
   page._eventType = 'mercury_retrograde';
   await page._loadContent(false);
   assert('区间内 canCheckIn=true', page.data.canCheckIn === true, page.data.canCheckIn);
-  for (let i = 0; i < 8; i++) page.onToggleItem({ currentTarget: { dataset: { index: i } } });
+  for (let i = 0; i < 7; i++) page.onToggleItem({ currentTarget: { dataset: { index: i } } });
   await page.onCheckIn();
   assert('POST event_key=mercury_guide', requestCalls[requestCalls.length - 1].opts.data.event_key === 'mercury_guide');
   assert('打卡后 checkedToday=true', page.data.checkedToday === true);
@@ -211,6 +250,27 @@ const dash = (s) => s.replace(/–/g, '~');
   await page.onLoad({ type: 'solar_term' });
   assert('nodeType=info', page.data.nodeType === 'info');
   assert('hasInfoNotes=true', page.data.hasInfoNotes === true);
+
+  console.log('== D1. 分享携带原始事件类型（T3-5 Fix：info 不再丢类型）==');
+  page = fresh();
+  await page.onLoad({ type: 'wish' });
+  assert('wish 分享 type=new_moon', page.onShareAppMessage().path === '/pages/astral-event/astral-event?type=new_moon', page.onShareAppMessage().path);
+  page = fresh();
+  await page.onLoad({ type: 'full_moon' });
+  assert('review 分享 type=full_moon', page.onShareAppMessage().path.endsWith('type=full_moon'));
+  page = fresh();
+  await page.onLoad({ type: 'mercury_guide' });
+  assert('mercury 分享 type=mercury_retrograde', page.onShareAppMessage().path.endsWith('type=mercury_retrograde'));
+  page = fresh();
+  await page.onLoad({ type: 'solar_term' });
+  assert('info 分享保留事件类型 solar_term', page.onShareAppMessage().path.endsWith('type=solar_term'), page.onShareAppMessage().path);
+  // 接收方以事件类型打开 → 映射回原形态（wish 可复达、info 可复达）
+  page = fresh();
+  await page.onLoad({ type: 'new_moon' });
+  assert('接收方 new_moon → nodeType=wish', page.data.nodeType === 'wish');
+  page = fresh();
+  await page.onLoad({ type: 'solar_term' });
+  assert('接收方 solar_term → info 正常渲染', page.data.nodeType === 'info' && page.data.hasInfoNotes === true);
 
   console.log('== E. 降级：后端 500 → 错误态 + 重试 ==');
   page = fresh();

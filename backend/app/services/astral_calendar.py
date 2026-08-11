@@ -24,7 +24,11 @@ from app.services.energy_engine import (
     NEUTRAL_GUIDANCE,
     astral_events_on,
 )
-from app.services.moon import moon_phase_on, next_new_moon_after
+from app.services.moon import (
+    moon_phase_on,
+    next_full_moon_after,
+    next_new_moon_after,
+)
 
 # 事件类型 → 节点活动形态（activity；由同日最高优先级事件决定）
 NODE_TYPE_BY_EVENT = {
@@ -43,11 +47,12 @@ WISH_WINDOW_DAYS = 2
 # range 空态规格（简报未定义空态 → 规格化：无逆行期时显式空对象，range 键恒在）
 EMPTY_RETROGRADE_RANGE = {"start": "", "end": "", "days_left": 0}
 
-# 水逆「自我关怀指南」固定清单（≥7 条，积极开放向，无黑名单词）
+# 水逆「自我关怀指南」固定清单（7 条，与「慢下来的 7 件小事」标题对齐；
+# 积极开放向，无黑名单词；T3-5 Fix：8→7 裁剪「备份文件」条——最偏任务式/
+# 水逆避坑俗套，且偏离自我关怀基调）
 MERCURY_CARE_ITEMS = [
     "把重要决定写下来，放一天再读一遍",
     "每一条消息都回慢一点，先想清楚再说",
-    "重要文件顺手备份到两个地方",
     "约一位老朋友聊聊近况，只聊开心的事",
     "把大计划拆成今天能完成的最小一步",
     "早一点睡，把夜晚完整留给自己",
@@ -200,31 +205,52 @@ def day_detail(target: date) -> dict:
 # ─────────────────────────────────────────────────────────────────────────────
 
 
-def _wish_window(today: date) -> dict:
-    """最近新月窗口：新月日 00:00 至其后 2 天；days_left 从今天倒计。
+# 无表数据（2027+）时的事件日回退：新月/满月走月相引擎（确定性可测）
+_EVENT_DAY_FALLBACK = {
+    "new_moon": next_new_moon_after,
+    "full_moon": next_full_moon_after,
+}
 
-    优先用 ASTRAL_EVENTS_2026 的定稿新月日；无表数据（2027+）回退月相引擎。
+
+def _event_day_window(today: date, event_type: str, extend_days: int = 0) -> dict:
+    """最近一次（含当天）{event_type} 事件日窗口：{start, end, days_left}。
+
+    start = 事件日；end = start + extend_days（单日事件 extend_days=0 → start=end）；
+    days_left 从今天倒计（事件日当天 = 0）。表内取 start >= today（含当天，
+    extend_days>0 时窗口尾部也回指当前窗口起始日）；无表数据回退月相引擎。
+    返回的 start 即前端 wish/review 打卡「当天门控」比对依据（today == start）。
     """
-    new_moons = sorted(
-        (ev for ev in ASTRAL_EVENTS_2026 if ev["type"] == "new_moon"),
+    events = sorted(
+        (ev for ev in ASTRAL_EVENTS_2026 if ev["type"] == event_type),
         key=lambda ev: ev["start"],
     )
     start = next(
         (
             ev["start"]
-            for ev in new_moons
-            if ev["start"] >= today - timedelta(days=WISH_WINDOW_DAYS)
+            for ev in events
+            if ev["start"] >= today - timedelta(days=extend_days)
         ),
         None,
     )
+    if start is None and event_type in _EVENT_DAY_FALLBACK:
+        start = _EVENT_DAY_FALLBACK[event_type](today)
     if start is None:
-        start = next_new_moon_after(today)
-    end = start + timedelta(days=WISH_WINDOW_DAYS)
+        # 仅防御：当前调用方只有 new_moon / full_moon（均有回退），不会触发
+        start = today
+    end = start + timedelta(days=extend_days)
     return {
         "start": start.isoformat(),
         "end": end.isoformat(),
         "days_left": (end - today).days,
     }
+
+
+def _wish_window(today: date) -> dict:
+    """最近新月窗口：新月日 00:00 至其后 2 天；days_left 从今天倒计。
+
+    优先用 ASTRAL_EVENTS_2026 的定稿新月日；无表数据（2027+）回退月相引擎。
+    """
+    return _event_day_window(today, "new_moon", extend_days=WISH_WINDOW_DAYS)
 
 
 def _retrograde_range(today: date) -> dict | None:
@@ -266,9 +292,14 @@ def node_content(node_type: str, today: date, wish_counts: dict | None = None) -
 
     - wish → 许愿之夜：窗口（最近新月日 00:00 至其后 2 天）+ 引导语 + 目标页
     - review → 复盘之夜：wish_counts（active/grown/answered，由 API 接 db 传入）
+      + window（最近满月日，start=end：前端打卡「当天门控」比对依据）
     - mercury_guide → 慢行期：当前/下一水逆区间（无则规格化空对象）+ 自我关怀清单
       + 确定性每日一句
     - info → 资讯：其余事件类型的说明文案列表
+
+    wish/review 的 window.start 供前端打卡当天门控（today === window.start），
+    与 POST /astral/activity 的「事件当天判定」（astral_events_on）保持一致，
+    避免窗口第 2-3 天/隔天打开分享链接时按钮可见但点击必 400。
     """
     counts = wish_counts or _ZERO_WISH_COUNTS
     if node_type == "wish":
@@ -284,6 +315,7 @@ def node_content(node_type: str, today: date, wish_counts: dict | None = None) -
         return {
             "type": "review",
             "title": "复盘之夜",
+            "window": _event_day_window(today, "full_moon"),
             "wish_counts": counts,
             "target_page": "pages/review/review",
         }

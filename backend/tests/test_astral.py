@@ -40,7 +40,7 @@ from app.services.astral_calendar import (
     month_view,
     node_content,
 )
-from app.services.moon import next_new_moon_after
+from app.services.moon import next_full_moon_after, next_new_moon_after
 from app.services.stardust import tier_for
 from app.utils.auth import create_token
 
@@ -252,7 +252,11 @@ def test_node_content_wish_window_2027_fallback():
 
 
 def test_node_content_review_shape():
-    """review 节点：复盘之夜 + wish_counts 透传 + target_page。"""
+    """review 节点：复盘之夜 + wish_counts 透传 + target_page + 打卡门控窗口。
+
+    window.start = 最近满月日（2026-08-12 视角下一满月 09-27），供前端
+    打卡「当天门控」比对（today === window.start）。
+    """
     node = node_content(
         "review",
         date(2026, 8, 12),
@@ -261,9 +265,33 @@ def test_node_content_review_shape():
     assert node == {
         "type": "review",
         "title": "复盘之夜",
+        "window": {
+            "start": "2026-09-27",
+            "end": "2026-09-27",
+            "days_left": 46,
+        },
         "wish_counts": {"active": 2, "grown": 1, "answered": 0},
         "target_page": "pages/review/review",
     }
+
+
+def test_node_content_review_window_full_moon_day():
+    """满月当天 → review window.start = 当天（start=end、days_left=0），打卡门控放行。"""
+    node = node_content("review", date(2026, 1, 11))
+    assert node["window"] == {
+        "start": "2026-01-11",
+        "end": "2026-01-11",
+        "days_left": 0,
+    }
+
+
+def test_node_content_review_window_2027_fallback():
+    """2027 无表内满月 → 回退月相引擎 next_full_moon_after（门控数据仍可算）。"""
+    today = date(2027, 1, 5)
+    expected = next_full_moon_after(today)
+    node = node_content("review", today)
+    assert node["window"]["start"] == expected.isoformat()
+    assert node["window"]["end"] == expected.isoformat()
 
 
 def test_node_content_mercury_guide_shape():
@@ -276,7 +304,7 @@ def test_node_content_mercury_guide_shape():
         "end": "2026-02-04",
         "days_left": 15,
     }
-    assert len(node["items"]) >= 7
+    assert len(node["items"]) == 7
     assert node["daily_sentence"] in MERCURY_DAILY_SENTENCES
     # 同日同人恒定
     assert node_content("mercury_guide", date(2026, 1, 20))["daily_sentence"] == node["daily_sentence"]
@@ -315,8 +343,9 @@ def test_node_content_info_shape():
 
 
 def test_care_items_and_sentences_compliance():
-    """7 件小事 ≥7 条、句子池 ≥12 条，且全部无黑名单词。"""
-    assert len(MERCURY_CARE_ITEMS) >= 7
+    """7 件小事 =7 条（与标题「慢下来的 7 件小事」对齐，T3-5 Fix 契约）、
+    句子池 ≥12 条，且全部无黑名单词。"""
+    assert len(MERCURY_CARE_ITEMS) == 7
     assert len(MERCURY_DAILY_SENTENCES) >= 12
     all_texts = list(MERCURY_CARE_ITEMS) + list(MERCURY_DAILY_SENTENCES)
     for text in all_texts:
@@ -420,7 +449,7 @@ def test_api_event_node_types(client: TestClient):
     resp = client.get("/astral/event/mercury_retrograde", headers=headers)
     body = resp.json()
     assert body["type"] == "mercury_guide"
-    assert len(body["items"]) >= 7
+    assert len(body["items"]) == 7
     assert body["daily_sentence"]
 
     resp = client.get("/astral/event/solar_eclipse", headers=headers)

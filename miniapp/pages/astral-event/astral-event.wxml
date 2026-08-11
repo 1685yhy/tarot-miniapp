@@ -67,15 +67,16 @@
         <view wx:else class="counts-empty">月光还没收到你的愿望，去写下一行吧</view>
       </view>
 
-      <!-- 打卡（幂等：重复 → 已点亮态，不重复 toast 奖励） -->
+      <!-- 打卡（幂等：重复 → 已点亮态，不重复 toast 奖励）；
+           当天门控：仅新月当天（today === window.start）可点亮，非当天置灰提示 -->
       <view class="checkin-area anim-fade-up anim-stagger-4">
         <button
           wx:if="{{!checkedToday}}"
-          class="btn-checkin"
-          disabled="{{checking}}"
+          class="btn-checkin {{canCheckIn ? '' : 'btn-checkin--muted'}}"
+          disabled="{{checking || !canCheckIn}}"
           bindtap="onCheckIn"
           hover-class="btn-checkin--press"
-        >我已许下愿望 · 点亮星尘 ✦</button>
+        >{{canCheckIn ? '我已许下愿望 · 点亮星尘 ✦' : checkinHint}}</button>
         <view wx:else class="checkin-done">
           <text class="checkin-done-star">✦</text>
           <text class="checkin-done-text">今日节点已点亮</text>
@@ -104,14 +105,15 @@
         <button class="btn-submit" bindtap="onGoReview" hover-class="btn-submit--press">去满月复盘 ✦</button>
       </view>
 
+      <!-- 打卡：当天门控同 wish，仅满月当天（window.start）可点亮，非当天置灰提示 -->
       <view class="checkin-area anim-fade-up anim-stagger-3">
         <button
           wx:if="{{!checkedToday}}"
-          class="btn-checkin"
-          disabled="{{checking}}"
+          class="btn-checkin {{canCheckIn ? '' : 'btn-checkin--muted'}}"
+          disabled="{{checking || !canCheckIn}}"
           bindtap="onCheckIn"
           hover-class="btn-checkin--press"
-        >我已完成复盘 · 点亮星尘 ✦</button>
+        >{{canCheckIn ? '我已完成复盘 · 点亮星尘 ✦' : checkinHint}}</button>
         <view wx:else class="checkin-done">
           <text class="checkin-done-star">✦</text>
           <text class="checkin-done-text">今日节点已点亮</text>
