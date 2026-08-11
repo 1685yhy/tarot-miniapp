@@ -25,6 +25,8 @@ from unittest import mock
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
 
 import app.api.astral as astral_api
 from app.db.database import async_session
@@ -526,6 +528,68 @@ def test_api_activity_duplicate_same_day_idempotent(client: TestClient):
     assert first.json()["rewarded"] is True
     assert second.json() == {"ok": True, "rewarded": False, "stardust_total": 1}
     assert len(_activity_logs(uid)) == 1
+
+
+def test_api_activity_concurrent_conflict_fallback_refresh(client: TestClient):
+    """并发同 key 打卡（唯一约束兜底路径）：不 500，返回并发赢家已提交的星尘总值。
+
+    时序（flush 时刻注入赢家提交，等价于并发窗口撞 UNIQUE 约束）：
+    1. 端点 SELECT 时赢家尚未提交（无日志）→ 不短路
+    2. db.add 日志 + user.stardust_total 内存 5→6
+    3. flush 瞬间赢家（独立会话）提交同 key 日志 + 星尘=6 → 端点 flush 抛
+       IntegrityError
+    4. rollback 无条件过期会话内**所有** ORM 对象（expire_on_commit=False 只
+       影响 commit 不影响 rollback）→ 修复前 except 分支读 user.stardust_total
+       触发 async 惰性加载抛 MissingGreenlet → 500（红验证：修复前本测试
+       FAILED status=500）
+    5. 修复后 except 内 await db.refresh(user) 回读 → 赢家已提交值 6
+    """
+    uid, headers = _new_user("openid_activity_conflict")
+    _set_stardust(uid, 5)
+    _flush_orig = AsyncSession.flush
+
+    async def _winner_commits_same_key() -> None:
+        """模拟并发赢家恰在冲突窗口提交：同 key 日志 + 星尘 5→6（独立会话）。"""
+        async with async_session() as session:
+            session.add(
+                AstralActivityLog(
+                    user_id=uid,
+                    event_key="new_moon-2026-08-12",
+                    event_date=date(2026, 8, 12),
+                )
+            )
+            user = await session.get(User, uid)
+            user.stardust_total = 6
+            user.star_tier = tier_for(6)
+            await session.commit()
+
+    async def _conflicting_flush(self) -> None:
+        # 赢家先提交（临时还原原版 flush——类级补丁需放行独立会话的正常 commit）
+        with mock.patch.object(AsyncSession, "flush", _flush_orig):
+            await _winner_commits_same_key()
+        raise IntegrityError(
+            "INSERT INTO astral_activity_logs (user_id, event_key, event_date) VALUES (?, ?, ?)",
+            (uid, "new_moon-2026-08-12", date(2026, 8, 12)),
+            Exception(
+                "UNIQUE constraint failed: astral_activity_logs.user_id, "
+                "astral_activity_logs.event_key, astral_activity_logs.event_date"
+            ),
+        )
+
+    with mock.patch.object(astral_api, "date", _FixedToday):
+        _FixedToday.fixed = date(2026, 8, 12)  # 狮子座新月
+        with mock.patch.object(AsyncSession, "flush", _conflicting_flush):
+            resp = client.post(
+                "/astral/activity", json={"event_key": "wish"}, headers=headers
+            )
+
+    assert resp.status_code == 200
+    assert resp.json() == {"ok": True, "rewarded": False, "stardust_total": 6}
+    # 赢家已提交值落库：星尘 6、无重复 +1；日志仅赢家一条（端点 add 被回滚丢弃）
+    assert _get_stardust_tier(uid) == (6, tier_for(6))
+    assert _activity_logs(uid) == [
+        {"event_key": "new_moon-2026-08-12", "event_date": "2026-08-12"}
+    ]
 
 
 def test_api_activity_same_day_different_keys_each_rewarded(client: TestClient):

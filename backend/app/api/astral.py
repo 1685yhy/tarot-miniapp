@@ -8,7 +8,9 @@
 - POST /astral/activity                   节点打卡：事件当天 +1 星尘（幂等，T3-3）
 - GET  /astral/activity/summary?month=    某月打卡汇总（我的页星阶区，T3-3）
 
-业务逻辑全部在 services/astral_calendar.py（纯函数），本模块只是薄封装。
+日历/日详情/节点内容走 services/astral_calendar.py（纯函数）；节点打卡
+（POST /astral/activity）的业务逻辑内联在本模块（事件当天判定 + 幂等 +1
+星尘 + 并发唯一约束兜底）。
 """
 
 import logging
@@ -160,8 +162,14 @@ async def check_in_activity(
     except IntegrityError:
         # 并发重复打卡 → 唯一约束兜底：回滚后按已打卡返回（不重复 +1）
         await db.rollback()
+        # T3-3 审查 Fix：db.rollback() 无条件过期会话内**所有** ORM 对象
+        # （expire_on_commit=False 只影响 commit 不影响 rollback），直接读
+        # user.stardust_total 在 async 下触发惰性加载抛 MissingGreenlet → 500。
+        # refresh 显式回读并发赢家已提交的星尘总值（真实值，非本会话内存值）；
+        # 赢家尚未提交时回读到回滚前值，语义同样正确（未实际发奖就不加）。
+        await db.refresh(user)
         return ActivityCheckInResponse(
-            ok=True, rewarded=False, stardust_total=user.stardust_total or 0
+            ok=True, rewarded=False, stardust_total=user.stardust_total
         )
     return ActivityCheckInResponse(
         ok=True, rewarded=True, stardust_total=user.stardust_total
