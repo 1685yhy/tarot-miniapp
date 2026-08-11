@@ -19,6 +19,8 @@ import uuid
 
 from fastapi.testclient import TestClient
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.meet import MEET_TIPS, pick_meet_cards
 from app.db.database import async_session
@@ -869,3 +871,116 @@ def test_join_outputs_compliant(client: TestClient, monkeypatch):
     for text in texts:
         banned = _scan_banned(text)
         assert not banned, f"输出含禁词 {banned}: {text}"
+
+
+# ── POST /meet/join：并发竞态（T2-3 审查修复钉住）──────────────────────────
+
+
+def test_join_concurrent_two_friends_no_double_reward(client: TestClient, monkeypatch):
+    """两个不同好友并发 join 同一 pending meet（第二个读到过期 pending 快照，
+    模拟读后写交错）→ 条件 UPDATE 原子认领只放行一人：
+    败者 400 幂等提示、奖励只 +1、行不被覆盖。
+
+    修复前红验证：B 读到 pending 快照 → 通过状态检查 → 回填覆盖 A 的行 →
+    各自 process_invite（invitee 不同，唯一约束不拦）→ 发起人 +2（双发）。
+    """
+    _mock_wxacode(monkeypatch, [])
+    initiator = _new_user(f"race_a_{uuid.uuid4().hex[:8]}", **BIRTH, invite_code=_new_code())
+    friend_a = _new_user(f"race_b_{uuid.uuid4().hex[:8]}", zodiac="capricorn")
+    friend_b = _new_user(f"race_c_{uuid.uuid4().hex[:8]}", zodiac="pisces")
+    created = _quick(client, initiator["token"])
+    assert _invite(client, initiator["token"], created["meet_id"]).status_code == 200
+
+    # A 正常加入（真实落库 completed + 奖励）
+    r1 = _join(client, friend_a["token"], created["meet_id"])
+    assert r1.status_code == 200 and r1.json()["reward_granted"] is True
+
+    # B 的请求在 A 提交前已读到 pending 快照（模拟并发读后写窗口）
+    real_get = AsyncSession.get
+
+    async def stale_get(self, model, ident, *a, **kw):
+        row = await real_get(self, model, ident, *a, **kw)
+        if model is StarMeeting and ident == created["meet_id"]:
+            # 过期快照：回放为分离的 pending 对象（不挂 session，避免被 autoflush 写回）
+            return StarMeeting(
+                id=row.id, initiator_id=row.initiator_id, relation=row.relation,
+                a_zodiac=row.a_zodiac, a_moon=row.a_moon, a_rising=row.a_rising,
+                b_zodiac=row.b_zodiac, b_moon=row.b_moon, b_rising=row.b_rising,
+                status="pending", result_json=None,
+            )
+        return row
+
+    monkeypatch.setattr(AsyncSession, "get", stale_get)
+    r2 = _join(
+        client, friend_b["token"], created["meet_id"],
+        b_birth_date="1990-01-15", b_birth_time="12:00",  # → 摩羯（若覆盖 A 的处女可检出）
+    )
+    monkeypatch.setattr(AsyncSession, "get", real_get)  # 恢复真实 get，断言真实落库行
+
+    # 修复后：条件 UPDATE WHERE status='pending' 已不匹配（A 已 completed）→ 400 幂等
+    assert r2.status_code == 400
+    assert "已完成" in r2.json()["detail"] or "邀请" in r2.json()["detail"]
+
+    # 奖励只 +1（发起人）；A +1、B +0
+    assert _user_row(initiator["id"]).free_deep_readings == 1
+    assert _user_row(friend_a["id"]).free_deep_readings == 1
+    assert _user_row(friend_b["id"]).free_deep_readings == 0
+
+    # 行不被 B 覆盖：friend_user_id 仍是 A，b 三要素仍是 A 的派生（处女座）
+    row = _meet_row(created["meet_id"])
+    assert row.status == "completed"
+    assert row.friend_user_id == friend_a["id"]
+    assert row.b_zodiac == "virgo"
+    assert row.b_moon and row.b_rising
+    assert json.loads(row.result_json)["score"] == r1.json()["score"]
+
+
+def test_join_concurrent_same_friend_two_meets_no_500(client: TestClient, monkeypatch):
+    """同一好友并发 join 两个不同 meet → Invite.invitee_id 唯一约束冲突必须在
+    meet_join 内被接住：幂等提示（200 不 500），奖励不重复，两 meet 均完成。
+
+    修复前红验证：冲突 IntegrityError 穿透 meet_join → get_db 回滚重抛 → 500。
+    """
+    _mock_wxacode(monkeypatch, [])
+    initiator1 = _new_user(f"race2_a_{uuid.uuid4().hex[:8]}", **BIRTH, invite_code=_new_code())
+    initiator2 = _new_user(f"race2_b_{uuid.uuid4().hex[:8]}", **BIRTH, invite_code=_new_code())
+    friend = _new_user(f"race2_c_{uuid.uuid4().hex[:8]}", zodiac="capricorn")
+    m1 = _quick(client, initiator1["token"])
+    m2 = _quick(client, initiator2["token"])
+    assert _invite(client, initiator1["token"], m1["meet_id"]).status_code == 200
+    assert _invite(client, initiator2["token"], m2["meet_id"]).status_code == 200
+
+    import app.api.meet as meet_api
+
+    real_process_invite = meet_api.process_invite
+    calls = {"n": 0}
+
+    async def racing_process_invite(db, inviter_code, invitee_user):
+        calls["n"] += 1
+        if calls["n"] <= 1:
+            return await real_process_invite(db, inviter_code, invitee_user)
+        # 模拟并发窗口：第二次调用的预检查已通过，但插入前另一请求已占
+        # invitee_id → 唯一约束冲突（修复后 meet_join 内接住 → 幂等提示不 500）
+        raise IntegrityError("UNIQUE constraint failed: invites.invitee_id", {}, {})
+
+    monkeypatch.setattr(meet_api, "process_invite", racing_process_invite)
+
+    r1 = _join(client, friend["token"], m1["meet_id"])
+    assert r1.status_code == 200, r1.text
+    assert r1.json()["reward_granted"] is True
+
+    r2 = _join(client, friend["token"], m2["meet_id"])
+    assert r2.status_code == 200, r2.text  # 修复前：IntegrityError 穿透 → 500
+    data2 = r2.json()
+    assert data2["reward_granted"] is False  # 奖励不重复
+    assert data2["reward_note"]  # 幂等提示
+
+    assert _user_row(friend["id"]).free_deep_readings == 1  # 全程只 +1
+    assert _user_row(initiator1["id"]).free_deep_readings == 1
+    assert _user_row(initiator2["id"]).free_deep_readings == 0
+
+    # 两个 meet 都完成、friend 都回填（仅奖励幂等，加入本身仍生效）
+    row1 = _meet_row(m1["meet_id"])
+    row2 = _meet_row(m2["meet_id"])
+    assert row1.status == "completed" and row1.friend_user_id == friend["id"]
+    assert row2.status == "completed" and row2.friend_user_id == friend["id"]

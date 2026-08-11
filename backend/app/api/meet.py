@@ -29,7 +29,8 @@ import uuid
 from datetime import date, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Response
-from sqlalchemy import or_, select
+from sqlalchemy import or_, select, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_db
@@ -575,11 +576,16 @@ async def meet_join(
 
     - 仅 status=pending（已邀请）的相遇可加入；发起人自己不能加入（同人防刷）；
       已完成（含重复加入/第三人）→ 400
-    - 回填 b 三要素 + friend_user_id + status=completed + result_json
-      （a 侧复用落库派生三要素；b 侧为好友真实信息，与 quick 同口径派生）
+    - 回填 b 三要素 + friend_user_id + status=completed + result_json（a 侧复用
+      落库派生三要素；b 侧为好友真实信息，与 quick 同口径派生）
+    - 并发安全（T2-3 审查修复）：认领走条件 UPDATE（WHERE status='pending'
+      同语句翻转 status + 回填全部字段，rowcount==1 才放行）——两个并发 join
+      只有一人成功，另一人 rowcount==0 → 幂等 400，杜绝"双读 pending 双双回填
+      覆盖 + 双发奖励"。
     - 奖励：发起人有 invite_code 且为首次 pending→completed → process_invite
-      （双方各 +1 免费解读）。幂等双保险：join 只放行 pending 行（首完成只
-      发生一次）+ process_invite 自身校验（invitee 唯一，已接受过不重复）
+      （双方各 +1 免费解读）。幂等三保险：原子认领（首完成只发生一次）+
+      process_invite 自身校验（invitee 唯一，已接受过不重复）+ 并发兜底
+      （Invite.invitee_id 唯一约束冲突在 SAVEPOINT 内接住 → 幂等提示不 500）。
     """
     if payload.zodiac_b not in ZODIAC_KEYS:
         raise HTTPException(status_code=400, detail="星座参数无效，请使用 aries 等标准 key")
@@ -595,8 +601,9 @@ async def meet_join(
         raise HTTPException(status_code=404, detail="相遇记录不存在")
     if row.initiator_id == user.id:
         raise HTTPException(status_code=400, detail="不能加入自己的相遇")
-    if row.status != "pending":
-        raise HTTPException(status_code=400, detail="该相遇未在邀请中或已完成")
+    # 注意：不再做 row.status 的"读后写"预检查（T2-3 审查并发竞态——
+    # 两个请求都读到 pending 会双双通过）。是否可加入由下方的
+    # 条件 UPDATE（WHERE status='pending'）原子认领裁决。
 
     # ── b 三要素（与 quick 的 b 侧同口径）──
     b_sun = payload.zodiac_b
@@ -636,25 +643,45 @@ async def meet_join(
         "tips": tips,
     }
 
-    # ── 回填 + 完成（pending→completed 只发生一次 → 奖励幂等前提）──
-    row.b_zodiac = b_sun
-    row.b_moon = b_moon
-    row.b_rising = b_rising
-    row.friend_user_id = user.id
-    row.status = "completed"
-    row.result_json = json.dumps(result, ensure_ascii=False)
-    await db.flush()
+    # ── 原子认领（T2-3 审查修复）：条件 UPDATE 同语句完成 status 翻转 + 全部
+    #    回填（status 变化与 result 回填同一语句，WHERE status='pending' 裁决）：
+    #    两个并发 join 只有一个 rowcount==1 放行；rowcount==0 视为已被占 →
+    #    幂等 400。修复前"读后写"会让两个请求都读到 pending 双双回填（后写覆盖
+    #    前写）+ 各自 process_invite → 发起人 +2 免费解读（应 +1）。──
+    claim = await db.execute(
+        update(StarMeeting)
+        .where(StarMeeting.id == payload.meet_id, StarMeeting.status == "pending")
+        .values(
+            b_zodiac=b_sun,
+            b_moon=b_moon,
+            b_rising=b_rising,
+            friend_user_id=user.id,
+            status="completed",
+            result_json=json.dumps(result, ensure_ascii=False),
+        )
+    )
+    if claim.rowcount != 1:
+        raise HTTPException(status_code=400, detail="该相遇未在邀请中或已完成")
+    await db.refresh(row)  # ORM 行同步回填值（响应 a/b 侧读取）
 
-    # ── 邀请奖励：发起人有 invite_code 且为首次完成（process_invite 自身幂等）──
+    # ── 邀请奖励：发起人有 invite_code 且为首次完成（process_invite 自身幂等；
+    #    并发兜底：同一好友并发 join 两个 meet → Invite.invitee_id 唯一约束冲突，
+    #    在子事务（SAVEPOINT）内接住 → 幂等提示，不 500，也不回滚已认领的 meet）──
     reward_granted = False
     reward_note: str | None = None
     if initiator is not None and initiator.invite_code:
-        invite_result = await process_invite(
-            db, inviter_code=initiator.invite_code, invitee_user=user
-        )
-        reward_granted = bool(invite_result.get("success", False))
-        if not reward_granted:
-            reward_note = invite_result.get("error")
+        try:
+            async with db.begin_nested():  # 奖励子事务：冲突只回滚奖励，保留认领
+                invite_result = await process_invite(
+                    db, inviter_code=initiator.invite_code, invitee_user=user
+                )
+                await db.flush()  # 让 Invite 唯一约束在此浮出（而非 get_db commit 阶段 500）
+            reward_granted = bool(invite_result.get("success", False))
+            if not reward_granted:
+                reward_note = invite_result.get("error")
+        except IntegrityError:
+            reward_granted = False
+            reward_note = "你已经接受过邀请"
 
     return {
         "meet_id": row.id,
