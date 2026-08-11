@@ -23,12 +23,10 @@ from sqlalchemy import delete, select, update
 
 from app.config import settings
 from app.db.database import async_session
-from app.models.push_subscription import PushSubscription
 from app.models.subscribe_quota import SubscribeQuota
 from app.models.user import User
 from app.services import daily_push
 from app.services.energy_engine import build_today_guidance
-from app.services.push import TEMPLATE_DAILY_CARD
 from app.utils.auth import create_token
 
 # 北京时间（UTC+8）
@@ -61,6 +59,7 @@ def _reset_state(monkeypatch) -> None:
     monkeypatch.setattr(daily_push, "_last_sent_date", None)
     monkeypatch.setattr(daily_push, "_last_config_error_date", None)
     monkeypatch.setattr(daily_push, "_morning_fail_counts", {})
+    monkeypatch.setattr(daily_push, "_night_fail_counts", {})
     monkeypatch.setattr(daily_push, "_load_state", lambda: None)
     monkeypatch.setattr(daily_push, "_save_state", lambda: None)
 
@@ -444,11 +443,11 @@ async def _get_token(user_id: str) -> str:
 def test_daily_push_skips_morning_recipients(
     client: TestClient, monkeypatch, clean_quotas
 ):
-    """用户 A 当日已收到星光晨讯（last_sent_date==今天）→ 21:00 晚间不再推送；
-    用户 B 未收晨讯 → 正常推送。
+    """用户 A 当日已收到星光晨讯（last_sent_date==今天）→ 21:00 星语不再推送；
+    用户 B 未收晨讯且偏好 night → 正常推送。
 
-    断言只针对本用例的两个用户（test_daily_push 先运行留下的订阅行也会被
-    选中发送，但与本用例无关）。
+    双槽位共用 last_sent_date 原子认领：A 的认领已被晨讯占据，21:00 扫描
+    即被排除（rowcount=0 语义），两槽位共享每日最多 1 条硬上限。
     """
     _reset_state(monkeypatch)
     monkeypatch.setattr(settings, "WX_TEMPLATE_DAILY_CARD", "TEST_TMPL")
@@ -457,29 +456,22 @@ def test_daily_push_skips_morning_recipients(
 
     async def _seed():
         async with async_session() as session:
-            # A：今日已收晨讯（quota 已扣完）
+            # A：今日已收晨讯（last_sent_date==今天，另有额度但认领已被占据）
             session.add(
                 SubscribeQuota(
                     user_id=morning_user_id,
-                    quota_available=0,
+                    quota_available=1,
                     last_sent_date=TODAY,
+                    slot_preference="morning",
                 )
             )
-            # A、B 均已订阅每日一牌模板
+            # B：未收晨讯、偏好 night、有额度 → 21:00 星语正常推送
             session.add(
-                PushSubscription(
-                    user_id=morning_user_id,
-                    openid="o_evening_morning_001",
-                    template_id=TEMPLATE_DAILY_CARD,
-                    subscribed=True,
-                )
-            )
-            session.add(
-                PushSubscription(
+                SubscribeQuota(
                     user_id=fresh_user_id,
-                    openid="o_evening_fresh_001",
-                    template_id=TEMPLATE_DAILY_CARD,
-                    subscribed=True,
+                    quota_available=1,
+                    last_sent_date=None,
+                    slot_preference="night",
                 )
             )
             await session.commit()
@@ -494,26 +486,18 @@ def test_daily_push_skips_morning_recipients(
 
     monkeypatch.setattr(daily_push, "send_subscribe_message", _fake_ok)
 
-    try:
-        NOW_2130 = datetime(2026, 8, 10, 21, 30, tzinfo=BEIJING_TZ)
-        result = _evening_send(NOW_2130)
-        assert result["status"] == "sent"
-        assert "o_evening_morning_001" not in calls  # 已收晨讯 → 晚间跳过
-        assert "o_evening_fresh_001" in calls        # 未收晨讯 → 正常推送
-        assert result["failed"] == 0
-    finally:
-        # 清理本用例的订阅行：test_daily_push 的精确 failed 计数依赖
-        # 订阅表不被本文件残留污染（两文件执行顺序不固定）
-        async def _cleanup():
-            async with async_session() as session:
-                await session.execute(
-                    delete(PushSubscription).where(
-                        PushSubscription.user_id.in_([morning_user_id, fresh_user_id])
-                    )
-                )
-                await session.commit()
+    NOW_2130 = datetime(2026, 8, 10, 21, 30, tzinfo=BEIJING_TZ)
+    result = _evening_send(NOW_2130)
+    assert result["status"] == "sent"
+    assert result["sent"] == 1
+    assert "evening_morning_001" not in calls  # 已收晨讯 → 晚间跳过
+    assert "evening_fresh_001" in calls        # 未收晨讯 → 正常推送
+    assert result["failed"] == 0
 
-        asyncio.run(_cleanup())
+    # B 额度被消费、认领=今天；A 未被消费
+    b_quota = asyncio.run(_get_quota(fresh_user_id))
+    assert b_quota.quota_available == 0
+    assert b_quota.last_sent_date == NOW_2130.date()
 
 
 # ══════════════════════════════════════════════════════════════

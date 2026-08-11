@@ -1,13 +1,14 @@
 """
-星光晨讯（7:37） + 晚间推送（21:00）— 两个定时推送共用 run_daily_push_loop。
+星光晨讯（7:37） + 睡前星语（21:00）— 两个定时推送共用 run_daily_push_loop。
 
 【7:37 星光晨讯（Task 5，按额度消费）】
-- 每天 7:37（北京时间 UTC+8，固定偏移）向「有订阅额度且今天未发过」的用户
-  推送「今日星光」：今日星光一句话（能量+星光数）+ 星象宜忌 + 星光色 + 日期。
+- 每天 7:37（北京时间 UTC+8，固定偏移）向「有订阅额度、槽位偏好 morning、
+  且今天未发过」的用户推送「今日星光」：今日星光一句话（能量+星光数）+
+  星象宜忌 + 星光色 + 日期。
 - 额度来源：微信一次性订阅授权（POST /notify/subscribe-grant → quota+1）；
   发送成功后 quota-1、记 last_sent_date（同日最多 1 条）。
 - 失败退避（最终审查 F-2）：微信 errcode!=0 / 异常时认领回退照旧（不扣额度），
-  但每用户当日失败次数达 _MORNING_MAX_ATTEMPTS（3）次后，本日不再尝试该
+  但每用户当日失败次数达 _MAX_ATTEMPTS（3）次后，本日不再尝试该
   用户——避免微信持续故障时每 5 分钟循环全天重试烧配额刷日志；
   计数按日存储（user_id → (日期, 次数)），次日日期变化自动重置。
 - 并发安全（原子认领）：发送前对每个用户执行
@@ -21,17 +22,24 @@
   （优先今日 HoroscopeHistory，无则轻量 compute_energy）。
 - 时间配置：settings.SEND_TIME（默认 "07:37"）。
 
-【21:00 晚间推送（Co-Star 模式，限量制造期待）】
-- 每天 21:00 向所有已订阅 TEMPLATE_DAILY_CARD 的用户推送「今晚之牌」：
-  当天每日一牌的牌名 + 一句牌语（确定性选牌，与 /cards/daily 一致）。
-- 月相事件优先（开发 04）：新月前 1 天推送「明日新月，准备好愿望了吗 ✦」；
-  满月当天推送「满月之夜，来复盘你的愿望 ✦」。
-- 防疲劳：同日已收到星光晨讯的用户不再收到晚间推送（每天最多 1 条）。
+【21:00 睡前星语（T4-3：额度制 + 槽位偏好分流）】
+- 每天 21:00 向「有订阅额度、槽位偏好 night、且今天未发过」的用户推送
+  睡前星语（T4-2 star_words：AI 优先 + 短句库兜底 + 同日缓存），点击直达
+  pages/moon-card/moon-card（月光卡）。
+- 与晨讯共用 SubscribeQuota 的 last_sent_date 原子认领：两槽位共享每日
+  最多 1 条硬上限；失败认领回退不扣额度；星语槽位独立当日失败计数
+  _night_fail_counts（同 _MAX_ATTEMPTS=3 语义）。
+- 月相事件优先（开发 04 + T4-3）：新月前 1 天 / 满月当天，21:00 向**全部**
+  有额度未发用户（不分槽位偏好）推送节点版（build_moon_push_data +
+  pages/wish/wish 或 pages/review/review），当日不发星语——节点召回不因
+  槽位偏好丢失。
+- 存量兼容：PushSubscription（TEMPLATE_DAILY_CARD）不再作为 21:00 发送
+  依据，仅作设置页「推送开关」展示数据源；未授权新额度的老用户晚间不再推送。
 
 通用约定：
 - 模板 ID 从 settings（WX_TEMPLATE_DAILY_CARD）读取；未配置时记 error 日志
   并跳过（服务不崩溃，也不向微信发请求）。
-- 已发送日期记在内存 + data/daily_push_state.json（best-effort 持久化，
+- 批标记记在内存 + data/daily_push_state.json（best-effort 持久化，
   服务重启后不会重复发送）。
 
 main.py 启动时挂后台任务：run_daily_push_loop()，每 5 分钟检查一次。
@@ -48,20 +56,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.db.database import async_session
-from app.models.card import TarotCard
 from app.models.horoscope import HoroscopeHistory
-from app.models.push_subscription import PushSubscription
 from app.models.subscribe_quota import SubscribeQuota
 from app.models.user import User
-from app.services.daily_card import pick_daily_card
 from app.services.energy_engine import DIM_NAMES_ZH, build_today_guidance, compute_energy
 from app.services.push import (
     TEMPLATE_DAILY_CARD,
-    build_daily_card_data,
     is_template_configured,
     resolve_template_id,
     send_subscribe_message,
 )
+from app.services.star_words import build_star_word_data, get_today_star_word
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +75,8 @@ BEIJING_TZ = timezone(timedelta(hours=8))
 PUSH_HOUR = 21
 # 星光晨讯目标页（今日星光卡在首页）
 MORNING_PAGE = "pages/index/index"
+# 睡前星语目标页（月光卡最小可用版，T4-3）
+NIGHT_PAGE = "pages/moon-card/moon-card"
 
 _STATE_FILE = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
@@ -78,35 +85,40 @@ _STATE_FILE = os.path.join(
 )
 
 # 内存态：'YYYY-MM-DD'（北京时间）
-# _last_sent_date：21:00 晚间推送当天是否已发送
-# _morning_sent_date：7:37 星光晨讯批标记（内存级第二道防线，逐人去重靠
+# _last_sent_date：21:00 睡前星语批标记（内存级第二道防线，逐人去重靠
 #   SubscribeQuota.last_sent_date 原子认领；仅整批无失败时置位）
+# _morning_sent_date：7:37 星光晨讯批标记（同上模式）
 _last_sent_date: str | None = None
 _morning_sent_date: str | None = None
 # 模板未配置的日志去重（每天只记一次 error，避免每 5 分钟刷屏）
 _last_config_error_date: str | None = None
 
-# ── 晨讯失败退避（最终审查 F-2）：当日每用户重试上限 ──
+# ── 失败退避（最终审查 F-2 + T4-3）：各槽位当日每用户重试上限 ──
 # 内存计数：user_id -> (失败日期'YYYY-MM-DD', 当日失败次数)。
 # 日期不等于今天时视为新的一天，自然重置；仅内存、不持久化（重启后
-# 重新计数，最多多试 3 次，无副作用）。
-_MORNING_MAX_ATTEMPTS = 3
+# 重新计数，最多多试 3 次，无副作用）。晨讯与星语槽位计数相互独立。
+_MAX_ATTEMPTS = 3
 _morning_fail_counts: dict[str, tuple[str, int]] = {}
+_night_fail_counts: dict[str, tuple[str, int]] = {}
 
 
-def _is_morning_attempt_exhausted(user_id: str, today_str: str) -> bool:
+def _is_attempt_exhausted(
+    fail_counts: dict[str, tuple[str, int]], user_id: str, today_str: str
+) -> bool:
     """当日失败次数已达上限 → 本日不再尝试该用户。"""
-    entry = _morning_fail_counts.get(user_id)
-    return entry is not None and entry[0] == today_str and entry[1] >= _MORNING_MAX_ATTEMPTS
+    entry = fail_counts.get(user_id)
+    return entry is not None and entry[0] == today_str and entry[1] >= _MAX_ATTEMPTS
 
 
-def _record_morning_failure(user_id: str, today_str: str) -> None:
-    """记录一次晨讯发送失败（按用户当日计数；跨日自动重置）。"""
-    entry = _morning_fail_counts.get(user_id)
+def _record_failure(
+    fail_counts: dict[str, tuple[str, int]], user_id: str, today_str: str
+) -> None:
+    """记录一次发送失败（按用户当日计数；跨日自动重置）。"""
+    entry = fail_counts.get(user_id)
     if entry is None or entry[0] != today_str:
-        _morning_fail_counts[user_id] = (today_str, 1)
+        fail_counts[user_id] = (today_str, 1)
     else:
-        _morning_fail_counts[user_id] = (today_str, entry[1] + 1)
+        fail_counts[user_id] = (today_str, entry[1] + 1)
 
 
 def _load_state() -> None:
@@ -143,21 +155,6 @@ def _parse_send_time(value: str | None) -> tuple[int, int]:
         return int(hour_s), int(minute_s)
     except (ValueError, AttributeError):
         return 7, 37
-
-
-def _first_keyword(card: TarotCard) -> str:
-    """从卡牌关键词（JSON 数组字符串或纯文本）中取第一句作为牌语。"""
-    raw = card.keywords_upright or ""
-    if not raw:
-        return "查看今日指引"
-    try:
-        kws = json.loads(raw)
-        if isinstance(kws, list) and kws:
-            return str(kws[0])[:20]
-    except (ValueError, TypeError):
-        pass
-    first = raw.split("，")[0].split(",")[0].strip()
-    return first[:20] or "查看今日指引"
 
 
 def get_moon_push_event(today: date) -> dict | None:
@@ -267,11 +264,12 @@ async def _today_energy(db: AsyncSession, user: User, today: date) -> dict:
     return result["energy"]
 
 
-async def _release_morning_claim(db: AsyncSession, user_id: str, today: date) -> None:
+async def _release_claim(db: AsyncSession, user_id: str, today: date) -> None:
     """发送失败 → 回退认领（last_sent_date 置回 NULL），不扣额度，允许下次重试。
 
     认领（last_sent_date=today）与发送在同一事务内：失败时把 today 回退为
     NULL 并 commit，微信临时故障不会烧掉用户的一次性授权。
+    晨讯与睡前星语两槽位共用（双槽位共享每日 1 条硬上限的认领/回退）。
     """
     try:
         await db.execute(
@@ -284,7 +282,7 @@ async def _release_morning_claim(db: AsyncSession, user_id: str, today: date) ->
         )
         await db.commit()
     except Exception:
-        logger.exception("7:37 星光晨讯认领回退失败：user=%s", user_id)
+        logger.exception("推送认领回退失败：user=%s", user_id)
         await db.rollback()
 
 
@@ -333,12 +331,14 @@ async def send_starlight_morning_if_due(
     if _morning_sent_date == today_str:
         return {"status": "not_due"}
 
-    # ── 有额度且今天未发过（last_sent_date IS NULL 或 != 今天）的用户 ──
+    # ── 有额度、偏好 morning、且今天未发过（last_sent_date IS NULL 或 != 今天）
+    #    的用户（T4-3：7:37 只发晨星用户，night 用户留给 21:00 星语）──
     result = await db.execute(
         select(SubscribeQuota, User)
         .join(User, User.id == SubscribeQuota.user_id)
         .where(
             SubscribeQuota.quota_available > 0,
+            SubscribeQuota.slot_preference == "morning",
             or_(
                 SubscribeQuota.last_sent_date.is_(None),
                 SubscribeQuota.last_sent_date != today,
@@ -347,12 +347,12 @@ async def send_starlight_morning_if_due(
         .limit(1000)  # 微信单模板每小时上限 1000 条
     )
     rows = list(result.all())
-    # ── 失败退避（F-2）：当日已失败 _MORNING_MAX_ATTEMPTS 次的用户本日不再尝试。
+    # ── 失败退避（F-2）：当日已失败 _MAX_ATTEMPTS 次的用户本日不再尝试。
     #    全部用户均达上限时 rows 为空 → 落入 no_subscribers 分支并置批标记，
     #    循环自然停止，直到次日日期变化重置计数。──
     rows = [
         row for row in rows
-        if not _is_morning_attempt_exhausted(row[0].user_id, today_str)
+        if not _is_attempt_exhausted(_morning_fail_counts, row[0].user_id, today_str)
     ]
     if not rows:
         logger.info("7:37 星光晨讯：今日无有额度的用户（或均已达当日重试上限），跳过")
@@ -408,13 +408,13 @@ async def send_starlight_morning_if_due(
                 # 微信 errcode!=0：不扣额度，认领回退为 NULL（允许下次重试），
                 # 但记录失败次数——当日达上限后不再尝试（F-2）
                 failed += 1
-                await _release_morning_claim(db, quota.user_id, today)
-                _record_morning_failure(quota.user_id, today_str)
+                await _release_claim(db, quota.user_id, today)
+                _record_failure(_morning_fail_counts, quota.user_id, today_str)
         except Exception:
             logger.exception("7:37 星光晨讯发送失败：user=%s", quota.user_id)
             failed += 1
-            await _release_morning_claim(db, quota.user_id, today)
-            _record_morning_failure(quota.user_id, today_str)
+            await _release_claim(db, quota.user_id, today)
+            _record_failure(_morning_fail_counts, quota.user_id, today_str)
 
     # 批标记仅作内存级第二道防线：整批无失败才置位（当天不再重扫）；
     # 有失败则保持空，下一轮 5 分钟循环补发失败用户（原子认领保证不重复发送；
@@ -429,7 +429,16 @@ async def send_starlight_morning_if_due(
 
 
 async def send_daily_push_if_due(db: AsyncSession, now: datetime | None = None) -> dict:
-    """到 21:00（北京时间）且今天未发送时，向订阅用户推送「今晚之牌」。
+    """21:00 睡前星语（T4-3 额度制 + 槽位偏好分流）。
+
+    - 扫描「有额度且今天未发过」的用户：普通日仅 slot_preference==night，
+      月相事件日（新月前 1 天 / 满月当天）发**全部**有额度未发用户。
+    - 内容：普通日 = 睡前星语（get_today_star_word 写同日缓存 →
+      build_star_word_data，page=月光卡）；节点日 = 月相节点文案优先。
+    - 与晨讯共用 SubscribeQuota.last_sent_date 原子认领：双槽位共享每日
+      最多 1 条硬上限；成功 quota-1 同事务 commit；失败认领回退 + 当日
+      失败计数（_night_fail_counts，达 _MAX_ATTEMPTS 次后本日不再尝试）。
+    - PushSubscription 不再作为发送依据（存量兼容：仅设置页开关展示数据源）。
 
     Parameters
     ----------
@@ -442,8 +451,8 @@ async def send_daily_push_if_due(db: AsyncSession, now: datetime | None = None) 
     -------
     dict
         - {"status": "skipped_config"}  模板未配置（记 error 日志，不崩溃）
-        - {"status": "not_due"}         未到 21:00，或今天已发送过
-        - {"status": "no_subscribers"}  无订阅用户 / 卡牌数据为空
+        - {"status": "not_due"}         未到 21:00，或今天已批量发送过
+        - {"status": "no_subscribers"}  无符合条件的用户（或均已达当日重试上限）
         - {"status": "sent", "sent": n, "failed": m}  发送完成
     """
     global _last_sent_date, _last_config_error_date
@@ -451,96 +460,132 @@ async def send_daily_push_if_due(db: AsyncSession, now: datetime | None = None) 
         _load_state()
 
     now = (now or datetime.now(BEIJING_TZ)).astimezone(BEIJING_TZ)
-    today_str = now.date().isoformat()
+    today = now.date()
+    today_str = today.isoformat()
 
     # ── 模板未配置：记 error 日志并跳过（每天只记一次）──
     if not is_template_configured(TEMPLATE_DAILY_CARD):
         if _last_config_error_date != today_str:
             logger.error(
-                "21:00 每日推送跳过：WX_TEMPLATE_DAILY_CARD 未配置"
+                "21:00 睡前星语跳过：WX_TEMPLATE_DAILY_CARD 未配置"
                 "（请在 .env 配置真实模板 ID 后重启服务）"
             )
             _last_config_error_date = today_str
         return {"status": "skipped_config"}
 
-    # ── 时间与去重 ──
+    # ── 时间与批标记去重 ──
     if now.hour < PUSH_HOUR:
         return {"status": "not_due"}
     if _last_sent_date == today_str:
         return {"status": "not_due"}
 
-    # ── 订阅用户（每日一牌模板）──
+    # ── 月相事件优先（开发 04 + T4-3）：命中日节点内容发给全部有额度用户，
+    #    节点召回不因槽位偏好丢失；普通日只发 night 偏好用户（星语）。──
+    moon_event = get_moon_push_event(today)
+
+    # ── 候选：有额度且今天未发过（last_sent_date IS NULL 或 != 今天）──
     result = await db.execute(
-        select(PushSubscription).where(
-            PushSubscription.template_id == TEMPLATE_DAILY_CARD,
-            PushSubscription.subscribed.is_(True),
+        select(SubscribeQuota, User)
+        .join(User, User.id == SubscribeQuota.user_id)
+        .where(
+            SubscribeQuota.quota_available > 0,
+            or_(
+                SubscribeQuota.last_sent_date.is_(None),
+                SubscribeQuota.last_sent_date != today,
+            ),
         )
+        .limit(1000)  # 微信单模板每小时上限 1000 条
     )
-    subs = list(result.scalars().all())
-    if not subs:
-        logger.info("21:00 每日推送：今日无订阅用户，跳过")
+    rows = list(result.all())
+    if moon_event is None:
+        # 普通日：21:00 星语只发 night 偏好用户（morning 用户留给 7:37 晨讯）
+        rows = [row for row in rows if row[0].slot_preference == "night"]
+    # ── 失败退避（F-2）：当日已失败 _MAX_ATTEMPTS 次的用户本日不再尝试。
+    #    全部用户均达上限时 rows 为空 → 落入 no_subscribers 分支并置批标记，
+    #    循环自然停止，直到次日日期变化重置计数。──
+    rows = [
+        row for row in rows
+        if not _is_attempt_exhausted(_night_fail_counts, row[0].user_id, today_str)
+    ]
+    if not rows:
+        logger.info("21:00 睡前星语：今日无符合条件的用户（或均已达当日重试上限），跳过")
         _last_sent_date = today_str
         _save_state()
         return {"status": "no_subscribers"}
 
-    # ── 防疲劳：同日已收到星光晨讯的用户不再推送（每天最多 1 条）──
-    quota_result = await db.execute(
-        select(SubscribeQuota.user_id).where(SubscribeQuota.last_sent_date == now.date())
-    )
-    morning_sent_ids = set(quota_result.scalars().all())
-    if morning_sent_ids:
-        subs = [s for s in subs if s.user_id not in morning_sent_ids]
-        if not subs:
-            logger.info("21:00 每日推送：订阅用户今日均已收到星光晨讯，跳过")
-            _last_sent_date = today_str
-            _save_state()
-            return {"status": "no_subscribers"}
-
-    # ── 一次性加载完整牌库，按用户逐人确定性选牌 ──
-    card_result = await db.execute(select(TarotCard).order_by(TarotCard.id))
-    cards = list(card_result.scalars().all())
-    if not cards:
-        logger.error("21:00 每日推送：卡牌数据为空，跳过")
-        return {"status": "no_subscribers"}
-
     template_id = resolve_template_id(TEMPLATE_DAILY_CARD)
-
-    # ── 月相事件优先（开发 04）：新月前夜 / 满月之夜 ──
-    moon_event = get_moon_push_event(now.date())
 
     sent = 0
     failed = 0
-    for sub in subs[:1000]:  # 微信单模板每小时上限 1000 条
+    for quota, user in rows:
+        # ── 原子认领（I-1）：与晨讯同款。并发/崩溃交错时同用户同日最多
+        #    发 1 条（双槽位共用 last_sent_date —— 已收晨讯者此处 rowcount==0
+        #    跳过，两槽位共享每日 1 条硬上限）。──
+        claim = await db.execute(
+            update(SubscribeQuota)
+            .where(
+                SubscribeQuota.user_id == quota.user_id,
+                or_(
+                    SubscribeQuota.last_sent_date.is_(None),
+                    SubscribeQuota.last_sent_date != today,
+                ),
+            )
+            .values(last_sent_date=today)
+        )
+        if claim.rowcount != 1:
+            continue
         try:
             if moon_event:
-                data = build_moon_push_data(moon_event, now.date())
+                # 节点日：节点文案优先，不发星语
+                data = build_moon_push_data(moon_event, today)
                 page = moon_event["page"]
             else:
-                card = pick_daily_card(cards, sub.user_id)
-                data = build_daily_card_data(
-                    card_name=card.name_zh,
-                    keyword=_first_keyword(card),
-                    date_str=today_str.replace("-", "."),
-                    hint="今晚之牌 · 点击查看牌面详解",
-                )
-                page = "pages/daily-card/daily-card"
+                # 星语日：AI 优先 → 短句库兜底 → 同日缓存（写缓存即落库）
+                star = await get_today_star_word(db, user, today)
+                guidance = build_today_guidance(today, user.zodiac or None)
+                energy = await _today_energy(db, user, today)
+                data = build_star_word_data(today, guidance, energy, star["phrase"])
+                page = NIGHT_PAGE
             resp = await send_subscribe_message(
-                openid=sub.openid,
+                openid=user.openid,
                 template_id=template_id,
                 data=data,
                 page=page,
             )
             if resp.get("errcode") == 0:
                 sent += 1
+                # 成功：额度减扣与 last_sent_date（认领已置 today）同一事务提交。
+                # 逐条 commit —— 中途崩溃只会丢弃未提交的认领，不会整批重发。
+                await db.execute(
+                    update(SubscribeQuota)
+                    .where(
+                        SubscribeQuota.user_id == quota.user_id,
+                        SubscribeQuota.quota_available > 0,
+                    )
+                    .values(quota_available=SubscribeQuota.quota_available - 1)
+                )
+                await db.commit()
             else:
+                # 微信 errcode!=0：不扣额度，认领回退为 NULL（允许下次重试），
+                # 但记录失败次数——当日达上限后不再尝试（F-2）
                 failed += 1
+                await _release_claim(db, quota.user_id, today)
+                _record_failure(_night_fail_counts, quota.user_id, today_str)
         except Exception:
-            logger.exception("21:00 每日推送失败：user=%s", sub.user_id)
+            logger.exception("21:00 睡前星语发送失败：user=%s", quota.user_id)
             failed += 1
+            await _release_claim(db, quota.user_id, today)
+            _record_failure(_night_fail_counts, quota.user_id, today_str)
 
-    _last_sent_date = today_str
+    # 批标记仅作内存级第二道防线：整批无失败才置位（当天不再重扫）；
+    # 有失败则保持空，下一轮 5 分钟循环补发失败用户（原子认领保证不重复发送；
+    # 失败退避 F-2：当日达 3 次上限的用户会从下一轮选中集中剔除）。
+    if failed:
+        _last_sent_date = None
+    else:
+        _last_sent_date = today_str
     _save_state()
-    logger.info("21:00 每日推送完成：sent=%d failed=%d", sent, failed)
+    logger.info("21:00 睡前星语完成：sent=%d failed=%d", sent, failed)
     return {"status": "sent", "sent": sent, "failed": failed}
 
 
