@@ -20,7 +20,7 @@ from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from app.db.database import async_session
 from app.models.checkin import CheckIn
@@ -575,3 +575,332 @@ def test_wall_rate_limited_429(client: TestClient):
     for _ in range(31):
         last = client.get("/resonance/wall", headers={"X-Forwarded-For": "198.51.100.77"})
     assert last.status_code == 429, "连续第 31 次请求应被限流 429"
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# 共鸣送出/统计/隐身/海报（SDD P2 · T8-3）
+# ═══════════════════════════════════════════════════════════════════════
+
+# 海报固定文案与兜底句（T8-3 简报；兜底句静态无变量，恒过禁词扫描）
+_CAPTION = "两颗星在同一片夜空相遇 ✦"
+_CAPTION_FALLBACK = "两颗星在这一刻同频 ✦"
+_DISCLAIMER = "仅供娱乐 · 星光映照"
+
+
+def _resonate_on(from_user_id: str, to_user_id: str, day: date) -> None:
+    """指定日期共鸣记录（跨日统计测试用）。"""
+
+    async def _go() -> None:
+        async with async_session() as session:
+            session.add(
+                StarResonance(
+                    from_user_id=from_user_id,
+                    to_user_id=to_user_id,
+                    resonate_date=day,
+                )
+            )
+            await session.commit()
+
+    asyncio.run(_go())
+
+
+def _give(client: TestClient, headers: dict[str, str], to_uid: str):
+    return client.post("/resonance/give", json={"to_user_id": to_uid}, headers=headers)
+
+
+# ── give：首次 / 幂等 / 每日上限 / 自给 / 目标校验 / 不产星尘 ─────────────
+
+
+def test_give_first_ok_count_today_1_persisted(client: TestClient):
+    """give 首次成功：200 {ok, count_today:1, limit:10} 且共鸣记录落库。"""
+    me, me_h = _new_user("openid_give_first1", zodiac="taurus", star_alias="星星·我")
+    target, _ = _new_user("openid_give_first2", zodiac="taurus", star_alias="星星·你")
+    r = _give(client, me_h, target)
+    assert r.status_code == 200, r.text
+    assert r.json() == {"ok": True, "count_today": 1, "limit": 10}
+
+    async def _count() -> int:
+        async with async_session() as session:
+            result = await session.execute(
+                select(func.count(StarResonance.id)).where(
+                    StarResonance.from_user_id == me,
+                    StarResonance.to_user_id == target,
+                )
+            )
+            return result.scalar_one()
+
+    assert asyncio.run(_count()) == 1, "give 成功应落库一条共鸣记录"
+
+
+def test_give_same_pair_same_day_409(client: TestClient):
+    """同日同人二次 give → 409 且 detail 含「已共鸣过」（唯一约束幂等）。"""
+    me, me_h = _new_user("openid_give_dup1", star_alias="星星·重")
+    target, _ = _new_user("openid_give_dup2", star_alias="星星·的")
+    assert _give(client, me_h, target).status_code == 200
+    second = _give(client, me_h, target)
+    assert second.status_code == 409, second.text
+    assert "已共鸣过" in second.json()["detail"]
+
+
+def test_give_daily_limit_10_eleventh_400(client: TestClient):
+    """每日上限：第 11 次 give → 400 且 detail 含「明天再来」（count_today 1→10）。"""
+    me, me_h = _new_user("openid_give_limit1", star_alias="星星·满")
+    count_today = None
+    for i in range(10):
+        target, _ = _new_user(f"openid_give_limit_t{i}", star_alias=f"星星·t{i}")
+        r = _give(client, me_h, target)
+        assert r.status_code == 200, r.text
+        count_today = r.json()["count_today"]
+    assert count_today == 10, "前 10 次 count_today 应递增到 10"
+    extra, _ = _new_user("openid_give_limit_x", star_alias="星星·x")
+    blocked = _give(client, me_h, extra)
+    assert blocked.status_code == 400, blocked.text
+    assert "明天再来" in blocked.json()["detail"]
+
+
+def test_give_self_400(client: TestClient):
+    """不能给自己共鸣 → 400。"""
+    me, me_h = _new_user("openid_give_self", star_alias="星星·己")
+    r = _give(client, me_h, me)
+    assert r.status_code == 400, r.text
+
+
+def test_give_target_missing_404(client: TestClient):
+    """to_user_id 不存在 → 404。"""
+    me, me_h = _new_user("openid_give_miss", star_alias="星星·缺")
+    r = _give(client, me_h, "no-such-uid")
+    assert r.status_code == 404, r.text
+
+
+def test_give_target_hidden_404(client: TestClient):
+    """to_user_id 已隐身 → 404（隐身即从夜空消失）。"""
+    me, me_h = _new_user("openid_give_hid1", star_alias="星星·给")
+    hidden, _ = _new_user("openid_give_hid2", star_alias="星星·隐", resonance_visible=False)
+    r = _give(client, me_h, hidden)
+    assert r.status_code == 404, r.text
+
+
+def test_give_produces_no_stardust(client: TestClient):
+    """三重防刷之三：共鸣不产星尘（given 后 stardust_total 不变）。"""
+    me, me_h = _new_user("openid_give_dust", star_alias="星星·尘", stardust_total=5)
+    target, _ = _new_user("openid_give_dust2", star_alias="星星·土")
+    assert _give(client, me_h, target).status_code == 200
+
+    async def _read() -> int:
+        async with async_session() as session:
+            u = await session.get(User, me)
+            return u.stardust_total
+
+    assert asyncio.run(_read()) == 5, "共鸣不应产生任何星尘"
+
+
+def test_give_requires_auth(client: TestClient):
+    """未登录 give → 401。"""
+    assert client.post("/resonance/give", json={"to_user_id": "x"}).status_code == 401
+
+
+# ── stats：累计口径（跨日 given_total 累加、received_today 复位）─────────
+
+
+def test_stats_accumulates_across_days(client: TestClient):
+    """stats：跨日 given_total 累加；received_total 累计；received_today 仅今日。"""
+    me, me_h = _new_user("openid_stats_me", star_alias="星星·统")
+    u1, _ = _new_user("openid_stats_u1", star_alias="星星·一")
+    u2, _ = _new_user("openid_stats_u2", star_alias="星星·二")
+    u3, _ = _new_user("openid_stats_u3", star_alias="星星·三")
+    u4, _ = _new_user("openid_stats_u4", star_alias="星星·四")
+    yesterday = beijing_today() - timedelta(days=1)
+    # 给出：昨日给 u1（直接落库）+ 今日给 u2（API）→ given_total=2
+    _resonate_on(me, u1, yesterday)
+    assert _give(client, me_h, u2).status_code == 200
+    # 收到：昨日 u3 + 今日 u4 → received_total=2、received_today=1
+    _resonate_on(u3, me, yesterday)
+    _resonate_on(u4, me, beijing_today())
+
+    r = client.get("/resonance/stats", headers=me_h)
+    assert r.status_code == 200, r.text
+    assert r.json() == {"given_total": 2, "received_total": 2, "received_today": 1}
+
+
+def test_stats_requires_auth(client: TestClient):
+    """未登录 stats → 401。"""
+    assert client.get("/resonance/stats").status_code == 401
+
+
+# ── visibility：隐身开关即时生效 ─────────────────────────────────────────
+
+
+def test_visibility_off_immediate_effect_on_wall(client: TestClient):
+    """visibility=false 即时生效：墙不再含该用户；本人仍可看墙（own 可见）。
+
+    用独占星座「virgo」3 人组钉住墙成员资格：3 人组为独立星座组（不入
+    兜底合并），组内 3 ≤ Top20 上限 → 成员展示确定性强；不含此星座的
+    共鸣记录用户不影响该组。隐身关闭/开启后该组在 2 人/3 人间切换，
+    可见性断言不再依赖兜底组的 Top20 轮换（uid 随机序，避免偶发）。
+    """
+    me, me_h = _new_user("openid_vis_me", zodiac="virgo", star_alias="星星·显")
+    for i in range(2):
+        uid, _ = _new_user(f"openid_vis_c{i}", zodiac="virgo", star_alias=f"星星·伴{i}")
+        _mark_active_today(uid)
+    _mark_active_today(me)
+
+    # 默认参与 → 独立 virgo 星座组（3 人）必含本人
+    before = _wall(client, xff="203.0.113.31")
+    assert me in {m["uid"] for g in before["groups"] for m in g["members"]}, (
+        "默认 resonance_visible=true 应在墙上"
+    )
+
+    r = client.post("/resonance/visibility", json={"visible": False}, headers=me_h)
+    assert r.status_code == 200, r.text
+    assert r.json() == {"ok": True, "visible": False}
+    assert _read_user(me)["resonance_visible"] is False, "users.resonance_visible 应落库 false"
+
+    after = _wall(client, xff="203.0.113.32")
+    assert me not in {m["uid"] for g in after["groups"] for m in g["members"]}, (
+        "隐身应立即从墙上消失"
+    )
+    # 本人仍可看墙（own 可看，my_card 返回）
+    own = client.get("/resonance/wall", headers=me_h)
+    assert own.status_code == 200
+    assert own.json()["my_card"] is not None
+
+    # 重新开启 → 回到墙上
+    r2 = client.post("/resonance/visibility", json={"visible": True}, headers=me_h)
+    assert r2.status_code == 200
+    assert r2.json() == {"ok": True, "visible": True}
+    reopened = _wall(client, xff="203.0.113.33")
+    assert me in {m["uid"] for g in reopened["groups"] for m in g["members"]}
+
+
+def test_visibility_requires_auth(client: TestClient):
+    """未登录 visibility → 401。"""
+    assert client.post("/resonance/visibility", json={"visible": False}).status_code == 401
+
+
+# ── poster：脱敏键集 + 固定文案 + 维度 + 内容安全接线 ─────────────────────
+
+
+def test_poster_keyset_and_fixed_caption(client: TestClient):
+    """poster：键集脱敏断言 + caption/disclaimer 固定句 + 维度与派生字段钉住。"""
+    me, me_h = _new_user(
+        "openid_post_a", zodiac="taurus", star_alias="星星·甲",
+        stardust_total=35, star_tier=2,  # 星阶索引 2 = 星辉（与墙测试同口径）
+    )
+    target, _ = _new_user("openid_post_b", zodiac="taurus", star_alias="星星·乙")
+
+    r = client.get("/resonance/poster", params={"to_user_id": target}, headers=me_h)
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert set(body) == {
+        "alias_a", "alias_b", "zodiac_a", "zodiac_b",
+        "star_number_a", "star_number_b",
+        "card_a", "card_b", "tier_name_a", "tier_name_b",
+        "dimension", "caption", "disclaimer",
+    }
+    assert set(body["card_a"]) == {"card_id", "name_zh"}
+    assert set(body["card_b"]) == {"card_id", "name_zh"}
+    # 固定文案
+    assert body["caption"] == _CAPTION
+    assert body["disclaimer"] == _DISCLAIMER
+    # 脱敏：零可联系字段、零 uid
+    keys = _collect_keys(body, set())
+    for secret in ("nickname", "avatar", "openid", "birth_date", "birth_time",
+                   "invite_code", "uid", "openid"):
+        assert secret not in keys, f"共鸣海报泄漏敏感字段: {secret}"
+    # 派生字段与确定性来源同源
+    assert body["alias_a"] == "星星·甲" and body["alias_b"] == "星星·乙"
+    assert body["zodiac_a"] == body["zodiac_b"] == "taurus"
+    assert body["star_number_a"] == body["star_number_b"] == (
+        build_today_guidance(beijing_today(), "taurus")["star_number"]
+    )
+    assert body["tier_name_a"] == "星辉", "stardust 35 → 星辉档（阈值 30）"
+
+    async def _cards() -> list[TarotCard]:
+        async with async_session() as session:
+            result = await session.execute(select(TarotCard).order_by(TarotCard.id))
+            return list(result.scalars().all())
+
+    cards = asyncio.run(_cards())
+    expect_a = pick_daily_card(cards, me, beijing_today())
+    expect_b = pick_daily_card(cards, target, beijing_today())
+    assert body["card_a"] == {"card_id": expect_a.id, "name_zh": expect_a.name_zh}
+    assert body["card_b"] == {"card_id": expect_b.id, "name_zh": expect_b.name_zh}
+    assert body["dimension"] == "zodiac", "双方同星座 → zodiac 维"
+
+
+def test_poster_dimension_number_when_zodiacs_differ(client: TestClient):
+    """poster 维度：星座不同 → number 维（同日全站星光数相同，恒真兜底）。"""
+    me, me_h = _new_user("openid_post_c", zodiac="aries", star_alias="星星·丙")
+    target, _ = _new_user("openid_post_d", zodiac="scorpio", star_alias="星星·丁")
+    r = client.get("/resonance/poster", params={"to_user_id": target}, headers=me_h)
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["dimension"] == "number"
+    assert body["star_number_a"] == body["star_number_b"], (
+        "同日 star_number 应全站相同（date-only 派生）"
+    )
+
+
+def test_poster_target_missing_404(client: TestClient):
+    """poster 目标不存在 → 404。"""
+    me, me_h = _new_user("openid_post_miss", star_alias="星星·无")
+    r = client.get("/resonance/poster", params={"to_user_id": "nope"}, headers=me_h)
+    assert r.status_code == 404, r.text
+
+
+def test_poster_target_hidden_404(client: TestClient):
+    """poster 目标已隐身 → 404（隐身即不出现在任何对外展示）。"""
+    me, me_h = _new_user("openid_post_h1", star_alias="星星·给")
+    hidden, _ = _new_user("openid_post_h2", star_alias="星星·隐", resonance_visible=False)
+    r = client.get("/resonance/poster", params={"to_user_id": hidden}, headers=me_h)
+    assert r.status_code == 404, r.text
+
+
+def test_poster_requires_auth(client: TestClient):
+    """未登录 poster → 401。"""
+    assert client.get("/resonance/poster", params={"to_user_id": "x"}).status_code == 401
+
+
+def test_poster_msg_check_risky_replaced_with_fallback(client: TestClient, monkeypatch):
+    """msg_sec_check 命中风险 → caption 替换为安全兜底句（不 4xx、不阻塞）。"""
+
+    async def _fake_risky(content: str, openid: str | None = None) -> dict:
+        return {"safe": False, "skipped": False, "err": "risky content"}
+
+    monkeypatch.setattr("app.api.resonance.msg_sec_check", _fake_risky)
+    me, me_h = _new_user("openid_post_risk1", zodiac="leo", star_alias="星星·险")
+    target, _ = _new_user("openid_post_risk2", zodiac="leo", star_alias="星星·靶")
+    r = client.get("/resonance/poster", params={"to_user_id": target}, headers=me_h)
+    assert r.status_code == 200, r.text
+    assert r.json()["caption"] == _CAPTION_FALLBACK
+
+
+def test_poster_msg_check_exception_returns_original(client: TestClient, monkeypatch):
+    """msg_sec_check 抛异常 → 不阻塞，caption 返回原文（fail-open）。"""
+
+    async def _fake_boom(content: str, openid: str | None = None) -> dict:
+        raise RuntimeError("wechat api down")
+
+    monkeypatch.setattr("app.api.resonance.msg_sec_check", _fake_boom)
+    me, me_h = _new_user("openid_post_boom1", zodiac="leo", star_alias="星星·异")
+    target, _ = _new_user("openid_post_boom2", zodiac="leo", star_alias="星星·常")
+    r = client.get("/resonance/poster", params={"to_user_id": target}, headers=me_h)
+    assert r.status_code == 200, r.text
+    assert r.json()["caption"] == _CAPTION
+
+
+def test_poster_local_blacklist_hit_replaced_with_fallback(client: TestClient, monkeypatch):
+    """find_forbidden 命中（本地禁词表）→ caption 替换为兜底句。"""
+    monkeypatch.setattr("app.api.resonance._RESONANCE_CAPTION", "两颗星注定相遇 ✦")
+    me, me_h = _new_user("openid_post_fb1", zodiac="leo", star_alias="星星·词")
+    target, _ = _new_user("openid_post_fb2", zodiac="leo", star_alias="星星·禁")
+    r = client.get("/resonance/poster", params={"to_user_id": target}, headers=me_h)
+    assert r.status_code == 200, r.text
+    assert r.json()["caption"] == _CAPTION_FALLBACK
+
+
+def test_poster_fixed_texts_compliant():
+    """固定文案/兜底句/免责行全部过 compliance 双表扫描（无禁词）。"""
+    for text in (_CAPTION, _CAPTION_FALLBACK, _DISCLAIMER):
+        assert find_forbidden(text, MEET_BLACKLIST) == [], f"MEET_BLACKLIST 命中: {text}"
+        assert find_forbidden(text, AI_OUTPUT_BLACKLIST) == [], f"AI_OUTPUT_BLACKLIST 命中: {text}"

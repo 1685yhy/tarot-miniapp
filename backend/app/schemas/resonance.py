@@ -1,4 +1,4 @@
-"""星友圈（SDD P2 · T8-1/T8-2）的请求/响应模型。
+"""星友圈（SDD P2 · T8-1/T8-2/T8-3）的请求/响应模型。
 
 响应合规：零 UGC、零敏感字段——只暴露系统生成的脱敏星名与聚合展示位，
 不暴露 openid/nickname/avatar/birth_date/invite_code 等真实身份字段
@@ -89,3 +89,65 @@ class WallResponse(BaseModel):
     active_count: int
     groups: list[WallGroup]
     my_card: MyCard | None
+
+
+# ── 共鸣送出 / 统计 / 隐身 / 海报（T8-3）──────────────────────────────────
+
+
+class GiveRequest(BaseModel):
+    """送出共鸣请求：目标星内部 uid（仅共鸣/海报用途，不对外展示）。"""
+
+    to_user_id: str
+
+
+class GiveResponse(BaseModel):
+    """送出共鸣响应：当日已送出数 + 每日上限（count_today 含本次）。"""
+
+    ok: bool
+    count_today: int
+    limit: int
+
+
+class StatsResponse(BaseModel):
+    """我的共鸣统计（我的页角标数据源）。"""
+
+    given_total: int
+    received_total: int
+    received_today: int
+
+
+class VisibilityRequest(BaseModel):
+    """隐身开关请求：false = 一键隐身（从共鸣墙/海报对外展示消失）。"""
+
+    visible: bool
+
+
+class VisibilityResponse(BaseModel):
+    """隐身开关响应（写 users.resonance_visible，关闭即时生效）。"""
+
+    ok: bool
+    visible: bool
+
+
+class PosterResponse(BaseModel):
+    """共鸣海报数据：双方全脱敏字段（星名/星座/星光数/今日牌/星阶名）。
+
+    - 零 UGC、零可联系字段（无昵称/头像/openid/uid——测试键集钉住）；
+    - ``dimension`` = 双方共鸣维度：同星座 → zodiac；同今日牌 → card；
+      否则 → number（同日全站星光数相同，恒真兜底）；
+    - ``caption`` / ``disclaimer`` 为固定模板句（代码常量，过内容安全后返回）。
+    """
+
+    alias_a: str
+    alias_b: str
+    zodiac_a: str | None
+    zodiac_b: str | None
+    star_number_a: int
+    star_number_b: int
+    card_a: WallCard
+    card_b: WallCard
+    tier_name_a: str
+    tier_name_b: str
+    dimension: str
+    caption: str
+    disclaimer: str
