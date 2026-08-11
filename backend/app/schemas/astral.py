@@ -98,3 +98,25 @@ class NodeContentResponse(BaseModel):
     items: list[str] = Field(default_factory=list)
     daily_sentence: str | None = None
     notes: list[str] = Field(default_factory=list)
+
+
+class ActivityCheckInRequest(BaseModel):
+    """节点打卡请求：event_key 仅限 wish | review | mercury_guide。"""
+
+    event_key: str
+
+
+class ActivityCheckInResponse(BaseModel):
+    """节点打卡响应：rewarded=false 表示当天已打卡（幂等，不重复加）。"""
+
+    ok: bool
+    rewarded: bool
+    stardust_total: int
+
+
+class ActivitySummaryResponse(BaseModel):
+    """我的页星阶区：某月节点打卡汇总。"""
+
+    month: str
+    completed: int
+    keys: list[str] = Field(default_factory=list)

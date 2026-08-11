@@ -24,9 +24,11 @@ from unittest import mock
 
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy import select
 
 import app.api.astral as astral_api
 from app.db.database import async_session
+from app.models.astral_activity_log import AstralActivityLog
 from app.models.user import User
 from app.models.wish import Wish
 from app.services.astral_calendar import (
@@ -37,6 +39,7 @@ from app.services.astral_calendar import (
     node_content,
 )
 from app.services.moon import next_new_moon_after
+from app.services.stardust import tier_for
 from app.utils.auth import create_token
 
 # 与用户决策禁词表对齐（2026-08-11 确认）：必/绝对/改运/化解/转运/注定/命
@@ -442,3 +445,149 @@ def test_api_invalid_inputs(client: TestClient):
     assert client.get("/astral/calendar", params={"year": 2026, "month": 13}, headers=headers).status_code == 422
     assert client.get("/astral/event/unknown_type", headers=headers).status_code == 400
     assert client.get("/astral/events/not-a-date", headers=headers).status_code == 422
+
+
+# ── 节点活动打卡（T3-3）：事件当天 +1 星尘，幂等 ─────────────────────────
+
+
+def _set_stardust(user_id: str, total: int) -> None:
+    """预置用户星尘（星阶按 tier_for 同步），供阈值断言。"""
+
+    async def _go() -> None:
+        async with async_session() as session:
+            user = await session.get(User, user_id)
+            user.stardust_total = total
+            user.star_tier = tier_for(total)
+            await session.commit()
+
+    asyncio.run(_go())
+
+
+def _get_stardust_tier(user_id: str) -> tuple[int, int | None]:
+    """独立会话读用户星尘/星阶（避开 API 会话 identity map）。"""
+
+    async def _go() -> tuple[int, int | None]:
+        async with async_session() as session:
+            user = await session.get(User, user_id)
+            return user.stardust_total or 0, user.star_tier
+
+    return asyncio.run(_go())
+
+
+def _activity_logs(user_id: str) -> list[dict]:
+    """读用户打卡日志（event_key + event_date）。"""
+
+    async def _go() -> list[dict]:
+        async with async_session() as session:
+            rows = (
+                await session.execute(
+                    select(AstralActivityLog)
+                    .where(AstralActivityLog.user_id == user_id)
+                    .order_by(AstralActivityLog.event_key)
+                )
+            ).scalars().all()
+            return [
+                {"event_key": r.event_key, "event_date": r.event_date.isoformat()}
+                for r in rows
+            ]
+
+    return asyncio.run(_go())
+
+
+def test_api_activity_requires_auth(client: TestClient):
+    """打卡与 summary 未登录一律 401。"""
+    assert client.post("/astral/activity", json={"event_key": "wish"}).status_code == 401
+    assert client.get("/astral/activity/summary", params={"month": "2026-08"}).status_code == 401
+
+
+def test_api_activity_first_checkin_rewards_and_syncs_tier(client: TestClient):
+    """首次打卡：stardust+1、star_tier 随 tier_for 同步、落库 event_key=类型-日期。"""
+    uid, headers = _new_user("openid_activity_first")
+    _set_stardust(uid, 6)  # 7 是星光门槛：+1 后星阶应从 0 升 1
+    with mock.patch.object(astral_api, "date", _FixedToday):
+        _FixedToday.fixed = date(2026, 8, 12)  # 狮子座新月
+        resp = client.post("/astral/activity", json={"event_key": "wish"}, headers=headers)
+    assert resp.status_code == 200
+    assert resp.json() == {"ok": True, "rewarded": True, "stardust_total": 7}
+    total, tier = _get_stardust_tier(uid)
+    assert total == 7
+    assert tier == tier_for(7) == 1
+    logs = _activity_logs(uid)
+    assert logs == [{"event_key": "new_moon-2026-08-12", "event_date": "2026-08-12"}]
+
+
+def test_api_activity_duplicate_same_day_idempotent(client: TestClient):
+    """同日同 event_key 重复打卡：rewarded=false，星尘不重复加、日志不重复。"""
+    uid, headers = _new_user("openid_activity_dup")
+    with mock.patch.object(astral_api, "date", _FixedToday):
+        _FixedToday.fixed = date(2026, 8, 12)
+        first = client.post("/astral/activity", json={"event_key": "wish"}, headers=headers)
+        second = client.post("/astral/activity", json={"event_key": "wish"}, headers=headers)
+    assert first.json()["rewarded"] is True
+    assert second.json() == {"ok": True, "rewarded": False, "stardust_total": 1}
+    assert len(_activity_logs(uid)) == 1
+
+
+def test_api_activity_same_day_different_keys_each_rewarded(client: TestClient):
+    """同日不同 event_key（09-27 满月 + 水逆区间日：review+mercury_guide）：各 +1。"""
+    uid, headers = _new_user("openid_activity_multi")
+    with mock.patch.object(astral_api, "date", _FixedToday):
+        _FixedToday.fixed = date(2026, 9, 27)  # 满月 + 水逆区间日
+        r1 = client.post("/astral/activity", json={"event_key": "review"}, headers=headers)
+        r2 = client.post("/astral/activity", json={"event_key": "mercury_guide"}, headers=headers)
+    assert r1.status_code == 200 and r2.status_code == 200
+    assert r1.json()["rewarded"] is True and r2.json()["rewarded"] is True
+    assert r2.json()["stardust_total"] == 2
+    keys = sorted(l["event_key"] for l in _activity_logs(uid))
+    assert keys == ["full_moon-2026-09-27", "mercury_retrograde-2026-09-27"]
+
+
+def test_api_activity_invalid_key(client: TestClient):
+    """非法 event_key → 400。"""
+    _, headers = _new_user("openid_activity_invalid")
+    with mock.patch.object(astral_api, "date", _FixedToday):
+        _FixedToday.fixed = date(2026, 8, 12)
+        resp = client.post("/astral/activity", json={"event_key": "solar_eclipse"}, headers=headers)
+    assert resp.status_code == 400
+
+
+def test_api_activity_only_on_node_day(client: TestClient):
+    """仅事件当天可打卡：无事件日 / 新月前一天 / 满月日打 wish 均 400。"""
+    _, headers = _new_user("openid_activity_node_day")
+    with mock.patch.object(astral_api, "date", _FixedToday):
+        _FixedToday.fixed = date(2026, 2, 10)  # 无事件日
+        assert client.post("/astral/activity", json={"event_key": "wish"}, headers=headers).status_code == 400
+        _FixedToday.fixed = date(2026, 8, 11)  # 新月前一天
+        assert client.post("/astral/activity", json={"event_key": "wish"}, headers=headers).status_code == 400
+        _FixedToday.fixed = date(2026, 9, 27)  # 满月日但当天没有新月
+        assert client.post("/astral/activity", json={"event_key": "wish"}, headers=headers).status_code == 400
+
+
+def test_api_activity_summary_counts(client: TestClient):
+    """summary 按月计数：completed=打卡数、keys=去重活动形态、用户双向隔离、非法 month 422。"""
+    uid, headers = _new_user("openid_activity_summary")
+    other_uid, other_headers = _new_user("openid_activity_summary_other")
+    with mock.patch.object(astral_api, "date", _FixedToday):
+        _FixedToday.fixed = date(2026, 8, 12)
+        client.post("/astral/activity", json={"event_key": "wish"}, headers=headers)
+        client.post("/astral/activity", json={"event_key": "wish"}, headers=other_headers)
+        _FixedToday.fixed = date(2026, 9, 27)
+        client.post("/astral/activity", json={"event_key": "review"}, headers=headers)
+        client.post("/astral/activity", json={"event_key": "mercury_guide"}, headers=headers)
+
+    resp = client.get("/astral/activity/summary", params={"month": "2026-08"}, headers=headers)
+    assert resp.status_code == 200
+    assert resp.json() == {"month": "2026-08", "completed": 1, "keys": ["wish"]}
+
+    resp = client.get("/astral/activity/summary", params={"month": "2026-09"}, headers=headers)
+    assert resp.json() == {"month": "2026-09", "completed": 2, "keys": ["mercury_guide", "review"]}
+
+    # 双向隔离：他人月视图只看自己的（09 月空态）
+    resp_other = client.get("/astral/activity/summary", params={"month": "2026-08"}, headers=other_headers)
+    assert resp_other.json() == {"month": "2026-08", "completed": 1, "keys": ["wish"]}
+    resp_other = client.get("/astral/activity/summary", params={"month": "2026-09"}, headers=other_headers)
+    assert resp_other.json() == {"month": "2026-09", "completed": 0, "keys": []}
+
+    # 非法 month：格式错误 / 越界月份 → 422
+    assert client.get("/astral/activity/summary", params={"month": "bad"}, headers=headers).status_code == 422
+    assert client.get("/astral/activity/summary", params={"month": "2026-13"}, headers=headers).status_code == 422

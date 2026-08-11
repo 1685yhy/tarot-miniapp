@@ -15,6 +15,7 @@ from app.models.wish import Wish
 from app.models.review import MoonReview
 from app.models.star_monthly_review import StarMonthlyReview
 from app.models.star_word_daily import StarWordDaily
+from app.models.astral_activity_log import AstralActivityLog
 
 __all__ = [
     "User",
@@ -38,4 +39,5 @@ __all__ = [
     "MoonReview",
     "StarMonthlyReview",
     "StarWordDaily",
+    "AstralActivityLog",
 ]
