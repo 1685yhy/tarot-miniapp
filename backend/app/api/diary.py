@@ -1,18 +1,18 @@
 import os
 import uuid
-import random
 import logging
 from datetime import date, timedelta
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel as PydanticBaseModel
-from sqlalchemy import select, func
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from openai import AsyncOpenAI
 from app.db.database import get_db
 from app.models.diary import DiaryEntry
 from app.models.card import TarotCard
 from app.models.user import User
+from app.services.diary_entries import upsert_diary_entry
 from app.utils.auth import get_current_user
 from app.utils.quota import reset_ai_quota_if_new_day
 from app.config import settings
@@ -64,69 +64,30 @@ async def create_entry(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    """记录/更新今日日记（T1-3 起与手账共用 services.diary_entries.upsert_diary_entry）。"""
     today = date.today()
-
-    # ── Check if entry already exists for today → update instead ──
-    existing_result = await db.execute(
-        select(DiaryEntry).where(
-            DiaryEntry.user_id == user.id,
-            DiaryEntry.entry_date == today,
-        )
-    )
-    existing = existing_result.scalar_one_or_none()
-
-    if existing:
-        # Update existing entry
-        existing.mood = body.mood
-        if body.reflection is not None:
-            existing.reflection = body.reflection
-        await db.flush()
-        card_result = await db.execute(
-            select(TarotCard).where(TarotCard.id == existing.card_id)
-        )
-        card = card_result.scalar_one_or_none()
-        return DiaryEntryResponse(
-            id=existing.id,
-            date=str(existing.entry_date),
-            mood=existing.mood,
-            card={"id": card.id, "name_zh": card.name_zh, "meaning_upright": card.meaning_upright[:200]} if card else None,
-            reflection=existing.reflection,
-            image_url=existing.image_url,
-        )
-
-    # ── Create new entry ──
-    # Use client-provided card_id or fallback to random
-    if body.card_id is not None:
-        card_result = await db.execute(
-            select(TarotCard).where(TarotCard.id == body.card_id)
-        )
-        card = card_result.scalar_one_or_none()
-        if card is None:
-            raise HTTPException(status_code=404, detail="卡牌不存在")
-    else:
-        card_result = await db.execute(
-            select(TarotCard).order_by(func.random()).limit(1)
-        )
-        card = card_result.scalar_one_or_none()
-        if card is None:
-            raise HTTPException(status_code=500, detail="卡牌数据为空")
-
-    entry = DiaryEntry(
-        user_id=user.id,
-        entry_date=today,
-        mood=body.mood,
-        card_id=card.id,
+    entry = await upsert_diary_entry(
+        db,
+        user,
+        body.mood,
         reflection=body.reflection,
+        card_id=body.card_id,
+        entry_date=today,
         image_url=body.image_url,
     )
-    db.add(entry)
-    await db.flush()
+
+    card = None
+    if entry.card_id:
+        card_result = await db.execute(
+            select(TarotCard).where(TarotCard.id == entry.card_id)
+        )
+        card = card_result.scalar_one_or_none()
 
     return DiaryEntryResponse(
         id=entry.id,
         date=str(entry.entry_date),
         mood=entry.mood,
-        card={"id": card.id, "name_zh": card.name_zh, "meaning_upright": card.meaning_upright[:200]},
+        card={"id": card.id, "name_zh": card.name_zh, "meaning_upright": card.meaning_upright[:200]} if card else None,
         reflection=entry.reflection,
         image_url=entry.image_url,
     )

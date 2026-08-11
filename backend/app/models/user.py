@@ -41,6 +41,11 @@ class User(Base):
     # server_default 与迁移文件一致（SQLite/MySQL 均需默认值）
     stardust_total: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     star_tier: Mapped[int | None] = mapped_column(Integer, default=0, server_default="0")
+    # ── 手账连续 7 天星尘奖励周键（P1 T1-3）──
+    # journal_streak_reward_week：ISO 周键 "YYYY-Www"（如 2026-W33），记录
+    #   连续 7 天记录奖励最后一次发放所在的周；同周再次达标不重复发放（幂等）。
+    #   写入模式与签到星尘一致（stardust_total += 1; star_tier = tier_for(...)）。
+    journal_streak_reward_week: Mapped[str | None] = mapped_column(String(8), nullable=True)
     # ── 星卡收藏 / 星光壁纸（P0-3：7 日稀有星卡 · 30 日星光壁纸）──
     # star_cards：JSON 数组字符串 [{"card_id": int, "date": "YYYY-MM-DD",
     #   "tier": "gold", "orientation": "upright"}, ...]（收藏品，不消耗额度）

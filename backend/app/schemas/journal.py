@@ -1,6 +1,11 @@
-"""星光手账（Journal）接口 schemas —— T1-1 月历聚合 + T1-2 月度复盘。"""
+"""星光手账（Journal）接口 schemas —— T1-1 月历聚合 + T1-2 月度复盘 + T1-3 记录。"""
+
+from typing import Literal
 
 from pydantic import BaseModel, Field
+
+# 6 档情绪枚举（与 diary.py / services.journal.MOOD_BRIGHTNESS 同口径）
+JournalMood = Literal["happy", "calm", "excited", "anxious", "sad", "thoughtful"]
 
 
 class JournalDay(BaseModel):
@@ -97,3 +102,44 @@ class JournalSharePreviewResponse(BaseModel):
     stats: JournalReviewStats
     star_color_counts: list[JournalStarColorCount]
     summary: str
+
+
+# ── T1-3 手账记录（POST /journal/entries）────────────────────────────────
+
+class JournalEntryCreate(BaseModel):
+    """POST /journal/entries 请求体。
+
+    mood 必填（6 档枚举，非法/缺失 422）；card_id 缺省时随机取一张。
+    """
+
+    mood: JournalMood
+    reflection: str | None = Field(None, max_length=2000, description="今日感悟，最长 2000 字")
+    card_id: int | None = Field(None, description="指定卡牌；缺省随机取一张")
+
+
+class JournalCardBrief(BaseModel):
+    """手账记录响应中的卡牌摘要。"""
+
+    id: int
+    name_zh: str
+    meaning_upright: str
+
+
+class JournalEntryResponse(BaseModel):
+    """POST /journal/entries 响应：今日星点 + 连续记录 + 奖励标记。
+
+    - brightness：6 档情绪 → 5 档星光亮度（services.journal 常量）
+    - star_color：由日期（+星座）确定性生成，不落库
+    - streak：以今天为锚的连续记录天数
+    - reward：本次写入是否触发「连续 7 天」星尘奖励（+1 星尘，同周只发一次）
+    """
+
+    id: str
+    date: str
+    mood: str
+    brightness: int
+    star_color: str
+    card: JournalCardBrief | None = None
+    reflection: str | None = None
+    streak: int
+    reward: bool

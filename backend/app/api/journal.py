@@ -18,20 +18,29 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.db.database import get_db
+from app.models.card import TarotCard
 from app.models.diary import DiaryEntry
 from app.models.star_monthly_review import StarMonthlyReview
 from app.models.user import User
 from app.schemas.journal import (
     MONTH_PATTERN,
     JournalCalendarResponse,
+    JournalCardBrief,
+    JournalEntryCreate,
+    JournalEntryResponse,
     JournalReviewRegenerateRequest,
     JournalReviewResponse,
     JournalSharePreviewResponse,
 )
+from app.services.diary_entries import upsert_diary_entry
+from app.services.energy_engine import build_today_guidance
 from app.services.journal import (
     aggregate_month,
+    brightness_for,
     build_monthly_review,
+    current_streak_for,
     journal_days_for,
+    maybe_grant_streak_reward,
     month_stats,
 )
 from app.utils.auth import get_current_user
@@ -102,6 +111,56 @@ async def calendar(
     prior_dates = await _streak_prior_dates(db, user.id, start)
     stats = month_stats(days, date.today(), prior_dates=prior_dates)
     return JournalCalendarResponse(days=days, stats=stats)
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# T1-3 · POST /journal/entries 手账记录 + 连续 7 天星尘奖励（ISO 周幂等）
+# ═══════════════════════════════════════════════════════════════════════
+
+
+@router.post("/entries", response_model=JournalEntryResponse)
+async def create_journal_entry(
+    body: JournalEntryCreate,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """记录/更新今日星点；连续记录 ≥7 天 → +1 星尘（同周只发一次）。
+
+    - 与 /diary/entries 共用 ``upsert_diary_entry``：同日已存在则更新（不新建）
+    - mood 必填（6 档枚举，非法 422）；card_id 缺省随机取一张
+    - 奖励幂等：``user.journal_streak_reward_week`` 记录发放周 ISO 周键，
+      同周再次达标不重复发放；星尘/星阶写入与签到模式一致
+    """
+    entry = await upsert_diary_entry(
+        db, user, body.mood, reflection=body.reflection, card_id=body.card_id,
+    )
+    today = entry.entry_date
+
+    card = None
+    if entry.card_id:
+        card_result = await db.execute(
+            select(TarotCard).where(TarotCard.id == entry.card_id)
+        )
+        card = card_result.scalar_one_or_none()
+
+    streak = await current_streak_for(db, user.id, today)
+    reward = maybe_grant_streak_reward(user, streak, today)
+
+    return JournalEntryResponse(
+        id=entry.id,
+        date=today.isoformat(),
+        mood=entry.mood,
+        brightness=brightness_for(entry.mood),
+        star_color=build_today_guidance(today, user.zodiac)["star_color"],
+        card=JournalCardBrief(
+            id=card.id,
+            name_zh=card.name_zh,
+            meaning_upright=card.meaning_upright[:200],
+        ) if card else None,
+        reflection=entry.reflection,
+        streak=streak,
+        reward=reward,
+    )
 
 
 # ═══════════════════════════════════════════════════════════════════════

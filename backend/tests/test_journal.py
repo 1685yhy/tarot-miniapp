@@ -26,6 +26,7 @@ from app.models.diary import DiaryEntry
 from app.models.user import User
 from app.services.energy_engine import build_today_guidance
 from app.services.journal import MOOD_BRIGHTNESS, current_streak
+from app.services.stardust import tier_for
 from app.utils.auth import create_token
 
 CALENDAR_URL = "/journal/calendar"
@@ -41,13 +42,31 @@ def _run(coro):
         loop.close()
 
 
-async def _make_user(zodiac: str | None = None) -> tuple[str, str]:
-    """Create an isolated user (with optional zodiac) and return (user_id, token)."""
+async def _make_user(
+    zodiac: str | None = None,
+    *,
+    stardust_total: int | None = None,
+    star_tier: int | None = None,
+    reward_week: str | None = None,
+) -> tuple[str, str]:
+    """Create an isolated user (with optional zodiac) and return (user_id, token).
+
+    stardust_total / star_tier / reward_week：奖励测试用（T1-3），缺省不传
+    （传 None 会覆盖模型默认值，故按需组装 kwargs）。
+    """
+    kwargs: dict = {}
+    if stardust_total is not None:
+        kwargs["stardust_total"] = stardust_total
+    if star_tier is not None:
+        kwargs["star_tier"] = star_tier
+    if reward_week is not None:
+        kwargs["journal_streak_reward_week"] = reward_week
     async with async_session() as session:
         user = User(
             openid=f"journal_test_{uuid.uuid4().hex[:10]}",
             nickname="手账测试",
             zodiac=zodiac,
+            **kwargs,
         )
         session.add(user)
         await session.flush()
@@ -380,3 +399,244 @@ class TestCurrentStreak:
     def test_cross_month_consecutive_counts(self):
         dates = {date(2026, 8, 1), date(2026, 7, 31), date(2026, 7, 30)}
         assert current_streak(dates, date(2026, 8, 1)) == 3
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# T1-3 · POST /journal/entries 手账记录 + 连续 7 天星尘奖励（ISO 周幂等）
+# ═══════════════════════════════════════════════════════════════════════
+
+JOURNAL_ENTRIES_URL = "/journal/entries"
+
+
+def _iso_week_key(day: date) -> str:
+    y, w, _ = day.isocalendar()
+    return f"{y}-W{w:02d}"
+
+
+async def _fetch_user_stardust(user_id: str) -> tuple[int, int | None, str | None]:
+    """返回 (stardust_total, star_tier, journal_streak_reward_week)。"""
+    async with async_session() as session:
+        row = (
+            await session.execute(select(User).where(User.id == user_id))
+        ).scalar_one()
+        return row.stardust_total, row.star_tier, row.journal_streak_reward_week
+
+
+class TestJournalEntryAuth:
+    """POST /journal/entries — 鉴权"""
+
+    def test_requires_login(self, client: TestClient):
+        resp = client.post(JOURNAL_ENTRIES_URL, json={"mood": "happy"})
+        assert resp.status_code == 401
+
+
+class TestJournalEntryCreate:
+    """POST /journal/entries — 记录/更新今日星点"""
+
+    def test_create_entry_returns_mood_brightness_star_color_and_card(self, client: TestClient):
+        """新建记录：mood/brightness/star_color/card 正确，streak=1、reward=false。"""
+        _, token = _run(_make_user(zodiac="leo"))
+        resp = client.post(
+            JOURNAL_ENTRIES_URL,
+            json={"mood": "excited", "reflection": "今天星光很亮"},
+            headers=_headers(token),
+        )
+        assert resp.status_code == 200, resp.text
+        data = resp.json()
+        today = date.today()
+        assert data["date"] == today.isoformat()
+        assert data["mood"] == "excited"
+        assert data["brightness"] == 5  # MOOD_BRIGHTNESS["excited"]
+        assert data["star_color"] == build_today_guidance(today, "leo")["star_color"]
+        assert data["card"] is not None
+        for field in ("id", "name_zh", "meaning_upright"):
+            assert field in data["card"], f"card 缺少 {field}"
+        assert data["reflection"] == "今天星光很亮"
+        assert data["streak"] == 1
+        assert data["reward"] is False
+
+    def test_same_day_resubmit_updates_instead_of_duplicating(self, client: TestClient):
+        """同日再次提交 → 更新而非新建（无重复行）。"""
+        user_id, token = _run(_make_user())
+        headers = _headers(token)
+        resp1 = client.post(
+            JOURNAL_ENTRIES_URL,
+            json={"mood": "sad", "reflection": "第一次"},
+            headers=headers,
+        )
+        assert resp1.status_code == 200, resp1.text
+        entry_id = resp1.json()["id"]
+
+        resp2 = client.post(
+            JOURNAL_ENTRIES_URL,
+            json={"mood": "happy", "reflection": "更新了"},
+            headers=headers,
+        )
+        assert resp2.status_code == 200, resp2.text
+        data2 = resp2.json()
+        assert data2["id"] == entry_id, "同日应更新同一行"
+        assert data2["mood"] == "happy"
+        assert data2["reflection"] == "更新了"
+
+        async def _count_today_rows() -> int:
+            async with async_session() as session:
+                result = await session.execute(
+                    select(DiaryEntry).where(
+                        DiaryEntry.user_id == user_id,
+                        DiaryEntry.entry_date == date.today(),
+                    )
+                )
+                return len(result.scalars().all())
+
+        assert _run(_count_today_rows()) == 1, "同日提交不得产生重复行"
+
+    def test_invalid_mood_returns_422(self, client: TestClient):
+        """mood 必填且限 6 档枚举 → 非法 422。"""
+        _, token = _run(_make_user())
+        headers = _headers(token)
+        assert (
+            client.post(JOURNAL_ENTRIES_URL, json={"mood": "angry"}, headers=headers).status_code
+            == 422
+        )
+        assert client.post(JOURNAL_ENTRIES_URL, json={}, headers=headers).status_code == 422
+        assert (
+            client.post(JOURNAL_ENTRIES_URL, json={"mood": None}, headers=headers).status_code
+            == 422
+        )
+
+    def test_provided_card_id_is_used(self, client: TestClient):
+        _, token = _run(_make_user())
+        resp = client.post(
+            JOURNAL_ENTRIES_URL,
+            json={"mood": "calm", "card_id": 7},
+            headers=_headers(token),
+        )
+        assert resp.status_code == 200, resp.text
+        assert resp.json()["card"]["id"] == 7
+
+    def test_nonexistent_card_id_returns_404(self, client: TestClient):
+        _, token = _run(_make_user())
+        resp = client.post(
+            JOURNAL_ENTRIES_URL,
+            json={"mood": "calm", "card_id": 99999},
+            headers=_headers(token),
+        )
+        assert resp.status_code == 404
+
+
+class TestJournalStreakReward:
+    """连续 7 天记录 → +1 星尘（ISO 周幂等，同周不重复；star_tier 同步推导）"""
+
+    def test_seventh_day_grants_reward_and_syncs_tier(self, client: TestClient):
+        """前 6 天连续（含昨天）+ 今天 POST → 第 7 天：reward=true、星尘+1、星阶同步。"""
+        user_id, token = _run(_make_user(stardust_total=6, star_tier=0))
+        today = date.today()
+        _run(_seed_entries(user_id, [
+            (today - timedelta(days=i), "happy", "x", 1) for i in range(1, 7)
+        ]))
+        resp = client.post(
+            JOURNAL_ENTRIES_URL, json={"mood": "happy"}, headers=_headers(token)
+        )
+        assert resp.status_code == 200, resp.text
+        data = resp.json()
+        assert data["streak"] == 7
+        assert data["reward"] is True
+        stardust, tier, week = _run(_fetch_user_stardust(user_id))
+        assert stardust == 7, "奖励应 +1 星尘"
+        assert tier == tier_for(7) == 1, "星尘 7 → 星阶 1「星光」"
+        assert week == _iso_week_key(today), "应记录本周 ISO 周键"
+
+    def test_reward_idempotent_within_same_week(self, client: TestClient):
+        """同周再次提交（同日更新）→ 不再奖励、星尘不变。"""
+        user_id, token = _run(_make_user(stardust_total=6, star_tier=0))
+        today = date.today()
+        _run(_seed_entries(user_id, [
+            (today - timedelta(days=i), "happy", "x", 1) for i in range(1, 7)
+        ]))
+        headers = _headers(token)
+        resp1 = client.post(JOURNAL_ENTRIES_URL, json={"mood": "happy"}, headers=headers)
+        assert resp1.status_code == 200, resp1.text
+        assert resp1.json()["reward"] is True
+
+        resp2 = client.post(JOURNAL_ENTRIES_URL, json={"mood": "calm"}, headers=headers)
+        assert resp2.status_code == 200, resp2.text
+        assert resp2.json()["reward"] is False
+
+        stardust, tier, _ = _run(_fetch_user_stardust(user_id))
+        assert stardust == 7, "同周不重复发放"
+        assert tier == 1
+
+    def test_eighth_day_same_week_no_second_reward(self, client: TestClient):
+        """同周第 8 天记录（7 天前已达标发过奖、周键已写）→ reward=false。"""
+        today = date.today()
+        user_id, token = _run(_make_user(
+            stardust_total=7,
+            star_tier=1,
+            reward_week=_iso_week_key(today),
+        ))
+        # 前 7 天连续 → 今天提交后为第 8 天，且本周已发过奖
+        _run(_seed_entries(user_id, [
+            (today - timedelta(days=i), "happy", "x", 1) for i in range(1, 8)
+        ]))
+        resp = client.post(
+            JOURNAL_ENTRIES_URL, json={"mood": "happy"}, headers=_headers(token)
+        )
+        assert resp.status_code == 200, resp.text
+        data = resp.json()
+        assert data["streak"] == 8
+        assert data["reward"] is False
+        stardust, _, week = _run(_fetch_user_stardust(user_id))
+        assert stardust == 7, "同周第 8 天不得再奖励"
+        assert week == _iso_week_key(today)
+
+    def test_streak_of_eight_first_time_rewards(self, client: TestClient):
+        """阈值边界：连续 ≥7 即奖励——第 8 天首次达标（本周未奖）同样发放。"""
+        user_id, token = _run(_make_user())
+        today = date.today()
+        _run(_seed_entries(user_id, [
+            (today - timedelta(days=i), "happy", "x", 1) for i in range(1, 8)
+        ]))
+        resp = client.post(
+            JOURNAL_ENTRIES_URL, json={"mood": "happy"}, headers=_headers(token)
+        )
+        assert resp.status_code == 200, resp.text
+        data = resp.json()
+        assert data["streak"] == 8
+        assert data["reward"] is True
+        stardust, tier, week = _run(_fetch_user_stardust(user_id))
+        assert stardust == 1
+        assert tier == tier_for(1) == 0
+        assert week == _iso_week_key(today)
+
+    def test_six_days_no_reward(self, client: TestClient):
+        """边界：连续 6 天（5 天已录 + 今天）→ 不奖励。"""
+        user_id, token = _run(_make_user())
+        today = date.today()
+        _run(_seed_entries(user_id, [
+            (today - timedelta(days=i), "calm", "x", 1) for i in range(1, 6)
+        ]))
+        resp = client.post(
+            JOURNAL_ENTRIES_URL, json={"mood": "calm"}, headers=_headers(token)
+        )
+        assert resp.status_code == 200, resp.text
+        data = resp.json()
+        assert data["streak"] == 6
+        assert data["reward"] is False
+        stardust, _, _ = _run(_fetch_user_stardust(user_id))
+        assert stardust == 0
+
+    def test_other_users_records_do_not_extend_streak(self, client: TestClient):
+        """隔离性：他人连续 6 天不影响本用户 streak。"""
+        user_id, token = _run(_make_user())
+        other_id, _ = _run(_make_user())
+        today = date.today()
+        _run(_seed_entries(other_id, [
+            (today - timedelta(days=i), "happy", "x", 1) for i in range(1, 7)
+        ]))
+        resp = client.post(
+            JOURNAL_ENTRIES_URL, json={"mood": "happy"}, headers=_headers(token)
+        )
+        assert resp.status_code == 200, resp.text
+        data = resp.json()
+        assert data["streak"] == 1
+        assert data["reward"] is False

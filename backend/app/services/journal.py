@@ -20,8 +20,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import settings
 from app.models.card import TarotCard
 from app.models.diary import DiaryEntry
+from app.models.user import User
 from app.services.ai_engine import _OUTPUT_RED_LINE
 from app.services.energy_engine import ASTRAL_EVENTS_2026, build_today_guidance
+from app.services.stardust import tier_for
 
 logger = logging.getLogger(__name__)
 
@@ -108,6 +110,51 @@ def month_stats(days: list[dict], today: date, prior_dates: set[date] | None = N
         "dim_count": sum(1 for d in days if d["brightness"] <= 2),
         "current_streak": current_streak(recorded_dates, today),
     }
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# T1-3 · 连续 7 天记录 → +1 星尘（ISO 周幂等）
+# ═══════════════════════════════════════════════════════════════════════
+
+
+def iso_week_key(day: date) -> str:
+    """ISO 周幂等键（如 2026-W33；VARCHAR(8)）。
+
+    用 ``isocalendar()`` 的 ISO 年（年初几天可能归属上一年第 53 周/下一年
+    第 1 周，年号必须取 ISO 年而非公历年）。``journal_streak_reward_week``
+    记录发放周键，同周不重复发放。
+    """
+    iso_year, iso_week, _ = day.isocalendar()
+    return f"{iso_year}-W{iso_week:02d}"
+
+
+async def current_streak_for(
+    db: AsyncSession, user_id: str, today: date
+) -> int:
+    """用户以 ``today`` 为锚的连续记录天然日数（跨月连续照常累计）。
+
+    查询投影 entry_date 全集（轻量；dairy 表按用户量级很小），交给纯函数
+    ``current_streak`` 计算，与月历统计口径一致。
+    """
+    result = await db.execute(
+        select(DiaryEntry.entry_date).where(DiaryEntry.user_id == user_id)
+    )
+    return current_streak(set(result.scalars()), today)
+
+
+def maybe_grant_streak_reward(user: User, streak: int, today: date) -> bool:
+    """连续 ≥7 天且本周未发放 → +1 星尘、星阶同步推导、写周键；返回是否发放。
+
+    幂等：``user.journal_streak_reward_week`` 与本周 ISO 周键相同即跳过，
+    同周不重复发放。星尘/星阶写入与 tasks.py 签到模式一致：
+    ``stardust_total += 1; star_tier = tier_for(stardust_total)``。
+    """
+    if streak < 7 or user.journal_streak_reward_week == iso_week_key(today):
+        return False
+    user.stardust_total = (user.stardust_total or 0) + 1
+    user.star_tier = tier_for(user.stardust_total)
+    user.journal_streak_reward_week = iso_week_key(today)
+    return True
 
 
 # ═══════════════════════════════════════════════════════════════════════
