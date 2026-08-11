@@ -587,6 +587,12 @@ Page({
     wx.navigateTo({ url: '/pages/astral-calendar/astral-calendar' });
   },
 
+  /** 星辰相遇（双人合盘）入口（SDD P1 · T2-4） */
+  onGoMeet() {
+    analytics.trackEvent('meet_entry', { source: 'today' });
+    wx.navigateTo({ url: '/pages/meet/meet' });
+  },
+
   goToAllSpreads() {
     wx.navigateTo({ url: '/pages/reading/reading' });
   },

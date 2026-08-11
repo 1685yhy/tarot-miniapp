@@ -256,6 +256,17 @@
         </view>
         <text class="menu-arrow">›</text>
       </view>
+      <!-- 星辰相遇 — 双人合盘（SDD P1 · T2-4） -->
+      <view class="menu-item anim-slide-up anim-stagger-2" bindtap="onGoMeet" role="button" aria-label="进入星辰相遇">
+        <view class="menu-icon-wrap">
+          <text class="menu-icon-text">✦</text>
+        </view>
+        <view class="menu-content">
+          <text class="menu-title">星辰相遇</text>
+          <text class="menu-desc">看看你们如何相处，邀请 TA 扫码相遇</text>
+        </view>
+        <text class="menu-arrow">›</text>
+      </view>
       <!-- UX 修复: 痛点#5 — 菜单名区分"卡牌收藏"与下方"收藏的解读"，避免两个收藏入口混淆 -->
       <view class="menu-item anim-slide-up anim-stagger-2" bindtap="onGoFavorites" role="button" aria-label="查看收藏的卡牌">
         <view class="menu-icon-wrap">

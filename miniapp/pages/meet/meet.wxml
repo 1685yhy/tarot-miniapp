@@ -1,0 +1,258 @@
+<!--
+  pages/meet/meet.wxml —— 星辰相遇（SDD P1 · T2-4）
+  流程：输入（关系+星座+可选出生）→ 合盘 loading → 结果三屏 → 邀请码分享
+  约定：WXML 不用 .length > 0 / 三元短路表达式，所有布尔 JS 预计算（T1-5 教训）
+-->
+
+<view class="meet-page">
+
+  <!-- ══════════ 输入屏（step=form） ══════════ -->
+  <block wx:if="{{step === 'form'}}">
+    <view class="meet-hero">
+      <text class="meet-hero-emoji">✦ ✧ ☾</text>
+      <text class="meet-hero-title">星辰相遇</text>
+      <text class="meet-hero-sub">两枚星光徽章相遇，看看你们如何相处</text>
+    </view>
+
+    <!-- 关系选择：4 枚星光徽章（友/恋/亲/事） -->
+    <view class="form-section">
+      <text class="form-label">你与 TA 的关系</text>
+      <view class="relation-row">
+        <view
+          class="relation-badge {{item.selected ? 'relation-badge--on' : ''}}"
+          wx:for="{{relations}}"
+          wx:key="key"
+          data-key="{{item.key}}"
+          bindtap="onRelationTap"
+          role="button"
+          aria-label="选择关系 {{item.name}}"
+          hover-class="relation-badge--press"
+        >
+          <text class="relation-emoji">{{item.emoji}}</text>
+          <text class="relation-label">{{item.label}}</text>
+        </view>
+      </view>
+      <text class="form-caption">关系只影响徽章样式，不影响共鸣度算法</text>
+    </view>
+
+    <!-- 星座 12 宫格（符号 + 元素底色） -->
+    <view class="form-section">
+      <text class="form-label">TA 的星座</text>
+      <view class="zodiac-grid">
+        <view
+          class="zodiac-cell {{item.selected ? 'zodiac-cell--on' : ''}}"
+          wx:for="{{zodiacs}}"
+          wx:key="key"
+          data-key="{{item.key}}"
+          bindtap="onZodiacTap"
+          style="background: {{item.elementBg}};"
+          role="button"
+          aria-label="选择星座 {{item.name}}"
+          hover-class="zodiac-cell--press"
+        >
+          <text class="zodiac-symbol">{{item.emoji}}</text>
+          <text class="zodiac-name">{{item.name}}</text>
+        </view>
+      </view>
+      <text class="form-caption">选了星座即可开始；补全出生信息能让月亮与上升落座更精确</text>
+    </view>
+
+    <!-- 可选出生日期/时间 -->
+    <view class="form-section">
+      <text class="form-label">TA 的出生信息（可选）</text>
+      <view class="birth-row">
+        <picker class="birth-picker" mode="date" start="1920-01-01" end="{{maxBirthYear}}-12-31" bindchange="onDateChange">
+          <view class="birth-item {{birthDate ? 'birth-item--on' : ''}}">
+            <text class="birth-item-icon">☀</text>
+            <text class="birth-item-label">{{birthDateLabel}}</text>
+          </view>
+        </picker>
+        <picker class="birth-picker" mode="time" bindchange="onTimeChange">
+          <view class="birth-item {{birthTime ? 'birth-item--on' : ''}}">
+            <text class="birth-item-icon">☾</text>
+            <text class="birth-item-label">{{birthTimeLabel}}</text>
+          </view>
+        </picker>
+        <view class="birth-clear" wx:if="{{hasBirth}}" bindtap="onClearBirth" role="button" aria-label="清除出生信息" hover-class="birth-clear--press">
+          <text class="birth-clear-text">清除</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 开始合盘 -->
+    <view class="start-btn {{submitting ? 'start-btn--disabled' : ''}}" bindtap="onStart" role="button" aria-label="开始合盘" hover-class="start-btn--press">
+      <text class="start-btn-text">{{submitLabel}}</text>
+    </view>
+
+    <!-- 我的相遇（快速版也落库 · GET /meet/list） -->
+    <view class="meet-history" wx:if="{{hasMeets}}">
+      <text class="meet-history-title">✦ 我的相遇</text>
+      <view
+        class="meet-history-item"
+        wx:for="{{meets}}"
+        wx:key="meet_id"
+        data-id="{{item.meet_id}}"
+        bindtap="onMeetItemTap"
+        role="button"
+        aria-label="回看与{{item.bName}}的相遇"
+        hover-class="meet-history-item--press"
+      >
+        <text class="meet-history-badge">{{item.relationLabel}}</text>
+        <text class="meet-history-name">与 {{item.bName}}</text>
+        <text class="meet-history-meta">{{item.levelName}} · {{item.scoreText}}</text>
+        <text class="meet-history-arrow">›</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- ══════════ 合盘中（step=loading） ══════════ -->
+  <view class="loading-screen" wx:elif="{{step === 'loading'}}">
+    <view class="loading-ring">
+      <text class="loading-star">✦</text>
+    </view>
+    <text class="loading-text">两枚星光正在相遇…</text>
+    <text class="loading-sub">共鸣需要一点时间，请稍候</text>
+  </view>
+
+  <!-- ══════════ 错误态（step=error） ══════════ -->
+  <view class="error-screen" wx:elif="{{step === 'error'}}">
+    <text class="error-emoji">☾</text>
+    <text class="error-title">星光暂时无法相遇</text>
+    <text class="error-detail">{{errorMsg}}</text>
+    <view class="retry-btn" bindtap="onRetry" role="button" aria-label="重新连接" hover-class="retry-btn--press">
+      <text class="retry-btn-text">重新连接</text>
+    </view>
+  </view>
+
+  <!-- ══════════ 结果屏（step=result） ══════════ -->
+  <view class="result-screen" wx:elif="{{hasResult}}">
+
+    <!-- 1. 双星徽章并置 -->
+    <view class="duo-badges">
+      <view class="duo-badge" style="background: {{res.a.elementBg}};">
+        <text class="duo-emoji">{{res.a.emoji}}</text>
+        <text class="duo-name">{{res.a.name}}</text>
+        <text class="duo-role">我</text>
+      </view>
+      <view class="duo-link">
+        <text class="duo-link-symbol">✦</text>
+      </view>
+      <view class="duo-badge" style="background: {{res.b.elementBg}};">
+        <text class="duo-emoji">{{res.b.emoji}}</text>
+        <text class="duo-name">{{res.b.name}}</text>
+        <text class="duo-role">TA</text>
+      </view>
+    </view>
+
+    <!-- 估算空态标注（estimated=true） -->
+    <view class="estimate-note" wx:if="{{estimated}}">
+      <text class="estimate-note-text">☾ {{res.estimateNote}}</text>
+    </view>
+
+    <!-- 2. 共鸣度大圆环 -->
+    <view class="score-ring">
+      <text class="score-num">{{res.scoreText}}</text>
+      <text class="score-unit">共鸣度</text>
+      <text class="score-level" wx:if="{{res.levelName}}">{{res.levelName}}</text>
+    </view>
+
+    <!-- 3. 三要素分解卡（相容度条 + 一句话原因，可展开「为什么」） -->
+    <view class="factors-card" wx:if="{{hasFactors}}">
+      <view class="section-title-row">
+        <text class="section-title">✦ 三要素分解</text>
+        <view class="why-toggle" bindtap="onToggleFactors" role="button" aria-label="展开或收起为什么">
+          <text class="why-toggle-text">{{whyLabel}}</text>
+        </view>
+      </view>
+      <view class="factor-item" wx:for="{{res.factors}}" wx:key="role">
+        <view class="factor-head">
+          <text class="factor-role">{{item.roleName}}</text>
+          <text class="factor-score">{{item.score}}</text>
+        </view>
+        <view class="factor-track">
+          <view class="factor-fill" style="width: {{item.barWidth}};"></view>
+        </view>
+        <text class="factor-reason" wx:if="{{expandedFactors}}">{{item.reason}}</text>
+      </view>
+    </view>
+
+    <!-- 4. 三牌横排（牌图 + 牌名 + 一句） -->
+    <view class="cards-card" wx:if="{{hasCards}}">
+      <view class="section-title-row">
+        <text class="section-title">✦ 合盘三牌</text>
+      </view>
+      <view class="cards-row">
+        <view class="card-mini" wx:for="{{res.cards}}" wx:key="position">
+          <view class="card-mini-art">
+            <image
+              wx:if="{{item.cardVisible}}"
+              class="card-mini-img"
+              src="{{item.image}}"
+              mode="aspectFill"
+              lazy-load
+              data-index="{{index}}"
+              binderror="onCardImgError"
+              aria-label="{{item.name_zh}}牌面"
+            />
+            <view class="card-mini-fallback" wx:if="{{item.cardFallback}}">
+              <text class="card-mini-fallback-symbol">✦</text>
+            </view>
+          </view>
+          <text class="card-mini-pos">{{item.position}}</text>
+          <text class="card-mini-name">{{item.name_zh}}</text>
+          <text class="card-mini-snippet">{{item.snippet}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 5. 相处提示卡（文案直接来自后端 MEET_TIPS 池） -->
+    <view class="tips-card" wx:if="{{hasTips}}">
+      <view class="section-title-row">
+        <text class="section-title">✦ 相处提示</text>
+      </view>
+      <view class="tip-item" wx:for="{{res.tips}}" wx:key="*this">
+        <text class="tip-marker">✧</text>
+        <text class="tip-text">{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 6. 邀请与分享 -->
+    <view class="action-row">
+      <view class="action-btn action-btn--primary {{inviting ? 'action-btn--disabled' : ''}}" bindtap="onInvite" role="button" aria-label="邀请 TA 相遇" hover-class="action-btn--press">
+        <text class="action-btn-text">{{inviteLabel}}</text>
+      </view>
+      <button class="action-btn action-btn--share" open-type="share" hover-class="action-btn--press">
+        <text class="action-btn-text">分享结果</text>
+      </button>
+    </view>
+    <view class="back-form" bindtap="onBackToForm" role="button" aria-label="重新计算" hover-class="back-form--press">
+      <text class="back-form-text">换一个 TA 再算一次</text>
+    </view>
+
+    <!-- 7. 固定免责尾行（常驻） -->
+    <view class="disclaimer">
+      <text class="disclaimer-text">{{res.disclaimer}}</text>
+    </view>
+  </view>
+
+  <!-- ══════════ 邀请码弹层（POST /meet/invite → PNG 预览） ══════════ -->
+  <view class="invite-mask" wx:if="{{inviteVisible}}" bindtap="onCloseInvite">
+    <view class="invite-modal" catchtap="noop">
+      <text class="invite-title">邀请 TA 相遇 ✦</text>
+      <text class="invite-sub">把这张星图发给 TA，扫码即可加入这场相遇</text>
+      <image class="invite-qr" src="{{inviteQrPath}}" mode="aspectFit" show-menu-by-longpress aria-label="相遇邀请小程序码" />
+      <view class="invite-actions">
+        <view class="invite-btn {{inviteSaving ? 'invite-btn--disabled' : ''}}" bindtap="onSaveInviteQr" role="button" aria-label="保存到相册" hover-class="invite-btn--press">
+          <text class="invite-btn-text">{{saveLabel}}</text>
+        </view>
+        <view class="invite-btn invite-btn--ghost" bindtap="onPreviewInvite" role="button" aria-label="放大查看邀请码" hover-class="invite-btn--press">
+          <text class="invite-btn-text">放大查看</text>
+        </view>
+      </view>
+      <view class="invite-close" bindtap="onCloseInvite" role="button" aria-label="关闭">
+        <text class="invite-close-text">关闭</text>
+      </view>
+    </view>
+  </view>
+
+</view>

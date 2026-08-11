@@ -2,6 +2,7 @@
 const perf = require('../../utils/performance');
 const { request, getFriendlyError } = require('../../utils/api');
 const { checkLogin } = require('../../utils/auth');
+const analytics = require('../../utils/analytics');
 const { computeImagePath, findCard } = require('../../utils/cards');
 const sound = require('../../utils/sound');
 const { getZodiacBadge } = require('../../utils/energy');
@@ -553,6 +554,12 @@ Page({
   onGoDiary() {
     // 星光手账 T1-4：日记与手账合并，入口指向手账
     wx.navigateTo({ url: '/pages/journal/journal' });
+  },
+
+  /** 星辰相遇（双人合盘）入口（SDD P1 · T2-4） */
+  onGoMeet() {
+    analytics.trackEvent('meet_entry', { source: 'profile' });
+    wx.navigateTo({ url: '/pages/meet/meet' });
   },
 
   /** P3-1: 每日签到入口 */

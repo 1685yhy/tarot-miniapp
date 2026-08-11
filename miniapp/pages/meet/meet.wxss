@@ -1,0 +1,820 @@
+/* ============================================================
+   pages/meet/meet.wxss —— 星辰相遇（SDD P1 · T2-4）
+   E3 奶油疗愈明亮主题（token 全部来自 styles/common.wxss）
+   ============================================================ */
+
+page {
+  background: var(--color-bg-gradient);
+  min-height: 100vh;
+}
+
+.meet-page {
+  padding: var(--spacing-lg) var(--page-padding) calc(var(--spacing-xl) + var(--safe-area-bottom));
+  max-width: var(--page-max-width);
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* ══════════ 输入屏 ══════════ */
+
+.meet-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-xl) 0 var(--spacing-lg);
+}
+
+.meet-hero-emoji {
+  font-size: var(--font-size-title);
+  color: var(--color-gold);
+  letter-spacing: 12rpx;
+  margin-bottom: var(--spacing-xs);
+}
+
+.meet-hero-title {
+  font-size: var(--font-size-display);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  letter-spacing: 4rpx;
+}
+
+.meet-hero-sub {
+  margin-top: var(--spacing-sm);
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+}
+
+.form-section {
+  background: var(--color-card);
+  border: 1rpx solid var(--color-card-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  box-shadow: var(--shadow-card);
+}
+
+.form-label {
+  display: block;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.form-caption {
+  display: block;
+  margin-top: var(--spacing-sm);
+  font-size: 22rpx;
+  color: var(--color-text-tertiary);
+  line-height: var(--line-height-base);
+}
+
+/* 关系 4 徽章 */
+.relation-row {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.relation-badge {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-sm) 0;
+  border-radius: var(--radius-md);
+  border: 2rpx solid var(--color-card-border);
+  background: var(--color-surface);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.relation-badge--on {
+  border-color: var(--color-gold);
+  background: var(--color-gold-glow);
+  box-shadow: var(--shadow-gold-button);
+}
+
+.relation-badge--press {
+  transform: scale(0.96);
+}
+
+.relation-emoji {
+  font-size: 40rpx;
+  color: var(--color-gold-deep-ink);
+}
+
+.relation-label {
+  margin-top: 6rpx;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+/* 星座 12 宫格 */
+.zodiac-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.zodiac-cell {
+  width: calc((100% - 3 * var(--spacing-xs)) / 4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-sm) 0 var(--spacing-xs);
+  border-radius: var(--radius-md);
+  border: 2rpx solid var(--color-card-border);
+  box-sizing: border-box;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.zodiac-cell--on {
+  border-color: var(--color-gold);
+  box-shadow: var(--shadow-gold-button);
+}
+
+.zodiac-cell--press {
+  transform: scale(0.94);
+}
+
+.zodiac-symbol {
+  font-size: 44rpx;
+  line-height: 1.1;
+  color: var(--color-text-primary);
+}
+
+.zodiac-name {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: var(--color-text-secondary);
+}
+
+/* 出生信息 */
+.birth-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.birth-picker {
+  flex: 1;
+}
+
+.birth-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: var(--spacing-sm) 0;
+  border-radius: var(--radius-md);
+  border: 2rpx dashed var(--color-card-border);
+  background: var(--color-surface);
+}
+
+.birth-item--on {
+  border-style: solid;
+  border-color: var(--color-gold);
+  background: var(--color-gold-glow);
+}
+
+.birth-item-icon {
+  font-size: 28rpx;
+  color: var(--color-gold-dark);
+}
+
+.birth-item-label {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+}
+
+.birth-clear {
+  padding: var(--spacing-sm) var(--spacing-xs);
+}
+
+.birth-clear--press {
+  opacity: 0.6;
+}
+
+.birth-clear-text {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-link);
+}
+
+/* 开始按钮 */
+.start-btn {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md) 0;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, var(--color-gold-light), var(--color-gold));
+  box-shadow: var(--shadow-gold-button);
+  text-align: center;
+}
+
+.start-btn--press {
+  transform: scale(0.98);
+  box-shadow: var(--shadow-pressed);
+}
+
+.start-btn--disabled {
+  opacity: 0.6;
+}
+
+.start-btn-text {
+  font-size: var(--font-size-subhead);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gold-deep-ink);
+}
+
+/* 我的相遇 */
+.meet-history {
+  margin-top: var(--spacing-xl);
+}
+
+.meet-history-title {
+  display: block;
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.meet-history-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-card);
+  border: 1rpx solid var(--color-card-border);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-xs);
+  box-shadow: var(--shadow-card);
+}
+
+.meet-history-item--press {
+  background: var(--color-card-hover);
+}
+
+.meet-history-badge {
+  padding: 4rpx 14rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-gold-glow);
+  font-size: 22rpx;
+  color: var(--color-gold-dark);
+}
+
+.meet-history-name {
+  flex: 1;
+  font-size: var(--font-size-caption);
+  color: var(--color-text-primary);
+}
+
+.meet-history-meta {
+  font-size: 22rpx;
+  color: var(--color-text-secondary);
+}
+
+.meet-history-arrow {
+  font-size: 32rpx;
+  color: var(--color-text-tertiary);
+}
+
+/* ══════════ 合盘中 / 错误态 ══════════ */
+
+.loading-screen,
+.error-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 240rpx;
+}
+
+.loading-ring {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: var(--radius-full);
+  border: 6rpx solid var(--color-gold-glow-strong);
+  border-top-color: var(--color-gold);
+  animation: meet-spin 1.2s linear infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes meet-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.loading-star {
+  font-size: 44rpx;
+  color: var(--color-gold);
+  animation: meet-twinkle 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes meet-twinkle {
+  from { opacity: 0.4; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1.1); }
+}
+
+.loading-text {
+  margin-top: var(--spacing-lg);
+  font-size: var(--font-size-subhead);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.loading-sub {
+  margin-top: var(--spacing-xs);
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+}
+
+.error-emoji {
+  font-size: 72rpx;
+  color: var(--color-gold);
+}
+
+.error-title {
+  margin-top: var(--spacing-md);
+  font-size: var(--font-size-subhead);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.error-detail {
+  margin-top: var(--spacing-sm);
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding: 0 var(--spacing-xl);
+}
+
+.retry-btn {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-sm) var(--spacing-2xl);
+  border-radius: var(--radius-pill);
+  border: 2rpx solid var(--color-gold);
+  background: var(--color-gold-glow);
+}
+
+.retry-btn--press {
+  background: var(--color-gold-glow-strong);
+}
+
+.retry-btn-text {
+  font-size: var(--font-size-body);
+  color: var(--color-gold-deep-ink);
+}
+
+/* ══════════ 结果屏 ══════════ */
+
+.result-screen {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 1. 双星徽章并置 */
+.duo-badges {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg) 0 var(--spacing-md);
+}
+
+.duo-badge {
+  width: 176rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-md) 0 var(--spacing-sm);
+  border-radius: var(--radius-lg);
+  border: 2rpx solid var(--color-card-border);
+  box-shadow: var(--shadow-card);
+}
+
+.duo-emoji {
+  font-size: 64rpx;
+  line-height: 1.1;
+}
+
+.duo-name {
+  margin-top: var(--spacing-xs);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.duo-role {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: var(--color-text-secondary);
+}
+
+.duo-link {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: var(--radius-full);
+  background: var(--color-gold-glow);
+  border: 2rpx solid var(--color-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.duo-link-symbol {
+  font-size: 28rpx;
+  color: var(--color-gold-deep-ink);
+}
+
+/* 估算空态标注 */
+.estimate-note {
+  margin: 0 auto var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-pill);
+  background: var(--color-warning-bg);
+  max-width: 92%;
+}
+
+.estimate-note-text {
+  font-size: 22rpx;
+  color: var(--color-warning);
+  line-height: var(--line-height-base);
+  text-align: center;
+  display: block;
+}
+
+/* 2. 共鸣度大圆环 */
+.score-ring {
+  width: 340rpx;
+  height: 340rpx;
+  margin: var(--spacing-sm) auto var(--spacing-lg);
+  border-radius: var(--radius-full);
+  background: radial-gradient(circle, var(--color-surface) 0%, var(--color-card-hover) 72%, rgba(201, 169, 124, 0.16) 100%);
+  border: 8rpx solid var(--color-gold-light);
+  box-shadow: var(--shadow-glow-gold), 0 0 0 16rpx rgba(201, 169, 124, 0.10);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.score-num {
+  font-size: 96rpx;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-gold-deep-ink);
+  line-height: 1.1;
+}
+
+.score-unit {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+  letter-spacing: 6rpx;
+}
+
+.score-level {
+  margin-top: var(--spacing-xs);
+  padding: 6rpx var(--spacing-md);
+  border-radius: var(--radius-pill);
+  background: var(--color-gold-glow);
+  font-size: 28rpx;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gold-deep-ink);
+}
+
+/* 通用小节标题 */
+.section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-sm);
+}
+
+.section-title {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.why-toggle {
+  padding: 4rpx var(--spacing-sm);
+  border-radius: var(--radius-pill);
+  background: var(--color-gold-glow);
+}
+
+.why-toggle-text {
+  font-size: 22rpx;
+  color: var(--color-gold-dark);
+}
+
+/* 3. 三要素分解卡 */
+.factors-card,
+.cards-card,
+.tips-card {
+  background: var(--color-card);
+  border: 1rpx solid var(--color-card-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  box-shadow: var(--shadow-card);
+}
+
+.factor-item {
+  margin-bottom: var(--spacing-sm);
+}
+
+.factor-item:last-child {
+  margin-bottom: 0;
+}
+
+.factor-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
+}
+
+.factor-role {
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.factor-score {
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gold-deep-ink);
+}
+
+.factor-track {
+  height: 14rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-gold-glow);
+  overflow: hidden;
+}
+
+.factor-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--color-gold-light), var(--color-gold));
+}
+
+.factor-reason {
+  display: block;
+  margin-top: var(--spacing-xs);
+  font-size: 22rpx;
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-base);
+}
+
+/* 4. 三牌横排 */
+.cards-row {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.card-mini {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+
+.card-mini-art {
+  width: 100%;
+  height: 320rpx; /* 固定高（aspect-ratio 兼容性不可靠，改用固定尺寸） */
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: linear-gradient(145deg, var(--color-lavender-light), var(--color-gold-glow));
+  border: 2rpx solid var(--color-card-border);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-mini-img {
+  width: 100%;
+  height: 100%;
+}
+
+.card-mini-fallback-symbol {
+  font-size: 44rpx;
+  color: var(--color-gold);
+}
+
+.card-mini-pos {
+  margin-top: var(--spacing-xs);
+  font-size: 20rpx;
+  color: var(--color-text-tertiary);
+}
+
+.card-mini-name {
+  margin-top: 4rpx;
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.card-mini-snippet {
+  margin-top: 6rpx;
+  font-size: 20rpx;
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-base);
+  text-align: center;
+  word-break: break-all;
+}
+
+/* 5. 相处提示卡 */
+.tip-item {
+  display: flex;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+}
+
+.tip-item:last-child {
+  margin-bottom: 0;
+}
+
+.tip-marker {
+  font-size: var(--font-size-caption);
+  color: var(--color-gold);
+  flex-shrink: 0;
+}
+
+.tip-text {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-loose);
+}
+
+/* 6. 邀请与分享 */
+.action-row {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+.action-btn {
+  flex: 1;
+  border-radius: var(--radius-pill);
+  text-align: center;
+  padding: var(--spacing-md) 0;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.4;
+}
+
+.action-btn--primary {
+  background: linear-gradient(135deg, var(--color-gold-light), var(--color-gold));
+  box-shadow: var(--shadow-gold-button);
+}
+
+.action-btn--primary .action-btn-text {
+  color: var(--color-gold-deep-ink);
+}
+
+.action-btn--share {
+  background: var(--color-gold-glow);
+  border: 2rpx solid var(--color-gold);
+  margin: 0;
+}
+
+.action-btn--share .action-btn-text {
+  color: var(--color-gold-deep-ink);
+}
+
+.action-btn--share::after {
+  border: none;
+}
+
+.action-btn--press {
+  transform: scale(0.97);
+}
+
+.action-btn--disabled {
+  opacity: 0.6;
+}
+
+.back-form {
+  margin-top: var(--spacing-md);
+  text-align: center;
+}
+
+.back-form--press {
+  opacity: 0.6;
+}
+
+.back-form-text {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-link);
+}
+
+/* 7. 固定免责尾行 */
+.disclaimer {
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-md) var(--spacing-lg);
+  text-align: center;
+}
+
+.disclaimer-text {
+  font-size: 22rpx;
+  color: var(--color-text-tertiary);
+  line-height: var(--line-height-base);
+}
+
+/* ══════════ 邀请码弹层 ══════════ */
+
+.invite-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--color-overlay);
+  z-index: var(--z-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--page-padding);
+}
+
+.invite-modal {
+  width: 100%;
+  max-width: 560rpx;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: var(--shadow-elevated);
+}
+
+.invite-title {
+  font-size: var(--font-size-subhead);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.invite-sub {
+  margin-top: var(--spacing-xs);
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+  text-align: center;
+  line-height: var(--line-height-base);
+}
+
+.invite-qr {
+  width: 400rpx;
+  height: 400rpx;
+  margin: var(--spacing-md) 0;
+  border-radius: var(--radius-md);
+  background: #FFFFFF;
+  border: 2rpx solid var(--color-card-border);
+}
+
+.invite-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  width: 100%;
+}
+
+.invite-btn {
+  flex: 1;
+  padding: var(--spacing-sm) 0;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, var(--color-gold-light), var(--color-gold));
+  text-align: center;
+  box-shadow: var(--shadow-gold-button);
+}
+
+.invite-btn--ghost {
+  background: var(--color-gold-glow);
+  border: 2rpx solid var(--color-gold);
+  box-shadow: none;
+}
+
+.invite-btn--disabled {
+  opacity: 0.6;
+}
+
+.invite-btn--press {
+  transform: scale(0.97);
+}
+
+.invite-btn-text {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gold-deep-ink);
+}
+
+.invite-close {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-xs) var(--spacing-lg);
+}
+
+.invite-close-text {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-tertiary);
+}
