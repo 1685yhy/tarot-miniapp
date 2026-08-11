@@ -505,7 +505,9 @@ def test_birth_city_overlong_rejected(client: TestClient):
 # 开发07 · 星象宜忌引擎（今日星光卡：星光色 / 星光数 / 星象宜忌）
 # ─────────────────────────────────────────────────────────────────────────────
 
-BANNED_ADVICE_WORDS = ("必", "绝对", "改运", "化解", "转运", "注定")
+# T2-6 统一：宜忌禁词表收敛到共享 compliance.AI_OUTPUT_BLACKLIST
+# （星语口径 ⊇ 原宜忌口径，扫描只增不减；避免每处一份拷贝）
+from app.services.compliance import AI_OUTPUT_BLACKLIST as BANNED_ADVICE_WORDS
 
 
 def test_guidance_returns_four_fields_with_types():

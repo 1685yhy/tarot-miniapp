@@ -56,6 +56,7 @@ from app.services.birthchart import (
     sun_sign,
 )
 from app.services.compatibility import compute_compatibility
+from app.services.msg_check import msg_sec_check
 from app.services.share import process_invite
 from app.services.stardust import tier_for, tier_name
 from app.services.wxacode import get_wxacode
@@ -67,6 +68,10 @@ router = APIRouter(prefix="/meet", tags=["星辰相遇"])
 
 # 关系类型（设计 2.1：朋友/恋人/家人/同事）
 RELATIONS = frozenset({"friend", "love", "family", "work"})
+
+# 海报分享文案内容安全兜底（T2-6）：msg_sec_check 命中风险时替换的静态文案，
+# 无 score/档位等变量内容，恒过 MEET_BLACKLIST（test_meet_compliance 钉住）。
+_MEET_SHARE_FALLBACK = "我和TA的星光相遇了 · 看看你和谁星光相映 ✦"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -82,7 +87,7 @@ MEET_TIPS: list[str] = [
     "你们的相处像双人舞——有人进，就有人退，步调总会合上。",
     "把期待放低一点，把好奇放高一点，认识一个人是慢慢发生的事。",
     "分歧时先按下暂停，等星光安静下来再继续说话。",
-    "你们各有各的光，不必为了同频而熄灭自己的那一盏。",
+    "你们各有各的光，无需为了同频而熄灭自己的那一盏。",
     "一起把日子过成小确幸的合集，比任何预言都可靠。",
     "慢一点也没关系，你们的星光喜欢按自己的节拍亮起来。",
     "试着把「我在乎你」说出口，温暖需要被听见才会回响。",
@@ -403,6 +408,29 @@ async def get_meet(
 # ─────────────────────────────────────────────────────────────────────────────
 
 
+async def _safe_share_text(text: str, openid: str | None) -> str:
+    """分享文案内容安全（T2-6）：msg_sec_check 命中风险 → 安全兜底文案 + 记日志。
+
+    与 community posts 同用 ``msg_sec_check``（services/msg_check.py）：
+    - 命中风险（本地禁词或微信 risky/review）→ 替换为 ``_MEET_SHARE_FALLBACK``
+      （静态无变量文案，恒过 MEET_BLACKLIST）+ 记日志；不 4xx、不阻塞出图。
+    - 接口异常/不可用 → 不阻塞，try/except 降级返回原文（fail-open，与
+      community 同口径；msg_sec_check 本身不 raise，try/except 为防御兜底）。
+    """
+    try:
+        check = await msg_sec_check(text, openid)
+    except Exception as exc:  # 防御：微信接口/网络异常不阻塞海报
+        logger.warning("Meet share msg check raised (fail-open): %s", exc)
+        return text
+    if not check["safe"]:
+        logger.warning(
+            "Meet share text flagged by msg check, replaced with fallback: %s",
+            check.get("err"),
+        )
+        return _MEET_SHARE_FALLBACK
+    return text
+
+
 @router.get(
     "/{meet_id}/poster",
     response_model=MeetPosterResponse,
@@ -422,6 +450,13 @@ async def meet_poster(
     score = result.get("score")
     initiator = await db.get(User, row.initiator_id)
     nickname = (initiator.nickname if initiator else None) or "一位星光旅人"
+    share_text = (
+        f"我和TA的星辰共鸣度是 {score} · 看看你和谁星光相映 ✦"
+        if score is not None
+        else "我和TA的星光相遇了 · 看看你和谁星光相映 ✦"
+    )
+    # T2-6：分享文案拼接后过内容安全（命中风险 → 兜底文案；异常不阻塞）
+    share_text = await _safe_share_text(share_text, initiator.openid if initiator else None)
     return {
         "meet_id": row.id,
         "relation": row.relation,
@@ -440,11 +475,7 @@ async def meet_poster(
             {"position": c["position"], "name_zh": c["name_zh"]}
             for c in result.get("cards", [])
         ],
-        "share_text": (
-            f"我和TA的星辰共鸣度是 {score} · 看看你和谁星光相映 ✦"
-            if score is not None
-            else "我和TA的星光相遇了 · 看看你和谁星光相映 ✦"
-        ),
+        "share_text": share_text,
     }
 
 

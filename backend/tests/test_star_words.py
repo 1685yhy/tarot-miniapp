@@ -31,7 +31,9 @@ from app.utils.auth import create_token
 
 # 与用户决策禁词表对齐（2026-08-11 确认）：必/绝对/改运/化解/转运/注定/命
 # + 现有 预测/明天一定会；字符级口径（含"不必""必定"等含"必"形态）
-BLACKLIST_WORDS = ("必", "绝对", "改运", "化解", "转运", "注定", "命", "预测", "明天一定会")
+# T2-6 统一：禁词表收敛到共享 compliance.AI_OUTPUT_BLACKLIST（避免每处一份拷贝）
+from app.services.compliance import AI_OUTPUT_BLACKLIST as BLACKLIST_WORDS
+
 EXPECTED_DIMS = {"love", "career", "social", "health"}
 
 # ── helpers ─────────────────────────────────────────────────────────────
