@@ -624,6 +624,12 @@ Page({
     wx.navigateTo({ url: '/pages/community/community' });
   },
 
+  /** 今日共鸣墙（星友圈 · T8-4）入口：看看今天谁与你同星 */
+  onGoResonance() {
+    analytics.trackEvent('resonance_entry', { source: 'today' });
+    wx.navigateTo({ url: '/pages/resonance/resonance' });
+  },
+
   /** Navigate to membership page（牌阵区耗尽态「补充解读次数」入口） */
   onGoMembership() {
     wx.navigateTo({ url: '/pages/membership/membership' });

@@ -1,0 +1,237 @@
+<!-- pages/resonance/resonance.wxml -->
+<!-- 今日星光共鸣（星友圈 · T8-4）：三分组共鸣墙 + 公约弹窗 + 隐身开关 + 共鸣海报 -->
+<!-- E3 奶油疗愈明亮主题（common.wxss tokens） -->
+
+<!-- ===== 加载骨架 ===== -->
+<view class="page" wx:if="{{pageLoading}}">
+  <view class="skeleton skeleton--circle" style="margin:120rpx auto 40rpx"></view>
+  <view class="skeleton skeleton--text" style="width:60%;margin:0 auto"></view>
+  <view class="skeleton skeleton--text-sm" style="width:40%;margin:12rpx auto 60rpx"></view>
+  <view class="skeleton skeleton--block" style="width:640rpx;height:200rpx;margin:0 auto 40rpx;border-radius:28rpx;"></view>
+  <view class="skeleton skeleton--block" style="margin:0 auto 20rpx;border-radius:24rpx;"></view>
+  <view class="skeleton skeleton--block" style="margin:0 auto;border-radius:24rpx;"></view>
+</view>
+
+<!-- ===== 错误状态 ===== -->
+<view class="page" wx:elif="{{pageError}}">
+  <view class="error-state">
+    <text class="error-text">星光暂未连接</text>
+    <text class="error-hint">{{pageError}}</text>
+    <button class="btn-ghost" bindtap="onRetry">重新连接</button>
+  </view>
+</view>
+
+<!-- ===== 主内容 ===== -->
+<view class="page resonance-page" wx:else>
+  <!-- E3 奶油底色氛围光斑 -->
+  <view class="wash wash-pink"></view>
+  <view class="wash wash-gold"></view>
+
+  <!-- ===== 页头：今日共鸣墙 + 今日活跃星光数 ===== -->
+  <view class="wall-header anim-fade-in-up-1">
+    <view class="wall-title-row">
+      <text class="wall-title">今日共鸣墙</text>
+      <view class="wall-count">
+        <text class="wall-count-star">✦</text>
+        <text class="wall-count-text">{{activeCount}} 颗星今夜活跃</text>
+      </view>
+    </view>
+    <text class="wall-sub">看看今天谁与你同星——为同频的星送出共鸣</text>
+  </view>
+
+  <!-- ===== 我的今日卡片（置顶） ===== -->
+  <view class="my-card-wrap anim-fade-in-up-1" wx:if="{{hasMyCard}}">
+    <view class="my-card">
+      <view class="my-card-head">
+        <text class="my-card-alias">{{myCard.alias}}</text>
+        <view class="my-card-zodiac" wx:if="{{myCard.zodiacText}}">
+          <text class="my-card-zodiac-emoji">{{myCard.zodiacEmoji}}</text>
+          <text class="my-card-zodiac-text">{{myCard.zodiacText}}</text>
+        </view>
+      </view>
+      <view class="my-card-body">
+        <view class="my-card-thumb" wx:if="{{myCard.cardImage && !myCard.imgError}}">
+          <image class="my-card-thumb-img" src="{{myCard.cardImage}}" mode="aspectFill" binderror="onMyCardImgError" aria-label="今日牌 {{myCard.cardName}}" />
+        </view>
+        <view class="my-card-thumb my-card-thumb--fallback" wx:else>
+          <text class="my-card-thumb-fallback">{{myCard.cardName}}</text>
+        </view>
+        <view class="my-card-info">
+          <view class="my-card-line">
+            <text class="my-card-line-label">今日牌</text>
+            <text class="my-card-line-value">{{myCard.cardName}}</text>
+          </view>
+          <view class="my-card-line">
+            <text class="my-card-line-label">星光数</text>
+            <text class="my-card-line-value">{{myCard.starNumber}}</text>
+          </view>
+        </view>
+        <view class="my-card-side">
+          <view class="tier-badge">{{myCard.tierName}}</view>
+          <view class="my-card-received">
+            <text class="my-card-received-num">{{myCard.receivedToday}}</text>
+            <text class="my-card-received-label">颗星今日与你共鸣</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 我的共鸣：统计 + 今日剩余次数 + 隐身开关（登录可见） ===== -->
+  <view class="my-panel anim-fade-in-up-2" wx:if="{{isLoggedIn}}">
+    <view class="my-panel-title-row">
+      <text class="my-panel-title">我的共鸣</text>
+      <text class="my-panel-remain">今日还可送出 <text class="my-panel-remain-num">{{remainToday}}</text> 次</text>
+    </view>
+    <view class="my-panel-stats" wx:if="{{hasStats}}">
+      <view class="my-panel-stat">
+        <text class="my-panel-stat-num">{{stats.givenTotal}}</text>
+        <text class="my-panel-stat-label">累计送出</text>
+      </view>
+      <view class="my-panel-stat-sep"></view>
+      <view class="my-panel-stat">
+        <text class="my-panel-stat-num">{{stats.receivedTotal}}</text>
+        <text class="my-panel-stat-label">累计收到</text>
+      </view>
+      <view class="my-panel-stat-sep"></view>
+      <view class="my-panel-stat">
+        <text class="my-panel-stat-num">{{stats.receivedToday}}</text>
+        <text class="my-panel-stat-label">今日收到</text>
+      </view>
+    </view>
+    <view class="my-panel-vis-row" wx:else>
+      <text class="my-panel-vis-note">每日 10 次共鸣 · 只谈星光同频</text>
+    </view>
+    <view class="my-panel-vis-row">
+      <view class="my-panel-vis-text">
+        <text class="my-panel-vis-title">在共鸣墙中展示</text>
+        <text class="my-panel-vis-desc">关闭后他人看不到你，你仍可看墙与共鸣</text>
+      </view>
+      <switch checked="{{visible}}" color="#C9A97C" bindchange="onToggleVisibility" aria-label="在共鸣墙中展示" />
+    </view>
+  </view>
+  <view class="my-panel my-panel--guest anim-fade-in-up-2" wx:else>
+    <text class="my-panel-vis-title">登录后可为同频的星送出共鸣</text>
+    <text class="my-panel-vis-desc">并生成你们的共鸣海报 ✦</text>
+  </view>
+
+  <!-- ===== 三分组墙（同星座 / 同星光数 / 同一张牌 + 兜底） ===== -->
+  <view class="wall-groups anim-fade-in-up-3" wx:if="{{hasGroups}}">
+    <view class="wall-group" wx:for="{{groups}}" wx:for-item="group" wx:for-index="gidx" wx:key="type">
+      <view class="wall-group-head">
+        <view class="wall-group-icon">
+          <text class="wall-group-icon-text">{{group.icon}}</text>
+        </view>
+        <text class="wall-group-title">{{group.label}}</text>
+      </view>
+      <scroll-view class="wall-group-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+        <view class="wall-group-row">
+          <view
+            class="star-card"
+            wx:for="{{group.members}}"
+            wx:for-item="member"
+            wx:for-index="midx"
+            wx:key="key"
+          >
+            <!-- 共鸣星点上浮动效（点击后在此卡内渲染，单实例） -->
+            <view class="fly-star-layer" wx:if="{{flyStar && flyStar.uid === member.uid}}">
+              <text class="fly-star fly-star--main" bindanimationend="onFlyStarEnd">✦</text>
+              <text class="fly-star fly-star--sub">✦</text>
+            </view>
+
+            <view class="star-card-head">
+              <text class="star-card-alias">{{member.alias}}</text>
+              <text class="star-card-zodiac" wx:if="{{member.zodiacText}}">{{member.zodiacEmoji}} {{member.zodiacText}}</text>
+            </view>
+            <view class="star-card-thumb-wrap">
+              <view class="star-card-thumb" wx:if="{{member.cardImage && !member.imgError}}">
+                <image class="star-card-thumb-img" src="{{member.cardImage}}" mode="aspectFill" binderror="onCardImgError" data-key="{{member.key}}" aria-label="今日牌 {{member.cardName}}" />
+              </view>
+              <view class="star-card-thumb star-card-thumb--fallback" wx:else>
+                <text class="star-card-thumb-name">{{member.cardName}}</text>
+              </view>
+              <view class="star-card-receive">
+                <text class="star-card-receive-num">{{member.resonateCount}}</text>
+                <text class="star-card-receive-label">共鸣</text>
+              </view>
+            </view>
+            <view class="star-card-meta">
+              <text class="star-card-meta-item">星光数 {{member.starNumber}}</text>
+              <text class="star-card-meta-dot">·</text>
+              <text class="star-card-meta-item">{{member.tierName}}</text>
+            </view>
+            <view class="star-card-actions">
+              <view
+                class="give-btn {{member.resonatedByMe ? 'give-btn--done' : ''}}"
+                bindtap="onGiveResonance"
+                data-uid="{{member.uid}}"
+                data-gidx="{{gidx}}"
+                data-midx="{{midx}}"
+                hover-class="give-btn--press"
+                role="button"
+                aria-label="{{member.resonatedByMe ? '已共鸣过这颗星' : '送出共鸣'}}"
+              >
+                <text class="give-btn-star">{{member.resonatedByMe ? '★' : '✦'}}</text>
+                <text class="give-btn-text">{{member.resonatedByMe ? '已共鸣' : '共鸣'}}</text>
+              </view>
+              <view
+                class="poster-btn"
+                bindtap="onGeneratePoster"
+                data-uid="{{member.uid}}"
+                hover-class="poster-btn--press"
+                role="button"
+                aria-label="生成共鸣海报"
+              >
+                <text class="poster-btn-text">海报</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- ===== 空态 ===== -->
+  <view class="wall-empty anim-fade-in-up-3" wx:elif="{{!pageLoading}}">
+    <text class="wall-empty-star">✦</text>
+    <text class="wall-empty-text">今晚的夜空有些安静——你的星先亮着 ✦</text>
+    <text class="wall-empty-hint">翻开今日之牌、点亮星光手账或送出共鸣，你的星就会出现在这里</text>
+  </view>
+
+  <!-- ===== 星光公约弹窗（首次进入） ===== -->
+  <view class="pact-overlay" wx:if="{{showPact}}" catchtouchmove="noop">
+    <view class="pact-card">
+      <view class="pact-head">
+        <text class="pact-title">星光公约</text>
+        <text class="pact-sub">两颗星在同一片夜空相遇 ✦</text>
+      </view>
+      <view class="pact-body">
+        <view class="pact-row">
+          <text class="pact-row-tag pact-row-tag--show">展示</text>
+          <text class="pact-row-text">你的星名、星座、星光数、今日牌与星阶（均为系统生成）</text>
+        </view>
+        <view class="pact-row">
+          <text class="pact-row-tag pact-row-tag--hide">不展示</text>
+          <text class="pact-row-text">你的微信昵称头像、出生信息、日记与解读内容</text>
+        </view>
+        <view class="pact-row">
+          <text class="pact-row-tag pact-row-tag--ctrl">可关</text>
+          <text class="pact-row-text">随时可在本页关闭展示（隐身）</text>
+        </view>
+      </view>
+      <view class="pact-foot">
+        <text class="pact-foot-text">仅供娱乐 · 星光映照</text>
+      </view>
+      <button class="pact-btn" bindtap="onPactConfirm" hover-class="pact-btn--press">我知道了</button>
+    </view>
+  </view>
+
+  <!-- ===== 共鸣海报（复用 share-poster 模式 · 双星版式） ===== -->
+  <share-poster
+    mode="resonance"
+    visible="{{showPoster}}"
+    resonanceData="{{posterData}}"
+    bind:close="onClosePoster"
+    bind:share="onSharePosterToFriend"
+  />
+</view>

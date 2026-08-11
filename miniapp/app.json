@@ -99,6 +99,10 @@
     {
       "root": "pages/meet-landing/",
       "pages": ["meet-landing"]
+    },
+    {
+      "root": "pages/resonance/",
+      "pages": ["resonance"]
     }
   ],
   "window": {
@@ -137,7 +141,7 @@
   "preloadRule": {
     "pages/index/index": {
       "network": "all",
-      "packages": ["pages/daily-card/", "pages/reading/", "pages/reading-result/", "pages/checkin/", "pages/journal/", "pages/journal-review/", "pages/moon-card/", "pages/astral-calendar/", "pages/astral-event/", "pages/meet/"]
+      "packages": ["pages/daily-card/", "pages/reading/", "pages/reading-result/", "pages/checkin/", "pages/journal/", "pages/journal-review/", "pages/moon-card/", "pages/astral-calendar/", "pages/astral-event/", "pages/meet/", "pages/resonance/"]
     },
     "pages/oracle/oracle": {
       "network": "all",

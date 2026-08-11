@@ -1,0 +1,659 @@
+/* ============================================================
+   今日星光共鸣（星友圈 · T8-4）— E3 奶油疗愈明亮主题
+   tokens 复用 styles/common.wxss（--color-*）
+   结构：页头 → 我的今日卡片 → 我的共鸣面板 → 三分组横滑墙 → 公约弹窗
+   ============================================================ */
+
+page {
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+.resonance-page {
+  position: relative;
+  padding: 32rpx 32rpx calc(48rpx + env(safe-area-inset-bottom, 0px));
+  overflow: hidden;
+  background: var(--color-bg-gradient);
+}
+
+/* 氛围光斑（与今日屏同款 E3 底色） */
+.wash {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60rpx);
+  opacity: 0.55;
+  pointer-events: none;
+}
+.wash-pink {
+  width: 420rpx;
+  height: 420rpx;
+  background: rgba(232, 196, 190, 0.30);
+  top: -140rpx;
+  right: -120rpx;
+}
+.wash-gold {
+  width: 380rpx;
+  height: 380rpx;
+  background: rgba(201, 169, 124, 0.18);
+  top: 360rpx;
+  left: -160rpx;
+}
+
+/* ── 页头 ─────────────────────────────────────────────── */
+.wall-header {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 28rpx;
+}
+.wall-title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.wall-title {
+  font-size: 44rpx;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  letter-spacing: 2rpx;
+}
+.wall-count {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 8rpx 20rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  border: 1rpx solid var(--color-card-border);
+  box-shadow: var(--shadow-card);
+}
+.wall-count-star {
+  font-size: 22rpx;
+  color: var(--color-gold);
+}
+.wall-count-text {
+  font-size: 22rpx;
+  color: var(--color-gold-deep-ink);
+  letter-spacing: 1rpx;
+}
+.wall-sub {
+  display: block;
+  margin-top: 12rpx;
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+}
+
+/* ── 我的今日卡片（置顶） ─────────────────────────────── */
+.my-card-wrap {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 24rpx;
+}
+.my-card {
+  padding: 28rpx;
+  border-radius: 28rpx;
+  background: var(--color-surface-gradient);
+  border: 1rpx solid var(--color-card-border);
+  box-shadow: var(--shadow-elevated);
+}
+.my-card-head {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+.my-card-alias {
+  font-size: var(--font-size-subhead);
+  font-weight: 600;
+  color: var(--color-gold-deep-ink);
+  letter-spacing: 2rpx;
+}
+.my-card-zodiac {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 4rpx 16rpx;
+  border-radius: var(--radius-pill);
+  background: rgba(216, 210, 228, 0.25);
+}
+.my-card-zodiac-emoji {
+  font-size: 24rpx;
+}
+.my-card-zodiac-text {
+  font-size: 22rpx;
+  color: var(--color-lavender-deep);
+}
+.my-card-body {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+.my-card-thumb {
+  width: 128rpx;
+  height: 176rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  background: var(--color-card-hover);
+  border: 1rpx solid var(--color-card-border);
+  flex-shrink: 0;
+}
+.my-card-thumb-img {
+  width: 100%;
+  height: 100%;
+}
+.my-card-thumb--fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.my-card-thumb-fallback {
+  font-size: 24rpx;
+  color: var(--color-gold-deep-ink);
+  text-align: center;
+  padding: 0 8rpx;
+}
+.my-card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+.my-card-line {
+  display: flex;
+  align-items: baseline;
+  gap: 12rpx;
+}
+.my-card-line-label {
+  font-size: 22rpx;
+  color: var(--color-text-tertiary);
+}
+.my-card-line-value {
+  font-size: 26rpx;
+  color: var(--color-text-primary);
+}
+.my-card-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 16rpx;
+  flex-shrink: 0;
+}
+.tier-badge {
+  padding: 6rpx 18rpx;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, #C9A97C 0%, #D9BC8F 100%);
+  color: #FFFDF8;
+  font-size: 20rpx;
+  letter-spacing: 2rpx;
+  box-shadow: var(--shadow-gold-button);
+}
+.my-card-received {
+  display: flex;
+  align-items: baseline;
+  gap: 6rpx;
+}
+.my-card-received-num {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: var(--color-gold-deep-ink);
+}
+.my-card-received-label {
+  font-size: 22rpx;
+  color: var(--color-text-secondary);
+}
+
+/* ── 我的共鸣面板（统计 + 剩余次数 + 隐身开关） ─────────── */
+.my-panel {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 32rpx;
+  padding: 24rpx 28rpx;
+  border-radius: 24rpx;
+  background: var(--color-surface);
+  border: 1rpx solid var(--color-card-border);
+  box-shadow: var(--shadow-card);
+}
+.my-panel-title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+.my-panel-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+.my-panel-remain {
+  font-size: 22rpx;
+  color: var(--color-text-secondary);
+}
+.my-panel-remain-num {
+  color: var(--color-gold-deep-ink);
+  font-weight: 600;
+}
+.my-panel-stats {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 0 20rpx;
+}
+.my-panel-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+}
+.my-panel-stat-num {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: var(--color-gold-deep-ink);
+}
+.my-panel-stat-label {
+  font-size: 22rpx;
+  color: var(--color-text-tertiary);
+}
+.my-panel-stat-sep {
+  width: 1rpx;
+  height: 56rpx;
+  background: var(--color-card-border);
+}
+.my-panel-vis-note {
+  display: block;
+  padding: 8rpx 0 16rpx;
+  font-size: 22rpx;
+  color: var(--color-text-secondary);
+}
+.my-panel-vis-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16rpx;
+  border-top: 1rpx solid var(--color-card-border);
+}
+.my-panel-vis-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+.my-panel-vis-title {
+  font-size: 26rpx;
+  color: var(--color-text-primary);
+}
+.my-panel-vis-desc {
+  font-size: 22rpx;
+  color: var(--color-text-tertiary);
+}
+.my-panel--guest {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+/* ── 三分组墙 ─────────────────────────────────────────── */
+.wall-groups {
+  position: relative;
+  z-index: 2;
+}
+.wall-group {
+  margin-bottom: 36rpx;
+}
+.wall-group-head {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  margin-bottom: 16rpx;
+}
+.wall-group-icon {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface);
+  border: 1rpx solid var(--color-card-border);
+  box-shadow: var(--shadow-card);
+}
+.wall-group-icon-text {
+  font-size: 26rpx;
+  color: var(--color-gold);
+}
+.wall-group-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  letter-spacing: 1rpx;
+}
+.wall-group-scroll {
+  width: 100%;
+  white-space: nowrap;
+}
+.wall-group-row {
+  display: flex;
+  gap: 20rpx;
+  padding-bottom: 8rpx;
+}
+
+/* ── 星星卡片 ─────────────────────────────────────────── */
+.star-card {
+  position: relative;
+  width: 300rpx;
+  flex-shrink: 0;
+  padding: 24rpx;
+  border-radius: 24rpx;
+  background: var(--color-surface-gradient);
+  border: 1rpx solid var(--color-card-border);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+.star-card-head {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  margin-bottom: 16rpx;
+}
+.star-card-alias {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-gold-deep-ink);
+  letter-spacing: 1rpx;
+}
+.star-card-zodiac {
+  font-size: 22rpx;
+  color: var(--color-lavender-deep);
+}
+.star-card-thumb-wrap {
+  position: relative;
+  margin-bottom: 16rpx;
+}
+.star-card-thumb {
+  width: 100%;
+  height: 180rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  background: var(--color-card-hover);
+  border: 1rpx solid var(--color-card-border);
+}
+.star-card-thumb-img {
+  width: 100%;
+  height: 100%;
+}
+.star-card-thumb--fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.star-card-thumb-name {
+  font-size: 26rpx;
+  color: var(--color-gold-deep-ink);
+  text-align: center;
+  padding: 0 12rpx;
+}
+.star-card-receive {
+  position: absolute;
+  right: 10rpx;
+  bottom: 10rpx;
+  display: flex;
+  align-items: baseline;
+  gap: 4rpx;
+  padding: 4rpx 14rpx;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 253, 248, 0.92);
+  border: 1rpx solid var(--color-card-border);
+}
+.star-card-receive-num {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--color-gold-deep-ink);
+}
+.star-card-receive-label {
+  font-size: 20rpx;
+  color: var(--color-text-tertiary);
+}
+.star-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-bottom: 16rpx;
+}
+.star-card-meta-item {
+  font-size: 22rpx;
+  color: var(--color-text-secondary);
+}
+.star-card-meta-dot {
+  font-size: 22rpx;
+  color: var(--color-card-border-hover);
+}
+.star-card-actions {
+  display: flex;
+  gap: 14rpx;
+}
+.give-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 14rpx 0;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, #C9A97C 0%, #D9BC8F 100%);
+  box-shadow: var(--shadow-gold-button);
+}
+.give-btn--press {
+  transform: scale(0.96);
+  opacity: 0.9;
+}
+.give-btn--done {
+  background: var(--color-card-hover);
+  border: 1rpx solid var(--color-card-border);
+  box-shadow: none;
+}
+.give-btn-star {
+  font-size: 26rpx;
+  color: #FFFDF8;
+}
+.give-btn--done .give-btn-star {
+  color: var(--color-gold-deep-ink);
+}
+.give-btn-text {
+  font-size: 24rpx;
+  color: #FFFDF8;
+  letter-spacing: 2rpx;
+}
+.give-btn--done .give-btn-text {
+  color: var(--color-text-tertiary);
+}
+.poster-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 22rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  border: 1rpx solid var(--color-card-border);
+}
+.poster-btn--press {
+  transform: scale(0.96);
+  opacity: 0.85;
+}
+.poster-btn-text {
+  font-size: 22rpx;
+  color: var(--color-gold-deep-ink);
+  letter-spacing: 2rpx;
+}
+
+/* ── 星点上浮动效（共鸣动效：飞出上浮消散） ─────────────── */
+.fly-star-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 8;
+  overflow: visible;
+}
+.fly-star {
+  position: absolute;
+  right: 70rpx;
+  top: 30rpx;
+  color: var(--color-gold);
+  font-size: 34rpx;
+  animation: fly-up 0.9s var(--ease-out) forwards;
+  text-shadow: 0 0 12rpx rgba(201, 169, 124, 0.5);
+}
+.fly-star--sub {
+  right: 120rpx;
+  top: 50rpx;
+  font-size: 24rpx;
+  animation: fly-up 0.9s var(--ease-out) 0.06s forwards;
+  opacity: 0;
+}
+@keyframes fly-up {
+  0% {
+    transform: translate(0, 0) scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(0, -150rpx) scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* ── 空态 ─────────────────────────────────────────────── */
+.wall-empty {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 96rpx 40rpx;
+  border-radius: 28rpx;
+  background: var(--color-surface);
+  border: 1rpx dashed var(--color-card-border);
+}
+.wall-empty-star {
+  font-size: 56rpx;
+  color: var(--color-gold);
+  margin-bottom: 24rpx;
+  animation: star-breathe 2.4s ease-in-out infinite;
+}
+@keyframes star-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+.wall-empty-text {
+  font-size: 28rpx;
+  color: var(--color-gold-deep-ink);
+  text-align: center;
+  letter-spacing: 1rpx;
+}
+.wall-empty-hint {
+  margin-top: 12rpx;
+  font-size: 22rpx;
+  color: var(--color-text-tertiary);
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* ── 星光公约弹窗 ─────────────────────────────────────── */
+.pact-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 56rpx;
+  background: var(--color-overlay);
+}
+.pact-card {
+  width: 100%;
+  max-width: 640rpx;
+  padding: 48rpx 40rpx 40rpx;
+  border-radius: 32rpx;
+  background: var(--color-surface-gradient);
+  border: 1rpx solid var(--color-card-border);
+  box-shadow: var(--shadow-elevated);
+}
+.pact-head {
+  text-align: center;
+  margin-bottom: 32rpx;
+}
+.pact-title {
+  display: block;
+  font-size: 40rpx;
+  font-weight: 600;
+  color: var(--color-gold-deep-ink);
+  letter-spacing: 6rpx;
+}
+.pact-sub {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 22rpx;
+  color: var(--color-text-secondary);
+}
+.pact-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  margin-bottom: 28rpx;
+}
+.pact-row {
+  display: flex;
+  gap: 16rpx;
+  align-items: flex-start;
+}
+.pact-row-tag {
+  flex-shrink: 0;
+  padding: 4rpx 14rpx;
+  border-radius: var(--radius-pill);
+  font-size: 20rpx;
+  color: #FFFDF8;
+  letter-spacing: 1rpx;
+}
+.pact-row-tag--show {
+  background: #C9A97C;
+}
+.pact-row-tag--hide {
+  background: #8A8478;
+}
+.pact-row-tag--ctrl {
+  background: #6E6A96;
+}
+.pact-row-text {
+  flex: 1;
+  font-size: 24rpx;
+  color: var(--color-text-primary);
+  line-height: 1.7;
+}
+.pact-foot {
+  text-align: center;
+  margin-bottom: 28rpx;
+}
+.pact-foot-text {
+  font-size: 20rpx;
+  color: var(--color-text-tertiary);
+  letter-spacing: 2rpx;
+}
+.pact-btn {
+  width: 100%;
+  padding: 22rpx 0;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, #C9A97C 0%, #D9BC8F 100%);
+  color: #FFFDF8;
+  font-size: 28rpx;
+  letter-spacing: 4rpx;
+  box-shadow: var(--shadow-gold-button);
+}
+.pact-btn::after {
+  border: none;
+}
+.pact-btn--press {
+  transform: scale(0.98);
+  opacity: 0.92;
+}

@@ -706,18 +706,19 @@ page {
 }
 
 /* -----------------------------------------------------------
-   10. 底部降权入口（占卜 / 树洞 / 记录今天 · 注脚）
+   10. 底部降权入口（占卜 / 树洞 / 记录今天 / 今日共鸣 · 注脚 · 4 项一行两行排布）
    ----------------------------------------------------------- */
 .foot-entry-row {
   position: relative;
   z-index: 3;
   display: flex;
-  gap: 18rpx;
+  flex-wrap: wrap;
+  gap: 8rpx;
   margin-top: 36rpx;
   justify-content: center;
 }
 .foot-entry {
-  flex: 1;
+  flex: 0 0 24%;
   display: flex;
   flex-direction: column;
   align-items: center;

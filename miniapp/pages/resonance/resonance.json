@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "今日星光共鸣",
+  "navigationBarBackgroundColor": "#FAF6EF",
+  "navigationBarTextStyle": "black",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "share-poster": "/components/share-poster/share-poster"
+  }
+}
