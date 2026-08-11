@@ -184,9 +184,9 @@ module.exports = { fmtDate: fmtDate };
       <text class="foot-entry-emoji">🕊️</text>
       <text class="foot-entry-label">星光树洞</text>
     </view>
-    <view class="foot-entry" bindtap="onGoDiary" role="button" aria-label="记录今天" hover-class="card-pressed">
-      <text class="foot-entry-emoji">✎</text>
-      <text class="foot-entry-label">记录今天</text>
+    <view class="foot-entry" bindtap="onGoDiary" role="button" aria-label="进入星光手账" hover-class="card-pressed">
+      <text class="foot-entry-emoji">✧</text>
+      <text class="foot-entry-label">星光手账</text>
     </view>
     <view wx:if="{{pendingReading}}" class="foot-entry" bindtap="onContinueReading" role="button" aria-label="继续上次未完成的解读" hover-class="card-pressed">
       <text class="foot-entry-emoji">✦</text>

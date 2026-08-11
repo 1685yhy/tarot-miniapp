@@ -1,0 +1,49 @@
+<!-- 共用月历组件：月网格 · 今天高亮环 · 左右滑切月 · 星点/事件标记（T1-4，T2-4 星象日历复用） -->
+<view class="cal">
+  <!-- 月头：‹ 2026年8月 › -->
+  <view class="cal-header">
+    <view class="cal-nav" bindtap="onPrevMonth" role="button" aria-label="上个月">‹</view>
+    <text class="cal-title">{{displayYear}}年{{displayMonth}}月</text>
+    <view class="cal-nav" bindtap="onNextMonth" role="button" aria-label="下个月">›</view>
+  </view>
+
+  <!-- 星期行（周一起始） -->
+  <view class="cal-week">
+    <view class="cal-week-item" wx:for="{{WEEKDAYS}}" wx:key="*this">{{item}}</view>
+  </view>
+
+  <!-- 42 格月网格 -->
+  <view class="cal-grid" bindtouchstart="onTouchStart" bindtouchend="onTouchEnd">
+    <view
+      wx:for="{{cells}}"
+      wx:key="key"
+      class="cal-cell {{item.inMonth ? '' : 'cal-cell--pad'}} {{item.isToday ? 'cal-cell--today' : ''}}"
+      data-date="{{item.date}}"
+      data-has-star="{{item.hasStar}}"
+      bindtap="onDayTap"
+      role="button"
+      aria-label="{{item.date}}{{item.isToday ? ' 今天' : ''}}{{item.hasStar ? ' 已记录' : ''}}"
+      hover-class="cal-cell--press"
+    >
+      <text class="cal-day {{item.isToday ? 'cal-day--today' : ''}}">{{item.day}}</text>
+
+      <!-- 星点模式：已记录 → 星光星点（颜色=当日星光色 · 光晕=亮度档） -->
+      <view
+        wx:if="{{markMode === 'stars' && item.hasStar}}"
+        class="cal-star {{item.brightness >= 4 ? 'cal-star--bright' : ''}}"
+        style="width: {{10 + item.brightness * 4}}rpx; height: {{10 + item.brightness * 4}}rpx; background: {{item.starColor}}; box-shadow: 0 0 {{item.brightness * 5}}rpx {{item.starColor}};"
+      ></view>
+
+      <!-- 星点模式：未记录 → 极淡星尘点（"留一颗星的位子"） -->
+      <view wx:elif="{{markMode === 'stars' && item.dust}}" class="cal-dust"></view>
+
+      <!-- 事件模式（阶段 2 星象日历复用）：事件徽标 -->
+      <view wx:elif="{{markMode === 'events' && item.events.length > 0}}" class="cal-events">
+        <text class="cal-event-emoji">{{item.eventEmoji}}</text>
+        <text wx:if="{{item.eventLabel}}" class="cal-event-label">{{item.eventLabel}}</text>
+      </view>
+
+      <!-- 未来未记录日：留白 -->
+    </view>
+  </view>
+</view>

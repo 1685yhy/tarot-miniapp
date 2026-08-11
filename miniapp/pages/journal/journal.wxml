@@ -1,0 +1,268 @@
+<!-- pages/journal/journal.wxml —— 星光手账（T1-4）：五档点星 + 星光夜空月历 + 星点详情展开 -->
+
+<view class="container">
+  <!-- E3 奶油底色氛围光斑 -->
+  <view class="wash wash-pink"></view>
+  <view class="wash wash-gold"></view>
+
+  <!-- ===== 加载骨架 ===== -->
+  <view wx:if="{{calendarLoading}}">
+    <view class="skeleton-wrap">
+      <view class="skeleton-header-area">
+        <view class="skeleton skeleton-line wide"></view>
+        <view class="skeleton skeleton-line medium"></view>
+      </view>
+      <view class="skeleton skeleton-btn"></view>
+      <view class="skeleton skeleton-block"></view>
+    </view>
+  </view>
+
+  <!-- ===== 错误状态 ===== -->
+  <view wx:elif="{{calendarError}}" class="error-state">
+    <view class="error-card">
+      <text class="error-title">夜空暂时无法打开</text>
+      <text class="error-desc">{{calendarError}}</text>
+      <button class="btn-retry" bindtap="onRetry">重新连接</button>
+    </view>
+  </view>
+
+  <!-- ===== 主内容 ===== -->
+  <view wx:else>
+
+    <!-- Header -->
+    <view class="page-header">
+      <text class="page-title">星光手账</text>
+      <text class="page-subtitle">我的星光夜空 · 每晚一颗星</text>
+    </view>
+
+    <!-- ===== 今晚，记一颗星：5 档星光亮度一屏点选 ===== -->
+    <view class="quick-card anim-fade-up">
+      <view class="quick-header">
+        <view class="quick-title-line">
+          <text class="quick-title">今晚，记一颗星</text>
+          <view wx:if="{{quickDone}}" class="quick-done-badge">
+            <text class="quick-done-text">今晚的星已点亮 ✦</text>
+          </view>
+        </view>
+        <text class="quick-subtitle">点选星光亮度，一按即记 · 3 秒完成</text>
+      </view>
+
+      <view class="quick-row">
+        <view
+          wx:for="{{quickLevels}}" wx:key="level"
+          class="quick-level {{quickSaving ? 'quick-level--busy' : ''}}"
+          data-mood="{{item.mood}}"
+          bindtap="onQuickRecord"
+          role="button"
+          aria-label="记一颗{{item.name}}（{{item.hint}}）"
+          hover-class="quick-level--press"
+        >
+          <view class="quick-glyph-wrap">
+            <text class="quick-glyph {{item.level <= 2 ? 'quick-glyph--dim' : ''}} {{item.level === 1 ? 'quick-glyph--faint' : ''}}">{{item.glyph}}</text>
+          </view>
+          <text class="quick-name">{{item.name}}</text>
+          <text class="quick-hint">{{item.hint}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ===== 月度统计 ===== -->
+    <view class="stats-row anim-fade-up" wx:if="{{stats}}">
+      <view class="stat-item">
+        <text class="stat-num">{{stats.days_recorded}}</text>
+        <text class="stat-label">点亮天数</text>
+      </view>
+      <view class="stat-sep"></view>
+      <view class="stat-item">
+        <text class="stat-num">{{stats.bright_count}}</text>
+        <text class="stat-label">亮星</text>
+      </view>
+      <view class="stat-sep"></view>
+      <view class="stat-item">
+        <text class="stat-num">{{stats.dim_count}}</text>
+        <text class="stat-label">暗星</text>
+      </view>
+      <view class="stat-sep"></view>
+      <view class="stat-item">
+        <text class="stat-num stat-num--streak">{{stats.current_streak}}</text>
+        <text class="stat-label">连续记录</text>
+      </view>
+    </view>
+
+    <!-- ===== 空月引导 ===== -->
+    <view class="empty-month anim-fade-up" wx:if="{{stats && stats.days_recorded === 0}}">
+      <text class="empty-month-icon">✦</text>
+      <text class="empty-month-text">夜空从不催促，星会等你</text>
+      <text class="empty-month-sub">今晚，为今天点一颗星，夜空就多一处光</text>
+    </view>
+
+    <!-- ===== 星光夜空月历（共用组件 · 星点模式） ===== -->
+    <view class="calendar-wrap anim-fade-up anim-stagger-1">
+      <calendar
+        year="{{year}}"
+        month="{{month}}"
+        days="{{calDays}}"
+        today="{{todayStr}}"
+        mark-mode="stars"
+        bind:daytap="onDayTap"
+        bind:monthchange="onCalendarMonthChange"
+      />
+    </view>
+
+    <view class="cal-legend">
+      <view class="legend-item">
+        <view class="legend-dust"></view>
+        <text class="legend-text">留一颗星的位子</text>
+      </view>
+      <view class="legend-item">
+        <view class="legend-star"></view>
+        <text class="legend-text">星光色 = 当天星光 · 光晕 = 亮度</text>
+      </view>
+    </view>
+
+  </view>
+
+  <!-- ============ 星点详情展开（底部弹层） ============ -->
+  <view class="modal-mask" wx:if="{{detailVisible}}" bindtap="_closeDetail" role="button" aria-label="关闭星点详情">
+    <view class="modal-sheet" catchtap="preventClose">
+
+      <!-- Handle -->
+      <view class="modal-handle"></view>
+
+      <!-- 日期标题 -->
+      <view class="detail-header">
+        <text class="detail-date">{{detailDateLabel}}</text>
+        <text wx:if="{{detailIsToday}}" class="detail-today-tag">今天</text>
+      </view>
+
+      <!-- ── 已记录：星点 + 情绪档 + 可选文字 ── -->
+      <block wx:if="{{detailHasStar}}">
+        <!-- 星点预览：颜色=当日星光色 · 光晕=亮度档 -->
+        <view class="detail-star-preview">
+          <view
+            class="detail-star"
+            style="width: {{26 + detailBrightness * 8}}rpx; height: {{26 + detailBrightness * 8}}rpx; background: {{detailStarColor}}; box-shadow: 0 0 {{detailBrightness * 12}}rpx {{detailStarColor}};"
+          ></view>
+          <view class="detail-star-info">
+            <text class="detail-brightness-name">{{detailBrightnessName}}</text>
+            <text class="detail-mood-line" wx:if="{{detailMoodMeta}}">{{detailMoodMeta.emoji}} {{detailMoodMeta.name}}</text>
+          </view>
+        </view>
+        <text wx:if="{{detailBrightness === 1}}" class="detail-dim-note">隐没的星，也是夜空的居民。它只是需要一点时间，再亮起来。</text>
+
+        <!-- 当日卡牌 -->
+        <view class="detail-card-row" wx:if="{{detailCard}}">
+          <view class="detail-card-dot">🃏</view>
+          <view class="detail-card-info">
+            <text class="detail-card-name">{{detailCard.name_zh}}</text>
+            <text class="detail-card-meaning">{{detailCard.meaning_upright}}</text>
+          </view>
+        </view>
+
+        <!-- 情绪档（6 档 → 星光亮度） -->
+        <text class="modal-label">让这一天更亮一点</text>
+        <view class="detail-mood-row">
+          <view
+            wx:for="{{moodChips}}" wx:key="mood"
+            class="detail-chip {{detailMood === item.mood ? 'detail-chip--selected' : ''}}"
+            data-mood="{{item.mood}}"
+            bindtap="onDetailMoodSelect"
+            role="button"
+            aria-label="选择星光亮度：{{item.name}}"
+          >
+            <text class="detail-chip-emoji">{{item.emoji}}</text>
+            <text class="detail-chip-name">{{item.name}}</text>
+            <view class="detail-chip-stars">
+              <text class="detail-chip-star {{item.brightness <= 2 ? 'detail-chip-star--dim' : ''}}">{{item.starGlyph}}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 反思引导 + 可选文字 -->
+        <view class="reflection-prompt-card" wx:if="{{detailReflectionPrompt}}">
+          <text class="reflection-prompt-label">💫 今日反思</text>
+          <text class="reflection-prompt-question">{{detailReflectionPrompt}}</text>
+        </view>
+        <text class="modal-label">星语（可选）</text>
+        <textarea
+          class="reflection-input"
+          placeholder="此刻的心事，交给星光收好…"
+          value="{{detailReflection}}"
+          bindinput="onDetailReflectionInput"
+          maxlength="500"
+        />
+        <text class="char-count">{{detailReflection.length}}/500</text>
+
+        <!-- 图片（复用旧日记上传） -->
+        <view class="image-picker-wrap">
+          <view wx:if="{{!detailSelectedImage && !detailImage}}" class="image-picker-btn" bindtap="onDetailChooseImage" role="button" aria-label="添加图片">
+            <text class="image-picker-icon">+</text>
+            <text class="image-picker-label">添加图片</text>
+          </view>
+          <view wx:else class="image-preview-wrap">
+            <image
+              class="image-preview"
+              src="{{detailSelectedImage || detailImage}}"
+              mode="aspectFill"
+              aria-label="已选图片预览"
+            />
+            <view wx:if="{{detailSelectedImage}}" class="image-remove-btn" bindtap="onDetailRemoveImage" role="button" aria-label="移除图片">
+              <text class="image-remove-btn-char">✕</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 保存 / 删除 -->
+        <button
+          class="btn-submit"
+          bindtap="onDetailSave"
+          disabled="{{detailSaving || !detailEntry || !detailEntry.id}}"
+        >
+          {{detailSaving ? '让星光更亮一点…' : '让这一天更亮一点 ✦'}}
+        </button>
+        <text wx:if="{{detailHasStar && (!detailEntry || !detailEntry.id)}}" class="detail-edit-hint">较早的记录仅可查看星光，暂不可编辑</text>
+        <view wx:if="{{detailEntry && detailEntry.id}}" class="detail-delete" bindtap="onDetailDelete" role="button" aria-label="删除这一天">
+          <text class="detail-delete-text">{{detailDeleting ? '删除中…' : '删除这一天'}}</text>
+        </view>
+      </block>
+
+      <!-- ── 未记录 · 今天：引导点亮 ── -->
+      <block wx:elif="{{detailIsToday}}">
+        <view class="detail-empty">
+          <view class="detail-empty-dust"></view>
+          <text class="detail-empty-title">留一颗星的位子</text>
+          <text class="detail-empty-sub">今晚的星，等你来点亮 · 3 秒完成</text>
+        </view>
+        <view class="quick-row quick-row--sheet">
+          <view
+            wx:for="{{quickLevels}}" wx:key="level"
+            class="quick-level {{quickSaving ? 'quick-level--busy' : ''}}"
+            data-mood="{{item.mood}}"
+            bindtap="onQuickRecord"
+            role="button"
+            aria-label="记一颗{{item.name}}（{{item.hint}}）"
+            hover-class="quick-level--press"
+          >
+            <view class="quick-glyph-wrap">
+              <text class="quick-glyph {{item.level <= 2 ? 'quick-glyph--dim' : ''}} {{item.level === 1 ? 'quick-glyph--faint' : ''}}">{{item.glyph}}</text>
+            </view>
+            <text class="quick-name">{{item.name}}</text>
+          </view>
+        </view>
+      </block>
+
+      <!-- ── 未记录 · 过去/未来：温柔留白 ── -->
+      <block wx:else>
+        <view class="detail-empty">
+          <view class="detail-empty-dust"></view>
+          <text wx:if="{{detailIsFuture}}" class="detail-empty-title">这一天还在前方</text>
+          <text wx:else class="detail-empty-title">留一颗星的位子</text>
+          <text wx:if="{{detailIsFuture}}" class="detail-empty-sub">未来的夜空，还留着你的星光 ✦</text>
+          <text wx:else class="detail-empty-sub">夜空从不催促，星会等你 ✦</text>
+        </view>
+      </block>
+
+    </view>
+  </view>
+
+</view>

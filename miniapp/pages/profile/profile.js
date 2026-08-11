@@ -551,7 +551,8 @@ Page({
   },
 
   onGoDiary() {
-    wx.navigateTo({ url: '/pages/diary/diary' });
+    // 星光手账 T1-4：日记与手账合并，入口指向手账
+    wx.navigateTo({ url: '/pages/journal/journal' });
   },
 
   /** P3-1: 每日签到入口 */

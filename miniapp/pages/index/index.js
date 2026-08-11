@@ -572,11 +572,13 @@ Page({
   },
 
   goToDiary() {
-    wx.navigateTo({ url: '/pages/diary/diary' });
+    // 星光手账 T1-4：与"记录今天"合并指向手账
+    wx.navigateTo({ url: '/pages/journal/journal' });
   },
 
   onGoDiary() {
-    wx.navigateTo({ url: '/pages/diary/diary' });
+    // 星光手账 T1-4：与"记录今天"合并指向手账
+    wx.navigateTo({ url: '/pages/journal/journal' });
   },
 
   goToAllSpreads() {

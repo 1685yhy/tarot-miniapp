@@ -65,6 +65,12 @@ Page({
   },
 
   async onShow() {
+    // 星光手账 T1-4：手账与日记合并——旧路径保留兼容，进入即升级到手账视图
+    if (!this._journalRedirectDone) {
+      this._journalRedirectDone = true;
+      wx.redirectTo({ url: '/pages/journal/journal' });
+      return;
+    }
     this.setData({ page: 1, entries: [], pageLoading: true, weeklyReview: null });
     await this.loadEntries();
     await this._loadTodayCard();

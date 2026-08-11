@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "星光手账",
+  "navigationBarBackgroundColor": "#FAF6EF",
+  "navigationBarTextStyle": "black",
+  "usingComponents": {
+    "calendar": "/components/calendar/calendar"
+  }
+}

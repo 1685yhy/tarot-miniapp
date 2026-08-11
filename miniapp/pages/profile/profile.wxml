@@ -72,7 +72,7 @@
         </view>
         <view class="record-stat">
           <text class="record-stat-num">{{diaryCount}}</text>
-          <text class="record-stat-label">日记</text>
+          <text class="record-stat-label">手账</text>
         </view>
         <view class="record-stat">
           <text class="record-stat-num">{{wishCount}}</text>
@@ -119,11 +119,11 @@
 
     <!-- ============ 注脚入口（开发 04 · 日记 3 小卡 + 签到/收藏/设置） ============ -->
     <view class="me-grid anim-fade-up anim-stagger-3">
-      <view class="me-tile" bindtap="onGoDiary" role="button" aria-label="我的日记" hover-class="tile-pressed">
-        <view class="me-tile-icon"><text class="me-tile-emoji">✎</text></view>
+      <view class="me-tile" bindtap="onGoDiary" role="button" aria-label="我的星光手账" hover-class="tile-pressed">
+        <view class="me-tile-icon"><text class="me-tile-emoji">✦</text></view>
         <view class="me-tile-text">
-          <text class="me-tile-name">我的日记</text>
-          <text class="me-tile-desc">{{diaryCount}} 篇星光感悟</text>
+          <text class="me-tile-name">星光手账</text>
+          <text class="me-tile-desc">{{diaryCount}} 颗星已点亮</text>
         </view>
       </view>
       <view class="me-tile" bindtap="onGoWish" role="button" aria-label="新月许愿" hover-class="tile-pressed">
@@ -246,13 +246,13 @@
       <view class="menu-section-title anim-fade-up anim-stagger-1">
         <text class="menu-section-label">我的内容</text>
       </view>
-      <view class="menu-item anim-slide-up anim-stagger-1" bindtap="onGoDiary" role="button" aria-label="进入我的日记">
+      <view class="menu-item anim-slide-up anim-stagger-1" bindtap="onGoDiary" role="button" aria-label="进入星光手账">
         <view class="menu-icon-wrap">
-          <image src="/images/icons/diary_64.png" mode="aspectFit" class="menu-icon-img" aria-label="我的日记"></image>
+          <image src="/images/icons/diary_64.png" mode="aspectFit" class="menu-icon-img" aria-label="星光手账"></image>
         </view>
         <view class="menu-content">
-          <text class="menu-title">我的日记</text>
-          <text class="menu-desc">记录你的星光感悟</text>
+          <text class="menu-title">星光手账</text>
+          <text class="menu-desc">把心情交给夜空，点一颗星</text>
         </view>
         <text class="menu-arrow">›</text>
       </view>

@@ -1,0 +1,837 @@
+/* ============================================================
+   星光手账页 — E3 奶油疗愈 token（styles/common.wxss）
+   月历即"我的星光夜空"：星点=情绪，颜色=当日星光色，光晕=亮度档
+   ============================================================ */
+
+.container {
+  padding: var(--spacing-xl) var(--spacing-lg);
+  padding-bottom: calc(120rpx + var(--safe-area-bottom));
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================================
+   Page Header
+   ============================================================ */
+.page-header {
+  text-align: center;
+  padding: var(--spacing-lg) 0 40rpx;
+}
+
+.page-title {
+  font-size: var(--font-size-subhead);
+  font-weight: 500;
+  font-family: var(--e3-serif, 'Songti SC', serif);
+  color: var(--e3-ink, #3D3A36);
+  letter-spacing: 8rpx;
+  display: block;
+  margin-bottom: 12rpx;
+}
+
+.page-subtitle {
+  font-size: var(--font-size-caption);
+  color: var(--e3-ink-soft, #8A8478);
+  letter-spacing: 3rpx;
+  display: block;
+}
+
+/* ============================================================
+   快记卡 — 今晚，记一颗星
+   ============================================================ */
+.quick-card {
+  background: linear-gradient(145deg, var(--e3-cream-hi, #FFFDF8) 0%, var(--e3-paper, #F2ECDF) 100%);
+  border: 1rpx solid var(--e3-line, rgba(201, 169, 124, 0.28));
+  border-radius: 24rpx;
+  padding: var(--spacing-md) var(--spacing-md) var(--spacing-lg);
+  box-shadow: var(--e3-shadow, 0 2rpx 8rpx rgba(61, 58, 54, 0.08)), var(--e3-hi, inset 0 1rpx 0 rgba(255, 255, 255, 0.6));
+  margin-bottom: var(--spacing-md);
+}
+
+.quick-header {
+  margin-bottom: var(--spacing-sm);
+}
+
+.quick-title-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6rpx;
+}
+
+.quick-title {
+  font-family: var(--e3-serif, 'Songti SC', serif);
+  font-size: var(--font-size-body);
+  font-weight: 500;
+  color: var(--e3-ink, #3D3A36);
+  letter-spacing: 4rpx;
+}
+
+.quick-done-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6rpx 18rpx;
+  background: rgba(201, 169, 124, 0.14);
+  border: 1rpx solid rgba(201, 169, 124, 0.30);
+  border-radius: var(--radius-pill);
+}
+
+.quick-done-text {
+  font-size: 20rpx;
+  color: var(--e3-gold-deep, #8A6B3D);
+  letter-spacing: 1rpx;
+}
+
+.quick-subtitle {
+  font-size: var(--font-size-xs);
+  color: var(--e3-ink-soft, #8A8478);
+  letter-spacing: 1rpx;
+}
+
+.quick-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-xxs);
+}
+
+.quick-row--sheet {
+  margin-top: var(--spacing-lg);
+}
+
+.quick-level {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+  min-height: 148rpx;
+  padding: var(--spacing-xs) 4rpx;
+  border-radius: var(--radius-md);
+  background: rgba(255, 253, 248, 0.7);
+  border: 1rpx solid transparent;
+  transition: transform 0.15s ease-out, border-color 0.15s ease-out, background 0.15s ease-out;
+}
+
+.quick-level--press {
+  background: rgba(201, 169, 124, 0.12);
+  border-color: rgba(201, 169, 124, 0.35);
+  transform: scale(0.96);
+}
+
+.quick-level--busy {
+  opacity: 0.55;
+}
+
+.quick-glyph-wrap {
+  min-height: 52rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quick-glyph {
+  font-size: 34rpx;
+  letter-spacing: 2rpx;
+  color: var(--e3-gold, #C9A97C);
+  text-shadow: 0 0 12rpx rgba(201, 169, 124, 0.35);
+}
+
+.quick-glyph--dim {
+  color: #B8A6D9;
+  text-shadow: 0 0 10rpx rgba(184, 166, 217, 0.30);
+}
+
+.quick-glyph--faint {
+  color: rgba(184, 166, 217, 0.55);
+  text-shadow: none;
+}
+
+.quick-name {
+  font-size: 20rpx;
+  color: var(--e3-ink, #3D3A36);
+  letter-spacing: 1rpx;
+  text-align: center;
+}
+
+.quick-hint {
+  font-size: 18rpx;
+  color: var(--e3-ink-faint, #6E6A96);
+  text-align: center;
+}
+
+/* ============================================================
+   月度统计
+   ============================================================ */
+.stats-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 253, 248, 0.75);
+  border: 1rpx solid var(--e3-line, rgba(201, 169, 124, 0.28));
+  border-radius: 20rpx;
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.stat-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rpx;
+}
+
+.stat-sep {
+  width: 1rpx;
+  height: 36rpx;
+  background: rgba(201, 169, 124, 0.20);
+}
+
+.stat-num {
+  font-family: var(--e3-serif, 'Songti SC', serif);
+  font-size: var(--font-size-subhead);
+  font-weight: 500;
+  color: var(--e3-gold-deep, #8A6B3D);
+}
+
+.stat-num--streak {
+  color: var(--e3-pink-ink, #B08A82);
+}
+
+.stat-label {
+  font-size: var(--font-size-xs);
+  color: var(--e3-ink-soft, #8A8478);
+  letter-spacing: 1rpx;
+}
+
+/* ============================================================
+   空月引导
+   ============================================================ */
+.empty-month {
+  text-align: center;
+  background: linear-gradient(135deg, rgba(232, 196, 190, 0.16) 0%, rgba(216, 210, 228, 0.12) 100%);
+  border: 1rpx solid rgba(201, 169, 124, 0.18);
+  border-radius: 20rpx;
+  padding: var(--spacing-lg) var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.empty-month-icon {
+  display: block;
+  font-size: 40rpx;
+  color: var(--e3-gold, #C9A97C);
+  margin-bottom: 8rpx;
+}
+
+.empty-month-text {
+  display: block;
+  font-family: var(--e3-serif, 'Songti SC', serif);
+  font-size: var(--font-size-body);
+  color: var(--e3-ink, #3D3A36);
+  letter-spacing: 3rpx;
+  margin-bottom: 6rpx;
+}
+
+.empty-month-sub {
+  display: block;
+  font-size: var(--font-size-xs);
+  color: var(--e3-ink-soft, #8A8478);
+  letter-spacing: 1rpx;
+}
+
+/* ============================================================
+   月历 + 图例
+   ============================================================ */
+.calendar-wrap {
+  margin-bottom: var(--spacing-sm);
+}
+
+.cal-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  padding: 0 var(--spacing-xs) var(--spacing-xl);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.legend-dust {
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background: rgba(190, 182, 212, 0.45);
+}
+
+.legend-star {
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  background: var(--e3-gold, #C9A97C);
+  box-shadow: 0 0 8rpx rgba(201, 169, 124, 0.5);
+}
+
+.legend-text {
+  font-size: var(--font-size-xs);
+  color: var(--e3-ink-soft, #8A8478);
+  letter-spacing: 1rpx;
+}
+
+/* ============================================================
+   加载骨架
+   ============================================================ */
+.skeleton-wrap {
+  padding: var(--spacing-xl) 0;
+}
+
+.skeleton-header-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-xl);
+}
+
+.skeleton-line {
+  height: 30rpx;
+  border-radius: var(--radius-sm);
+}
+
+.skeleton-line.wide { width: 280rpx; }
+.skeleton-line.medium { width: 200rpx; }
+
+.skeleton-btn {
+  width: 100%;
+  height: 220rpx;
+  border-radius: 24rpx;
+  margin-bottom: var(--spacing-xl);
+}
+
+.skeleton-block {
+  width: 100%;
+  height: 560rpx;
+  border-radius: 28rpx;
+}
+
+/* ============================================================
+   错误状态
+   ============================================================ */
+.error-state {
+  padding: 120rpx var(--spacing-lg);
+  text-align: center;
+}
+
+.error-card {
+  background: var(--color-surface);
+  border: 1rpx solid rgba(232, 122, 138, 0.20);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl) var(--spacing-lg);
+}
+
+.error-title {
+  font-family: var(--e3-serif, 'Songti SC', serif);
+  font-size: var(--font-size-body);
+  color: var(--e3-ink, #3D3A36);
+  letter-spacing: 3rpx;
+  display: block;
+  margin-bottom: 12rpx;
+}
+
+.error-desc {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-tertiary);
+  display: block;
+  margin-bottom: 36rpx;
+  line-height: 1.6;
+}
+
+.btn-retry {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 88rpx;
+  background: rgba(201, 169, 124, 0.10);
+  color: var(--color-gold-dark);
+  font-size: var(--font-size-caption);
+  font-weight: 500;
+  border: 1rpx solid rgba(201, 169, 124, 0.20);
+  border-radius: var(--radius-pill);
+  padding: var(--spacing-sm) var(--spacing-xl);
+  transition: background 0.2s;
+}
+
+.btn-retry:active {
+  background: rgba(201, 169, 124, 0.18);
+}
+
+/* ============================================================
+   星点详情弹层（底部 sheet）
+   ============================================================ */
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(61, 58, 54, 0.45);
+  z-index: 1000;
+  animation: fade-in var(--duration-fast) var(--ease-out) forwards;
+}
+
+.modal-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--e3-cream, #FAF6EF);
+  border-top: 1rpx solid var(--e3-line-soft, rgba(201, 169, 124, 0.38));
+  border-radius: 32rpx 32rpx 0 0;
+  z-index: 1001;
+  padding: var(--spacing-sm) var(--spacing-lg) 60rpx;
+  padding-bottom: calc(60rpx + var(--safe-area-bottom));
+  max-height: 82vh;
+  overflow-y: auto;
+  animation: sheet-up 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 -12rpx 60rpx rgba(61, 58, 54, 0.12);
+}
+
+@keyframes sheet-up {
+  0% { transform: translateY(100%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.modal-handle {
+  width: 60rpx;
+  height: 6rpx;
+  background: rgba(201, 169, 124, 0.20);
+  border-radius: var(--radius-pill);
+  margin: 0 auto 32rpx;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-lg);
+}
+
+.detail-date {
+  font-family: var(--e3-serif, 'Songti SC', serif);
+  font-size: var(--font-size-subhead);
+  font-weight: 500;
+  color: var(--e3-ink, #3D3A36);
+  letter-spacing: 4rpx;
+}
+
+.detail-today-tag {
+  font-size: var(--font-size-xs);
+  color: var(--e3-gold-deep, #8A6B3D);
+  background: rgba(201, 169, 124, 0.14);
+  border: 1rpx solid rgba(201, 169, 124, 0.30);
+  border-radius: var(--radius-pill);
+  padding: 2rpx 14rpx;
+}
+
+/* —— 星点预览 —— */
+.detail-star-preview {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  background: linear-gradient(145deg, var(--e3-cream-hi, #FFFDF8) 0%, var(--e3-paper, #F2ECDF) 100%);
+  border: 1rpx solid var(--e3-line, rgba(201, 169, 124, 0.28));
+  border-radius: 20rpx;
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.detail-star {
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: detail-star-breathe 3s ease-in-out infinite;
+}
+
+@keyframes detail-star-breathe {
+  0%, 100% { opacity: 0.9; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+
+.detail-star-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.detail-brightness-name {
+  font-family: var(--e3-serif, 'Songti SC', serif);
+  font-size: var(--font-size-body);
+  color: var(--e3-ink, #3D3A36);
+  letter-spacing: 3rpx;
+}
+
+.detail-mood-line {
+  font-size: var(--font-size-caption);
+  color: var(--e3-ink-soft, #8A8478);
+  letter-spacing: 1rpx;
+}
+
+/* 暗星不禁忌文案 */
+.detail-dim-note {
+  display: block;
+  font-family: var(--e3-serif, 'Songti SC', serif);
+  font-size: var(--font-size-caption);
+  color: var(--e3-pink-ink, #B08A82);
+  line-height: 1.8;
+  background: rgba(232, 196, 190, 0.14);
+  border: 1rpx solid rgba(232, 196, 190, 0.30);
+  border-radius: 16rpx;
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+/* —— 当日卡牌 —— */
+.detail-card-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  background: rgba(216, 210, 228, 0.16);
+  border: 1rpx solid rgba(216, 210, 228, 0.30);
+  border-radius: 16rpx;
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.detail-card-dot {
+  font-size: 28rpx;
+  flex-shrink: 0;
+}
+
+.detail-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  min-width: 0;
+}
+
+.detail-card-name {
+  font-family: var(--e3-serif, 'Songti SC', serif);
+  font-size: var(--font-size-caption);
+  font-weight: 500;
+  color: var(--e3-gold-deep, #8A6B3D);
+  letter-spacing: 2rpx;
+}
+
+.detail-card-meaning {
+  font-size: var(--font-size-xs);
+  color: var(--e3-ink-soft, #8A8478);
+  line-height: 1.6;
+}
+
+/* —— 标签 —— */
+.modal-label {
+  font-family: var(--e3-serif, 'Songti SC', serif);
+  font-size: var(--font-size-caption);
+  font-weight: 500;
+  color: var(--e3-ink, #3D3A36);
+  display: block;
+  margin-bottom: 16rpx;
+  letter-spacing: 2rpx;
+}
+
+/* —— 6 档情绪 chips（星光亮度视觉） —— */
+.detail-mood-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.detail-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+  min-width: 148rpx;
+  padding: var(--spacing-sm) var(--spacing-sm) 12rpx;
+  border-radius: 16rpx;
+  background: rgba(201, 169, 124, 0.06);
+  border: 1rpx solid rgba(201, 169, 124, 0.12);
+  transition: transform 0.15s ease-out, border-color 0.15s ease-out, background 0.15s ease-out, box-shadow 0.15s ease-out;
+}
+
+.detail-chip:active {
+  transform: scale(0.95);
+}
+
+.detail-chip--selected {
+  border-color: var(--e3-gold, #C9A97C);
+  background: rgba(201, 169, 124, 0.14);
+  box-shadow: 0 0 20rpx rgba(201, 169, 124, 0.18);
+}
+
+.detail-chip-emoji {
+  font-size: 32rpx;
+  line-height: 1.2;
+}
+
+.detail-chip-name {
+  font-size: var(--font-size-xs);
+  color: var(--e3-ink, #3D3A36);
+  letter-spacing: 1rpx;
+}
+
+.detail-chip--selected .detail-chip-name {
+  color: var(--e3-gold-deep, #8A6B3D);
+}
+
+.detail-chip-stars {
+  min-height: 22rpx;
+}
+
+.detail-chip-star {
+  font-size: 20rpx;
+  color: var(--e3-gold, #C9A97C);
+}
+
+.detail-chip-star--dim {
+  color: rgba(184, 166, 217, 0.60);
+}
+
+/* —— 反思引导 —— */
+.reflection-prompt-card {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: linear-gradient(135deg, rgba(232, 196, 190, 0.20) 0%, rgba(216, 210, 228, 0.14) 100%);
+  border: 1rpx solid rgba(201, 169, 124, 0.20);
+  border-radius: 16rpx;
+  margin-bottom: var(--spacing-md);
+}
+
+.reflection-prompt-label {
+  display: block;
+  font-family: var(--e3-serif, 'Songti SC', serif);
+  font-size: var(--font-size-xs);
+  color: var(--e3-pink-ink, #B08A82);
+  letter-spacing: 2rpx;
+  margin-bottom: 8rpx;
+}
+
+.reflection-prompt-question {
+  display: block;
+  font-size: var(--font-size-caption);
+  color: var(--e3-ink, #3D3A36);
+  line-height: 1.6;
+}
+
+/* —— 文字输入 —— */
+.reflection-input {
+  width: 100%;
+  min-height: 180rpx;
+  background: rgba(201, 169, 124, 0.04);
+  border: 1rpx solid rgba(201, 169, 124, 0.12);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  font-size: var(--font-size-caption);
+  color: var(--color-text-primary);
+  line-height: 1.7;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.reflection-input:focus {
+  border-color: rgba(201, 169, 124, 0.40);
+  box-shadow: 0 0 0 3rpx rgba(201, 169, 124, 0.06);
+}
+
+.reflection-input::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.char-count {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-tertiary);
+  display: block;
+  text-align: right;
+  margin-top: 10rpx;
+}
+
+/* —— 图片 —— */
+.image-picker-wrap {
+  margin-top: var(--spacing-sm);
+}
+
+.image-picker-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6rpx;
+  width: 140rpx;
+  height: 140rpx;
+  border: 1.5rpx dashed rgba(201, 169, 124, 0.25);
+  border-radius: var(--radius-md);
+  background: rgba(201, 169, 124, 0.04);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.image-picker-btn:active {
+  background: rgba(201, 169, 124, 0.10);
+  border-color: rgba(201, 169, 124, 0.40);
+}
+
+.image-picker-icon {
+  font-size: 48rpx;
+  color: var(--color-gold-dark);
+  line-height: 1;
+  opacity: 0.6;
+}
+
+.image-picker-label {
+  font-size: 20rpx;
+  color: var(--color-lavender);
+  opacity: 0.7;
+}
+
+.image-preview-wrap {
+  position: relative;
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1.5rpx solid rgba(201, 169, 124, 0.20);
+}
+
+.image-preview {
+  width: 100%;
+  height: 100%;
+}
+
+.image-remove-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 88rpx;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.image-remove-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 36rpx;
+  height: 36rpx;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+}
+
+.image-remove-btn-char {
+  position: relative;
+  font-size: 24rpx;
+  color: #fff;
+}
+
+/* —— 保存 / 删除 —— */
+.btn-submit {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #C9A97C 0%, #B08F52 50%, #A98B5F 100%);
+  color: var(--color-text-inverse);
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: var(--spacing-md) 0;
+  margin-top: var(--spacing-xl);
+  box-shadow: 0 4rpx 20rpx rgba(201, 169, 124, 0.25);
+  letter-spacing: 2rpx;
+  transition: transform 0.15s ease-out, opacity 0.15s ease-out;
+}
+
+.btn-submit:active {
+  transform: scale(0.97);
+  opacity: 0.85;
+}
+
+.btn-submit[disabled] {
+  opacity: 0.30;
+  box-shadow: none;
+  transform: none;
+  pointer-events: none;
+}
+
+.detail-edit-hint {
+  display: block;
+  text-align: center;
+  font-size: var(--font-size-xs);
+  color: var(--e3-ink-soft, #8A8478);
+  margin-top: var(--spacing-sm);
+  letter-spacing: 1rpx;
+}
+
+.detail-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 88rpx;
+  margin-top: var(--spacing-xs);
+}
+
+.detail-delete-text {
+  font-size: var(--font-size-caption);
+  color: rgba(232, 122, 138, 0.85);
+  letter-spacing: 1rpx;
+}
+
+.detail-delete:active .detail-delete-text {
+  opacity: 0.6;
+}
+
+/* —— 未记录空态 —— */
+.detail-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-2xl) 0 var(--spacing-lg);
+  text-align: center;
+}
+
+.detail-empty-dust {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+  background: rgba(190, 182, 212, 0.45);
+  margin-bottom: var(--spacing-md);
+}
+
+.detail-empty-title {
+  font-family: var(--e3-serif, 'Songti SC', serif);
+  font-size: var(--font-size-body);
+  color: var(--e3-ink, #3D3A36);
+  letter-spacing: 3rpx;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.detail-empty-sub {
+  font-size: var(--font-size-caption);
+  color: var(--e3-ink-soft, #8A8478);
+  letter-spacing: 1rpx;
+  display: block;
+  line-height: 1.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .detail-star {
+    animation: none;
+  }
+}

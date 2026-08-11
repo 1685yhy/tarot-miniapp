@@ -1,0 +1,168 @@
+/* 共用月历组件样式 —— E3 奶油疗愈 token（styles/common.wxss） */
+
+.cal {
+  background: linear-gradient(145deg, var(--e3-cream-hi, #FFFDF8) 0%, var(--e3-paper, #F2ECDF) 100%);
+  border: 1rpx solid var(--e3-line, rgba(201, 169, 124, 0.28));
+  border-radius: 28rpx;
+  padding: var(--spacing-md, 24rpx) var(--spacing-sm, 16rpx) var(--spacing-md, 24rpx);
+  box-shadow: var(--e3-shadow, 0 2rpx 8rpx rgba(61, 58, 54, 0.08)), var(--e3-hi, inset 0 1rpx 0 rgba(255, 255, 255, 0.6));
+  position: relative;
+  overflow: hidden;
+}
+
+/* 月头 */
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-xs, 12rpx) var(--spacing-sm, 16rpx);
+}
+
+.cal-title {
+  font-family: var(--e3-serif, 'Songti SC', serif);
+  font-size: var(--font-size-body, 30rpx);
+  font-weight: 500;
+  color: var(--e3-ink, #3D3A36);
+  letter-spacing: 4rpx;
+}
+
+.cal-nav {
+  min-width: 88rpx;
+  min-height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  color: var(--e3-gold-deep, #8A6B3D);
+  border-radius: var(--radius-pill, 999rpx);
+  transition: background 0.15s ease;
+}
+
+.cal-nav:active {
+  background: rgba(201, 169, 124, 0.12);
+}
+
+/* 星期行 */
+.cal-week {
+  display: flex;
+  padding-bottom: var(--spacing-xs, 12rpx);
+}
+
+.cal-week-item {
+  flex: 1;
+  text-align: center;
+  font-size: var(--font-size-xs, 20rpx);
+  color: var(--e3-ink-soft, #8A8478);
+  letter-spacing: 2rpx;
+}
+
+/* 网格 */
+.cal-grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.cal-cell {
+  width: 14.2857%;
+  min-height: 96rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 8rpx;
+  position: relative;
+  border-radius: var(--radius-md, 16rpx);
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cal-cell--pad {
+  visibility: hidden;
+}
+
+.cal-cell--press {
+  background: rgba(201, 169, 124, 0.08);
+}
+
+/* 今天高亮环 */
+.cal-cell--today::after {
+  content: '';
+  position: absolute;
+  top: 4rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 56rpx;
+  height: 56rpx;
+  border: 2rpx solid var(--e3-gold, #C9A97C);
+  border-radius: 50%;
+  box-shadow: 0 0 16rpx rgba(201, 169, 124, 0.30);
+  pointer-events: none;
+}
+
+.cal-day {
+  font-size: var(--font-size-xs, 20rpx);
+  color: var(--e3-ink-soft, #8A8478);
+  line-height: 1.3;
+  z-index: 1;
+}
+
+.cal-day--today {
+  color: var(--e3-gold-deep, #8A6B3D);
+  font-weight: 600;
+}
+
+/* 星点：颜色=当日星光色 · 光晕=亮度档（1-5） */
+.cal-star {
+  border-radius: 50%;
+  margin-top: 10rpx;
+  flex-shrink: 0;
+  animation: cal-star-breathe 3s ease-in-out infinite;
+}
+
+.cal-star--bright {
+  animation: cal-star-breathe 2.4s ease-in-out infinite;
+}
+
+@keyframes cal-star-breathe {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.18); }
+}
+
+/* 极淡星尘点：留一颗星的位子 */
+.cal-dust {
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background: rgba(190, 182, 212, 0.45);
+  margin-top: 14rpx;
+  flex-shrink: 0;
+}
+
+/* 事件模式（阶段 2 星象日历） */
+.cal-events {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rpx;
+  margin-top: 8rpx;
+}
+
+.cal-event-emoji {
+  font-size: 24rpx;
+  line-height: 1.2;
+}
+
+.cal-event-label {
+  font-size: 16rpx;
+  color: var(--e3-ink-faint, #6E6A96);
+  max-width: 80rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cal-star {
+    animation: none;
+  }
+}
