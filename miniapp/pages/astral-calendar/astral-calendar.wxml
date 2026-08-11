@@ -35,6 +35,15 @@
       <text class="page-subtitle">星象日历 · 每个节点都值得被看见</text>
     </view>
 
+    <!-- ===== 静默路径失败内联提示（切月/onShow 刷新失败；与"本月无事件"空态可区分） ===== -->
+    <view wx:if="{{silentError}}" class="silent-error">
+      <view class="silent-error-texts">
+        <text class="silent-error-title">星图加载失败</text>
+        <text class="silent-error-desc">{{silentError}}</text>
+      </view>
+      <button class="silent-error-retry" bindtap="onRetry" hover-class="btn-retry--press">重试</button>
+    </view>
+
     <!-- ===== 下一节点倒计时卡（数据来自后端 next_event） ===== -->
     <view
       wx:if="{{nextEvent}}"
@@ -95,15 +104,15 @@
           <text class="legend-text">月相小字 = 当日月相</text>
         </view>
       </view>
-      <view wx:if="{{!hasMonthEvents}}" class="empty-month">
+      <view wx:if="{{hasNoEvents && !silentError}}" class="empty-month">
         <text class="empty-month-text">星空从不缺席，只是有时安静。</text>
       </view>
     </view>
 
     <!-- ===== 事件列表视图（区间事件显示起止） ===== -->
     <view wx:else class="event-list anim-fade-up">
-      <!-- 空态：本月无任何天象事件 -->
-      <view wx:if="{{hasNoEvents}}" class="list-empty">
+      <!-- 空态：本月无任何天象事件（加载失败时由 silent-error 横幅接管，不误报空态） -->
+      <view wx:if="{{hasNoEvents && !silentError}}" class="list-empty">
         <text class="list-empty-icon">✦</text>
         <text class="list-empty-text">星空从不缺席，只是有时安静。</text>
         <text class="list-empty-sub">这个月没有重大天象，正好安静地数星星</text>

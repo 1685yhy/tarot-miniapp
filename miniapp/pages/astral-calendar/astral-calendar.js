@@ -64,6 +64,11 @@ function fmtDateLabel(dateStr) {
 }
 
 Page({
+  // 月历请求序号守卫：每次 _loadCalendar 递增，响应到达时若序号已过期
+  // （期间又发起了更新的请求，如快速连切两月 / 切月中 onShow 刷新）则丢弃，
+  // 防止旧月份的响应覆盖新月份数据（T3-4 审查 Important 修复）
+  _calendarReqId: 0,
+
   data: {
     todayStr: '',
     year: 0,
@@ -76,6 +81,7 @@ Page({
     hasMonthEvents: false, // WXML 编译环境不认 .length > 0，JS 预计算
     hasNoEvents: false, // 本月零事件（空态文案用）
     nextEvent: null, // {type,label,date,days_until,emoji,countdownText,dateLabel}
+    silentError: '', // 静默路径（切月/onShow 刷新）失败的内联提示——与"本月无事件"空态可区分
 
     // 事件详情底部弹层
     detailVisible: false,
@@ -123,11 +129,13 @@ Page({
   // ============================================================
 
   async _loadCalendar(silent) {
-    if (!silent) this.setData({ loading: true, error: null });
+    const reqId = ++this._calendarReqId; // 序号守卫：本请求的"最新"凭证
+    if (!silent) this.setData({ loading: true, error: null, silentError: '' });
     try {
       const data = await request(
         `/astral/calendar?year=${this.data.year}&month=${this.data.month}`
       );
+      if (reqId !== this._calendarReqId) return; // 过期响应（期间有更新请求）→ 丢弃
       // 事件模式展示字段在 JS 预计算（组件按字段名取值，避免动态 key）
       const days = (data.days || []).map((d) => ({
         date: d.date,
@@ -144,6 +152,7 @@ Page({
       this.setData({
         loading: false,
         error: null,
+        silentError: '', // 成功即清静默失败提示
         calDays: days,
         eventList,
         hasMonthEvents: eventList.length > 0,
@@ -151,31 +160,61 @@ Page({
         nextEvent: this._prepareNextEvent(data.next_event || null),
       });
     } catch (err) {
-      if (!silent) {
+      if (reqId !== this._calendarReqId) return; // 过期失败响应同样丢弃
+      if (silent) {
+        // 静默失败（切月/onShow 刷新）：轻量内联提示 + 重试，
+        // 与"本月无事件"空态可区分（空态只在加载成功后展示）
+        this.setData({ silentError: getFriendlyError(err) });
+      } else {
         this.setData({ loading: false, error: getFriendlyError(err) });
       }
     }
   },
 
   onRetry() {
-    this.setData({ error: null, loading: true });
+    this.setData({ error: null, loading: true, silentError: '' });
     this._loadCalendar(false);
   },
 
   onMonthChange(e) {
     const { year, month } = e.detail;
-    this.setData({ year, month });
+    // 清空上一月的派生数据：避免新月份网格渲染旧月数据、空态文案错配
+    //（加载成功后再填充；失败时网格空白 + silentError 内联提示，语义明确）
+    this.setData({
+      year,
+      month,
+      calDays: [],
+      eventList: [],
+      hasMonthEvents: false,
+      hasNoEvents: false,
+      nextEvent: null,
+      silentError: '',
+    });
     this._loadCalendar(true);
   },
 
-  /** 下一节点倒计时卡数据（days_until: 0=今夜 / 1=明天 / N天后） */
+  /** 下一节点倒计时卡数据（days_until: 0=今夜 / 1=明天 / N天后）
+   *  NaN 防御：days_until 缺失/非数字时 Number(undefined)→NaN、Number(null)→0
+   *  会渲染出"NaN 天后"/误判"今夜"——统一回退为中性文案「即将到来」（T3-4 审查 Minor 修复） */
   _prepareNextEvent(next) {
     if (!next || !next.date) return null;
-    const d = Number(next.days_until);
-    const countdownText = d <= 0 ? '今夜' : d === 1 ? '明天' : `${d} 天后`;
+    const raw = next.days_until;
+    const d = raw == null || !Number.isFinite(Number(raw)) ? null : Number(raw);
+    const countdownText = d == null ? '即将到来' : d <= 0 ? '今夜' : d === 1 ? '明天' : `${d} 天后`;
+    // 日期合法性防御：非法日期（NaN 段/2月30日等）回退为原始日期串，避免"NaN月NaN日 · undefined"
     const p = next.date.split('-');
-    const dt = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
-    const week = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][dt.getDay()];
+    let dateLabel = next.date;
+    if (p.length === 3 && p.every((s) => /^\d{1,4}$/.test(s))) {
+      const dt = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+      if (
+        dt.getFullYear() === Number(p[0]) &&
+        dt.getMonth() === Number(p[1]) - 1 &&
+        dt.getDate() === Number(p[2])
+      ) {
+        const week = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][dt.getDay()];
+        dateLabel = `${Number(p[1])}月${Number(p[2])}日 · ${week}`;
+      }
+    }
     return {
       type: next.type,
       label: next.label,
@@ -183,7 +222,7 @@ Page({
       days_until: d,
       emoji: EVENT_EMOJI[next.type] || '✦',
       countdownText,
-      dateLabel: `${Number(p[1])}月${Number(p[2])}日 · ${week}`,
+      dateLabel,
     };
   },
 
