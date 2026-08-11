@@ -173,6 +173,80 @@
 }
 
 /* ============================================================
+   晚安卡分享（T4-5）
+   ============================================================ */
+.btn-share-poster {
+  margin-top: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  height: 88rpx;
+  border-radius: 999rpx;
+  background: linear-gradient(135deg, #F5D48F 0%, #D9AF6B 100%);
+  color: #4A3B22;
+  font-size: 30rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  box-shadow: 0 12rpx 32rpx rgba(217, 175, 107, 0.35);
+}
+.btn-share-poster::after { border: none; }
+.btn-share-poster--active {
+  opacity: 0.85;
+  transform: scale(0.98);
+}
+.btn-share-star {
+  font-size: 28rpx;
+}
+
+/* ============================================================
+   沉淀引导（设计 4.1）：睡前三分钟，给今天记一颗星
+   ============================================================ */
+.sink-row {
+  margin-top: 32rpx;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 24rpx 28rpx;
+  border-radius: 24rpx;
+  background: rgba(250, 246, 239, 0.72);
+  border: 1rpx solid rgba(201, 169, 124, 0.30);
+}
+.sink-row--active {
+  background: rgba(250, 246, 239, 0.95);
+}
+.sink-dot {
+  flex: none;
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  background: #C9A97C;
+  box-shadow: 0 0 12rpx rgba(201, 169, 124, 0.6);
+}
+.sink-copy {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  text-align: left;
+}
+.sink-title {
+  font-size: 26rpx;
+  color: var(--color-text-primary);
+  letter-spacing: 1rpx;
+}
+.sink-sub {
+  font-size: 22rpx;
+  color: var(--color-text-tertiary);
+}
+.sink-arrow {
+  flex: none;
+  font-size: 40rpx;
+  color: var(--color-gold-deep-ink);
+  line-height: 1;
+}
+
+/* ============================================================
    入场动画
    ============================================================ */
 .anim-fade-up {

@@ -2,5 +2,7 @@
   "navigationBarTitleText": "月光卡",
   "navigationBarBackgroundColor": "#FAF6EF",
   "navigationBarTextStyle": "black",
-  "usingComponents": {}
+  "usingComponents": {
+    "share-poster": "/components/share-poster/share-poster"
+  }
 }

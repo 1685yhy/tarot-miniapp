@@ -1,4 +1,4 @@
-<!-- pages/moon-card/moon-card.wxml — 月光卡（睡前星语 · 最小可用版） -->
+<!-- pages/moon-card/moon-card.wxml — 月光卡（睡前星语 · 完整版 T4-5） -->
 <view class="page">
   <view class="stars-layer"></view>
 
@@ -35,6 +35,37 @@
       <text class="starlight-text">星光色 {{card.star_color}} · 星光数 {{card.star_number}}</text>
     </view>
 
-    <text class="card-note">愿星光伴你入眠 ✦</text>
+    <text class="card-note">晚安。月亮替你把今天收尾，星光陪你入睡 ✦</text>
+
+    <!-- ===== 晚安卡分享（T4-5） ===== -->
+    <button
+      class="btn-share-poster"
+      bindtap="onSharePoster"
+      disabled="{{sharing}}"
+      hover-class="btn-share-poster--active"
+    >
+      <text class="btn-share-star">✦</text>
+      <text>{{sharing ? '晚安卡生成中…' : '分享晚安卡'}}</text>
+    </button>
+
+    <!-- ===== 沉淀引导（设计 4.1）：睡前三分钟，给今天记一颗星 ===== -->
+    <view class="sink-row" bindtap="goWriteJournal" hover-class="sink-row--active">
+      <view class="sink-dot"></view>
+      <view class="sink-copy">
+        <text class="sink-title">睡前三分钟，给今天记一颗星</text>
+        <text class="sink-sub">星光手账 · 写下一日星光</text>
+      </view>
+      <text class="sink-arrow">›</text>
+    </view>
   </view>
+
+  <!-- ===== 晚安卡海报（深空底 · share-poster mode="moon"） ===== -->
+  <share-poster
+    wx:if="{{posterData}}"
+    mode="moon"
+    visible="{{showPoster}}"
+    moonCardData="{{posterData}}"
+    bind:close="onClosePoster"
+    bind:share="onShareMoonPosterToFriend"
+  />
 </view>

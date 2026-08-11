@@ -97,6 +97,16 @@
  *     bind:share="onSharePosterToFriend"
  *   />
  *
+ * Usage (月光卡晚安卡海报 — mode="moon", 深空底晚安版星光名片 +
+ * 小程序码 from /share/wxacode, footer 仅供娱乐 · 星光映照):
+ *   <share-poster
+ *     mode="moon"
+ *     visible="{{showMoonPoster}}"
+ *     moonCardData="{{posterData}}"
+ *     bind:close="onCloseMoonPoster"
+ *     bind:share="onShareMoonPosterToFriend"
+ *   />
+ *
  * fortuneData shape:
  *   {
  *     dateText, totalReadings, mood,
@@ -117,6 +127,7 @@
  */
 const { drawSharePoster } = require('../../utils/canvas-poster');
 const { drawJournalPoster } = require('../../utils/journal-poster');
+const { drawMoonCardPoster } = require('../../utils/moon-card-poster');
 
 Component({
   properties: {
@@ -127,12 +138,17 @@ Component({
     },
     mode: {
       type: String,
-      value: 'reading', // 'reading' | 'daily' | 'invite' | 'zodiac' | 'diary' | 'fortune' | 'card' | 'journal'
+      value: 'reading', // 'reading' | 'daily' | 'invite' | 'zodiac' | 'diary' | 'fortune' | 'card' | 'journal' | 'moon'
     },
     // journal mode: 月度星光手账海报数据（脱敏）
     journalData: {
       type: null,
       value: {}, // { monthLabel, stats, starColorCounts, summary, starTierName }
+    },
+    // moon mode: 月光卡晚安卡海报数据（当日月光卡 + 日期行）
+    moonCardData: {
+      type: null,
+      value: {}, // { dateText, card: {date, phase:{emoji,label}, phrase, star_color, star_number, source} }
     },
     starTierName: {
       type: String,
@@ -258,16 +274,49 @@ Component({
        Draw the poster on canvas using the utility
        --------------------------------------------------------------- */
     _drawPoster() {
-      const { mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak, inviteCode, zodiacSigns, moodEmoji, excerpt, fortuneData, journalData, starTierName, stardustTotal } = this.properties;
+      const { mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak, inviteCode, zodiacSigns, moodEmoji, excerpt, fortuneData, journalData, moonCardData, starTierName, stardustTotal } = this.properties;
 
-      // Card image is optional in diary/fortune/journal modes — data-only
-      // posters (mood emoji + excerpt / fortune trend / 月度星光手账) are valid.
-      if (!cardImagePath && !cardName && mode !== 'diary' && mode !== 'fortune' && mode !== 'journal') {
+      // 懒挂载 + visible 初始为 true 时，属性 observer 可能在 attached() 生成
+      // canvasId 之前触发（部分基础库版本对初始属性值也触发 observer）——
+      // 绘制前兜底生成，保证 canvasId 恒存在。
+      if (!this.data.canvasId) {
+        this.setData({
+          canvasId: 'shareCanvas_' + Date.now().toString(36) + '_' + Math.floor(Math.random() * 1e6).toString(36),
+        });
+      }
+
+      // Card image is optional in diary/fortune/journal/moon modes — data-only
+      // posters (mood emoji + excerpt / fortune trend / 月度星光手账 / 月光卡晚安卡) are valid.
+      if (!cardImagePath && !cardName && mode !== 'diary' && mode !== 'fortune' && mode !== 'journal' && mode !== 'moon') {
         this.setData({ drawError: true });
         return;
       }
 
       this.setData({ isDrawing: true, drawError: false });
+
+      // 月光卡晚安卡海报：深空底晚安版星光名片（moon-card-poster.js，独立绘制管线）
+      if (mode === 'moon') {
+        const md = moonCardData || {};
+        drawMoonCardPoster(this.data.canvasId, this, {
+          dateText: md.dateText || '',
+          card: md.card || {},
+          onSuccess: (tempFilePath) => {
+            this.setData({
+              previewPath: tempFilePath,
+              isDrawing: false,
+              drawError: false,
+            });
+          },
+          onError: (err) => {
+            console.error('[share-poster] Moon draw error:', err);
+            this.setData({
+              drawError: true,
+              isDrawing: false,
+            });
+          },
+        });
+        return;
+      }
 
       // 月度星光手账海报：独立绘制管线（journal-poster.js，复用 E3 调色板）
       if (mode === 'journal') {
