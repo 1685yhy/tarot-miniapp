@@ -14,6 +14,7 @@ from app.models.horoscope import HoroscopeHistory
 from app.models.wish import Wish
 from app.models.review import MoonReview
 from app.models.star_monthly_review import StarMonthlyReview
+from app.models.star_word_daily import StarWordDaily
 
 __all__ = [
     "User",
@@ -36,4 +37,5 @@ __all__ = [
     "Wish",
     "MoonReview",
     "StarMonthlyReview",
+    "StarWordDaily",
 ]
