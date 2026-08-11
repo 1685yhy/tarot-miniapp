@@ -59,7 +59,8 @@ const ELEMENT_BG = {
 const ROLE_NAMES = { sun: '太阳', moon: '月亮', rising: '上升' };
 
 // 免责尾行（结果页常驻，设计 2.3 合规要求）
-const DISCLAIMER = '星辰只描述你们如何相处，不定义任何结局 · 仅供娱乐';
+// T5-1 合规统一：固定「仅供娱乐 · 星光映照」（设计五-5）
+const DISCLAIMER = '星辰只描述你们如何相处，不定义任何结局 · 仅供娱乐 · 星光映照';
 
 // 本地默认关系（未选择时提示用）
 const DEFAULT_RELATION = 'friend';

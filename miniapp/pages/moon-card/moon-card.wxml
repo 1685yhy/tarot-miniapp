@@ -68,4 +68,9 @@
     bind:close="onClosePoster"
     bind:share="onShareMoonPosterToFriend"
   />
+
+  <!-- T5-1 合规统一：新结果页固定「仅供娱乐 · 星光映照」（设计五-5） -->
+  <view class="mc-foot">
+    <text class="mc-foot-text">仅供娱乐 · 星光映照</text>
+  </view>
 </view>

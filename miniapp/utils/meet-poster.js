@@ -300,7 +300,7 @@ function drawMeetPoster(canvasId, pageContext, opts) {
 
     // 相遇码：scene=m:{meet_id} → meet-landing（/share/wxa-code 公开、无需登录，
     // 与 canvas-poster invite 模式同款调用；双端（发起人/好友）都能取码）
-    const qrUrl = BASE_URL + '/share/wxa-code?path=' +
+    const qrUrl = BASE_URL + '/share/wxa-code?page=' +
       encodeURIComponent('pages/meet-landing/meet-landing') + '&width=280&scene=' +
       encodeURIComponent('m:' + meetId);
     wx.downloadFile({

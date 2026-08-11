@@ -146,4 +146,9 @@
     bind:share="onShareJournalPosterToFriend"
   />
 
+  <!-- T5-1 合规统一：新结果页固定「仅供娱乐 · 星光映照」（设计五-5） -->
+  <view class="jr-foot">
+    <text class="jr-foot-text">仅供娱乐 · 星光映照</text>
+  </view>
+
 </view>

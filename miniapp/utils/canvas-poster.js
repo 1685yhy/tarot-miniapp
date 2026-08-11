@@ -1259,7 +1259,7 @@ function drawSharePoster(canvasId, opts) {
     // them with 41030) — use a real non-tabbar page and pass the invite code
     // through the `scene` param instead. On scan, the mini-program launches
     // pages/share-center/share-center with options.query.scene carrying the code.
-    let qrUrl = BASE_URL + '/share/wxa-code?path=' + encodeURIComponent('pages/share-center/share-center') + '&width=280';
+    let qrUrl = BASE_URL + '/share/wxa-code?page=' + encodeURIComponent('pages/share-center/share-center') + '&width=280';
     if (isInviteMode) {
       qrUrl += '&scene=' + encodeURIComponent('invite_code=' + inviteCode);
     }
@@ -1674,7 +1674,7 @@ function drawBirthchartPoster(canvasId, opts) {
     let qrImg = null;
     let qrLoaded = false;
 
-    const qrUrl = BASE_URL + '/share/wxa-code?path=' + encodeURIComponent('pages/birthchart/birthchart') + '&width=280';
+    const qrUrl = BASE_URL + '/share/wxa-code?page=' + encodeURIComponent('pages/birthchart/birthchart') + '&width=280';
     wx.downloadFile({
       url: qrUrl,
       success: function (dlRes) {

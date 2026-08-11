@@ -472,3 +472,16 @@ page {
 .action-btn--primary:active {
   transform: scale(0.96);
 }
+
+/* T5-1 合规统一：页脚「仅供娱乐 · 星光映照」 */
+.jr-foot {
+  margin-top: 32rpx;
+  padding: 20rpx 0 40rpx;
+  display: flex;
+  justify-content: center;
+}
+.jr-foot-text {
+  font-size: 20rpx;
+  letter-spacing: 2rpx;
+  color: rgba(176, 170, 156, 0.85);
+}

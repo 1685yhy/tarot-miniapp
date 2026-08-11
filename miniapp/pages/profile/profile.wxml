@@ -54,6 +54,11 @@
         <text class="record-tier-badge">星阶：{{starTierName}}（星尘 {{stardustTotal}}）</text>
         <text class="record-tier-hint" wx:if="{{tierNextName}}">距「{{tierNextName}}」还差 {{tierNeed}} 星尘</text>
       </view>
+      <!-- T5-1 星阶区三数据：手账连续记录天数 + 本月节点完成数（推送偏好见星光时刻设置区） -->
+      <view class="record-p1-row" wx:if="{{p1StatsVisible}}">
+        <text class="record-p1-chip">✧ 手账连续 {{journalStreak}} 天</text>
+        <text class="record-p1-chip">☾ 本月节点 {{nodeCompleted}} 次</text>
+      </view>
       <view class="record-card-main">
         <text class="record-card-num">{{streak}}<text class="record-card-num-unit">天连续</text></text>
         <view class="record-card-text">

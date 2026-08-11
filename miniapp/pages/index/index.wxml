@@ -147,6 +147,10 @@ module.exports = { fmtDate: fmtDate };
       <text class="sg-text sg-sep-inline">/</text>
       <text class="sg-advice sg-advice--dont">{{adviceDont}}</text>
     </text>
+    <!-- T5-1：今晚的星已点亮角标（今日手账有记录时点亮） -->
+    <view class="sg-lit-badge" wx:if="{{journalLitToday}}" role="text" aria-label="今晚的星已点亮">
+      <text class="sg-lit-badge-text">✦ 今晚的星已点亮</text>
+    </view>
   </view>
 
   <!-- ===== 今日天象链接 → 星空时刻表（T3-4 · 星象日历 + 节点活动） ===== -->

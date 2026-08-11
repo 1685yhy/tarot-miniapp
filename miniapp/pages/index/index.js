@@ -133,6 +133,8 @@ Page({
     adviceDo: '',
     adviceDont: '',
     starInfoVisible: false,
+    // T5-1：今日星光卡「今晚的星已点亮」角标（读 GET /journal/calendar 当月今日有记录）
+    journalLitToday: false,
 
     zodiacList: [
       { key: 'aries', name: '白羊座', emoji: '♈' },
@@ -211,6 +213,8 @@ Page({
     // 今日屏星象数据（天象小字 / 能量注脚）—— 徽章改动后与星座无关，但日期跨天后刷新
     this._refreshStarData(this.data.dailyCard);
     this._loadTasks();
+    // T5-1：今日星光卡「今晚的星已点亮」角标（onShow 刷新 —— 手账记录后返回首页即刻点亮）
+    this._loadJournalBadge();
     // Load community topic title for home entry
     this._loadCommunityTopic();
     // Resume ambient sound if previously stopped
@@ -231,6 +235,24 @@ Page({
       }
     } catch (_err) {
       // Silent degrade — entry just shows default text
+    }
+  },
+
+  /** T5-1：今日星光卡「今晚的星已点亮」角标 —— 读 GET /journal/calendar
+   *  当月今日有记录时点亮；失败静默降级（角标缺失无碍主流程）。 */
+  async _loadJournalBadge() {
+    try {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth() + 1;
+      const data = await request(`/journal/calendar?year=${year}&month=${month}`);
+      const todayStr = `${year}-${String(month).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      const lit = !!(data && data.days && data.days.some((d) => d.date === todayStr));
+      if (lit !== this.data.journalLitToday) {
+        this.setData({ journalLitToday: lit });
+      }
+    } catch (_err) {
+      // Silent degrade — 接口失败不打扰主流程
     }
   },
 

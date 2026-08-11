@@ -263,3 +263,16 @@ button[disabled].btn-share-poster {
   from { opacity: 0; transform: translateY(24rpx); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* T5-1 合规统一：页脚「仅供娱乐 · 星光映照」 */
+.mc-foot {
+  margin-top: 28rpx;
+  padding: 20rpx 0 36rpx;
+  display: flex;
+  justify-content: center;
+}
+.mc-foot-text {
+  font-size: 20rpx;
+  letter-spacing: 2rpx;
+  color: rgba(176, 170, 156, 0.85);
+}

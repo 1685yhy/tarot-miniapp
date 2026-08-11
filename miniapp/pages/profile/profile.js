@@ -163,6 +163,10 @@ Page({
     tierNeed: 0,           // 距下一阶还差多少星尘
     starCards: [],         // 稀有星卡收藏（card_name/date/tier + image）
     wallpapers: [],        // 星光壁纸达成日期
+    // T5-1 星阶区三数据：手账连续记录天数 / 本月节点完成数
+    journalStreak: 0,
+    nodeCompleted: 0,
+    p1StatsVisible: false,
   },
 
   // —— History card image loading ——
@@ -211,11 +215,17 @@ Page({
     this.setData({ pageLoading: true });
     try {
       const user = await checkLogin();
-      const [status, history, shareStats, taskStatus] = await Promise.all([
+      // T5-1：星阶区三数据 —— 手账连续记录天数（journal calendar）+ 本月节点完成数
+      const _now = new Date();
+      const _monthStr = `${_now.getFullYear()}-${String(_now.getMonth() + 1).padStart(2, '0')}`;
+      const [status, history, shareStats, taskStatus, journalCal, activitySum] = await Promise.all([
         request('/membership/status'),
         request('/readings/history?page=1&page_size=20'),
         request('/share/stats?days=365'),
         request('/tasks/status').catch(() => null),
+        request(`/journal/calendar?year=${_now.getFullYear()}&month=${_now.getMonth() + 1}`)
+          .catch(() => null),
+        request(`/astral/activity/summary?month=${_monthStr}`).catch(() => null),
       ]);
       // Subtle entrance chime
       sound.playPageEnterSound();
@@ -242,6 +252,9 @@ Page({
       // P0-3 缺口2/1：星阶徽章 + 星卡收藏（后端新字段，旧后端无字段时优雅降级为空）
       const stardustTotal = (taskStatus && taskStatus.stardust_total) || 0;
       const next = nextTierInfo(stardustTotal);
+      // T5-1：星阶区三数据 —— 手账连续记录天数 + 本月节点完成数（后端缺失优雅降级 0）
+      const journalStreak = (journalCal && journalCal.stats && journalCal.stats.current_streak) || 0;
+      const nodeCompleted = (activitySum && activitySum.completed) || 0;
       const starCards = ((taskStatus && taskStatus.star_cards) || []).map(c => ({
         ...c,
         image: computeCardImage(c.card_name),
@@ -268,6 +281,10 @@ Page({
         stardustTotal,
         tierNextName: next ? next.name : '',
         tierNeed: next ? next.need : 0,
+        // T5-1：星阶区三数据（手账连续 / 本月节点 / 推送偏好——偏好由 _loadSlotPreference 回显）
+        journalStreak,
+        nodeCompleted,
+        p1StatsVisible: journalStreak > 0 || nodeCompleted > 0,
         starCards,
         wallpapers: (taskStatus && taskStatus.wallpapers) || [],
         collectionCount,
