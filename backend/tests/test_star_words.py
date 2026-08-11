@@ -3,12 +3,14 @@
 
 覆盖：
 - 短句库合规：总条数 ≥50、每池 ≥12、每条 ≤20 字、黑名单词扫描
-  （预测 / 注定 / 明天一定会 / 命 / 改运 / 运）
+  （必 / 绝对 / 改运 / 化解 / 转运 / 注定 / 命 / 预测 / 明天一定会，
+  与用户决策对齐的字符级口径）
 - 确定性选择器：同 date+user 同句；不同 date 抽样非全同；结果必属对应池
 - AI 成功 → source=ai、短语来自 AI 输出（黑名单清洗后）
 - AI 输出超长 → 截断到 20 字；AI 输出含黑名单词 → 清洗后无禁词
 - AI 抛异常 → 重试上限（3 次）后降级 fallback、短语来自短句库
 - 同日缓存：第二次调用命中缓存、AI 只调 1 次；缓存行 data/source 落库
+- 并发首请求竞态：insert 撞 UNIQUE 约束 → 回滚回读已落库缓存返回（不 500）
 - /moon-card/today：未登录 401；字段完整；phase 与 moon_phase_on 一致；
   date 为北京时间当日；测试环境无 AI key → source=fallback
 """
@@ -27,7 +29,9 @@ from app.models.user import User
 from app.services.moon import moon_phase_on
 from app.utils.auth import create_token
 
-BLACKLIST_WORDS = ("预测", "注定", "明天一定会", "命", "改运", "运")
+# 与用户决策禁词表对齐（2026-08-11 确认）：必/绝对/改运/化解/转运/注定/命
+# + 现有 预测/明天一定会；字符级口径（含"不必""必定"等含"必"形态）
+BLACKLIST_WORDS = ("必", "绝对", "改运", "化解", "转运", "注定", "命", "预测", "明天一定会")
 EXPECTED_DIMS = {"love", "career", "social", "health"}
 
 # ── helpers ─────────────────────────────────────────────────────────────
@@ -241,12 +245,69 @@ def test_second_call_hits_cache_ai_once(client: TestClient, monkeypatch):
     assert len(fake.chat.completions.calls) == 1, "缓存命中不得重复调用 AI"
 
 
+def test_save_cache_concurrent_race_reads_back_existing(client: TestClient, monkeypatch):
+    """并发首请求竞态（T1-7 Minor-2）：insert 撞 UNIQUE → 回滚回读已落库缓存返回。
+
+    竞态模拟：先落一行缓存（赢家）；再模拟「输家」预检读到空（预检先于赢家
+    写入执行）→ 输家走 insert → 撞 ``uq_user_word_date`` 唯一约束 IntegrityError
+    → 回滚 → 回读赢家已落库内容返回（同日同人只留一份权威结果，不 500）。
+    """
+    from sqlalchemy.ext.asyncio import AsyncSession
+
+    uid, _ = _new_user("starword_race")
+    today = date(2026, 8, 11)
+    winner = {"phrase": "把今天的疲惫，交给月亮收好。", "source": "ai"}
+
+    # 赢家：正常写入一行缓存
+    async def _seed() -> None:
+        async with async_session() as session:
+            from app.services import star_words
+            await star_words._save_cache(
+                session, uid, today, winner["phrase"], winner["source"]
+            )
+
+    asyncio.run(_seed())
+
+    # 输家：首次 execute 返回空结果（模拟预检在赢家写入前执行），随后走真实执行
+    real_execute = AsyncSession.execute
+    state = {"faked": False}
+
+    class _EmptyResult:
+        def scalar_one_or_none(self):
+            return None
+
+    async def _execute(self, statement, *args, **kwargs):
+        if not state["faked"]:
+            state["faked"] = True
+            return _EmptyResult()
+        return await real_execute(self, statement, *args, **kwargs)
+
+    monkeypatch.setattr(AsyncSession, "execute", _execute)
+
+    async def _go() -> dict:
+        async with async_session() as session:
+            from app.services import star_words
+            return await star_words._save_cache(
+                session, uid, today, "输家的短语", "fallback"
+            )
+
+    result = asyncio.run(_go())
+    assert result == winner, "并发输家必须回读赢家已落库内容返回"
+
+    # 落库内容仍是赢家那份，未被输家覆盖
+    row = _cache_row(uid, today)
+    assert row is not None
+    assert json.loads(row.data) == {"phrase": winner["phrase"]}
+    assert row.source == winner["source"]
+
+
 def test_ai_output_sanitized(client: TestClient, monkeypatch):
     """AI 输出含黑名单词 → 落库/返回前必须清洗（T1-2 _SANITIZE 模式）。"""
     uid, _ = _new_user("starword_dirty")
     today = date(2026, 8, 11)
 
-    fake = _fake_ai("你注定会走运，明天一定会心想事成。")
+    # 覆盖全部禁词形态：注定/走运/必定/转运/化解/明天一定会
+    fake = _fake_ai("你注定会走运，必定转运化解烦恼，明天一定会心想事成。")
     monkeypatch.setattr("app.services.star_words._get_ai_client", lambda: fake)
 
     result = _get_today(uid, today)

@@ -5,7 +5,8 @@
 
 关键设计：
 - ``STAR_WORD_POOLS``：4 池 × 13 条（共 52 条），全部治愈系开放积极向、
-  ≤20 字、无预测/无评断、无黑名单词（命/运/改运/注定/预测/明天一定会）。
+  ≤20 字、无预测/无评断、无黑名单词（必/绝对/改运/化解/转运/注定/命/预测/
+  明天一定会，字符级口径——测试钉住全库无禁词）。
 - ``select_fallback_phrase``：纯确定性选择（date_seed + user_seed 对池取模），
   同日同人恒定——与缓存一起构成「同日同人恒定」的双重保证。
 - ``generate_star_word_ai``：DeepSeek 生成 ≤20 字星语，system 含
@@ -25,6 +26,7 @@ from datetime import date, datetime, timezone, timedelta
 
 from openai import AsyncOpenAI
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
@@ -48,18 +50,19 @@ def beijing_today() -> date:
 # ═══════════════════════════════════════════════════════════════════════
 # 短句库（T4-2 · 兜底文案）：4 池 × 13 条 = 52 条
 # 全部治愈系开放积极向：只描述心情/意象/小行动，不预测、不评断、不承诺结果；
-# ≤20 字；禁词扫描（命/运/改运/注定/预测/明天一定会）全合规（测试钉住）。
+# ≤20 字；禁词扫描（必/绝对/改运/化解/转运/注定/命/预测/明天一定会，
+# 字符级口径）全合规（测试钉住）。
 # ═══════════════════════════════════════════════════════════════════════
 
 STAR_WORD_POOLS: dict[str, list[str]] = {
     "love": [
         "把今天的疲惫，交给月亮收好。",
-        "温柔不必用力，安静地爱自己。",
+        "温柔无需用力，安静地爱自己。",
         "心里的话，说给风听也是回应。",
         "慢一点，感情里的答案会自己浮上来。",
         "先把自己哄开心，再去爱这个世界。",
         "今晚的星光，都在替你说晚安。",
-        "想念是温柔的信号，不必急着解决。",
+        "想念是温柔的信号，无需急着解决。",
         "心软的时候，记得也对自己心软。",
         "爱不是追赶，是并肩走路时的默契。",
         "睡前原谅今天，醒来再重新喜欢。",
@@ -116,7 +119,8 @@ STAR_WORD_POOLS: dict[str, list[str]] = {
 
 # ═══════════════════════════════════════════════════════════════════════
 # AI 输出黑名单清洗（参照 T1-2 journal._SANITIZE 模式）
-# 先短语替换，再移除残留的「命/运」字（红线兜底）；清洗后为空 → 降级
+# 先短语替换，再移除残留的「命/运/必」字（红线兜底）；清洗后为空 → 降级
+# 替换表与用户决策禁词表对齐（必/绝对/改运/化解/转运/注定/命/预测/明天一定会）
 # ═══════════════════════════════════════════════════════════════════════
 
 _SANITIZE_REPLACEMENTS = {
@@ -131,14 +135,21 @@ _SANITIZE_REPLACEMENTS = {
     "转运": "调整",
     "运势": "星光",
     "运气": "心情",
+    # T1-7 Minor-3：与用户决策禁词表（必/绝对/化解）对齐的短语替换
+    "必定": "总会",
+    "不必": "无需",
+    "必须": "只需",
+    "未必": "也许",
+    "绝对": "一定",
+    "化解": "放下",
 }
 
 
 def _sanitize(text: str) -> str:
-    """黑名单词清洗：先短语替换，再移除任何残留的「命/运」字（红线兜底）。"""
+    """黑名单词清洗：先短语替换，再移除任何残留的「命/运/必」字（红线兜底）。"""
     for word, repl in _SANITIZE_REPLACEMENTS.items():
         text = text.replace(word, repl)
-    return text.replace("命", "").replace("运", "")
+    return text.replace("命", "").replace("运", "").replace("必", "")
 
 
 # 情绪中文名（与 diary.py MOOD_LABEL_MAP 同口径；services 层不反向依赖 api 层）
@@ -357,8 +368,14 @@ async def _load_cache(db: AsyncSession, user_id: str, today: date) -> dict | Non
 
 async def _save_cache(
     db: AsyncSession, user_id: str, today: date, phrase: str, source: str
-) -> None:
-    """写入/覆盖同日缓存（upsert，幂等）。"""
+) -> dict:
+    """写入/覆盖同日缓存（upsert，幂等），返回最终生效的缓存内容。
+
+    并发竞态（T1-7 Minor-2）：同用户同日两个首请求同时通过预检 → 都走
+    insert → 后到者撞 ``uq_user_word_date`` 唯一约束抛 IntegrityError。
+    此时回滚并回读赢家已落库的缓存返回——同日同人只留一份权威结果
+    （AI 只调一次语义，不 500）；仅在回读也失败时上抛真实异常。
+    """
     result = await db.execute(
         select(StarWordDaily).where(
             StarWordDaily.user_id == user_id,
@@ -374,7 +391,20 @@ async def _save_cache(
         db.add(StarWordDaily(
             user_id=user_id, word_date=today, data=payload, source=source,
         ))
-    await db.commit()
+    try:
+        await db.commit()
+    except IntegrityError:
+        # 并发输家：insert 撞唯一约束 → 回滚 → 回读已落库缓存返回
+        await db.rollback()
+        cached = await _load_cache(db, user_id, today)
+        if cached is not None:
+            logger.info(
+                "星语缓存并发回读：user=%s date=%s 采用已落库内容",
+                user_id, today,
+            )
+            return cached
+        raise
+    return {"phrase": phrase, "source": source}
 
 
 async def get_today_star_word(db: AsyncSession, user, today: date) -> dict:
@@ -382,6 +412,7 @@ async def get_today_star_word(db: AsyncSession, user, today: date) -> dict:
 
     - 缓存命中即返（不调 AI，同日同人恒定 + 成本控制）
     - 未命中：AI 优先 → 失败/无 key → 短句库确定性兜底 → 写缓存
+    - 并发首请求撞唯一约束：写缓存回读已落库内容返回（同日同人只留一份）
     """
     cached = await _load_cache(db, user.id, today)
     if cached is not None:
@@ -399,8 +430,7 @@ async def get_today_star_word(db: AsyncSession, user, today: date) -> dict:
     else:
         source = "ai"
 
-    await _save_cache(db, user.id, today, phrase, source)
-    return {"phrase": phrase, "source": source}
+    return await _save_cache(db, user.id, today, phrase, source)
 
 
 # ═══════════════════════════════════════════════════════════════════════
