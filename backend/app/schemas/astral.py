@@ -83,7 +83,8 @@ class NodeContentResponse(BaseModel):
 
     - wish: type/title/window/content/target_page/wish_counts
     - review: type/title/wish_counts/target_page
-    - mercury_guide: type/title/range/items/daily_sentence
+    - mercury_guide: type/title/range/items/daily_sentence（range 键恒在；
+      无逆行期时为空对象 {start:"", end:"", days_left:0}，见 EMPTY_RETROGRADE_RANGE）
     - info: type/notes
     """
 

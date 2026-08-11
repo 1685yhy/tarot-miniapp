@@ -40,6 +40,9 @@ RETROGRADE_TYPES = frozenset({"mercury_retrograde", "venus_retrograde"})
 # 许愿窗口：新月日 00:00 起至其后 2 天
 WISH_WINDOW_DAYS = 2
 
+# range 空态规格（简报未定义空态 → 规格化：无逆行期时显式空对象，range 键恒在）
+EMPTY_RETROGRADE_RANGE = {"start": "", "end": "", "days_left": 0}
+
 # 水逆「自我关怀指南」固定清单（≥7 条，积极开放向，无黑名单词）
 MERCURY_CARE_ITEMS = [
     "把重要决定写下来，放一天再读一遍",
@@ -225,7 +228,11 @@ def _wish_window(today: date) -> dict:
 
 
 def _retrograde_range(today: date) -> dict | None:
-    """当前（或下一个）水逆区间：{start, end, days_left}；无则 None。"""
+    """当前（或下一个）水逆区间：{start, end, days_left}；无则 None。
+
+    2026-10-10（末次水逆结束）之后 / 2027 起无表内水逆 → None；node_content
+    侧规格化为 EMPTY_RETROGRADE_RANGE，保证响应 range 键恒在。
+    """
     retros = sorted(
         (ev for ev in ASTRAL_EVENTS_2026 if ev["type"] == "mercury_retrograde"),
         key=lambda ev: ev["start"],
@@ -259,7 +266,8 @@ def node_content(node_type: str, today: date, wish_counts: dict | None = None) -
 
     - wish → 许愿之夜：窗口（最近新月日 00:00 至其后 2 天）+ 引导语 + 目标页
     - review → 复盘之夜：wish_counts（active/grown/answered，由 API 接 db 传入）
-    - mercury_guide → 慢行期：当前/下一水逆区间 + 自我关怀清单 + 确定性每日一句
+    - mercury_guide → 慢行期：当前/下一水逆区间（无则规格化空对象）+ 自我关怀清单
+      + 确定性每日一句
     - info → 资讯：其余事件类型的说明文案列表
     """
     counts = wish_counts or _ZERO_WISH_COUNTS
@@ -283,7 +291,7 @@ def node_content(node_type: str, today: date, wish_counts: dict | None = None) -
         return {
             "type": "mercury_guide",
             "title": "慢行期",
-            "range": _retrograde_range(today),
+            "range": _retrograde_range(today) or EMPTY_RETROGRADE_RANGE,
             "items": list(MERCURY_CARE_ITEMS),
             "daily_sentence": MERCURY_DAILY_SENTENCES[
                 _date_seed(today) % len(MERCURY_DAILY_SENTENCES)

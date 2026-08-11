@@ -8,18 +8,24 @@
 - 无事件日：phase 字段非空、activity=info、guidance 走中性宜忌池
 - next_event 倒计时（参数化 today）：跨月取首个、当天取当日首个、空表 None
 - 2027 空表：不崩溃、days 全空 events、phase 仍非空
-- node_content 四形态字段完整；7 件小事清单 ≥7 条且无黑名单词；
-  daily_sentence 同日恒定且属于轮换池
+- node_content 四形态字段完整；mercury_guide range 空态规格化（末次水逆后
+  空对象、键恒在）；7 件小事清单 ≥7 条且无黑名单词；daily_sentence 同日恒定
+  且属于轮换池
 - wish window days_left 边界（新月日/窗口末日/窗口外/跨月）；2027 回退月相引擎
-- API：未登录 401；登录后 200 且字段完整；wish/review 的 wish_counts 接 db
-  （含用户隔离）；非法 month / 未知事件类型 / 非法日期 → 4xx
+- API：未登录 401；登录后 200 且字段完整；calendar next_event 用固定 today
+  参数化比对（不依赖真实日期，任何日期跑都绿）；wish/review 的 wish_counts
+  接 db（双向用户隔离，真实用户 id 播种）；非法 month / 未知事件类型 /
+  非法日期 → 4xx
 """
 
 import asyncio
 from datetime import date, timedelta
+from unittest import mock
 
+import pytest
 from fastapi.testclient import TestClient
 
+import app.api.astral as astral_api
 from app.db.database import async_session
 from app.models.user import User
 from app.models.wish import Wish
@@ -57,6 +63,16 @@ def _new_user(openid: str) -> tuple[str, dict[str, str]]:
 
     uid, token = asyncio.run(_go())
     return uid, {"Authorization": f"Bearer {token}"}
+
+
+class _FixedToday(date):
+    """date 子类：today() 返回固定日期（把 API 层的 date.today() 钉死，用于参数化）。"""
+
+    fixed: date = date(2026, 8, 11)
+
+    @classmethod
+    def today(cls) -> date:
+        return cls.fixed
 
 
 def _seed_wishes(user_id: str, statuses: list[str]) -> None:
@@ -271,6 +287,20 @@ def test_node_content_mercury_guide_upcoming_range():
     }
 
 
+def test_node_content_mercury_guide_empty_range():
+    """末次水逆（2026-09-18~10-10）之后 / 2027 无逆行期：range 为规格化空对象。"""
+    assert node_content("mercury_guide", date(2026, 12, 31))["range"] == {
+        "start": "",
+        "end": "",
+        "days_left": 0,
+    }
+    assert node_content("mercury_guide", date(2027, 1, 1))["range"] == {
+        "start": "",
+        "end": "",
+        "days_left": 0,
+    }
+
+
 def test_node_content_info_shape():
     """info 节点：notes 文案列表（其余事件类型的说明）。"""
     node = node_content("info", date(2026, 8, 12))
@@ -300,19 +330,45 @@ def test_api_requires_auth(client: TestClient):
     assert client.get("/astral/event/new_moon").status_code == 401
 
 
-def test_api_calendar_ok(client: TestClient):
-    """登录后月历 200：字段完整、08-12 两条事件、next_event 存在。"""
-    _, headers = _new_user("openid_calendar_ok")
-    resp = client.get("/astral/calendar", params={"year": 2026, "month": 8}, headers=headers)
+@pytest.mark.parametrize(
+    "fixed_today",
+    [
+        date(2026, 1, 1),   # 年初：首个事件 01-03 摩羯新月
+        date(2026, 8, 11),  # 日食前一天
+        date(2026, 8, 13),  # 日食后、处暑前（旧断言的时间炸弹场景）
+        date(2026, 8, 23),  # 处暑当天
+        date(2026, 9, 1),   # 处暑后：首个事件 09-08 白露
+        date(2026, 12, 31),  # 年末无后续事件 → None
+        date(2027, 1, 1),   # 2027 空表 → None
+    ],
+)
+def test_api_calendar_ok(client: TestClient, fixed_today: date):
+    """登录后月历 200：字段完整、08-12 两条事件；next_event 固定 today 参数化比对。
+
+    不依赖真实 date.today()：旧版断言真实 today 计算出的 next_event 必为
+    solar_eclipse/2026-08-12，2026-08-13 起真实 today 的首个事件变为 08-23
+    处暑 → 必挂（时间炸弹）。现把 API 层 today 钉为固定日期，期望值由同源
+    纯函数 month_view 算出再与响应比对，任何日期跑都绿。
+    """
+    _, headers = _new_user(f"openid_calendar_{fixed_today.isoformat().replace('-', '')}")
+    with mock.patch.object(astral_api, "date", _FixedToday):
+        _FixedToday.fixed = fixed_today
+        resp = client.get("/astral/calendar", params={"year": 2026, "month": 8}, headers=headers)
     assert resp.status_code == 200
     body = resp.json()
     assert body["year"] == 2026 and body["month"] == 8
     assert len(body["days"]) == 31
     day = next(d for d in body["days"] if d["date"] == "2026-08-12")
     assert [ev["type"] for ev in day["events"]] == ["solar_eclipse", "new_moon"]
-    # next_event 由真实 today 计算（倒计时本身已在纯函数测试钉住）；只钉日期/类型
-    assert body["next_event"]["type"] == "solar_eclipse"
-    assert body["next_event"]["date"] == "2026-08-12"
+    # next_event：期望 = 固定 today 调 month_view（与 API 同源逻辑），全字段比对
+    assert body["next_event"] == month_view(2026, 8, today=fixed_today)["next_event"]
+    # 钉住时间炸弹场景的具体形态：日食后首个事件是 08-23 处暑（而非 08-12 日食）
+    if fixed_today == date(2026, 8, 13):
+        assert body["next_event"]["type"] == "solar_term"
+        assert body["next_event"]["date"] == "2026-08-23"
+    # 钉住空态：年末 / 2027 无后续事件 → None
+    if fixed_today >= date(2026, 12, 31):
+        assert body["next_event"] is None
 
 
 def test_api_day_events_ok(client: TestClient):
@@ -330,9 +386,10 @@ def test_api_day_events_ok(client: TestClient):
 def test_api_event_node_wish_counts_from_db(client: TestClient):
     """wish 节点 wish_counts 接 db（按用户隔离：他人愿望不计入）。"""
     uid, headers = _new_user("openid_wish_counts")
-    _, other_headers = _new_user("openid_wish_counts_other")
+    other_uid, other_headers = _new_user("openid_wish_counts_other")
     _seed_wishes(uid, ["active", "active", "grown"])
-    _seed_wishes("other-user-id-not-used", ["active", "answered"])  # 不应计入
+    # 用真实第二个用户 id 播种（旧版用不存在的 id，依赖 SQLite FK 关闭）
+    _seed_wishes(other_uid, ["active", "answered"])
 
     resp = client.get("/astral/event/new_moon", headers=headers)
     assert resp.status_code == 200
@@ -342,9 +399,9 @@ def test_api_event_node_wish_counts_from_db(client: TestClient):
     assert body["window"]["days_left"] >= 0
     assert body["wish_counts"] == {"active": 2, "grown": 1, "answered": 0}
 
-    # 他人视角不受影响
+    # 他人视角只看到自己的愿望（双向隔离钉死：真实播种的 other_uid 计 1/0/1）
     resp_other = client.get("/astral/event/new_moon", headers=other_headers)
-    assert resp_other.json()["wish_counts"] == {"active": 0, "grown": 0, "answered": 0}
+    assert resp_other.json()["wish_counts"] == {"active": 1, "grown": 0, "answered": 1}
 
 
 def test_api_event_node_types(client: TestClient):
@@ -365,6 +422,18 @@ def test_api_event_node_types(client: TestClient):
     body = resp.json()
     assert body["type"] == "info"
     assert len(body["notes"]) == 4
+
+
+def test_api_mercury_guide_range_empty_state(client: TestClient):
+    """API：2027 无逆行期 → range 键仍存在（旧版被 exclude_none 剔除），为空对象。"""
+    _, headers = _new_user("openid_range_empty")
+    with mock.patch.object(astral_api, "date", _FixedToday):
+        _FixedToday.fixed = date(2027, 1, 1)
+        resp = client.get("/astral/event/mercury_retrograde", headers=headers)
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["type"] == "mercury_guide"
+    assert body["range"] == {"start": "", "end": "", "days_left": 0}
 
 
 def test_api_invalid_inputs(client: TestClient):
