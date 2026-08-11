@@ -555,6 +555,42 @@ page {
 }
 
 /* -----------------------------------------------------------
+   6.6 今日天象链接 → 星空时刻表（T3-4 · 星光卡下瘦胶囊行）
+   ----------------------------------------------------------- */
+.astral-link {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  margin: 14rpx 10rpx 0;
+  padding: 12rpx 0 10rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 253, 248, 0.6);
+  border: 1rpx solid rgba(201, 169, 124, 0.22);
+  transition: background 0.15s ease-out, transform 0.15s ease-out;
+}
+
+.astral-link--press {
+  background: rgba(201, 169, 124, 0.12);
+  transform: scale(0.98);
+}
+
+.astral-link-emoji {
+  font-size: 24rpx;
+  color: var(--e3-gold-deep);
+  line-height: 1;
+}
+
+.astral-link-text {
+  font-family: var(--e3-sans);
+  font-size: 19rpx;
+  color: var(--e3-gold-deep);
+  letter-spacing: 2rpx;
+}
+
+/* -----------------------------------------------------------
    7. 联动解读：牌 × 天象（主角的展开）
    ----------------------------------------------------------- */
 .link {

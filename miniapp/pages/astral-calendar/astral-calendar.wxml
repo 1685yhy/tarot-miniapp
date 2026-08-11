@@ -1,0 +1,202 @@
+<!-- pages/astral-calendar/astral-calendar.wxml —— 星空时刻表（T3-4）：
+     月历（共用 calendar 组件·事件模式）+ 事件列表双视图 + 下一节点倒计时 -->
+
+<view class="container">
+  <!-- E3 奶油底色氛围光斑 -->
+  <view class="wash wash-pink"></view>
+  <view class="wash wash-gold"></view>
+
+  <!-- ===== 加载骨架 ===== -->
+  <view wx:if="{{loading}}">
+    <view class="skeleton-wrap">
+      <view class="skeleton-header-area">
+        <view class="skeleton skeleton-line wide"></view>
+        <view class="skeleton skeleton-line medium"></view>
+      </view>
+      <view class="skeleton skeleton-block"></view>
+    </view>
+  </view>
+
+  <!-- ===== 错误状态 ===== -->
+  <view wx:elif="{{error}}" class="error-state">
+    <view class="error-card">
+      <text class="error-title">星空暂时无法打开</text>
+      <text class="error-desc">{{error}}</text>
+      <button class="btn-retry" bindtap="onRetry">重新连接</button>
+    </view>
+  </view>
+
+  <!-- ===== 主内容 ===== -->
+  <view wx:else>
+
+    <!-- Header -->
+    <view class="page-header">
+      <text class="page-title">星空时刻表</text>
+      <text class="page-subtitle">星象日历 · 每个节点都值得被看见</text>
+    </view>
+
+    <!-- ===== 下一节点倒计时卡（数据来自后端 next_event） ===== -->
+    <view
+      wx:if="{{nextEvent}}"
+      class="countdown-card anim-fade-up"
+      bindtap="onCountdownTap"
+      role="button"
+      aria-label="下一节点 {{nextEvent.countdownText}} {{nextEvent.label}}，点击查看"
+      hover-class="countdown-card--press"
+    >
+      <view class="countdown-emoji-wrap">
+        <text class="countdown-emoji">{{nextEvent.emoji}}</text>
+      </view>
+      <view class="countdown-texts">
+        <text class="countdown-label">下一节点</text>
+        <text class="countdown-title">{{nextEvent.countdownText}} · {{nextEvent.label}}</text>
+        <text class="countdown-date">{{nextEvent.dateLabel}}</text>
+      </view>
+      <text class="countdown-arrow">›</text>
+    </view>
+
+    <!-- ===== 双视图切换 ===== -->
+    <view class="view-toggle anim-fade-up anim-stagger-1">
+      <view
+        class="view-tab {{viewMode === 'calendar' ? 'view-tab--active' : ''}}"
+        data-mode="calendar"
+        bindtap="onSwitchView"
+        role="button"
+        aria-label="月历视图"
+      >月历</view>
+      <view
+        class="view-tab {{viewMode === 'list' ? 'view-tab--active' : ''}}"
+        data-mode="list"
+        bindtap="onSwitchView"
+        role="button"
+        aria-label="事件列表视图"
+      >事件列表</view>
+    </view>
+
+    <!-- ===== 月历视图（共用 calendar 组件 · 事件模式） ===== -->
+    <view wx:if="{{viewMode === 'calendar'}}" class="calendar-wrap anim-fade-up anim-stagger-1">
+      <calendar
+        id="astral-cal"
+        year="{{year}}"
+        month="{{month}}"
+        days="{{calDays}}"
+        today="{{todayStr}}"
+        mark-mode="events"
+        bind:daytap="onDayTap"
+        bind:monthchange="onMonthChange"
+      />
+      <view class="cal-legend">
+        <view class="legend-item">
+          <text class="legend-emoji">🌑</text>
+          <text class="legend-text">符号 = 天象事件</text>
+        </view>
+        <view class="legend-item">
+          <text class="legend-emoji">🌘</text>
+          <text class="legend-text">月相小字 = 当日月相</text>
+        </view>
+      </view>
+      <view wx:if="{{!hasMonthEvents}}" class="empty-month">
+        <text class="empty-month-text">星空从不缺席，只是有时安静。</text>
+      </view>
+    </view>
+
+    <!-- ===== 事件列表视图（区间事件显示起止） ===== -->
+    <view wx:else class="event-list anim-fade-up">
+      <!-- 空态：本月无任何天象事件 -->
+      <view wx:if="{{hasNoEvents}}" class="list-empty">
+        <text class="list-empty-icon">✦</text>
+        <text class="list-empty-text">星空从不缺席，只是有时安静。</text>
+        <text class="list-empty-sub">这个月没有重大天象，正好安静地数星星</text>
+      </view>
+
+      <view
+        wx:for="{{eventList}}" wx:key="key"
+        class="event-item"
+        data-date="{{item.start}}"
+        bindtap="onEventItemTap"
+        role="button"
+        aria-label="{{item.label}} {{item.dateText}}"
+        hover-class="event-item--press"
+      >
+        <text class="event-item-emoji">{{item.emoji}}</text>
+        <view class="event-item-texts">
+          <text class="event-item-label">{{item.label}}</text>
+          <text class="event-item-date">{{item.dateText}}</text>
+        </view>
+        <text class="event-item-arrow">›</text>
+      </view>
+    </view>
+
+  </view>
+
+  <!-- ============ 事件详情底部弹层（GET /astral/events/{date}） ============ -->
+  <view class="modal-mask" wx:if="{{detailVisible}}" bindtap="closeDetail" role="button" aria-label="关闭事件详情">
+    <view class="modal-sheet" catchtap="preventClose">
+
+      <!-- Handle -->
+      <view class="modal-handle"></view>
+
+      <!-- 日期标题 -->
+      <view class="detail-header">
+        <text class="detail-date">{{detailDateLabel}}</text>
+        <text wx:if="{{detailIsToday}}" class="detail-today-tag">今天</text>
+      </view>
+
+      <!-- 当日月相小字 -->
+      <view class="detail-phase" wx:if="{{detailPhaseEmoji}}">
+        <text class="detail-phase-emoji">{{detailPhaseEmoji}}</text>
+        <text class="detail-phase-label">{{detailPhaseLabel}} · 当日月相</text>
+      </view>
+
+      <!-- 加载中 -->
+      <view wx:if="{{detailLoading}}" class="detail-loading">
+        <text class="detail-loading-text">正在翻阅星图...</text>
+      </view>
+
+      <block wx:else>
+        <!-- 事件卡：符号 + 名称 + note -->
+        <view wx:if="{{detailHasEvents}}" class="detail-events">
+          <view class="detail-event" wx:for="{{detailEvents}}" wx:key="type">
+            <view class="detail-event-icon">
+              <text class="detail-event-emoji">{{item.emoji}}</text>
+            </view>
+            <view class="detail-event-texts">
+              <text class="detail-event-label">{{item.label}}</text>
+              <text wx:if="{{item.note}}" class="detail-event-note">{{item.note}}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 无事件日：月相即主角 -->
+        <view wx:else class="detail-quiet">
+          <text class="detail-quiet-text">这一天没有重大天象</text>
+          <text class="detail-quiet-sub">月相小字已记在日历上 ✦</text>
+        </view>
+
+        <!-- 星象宜忌 -->
+        <view class="detail-guidance" wx:if="{{detailGuidance}}">
+          <text class="modal-label">星象宜忌</text>
+          <view class="guidance-row">
+            <text class="guidance-do">宜 {{detailGuidance.do}}</text>
+            <text class="guidance-dont">忌 {{detailGuidance.dont}}</text>
+          </view>
+        </view>
+
+        <!-- 日详情降级提示 -->
+        <view wx:if="{{detailError}}" class="detail-error-hint">{{detailError}}</view>
+
+        <!-- 进入节点活动（T3-5 建 astral-event 页后直达；info 无节点入口） -->
+        <button
+          wx:if="{{detailActivity && detailActivity !== 'info'}}"
+          class="btn-submit"
+          bindtap="onEnterNode"
+          hover-class="btn-submit--press"
+        >
+          进入{{detailActivityName}} ✦
+        </button>
+      </block>
+
+    </view>
+  </view>
+
+</view>

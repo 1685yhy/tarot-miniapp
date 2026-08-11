@@ -581,6 +581,12 @@ Page({
     wx.navigateTo({ url: '/pages/journal/journal' });
   },
 
+  /** 星空时刻表（星象日历 + 节点活动）入口（SDD P1 · T3-4） */
+  onGoAstralCalendar() {
+    analytics.trackEvent('astral_calendar_entry', { source: 'today' });
+    wx.navigateTo({ url: '/pages/astral-calendar/astral-calendar' });
+  },
+
   goToAllSpreads() {
     wx.navigateTo({ url: '/pages/reading/reading' });
   },

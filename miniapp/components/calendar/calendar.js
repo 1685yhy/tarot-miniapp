@@ -4,8 +4,10 @@
 // 设计为"可配置数据源"：
 //   - markMode='stars'（默认）→ 每天读 `starColorField`/`brightnessField` 渲染星点，
 //     未记录且非未来的天渲染"极淡星尘点"（留一颗星的位子）
-//   - markMode='events'（阶段 2 星象日历）→ 每天读 `days[i].events` 渲染事件徽标
-//     （`eventEmojiField`/`eventLabelField` 可配置，默认 'emoji'/'label'）
+//   - markMode='events'（T2-4 星空时刻表复用）→ 每天读 `days[i].events` 渲染事件徽标
+//     （`eventEmojiField`/`eventLabelField` 可配置，默认 'emoji'/'label'）；
+//     无事件日渲染月相小字（`phaseEmojiField`/`phaseLabelField` 可配置，
+//     默认 'phase_emoji'/'phase_label'，父层预计算进 day 对象）
 //   - 今天高亮环、左右滑切月、月头 ‹ 年月 › 翻页均由组件自带；切换月触发
 //     `monthchange` 事件，父层拉取新数据后回传 `days` 属性即可（组件按日期归位）
 //
@@ -39,6 +41,9 @@ Component({
     brightnessField: { type: String, value: 'brightness' },
     eventEmojiField: { type: String, value: 'emoji' },
     eventLabelField: { type: String, value: 'label' },
+    // 事件模式：无事件日的月相小字（字段由父层预计算进 day 对象）
+    phaseEmojiField: { type: String, value: 'phase_emoji' },
+    phaseLabelField: { type: String, value: 'phase_label' },
   },
 
   data: {
@@ -96,7 +101,8 @@ Component({
         const brightness = Number(info[this.data.brightnessField]) || 0;
         const starColor = info[this.data.starColorField] || '';
         const events = Array.isArray(info.events) ? info.events : [];
-        const hasStar = markMode === 'events' ? events.length > 0 : !!(starColor && brightness > 0);
+        const hasEvents = events.length > 0;
+        const hasStar = markMode === 'events' ? hasEvents : !!(starColor && brightness > 0);
         // 事件模式的展示字段在 JS 预计算（避免 wxml 按动态 key 取对象）
         const firstEvent = events.length > 0 ? events[0] : null;
         cells.push({
@@ -107,13 +113,18 @@ Component({
           isToday: date === tStr,
           isFuture: date > tStr,
           hasStar,
+          // T1-5 教训：WXML 编译环境不认 .length > 0 表达式，布尔值 JS 预计算
+          hasEvents,
           brightness,
           starColor,
           events,
           eventEmoji: firstEvent ? firstEvent[this.data.eventEmojiField] : '',
           eventLabel: firstEvent ? firstEvent[this.data.eventLabelField] : '',
-          // 极淡星尘点：未记录、非未来——"留一颗星的位子"
-          dust: !hasStar && date <= tStr,
+          // 事件模式：无事件日的月相小字（全月每天都有月相信息）
+          phaseEmoji: info[this.data.phaseEmojiField] || '',
+          phaseLabel: info[this.data.phaseLabelField] || '',
+          // 极淡星尘点：仅星点模式——未记录、非未来——"留一颗星的位子"
+          dust: markMode === 'stars' && !hasStar && date <= tStr,
         });
       }
       this.setData({ cells });

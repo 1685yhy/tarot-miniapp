@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "星空时刻表",
+  "navigationBarBackgroundColor": "#FAF6EF",
+  "navigationBarTextStyle": "black",
+  "usingComponents": {
+    "calendar": "/components/calendar/calendar"
+  }
+}

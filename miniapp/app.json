@@ -83,6 +83,10 @@
     {
       "root": "pages/moon-card/",
       "pages": ["moon-card"]
+    },
+    {
+      "root": "pages/astral-calendar/",
+      "pages": ["astral-calendar"]
     }
   ],
   "window": {
@@ -121,7 +125,7 @@
   "preloadRule": {
     "pages/index/index": {
       "network": "all",
-      "packages": ["pages/daily-card/", "pages/reading/", "pages/reading-result/", "pages/checkin/", "pages/journal/", "pages/journal-review/", "pages/moon-card/"]
+      "packages": ["pages/daily-card/", "pages/reading/", "pages/reading-result/", "pages/checkin/", "pages/journal/", "pages/journal-review/", "pages/moon-card/", "pages/astral-calendar/"]
     },
     "pages/oracle/oracle": {
       "network": "all",

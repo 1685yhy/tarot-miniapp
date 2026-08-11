@@ -37,10 +37,16 @@
       <!-- 星点模式：未记录 → 极淡星尘点（"留一颗星的位子"） -->
       <view wx:elif="{{markMode === 'stars' && item.dust}}" class="cal-dust"></view>
 
-      <!-- 事件模式（阶段 2 星象日历复用）：事件徽标 -->
-      <view wx:elif="{{markMode === 'events' && item.events.length > 0}}" class="cal-events">
+      <!-- 事件模式（T2-4 星空时刻表复用）：事件徽标 -->
+      <view wx:elif="{{markMode === 'events' && item.hasEvents}}" class="cal-events">
         <text class="cal-event-emoji">{{item.eventEmoji}}</text>
         <text wx:if="{{item.eventLabel}}" class="cal-event-label">{{item.eventLabel}}</text>
+      </view>
+
+      <!-- 事件模式：无事件日 → 月相小字（全月每天都有月相信息） -->
+      <view wx:elif="{{markMode === 'events' && item.phaseEmoji}}" class="cal-phase">
+        <text class="cal-phase-emoji">{{item.phaseEmoji}}</text>
+        <text class="cal-phase-label">{{item.phaseLabel}}</text>
       </view>
 
       <!-- 未来未记录日：留白 -->
