@@ -611,6 +611,12 @@ def test_night_push_star_cache_conflict_does_not_lose_claim(
     破坏 1 条/天硬上限）。
     修复后（方案 B）：取星语在认领 UPDATE 之前，缓存冲突的 rollback
     只作用于星语缓存事务；认领在其后执行，不受影响。
+    T1-8 闭环（Fix round 2）：rollback() 无条件过期会话内**所有** ORM 对象
+    （expire_on_commit=False 只影响 commit 不影响 rollback）——本轮 mock
+    **不注入 db.refresh**（生产 _save_cache 没有这步），精确模拟生产冲突
+    路径：修复前 user.zodiac/_today_energy/user.openid 访问直接
+    MissingGreenlet → 整轮失败；修复后循环体零 ORM 属性访问（循环前
+    物化的纯值快照），冲突回滚后继续发送不受影响。
     模拟：monkeypatch _save_cache 走并发输家路径（rollback + 返回赢家内容），
     断言发送后 last_sent_date==今天、quota-1，且清掉批标记后再次循环不双发。
     """
@@ -620,24 +626,11 @@ def test_night_push_star_cache_conflict_does_not_lose_claim(
     uid = asyncio.run(_uid_by_openid("night_cache_race_001"))
     asyncio.run(_seed_quota(uid, 2))  # quota>=2 才能暴露旧 bug 的二次推送
 
-    # 捕获推送循环持有的 user 对象（回滚后需刷新，见下）
-    captured: dict = {}
-    real_get_star_word = star_words.get_today_star_word
-
-    async def _capture_user(db, user, today):
-        captured["user"] = user
-        return await real_get_star_word(db, user, today)
-
-    monkeypatch.setattr(daily_push, "get_today_star_word", _capture_user)
-
     # 模拟并发输家：commit 撞 uq_user_word_date 唯一约束 → IntegrityError
     # 处理器回滚 → 回读赢家已落库缓存返回（与 star_words._save_cache 同款路径）。
-    # 注：rollback() 会令会话内 ORM 对象过期，async 下惰性加载抛
-    # MissingGreenlet——刷新 user 恢复推送流程（quota 侧由 daily_push 的
-    # user_id 纯值快照规避，无需刷新）。
+    # 只 rollback、不 refresh、不回读 ORM——与生产 _save_cache 完全一致。
     async def _conflicting_save_cache(db, user_id, today, phrase, source):
         await db.rollback()
-        await db.refresh(captured["user"])
         return {"phrase": "并发赢家已落库短语", "source": "ai"}
 
     monkeypatch.setattr(star_words, "_save_cache", _conflicting_save_cache)

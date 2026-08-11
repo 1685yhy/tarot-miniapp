@@ -46,8 +46,14 @@ async def moon_card_today(
     此后同日请求直接命中缓存，不再调 AI。
     """
     today = star_words.beijing_today()
+    # T1-8 闭环：zodiac 提前物化为纯值局部变量——get_today_star_word 内部
+    # _save_cache 并发首写撞 uq_user_word_date 唯一约束会 db.rollback()，
+    # 无条件过期会话内所有 ORM 对象（expire_on_commit=False 只影响 commit
+    # 不影响 rollback），之后访问 user.zodiac 惰性加载抛 MissingGreenlet
+    # → 该 API 并发首写 500 一次。
+    zodiac = user.zodiac
     result = await star_words.get_today_star_word(db, user, today)
-    guidance = build_today_guidance(today, user.zodiac or None)
+    guidance = build_today_guidance(today, zodiac or None)
     phase = moon_phase_on(today)
     return MoonCardTodayResponse(
         date=today.isoformat(),

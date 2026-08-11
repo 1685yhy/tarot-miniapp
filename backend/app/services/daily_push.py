@@ -49,6 +49,7 @@ import asyncio
 import json
 import logging
 import os
+from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 
 from sqlalchemy import or_, select, update
@@ -92,6 +93,26 @@ _last_sent_date: str | None = None
 _morning_sent_date: str | None = None
 # 模板未配置的日志去重（每天只记一次 error，避免每 5 分钟刷屏）
 _last_config_error_date: str | None = None
+
+@dataclass(frozen=True)
+class _UserSnapshot:
+    """推送循环前的用户纯值快照（T1-8 闭环，Fix round 2）。
+
+    不持有 ORM 对象：循环内可能发生 rollback（get_today_star_word →
+    _save_cache 并发首写撞 uq_user_word_date 唯一约束；_release_claim
+    异常路径）——``db.rollback()`` 无条件过期会话内**所有** ORM 对象
+    （``expire_on_commit=False`` 只影响 commit 不影响 rollback），async 下
+    惰性加载抛 MissingGreenlet。快照只含纯值，回滚后依然可用；循环体内
+    零 ORM 属性访问，认领/扣减/回退全部用纯值参数。
+    """
+
+    id: str  # user_id（与 quota.user_id 同值）
+    openid: str
+    zodiac: str | None
+    birth_date: str | None
+    created_at: datetime | None
+    quota_available: int
+
 
 # ── 失败退避（最终审查 F-2 + T4-3）：各槽位当日每用户重试上限 ──
 # 内存计数：user_id -> (失败日期'YYYY-MM-DD', 当日失败次数)。
@@ -362,16 +383,31 @@ async def send_starlight_morning_if_due(
 
     template_id = resolve_template_id(TEMPLATE_DAILY_CARD)
 
+    # ── 同类一并修（T1-8 闭环）：晨讯路径与 night 路径同构——循环内
+    #    _release_claim 异常路径有 db.rollback() 源，回滚无条件过期会话内
+    #    ORM 对象；循环前物化纯值快照，循环体内零 ORM 属性访问。──
+    targets = [
+        _UserSnapshot(
+            id=quota.user_id,
+            openid=user.openid,
+            zodiac=user.zodiac,
+            birth_date=user.birth_date,
+            created_at=user.created_at,
+            quota_available=quota.quota_available,
+        )
+        for quota, user in rows
+    ]
+
     sent = 0
     failed = 0
-    for quota, user in rows:
+    for target in targets:
         # ── 原子认领（I-1）：并发/崩溃安全。同一用户同一天只可能被一个发送者
         #    认领成功；rowcount==1 才继续发送，否则（已被并发认领/同日已发）
         #    跳过——admin 端点与 7:37 定时任务交错也不会双发。──
         claim = await db.execute(
             update(SubscribeQuota)
             .where(
-                SubscribeQuota.user_id == quota.user_id,
+                SubscribeQuota.user_id == target.id,
                 or_(
                     SubscribeQuota.last_sent_date.is_(None),
                     SubscribeQuota.last_sent_date != today,
@@ -382,11 +418,11 @@ async def send_starlight_morning_if_due(
         if claim.rowcount != 1:
             continue
         try:
-            guidance = build_today_guidance(today, user.zodiac or None)
-            energy = await _today_energy(db, user, today)
+            guidance = build_today_guidance(today, target.zodiac or None)
+            energy = await _today_energy(db, target, today)
             data = build_starlight_morning_data(today, guidance, energy)
             resp = await send_subscribe_message(
-                openid=user.openid,
+                openid=target.openid,
                 template_id=template_id,
                 data=data,
                 page=MORNING_PAGE,
@@ -398,7 +434,7 @@ async def send_starlight_morning_if_due(
                 await db.execute(
                     update(SubscribeQuota)
                     .where(
-                        SubscribeQuota.user_id == quota.user_id,
+                        SubscribeQuota.user_id == target.id,
                         SubscribeQuota.quota_available > 0,
                     )
                     .values(quota_available=SubscribeQuota.quota_available - 1)
@@ -408,13 +444,13 @@ async def send_starlight_morning_if_due(
                 # 微信 errcode!=0：不扣额度，认领回退为 NULL（允许下次重试），
                 # 但记录失败次数——当日达上限后不再尝试（F-2）
                 failed += 1
-                await _release_claim(db, quota.user_id, today)
-                _record_failure(_morning_fail_counts, quota.user_id, today_str)
+                await _release_claim(db, target.id, today)
+                _record_failure(_morning_fail_counts, target.id, today_str)
         except Exception:
-            logger.exception("7:37 星光晨讯发送失败：user=%s", quota.user_id)
+            logger.exception("7:37 星光晨讯发送失败：user=%s", target.id)
             failed += 1
-            await _release_claim(db, quota.user_id, today)
-            _record_failure(_morning_fail_counts, quota.user_id, today_str)
+            await _release_claim(db, target.id, today)
+            _record_failure(_morning_fail_counts, target.id, today_str)
 
     # 批标记仅作内存级第二道防线：整批无失败才置位（当天不再重扫）；
     # 有失败则保持空，下一轮 5 分钟循环补发失败用户（原子认领保证不重复发送；
@@ -515,13 +551,29 @@ async def send_daily_push_if_due(db: AsyncSession, now: datetime | None = None) 
 
     template_id = resolve_template_id(TEMPLATE_DAILY_CARD)
 
+    # ── T1-8 闭环（方案 b）：循环前把循环内会访问的 ORM 字段物化为纯值快照。
+    #    get_today_star_word → _save_cache 并发首写撞 uq_user_word_date 唯一
+    #    约束会 db.rollback()，无条件过期会话内所有 ORM 对象（expire_on_commit
+    #    =False 只影响 commit 不影响 rollback），async 下惰性加载抛
+    #    MissingGreenlet（实证：daily_push.py:544 user.zodiac / 566 user.openid
+    #    / 524 quota.user_id）。快照只含纯值，回滚后依然可用；循环体内零 ORM
+    #    属性访问，认领/扣减/回退全部用纯值参数。──
+    targets = [
+        _UserSnapshot(
+            id=quota.user_id,
+            openid=user.openid,
+            zodiac=user.zodiac,
+            birth_date=user.birth_date,
+            created_at=user.created_at,
+            quota_available=quota.quota_available,
+        )
+        for quota, user in rows
+    ]
+
     sent = 0
     failed = 0
-    for quota, user in rows:
-        # ── user_id 快照：get_today_star_word 的缓存冲突回滚（_save_cache 撞
-        #    唯一约束）会令会话内 ORM 对象过期，async 下惰性加载抛
-        #    MissingGreenlet；认领/额度减扣/认领回退全部改用纯值，回滚后仍可用。──
-        user_id = quota.user_id
+    for target in targets:
+        user_id = target.id
         try:
             if moon_event:
                 # 节点日：节点文案优先，不发星语（无落库副作用，认领后即可）
@@ -539,10 +591,12 @@ async def send_daily_push_if_due(db: AsyncSession, now: datetime | None = None) 
                 #    二次推送（quota≥2 时破坏 1 条/天硬上限）。
                 #    先取星语（纯 SELECT/缓存优先；AI 全挂有短句库兜底，
                 #    star_words 保证总有返回），其 commit/rollback 只作用于
-                #    星语缓存事务；缓存落库完成后再开启认领事务，互不影响。──
-                star = await get_today_star_word(db, user, today)
-                guidance = build_today_guidance(today, user.zodiac or None)
-                energy = await _today_energy(db, user, today)
+                #    星语缓存事务；缓存落库完成后再开启认领事务，互不影响。
+                #    传快照而非 ORM user：其 rollback 即使令 ORM 对象过期，
+                #    快照纯值不受影响（Fix round 2）。──
+                star = await get_today_star_word(db, target, today)
+                guidance = build_today_guidance(today, target.zodiac or None)
+                energy = await _today_energy(db, target, today)
                 data = build_star_word_data(today, guidance, energy, star["phrase"])
                 page = NIGHT_PAGE
 
@@ -563,7 +617,7 @@ async def send_daily_push_if_due(db: AsyncSession, now: datetime | None = None) 
             if claim.rowcount != 1:
                 continue
             resp = await send_subscribe_message(
-                openid=user.openid,
+                openid=target.openid,
                 template_id=template_id,
                 data=data,
                 page=page,
