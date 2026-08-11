@@ -216,7 +216,7 @@
         </view>
         <view class="pact-row">
           <text class="pact-row-tag pact-row-tag--ctrl">可关</text>
-          <text class="pact-row-text">随时可在本页关闭展示（隐身）</text>
+          <text class="pact-row-text">随时可在本页或我的页关闭展示（隐身）</text>
         </view>
       </view>
       <view class="pact-foot">

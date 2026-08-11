@@ -526,6 +526,19 @@
   line-height: var(--line-height-base);
 }
 
+/* 星友圈共鸣角标（T8-5）：金高亮 desc「今天有 N 颗星与你共鸣 ✦」 */
+.menu-desc--gold {
+  color: #A97E4F;
+  font-weight: var(--font-weight-medium);
+}
+
+/* 星友圈隐身开关行（T8-5 我的页设置项）：switch 垂直居中不挤压 desc */
+.vis-row .vis-switch {
+  flex-shrink: 0;
+  margin-left: var(--spacing-sm);
+  transform: scale(0.9);
+}
+
 /* Right arrow */
 .menu-arrow {
   font-size: var(--font-size-body);

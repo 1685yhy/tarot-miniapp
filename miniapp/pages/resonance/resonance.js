@@ -9,7 +9,9 @@
 //      已共鸣卡片实心 + 点击 toast「已共鸣过这颗星 ✦」；超 10 次 400 原样展示
 //   6. 我的共鸣统计（stats）+ 今日剩余次数提示
 //   7. 隐身开关（默认开，一键关：确认弹窗 + 即时生效）
-//   8. 共鸣海报分享（GET /resonance/poster → share-poster mode="resonance"）
+//   8. 共鸣海报分享（GET /resonance/poster → share-poster mode="resonance"；
+//      海报带小程序码（/share/wxacode 名片码 scene=邀请码 → card-landing 拉新，
+//      失败无码降级）；分享时 POST /share/track 打点 share_type="resonance"）
 //
 // 接口：GET /resonance/wall（公开限流）· GET /resonance/alias（进页确保星名落库）
 //       GET /resonance/stats · POST /resonance/give · POST /resonance/visibility
@@ -80,9 +82,10 @@ Page({
   // 乐观锁（防连点重复送出）
   _giving: false,
   _posterBusy: false,
+  _posterUid: '', // 当前海报目标星 uid（分享打点 ref_id）
 
   onLoad() {
-    // 首次进入弹「星光公约」（三行说明 + 可随时在本页关闭展示）
+    // 首次进入弹「星光公约」（三行说明 + 可随时在本页或我的页关闭展示）
     if (!wx.getStorageSync(PACT_KEY)) {
       this.setData({ showPact: true });
     }
@@ -387,6 +390,7 @@ Page({
     }
     if (this._posterBusy) return;
     this._posterBusy = true;
+    this._posterUid = uid || ''; // 分享打点 ref_id（目标星 uid）
     this.setData({ posterLoading: true });
     try {
       const data = await request(`/resonance/poster?to_user_id=${encodeURIComponent(uid)}`);
@@ -432,8 +436,16 @@ Page({
     this.setData({ showPoster: false, posterData: null });
   },
 
+  /** 分享共鸣海报：打点（T8-5：analytics + POST /share/track share_type="resonance"） */
   onSharePosterToFriend(e) {
     const imagePath = (e.detail && e.detail.imagePath) || '';
+    if (imagePath) {
+      analytics.trackShare('wechat_friend', 'resonance');
+      request('/share/track', {
+        method: 'POST',
+        data: { channel: 'wechat_friend', share_type: 'resonance', ref_id: this._posterUid || '' },
+      }).catch(() => { /* 打点失败静默，不影响分享 */ });
+    }
     wx.showShareImageMenu({
       path: imagePath,
       fail: () => {},

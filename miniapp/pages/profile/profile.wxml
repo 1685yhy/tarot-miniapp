@@ -272,6 +272,18 @@
         </view>
         <text class="menu-arrow">›</text>
       </view>
+      <!-- 星友圈 — 今日共鸣墙（SDD P2 · T8-5 入口 + 共鸣角标） -->
+      <view class="menu-item anim-slide-up anim-stagger-2" bindtap="onGoResonance" role="button" aria-label="进入星友圈共鸣墙">
+        <view class="menu-icon-wrap">
+          <text class="menu-icon-text">💫</text>
+        </view>
+        <view class="menu-content">
+          <text class="menu-title">星友圈 · 共鸣墙</text>
+          <text class="menu-desc menu-desc--gold" wx:if="{{resonanceReceivedToday > 0}}">今天有 {{resonanceReceivedToday}} 颗星与你共鸣 ✦</text>
+          <text class="menu-desc" wx:else>看看今天谁与你同星</text>
+        </view>
+        <text class="menu-arrow">›</text>
+      </view>
       <!-- UX 修复: 痛点#5 — 菜单名区分"卡牌收藏"与下方"收藏的解读"，避免两个收藏入口混淆 -->
       <view class="menu-item anim-slide-up anim-stagger-2" bindtap="onGoFavorites" role="button" aria-label="查看收藏的卡牌">
         <view class="menu-icon-wrap">
@@ -370,6 +382,17 @@
         </view>
         <image wx:if="{{ambientEnabled}}" class="menu-arrow-img" src="/images/icons/star_64.png" mode="aspectFit" aria-label="星空环境音开启" />
         <text wx:else class="menu-arrow">○</text>
+      </view>
+      <!-- 在共鸣墙中出现 — 星友圈隐身开关（SDD P2 · T8-5 我的页设置项） -->
+      <view class="menu-item vis-row anim-slide-up anim-stagger-9" role="button" aria-label="切换是否在共鸣墙中出现">
+        <view class="menu-icon-wrap">
+          <text class="menu-icon-text">✦</text>
+        </view>
+        <view class="menu-content">
+          <text class="menu-title">在共鸣墙中出现</text>
+          <text class="menu-desc">关闭后他人看不到你的星，你仍可看墙与共鸣</text>
+        </view>
+        <switch class="vis-switch" checked="{{resonanceVisible}}" color="#C9A97C" bindchange="onToggleResonanceVisible" aria-label="在共鸣墙中出现" />
       </view>
       <!-- ===== Push Notification Settings（T4-4：星光时刻二选一） ===== -->
       <view class="menu-section-title anim-fade-up anim-stagger-9">

@@ -167,6 +167,10 @@ Page({
     journalStreak: 0,
     nodeCompleted: 0,
     p1StatsVisible: false,
+
+    // 星友圈（T8-5）：共鸣墙入口角标 + 隐身开关（我的页）
+    resonanceReceivedToday: 0, // 今日收到共鸣数（角标「今天有 N 颗星与你共鸣」）
+    resonanceVisible: true,    // 在共鸣墙中出现（默认开，wall 回读校准）
   },
 
   // —— History card image loading ——
@@ -199,6 +203,9 @@ Page({
 
     // Load push slot preference（星光时刻：GET /notify/preference 回显）
     this._loadSlotPreference();
+
+    // 星友圈（T8-5）：共鸣角标 + 隐身开关回读（登录态才拉，失败静默）
+    this._loadResonance();
 
     // Check annual report season (Dec-Jan)
     const month = new Date().getMonth() + 1;
@@ -577,6 +584,50 @@ Page({
   onGoMeet() {
     analytics.trackEvent('meet_entry', { source: 'profile' });
     wx.navigateTo({ url: '/pages/meet/meet' });
+  },
+
+  /** 星友圈（今日共鸣墙）入口（SDD P2 · T8-5） */
+  onGoResonance() {
+    analytics.trackEvent('resonance_entry', { source: 'profile' });
+    wx.navigateTo({ url: '/pages/resonance/resonance' });
+  },
+
+  /**
+   * 星友圈共鸣角标 + 隐身开关回读（T8-5，我的页）：
+   * - GET /resonance/stats → received_today 角标「今天有 N 颗星与你共鸣」
+   * - GET /resonance/wall → my_card.visible 回读隐身态（与共鸣页同契约，0215345）
+   * 失败静默降级（角标 0、开关默认开），不阻塞我的页加载。
+   */
+  async _loadResonance() {
+    if (!wx.getStorageSync('token')) return; // 未登录不拉（接口需鉴权）
+    const [statsRes, wallRes] = await Promise.allSettled([
+      request('/resonance/stats'),
+      request('/resonance/wall'),
+    ]);
+    if (statsRes.status === 'fulfilled' && statsRes.value) {
+      this.setData({ resonanceReceivedToday: statsRes.value.received_today || 0 });
+    }
+    const myCard = wallRes.status === 'fulfilled' && wallRes.value && wallRes.value.my_card;
+    if (myCard && typeof myCard.visible === 'boolean') {
+      this.setData({ resonanceVisible: myCard.visible });
+    }
+  },
+
+  /** 隐身开关（我的页设置项 · T8-5）：即时生效（POST /resonance/visibility），失败回滚 */
+  async onToggleResonanceVisible(e) {
+    const next = !!(e && e.detail && e.detail.value);
+    const prev = this.data.resonanceVisible;
+    if (next === prev) return;
+    this.setData({ resonanceVisible: next });
+    try {
+      await request('/resonance/visibility', { method: 'POST', data: { visible: next } });
+      analytics.trackEvent('resonance_visibility', { visible: next ? 1 : 0, source: 'profile' });
+      wx.showToast({ title: next ? '你的星重新点亮 ✦' : '已隐身 ✦', icon: 'none' });
+    } catch (err) {
+      // 失败回滚开关状态（即时生效语义以服务端为准，与共鸣页一致）
+      this.setData({ resonanceVisible: prev });
+      wx.showToast({ title: getFriendlyError(err), icon: 'none' });
+    }
   },
 
   /** P3-1: 每日签到入口 */

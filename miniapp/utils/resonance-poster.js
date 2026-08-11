@@ -13,10 +13,14 @@
 // 零 UGC、零可联系字段）。与 meet-poster.js / journal-poster.js 同构：
 // 复用 canvas-poster.js 的 E3 调色板与绘制辅助（单一色彩/圆角/码位来源）。
 //
-// 小程序码：T8-5 接入（scene=invite_code → card-landing 拉新闭环）；
-// 本版为无码版式，但管线（onSuccess/onError/预览/保存/分享）与带码版完全一致。
+// 小程序码（T8-5）：复用 /share/wxacode（登录态名片码，scene=邀请码 →
+// card-landing 拉新闭环，不新增微信调用）。拉取失败/超时 → 无码降级
+// （仅页脚、不画空白码位，T8-4 既有版式）；带码版式在小程序码上方
+// 预留 QR 区（qrZoneY），文案行数随可用高度收敛，不重叠码位。
+// 管线（onSuccess/onError/预览/保存/分享）两版式完全一致。
 
 const { PALETTE, DRAW_HELPERS, LAYOUT } = require('./canvas-poster');
+const { BASE_URL } = require('./api');
 const { ZODIAC_BY_KEY } = require('./energy');
 
 const {
@@ -36,6 +40,7 @@ const {
   drawStars,
   drawHeader,
   drawFooter,
+  drawQRCode,
 } = DRAW_HELPERS;
 
 const FONT = '"PingFang SC", "Helvetica Neue", sans-serif';
@@ -82,6 +87,10 @@ function dimensionText(dim, p) {
 
 /**
  * 生成今日星光共鸣海报（3:4 竖版 · E3 奶油底 · 双星版式）。
+ *
+ * 小程序码（T8-5）：复用 /share/wxacode（登录态名片码 scene=邀请码 →
+ * card-landing）。码拉取失败/未登录/超时 → 无码降级（仅页脚），
+ * 保存/分享不阻塞；管线与带码版式一致。
  *
  * @param {string} canvasId - Canvas 节点 id
  * @param {Object} pageContext - 页面 this（SelectorQuery 作用域）
@@ -269,7 +278,7 @@ function drawResonancePoster(canvasId, pageContext, opts) {
     ctx.restore();
     y += Math.round(W * 0.014);
 
-    // ── 6. 分隔线 + 固定文案 caption ──
+    // ── 6. 分隔线 + 固定文案 caption（行数随小程序码区可用高度收敛） ──
     ctx.save();
     ctx.strokeStyle = C_LINE_GOLD;
     ctx.lineWidth = 0.8;
@@ -280,6 +289,10 @@ function drawResonancePoster(canvasId, pageContext, opts) {
     ctx.restore();
     y += Math.round(W * 0.040);
 
+    // 小程序码区上沿（T8-5：复用 /share/wxacode 名片码；码位恒定预留，
+    // 无码降级时该区留白仅页脚，与 T8-4 既有版式一致）
+    const qrZoneY = H - Math.round(W * 0.26);
+
     const caption = p.caption || '两颗星在同一片夜空相遇 ✦';
     ctx.save();
     ctx.fillStyle = C_GOLD_INK;
@@ -287,24 +300,75 @@ function drawResonancePoster(canvasId, pageContext, opts) {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
     const capLines = wrapText(ctx, caption, W * 0.86);
-    capLines.slice(0, 2).forEach((ln, i) => {
-      ctx.fillText(ln, W / 2, y + i * Math.round(W * 0.050));
+    const capLineH = Math.round(W * 0.050);
+    // 文案止于码区上沿（最多 2 行；可用高度不足时收敛为 1 行，不重叠码位）
+    const maxCapLines = Math.max(1, Math.min(2, Math.floor((qrZoneY - y - Math.round(W * 0.030)) / capLineH)));
+    capLines.slice(0, maxCapLines).forEach((ln, i) => {
+      ctx.fillText(ln, W / 2, y + i * capLineH);
     });
     ctx.restore();
-    y += (capLines.slice(0, 2).length) * Math.round(W * 0.050) + Math.round(W * 0.030);
+    y += maxCapLines * capLineH + Math.round(W * 0.030);
 
-    // ── 7. 页脚 ──
-    drawFooter(ctx, W, H - Math.round(W * 0.040), p.disclaimer || '仅供娱乐 · 星光映照');
+    // ── 7. 小程序码（/share/wxacode · 登录态）+ 页脚 ──
+    // 码拉取失败/未登录/超时 → 无码降级（仅页脚，不画空白码位），不阻塞成图
+    let qrImg = null;
+    let qrReady = false;
+    let finished = false;
 
-    wx.canvasToTempFilePath({
-      canvas: canvas,
-      success: function (res2) {
-        if (onSuccess) onSuccess(res2.tempFilePath);
+    function _finish() {
+      if (finished) return;
+      if (!qrReady) return;
+      finished = true;
+      if (qrImg) {
+        drawQRCode(ctx, W, qrZoneY, qrImg, '扫码 · 看看谁与你同星');
+      }
+      drawFooter(ctx, W, H - Math.round(W * 0.040), p.disclaimer || '仅供娱乐 · 星光映照');
+      wx.canvasToTempFilePath({
+        canvas: canvas,
+        success: function (res2) {
+          if (onSuccess) onSuccess(res2.tempFilePath);
+        },
+        fail: function (err) {
+          if (onError) onError(err);
+        },
+      }, pageContext);
+    }
+
+    // 名片码：scene=用户邀请码 → card-landing 拉新（复用 /share/wxacode，不新增微信调用）
+    const token = wx.getStorageSync('token');
+    wx.downloadFile({
+      url: BASE_URL + '/share/wxacode',
+      header: token ? { Authorization: 'Bearer ' + token } : {},
+      success: function (dlRes) {
+        if (dlRes.statusCode !== 200) {
+          // 码拉取失败：无码降级，海报仍可生成
+          qrReady = true;
+          _finish();
+          return;
+        }
+        const q = canvas.createImage();
+        q.onload = function () {
+          qrImg = q;
+          qrReady = true;
+          _finish();
+        };
+        q.onerror = function () {
+          qrReady = true;
+          _finish();
+        };
+        q.src = dlRes.tempFilePath;
       },
-      fail: function (err) {
-        if (onError) onError(err);
+      fail: function () {
+        qrReady = true;
+        _finish();
       },
-    }, pageContext);
+    });
+
+    // 安全超时：码 5 秒未就绪也照常成图（无码降级）
+    setTimeout(function () {
+      qrReady = true;
+      _finish();
+    }, 5000);
   });
 }
 
