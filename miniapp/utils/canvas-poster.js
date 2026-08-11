@@ -232,8 +232,10 @@ function _drawKeyInsight(ctx, W, Y, insight) {
  *
  * @param {string} [ctaText]    - Optional call-to-action text (defaults to reading-mode copy)
  * @param {string} [inviteCode] - Invite mode: draws "邀请码 STAR-XXXX" under the CTA
+ * @param {string} [ctaColor]   - Optional CTA text color (defaults to C_MUTED;
+ *                                deep-space posters pass a light lavender for dark bg)
  */
-function _drawQRCode(ctx, W, Y, qrImg, ctaText, inviteCode) {
+function _drawQRCode(ctx, W, Y, qrImg, ctaText, inviteCode, ctaColor) {
   const qrSize = Math.round(W * QR_SIZE_RATIO);
   const qrX = Math.round((W - qrSize) / 2);
   const gap = Math.round(W * 0.024);
@@ -264,7 +266,7 @@ function _drawQRCode(ctx, W, Y, qrImg, ctaText, inviteCode) {
   // Call-to-action text below QR code
   const ctaY = qrAreaY + qrSize + 4;
   ctx.save();
-  ctx.fillStyle = C_MUTED;
+  ctx.fillStyle = ctaColor || C_MUTED;
   ctx.font = `${Math.round(W * 0.028)}px "PingFang SC", "Helvetica Neue", sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';

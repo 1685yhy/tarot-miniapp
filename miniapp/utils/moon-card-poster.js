@@ -233,7 +233,8 @@ function drawMoonCardPoster(canvasId, pageContext, opts) {
       if (drawAttempted) return;
       if (!qrImageLoaded) return;
       drawAttempted = true;
-      drawQRCode(ctx, W, qrZoneY, qrImg, '扫码收下你的晚安卡 ✦');
+      // 深空底上用浅色 CTA（N_MUTED 系亮紫，dark bg 对比度达标）
+      drawQRCode(ctx, W, qrZoneY, qrImg, '扫码收下你的晚安卡 ✦', undefined, '#B8ACD9');
       // 页脚（深底亮金）
       ctx.save();
       ctx.fillStyle = N_GOLD;

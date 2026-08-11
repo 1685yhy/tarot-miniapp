@@ -134,7 +134,7 @@ async function run() {
     requestImpl = async () => MOCK_CARD;
     await inst._load();
     assertEq(inst.data.loading, false, 'A1 加载完成后 loading=false');
-    assert(inst.data.hasCard === true, 'A2 成功加载后 hasCard=true');
+    assert(!!inst.data.card, 'A2 成功加载后 card 有值');
     assertEq(inst.data.card.phase.emoji, '🌕', 'A3 月相 emoji 透传');
     assertEq(inst.data.pageError, null, 'A4 成功路径 pageError=null');
   }
@@ -143,18 +143,16 @@ async function run() {
     requestImpl = async () => { throw new Error('月光暂时迷路了'); };
     await inst._load();
     assertEq(inst.data.loading, false, 'A5 失败路径 loading=false');
-    assert(inst.data.hasCard === false, 'A6 失败路径 hasCard=false');
+    assertEq(inst.data.card, null, 'A6 失败路径 card=null');
     assert(!!inst.data.pageError, 'A7 失败路径 pageError 有值');
   }
   {
+    // onRetry 重载成功（先注入再触发，验证真实重载路径）
     const inst = freshInstance();
-    inst.data.card = MOCK_CARD;
-    inst.onRetry();
     requestImpl = async () => MOCK_CARD;
-    await sleep(0);
-    // onRetry 仅调用 _load——上面重新注入 request 后，等待微任务
+    inst.onRetry();
     await sleep(10);
-    assert(inst.data.loading === false, 'A8 onRetry 触发重新加载');
+    assert(!!inst.data.card && inst.data.loading === false, 'A8 onRetry 触发重新加载成功');
   }
 
   // ---- B. onSharePoster 晚安卡海报链路 ----

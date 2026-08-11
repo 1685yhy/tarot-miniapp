@@ -195,6 +195,13 @@
   opacity: 0.85;
   transform: scale(0.98);
 }
+/* 基础库 button[disabled]（0,1,1）specificity 高于 .btn-share-poster（0,1,0），
+   生成中 120ms 窗口禁用态会被默认灰底覆盖——用复合选择器压过 */
+button[disabled].btn-share-poster {
+  background: linear-gradient(135deg, #F5D48F 0%, #D9AF6B 100%);
+  color: #4A3B22;
+  opacity: 0.75;
+}
 .btn-share-star {
   font-size: 28rpx;
 }

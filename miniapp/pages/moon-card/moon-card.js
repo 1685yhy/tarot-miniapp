@@ -13,7 +13,6 @@ Page({
     loading: true,
     pageError: null,
     card: null, // {date, phase:{emoji,label}, phrase, star_color, star_number, source}
-    hasCard: false, // WXML 编译环境下 wx:if 不认复杂表达式，JS 预计算
     sharing: false,
 
     // 晚安卡海报（深空底 · share-poster mode="moon"）
@@ -29,7 +28,7 @@ Page({
     this.setData({ loading: true, pageError: null });
     try {
       const card = await request('/moon-card/today');
-      this.setData({ card, hasCard: !!card, loading: false });
+      this.setData({ card, loading: false });
     } catch (err) {
       this.setData({
         loading: false,
