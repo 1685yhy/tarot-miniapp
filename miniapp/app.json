@@ -79,6 +79,10 @@
     {
       "root": "pages/journal-review/",
       "pages": ["journal-review"]
+    },
+    {
+      "root": "pages/moon-card/",
+      "pages": ["moon-card"]
     }
   ],
   "window": {
@@ -117,7 +121,7 @@
   "preloadRule": {
     "pages/index/index": {
       "network": "all",
-      "packages": ["pages/daily-card/", "pages/reading/", "pages/reading-result/", "pages/checkin/", "pages/journal/", "pages/journal-review/"]
+      "packages": ["pages/daily-card/", "pages/reading/", "pages/reading-result/", "pages/checkin/", "pages/journal/", "pages/journal-review/", "pages/moon-card/"]
     },
     "pages/oracle/oracle": {
       "network": "all",

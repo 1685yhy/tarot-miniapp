@@ -1,0 +1,40 @@
+<!-- pages/moon-card/moon-card.wxml — 月光卡（睡前星语 · 最小可用版） -->
+<view class="page">
+  <view class="stars-layer"></view>
+
+  <!-- ===== 加载态 ===== -->
+  <view wx:if="{{loading}}" class="center-state">
+    <text class="loading-text">月光正在为你点亮…</text>
+  </view>
+
+  <!-- ===== 错误态 ===== -->
+  <view wx:elif="{{pageError}}" class="center-state">
+    <text class="error-text">月光暂时迷路了</text>
+    <text class="error-hint">{{pageError}}</text>
+    <button class="btn-ghost" bindtap="onRetry">重新连接</button>
+  </view>
+
+  <!-- ===== 月光卡 ===== -->
+  <view wx:else class="card anim-fade-up">
+    <!-- 月相 + 日期 -->
+    <view class="phase-zone">
+      <text class="phase-emoji">{{card.phase.emoji}}</text>
+      <text class="phase-label">{{card.phase.label}}</text>
+      <text class="card-date">{{card.date}}</text>
+    </view>
+
+    <!-- 星语 -->
+    <view class="phrase-zone">
+      <text class="phrase-title">晚安星语</text>
+      <text class="phrase">{{card.phrase}}</text>
+    </view>
+
+    <!-- 星光色 + 星光数 -->
+    <view class="starlight-zone">
+      <view class="color-dot" style="background: {{card.star_color}};"></view>
+      <text class="starlight-text">星光色 {{card.star_color}} · 星光数 {{card.star_number}}</text>
+    </view>
+
+    <text class="card-note">愿星光伴你入眠 ✦</text>
+  </view>
+</view>
