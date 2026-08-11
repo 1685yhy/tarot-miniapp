@@ -1,5 +1,26 @@
 /* 共用月历组件样式 —— E3 奶油疗愈 token（styles/common.wxss） */
 
+/* M-1 修复：--e3-* token 接线。组件 wxss 的选择器不匹配页面节点，故在组件根
+   （:host）上定义 token，跨页面独立可用；var() 不再落到硬编码 fallback。 */
+:host {
+  --e3-cream: #FAF6EF;
+  --e3-cream-hi: #FFFDF8;
+  --e3-paper: #F2ECDF;
+  --e3-pink: #E8C4BE;
+  --e3-pink-ink: #B08A82;
+  --e3-gold: #C9A97C;
+  --e3-gold-deep: #8A6B3D;
+  --e3-line: rgba(201, 169, 124, 0.28);
+  --e3-line-soft: rgba(201, 169, 124, 0.38);
+  --e3-lav: #D8D2E4;
+  --e3-ink: #3D3A36;
+  --e3-ink-soft: #8A8478;
+  --e3-ink-faint: #6E6A96;
+  --e3-shadow: 0 2rpx 8rpx rgba(61, 58, 54, 0.08);
+  --e3-hi: inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
+  --e3-serif: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif CJK SC', 'Noto Serif SC', serif;
+}
+
 .cal {
   background: linear-gradient(145deg, var(--e3-cream-hi, #FFFDF8) 0%, var(--e3-paper, #F2ECDF) 100%);
   border: 1rpx solid var(--e3-line, rgba(201, 169, 124, 0.28));

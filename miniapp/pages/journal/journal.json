@@ -3,6 +3,7 @@
   "navigationBarBackgroundColor": "#FAF6EF",
   "navigationBarTextStyle": "black",
   "usingComponents": {
-    "calendar": "/components/calendar/calendar"
+    "calendar": "/components/calendar/calendar",
+    "share-poster": "../../components/share-poster/share-poster"
   }
 }

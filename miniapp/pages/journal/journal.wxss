@@ -3,6 +3,28 @@
    月历即"我的星光夜空"：星点=情绪，颜色=当日星光色，光晕=亮度档
    ============================================================ */
 
+/* M-1 修复：--e3-* token 接线（参照 diary.wxss 追加覆盖模式），
+   var(--e3-*) 由本页解析，不再落到硬编码 fallback。
+   page 级自定义属性会正常继承进 calendar/share-poster 组件子树。 */
+page {
+  --e3-cream: #FAF6EF;
+  --e3-cream-hi: #FFFDF8;
+  --e3-paper: #F2ECDF;
+  --e3-pink: #E8C4BE;
+  --e3-pink-ink: #B08A82;
+  --e3-gold: #C9A97C;
+  --e3-gold-deep: #8A6B3D;
+  --e3-line: rgba(201, 169, 124, 0.28);
+  --e3-line-soft: rgba(201, 169, 124, 0.38);
+  --e3-lav: #D8D2E4;
+  --e3-ink: #3D3A36;
+  --e3-ink-soft: #8A8478;
+  --e3-ink-faint: #6E6A96;
+  --e3-shadow: 0 2rpx 8rpx rgba(61, 58, 54, 0.08);
+  --e3-hi: inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
+  --e3-serif: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif CJK SC', 'Noto Serif SC', serif;
+}
+
 .container {
   padding: var(--spacing-xl) var(--spacing-lg);
   padding-bottom: calc(120rpx + var(--safe-area-bottom));
@@ -828,6 +850,388 @@
   letter-spacing: 1rpx;
   display: block;
   line-height: 1.6;
+}
+
+/* ============================================================
+   I-1：AI 周回顾卡片（由旧 diary 迁入 · 折叠标题条 + 情绪趋势 + 洞察）
+   ============================================================ */
+.review-card {
+  background: linear-gradient(135deg, rgba(201, 169, 124, 0.06) 0%, rgba(180, 140, 200, 0.06) 100%);
+  border: 1.5rpx solid var(--e3-line, rgba(201, 169, 124, 0.18));
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle top glow */
+.review-card::before {
+  content: '';
+  position: absolute;
+  top: -80rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300rpx;
+  height: 160rpx;
+  background: radial-gradient(circle, rgba(201, 169, 124, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1rpx solid rgba(201, 169, 124, 0.10);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.review-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.review-header-icon {
+  font-size: var(--font-size-body);
+}
+
+.review-title {
+  font-size: var(--font-size-body);
+  font-weight: 700;
+  color: var(--e3-gold-deep, #8A6B3D);
+  letter-spacing: 2rpx;
+}
+
+.review-header-actions {
+  display: flex;
+  align-items: center;
+}
+
+.review-refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 88rpx;
+  padding: 0 var(--spacing-sm);
+  font-size: var(--font-size-caption);
+  color: var(--e3-ink-faint, #6E6A96);
+  opacity: 0.75;
+  border-radius: var(--radius-pill);
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.review-refresh-btn:active {
+  opacity: 1;
+  background: rgba(201, 169, 124, 0.10);
+}
+
+.review-fold-arrow {
+  font-size: var(--font-size-caption);
+  color: var(--e3-gold-deep, #8A6B3D);
+  margin-left: var(--spacing-sm);
+  letter-spacing: 1rpx;
+}
+
+.review-body {
+  padding-top: var(--spacing-xs);
+}
+
+.review-loading {
+  padding: var(--spacing-lg) 0;
+  text-align: center;
+}
+
+.review-loading-text {
+  font-size: var(--font-size-caption);
+  color: var(--e3-ink-faint, #6E6A96);
+  opacity: 0.7;
+}
+
+.review-summary {
+  font-size: var(--font-size-caption);
+  color: var(--e3-ink-faint, #6E6A96);
+  line-height: 1.8;
+  display: block;
+  letter-spacing: 1rpx;
+}
+
+/* 初始状态 — 主动生成回顾 */
+.review-generate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-lg) var(--spacing-md);
+  text-align: center;
+}
+
+.review-generate-icon {
+  font-size: 48rpx;
+  display: block;
+  margin-bottom: var(--spacing-sm);
+}
+
+.review-generate-text {
+  font-size: var(--font-size-caption);
+  color: var(--e3-ink-faint, #6E6A96);
+  margin-bottom: var(--spacing-md);
+  line-height: 1.6;
+}
+
+.review-generate-btn {
+  background: linear-gradient(135deg, var(--e3-gold, #C9A97C) 0%, var(--e3-gold-deep, #8A6B3D) 100%);
+  color: var(--e3-cream-hi, #FFFDF8);
+  font-size: var(--font-size-caption);
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius-pill);
+  min-height: 88rpx;
+  padding: var(--spacing-sm) var(--spacing-xl);
+  letter-spacing: 2rpx;
+}
+
+.review-generate-btn::after { border: none; }
+.review-generate-btn:active { transform: scale(0.96); }
+
+.review-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* —— 情绪趋势曲线 —— */
+.mood-trend {
+  padding: var(--spacing-sm) 0;
+  margin-bottom: var(--spacing-sm);
+}
+
+.trend-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 6rpx;
+  padding: 12rpx 0;
+}
+
+.trend-emoji {
+  font-size: 36rpx;
+  line-height: 1;
+  filter: drop-shadow(0 0 8rpx rgba(201, 169, 124, 0.15));
+}
+
+.trend-curve-text {
+  display: block;
+  text-align: center;
+  font-size: 32rpx;
+  letter-spacing: 6rpx;
+  padding: 8rpx 0;
+  color: var(--e3-gold-deep, #8A6B3D);
+  opacity: 0.85;
+  line-height: 1.6;
+}
+
+/* —— 区块标签 —— */
+.review-section-label {
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+  color: var(--e3-gold-deep, #8A6B3D);
+  display: block;
+  margin-bottom: 10rpx;
+  letter-spacing: 2rpx;
+  opacity: 0.85;
+}
+
+/* —— 情绪趋势柱状图 —— */
+.chart-section {
+  padding: var(--spacing-sm) 0;
+  margin-bottom: var(--spacing-sm);
+}
+
+.trend-summary-text {
+  font-size: var(--font-size-caption);
+  color: var(--e3-ink, #3D3A36);
+  line-height: 1.7;
+  display: block;
+  margin-bottom: 16rpx;
+  letter-spacing: 1rpx;
+}
+
+.mood-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  gap: 8rpx;
+  padding: 10rpx 0;
+  min-height: 160rpx;
+}
+
+.chart-bar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+}
+
+.chart-bar-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+}
+
+.chart-bar-emoji {
+  font-size: 28rpx;
+  line-height: 1;
+}
+
+.chart-bar-track {
+  width: 40rpx;
+  height: 100rpx;
+  background: rgba(201, 169, 124, 0.06);
+  border-radius: 20rpx;
+  position: relative;
+  overflow: hidden;
+  border: 1rpx solid rgba(201, 169, 124, 0.08);
+}
+
+.chart-bar-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, #C9A97C 0%, #B08F52 60%, #A98B5F 100%);
+  border-radius: 20rpx;
+  transition: height 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  min-height: 8rpx;
+  box-shadow: 0 0 12rpx rgba(201, 169, 124, 0.15);
+  transform-origin: bottom;
+}
+
+.chart-bar-label {
+  font-size: 20rpx;
+  color: var(--e3-ink-faint, #6E6A96);
+  opacity: 0.65;
+  letter-spacing: 1rpx;
+}
+
+/* —— 洞察区块 —— */
+.review-card-section {
+  padding: var(--spacing-sm) 0;
+  margin-bottom: var(--spacing-sm);
+  border-top: 1rpx solid rgba(201, 169, 124, 0.06);
+}
+
+.top-card-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: 8rpx;
+}
+
+.top-card-name {
+  font-size: var(--font-size-body);
+  font-weight: 700;
+  color: var(--e3-gold-deep, #8A6B3D);
+  letter-spacing: 2rpx;
+}
+
+.top-card-count {
+  font-size: var(--font-size-xs);
+  color: var(--e3-ink-faint, #6E6A96);
+  opacity: 0.7;
+  background: rgba(201, 169, 124, 0.10);
+  padding: 2rpx 12rpx;
+  border-radius: var(--radius-pill);
+}
+
+.top-card-meaning {
+  font-size: var(--font-size-caption);
+  color: var(--e3-ink-soft, #8A8478);
+  line-height: 1.7;
+  display: block;
+  letter-spacing: 1rpx;
+}
+
+.insight-section {
+  background: rgba(201, 169, 124, 0.04);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin: var(--spacing-sm) 0;
+  border: 1rpx solid rgba(201, 169, 124, 0.10);
+}
+
+.insight-text {
+  font-size: var(--font-size-body);
+  color: var(--e3-ink, #3D3A36);
+  line-height: 1.8;
+  display: block;
+  font-style: italic;
+  letter-spacing: 1rpx;
+}
+
+.guidance-section {
+  background: rgba(180, 140, 200, 0.06);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1rpx solid rgba(180, 140, 200, 0.12);
+}
+
+.guidance-text {
+  font-size: var(--font-size-caption);
+  color: var(--e3-ink-faint, #6E6A96);
+  line-height: 1.8;
+  display: block;
+  letter-spacing: 1rpx;
+}
+
+/* ============================================================
+   I-1：详情层分享按钮（匿名海报入口）
+   ============================================================ */
+.detail-share {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 88rpx;
+  margin-top: var(--spacing-xs);
+}
+
+.detail-share-text {
+  font-size: var(--font-size-caption);
+  color: var(--e3-gold-deep, #8A6B3D);
+  letter-spacing: 1rpx;
+}
+
+.detail-share:active .detail-share-text {
+  opacity: 0.6;
+}
+
+/* ============================================================
+   M-2：已保存图片删除入口
+   ============================================================ */
+.image-saved-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 64rpx;
+  margin-top: var(--spacing-sm);
+  padding: 0 var(--spacing-md);
+  border: 1rpx solid rgba(232, 122, 138, 0.25);
+  border-radius: var(--radius-pill);
+  background: rgba(232, 122, 138, 0.04);
+}
+
+.image-saved-delete-text {
+  font-size: var(--font-size-xs);
+  color: rgba(232, 122, 138, 0.85);
+  letter-spacing: 1rpx;
+}
+
+.image-saved-delete:active {
+  background: rgba(232, 122, 138, 0.10);
 }
 
 @media (prefers-reduced-motion: reduce) {

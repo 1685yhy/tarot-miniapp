@@ -139,9 +139,16 @@ Component({
     },
 
     _touchX: 0,
+    // I-3 修复：滑动切月与格子 tap 互斥。
+    // 手势序列为 touchstart → touchmove → touchend → tap；切月阈值判定发生在
+    // touchend，晚于此的 tap 仍会派发给手指落点所在的格子。滑动一旦判定为切月
+    // （位移超阈值），置 _suppressTap 标记，onDayTap 消费该标记并跳过本次，
+    // 防止滑动后误弹空详情层。每次新手势 touchstart 重置标记。
+    _suppressTap: false,
 
     onTouchStart(e) {
       this._touchX = e.touches && e.touches[0] ? e.touches[0].clientX : 0;
+      this._suppressTap = false;
     },
 
     onTouchEnd(e) {
@@ -149,10 +156,15 @@ Component({
       if (!touch) return;
       const dx = touch.clientX - this._touchX;
       if (Math.abs(dx) < 40) return; // 低于阈值视为点击，不切月
+      this._suppressTap = true; // 滑动切月 → 抑制随后的 tap
       this._changeMonth(dx < 0 ? 1 : -1);
     },
 
     onDayTap(e) {
+      if (this._suppressTap) {
+        this._suppressTap = false; // 切月滑动产生的 tap，本次忽略
+        return;
+      }
       const { date, hasStar } = e.currentTarget.dataset;
       if (!date) return;
       this.triggerEvent('daytap', { date, hasStar });

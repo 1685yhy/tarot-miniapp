@@ -120,6 +120,112 @@
       </view>
     </view>
 
+    <!-- ===== AI 周回顾（I-1：由旧日记迁入 · 折叠标题条） ===== -->
+    <view class="review-card anim-fade-up anim-stagger-2" wx:if="{{entriesCount >= 3}}">
+      <!-- 一行标题条：本周回顾 ▾ 生成（数据绑定与动画完整保留） -->
+      <view class="review-header" bindtap="onToggleReview" role="button" aria-label="{{reviewExpanded ? '收起本周回顾' : '展开本周回顾'}}">
+        <view class="review-header-left">
+          <text class="review-header-icon">📊</text>
+          <text class="review-title">本周回顾</text>
+        </view>
+        <view class="review-header-actions">
+          <view class="review-refresh-btn" catchtap="onRefreshReview" role="button" aria-label="生成周回顾">
+            <text wx:if="{{reviewLoading}}">加载中...</text>
+            <text wx:elif="{{weeklyReview}}">⟳ 刷新</text>
+            <text wx:else>生成回顾</text>
+          </view>
+          <text class="review-fold-arrow">{{reviewExpanded ? '▴' : '▾'}}</text>
+        </view>
+      </view>
+
+      <!-- 展开区（wx:if 控制显隐，保留全部数据绑定与动画） -->
+      <view wx:if="{{reviewExpanded}}" class="review-body">
+
+        <!-- 加载状态 -->
+        <view wx:if="{{reviewLoading && !weeklyReview}}" class="review-loading">
+          <text class="review-loading-text">AI 正在分析你的周记...</text>
+        </view>
+
+        <!-- 错误状态（保留本地回溯数据作为降级） -->
+        <view wx:elif="{{reviewError && !weeklyReview}}" class="review-fallback">
+          <text class="review-summary">
+            这周你记录了 {{entriesCount}} 次心情，
+            最常出现的牌是「{{topCard}}」，
+            你的心情趋势是{{moodTrend}}。
+          </text>
+        </view>
+
+        <!-- 初始状态 — 主动生成回顾 -->
+        <view wx:elif="{{!reviewLoading && !reviewError && !weeklyReview}}" class="review-generate">
+          <text class="review-generate-icon">📊</text>
+          <text class="review-generate-text">本周已有 {{entriesCount}} 条日记记录</text>
+          <button class="review-generate-btn" bindtap="onRefreshReview">生成 AI 周回顾 ✦</button>
+        </view>
+
+        <!-- AI 周回顾内容 -->
+        <view wx:elif="{{weeklyReview}}" class="review-content">
+
+          <!-- 情绪趋势曲线 (emoji + block chart) -->
+          <view class="mood-trend" wx:if="{{weeklyReview.moodTrendCurve}}">
+            <text class="review-section-label">本周心情</text>
+            <view class="trend-line">
+              <text class="trend-emoji" wx:for="{{weeklyReview.mood_trends}}" wx:key="date">{{item.mood_emoji}}</text>
+            </view>
+            <text class="trend-curve-text">{{weeklyReview.moodTrendCurve}}</text>
+          </view>
+
+          <!-- 情绪趋势柱状图 -->
+          <view class="chart-section" wx:if="{{weeklyReview.mood_trends && weeklyReview.mood_trends.length > 0}}">
+            <text class="review-section-label">情绪趋势</text>
+            <text class="trend-summary-text">{{weeklyReview.emotional_trend_summary}}</text>
+            <view class="mood-chart">
+              <view
+                class="chart-bar-wrap"
+                wx:for="{{weeklyReview.mood_trends}}" wx:for-item="trend" wx:key="date"
+              >
+                <view class="chart-bar-column">
+                  <text class="chart-bar-emoji">{{trend.mood_emoji}}</text>
+                  <view class="chart-bar-track">
+                    <view
+                      class="chart-bar-fill"
+                      style="height: {{(trend.mood_score / 5) * 100}}%;"
+                    ></view>
+                  </view>
+                  <text class="chart-bar-label">{{trend.date.slice(5)}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 本周影响最大的牌 -->
+          <view class="review-card-section" wx:if="{{weeklyReview.top_card_name}}">
+            <text class="review-section-label">本周影响力之牌</text>
+            <view class="top-card-row">
+              <text class="top-card-name">{{weeklyReview.top_card_name}}</text>
+              <text class="top-card-count">出现 {{weeklyReview.top_card_count}} 次</text>
+            </view>
+            <text class="top-card-meaning" wx:if="{{weeklyReview.top_card_meaning}}">
+              {{weeklyReview.top_card_meaning}}
+            </text>
+          </view>
+
+          <!-- AI 洞察 -->
+          <view class="review-card-section insight-section" wx:if="{{weeklyReview.ai_insight}}">
+            <text class="review-section-label">AI 洞察</text>
+            <text class="insight-text">{{weeklyReview.ai_insight}}</text>
+          </view>
+
+          <!-- 下周指引 -->
+          <view class="review-card-section guidance-section" wx:if="{{weeklyReview.next_week_guidance}}">
+            <text class="review-section-label">下周指引</text>
+            <text class="guidance-text">{{weeklyReview.next_week_guidance}}</text>
+          </view>
+
+        </view>
+
+      </view>
+    </view>
+
   </view>
 
   <!-- ============ 星点详情展开（底部弹层） ============ -->
@@ -210,6 +316,10 @@
               <text class="image-remove-btn-char">✕</text>
             </view>
           </view>
+          <!-- M-2：已保存图片的删除入口（PUT image_url 置空） -->
+          <view wx:if="{{detailImage && !detailSelectedImage}}" class="image-saved-delete" bindtap="onDetailRemoveSavedImage" role="button" aria-label="删除图片">
+            <text class="image-saved-delete-text">删除图片</text>
+          </view>
         </view>
 
         <!-- 保存 / 删除 -->
@@ -221,6 +331,10 @@
           {{detailSaving ? '让星光更亮一点…' : '让这一天更亮一点 ✦'}}
         </button>
         <text wx:if="{{detailHasStar && (!detailEntry || !detailEntry.id)}}" class="detail-edit-hint">较早的记录仅可查看星光，暂不可编辑</text>
+        <!-- I-1：匿名分享海报（复用旧 diary share-poster 流程） -->
+        <view wx:if="{{detailEntry && detailEntry.id}}" class="detail-share" bindtap="onDetailShare" role="button" aria-label="生成分享图">
+          <text class="detail-share-text">✦ 生成分享图</text>
+        </view>
         <view wx:if="{{detailEntry && detailEntry.id}}" class="detail-delete" bindtap="onDetailDelete" role="button" aria-label="删除这一天">
           <text class="detail-delete-text">{{detailDeleting ? '删除中…' : '删除这一天'}}</text>
         </view>
@@ -264,5 +378,19 @@
 
     </view>
   </view>
+
+  <!-- I-1：日记精选分享海报（匿名 · 复用旧 diary share-poster） -->
+  <share-poster
+    wx:if="{{diaryShareData}}"
+    mode="diary"
+    visible="{{showDiarySharePoster}}"
+    moodEmoji="{{diaryShareData.moodEmoji}}"
+    dateText="{{diaryShareData.date}}"
+    cardImagePath="{{diaryShareData.cardImagePath}}"
+    cardName="{{diaryShareData.cardName}}"
+    excerpt="{{diaryShareData.excerpt}}"
+    bind:close="onCloseDiarySharePoster"
+    bind:share="onShareDiaryPosterToFriend"
+  />
 
 </view>
