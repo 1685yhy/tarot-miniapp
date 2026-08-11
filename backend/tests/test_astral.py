@@ -44,9 +44,9 @@ from app.services.moon import next_full_moon_after, next_new_moon_after
 from app.services.stardust import tier_for
 from app.utils.auth import create_token
 
-# 与用户决策禁词表对齐（2026-08-11 确认）：必/绝对/改运/化解/转运/注定/命
-# + 现有 预测/明天一定会；字符级口径（含"不必""必定"等含"必"形态）
-BLACKLIST_WORDS = ("必", "绝对", "改运", "化解", "转运", "注定", "命", "预测", "明天一定会")
+# T2-6 统一：禁词表收敛到共享 compliance.AI_OUTPUT_BLACKLIST
+# （与 test_star_words / test_horoscope_energy 同款别名 import，去掉第三份逐字拷贝）
+from app.services.compliance import AI_OUTPUT_BLACKLIST as BLACKLIST_WORDS
 
 PHASE_KEYS = {"new_moon", "waxing", "first_quarter", "full_moon", "last_quarter", "waning"}
 

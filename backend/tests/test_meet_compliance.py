@@ -26,7 +26,7 @@ from app.models.card import TarotCard
 from app.models.star_meeting import StarMeeting
 from app.models.user import User
 from app.services.birthchart import ZODIAC_KEYS
-from app.services.compatibility import compute_compatibility
+from app.services.compatibility import LEVEL_NAMES, compute_compatibility
 from app.services.compliance import (
     AI_OUTPUT_BLACKLIST,
     MEET_BLACKLIST,
@@ -34,8 +34,8 @@ from app.services.compliance import (
 )
 from app.utils.auth import create_token
 
-# 档位名（T2-1 设计定稿：85+ 星光共鸣 / 70+ 星光相映 / 55+ 星光相伴 / 其余 星光初见）
-MEET_LEVEL_NAMES = ("星光共鸣", "星光相映", "星光相伴", "星光初见")
+# 档位名取真实来源 compatibility.LEVEL_NAMES（T2-1 设计定稿：
+# 85+ 星光共鸣 / 70+ 星光相映 / 55+ 星光相伴 / 其余 星光初见），不自行拷贝
 
 # 牌位名（T2-2 三牌位）
 CARD_POSITION_NAMES = ("关系之牌", "星光之牌", "相处之牌")
@@ -104,9 +104,9 @@ def test_meet_tips_no_blacklist():
 
 
 def test_meet_level_names_no_blacklist():
-    """档位名（星光共鸣/相映/相伴/初见）过 MEET_BLACKLIST。"""
-    assert len(MEET_LEVEL_NAMES) == 4
-    for name in MEET_LEVEL_NAMES:
+    """档位名（真实来源 compatibility.LEVEL_NAMES）过 MEET_BLACKLIST。"""
+    assert len(LEVEL_NAMES) == 4
+    for name in LEVEL_NAMES:
         assert not _scan(name), f"档位名含禁词 {_scan(name)}: {name}"
 
 
@@ -120,7 +120,8 @@ def test_meet_card_names_no_blacklist(client: TestClient):
             return list(rows)
 
     names = asyncio.run(_names())
-    assert len(names) >= 10  # 牌库规模自检
+    # 牌库规模钉住 78 张（与 seed.py 导入断言一致，守护种子完整性）
+    assert len(names) == 78, f"牌库应恒为 78 张（种子完整性），实际 {len(names)}"
     for name in names:
         assert not _scan(name), f"卡牌名含禁词 {_scan(name)}: {name}"
     for pos in CARD_POSITION_NAMES:

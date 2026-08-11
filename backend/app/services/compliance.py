@@ -1,8 +1,10 @@
-"""合规共享服务（SDD P1 · T2-6）：合盘/星语/宜忌 统一禁词表与字符级扫描函数。
+"""合规测试层统一扫描表（SDD P1 · T2-6）：合盘/星语/宜忌 测试共用的禁词表与扫描函数。
 
-背景：宜忌（energy_engine）、睡前星语（star_words）、合盘（meet/compatibility）
-此前各自维护一份禁词表、测试各自硬编码一份拷贝——本次统一收敛到本模块，
-任何文案库/模板的合规扫描走同一张表 + 同一个函数，避免每处一份拷贝。
+口径：本模块是「测试层」统一扫描表——宜忌（energy_engine）、睡前星语
+（star_words）、合盘（meet/compatibility）的文案/模板合规断言共用同一张表 +
+同一个函数，避免每处一份拷贝。运行期清洗器按域独立：journal._sanitize /
+star_words._sanitize 的替换语义词表（_BLACKLIST_WORDS / _SANITIZE_REPLACEMENTS）
+是各域自己的改写规则，保留在各域模块，不属于本表、本表不接管。
 
 - ``MEET_BLACKLIST``：合盘文案禁词（Task 21 定稿）——相处提示库 / 档位名 /
   三牌名 / reason 文案 / 分享文案，字符级口径（含「不必/必定」等含「必」形态）。
@@ -12,8 +14,9 @@
 - ``find_forbidden(text, words)``：返回命中列表（空列表 = 合规）；
   ``has_forbidden(text, words)``：布尔短路版。均为纯函数、无状态。
 
-三层防护第一层 = 文案库/模板写死时即被测试钉住；第二层 = AI 输出红线提示词
-（ai_engine._OUTPUT_RED_LINE 等）；第三层 = 输出后清洗/兜底（star_words._sanitize）。
+三层防护第一层 = 文案库/模板写死时即被测试钉住（本表）；第二层 = AI 输出红线
+提示词（ai_engine._OUTPUT_RED_LINE 等）；第三层 = 输出后清洗/兜底
+（star_words._sanitize / journal._sanitize 等，按域独立维护）。
 """
 
 from __future__ import annotations

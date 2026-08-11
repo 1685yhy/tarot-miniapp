@@ -130,6 +130,9 @@ _LEVELS = [
     (0, "星光初见"),    # <55 各自闪光，相逢即是好开头
 ]
 
+# 公开档位名常量（T2-1 设计定稿；测试/运营取真实来源，不自行拷贝）
+LEVEL_NAMES: tuple[str, ...] = tuple(name for _, name in _LEVELS)
+
 
 def level_name(score: int) -> str:
     """分数 → 档位名（相合度框架，非预测）。"""
