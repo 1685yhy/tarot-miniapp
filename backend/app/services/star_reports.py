@@ -242,6 +242,9 @@ async def aggregate_week(
                 Reading.created_at >= start_dt,
                 Reading.created_at < end_dt,
             )
+            # 显式定序：无 ORDER BY 时行序由数据库实现决定，
+            # 平局时 most_common 取首见牌会不确定——按卡名排序后同人同周期结果确定
+            .order_by(TarotCard.name_zh)
         )
     ).all()
     counter = Counter(name for name, _ in card_rows)
@@ -251,6 +254,7 @@ async def aggregate_week(
 
     most_card = None
     if counter:
+        # 平局规则：同次数取卡名排序最前（name_zh 升序首见者）
         top_name = counter.most_common(1)[0][0]
         most_card = {
             "name": top_name,

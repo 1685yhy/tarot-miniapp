@@ -312,6 +312,31 @@ class TestAggregateWeek:
             {"name": "卡牌2", "count": 1},
         ]
 
+    def test_aggregate_most_card_tie_deterministic(self):
+        """最常牌平局：两张牌同次数 → 取卡名排序最前一张；同人同周期结果确定。"""
+        from app.services.star_reports import aggregate_week
+
+        uid, _ = _new_user("agg_tie")
+        _seed_readings(uid, [3, 4])  # 各 1 次 → 平局
+        _set_card_keywords(3, ["平衡"])
+        _set_card_keywords(4, ["稳固"])
+
+        async def _go() -> dict:
+            async with async_session() as session:
+                user = await session.get(User, uid)
+                return await aggregate_week(session, user, WEEK_START, WEEK_END)
+
+        stats = asyncio.run(_go())
+        assert stats["cards"]["readings_count"] == 2
+        # 平局规则：卡名升序首见者（"卡牌3" < "卡牌4"）
+        assert stats["cards"]["most_card"] == {
+            "name": "卡牌3", "count": 1, "keywords": ["平衡"],
+        }
+        assert stats["cards"]["card_list"] == [
+            {"name": "卡牌3", "count": 1},
+            {"name": "卡牌4", "count": 1},
+        ]
+
     def test_aggregate_empty_week_zero_stats(self):
         """空态周：统计全 0，曲线 7 天 total 全 null，不报错。"""
         from app.services.star_reports import aggregate_week
@@ -468,12 +493,15 @@ class TestWeekEndpoint:
         _assert_no_blacklist(d["report"]["note"])
         assert "注定" not in d["report"]["note"]
 
-    def test_week_report_nonmember_preview(self, client: TestClient):
+    def test_week_report_nonmember_preview(self, client: TestClient, monkeypatch):
         """非会员 → locked=true 且 report 为预览结构（键集断言 curve+note）。"""
         uid, headers = _new_user("week_free")
         _seed_readings(uid, [1, 2, 2])
         _seed_horoscope(uid, [date(2026, 8, 11)],
                         {"love": 70, "career": 70, "social": 70, "health": 70})
+
+        # AI 隔离：不依赖真实 key/网络，避免真实付费调用（测试只关心预览结构）
+        monkeypatch.setattr("app.services.star_reports._get_ai_client", lambda: None)
 
         resp = client.get(f"/report/week?period={PERIOD}", headers=headers)
         assert resp.status_code == 200, resp.text
@@ -515,8 +543,10 @@ class TestWeekEndpoint:
         assert resp2.status_code == 200
         assert resp2.json()["cached"] is False
 
-    def test_week_report_fallback_tiers_by_energy(self, client: TestClient):
+    def test_week_report_fallback_tiers_by_energy(self, client: TestClient, monkeypatch):
         """降级文案按能量均值三档（≥4/≥3/<3）；无 key 时直接走降级。"""
+        # AI 隔离：断言 source==fallback 依赖 AI 不可用，必须钉死 _get_ai_client
+        monkeypatch.setattr("app.services.star_reports._get_ai_client", lambda: None)
         # 高能量周：四维 95 → 总分 380 → 均值星 4.75 → 高档
         hi_uid, hi_headers = _new_user("week_hi", member=True)
         _seed_horoscope(hi_uid, [WEEK_START],
