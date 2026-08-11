@@ -1,0 +1,212 @@
+<!-- pages/astral-event/astral-event.wxml —— 星象节点活动页三形态（T3-5）：
+     新月→许愿之夜引导（联动 wish 页）/ 满月→复盘之夜引导（联动 review 页）/
+     水逆→慢行期「慢下来的 7 件小事」清单打卡 + 每日一句；info 事件直达兜底
+     所有布尔条件均来自 JS 预计算字段（WXML 不写 .length 表达式） -->
+
+<view class="container">
+  <!-- E3 奶油底色氛围光斑 -->
+  <view class="wash wash-pink"></view>
+  <view class="wash wash-gold"></view>
+
+  <!-- ===== 加载骨架 ===== -->
+  <view wx:if="{{loading}}">
+    <view class="skeleton-wrap">
+      <view class="skeleton-header-area">
+        <view class="skeleton skeleton-line wide"></view>
+        <view class="skeleton skeleton-line medium"></view>
+      </view>
+      <view class="skeleton skeleton-block"></view>
+    </view>
+  </view>
+
+  <!-- ===== 错误状态（后端 404/网络异常 → 错误态 + 重试） ===== -->
+  <view wx:elif="{{error}}" class="error-state">
+    <view class="error-card">
+      <text class="error-title">节点暂时打不开</text>
+      <text class="error-desc">{{error}}</text>
+      <button class="btn-retry" bindtap="onRetry" hover-class="btn-retry--press">重新连接</button>
+    </view>
+  </view>
+
+  <!-- ===== 内容 ===== -->
+  <block wx:else>
+    <!-- 节点头 -->
+    <view class="page-header anim-fade-up">
+      <view class="node-emoji-wrap">
+        <text class="node-emoji">{{meta.emoji}}</text>
+      </view>
+      <text class="page-title">{{meta.title}}</text>
+      <text class="page-subtitle">{{meta.subtitle}}</text>
+    </view>
+
+    <!-- ========== 许愿之夜（wish） ========== -->
+    <block wx:if="{{nodeType === 'wish'}}">
+      <!-- 新月窗口倒计时 -->
+      <view class="window-card anim-fade-up anim-stagger-1">
+        <text class="window-label">许愿窗口</text>
+        <text class="window-range" wx:if="{{windowText}}">{{windowText}}</text>
+        <text class="window-days" wx:if="{{windowDaysText}}">{{windowDaysText}}</text>
+      </view>
+
+      <!-- 许愿引导卡（只引导，不承诺实现） -->
+      <view class="guide-card anim-fade-up anim-stagger-2">
+        <text class="guide-title">{{content}}</text>
+        <text class="guide-body">月亮为你留了一页空白。写下三行愿望，交给月光保管。</text>
+        <button class="btn-submit" bindtap="onGoWish" hover-class="btn-submit--press">去写下愿望 ✦</button>
+      </view>
+
+      <!-- 愿望状态总览 -->
+      <view class="counts-card anim-fade-up anim-stagger-3">
+        <text class="counts-title">你的愿望</text>
+        <view wx:if="{{hasAnyWish}}" class="counts-row">
+          <view class="count-chip {{item.cls}}" wx:for="{{wishStatus}}" wx:key="key">
+            <text class="count-num">{{item.count}}</text>
+            <text class="count-label">{{item.label}}</text>
+          </view>
+        </view>
+        <view wx:else class="counts-empty">月光还没收到你的愿望，去写下一行吧</view>
+      </view>
+
+      <!-- 打卡（幂等：重复 → 已点亮态，不重复 toast 奖励） -->
+      <view class="checkin-area anim-fade-up anim-stagger-4">
+        <button
+          wx:if="{{!checkedToday}}"
+          class="btn-checkin"
+          disabled="{{checking}}"
+          bindtap="onCheckIn"
+          hover-class="btn-checkin--press"
+        >我已许下愿望 · 点亮星尘 ✦</button>
+        <view wx:else class="checkin-done">
+          <text class="checkin-done-star">✦</text>
+          <text class="checkin-done-text">今日节点已点亮</text>
+        </view>
+      </view>
+    </block>
+
+    <!-- ========== 复盘之夜（review） ========== -->
+    <block wx:elif="{{nodeType === 'review'}}">
+      <!-- 愿望状态总览预览（active/grown/answered 计数） -->
+      <view class="counts-card anim-fade-up anim-stagger-1">
+        <text class="counts-title">愿望状态总览</text>
+        <view wx:if="{{hasAnyWish}}" class="counts-row">
+          <view class="count-chip {{item.cls}}" wx:for="{{wishStatus}}" wx:key="key">
+            <text class="count-num">{{item.count}}</text>
+            <text class="count-label">{{item.label}}</text>
+          </view>
+        </view>
+        <view wx:else class="counts-empty">月光还没收到你的愿望</view>
+      </view>
+
+      <!-- 复盘引导卡（流程复用现有 review 页） -->
+      <view class="guide-card anim-fade-up anim-stagger-2">
+        <text class="guide-title">满月之夜 · 来复盘你的愿望</text>
+        <text class="guide-body">月亮替你保管的这些天，愿望长得怎么样了？回到月光下，一起回望。</text>
+        <button class="btn-submit" bindtap="onGoReview" hover-class="btn-submit--press">去满月复盘 ✦</button>
+      </view>
+
+      <view class="checkin-area anim-fade-up anim-stagger-3">
+        <button
+          wx:if="{{!checkedToday}}"
+          class="btn-checkin"
+          disabled="{{checking}}"
+          bindtap="onCheckIn"
+          hover-class="btn-checkin--press"
+        >我已完成复盘 · 点亮星尘 ✦</button>
+        <view wx:else class="checkin-done">
+          <text class="checkin-done-star">✦</text>
+          <text class="checkin-done-text">今日节点已点亮</text>
+        </view>
+      </view>
+    </block>
+
+    <!-- ========== 慢行期（mercury_guide） ========== -->
+    <block wx:elif="{{nodeType === 'mercury_guide'}}">
+      <!-- 区间倒计时 -->
+      <view class="window-card anim-fade-up anim-stagger-1">
+        <text class="window-label">慢行期区间</text>
+        <text class="window-range" wx:if="{{rangeActive}}">{{rangeText}}</text>
+        <text class="window-days" wx:if="{{rangeDaysText}}">{{rangeDaysText}}</text>
+        <text class="window-days" wx:if="{{!rangeActive}}">慢一点，永远不晚</text>
+      </view>
+
+      <!-- 每日一句（确定性轮换） -->
+      <view class="daily-card anim-fade-up anim-stagger-2" wx:if="{{dailySentence}}">
+        <text class="daily-label">今日一句</text>
+        <text class="daily-text">{{dailySentence}}</text>
+      </view>
+
+      <!-- 「慢下来的 7 件小事」清单：每完成一项点亮一颗星 -->
+      <view class="care-card anim-fade-up anim-stagger-3">
+        <view class="care-head">
+          <text class="care-title">慢下来的 7 件小事</text>
+          <text class="care-progress" wx:if="{{hasCareItems}}">已点亮 {{litCount}} / {{totalItems}}</text>
+        </view>
+        <text class="care-sub">每完成一件，点亮一颗星</text>
+
+        <view class="star-row" wx:if="{{hasCareItems}}">
+          <text
+            wx:for="{{stars}}" wx:key="index"
+            class="star-chip {{item.lit ? 'star-chip--lit' : ''}}"
+          >✦</text>
+        </view>
+
+        <view class="care-list" wx:if="{{hasCareItems}}">
+          <view
+            wx:for="{{careItems}}" wx:key="index"
+            class="care-item {{item.done ? 'care-item--done' : ''}}"
+            data-index="{{index}}"
+            bindtap="onToggleItem"
+            role="button"
+            aria-label="{{item.text}}，{{item.done ? '已完成' : '未完成'}}，点击切换"
+            hover-class="care-item--press"
+          >
+            <view class="care-check">{{item.done ? '✦' : ''}}</view>
+            <text class="care-text">{{item.text}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 自我关怀备注（合规：只谈自我关怀，无化解/转运/防小人措辞） -->
+      <view class="care-note anim-fade-up anim-stagger-3">
+        <text class="care-note-text">这段日子，允许自己慢一点。照顾好自己，就是慢行期最重要的事。</text>
+      </view>
+
+      <!-- 打卡：全部点亮后可用；已打卡 → 完成态（幂等） -->
+      <view class="checkin-area anim-fade-up anim-stagger-4">
+        <button
+          wx:if="{{canCheckIn && !checkedToday}}"
+          class="btn-checkin {{allLit ? '' : 'btn-checkin--muted'}}"
+          disabled="{{checking || !allLit}}"
+          bindtap="onCheckIn"
+          hover-class="btn-checkin--press"
+        >{{allLit ? '全部点亮 · 打卡 +1 星尘 ✦' : '点亮全部小事后即可打卡'}}</button>
+        <view wx:elif="{{checkedToday}}" class="checkin-done">
+          <text class="checkin-done-star">✦</text>
+          <text class="checkin-done-text">今日已打卡 · 星尘已点亮</text>
+        </view>
+      </view>
+    </block>
+
+    <!-- ========== 星象资讯（info 兜底：日月食/节气等事件直达） ========== -->
+    <block wx:else>
+      <view class="guide-card anim-fade-up anim-stagger-1">
+        <text class="guide-title">今夜星象笔记</text>
+        <view class="info-list" wx:if="{{hasInfoNotes}}">
+          <view class="info-item" wx:for="{{infoNotes}}" wx:key="index">
+            <text class="info-dot">✦</text>
+            <text class="info-text">{{item}}</text>
+          </view>
+        </view>
+        <view wx:else class="counts-empty">今天的星象很安静</view>
+        <button class="btn-submit" bindtap="onGoCalendar" hover-class="btn-submit--press">回到星空时刻表 ✦</button>
+      </view>
+    </block>
+
+    <!-- 合规尾行 -->
+    <view class="disclaimer">
+      <view class="disc-line"></view>
+      <text class="disc-text">仅供娱乐 · 星光映照</text>
+      <view class="disc-line"></view>
+    </view>
+  </block>
+</view>
