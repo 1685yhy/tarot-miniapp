@@ -46,6 +46,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import delete, select
 
 import app.api.astral as astral_api
+import app.api.journal as journal_api
 import app.api.meet as meet_api
 import app.api.share as share_api
 import app.api.tasks as tasks_api
@@ -61,6 +62,7 @@ from app.models.star_word_daily import StarWordDaily
 from app.models.subscribe_quota import SubscribeQuota
 from app.models.user import User
 from app.services import daily_push
+from app.services import diary_entries
 from app.services.diary_entries import upsert_diary_entry
 from app.services.stardust import tier_for, tier_name
 from app.utils.auth import create_token
@@ -587,7 +589,11 @@ class TestEmotionMainlineJournalReview:
     def test_journal_entries_feed_monthly_review(self, client: TestClient):
         uid, _, headers = _new_user(f"integ-review-{date.today().isoformat()}")
         try:
-            today = date.today()
+            # 钉月（T5-1 审查 Important 修复）：固定 2026-08-12（NODE_DAY），
+            # 回填 8/9..8/11 + 今日 = 当月 4 条。若用真实日期，每月 1-3 日回填
+            # 天落上月 → days_recorded 当月口径 < 4 确定性失败（月界时间炸弹）；
+            # _FixedToday 让测试任何日期运行都绿。
+            today = _FixedToday.fixed
             _seed_diary_entries(
                 uid,
                 [
@@ -596,37 +602,46 @@ class TestEmotionMainlineJournalReview:
                     (today - timedelta(days=1), "calm"),
                 ],
             )
-            resp = client.post(
-                "/journal/entries", headers=headers, json={"mood": "thoughtful"}
-            )
-            assert resp.status_code == 200
-            assert resp.json()["streak"] == 4
+            with mock.patch.object(diary_entries, "date", _FixedToday), mock.patch.object(
+                journal_api, "date", _FixedToday
+            ):
+                resp = client.post(
+                    "/journal/entries", headers=headers, json={"mood": "thoughtful"}
+                )
+                assert resp.status_code == 200
+                assert resp.json()["streak"] == 4
 
-            # 月历聚合：当月含今日记录 + current_streak ≥ 1
-            now = date.today()
-            month = f"{now.year:04d}-{now.month:02d}"
-            cal = client.get(
-                f"/journal/calendar?year={now.year}&month={now.month}",
-                headers=headers,
-            ).json()
-            assert cal["stats"]["days_recorded"] >= 4
-            assert now.isoformat() in [d["date"] for d in cal["days"]]
-            assert cal["stats"]["current_streak"] >= 1
+                # 月历聚合：当月含今日记录 + current_streak ≥ 1
+                now = _FixedToday.fixed
+                month = f"{now.year:04d}-{now.month:02d}"
+                cal = client.get(
+                    f"/journal/calendar?year={now.year}&month={now.month}",
+                    headers=headers,
+                ).json()
+                assert cal["stats"]["days_recorded"] >= 4
+                assert now.isoformat() in [d["date"] for d in cal["days"]]
+                assert cal["stats"]["current_streak"] >= 1
 
-            # 月度复盘有料（AI 禁用 → 降级模板仍非空）＋ 落缓存
-            review = client.get(f"/journal/review?month={month}", headers=headers).json()
-            assert review["stats"]["days_recorded"] >= 4
-            assert review["trend_summary"]
-            assert review["mood_series"]
-            # 缓存命中（二次请求不重复生成）
-            again = client.get(f"/journal/review?month={month}", headers=headers).json()
-            assert again["cached"] is True
+                # 月度复盘有料（AI 禁用 → 降级模板仍非空）＋ 落缓存
+                review = client.get(
+                    f"/journal/review?month={month}", headers=headers
+                ).json()
+                assert review["stats"]["days_recorded"] >= 4
+                assert review["trend_summary"]
+                assert review["mood_series"]
+                # 缓存命中（二次请求不重复生成）
+                again = client.get(
+                    f"/journal/review?month={month}", headers=headers
+                ).json()
+                assert again["cached"] is True
 
-            # 海报预览：与复盘同口径统计，且无敏感字段
-            preview = client.get(
-                f"/journal/review/share-preview?month={month}", headers=headers
-            ).json()
-            assert preview["stats"]["days_recorded"] == review["stats"]["days_recorded"]
+                # 海报预览：与复盘同口径统计，且无敏感字段
+                preview = client.get(
+                    f"/journal/review/share-preview?month={month}", headers=headers
+                ).json()
+                assert preview["stats"]["days_recorded"] == review["stats"][
+                    "days_recorded"
+                ]
             for key in ("user_id", "nickname", "openid"):
                 assert key not in preview
         finally:
@@ -712,7 +727,7 @@ class TestMeetInviteChainAndStarTierPassthrough:
             # 5) 归属校验：双方可见，第三人 404；重复 join 幂等 400
             assert client.get(f"/meet/{meet_id}", headers=h_b).status_code == 200
             assert client.get(f"/meet/{meet_id}", headers=h_a).status_code == 200
-            _, _, h_c = _new_user(f"integ-meetc-{date.today().isoformat()}")
+            uid_c, _, h_c = _new_user(f"integ-meetc-{date.today().isoformat()}")
             assert client.get(f"/meet/{meet_id}", headers=h_c).status_code == 404
             again = client.post(
                 "/meet/join",
@@ -731,4 +746,4 @@ class TestMeetInviteChainAndStarTierPassthrough:
                 for m in client.get("/meet/list", headers=h_b).json()["meetings"]
             ]
         finally:
-            _cleanup(initiator_id, friend_id)
+            _cleanup(initiator_id, friend_id, uid_c)

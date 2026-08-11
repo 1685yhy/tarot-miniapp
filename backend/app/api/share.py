@@ -190,7 +190,10 @@ async def get_invite_code(
 
 @router.get("/wxa-code")
 async def wxa_code(
-    page: str = Query("pages/index/index", description="Mini-program page path"),
+    page: str | None = Query(
+        None,
+        description="Mini-program page path（未传时回退 path 别名，再缺省首页）",
+    ),
     path: str | None = Query(
         None,
         description="历史别名：早期前端用 path= 传页面路径，与 page 等价（T5-1 兼容）",
@@ -205,15 +208,17 @@ async def wxa_code(
     the raw PNG bytes directly, so the client can display it on a canvas or
     save it.
 
-    - **page**  — path to the published page (default: ``pages/index/index``)
-    - **path**  — 历史别名（早期前端调用方用 path=），仅在 page 未显式指定时
+    - **page**  — path to the published page；None 哨兵区分「未传」与「显式传
+      默认值」：未传时回退 path（历史别名），仍缺省则首页。显式传
+      page=pages/index/index 时 path 不再覆盖（T5-1 审查 Minor 修复）
+    - **path**  — 历史别名（早期前端调用方用 path=），仅在 page 未传（None）时
       生效；两者同传时 page 优先（T5-1 集成发现：meet 海报/分享中心海报曾用
       path= 传参被静默丢弃 → 码指向首页而非落地页，裂变断链）
     - **width** — image width in px (200–1280, default: 280)
     - **scene** — optional scene string passed to the mini-program on scan
     """
-    if path and page == "pages/index/index":
-        page = path
+    if page is None:
+        page = path or "pages/index/index"
     try:
         png_bytes = await get_wxacode(scene=scene, page=page, width=width)
         return Response(content=png_bytes, media_type="image/png")

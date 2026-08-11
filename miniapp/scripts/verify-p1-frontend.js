@@ -169,6 +169,14 @@ if (canvasPoster.includes("?path='")) {
 } else {
   fail('canvas-poster：未检测到 page= 参数');
 }
+const weeklyReportPoster = read('components/weekly-report-poster/weekly-report-poster.js');
+if (weeklyReportPoster.includes("?path='")) {
+  fail('weekly-report-poster：仍有 path= 残留（同类一并修）');
+} else if (weeklyReportPoster.includes("?page='")) {
+  ok('weekly-report-poster：周报海报已用 page= 参数（同类一并修）');
+} else {
+  fail('weekly-report-poster：未检测到 page= 参数');
+}
 
 // ── 4. 合规统一：新结果页/海报含「仅供娱乐 · 星光映照」─────────────────
 const COMPLIANCE = '仅供娱乐 · 星光映照';
