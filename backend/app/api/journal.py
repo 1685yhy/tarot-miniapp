@@ -4,7 +4,7 @@
 star_color 由 ``build_today_guidance(date, user.zodiac)`` 确定性生成，不落库。
 """
 
-from datetime import date
+from datetime import date, timedelta
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import select
@@ -18,6 +18,34 @@ from app.services.journal import journal_days_for, month_stats
 from app.utils.auth import get_current_user
 
 router = APIRouter(prefix="/journal", tags=["星光手账"])
+
+
+async def _streak_prior_dates(
+    db: AsyncSession, user_id: str, month_start: date
+) -> set[date]:
+    """跨月连续回扫：月初之前、紧接月初的连续记录日期集（供 current_streak 补数据）。
+
+    只取“以 month_start-1 结尾的最长连续段”，断档即止——更早的记录与当月
+    不可能连续，直接舍弃。仅投影 entry_date（轻量），结果交给 ``month_stats``
+    并入 current_streak 计算，保持 ``current_streak`` 纯函数语义不变。
+    """
+    expected = month_start - timedelta(days=1)
+    result = await db.execute(
+        select(DiaryEntry.entry_date)
+        .where(
+            DiaryEntry.user_id == user_id,
+            DiaryEntry.entry_date < month_start,
+        )
+        .order_by(DiaryEntry.entry_date.desc())
+    )
+    prior: set[date] = set()
+    for entry_date in result.scalars():
+        if entry_date == expected:
+            prior.add(entry_date)
+            expected -= timedelta(days=1)
+        elif entry_date < expected:
+            break  # 断档：更早的记录与当月不再连续
+    return prior
 
 
 @router.get("/calendar", response_model=JournalCalendarResponse)
@@ -46,5 +74,7 @@ async def calendar(
     )
     entries = result.scalars().all()
     days = journal_days_for(entries, user.zodiac)
-    stats = month_stats(days, date.today())
+    # 跨月连续回扫：7-31→8-11 这类月初前连续记录需并入 streak，否则月初被截断
+    prior_dates = await _streak_prior_dates(db, user.id, start)
+    stats = month_stats(days, date.today(), prior_dates=prior_dates)
     return JournalCalendarResponse(days=days, stats=stats)

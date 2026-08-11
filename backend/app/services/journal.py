@@ -75,9 +75,16 @@ def journal_days_for(entries, zodiac: str | None) -> list[dict]:
     return days
 
 
-def month_stats(days: list[dict], today: date) -> dict:
-    """月度统计：days_recorded / bright_count(亮度≥4) / dim_count(亮度≤2) / current_streak。"""
+def month_stats(days: list[dict], today: date, prior_dates: set[date] | None = None) -> dict:
+    """月度统计：days_recorded / bright_count(亮度≥4) / dim_count(亮度≤2) / current_streak。
+
+    ``prior_dates``：月初之前的连续记录日期集（API 集成层为跨月 streak 补数据）。
+    只并入 current_streak 的计算集合；days_recorded / bright_count / dim_count
+    仍只统计当月（与 days 数组口径一致）。
+    """
     recorded_dates = {date.fromisoformat(d["date"]) for d in days}
+    if prior_dates:
+        recorded_dates |= prior_dates
     return {
         "days_recorded": len(days),
         "bright_count": sum(1 for d in days if d["brightness"] >= 4),

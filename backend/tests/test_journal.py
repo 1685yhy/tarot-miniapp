@@ -8,6 +8,9 @@ Covers:
 - 6 moods → correct 5-level brightness (excited=5 ... anxious|sad=1)
 - has_reflection flips with reflection presence/absence
 - month stats counting (bright_count >= 4, dim_count <= 2, streak)
+- API 层跨月 streak：月初前连续回扫（跨月连续 / 长跨月 / 断档截断）
+- invalid year/month params → 422
+- mood=None / 未知 mood → 亮度 2 兜底
 - current_streak pure function (0 / consecutive / gap breaks / cross-month)
 """
 
@@ -181,23 +184,27 @@ class TestMonthStats:
 
     def test_stats_counts_and_date_order(self, client: TestClient):
         user_id, token = _run(_make_user())
+        # 动态构造“上个月”，避免固定日期断言（固定 2026-07 依赖今天已过该月）
+        last_month = date.today().replace(day=1) - timedelta(days=1)
+        y, m = last_month.year, last_month.month
         _run(_seed_entries(user_id, [
-            (date(2026, 7, 1), "excited", "a", 1),   # brightness 5 → bright
-            (date(2026, 7, 3), "happy", "b", 1),     # brightness 4 → bright
-            (date(2026, 7, 5), "calm", "c", 1),      # brightness 3 → neither
-            (date(2026, 7, 7), "anxious", "d", 1),   # brightness 1 → dim
-            (date(2026, 7, 9), "sad", "e", 1),       # brightness 1 → dim
+            (date(y, m, 1), "excited", "a", 1),   # brightness 5 → bright
+            (date(y, m, 3), "happy", "b", 1),     # brightness 4 → bright
+            (date(y, m, 5), "calm", "c", 1),      # brightness 3 → neither
+            (date(y, m, 7), "anxious", "d", 1),   # brightness 1 → dim
+            (date(y, m, 9), "sad", "e", 1),       # brightness 1 → dim
         ]))
-        resp = client.get(f"{CALENDAR_URL}?year=2026&month=7", headers=_headers(token))
+        resp = client.get(f"{CALENDAR_URL}?year={y}&month={m}", headers=_headers(token))
         assert resp.status_code == 200, resp.text
         data = resp.json()
         assert data["stats"]["days_recorded"] == 5
         assert data["stats"]["bright_count"] == 2
         assert data["stats"]["dim_count"] == 2
-        assert data["stats"]["current_streak"] == 0  # July 2026 fully in the past
+        assert data["stats"]["current_streak"] == 0  # 整月已完全过去 → 与今天不连续
         # days sorted ascending by date
         assert [d["date"] for d in data["days"]] == [
-            "2026-07-01", "2026-07-03", "2026-07-05", "2026-07-07", "2026-07-09",
+            f"{y}-{m:02d}-01", f"{y}-{m:02d}-03", f"{y}-{m:02d}-05", f"{y}-{m:02d}-07",
+            f"{y}-{m:02d}-09",
         ]
         # card_id passthrough
         assert all(d["card_id"] == 1 for d in data["days"])
@@ -248,6 +255,108 @@ class TestCalendarStreak:
         )
         assert resp.status_code == 200, resp.text
         assert resp.json()["stats"]["current_streak"] == 1
+
+    def test_streak_spans_month_boundary(self, client: TestClient):
+        """跨月连续：月初前的连续记录计入当月 streak（如 7-31→8-11 返回 12）。"""
+        user_id, token = _run(_make_user())
+        today = date.today()
+        month_start = today.replace(day=1)
+        # 月初前 4 天起连续到今天（无论今天几号都必然跨月）
+        seed_start = month_start - timedelta(days=4)
+        _run(_seed_entries(user_id, [
+            (seed_start + timedelta(days=i), "happy", "x", 1)
+            for i in range((today - seed_start).days + 1)
+        ]))
+        resp = client.get(
+            f"{CALENDAR_URL}?year={today.year}&month={today.month}",
+            headers=_headers(token),
+        )
+        assert resp.status_code == 200, resp.text
+        data = resp.json()
+        assert data["stats"]["current_streak"] == (today - seed_start).days + 1
+        # days 仍只含当月记录，跨月部分只进 streak
+        assert len(data["days"]) == (today - month_start).days + 1
+
+    def test_long_streak_spans_multiple_months(self, client: TestClient):
+        """长跨月：连续 60+ 天（必然跨越至少两个月界）返回完整天数，不在月初截断。"""
+        user_id, token = _run(_make_user())
+        today = date.today()
+        seed_start = today - timedelta(days=60)
+        _run(_seed_entries(user_id, [
+            (seed_start + timedelta(days=i), "calm", "x", 1)
+            for i in range(61)  # 60 天前到今天，含两端共 61 天
+        ]))
+        resp = client.get(
+            f"{CALENDAR_URL}?year={today.year}&month={today.month}",
+            headers=_headers(token),
+        )
+        assert resp.status_code == 200, resp.text
+        assert resp.json()["stats"]["current_streak"] == 61
+
+    def test_streak_cross_month_truncates_at_gap(self, client: TestClient):
+        """断档：月中缺一天即截断，月初前的更早记录不得并入。"""
+        user_id, token = _run(_make_user())
+        today = date.today()
+        month_start = today.replace(day=1)
+        seed_start = month_start - timedelta(days=6)
+        gap_day = seed_start + timedelta(days=4)  # 中间缺一天 → 之后全部截断
+        rows = [
+            (seed_start + timedelta(days=i), "happy", "x", 1)
+            for i in range((today - seed_start).days + 1)
+            if seed_start + timedelta(days=i) != gap_day
+        ]
+        _run(_seed_entries(user_id, rows))
+        resp = client.get(
+            f"{CALENDAR_URL}?year={today.year}&month={today.month}",
+            headers=_headers(token),
+        )
+        assert resp.status_code == 200, resp.text
+        # 断档后只数到今天为止的连续段：今天−断档日 之间的天（不含断档日）
+        expected = (today - gap_day).days
+        assert resp.json()["stats"]["current_streak"] == expected
+
+
+class TestCalendarValidation:
+    """GET /journal/calendar — 非法参数 → 422"""
+
+    def test_out_of_range_year_month_returns_422(self, client: TestClient):
+        _, token = _run(_make_user())
+        headers = _headers(token)
+        for params in (
+            "year=1999&month=8",   # year < 2000
+            "year=2101&month=8",   # year > 2100
+            "year=2026&month=0",   # month < 1
+            "year=2026&month=13",  # month > 12
+        ):
+            resp = client.get(f"{CALENDAR_URL}?{params}", headers=headers)
+            assert resp.status_code == 422, params
+
+    def test_missing_or_non_integer_params_returns_422(self, client: TestClient):
+        _, token = _run(_make_user())
+        headers = _headers(token)
+        assert client.get(f"{CALENDAR_URL}?year=2026", headers=headers).status_code == 422
+        assert client.get(f"{CALENDAR_URL}?month=8", headers=headers).status_code == 422
+        assert client.get(f"{CALENDAR_URL}?year=abc&month=8", headers=headers).status_code == 422
+
+
+class TestMoodFallback:
+    """缺失/未知 mood → 按“思考”(2) 兜底"""
+
+    def test_null_mood_falls_back_to_thoughtful_brightness(self, client: TestClient):
+        user_id, token = _run(_make_user())
+        _run(_seed_entries(user_id, [(date(2026, 8, 5), None, None, None)]))
+        resp = client.get(f"{CALENDAR_URL}?year=2026&month=8", headers=_headers(token))
+        assert resp.status_code == 200, resp.text
+        day = resp.json()["days"][0]
+        assert day["mood"] is None
+        assert day["brightness"] == 2  # MOOD_BRIGHTNESS["thoughtful"]
+
+    def test_null_and_unknown_mood_fallback_unit(self):
+        from app.services.journal import brightness_for
+
+        assert brightness_for(None) == 2
+        assert brightness_for("not-a-mood") == 2
+        assert brightness_for("") == 2
 
 
 class TestCurrentStreak:
