@@ -175,3 +175,53 @@ def test_alembic_migration_star_monthly_reviews(tmp_path, monkeypatch):
     )}
     conn.close()
     assert "star_monthly_reviews" not in tables_after
+
+
+def test_alembic_migration_star_meetings(tmp_path, monkeypatch):
+    """迁移 66ff77aa88bb：star_meetings 表（星辰相遇记录，P1 T2-2）可升级、可回滚。
+
+    列严格按设计 2.4 SQL：id/initiator_id/friend_user_id/relation/
+    a_zodiac/a_moon/a_rising/b_zodiac/b_moon/b_rising/status/result_json/created_at/updated_at。
+    """
+    from alembic import command
+    from alembic.config import Config
+
+    from app.config import settings
+
+    db_path = tmp_path / "migration_meetings.db"
+    monkeypatch.setattr(settings, "DATABASE_URL", f"sqlite:///{db_path}")
+
+    cfg = Config(str(BACKEND_DIR / "alembic.ini"))
+
+    # ── upgrade 到 head ──
+    command.upgrade(cfg, "head")
+
+    conn = sqlite3.connect(str(db_path))
+    tables = {r[0] for r in conn.execute(
+        "SELECT name FROM sqlite_master WHERE type='table'"
+    )}
+    assert "star_meetings" in tables, "star_meetings 表应已创建"
+
+    cols = {r[1] for r in conn.execute("PRAGMA table_info(star_meetings)")}
+    expected = {
+        "id", "initiator_id", "friend_user_id", "relation",
+        "a_zodiac", "a_moon", "a_rising", "b_zodiac", "b_moon", "b_rising",
+        "status", "result_json", "created_at", "updated_at",
+    }
+    assert expected <= cols, f"star_meetings 缺列: {sorted(expected - cols)}"
+    # 无出生日期/时间列（PII 最小化：只存派生星座 key）
+    assert not ({"b_birth_date", "b_birth_time"} & cols), "不允许存出生信息明文"
+
+    # status 默认 completed（设计 2.4 SQL）
+    ddl = conn.execute(
+        "SELECT sql FROM sqlite_master WHERE type='table' AND name='star_meetings'"
+    ).fetchone()[0]
+    assert "DEFAULT 'completed'" in ddl.upper().replace("'", "'") or "COMPLETED" in ddl.upper()
+
+    # ── downgrade 回 base：新表被删除 ──
+    command.downgrade(cfg, "base")
+    tables_after = {r[0] for r in conn.execute(
+        "SELECT name FROM sqlite_master WHERE type='table'"
+    )}
+    conn.close()
+    assert "star_meetings" not in tables_after
