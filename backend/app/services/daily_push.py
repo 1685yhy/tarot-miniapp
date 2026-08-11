@@ -162,7 +162,7 @@ def get_moon_push_event(today: date) -> dict | None:
 
     - 新月前 1 天（明天是新月日）→ 「明日新月，准备好愿望了吗 ✦」→ pages/wish/wish
     - 满月当天 → 「满月之夜，来复盘你的愿望 ✦」→ pages/review/review
-    - 其他日期 → None（走常规每日一牌）
+    - 其他日期 → None（普通日走 7:37 星光晨讯 / 21:00 睡前星语常规推送）
 
     月相判定与 /moon/phase 同一确定性算法（services/moon.py），
     推送、页面展示、许愿记录完全同源。
@@ -518,34 +518,50 @@ async def send_daily_push_if_due(db: AsyncSession, now: datetime | None = None) 
     sent = 0
     failed = 0
     for quota, user in rows:
-        # ── 原子认领（I-1）：与晨讯同款。并发/崩溃交错时同用户同日最多
-        #    发 1 条（双槽位共用 last_sent_date —— 已收晨讯者此处 rowcount==0
-        #    跳过，两槽位共享每日 1 条硬上限）。──
-        claim = await db.execute(
-            update(SubscribeQuota)
-            .where(
-                SubscribeQuota.user_id == quota.user_id,
-                or_(
-                    SubscribeQuota.last_sent_date.is_(None),
-                    SubscribeQuota.last_sent_date != today,
-                ),
-            )
-            .values(last_sent_date=today)
-        )
-        if claim.rowcount != 1:
-            continue
+        # ── user_id 快照：get_today_star_word 的缓存冲突回滚（_save_cache 撞
+        #    唯一约束）会令会话内 ORM 对象过期，async 下惰性加载抛
+        #    MissingGreenlet；认领/额度减扣/认领回退全部改用纯值，回滚后仍可用。──
+        user_id = quota.user_id
         try:
             if moon_event:
-                # 节点日：节点文案优先，不发星语
+                # 节点日：节点文案优先，不发星语（无落库副作用，认领后即可）
                 data = build_moon_push_data(moon_event, today)
                 page = moon_event["page"]
             else:
                 # 星语日：AI 优先 → 短句库兜底 → 同日缓存（写缓存即落库）
+                # ── T1-8 认领竞态修复（方案 B）：取星语必须在认领 UPDATE
+                #    之前。get_today_star_word 内部 _save_cache 会自行
+                #    db.commit()；若在认领之后调用，并发首写撞
+                #    uq_user_word_date 唯一约束时 _save_cache 的
+                #    db.rollback() 会连带撤销同事务内已写入的
+                #    last_sent_date=today（认领被静默回滚）→ 发送成功后
+                #    quota-1 但 last_sent_date 仍 NULL → 下轮循环同日
+                #    二次推送（quota≥2 时破坏 1 条/天硬上限）。
+                #    先取星语（纯 SELECT/缓存优先；AI 全挂有短句库兜底，
+                #    star_words 保证总有返回），其 commit/rollback 只作用于
+                #    星语缓存事务；缓存落库完成后再开启认领事务，互不影响。──
                 star = await get_today_star_word(db, user, today)
                 guidance = build_today_guidance(today, user.zodiac or None)
                 energy = await _today_energy(db, user, today)
                 data = build_star_word_data(today, guidance, energy, star["phrase"])
                 page = NIGHT_PAGE
+
+            # ── 原子认领（I-1）：与晨讯同款。并发/崩溃交错时同用户同日最多
+            #    发 1 条（双槽位共用 last_sent_date —— 已收晨讯者此处 rowcount==0
+            #    跳过，两槽位共享每日 1 条硬上限）。──
+            claim = await db.execute(
+                update(SubscribeQuota)
+                .where(
+                    SubscribeQuota.user_id == user_id,
+                    or_(
+                        SubscribeQuota.last_sent_date.is_(None),
+                        SubscribeQuota.last_sent_date != today,
+                    ),
+                )
+                .values(last_sent_date=today)
+            )
+            if claim.rowcount != 1:
+                continue
             resp = await send_subscribe_message(
                 openid=user.openid,
                 template_id=template_id,
@@ -559,7 +575,7 @@ async def send_daily_push_if_due(db: AsyncSession, now: datetime | None = None) 
                 await db.execute(
                     update(SubscribeQuota)
                     .where(
-                        SubscribeQuota.user_id == quota.user_id,
+                        SubscribeQuota.user_id == user_id,
                         SubscribeQuota.quota_available > 0,
                     )
                     .values(quota_available=SubscribeQuota.quota_available - 1)
@@ -569,13 +585,13 @@ async def send_daily_push_if_due(db: AsyncSession, now: datetime | None = None) 
                 # 微信 errcode!=0：不扣额度，认领回退为 NULL（允许下次重试），
                 # 但记录失败次数——当日达上限后不再尝试（F-2）
                 failed += 1
-                await _release_claim(db, quota.user_id, today)
-                _record_failure(_night_fail_counts, quota.user_id, today_str)
+                await _release_claim(db, user_id, today)
+                _record_failure(_night_fail_counts, user_id, today_str)
         except Exception:
-            logger.exception("21:00 睡前星语发送失败：user=%s", quota.user_id)
+            logger.exception("21:00 睡前星语发送失败：user=%s", user_id)
             failed += 1
-            await _release_claim(db, quota.user_id, today)
-            _record_failure(_night_fail_counts, quota.user_id, today_str)
+            await _release_claim(db, user_id, today)
+            _record_failure(_night_fail_counts, user_id, today_str)
 
     # 批标记仅作内存级第二道防线：整批无失败才置位（当天不再重扫）；
     # 有失败则保持空，下一轮 5 分钟循环补发失败用户（原子认领保证不重复发送；
@@ -593,7 +609,7 @@ async def run_daily_push_loop(
     interval_seconds: int = 300,
     stop_event: asyncio.Event | None = None,
 ) -> None:
-    """后台任务：每 5 分钟检查一次两个推送槽位（7:37 星光晨讯 / 21:00 晚间推送）。
+    """后台任务：每 5 分钟检查一次两个推送槽位（7:37 星光晨讯 / 21:00 睡前星语）。
 
     模板未配置时直接退出（记 error 日志），不空转。异常被捕获并记录，
     循环继续，保证推送任务永不崩溃整个服务。
@@ -609,7 +625,7 @@ async def run_daily_push_loop(
         try:
             async with async_session() as db:
                 await send_starlight_morning_if_due(db)  # 7:37 星光晨讯（按额度消费）
-                await send_daily_push_if_due(db)          # 21:00 晚间推送
+                await send_daily_push_if_due(db)          # 21:00 睡前星语
         except asyncio.CancelledError:
             raise
         except Exception:

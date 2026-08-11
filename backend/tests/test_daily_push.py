@@ -597,3 +597,73 @@ def test_night_push_claim_blocks_preclaimed(
     quota = asyncio.run(_get_quota_row(uid))
     assert quota.quota_available == 1
     assert quota.last_sent_date == NOW_2130.date()
+
+
+def test_night_push_star_cache_conflict_does_not_lose_claim(
+    client: TestClient, monkeypatch, clean_push_state
+):
+    """T1-8 认领竞态回归：星语缓存并发冲突（rollback）不得连带撤销认领。
+
+    修复前：night 路径先认领（last_sent_date=today，未提交）再调
+    get_today_star_word —— _save_cache 撞 uq_user_word_date 唯一约束时
+    db.rollback() 会回滚同事务内的认领；发送成功后 quota-1 但
+    last_sent_date 仍 NULL → 下一轮循环同日二次推送（quota≥2 时
+    破坏 1 条/天硬上限）。
+    修复后（方案 B）：取星语在认领 UPDATE 之前，缓存冲突的 rollback
+    只作用于星语缓存事务；认领在其后执行，不受影响。
+    模拟：monkeypatch _save_cache 走并发输家路径（rollback + 返回赢家内容），
+    断言发送后 last_sent_date==今天、quota-1，且清掉批标记后再次循环不双发。
+    """
+    _reset_state(monkeypatch)
+    monkeypatch.setattr(settings, "WX_TEMPLATE_DAILY_CARD", "TEST_TMPL")
+    _, _ = asyncio.run(_new_user("night_cache_race_001"))
+    uid = asyncio.run(_uid_by_openid("night_cache_race_001"))
+    asyncio.run(_seed_quota(uid, 2))  # quota>=2 才能暴露旧 bug 的二次推送
+
+    # 捕获推送循环持有的 user 对象（回滚后需刷新，见下）
+    captured: dict = {}
+    real_get_star_word = star_words.get_today_star_word
+
+    async def _capture_user(db, user, today):
+        captured["user"] = user
+        return await real_get_star_word(db, user, today)
+
+    monkeypatch.setattr(daily_push, "get_today_star_word", _capture_user)
+
+    # 模拟并发输家：commit 撞 uq_user_word_date 唯一约束 → IntegrityError
+    # 处理器回滚 → 回读赢家已落库缓存返回（与 star_words._save_cache 同款路径）。
+    # 注：rollback() 会令会话内 ORM 对象过期，async 下惰性加载抛
+    # MissingGreenlet——刷新 user 恢复推送流程（quota 侧由 daily_push 的
+    # user_id 纯值快照规避，无需刷新）。
+    async def _conflicting_save_cache(db, user_id, today, phrase, source):
+        await db.rollback()
+        await db.refresh(captured["user"])
+        return {"phrase": "并发赢家已落库短语", "source": "ai"}
+
+    monkeypatch.setattr(star_words, "_save_cache", _conflicting_save_cache)
+
+    calls: list = []
+    _fake_wechat_ok(monkeypatch, calls)
+
+    result = _send_if_due(NOW_2130)
+    assert result["status"] == "sent"
+    assert result["sent"] == 1
+    assert result["failed"] == 0
+    assert len(calls) == 1
+    # 赢家短语贯通到推送内容（thing1）
+    assert calls[0]["data"]["thing1"]["value"] == "并发赢家已落库短语"
+
+    # 认领未被缓存冲突回滚连带撤销：last_sent_date==今天、quota-1
+    quota = asyncio.run(_get_quota_row(uid))
+    assert quota.quota_available == 1
+    assert quota.last_sent_date == NOW_2130.date()
+
+    # 清掉批标记模拟 5 分钟循环再次扫描（旧 bug：认领被回滚 → 同日再发）
+    monkeypatch.setattr(daily_push, "_last_sent_date", None)
+    result2 = _send_if_due(NOW_2130)
+    assert result2["status"] == "no_subscribers"
+    assert len(calls) == 1  # 未双发
+
+    quota2 = asyncio.run(_get_quota_row(uid))
+    assert quota2.quota_available == 1
+    assert quota2.last_sent_date == NOW_2130.date()
