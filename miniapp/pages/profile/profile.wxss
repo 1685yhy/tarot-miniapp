@@ -608,6 +608,96 @@
 }
 
 /* ============================================================
+   SLOT PICKER — 星光时刻（推送槽位偏好二选一，T4-4）
+   E3 奶油疗愈：晨星/晚星两枚按钮，高亮所选
+   ============================================================ */
+.slot-picker {
+  background: var(--color-surface-gradient);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.12);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg) var(--spacing-xl) var(--spacing-xl);
+  margin-bottom: var(--spacing-sm);
+  box-shadow: var(--shadow-card);
+}
+
+.slot-picker-title {
+  display: block;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+  margin-bottom: 6rpx;
+}
+
+.slot-picker-desc {
+  display: block;
+  font-size: var(--font-size-caption);
+  color: var(--color-text-tertiary);
+  line-height: var(--line-height-base);
+  margin-bottom: var(--spacing-md);
+}
+
+.slot-picker-row {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.slot-btn {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-sm);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 2rpx solid rgba(201, 169, 124, 0.20);
+  transition: background var(--duration-fast) var(--ease-soft),
+              border-color var(--duration-fast) var(--ease-soft),
+              transform var(--duration-fast) var(--ease-soft);
+}
+
+.slot-btn:active {
+  transform: scale(0.97);
+  background: var(--color-card-hover);
+}
+
+.slot-btn--active {
+  background: linear-gradient(145deg, rgba(201, 169, 124, 0.16) 0%, rgba(201, 169, 124, 0.06) 100%);
+  border-color: var(--color-gold);
+  box-shadow: var(--shadow-glow-gold);
+}
+
+.slot-btn-icon {
+  font-size: 40rpx;
+  line-height: 1;
+  margin-bottom: 8rpx;
+  color: var(--color-gold-dark);
+}
+
+.slot-btn--active .slot-btn-icon {
+  color: var(--color-gold-deep-ink);
+}
+
+.slot-btn-time {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+  margin-bottom: 4rpx;
+}
+
+.slot-btn-name {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-tertiary);
+  line-height: var(--line-height-tight);
+}
+
+.slot-btn--active .slot-btn-name {
+  color: var(--color-gold-deep-ink);
+}
+
+/* ============================================================
    HISTORY CARD — Card-style reading archive entries
    ============================================================ */
 .history-card {

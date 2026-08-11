@@ -355,20 +355,37 @@
         <image wx:if="{{ambientEnabled}}" class="menu-arrow-img" src="/images/icons/star_64.png" mode="aspectFit" aria-label="星空环境音开启" />
         <text wx:else class="menu-arrow">○</text>
       </view>
-      <!-- ===== Push Notification Settings ===== -->
+      <!-- ===== Push Notification Settings（T4-4：星光时刻二选一） ===== -->
       <view class="menu-section-title anim-fade-up anim-stagger-9">
         <text class="menu-section-label">推送设置</text>
       </view>
-      <view class="menu-item anim-slide-up anim-stagger-10" bindtap="onSubscribeDailyCard" role="button" aria-label="订阅每日塔罗推送">
-        <view class="menu-icon-wrap">
-          <image src="/images/icons/star_64.png" mode="aspectFit" class="menu-icon-img" aria-label="每日推送"></image>
+      <view class="slot-picker anim-slide-up anim-stagger-10">
+        <text class="slot-picker-title">✦ 星光时刻</text>
+        <text class="slot-picker-desc">每天只来一条星光——选择星光降临的时刻</text>
+        <view class="slot-picker-row">
+          <view
+            class="slot-btn {{slotPreference === 'morning' ? 'slot-btn--active' : ''}}"
+            bindtap="onSelectSlot"
+            data-slot="morning"
+            role="button"
+            aria-label="选择清晨 7:37 晨星：今日星光"
+          >
+            <text class="slot-btn-icon">✦</text>
+            <text class="slot-btn-time">清晨 7:37</text>
+            <text class="slot-btn-name">晨星 · 今日星光</text>
+          </view>
+          <view
+            class="slot-btn {{slotPreference === 'night' ? 'slot-btn--active' : ''}}"
+            bindtap="onSelectSlot"
+            data-slot="night"
+            role="button"
+            aria-label="选择夜晚 21:00 晚星：睡前星语"
+          >
+            <text class="slot-btn-icon">☽</text>
+            <text class="slot-btn-time">夜晚 21:00</text>
+            <text class="slot-btn-name">晚星 · 睡前星语</text>
+          </view>
         </view>
-        <view class="menu-content">
-          <text class="menu-title">每日塔罗推送</text>
-          <text class="menu-desc">{{pushDailyCard ? '已开启 · 每日推送今日塔罗' : '关闭'}}</text>
-        </view>
-        <image wx:if="{{pushDailyCard}}" class="menu-arrow-img" src="/images/icons/star_64.png" mode="aspectFit" aria-label="每日推送已开启" />
-        <text wx:else class="menu-arrow">○</text>
       </view>
       <view class="menu-item anim-slide-up anim-stagger-11" bindtap="onOpenPushSettings" role="button" aria-label="打开推送管理">
         <view class="menu-icon-wrap">

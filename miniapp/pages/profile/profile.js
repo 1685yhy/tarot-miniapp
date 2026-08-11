@@ -5,6 +5,7 @@ const { checkLogin } = require('../../utils/auth');
 const { computeImagePath, findCard } = require('../../utils/cards');
 const sound = require('../../utils/sound');
 const { getZodiacBadge } = require('../../utils/energy');
+const { SLOT_INFO } = require('../../utils/config');
 
 // 三位塔罗师信息（与 backend ai_personas.py 保持一致）
 const PERSONA_INFO = {
@@ -102,10 +103,9 @@ Page({
     // Invite / share rewards
     inviteRewards: 0,
 
-    // Push notification settings
-    pushDailyCard: false,
-    pushMemberExpire: false,
-    pushAnnualReport: false,
+    // Push notification settings（T4-4：星光时刻槽位偏好）
+    slotPreference: 'morning',   // 'morning' 晨讯 7:37 / 'night' 星语 21:00（回显高亮）
+    slotSwitching: false,        // 切换中防重复提交
 
     // Membership benefits data
     memberBenefits: [
@@ -192,8 +192,8 @@ Page({
       isAnnualReportSeason: false,
     });
 
-    // Load push subscription status from storage
-    this._loadPushSettings();
+    // Load push slot preference（星光时刻：GET /notify/preference 回显）
+    this._loadSlotPreference();
 
     // Check annual report season (Dec-Jan)
     const month = new Date().getMonth() + 1;
@@ -752,70 +752,61 @@ Page({
     });
   },
 
-  // ---- Push notification settings ----
+  // ---- Push notification settings（T4-4：星光时刻槽位偏好） ----
 
-  /** Load push subscription status from local storage */
-  _loadPushSettings() {
-    const pushDailyCard = wx.getStorageSync('push_daily_subscribed') === true;
-    const pushMemberExpire = wx.getStorageSync('push_member_expire') === true;
-    const pushAnnualReport = wx.getStorageSync('push_annual_report') === true;
-    this.setData({
-      pushDailyCard,
-      pushMemberExpire,
-      pushAnnualReport,
-    });
+  /**
+   * 加载推送槽位偏好（星光时刻）：GET /notify/preference 回显高亮。
+   * 优雅降级：未登录/接口失败时优先本地缓存（上次选择），无缓存默认
+   * morning（与后端默认一致）；失败静默不打扰用户。
+   */
+  async _loadSlotPreference() {
+    let cached = 'morning';
+    try { cached = wx.getStorageSync('slot_preference') || 'morning'; } catch (_e) { /* silent */ }
+    if (cached !== 'morning' && cached !== 'night') cached = 'morning';
+    try {
+      const data = await request('/notify/preference');
+      const slot = data && data.slot_preference;
+      const valid = (slot === 'morning' || slot === 'night') ? slot : cached;
+      try { wx.setStorageSync('slot_preference', valid); } catch (_e) { /* silent */ }
+      this.setData({ slotPreference: valid });
+    } catch (_err) {
+      // 未登录/接口失败：静默用缓存兜底，不打扰用户
+      this.setData({ slotPreference: cached });
+    }
   },
 
-  /** Subscribe to daily card push */
-  onSubscribeDailyCard() {
-    wx.requestSubscribeMessage({
-      tmplIds: ['TEMPLATE_DAILY_CARD'],
-      success: (res) => {
-        const accepted = res['TEMPLATE_DAILY_CARD'] === 'accept';
-        wx.setStorageSync('push_daily_subscribed', accepted);
-        this.setData({ pushDailyCard: accepted });
-        wx.showToast({
-          title: accepted ? '已开启每日推送 ✦' : '已关闭每日推送',
-          icon: 'none',
-          duration: 1500,
-        });
-        // Report to backend
-        this._reportSubscription('TEMPLATE_DAILY_CARD', accepted);
-      },
-      fail: () => {
-        // Silent degrade
-      },
-    });
+  /**
+   * 切换星光时刻（晨讯 7:37 / 星语 21:00）：POST /notify/preference，即时生效。
+   * 守卫：切换中防重复提交；重复点击当前已选槽位 no-op（不发请求）。
+   * 失败：回滚高亮 + 轻提示（本地态保持上一次选择，次日生效语义不因失败漂移）。
+   */
+  async onSelectSlot(e) {
+    const slot = e.currentTarget.dataset.slot;
+    if (slot !== 'morning' && slot !== 'night') return;
+    if (this.data.slotSwitching || this.data.slotPreference === slot) return;
+    const prev = this.data.slotPreference;
+    this.setData({ slotSwitching: true, slotPreference: slot });
+    try {
+      await request('/notify/preference', { method: 'POST', data: { slot } });
+      try { wx.setStorageSync('slot_preference', slot); } catch (_err) { /* silent */ }
+      const info = SLOT_INFO[slot] || SLOT_INFO.morning;
+      wx.showToast({ title: info.switchToast, icon: 'none', duration: 2000 });
+    } catch (_err) {
+      // 失败回滚 + 轻提示（getFriendlyError 映射为中文）
+      this.setData({ slotPreference: prev });
+      wx.showToast({ title: '切换失败，请稍后重试', icon: 'none' });
+    } finally {
+      this.setData({ slotSwitching: false });
+    }
   },
 
   /** Open WeChat settings page so user can manage notification permissions */
   onOpenPushSettings() {
     wx.openSetting({
-      success: (res) => {
-        // Check subscription settings after returning
-        this._loadPushSettings();
+      success: () => {
         wx.showToast({ title: '设置已更新', icon: 'none', duration: 1500 });
       },
     });
-  },
-
-  /** Report subscription status to backend */
-  async _reportSubscription(templateId, accepted) {
-    try {
-      const user = wx.getStorageSync('user');
-      const openid = user?.openid || '';
-      if (!openid) return;
-      await request('/notify/subscribe', {
-        method: 'POST',
-        data: {
-          openid,
-          template_id: templateId,
-          accept: accepted,
-        },
-      });
-    } catch (_err) {
-      // Silent degrade
-    }
   },
 
   onReady() {

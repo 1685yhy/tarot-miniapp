@@ -18,12 +18,38 @@ const CONTACT_EMAIL = '1685070007@qq.com';
 // 星光晨讯订阅模板 ID（微信公众平台「订阅消息」→ 模板库中申请，形如 "xxxx_xxxx_xxxx"）。
 // 为空字符串 = 未配置：抽牌结果页 / 许愿成功页 / 每日一牌翻转后均不弹订阅引导。
 // 配置后：用户同意 → wx.requestSubscribeMessage → POST /notify/subscribe-grant（额度+1），
-// 每天 7:37 发送「今日星光」推送（一次性订阅，每次授权对应 1 条发送额度）。
+// 每天按槽位偏好发送「今日星光」/「睡前星语」推送（一次性订阅，每次授权对应 1 条发送额度）。
 const WX_SUBSCRIBE_TEMPLATE_DAILY = '';
+
+// 推送槽位偏好文案（T4-4：订阅引导二选一 + 我的-推送设置切换共用）。
+// key 与后端 /notify/preference 的 slot 取值一致（morning=晨讯 7:37 / night=星语 21:00）。
+const SLOT_INFO = {
+  morning: {
+    key: 'morning',
+    icon: '✦',
+    label: '晨星',
+    time: '清晨 7:37',
+    name: '今日星光',
+    pickText: '清晨 7:37 · 晨星：今日星光',
+    switchToast: '明天起，星光在清晨 7:37 等你 ✦',
+    grantToast: '订阅成功，明早 7:37 见 ✦',
+  },
+  night: {
+    key: 'night',
+    icon: '☽',
+    label: '晚星',
+    time: '夜晚 21:00',
+    name: '睡前星语',
+    pickText: '夜晚 21:00 · 晚星：睡前星语',
+    switchToast: '明天起，星光在夜晚 21:00 等你 ✦',
+    grantToast: '订阅成功，明晚 21:00 见 ✦',
+  },
+};
 
 module.exports = {
   DEV_LOGIN_KEY,
   CONTACT_WEIXIN,
   CONTACT_EMAIL,
   WX_SUBSCRIBE_TEMPLATE_DAILY,
+  SLOT_INFO,
 };
