@@ -1,10 +1,11 @@
-"""星象月报 schemas（SDD P2 · T7-1 周报端点）。"""
+"""星象月报 schemas（SDD P2 · T7-1 周报 + T7-2 月报端点）。"""
 
 from typing import Union
 
 from pydantic import BaseModel, Field
 
 WEEK_PERIOD_PATTERN = r"^\d{4}-W\d{2}$"
+MONTH_PERIOD_PATTERN = r"^\d{4}-(0[1-9]|1[0-2])$"
 
 
 class WeekCurvePoint(BaseModel):
@@ -73,6 +74,88 @@ class WeekReportResponse(BaseModel):
     period: str
     week_range: list[str]
     report: Union[WeekReport, WeekPreview]
+    locked: bool
+    preview: bool
+    cached: bool
+    source: str | None
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# 月报（T7-2）
+# ═══════════════════════════════════════════════════════════════════════
+
+
+class MonthAstralEvent(BaseModel):
+    """月度天象事件（日历事实，零 AI）。"""
+
+    type: str
+    label: str
+    date: str
+
+
+class MonthJournal(BaseModel):
+    """星光手账汇总（直接引用 star_monthly_reviews 缓存）。"""
+
+    active_days: int
+    bright_ratio: float
+    trend: str
+
+
+class MonthCards(BaseModel):
+    """牌运回顾：月度占卜次数 + TOP3 牌。"""
+
+    readings_count: int
+    top3: list[WeekCardCount]
+
+
+class MonthStardust(BaseModel):
+    """星尘与星阶：当月行为可得星尘（估算口径）+ 当前星阶名。"""
+
+    estimated: int
+    tier_name: str
+
+
+class MonthOutlookEvent(BaseModel):
+    """下月展望单事件（仅真实天象日期）。"""
+
+    type: str
+    label: str
+    date: str
+
+
+class MonthOutlook(BaseModel):
+    """下月展望（活动预告非运势预测）。"""
+
+    first_new_moon: MonthOutlookEvent | None
+    first_full_moon: MonthOutlookEvent | None
+    first_retrograde: MonthOutlookEvent | None
+    tips: list[str]
+
+
+class MonthReport(BaseModel):
+    """月报全文（会员）。"""
+
+    astral_events: list[MonthAstralEvent]
+    journal: MonthJournal | None
+    cards: MonthCards
+    stardust: MonthStardust
+    outlook: MonthOutlook
+    note: str
+
+
+class MonthPreview(BaseModel):
+    """月报预览（非会员）：天象目录（封面+目录）+ 1 段总评。"""
+
+    astral_events: list[MonthAstralEvent]
+    note: str
+
+
+class MonthReportResponse(BaseModel):
+    """GET /report/month 响应。"""
+
+    period: str
+    month_range: list[str]
+    report: Union[MonthReport, MonthPreview]
     locked: bool
     preview: bool
     cached: bool

@@ -1,7 +1,7 @@
 """
-星象月报 · 周报后端测试（SDD P2 · T7-1）。
+星象月报后端测试（SDD P2 · T7-1 周报 + T7-2 月报）。
 
-覆盖：
+周报覆盖：
 - period_week_key / week_bounds 周期边界（跨月/跨年周、非法周期）
 - last_completed_week（周一当天 → 上周；周日 → 上周；周中 → 上周）
 - aggregate_week 纯 SQL 聚合：7 天曲线（无 horoscope 记录日 total=null 不崩溃）、
@@ -15,13 +15,25 @@
 - 未登录 401；非法周期 422
 - 全部使用固定周期 2026-W33（2026-08-10 周一 ~ 2026-08-16 周日），不依赖当前日期
 
+月报覆盖（T7-2）：
+- period_month_key / month_bounds（大/小月、跨年、非法周期）
+- last_completed_month（每月 1 日后可看上月；跨年 1 月 → 上年 12 月）
+- aggregate_month 纯 SQL：天象段对 astral_events_on 地面真值（2026-03 类型集合
+  含 new_moon/full_moon/mercury_retrograde，不写死日期字面量）；手账段直接引用
+  star_monthly_reviews 缓存（零新增 AI）；牌运 TOP3 排序；星尘估算 == 签到+事件数；
+  tier_name == 当前星阶
+- build_outlook：下月展望仅真实事件日期；建议不含黑名单词；无满月/水逆月为空位
+- 端点：会员全文 + 手账段复用缓存（mock AI 计数 == 1，仅月总评一次）、缓存二次零 AI、
+  非会员预览（键集断言 {astral_events, note}）、AI 异常/禁词降级、空态月统计 0 不报错、
+  未登录 401、非法周期 422
+
 测试数据全部直插 DB（显式日期），无时间炸弹。
 """
 
 import asyncio
 import json
 import uuid
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from types import SimpleNamespace
 
 import pytest
@@ -35,15 +47,30 @@ from app.models.card import TarotCard
 from app.models.diary import DiaryEntry
 from app.models.horoscope import HoroscopeHistory
 from app.models.reading import DrawnCard, Reading
+from app.models.star_monthly_review import StarMonthlyReview
 from app.models.star_report import StarReport
 from app.models.user import User
-from app.services.star_reports import last_completed_week, period_week_key, week_bounds
+from app.services.compliance import AI_OUTPUT_BLACKLIST, find_forbidden
+from app.services.energy_engine import ASTRAL_EVENTS_2026, astral_events_on
+from app.services.star_reports import (
+    last_completed_month,
+    last_completed_week,
+    month_bounds,
+    period_month_key,
+    period_week_key,
+    week_bounds,
+)
 from app.utils.auth import create_token
 
 # 固定测试周期：2026-W33 = 2026-08-10(周一) ~ 2026-08-16(周日)
 WEEK_START = date(2026, 8, 10)
 WEEK_END = date(2026, 8, 16)
 PERIOD = "2026-W33"
+
+# 固定测试月：2026-08（与周报周期同月，种子数据可复用）
+MONTH_START = date(2026, 8, 1)
+MONTH_END = date(2026, 8, 31)
+MONTH_PERIOD = "2026-08"
 
 BLACKLIST_WORDS = ("必", "绝对", "改运", "化解", "转运", "注定", "命", "预测")
 
@@ -67,6 +94,25 @@ def _new_user(
 
     uid, token = asyncio.run(_go())
     return uid, {"Authorization": f"Bearer {token}"}
+
+
+def _new_tiered_user(
+    openid: str, stardust_total: int, star_tier: int | None
+) -> str:
+    """创建指定星尘/星阶的用户，返回 user_id（星阶推导/兜底测试用）。"""
+
+    async def _go() -> str:
+        async with async_session() as session:
+            user = User(
+                openid=openid, nickname="月报测试",
+                stardust_total=stardust_total, star_tier=star_tier,
+            )
+            session.add(user)
+            await session.flush()
+            await session.commit()
+            return user.id
+
+    return asyncio.run(_go())
 
 
 def _seed_horoscope(uid: str, days: list[date], energy: dict) -> None:
@@ -171,6 +217,112 @@ def _cache_row(uid: str) -> dict | None:
     return asyncio.run(_go())
 
 
+# ── 月报（T7-2）种子 helpers ─────────────────────────────────────────────
+
+
+def _seed_month_readings(uid: str, card_ids: list[int]) -> None:
+    """月内 N 次占卜（created_at 依次落在 2026-08 月初）+ 月外 1 次（必须排除）。"""
+
+    async def _go() -> None:
+        async with async_session() as session:
+            for i, card_id in enumerate(card_ids):
+                reading = Reading(
+                    id=f"sr-m-{uid[:6]}-{i}",
+                    user_id=uid,
+                    spread_type="daily",
+                    theme="general",
+                    created_at=datetime(2026, 8, 1, 10, 0, 0) + timedelta(days=i),
+                )
+                session.add(reading)
+                session.add(DrawnCard(
+                    reading_id=reading.id, card_id=card_id, position=0,
+                    position_name="主牌", is_reversed=False,
+                ))
+            # 月外一次占卜（07-31，必须排除）
+            old = Reading(
+                id=f"sr-mold-{uid[:6]}",
+                user_id=uid,
+                spread_type="daily",
+                theme="general",
+                created_at=datetime(2026, 7, 31, 12, 0, 0),
+            )
+            session.add(old)
+            session.add(DrawnCard(
+                reading_id=old.id, card_id=9, position=0,
+                position_name="主牌", is_reversed=False,
+            ))
+            await session.commit()
+
+    asyncio.run(_go())
+
+
+def _seed_month_stardust(uid: str) -> None:
+    """月内 2 次签到 + 1 次节点活动 + 月外 1 次（必须排除）。"""
+
+    async def _go() -> None:
+        async with async_session() as session:
+            for d in (date(2026, 8, 5), date(2026, 8, 20)):
+                session.add(CheckIn(user_id=uid, checkin_date=d))
+            session.add(AstralActivityLog(
+                user_id=uid, event_key="full_moon-2026-08-26", event_date=date(2026, 8, 12),
+            ))
+            session.add(CheckIn(user_id=uid, checkin_date=date(2026, 7, 15)))
+            await session.commit()
+
+    asyncio.run(_go())
+
+
+def _seed_star_monthly_review(
+    uid: str, month: str, trend: str = "本月星光偏亮，情绪以平静为主。"
+) -> None:
+    """预置 star_monthly_reviews 缓存（手账段数据源，引用不重复调 AI）。"""
+
+    async def _go() -> None:
+        async with async_session() as session:
+            session.add(StarMonthlyReview(
+                user_id=uid,
+                month=month,
+                data=json.dumps({
+                    "month": month,
+                    "stats": {
+                        "days_recorded": 12,
+                        "bright_count": 8,
+                        "dim_count": 1,
+                        "bright_ratio": 0.6667,
+                    },
+                    "mood_series": [],
+                    "star_color_counts": [],
+                    "top_cards": [],
+                    "trend_summary": trend,
+                    "insight": None,
+                    "next_guide": None,
+                    "source": "ai",
+                }, ensure_ascii=False),
+            ))
+            await session.commit()
+
+    asyncio.run(_go())
+
+
+def _month_cache_row(uid: str, period: str) -> dict | None:
+    """读月报缓存行（month 类型）。"""
+
+    async def _go() -> dict | None:
+        async with async_session() as session:
+            row = (
+                await session.execute(
+                    select(StarReport).where(
+                        StarReport.user_id == uid,
+                        StarReport.report_type == "month",
+                        StarReport.period_key == period,
+                    )
+                )
+            ).scalar_one_or_none()
+            return json.loads(row.data) if row else None
+
+    return asyncio.run(_go())
+
+
 class _FakeCompletions:
     def __init__(self, content: str):
         self._content = content
@@ -203,6 +355,8 @@ def _boom():
 AI_WEEK_NOTE_JSON = '{"note": "这一周星象在缓慢转向，你抽到最多的牌，是一盏总在提醒你慢下来的灯。"}'
 AI_WEEK_NOTE_JSON_B = '{"note": "重新生成的一周寄语，星光继续陪你。"}'
 AI_WEEK_BLACKLIST_JSON = '{"note": "这一周注定会有好运。"}'
+AI_MONTH_NOTE_JSON = '{"note": "这一个月，你在月光下走了很远：新月许愿，满月复盘，慢下来的日子里也给自己留了温柔。"}'
+AI_MONTH_BLACKLIST_JSON = '{"note": "这个月注定会有好运。"}'
 
 
 def _assert_no_blacklist(text: str | None) -> None:
@@ -606,3 +760,370 @@ class TestRangeDelegation:
                 return len(rows)
 
         assert asyncio.run(_go()) == 2
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# 月报（T7-2）：周期键纯函数
+# ═══════════════════════════════════════════════════════════════════════
+
+
+class TestMonthKeys:
+    def test_period_month_key_basic(self):
+        assert period_month_key(date(2026, 8, 1)) == "2026-08"
+        assert period_month_key(date(2026, 8, 31)) == "2026-08"
+        assert period_month_key(date(2026, 12, 31)) == "2026-12"
+        assert period_month_key(date(2025, 12, 31)) == "2025-12"
+
+    def test_month_bounds_full_and_short_months(self):
+        assert month_bounds("2026-08") == (date(2026, 8, 1), date(2026, 8, 31))
+        assert month_bounds("2026-02") == (date(2026, 2, 1), date(2026, 2, 28))
+        assert month_bounds("2026-04") == (date(2026, 4, 1), date(2026, 4, 30))
+
+    def test_month_bounds_cross_year(self):
+        assert month_bounds("2026-01") == (date(2026, 1, 1), date(2026, 1, 31))
+        assert month_bounds("2026-12") == (date(2026, 12, 1), date(2026, 12, 31))
+        assert month_bounds("2025-12") == (date(2025, 12, 1), date(2025, 12, 31))
+
+    def test_month_bounds_invalid(self):
+        for bad in ("2026-13", "2026-00", "202608", "abc", "2026-W33", "2026-8", "2026"):
+            with pytest.raises(ValueError):
+                month_bounds(bad)
+
+    def test_month_key_roundtrip(self):
+        for day in (MONTH_START, MONTH_END):
+            start, end = month_bounds(period_month_key(day))
+            assert start <= day <= end
+
+    def test_last_completed_month(self):
+        # 每月 1 日后可看上月；月内任一天 → 上月
+        assert last_completed_month(date(2026, 8, 1)) == "2026-07"
+        assert last_completed_month(date(2026, 8, 15)) == "2026-07"
+        assert last_completed_month(date(2026, 8, 31)) == "2026-07"
+        # 跨年边界：2026-01-01 → 2025-12
+        assert last_completed_month(date(2026, 1, 1)) == "2025-12"
+        assert last_completed_month(date(2026, 12, 15)) == "2026-11"
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# 月报（T7-2）：聚合（纯 SQL，零 AI）
+# ═══════════════════════════════════════════════════════════════════════
+
+
+class TestAggregateMonth:
+    def test_aggregate_astral_events_ground_truth(self):
+        """天象段与 astral_events_on 地面真值一致；2026-03 含新/满月与水逆。
+
+        断言类型集合而非日期字面量：不写死日期。
+        """
+        from app.services.star_reports import aggregate_month
+
+        uid, _ = _new_user("agg_astro")
+
+        async def _go() -> dict:
+            async with async_session() as session:
+                user = await session.get(User, uid)
+                return await aggregate_month(
+                    session, user, date(2026, 3, 1), date(2026, 3, 31)
+                )
+
+        stats = asyncio.run(_go())
+        events = stats["astral_events"]
+        assert events, "2026-03 应有天象事件"
+        types = {ev["type"] for ev in events}
+        assert {"new_moon", "full_moon", "mercury_retrograde"} <= types, types
+        assert "solar_term" in types, "节气也应列入天象表"
+        # 日期升序 + 逐条对地面真值（含区间事件首日）
+        dates = [date.fromisoformat(ev["date"]) for ev in events]
+        assert dates == sorted(dates)
+        for ev in events:
+            day = date.fromisoformat(ev["date"])
+            ground = [
+                x for x in astral_events_on(day)
+                if x["type"] == ev["type"] and x["label"] == ev["label"]
+            ]
+            assert ground, f"事件 {ev} 不在 astral_events_on({day}) 地面真值中"
+            assert date(2026, 3, 1) <= day <= date(2026, 3, 31)
+
+    def test_aggregate_journal_references_review_cache(self):
+        """手账段直接引用 star_monthly_reviews 缓存；无缓存 → journal=None。"""
+        from app.services.star_reports import aggregate_month
+
+        uid, _ = _new_user("agg_journal")
+        _seed_star_monthly_review(
+            uid, "2026-08", trend="星光微亮，偶有低垂，多是温柔的夜。"
+        )
+
+        async def _go() -> dict:
+            async with async_session() as session:
+                user = await session.get(User, uid)
+                return await aggregate_month(session, user, MONTH_START, MONTH_END)
+
+        stats = asyncio.run(_go())
+        assert stats["journal"] == {
+            "active_days": 12,
+            "bright_ratio": 0.6667,
+            "trend": "星光微亮，偶有低垂，多是温柔的夜。",
+        }
+
+        # 无缓存用户 → journal None
+        other_uid, _ = _new_user("agg_journal_none")
+
+        async def _go2() -> dict:
+            async with async_session() as session:
+                user = await session.get(User, other_uid)
+                return await aggregate_month(session, user, MONTH_START, MONTH_END)
+
+        assert asyncio.run(_go2())["journal"] is None
+
+    def test_aggregate_cards_top3_sorted(self):
+        """牌运：月度占卜次数 + TOP3（次数降序、平局卡名升序）；月外排除。"""
+        from app.services.star_reports import aggregate_month
+
+        uid, _ = _new_user("agg_mcards")
+        _seed_month_readings(uid, [1, 1, 1, 2, 2, 3, 4])
+
+        async def _go() -> dict:
+            async with async_session() as session:
+                user = await session.get(User, uid)
+                return await aggregate_month(session, user, MONTH_START, MONTH_END)
+
+        stats = asyncio.run(_go())
+        assert stats["cards"]["readings_count"] == 7, "月外 07-31 占卜应排除"
+        assert stats["cards"]["top3"] == [
+            {"name": "卡牌1", "count": 3},
+            {"name": "卡牌2", "count": 2},
+            {"name": "卡牌3", "count": 1},
+        ]
+
+    def test_aggregate_stardust_estimate_and_tier_name(self):
+        """星尘估算 == 签到天数+事件数（月外排除）；tier_name == 当前星阶。"""
+        from app.services.star_reports import aggregate_month
+
+        uid = _new_tiered_user("agg_tier", stardust_total=35, star_tier=2)
+        _seed_month_stardust(uid)
+
+        async def _go() -> dict:
+            async with async_session() as session:
+                user = await session.get(User, uid)
+                return await aggregate_month(session, user, MONTH_START, MONTH_END)
+
+        stats = asyncio.run(_go())
+        assert stats["stardust"] == {"estimated": 3, "tier_name": "星辉"}
+        # 未推导星阶用户 → 按 stardust_total 兜底推导（微光）
+        uid_fb = _new_tiered_user("agg_tier_fb", stardust_total=0, star_tier=None)
+
+        async def _go2() -> dict:
+            async with async_session() as session:
+                user = await session.get(User, uid_fb)
+                return await aggregate_month(session, user, MONTH_START, MONTH_END)
+
+        assert asyncio.run(_go2())["stardust"]["tier_name"] == "微光"
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# 月报（T7-2）：下月展望（活动预告非运势预测）
+# ═══════════════════════════════════════════════════════════════════════
+
+
+class TestBuildOutlook:
+    def test_outlook_only_real_events_and_tips_clean(self):
+        """2026-09 展望：新/满月与水逆首日均存在且日期为真实事件；建议合规。"""
+        from app.services.star_reports import build_outlook
+
+        outlook = build_outlook("2026-09", ASTRAL_EVENTS_2026)
+        for key in ("first_new_moon", "first_full_moon", "first_retrograde"):
+            ev = outlook[key]
+            assert ev is not None, f"2026-09 应有 {key}"
+            day = date.fromisoformat(ev["date"])
+            assert any(x["type"] == ev["type"] for x in astral_events_on(day)), \
+                f"{key} 日期 {ev['date']} 不是真实天象日"
+            assert date(2026, 9, 1) <= day <= date(2026, 9, 30)
+        assert outlook["tips"], "应有行动建议"
+        for tip in outlook["tips"]:
+            assert find_forbidden(tip, AI_OUTPUT_BLACKLIST) == [], f"建议含禁词: {tip}"
+            _assert_no_blacklist(tip)
+
+    def test_outlook_month_without_full_moon_or_retrograde(self):
+        """2026-08 无满月无水逆 → 对应位 None，建议不含满月/慢行文案。"""
+        from app.services.star_reports import build_outlook
+
+        outlook = build_outlook("2026-08", ASTRAL_EVENTS_2026)
+        assert outlook["first_new_moon"] is not None, "2026-08 有新月"
+        assert outlook["first_full_moon"] is None, "2026-08 无满月"
+        assert outlook["first_retrograde"] is None, "2026-08 无水逆"
+        assert "满月" not in "".join(outlook["tips"])
+        assert "慢行" not in "".join(outlook["tips"])
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# 月报（T7-2）：端点（缓存 / 降级 / 权益语义）
+# ═══════════════════════════════════════════════════════════════════════
+
+
+class TestMonthEndpoint:
+    def test_month_report_requires_auth(self, client: TestClient):
+        assert client.get("/report/month").status_code == 401
+
+    def test_month_report_invalid_period_422(self, client: TestClient):
+        uid, headers = _new_user("month_bad_period")
+        assert client.get(
+            "/report/month?period=2026-13", headers=headers
+        ).status_code == 422
+        assert client.get(
+            "/report/month?period=abc", headers=headers
+        ).status_code == 422
+
+    def test_month_report_member_full_journal_reused_ai_once(
+        self, client: TestClient, monkeypatch
+    ):
+        """会员全文；手账段引用缓存零新增 AI；mock AI 计数 == 1（仅月总评）。"""
+        uid, headers = _new_user("month_member", member=True)
+        _seed_month_readings(uid, [1, 1, 2, 3])
+        _seed_month_stardust(uid)
+        _seed_star_monthly_review(uid, "2026-08")
+
+        fake = _FakeAIClient(AI_MONTH_NOTE_JSON)
+        monkeypatch.setattr("app.services.star_reports._get_ai_client", lambda: fake)
+
+        resp = client.get(f"/report/month?period={MONTH_PERIOD}", headers=headers)
+        assert resp.status_code == 200, resp.text
+        d = resp.json()
+        assert d["period"] == MONTH_PERIOD
+        assert d["month_range"] == ["2026-08-01", "2026-08-31"]
+        assert d["locked"] is False
+        assert d["preview"] is False
+        assert d["cached"] is False
+        assert d["source"] == "ai"
+        report = d["report"]
+        assert set(report.keys()) == {
+            "astral_events", "journal", "cards", "stardust", "outlook", "note",
+        }
+        # 天象：2026-08 有狮子座新月/日食/立秋/处暑
+        assert len(report["astral_events"]) >= 2
+        assert {"type", "label", "date"} <= set(report["astral_events"][0].keys())
+        # 手账：直接引用缓存
+        assert report["journal"] == {
+            "active_days": 12,
+            "bright_ratio": 0.6667,
+            "trend": "本月星光偏亮，情绪以平静为主。",
+        }
+        # 牌运
+        assert report["cards"]["readings_count"] == 4
+        assert report["cards"]["top3"][0]["name"] == "卡牌1"
+        # 星尘估算：2 签到 + 1 节点活动
+        assert report["stardust"]["estimated"] == 3
+        assert report["stardust"]["tier_name"]
+        # 展望
+        assert report["outlook"]["first_new_moon"] is not None
+        assert report["outlook"]["tips"]
+        # AI 总评 ≤100 字 + 合规
+        assert len(report["note"]) <= 100
+        _assert_no_blacklist(report["note"])
+
+        # AI prompt 校验：system 含输出红线；user 含当月数据
+        calls = fake.chat.completions.calls
+        assert len(calls) == 1, "月总评应恰好调用一次 AI（手账段零新增调用）"
+        system_content = calls[0]["messages"][0]["content"]
+        user_content = calls[0]["messages"][1]["content"]
+        assert "输出红线" in system_content
+        assert "卡牌1" in user_content
+        assert "星尘" in user_content
+
+        # 第二次命中缓存：零 AI
+        resp2 = client.get(f"/report/month?period={MONTH_PERIOD}", headers=headers)
+        d2 = resp2.json()
+        assert d2["cached"] is True
+        assert d2["source"] == "ai"
+        assert d2["report"]["note"] == report["note"]
+        assert len(fake.chat.completions.calls) == 1, "缓存命中不应再调 AI"
+
+    def test_month_report_nonmember_preview(self, client: TestClient, monkeypatch):
+        """非会员 → locked=true 且 report 为预览结构（键集断言 astral_events+note）。"""
+        uid, headers = _new_user("month_free")
+        _seed_month_readings(uid, [1])
+        _seed_star_monthly_review(uid, "2026-08")
+
+        monkeypatch.setattr("app.services.star_reports._get_ai_client", lambda: None)
+
+        resp = client.get(f"/report/month?period={MONTH_PERIOD}", headers=headers)
+        assert resp.status_code == 200, resp.text
+        d = resp.json()
+        assert d["locked"] is True
+        assert d["preview"] is True
+        assert set(d["report"].keys()) == {"astral_events", "note"}, \
+            "预览应只有天象目录 + 1 段总评"
+        assert len(d["report"]["astral_events"]) > 0
+        assert d["report"]["note"], "预览含 1 段总评"
+        # 预览态同样落缓存（解锁后无需重生成）
+        assert _month_cache_row(uid, MONTH_PERIOD) is not None
+
+    def test_month_report_ai_throws_falls_back(
+        self, client: TestClient, monkeypatch
+    ):
+        """AI 抛异常 → source=fallback 且统计段完整。"""
+        uid, headers = _new_user("month_boom", member=True)
+        _seed_month_readings(uid, [1, 1])
+        _seed_star_monthly_review(uid, "2026-08")
+
+        monkeypatch.setattr("app.services.star_reports._get_ai_client", _boom)
+
+        resp = client.get(f"/report/month?period={MONTH_PERIOD}", headers=headers)
+        assert resp.status_code == 200, resp.text
+        d = resp.json()
+        assert d["source"] == "fallback"
+        report = d["report"]
+        assert report["cards"]["readings_count"] == 2
+        assert report["journal"]["active_days"] == 12
+        assert report["stardust"]["estimated"] == 0
+        assert report["note"], "降级后仍应有总评"
+        _assert_no_blacklist(report["note"])
+        # 降级结果同样落缓存
+        assert _month_cache_row(uid, MONTH_PERIOD) is not None
+
+    def test_month_report_ai_blacklist_falls_back(
+        self, client: TestClient, monkeypatch
+    ):
+        """AI 输出含共享禁词 → 视为失败走降级模板。"""
+        uid, headers = _new_user("month_blacklist", member=True)
+        _seed_month_readings(uid, [1])
+        _seed_star_monthly_review(uid, "2026-08")
+
+        fake = _FakeAIClient(AI_MONTH_BLACKLIST_JSON)
+        monkeypatch.setattr("app.services.star_reports._get_ai_client", lambda: fake)
+
+        resp = client.get(f"/report/month?period={MONTH_PERIOD}", headers=headers)
+        assert resp.status_code == 200, resp.text
+        d = resp.json()
+        assert d["source"] == "fallback"
+        _assert_no_blacklist(d["report"]["note"])
+        assert "注定" not in d["report"]["note"]
+
+    def test_month_report_empty_month(self, client: TestClient, monkeypatch):
+        """空态月：统计 0 + 温柔引导；不发 AI、不落缓存、可重复请求。"""
+        uid, headers = _new_user("month_empty", member=True)
+
+        fake = _FakeAIClient(AI_MONTH_NOTE_JSON)
+        monkeypatch.setattr("app.services.star_reports._get_ai_client", lambda: fake)
+
+        resp = client.get(f"/report/month?period={MONTH_PERIOD}", headers=headers)
+        assert resp.status_code == 200, resp.text
+        d = resp.json()
+        assert d["cached"] is False
+        assert d["source"] is None
+        assert d["locked"] is False
+        report = d["report"]
+        assert report["cards"]["readings_count"] == 0
+        assert report["cards"]["top3"] == []
+        assert report["stardust"]["estimated"] == 0
+        assert report["journal"] is None
+        assert len(report["astral_events"]) > 0, "天象是日历事实，空态月仍有"
+        assert report["outlook"]["first_new_moon"] is not None
+        assert "点亮" in report["note"], "空态月应有温柔引导文案"
+        _assert_no_blacklist(report["note"])
+        assert len(fake.chat.completions.calls) == 0, "空态月不应调 AI"
+        assert _month_cache_row(uid, MONTH_PERIOD) is None, "空态月不落缓存"
+
+        # 再请求仍稳定
+        resp2 = client.get(f"/report/month?period={MONTH_PERIOD}", headers=headers)
+        assert resp2.status_code == 200
+        assert resp2.json()["cached"] is False
