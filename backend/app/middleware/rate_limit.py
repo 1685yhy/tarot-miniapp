@@ -181,6 +181,23 @@ async def meet_info_rate_limit(request: Request) -> None:
         raise HTTPException(status_code=429, detail="请求过于频繁，请稍后再试")
 
 
+# ── /resonance/wall 公开接口独立限流（T8-2）─────────────────────────────
+# 共鸣墙公开免登录（同 meet 公开接口模式）：独立 30 次/分/IP，在全局
+# 60/分中间件之上进一步压低离线抓墙/枚举；鉴权按 user、未鉴权按 IP。
+_resonance_wall_limiter = RateLimiter(max_requests=30, window_seconds=60)
+
+
+async def resonance_wall_rate_limit(request: Request) -> None:
+    """FastAPI dependency: 30 req/min per client for GET /resonance/wall.
+
+    与 meet_info_rate_limit 同策略（鉴权按 user、未鉴权按 IP；Redis 可用时
+    用 Redis，否则进程内滑动窗口）；key 前缀 resonance_wall:。
+    """
+    key = f"resonance_wall:{_request_key(request)}"
+    if not await _resonance_wall_limiter.is_allowed(key):
+        raise HTTPException(status_code=429, detail="请求过于频繁，请稍后再试")
+
+
 async def rate_limit_middleware(request: Request, call_next):
     """FastAPI middleware: reject clients exceeding 60 requests/min.
 

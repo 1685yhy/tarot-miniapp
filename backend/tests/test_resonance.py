@@ -15,7 +15,7 @@
 
 import asyncio
 import sqlite3
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 import pytest
@@ -23,12 +23,20 @@ from fastapi.testclient import TestClient
 from sqlalchemy import select
 
 from app.db.database import async_session
+from app.models.checkin import CheckIn
+from app.models.diary import DiaryEntry
+from app.models.horoscope import HoroscopeHistory
+from app.models.star_resonance import StarResonance
+from app.models.card import TarotCard
 from app.models.user import User
+from app.schemas.resonance import today_active_criteria
 from app.services.compliance import (
     AI_OUTPUT_BLACKLIST,
     MEET_BLACKLIST,
     find_forbidden,
 )
+from app.services.daily_card import pick_daily_card
+from app.services.energy_engine import ZODIAC_NAMES_ZH, build_today_guidance
 from app.services.resonance import ALIAS_POOL, generate_alias, get_or_create_alias
 from app.services.star_words import beijing_today
 from app.utils.auth import create_token
@@ -39,12 +47,15 @@ BACKEND_DIR = Path(__file__).resolve().parent.parent
 # ── helpers ─────────────────────────────────────────────────────────────
 
 
-def _new_user(openid: str) -> tuple[str, dict[str, str]]:
-    """创建隔离测试用户，返回 (user_id, auth_headers)。"""
+def _new_user(openid: str, **attrs) -> tuple[str, dict[str, str]]:
+    """创建隔离测试用户，返回 (user_id, auth_headers)。
+
+    attrs 透传给 User 模型（zodiac/star_alias/resonance_visible/stardust_total…）。
+    """
 
     async def _go() -> tuple[str, str]:
         async with async_session() as session:
-            user = User(openid=openid, nickname="星友圈测试")
+            user = User(openid=openid, nickname="星友圈测试", **attrs)
             session.add(user)
             await session.flush()
             token = create_token(user.id, user.token_version)
@@ -53,6 +64,75 @@ def _new_user(openid: str) -> tuple[str, dict[str, str]]:
 
     uid, token = asyncio.run(_go())
     return uid, {"Authorization": f"Bearer {token}"}
+
+
+def _mark_active_today(user_id: str, *, day: date | None = None) -> None:
+    """今日行为信号（今日活跃口径：horoscope 为主信号，默认今日）。"""
+
+    async def _go() -> None:
+        async with async_session() as session:
+            target = day or beijing_today()
+            session.add(
+                HoroscopeHistory(
+                    user_id=user_id,
+                    date=target,
+                    energy={"love": 50, "career": 50, "social": 50, "health": 50},
+                )
+            )
+            await session.commit()
+
+    asyncio.run(_go())
+
+
+def _resonate(from_user_id: str, to_user_id: str) -> None:
+    """今日共鸣记录（防刷唯一约束同款表级约束）。"""
+
+    async def _go() -> None:
+        async with async_session() as session:
+            session.add(
+                StarResonance(
+                    from_user_id=from_user_id,
+                    to_user_id=to_user_id,
+                    resonate_date=beijing_today(),
+                )
+            )
+            await session.commit()
+
+    asyncio.run(_go())
+
+
+def _wall(client: TestClient, *, xff: str) -> dict:
+    """公开请求共鸣墙（XFF 假 IP 隔离限流键）。"""
+    resp = client.get("/resonance/wall", headers={"X-Forwarded-For": xff})
+    assert resp.status_code == 200, resp.text
+    return resp.json()
+
+
+def _find_group(groups: list[dict], gtype: str) -> dict | None:
+    for g in groups:
+        if g["type"] == gtype:
+            return g
+    return None
+
+
+def _find_member(groups: list[dict], uid: str) -> dict | None:
+    for g in groups:
+        for m in g["members"]:
+            if m["uid"] == uid:
+                return m
+    return None
+
+
+def _collect_keys(obj, keys: set[str]) -> set[str]:
+    """递归收集响应中所有 JSON 键（脱敏断言用）。"""
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            keys.add(k)
+            _collect_keys(v, keys)
+    elif isinstance(obj, list):
+        for item in obj:
+            _collect_keys(item, keys)
+    return keys
 
 
 def _read_user(user_id: str) -> dict:
@@ -273,3 +353,225 @@ def test_alembic_migration_star_resonances_and_alias(tmp_path, monkeypatch):
     conn.close()
     assert "resonance_visible" not in user_cols_after
     assert "star_alias" not in user_cols_after
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# 共鸣墙（SDD P2 · T8-2）：今日活跃聚合 + 三分组 + 兜底 + 脱敏 + 限流
+# ═══════════════════════════════════════════════════════════════════════
+
+
+# ── today_active_criteria：今日活跃口径纯函数 ───────────────────────────
+
+
+def test_today_active_criteria():
+    """今日活跃 = 隐身即不活跃；任一今日信号（horoscope/diary/checkin/resonance）即活跃。"""
+    assert not today_active_criteria(resonance_visible=False, has_horoscope=True), (
+        "隐身用户不应出现在墙"
+    )
+    assert not today_active_criteria(resonance_visible=True), "无任何今日行为 → 不活跃"
+    assert today_active_criteria(resonance_visible=True, has_horoscope=True)
+    assert today_active_criteria(resonance_visible=True, has_diary=True)
+    assert today_active_criteria(resonance_visible=True, has_checkin=True)
+    assert today_active_criteria(resonance_visible=True, has_resonance=True)
+
+
+# ── 公开免登录 + 脱敏键集 ───────────────────────────────────────────────
+
+
+def test_wall_public_no_auth_200(client: TestClient):
+    """公开页免登录 200；响应顶层键恰为 active_count/groups/my_card。"""
+    resp = client.get("/resonance/wall", headers={"X-Forwarded-For": "203.0.113.11"})
+    assert resp.status_code == 200
+    body = resp.json()
+    assert set(body) == {"active_count", "groups", "my_card"}
+    assert body["my_card"] is None
+
+
+def test_wall_desensitized_keyset(client: TestClient):
+    """脱敏断言：响应键集不含任何可联系字段（nickname/avatar/openid/出生/邀请码）。"""
+    uid, _ = _new_user("openid_wall_des1", zodiac="pisces", star_alias="星星·晚风")
+    _mark_active_today(uid)
+    body = _wall(client, xff="203.0.113.12")
+    keys = _collect_keys(body, set())
+    for secret in ("nickname", "avatar", "openid", "birth_date", "birth_time", "invite_code"):
+        assert secret not in keys, f"共鸣墙响应泄漏敏感字段: {secret}"
+
+
+# ── 隐身过滤 ────────────────────────────────────────────────────────────
+
+
+def test_wall_hidden_users_filtered(client: TestClient):
+    """隐身过滤：resonance_visible=false 的用户即使今日活跃也不出现在墙。"""
+    vis = []
+    for i in range(3):
+        uid, _ = _new_user(f"openid_wall_hid{i}", zodiac="pisces", star_alias=f"星星·明{i}")
+        _mark_active_today(uid)
+        vis.append(uid)
+    hid, _ = _new_user("openid_wall_hid3", zodiac="pisces", star_alias="星星·隐", resonance_visible=False)
+    _mark_active_today(hid)
+
+    body = _wall(client, xff="203.0.113.13")
+    assert body["active_count"] >= 3
+    uids = {m["uid"] for g in body["groups"] for m in g["members"]}
+    assert set(vis) <= uids, "可见活跃用户应出现在墙"
+    assert hid not in uids, "隐身用户不应出现在墙"
+    aliases = {m["alias"] for g in body["groups"] for m in g["members"]}
+    assert "星星·隐" not in aliases
+
+
+# ── 分组：同星座 / 同星光数 / 同今日牌 ──────────────────────────────────
+
+
+def test_wall_zodiac_grouping_and_label(client: TestClient):
+    """分组正确：3 用户同 zodiac → 同组且 label 含星座中文名；星光数组亦存在。"""
+    uids = []
+    for i in range(3):
+        uid, _ = _new_user(f"openid_wall_zod{i}", zodiac="taurus", star_alias=f"星星·牛{i}")
+        _mark_active_today(uid)
+        uids.append(uid)
+
+    body = _wall(client, xff="203.0.113.14")
+    # 墙上可能同时存在多个星座组，按 label 定位金牛座组（双鱼座组来自其他测试）
+    group = next(
+        (g for g in body["groups"]
+         if g["type"] == "zodiac" and ZODIAC_NAMES_ZH["taurus"] in g["label"]),
+        None,
+    )
+    assert group is not None, "应有金牛座 zodiac 组"
+    assert {m["uid"] for m in group["members"]} == set(uids), "同星座 3 人应同组"
+    assert all(m["zodiac"] == "taurus" for m in group["members"])
+
+    num = _find_group(body["groups"], "number")
+    assert num is not None, "应有星光数（number）组"
+    star_number = build_today_guidance(beijing_today(), "taurus")["star_number"]
+    assert f"· {star_number}" in num["label"], (
+        f"星光数组 label 应含当日星光数，实际 {num['label']}"
+    )
+    assert all(m["star_number"] == star_number for m in num["members"])
+
+
+# ── 兜底组：组内 <3 人合并进「同星光的星」 ──────────────────────────────
+
+
+def test_wall_small_group_merges_to_fallback(client: TestClient):
+    """兜底组：组内 2 人 → 合并进「同星光的星」（不显零、不显小星座组）。"""
+    u1, _ = _new_user("openid_wall_fb1", zodiac="leo", star_alias="星星·狮一")
+    u2, _ = _new_user("openid_wall_fb2", zodiac="leo", star_alias="星星·狮二")
+    for u in (u1, u2):
+        _mark_active_today(u)
+
+    body = _wall(client, xff="203.0.113.15")
+    fb = _find_group(body["groups"], "fallback")
+    assert fb is not None, "不足 3 人的组成员应并入兜底组"
+    assert fb["label"] == "同星光的星"
+    fb_uids = {m["uid"] for m in fb["members"]}
+    assert {u1, u2} <= fb_uids, "2 人同星座组应整体并入兜底组"
+    # 不足 3 人的星座不单独出组（任何 zodiac 组都不含这两颗星）
+    for g in body["groups"]:
+        if g["type"] == "zodiac":
+            assert {u1, u2}.isdisjoint({m["uid"] for m in g["members"]}), (
+                "不足 3 人的星座组不应单独展示"
+            )
+
+
+# ── 今日活跃口径：今日信号 vs 仅昨日 ────────────────────────────────────
+
+
+def test_wall_today_active_criteria_behavior(client: TestClient):
+    """今日活跃口径：今日有 horoscope 无日记 → 活跃；仅昨日有 → 不活跃。"""
+    today_active, _ = _new_user("openid_wall_act1", zodiac="gemini", star_alias="星星·今")
+    yesterday_only, _ = _new_user("openid_wall_act2", zodiac="gemini", star_alias="星星·昨")
+    _mark_active_today(today_active)
+    _mark_active_today(yesterday_only, day=beijing_today() - timedelta(days=1))
+
+    body = _wall(client, xff="203.0.113.16")
+    uids = {m["uid"] for g in body["groups"] for m in g["members"]}
+    assert today_active in uids, "今日有 horoscope 记录 → 活跃"
+    assert yesterday_only not in uids, "仅昨日有记录 → 不活跃"
+
+
+def test_wall_diary_counts_as_today_active(client: TestClient):
+    """今日活跃口径：无 horoscope 但今日有日记 → 仍活跃。"""
+    uid, _ = _new_user("openid_wall_diary1", zodiac="libra", star_alias="星星·记")
+
+    async def _go() -> None:
+        async with async_session() as session:
+            session.add(DiaryEntry(user_id=uid, entry_date=beijing_today(), mood="平静"))
+            await session.commit()
+
+    asyncio.run(_go())
+
+    body = _wall(client, xff="203.0.113.19")
+    uids = {m["uid"] for g in body["groups"] for m in g["members"]}
+    assert uid in uids, "今日有日记（无 horoscope）→ 仍活跃"
+
+
+# ── resonated_by_me 标记 ───────────────────────────────────────────────
+
+
+def test_wall_resonated_by_me_flag(client: TestClient):
+    """resonated_by_me：登录时按今日给出记录标记；未登录全 false。"""
+    me, me_headers = _new_user("openid_wall_me1", zodiac="cancer", star_alias="星星·我")
+    u1, _ = _new_user("openid_wall_m1", zodiac="cancer", star_alias="星星·甲")
+    u2, _ = _new_user("openid_wall_m2", zodiac="cancer", star_alias="星星·乙")
+    for u in (me, u1, u2):
+        _mark_active_today(u)
+    _resonate(me, u1)
+
+    # 未登录：resonated_by_me 全 false
+    anon = _wall(client, xff="203.0.113.17")
+    assert _find_member(anon["groups"], u1)["resonated_by_me"] is False
+    assert _find_member(anon["groups"], u1)["resonate_count"] == 1, (
+        "resonate_count = 今日收到共鸣数"
+    )
+
+    # 登录：仅给过共鸣的 u1 为 true
+    resp = client.get("/resonance/wall", headers=me_headers)
+    assert resp.status_code == 200
+    me_body = resp.json()
+    assert _find_member(me_body["groups"], u1)["resonated_by_me"] is True
+    assert _find_member(me_body["groups"], u2)["resonated_by_me"] is False
+
+
+# ── my_card ────────────────────────────────────────────────────────────
+
+
+def test_wall_my_card_when_logged_in(client: TestClient):
+    """登录：my_card 含星名/星座/星光数/今日牌/星阶名/今日收到共鸣数。"""
+    me, me_headers = _new_user(
+        "openid_wall_mc1", zodiac="capricorn", star_alias="星星·摩羯",
+        stardust_total=35, star_tier=2,  # 星阶索引 2 = 星辉（阈值 30；与 share.py 同口径）
+    )
+    u1, _ = _new_user("openid_wall_mc2", zodiac="capricorn", star_alias="星星·伴")
+    _mark_active_today(me)
+    _mark_active_today(u1)
+    _resonate(u1, me)
+
+    body = client.get("/resonance/wall", headers=me_headers).json()
+    mc = body["my_card"]
+    assert mc is not None, "登录后 my_card 不应为 null"
+    assert mc["alias"] == "星星·摩羯"
+    assert mc["zodiac"] == "capricorn"
+    assert mc["star_number"] == build_today_guidance(beijing_today(), "capricorn")["star_number"]
+    assert mc["tier_name"] == "星辉", "stardust 35 → 星辉档（阈值 30）"
+
+    async def _cards() -> TarotCard:
+        async with async_session() as session:
+            result = await session.execute(select(TarotCard).order_by(TarotCard.id))
+            return list(result.scalars().all())
+
+    cards = asyncio.run(_cards())
+    expected = pick_daily_card(cards, me, beijing_today())
+    assert mc["card"] == {"card_id": expected.id, "name_zh": expected.name_zh}
+    assert mc["received_today"] == 1, "今日收到共鸣数 = 1"
+
+
+# ── 公开限流：30 次/分/IP ───────────────────────────────────────────────
+
+
+def test_wall_rate_limited_429(client: TestClient):
+    """公开限流：同 IP 连续第 31 次请求 → 429（30 次/分）。"""
+    last = None
+    for _ in range(31):
+        last = client.get("/resonance/wall", headers={"X-Forwarded-For": "198.51.100.77"})
+    assert last.status_code == 429, "连续第 31 次请求应被限流 429"
