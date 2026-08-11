@@ -12,7 +12,7 @@ Covers:
 """
 
 import asyncio
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
 import pytest
 from fastapi.testclient import TestClient
@@ -660,3 +660,133 @@ def test_night_push_star_cache_conflict_does_not_lose_claim(
     quota2 = asyncio.run(_get_quota_row(uid))
     assert quota2.quota_available == 1
     assert quota2.last_sent_date == NOW_2130.date()
+
+
+# ══════════════════════════════════════════════════════════════
+# T3-2: 晨讯节点主题三态切换（新月许愿 / 满月复盘 / 水逆首日关怀）
+# ══════════════════════════════════════════════════════════════
+
+
+def test_astral_morning_new_moon_day():
+    """新月当天（2026-01-03）→ 新月版：许愿之夜，page=wish。"""
+    event = daily_push._astral_morning_event(date(2026, 1, 3))
+    assert event is not None
+    assert event["kind"] == "new_moon"
+    assert event["title"] == "今日新月 · 许愿之夜"
+    assert len(event["title"]) <= 20
+    assert event["page"] == "pages/wish/wish"
+
+
+def test_astral_morning_full_moon_day():
+    """满月当天（2026-01-11）→ 满月版：复盘愿望，page=review。"""
+    event = daily_push._astral_morning_event(date(2026, 1, 11))
+    assert event is not None
+    assert event["kind"] == "full_moon"
+    assert event["title"] == "满月之夜 · 来复盘你的愿望"
+    assert len(event["title"]) <= 20
+    assert event["page"] == "pages/review/review"
+
+
+def test_astral_morning_mercury_first_day():
+    """水逆首日（2026-01-14，ev["start"]==today）→ 水逆版：7 件小事，page=astral-event。"""
+    event = daily_push._astral_morning_event(date(2026, 1, 14))
+    assert event is not None
+    assert event["kind"] == "mercury_retrograde"
+    assert event["title"] == "水逆开始 · 7 件慢下来的小事"
+    assert len(event["title"]) <= 20
+    assert (
+        event["page"]
+        == "pages/astral-event/astral-event?type=mercury_retrograde"
+    )
+
+
+def test_astral_morning_mercury_mid_range_none():
+    """水逆中段（2026-01-20，非首日）→ None：不额外打扰（防疲劳纪律）。"""
+    assert daily_push._astral_morning_event(date(2026, 1, 20)) is None
+
+
+def test_astral_morning_regular_day_none():
+    """常规日（2026-01-05，仅节气）→ None：晨讯保持常规今日星光。"""
+    assert daily_push._astral_morning_event(date(2026, 1, 5)) is None
+
+
+def test_astral_morning_node_data_fields_within_20():
+    """三态节点版模板数据全部 thing 字段 ≤20 字（微信 thing 上限）。"""
+    from app.services.astral_calendar import node_content
+
+    for d in (date(2026, 1, 3), date(2026, 1, 11), date(2026, 1, 14)):
+        event = daily_push._astral_morning_event(d)
+        assert event is not None
+        data = daily_push.build_moon_push_data(event, d)
+        for key in ("thing1", "thing2", "thing4"):
+            assert len(data[key]["value"]) <= 20, (d, key, data[key]["value"])
+        assert data["date3"]["value"] == d.strftime("%Y.%m.%d")
+
+    # 文案复用 node_content（避免重复实现）：新月 thing2=许愿引导语、
+    # 水逆 thing2=慢行期每日一句（同日确定性）
+    wish_event = daily_push._astral_morning_event(date(2026, 1, 3))
+    assert daily_push.build_moon_push_data(wish_event, date(2026, 1, 3))[
+        "thing2"
+    ]["value"] == node_content("wish", date(2026, 1, 3))["content"]
+    mercury_event = daily_push._astral_morning_event(date(2026, 1, 14))
+    assert daily_push.build_moon_push_data(mercury_event, date(2026, 1, 14))[
+        "thing2"
+    ]["value"] == node_content("mercury_guide", date(2026, 1, 14))[
+        "daily_sentence"
+    ]
+
+
+def test_morning_push_node_content_on_new_moon_day(
+    client: TestClient, monkeypatch, clean_push_state
+):
+    """新月当天 7:37 晨讯 → 节点版：page=wish、thing1=许愿之夜；额度/认领语义不变。"""
+    _reset_state(monkeypatch)
+    monkeypatch.setattr(settings, "WX_TEMPLATE_DAILY_CARD", "TEST_TMPL")
+    _, openid = asyncio.run(_new_user("morning_node_001"))
+    uid = asyncio.run(_uid_by_openid("morning_node_001"))
+    asyncio.run(_seed_quota(uid, 1, slot="morning"))
+
+    calls: list = []
+    _fake_wechat_ok(monkeypatch, calls)
+
+    new_moon_now = datetime(2026, 1, 3, 7, 37, tzinfo=BEIJING_TZ)
+    result = _morning_send(new_moon_now)
+    assert result["status"] == "sent"
+    assert result["sent"] == 1
+    assert result["failed"] == 0
+    assert calls[0]["openid"] == openid
+    assert calls[0]["page"] == "pages/wish/wish"
+    assert calls[0]["data"]["thing1"]["value"] == "今日新月 · 许愿之夜"
+    assert calls[0]["data"]["thing2"]["value"] == "写给月亮的三行愿望"
+    assert calls[0]["data"]["date3"]["value"] == "2026.01.03"
+
+    # 成功语义与常规晨讯一致：quota-1、last_sent_date=今天（1 条/天额度不破）
+    quota = asyncio.run(_get_quota_row(uid))
+    assert quota.quota_available == 0
+    assert quota.last_sent_date == new_moon_now.date()
+
+
+def test_morning_push_regular_content_on_mercury_mid_range(
+    client: TestClient, monkeypatch, clean_push_state
+):
+    """水逆中段 7:37 晨讯 → 常规今日星光（page=index，节点不打扰）。"""
+    _reset_state(monkeypatch)
+    monkeypatch.setattr(settings, "WX_TEMPLATE_DAILY_CARD", "TEST_TMPL")
+    _, openid = asyncio.run(_new_user("morning_regular_001"))
+    uid = asyncio.run(_uid_by_openid("morning_regular_001"))
+    asyncio.run(_seed_quota(uid, 1, slot="morning"))
+
+    calls: list = []
+    _fake_wechat_ok(monkeypatch, calls)
+
+    mid_range_now = datetime(2026, 1, 20, 7, 37, tzinfo=BEIJING_TZ)
+    result = _morning_send(mid_range_now)
+    assert result["status"] == "sent"
+    assert result["sent"] == 1
+    assert calls[0]["page"] == "pages/index/index"
+    assert calls[0]["data"]["thing1"]["value"].startswith("今日星光")
+    assert calls[0]["data"]["thing4"]["value"].startswith("星光色")
+
+    quota = asyncio.run(_get_quota_row(uid))
+    assert quota.quota_available == 0
+    assert quota.last_sent_date == mid_range_now.date()

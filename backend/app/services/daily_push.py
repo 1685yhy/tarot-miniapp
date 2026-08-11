@@ -5,6 +5,12 @@
 - 每天 7:37（北京时间 UTC+8，固定偏移）向「有订阅额度、槽位偏好 morning、
   且今天未发过」的用户推送「今日星光」：今日星光一句话（能量+星光数）+
   星象宜忌 + 星光色 + 日期。
+- 节点主题切换（T3-2）：当天有天文节点事件时晨讯内容用节点版——新月当天 →
+  新月许愿版（pages/wish/wish）、满月当天 → 满月复盘版（pages/review/review）、
+  水逆首日 → 慢下来 7 件小事关怀版（pages/astral-event）；无节点 → 常规今日
+  星光不变。判断与 /astral 同源（astral_events_on），文案复用
+  astral_calendar.node_content；模板字段结构（thing1/thing2/date3/thing4）
+  与常规版及 21:00 月相节点一致。额度/认领/退避/批标记机制不动。
 - 额度来源：微信一次性订阅授权（POST /notify/subscribe-grant → quota+1）；
   发送成功后 quota-1、记 last_sent_date（同日最多 1 条）。
 - 失败退避（最终审查 F-2）：微信 errcode!=0 / 异常时认领回退照旧（不扣额度），
@@ -60,7 +66,13 @@ from app.db.database import async_session
 from app.models.horoscope import HoroscopeHistory
 from app.models.subscribe_quota import SubscribeQuota
 from app.models.user import User
-from app.services.energy_engine import DIM_NAMES_ZH, build_today_guidance, compute_energy
+from app.services.astral_calendar import node_content
+from app.services.energy_engine import (
+    DIM_NAMES_ZH,
+    astral_events_on,
+    build_today_guidance,
+    compute_energy,
+)
 from app.services.push import (
     TEMPLATE_DAILY_CARD,
     is_template_configured,
@@ -225,6 +237,47 @@ def _truncate_str(value: str, max_len: int = 20) -> str:
 # ---------------------------------------------------------------------------
 # 7:37 星光晨讯（Task 5 · 订阅额度消费制）
 # ---------------------------------------------------------------------------
+
+
+def _astral_morning_event(today: date) -> dict | None:
+    """晨讯节点主题事件（T3-2）：新月许愿 / 满月复盘 / 水逆首日关怀；无 → None。
+
+    - 判断与 /astral 同源：``astral_events_on(today)``（T3-1 同一事件表）。
+    - 新月当天 → 新月版（thing1「今日新月 · 许愿之夜」→ pages/wish/wish）
+    - 满月当天 → 满月版（「满月之夜 · 来复盘你的愿望」→ pages/review/review）
+    - 水逆**首日**（``ev["start"] == today``）→ 水逆版（「水逆开始 · 7 件
+      慢下来的小事」→ pages/astral-event）——中段不触发，防疲劳纪律不破
+    - 其余 → None，晨讯保持常规「今日星光」，内容默认分支不变
+    - 文案复用 astral_calendar.node_content（许愿引导语 / 慢行期每日一句，
+      避免重复实现）；返回结构兼容 build_moon_push_data（title/content/page），
+      与 21:00 月相节点共用同一套模板字段结构（thing1/thing2/date3/thing4）。
+    """
+    events = astral_events_on(today)
+    if any(ev["type"] == "new_moon" for ev in events):
+        node = node_content("wish", today)
+        return {
+            "kind": "new_moon",
+            "title": "今日新月 · 许愿之夜",
+            "content": node["content"],  # 写给月亮的三行愿望
+            "page": "pages/wish/wish",
+        }
+    if any(ev["type"] == "full_moon" for ev in events):
+        return {
+            "kind": "full_moon",
+            "title": "满月之夜 · 来复盘你的愿望",
+            "content": "满月之夜，来复盘你的愿望 ✦",  # 与 21:00 月相节点同款文案
+            "page": "pages/review/review",
+        }
+    for ev in events:
+        if ev["type"] == "mercury_retrograde" and ev["start"] == today:
+            node = node_content("mercury_guide", today)
+            return {
+                "kind": "mercury_retrograde",
+                "title": "水逆开始 · 7 件慢下来的小事",
+                "content": node["daily_sentence"],  # 慢行期每日一句（确定性）
+                "page": "pages/astral-event/astral-event?type=mercury_retrograde",
+            }
+    return None
 
 
 def build_starlight_morning_data(
@@ -418,14 +471,24 @@ async def send_starlight_morning_if_due(
         if claim.rowcount != 1:
             continue
         try:
-            guidance = build_today_guidance(today, target.zodiac or None)
-            energy = await _today_energy(db, target, today)
-            data = build_starlight_morning_data(today, guidance, energy)
+            # ── T3-2 节点主题切换：有节点事件（新月/满月/水逆首日）时晨讯
+            #    用节点版内容（_astral_morning_event 纯函数，判断同源 /astral）；
+            #    无节点 → 常规今日星光（内容默认分支不变）。
+            #    额度/原子认领/失败退避/批标记全链路不动。──
+            astral_event = _astral_morning_event(today)
+            if astral_event:
+                data = build_moon_push_data(astral_event, today)
+                page = astral_event["page"]
+            else:
+                guidance = build_today_guidance(today, target.zodiac or None)
+                energy = await _today_energy(db, target, today)
+                data = build_starlight_morning_data(today, guidance, energy)
+                page = MORNING_PAGE
             resp = await send_subscribe_message(
                 openid=target.openid,
                 template_id=template_id,
                 data=data,
-                page=MORNING_PAGE,
+                page=page,
             )
             if resp.get("errcode") == 0:
                 sent += 1
