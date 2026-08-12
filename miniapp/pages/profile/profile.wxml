@@ -122,15 +122,8 @@
       <text class="star-collection-empty-text">✦ 连续签到 7 天获得稀有星卡 · 30 天解锁星光壁纸</text>
     </view>
 
-    <!-- ============ 注脚入口（开发 04 · 日记 3 小卡 + 签到/收藏/设置） ============ -->
+    <!-- ============ 注脚入口（我的页整理 2026-08 · 只保留新月许愿/满月复盘，其余入口下部菜单已有） ============ -->
     <view class="me-grid anim-fade-up anim-stagger-3">
-      <view class="me-tile" bindtap="onGoDiary" role="button" aria-label="我的星光手账" hover-class="tile-pressed">
-        <view class="me-tile-icon"><text class="me-tile-emoji">✦</text></view>
-        <view class="me-tile-text">
-          <text class="me-tile-name">星光手账</text>
-          <text class="me-tile-desc">{{diaryCount}} 颗星已点亮</text>
-        </view>
-      </view>
       <view class="me-tile" bindtap="onGoWish" role="button" aria-label="新月许愿" hover-class="tile-pressed">
         <view class="me-tile-icon"><text class="me-tile-emoji">☽</text></view>
         <view class="me-tile-text">
@@ -143,27 +136,6 @@
         <view class="me-tile-text">
           <text class="me-tile-name">满月复盘</text>
           <text class="me-tile-desc">{{reviewTileDesc}}</text>
-        </view>
-      </view>
-      <view class="me-tile" bindtap="onGoCheckin" role="button" aria-label="每日签到" hover-class="tile-pressed">
-        <view class="me-tile-icon"><text class="me-tile-emoji">✦</text></view>
-        <view class="me-tile-text">
-          <text class="me-tile-name">每日签到</text>
-          <text class="me-tile-desc">连续 {{streak}} 天</text>
-        </view>
-      </view>
-      <view class="me-tile" bindtap="onGoFavorites" role="button" aria-label="收藏卡牌" hover-class="tile-pressed">
-        <view class="me-tile-icon"><text class="me-tile-emoji">✧</text></view>
-        <view class="me-tile-text">
-          <text class="me-tile-name">收藏卡牌</text>
-          <text class="me-tile-desc">{{collectionCount}} / 78 张</text>
-        </view>
-      </view>
-      <view class="me-tile" bindtap="onGoSettingsSection" role="button" aria-label="设置" hover-class="tile-pressed">
-        <view class="me-tile-icon"><text class="me-tile-emoji">⚙</text></view>
-        <view class="me-tile-text">
-          <text class="me-tile-name">设置</text>
-          <text class="me-tile-desc">推送 · 音效 · 隐私</text>
         </view>
       </view>
     </view>
@@ -358,9 +330,12 @@
         <image wx:if="{{yearEndReminderEnabled}}" class="menu-arrow-img" src="/images/icons/star_64.png" mode="aspectFit" aria-label="报告提醒开启" />
         <text wx:else class="menu-arrow">○</text>
       </view>
-      <view id="settings-section" class="menu-section-title anim-fade-up anim-stagger-7">
+      <!-- 设置分组折叠（我的页整理 2026-08 · 默认收起，标题行点击展开/收起，写法与日记页本周回顾 onToggleReview 一致） -->
+      <view id="settings-section" class="menu-section-title anim-fade-up anim-stagger-7 settings-toggle-row" bindtap="toggleSettings" role="button" aria-label="{{settingsExpanded ? '收起设置' : '展开设置'}}" hover-class="card-pressed">
         <text class="menu-section-label">设置</text>
+        <text class="settings-toggle-arrow">{{settingsExpanded ? '▴' : '▾'}}</text>
       </view>
+      <view wx:if="{{settingsExpanded}}">
       <view class="menu-item anim-slide-up anim-stagger-7" bindtap="onToggleSound" role="button" aria-label="切换音效开关">
         <view class="menu-icon-wrap">
           <image src="/images/icons/theme_general_64.png" mode="aspectFit" class="menu-icon-img" aria-label="音效"></image>
@@ -476,6 +451,7 @@
           <text class="menu-desc">注销后数据将被删除或匿名化处理</text>
         </view>
         <text class="menu-arrow">›</text>
+      </view>
       </view>
     </view>
 

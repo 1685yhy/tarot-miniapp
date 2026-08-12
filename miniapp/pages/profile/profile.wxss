@@ -1298,6 +1298,21 @@
   opacity: 0.85;
 }
 
+/* ── 设置分组折叠（我的页整理 2026-08 · 仅布局，无新视觉，token 全复用）── */
+/* 标题行改为 flex 让 ▴/▾ 箭头靠右；箭头字符复用日记页同款 ▴/▾，显隐由 wx:if 控制 */
+.settings-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.settings-toggle-arrow {
+  font-size: var(--font-size-caption);
+  color: var(--color-gold-dark, #A98B5F);
+  letter-spacing: 1rpx;
+  opacity: 0.75;
+  flex-shrink: 0;
+}
+
 /* 非会员权益摘要 — 一行 + 箭头（整卡可点） */
 .benefits-locked-row {
   display: flex;

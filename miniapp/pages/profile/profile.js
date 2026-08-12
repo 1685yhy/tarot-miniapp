@@ -171,6 +171,9 @@ Page({
     // 星友圈（T8-5）：共鸣墙入口角标 + 隐身开关（我的页）
     resonanceReceivedToday: 0, // 今日收到共鸣数（角标「今天有 N 颗星与你共鸣」）
     resonanceVisible: true,    // 在共鸣墙中出现（默认开，wall 回读校准）
+
+    // 我的页整理 2026-08：设置分组折叠（默认收起，点击标题行展开 9 项设置）
+    settingsExpanded: false,
   },
 
   // —— History card image loading ——
@@ -384,6 +387,11 @@ Page({
   /** 设置 tile → 平滑滚到页面「设置」分区 */
   onGoSettingsSection() {
     wx.pageScrollTo({ selector: '#settings-section', duration: 320 });
+  },
+
+  /** 展开/收起设置分组（折叠标题条，写法与日记页 onToggleReview 一致） */
+  toggleSettings() {
+    this.setData({ settingsExpanded: !this.data.settingsExpanded });
   },
 
   _loadFavoriteCount() {
