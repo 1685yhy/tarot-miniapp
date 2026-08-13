@@ -11,18 +11,30 @@
 """
 
 import json
-from datetime import date
+import logging
+from datetime import date, datetime, timezone
 
+from fastapi import HTTPException
+from openai import AsyncOpenAI
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import settings
 from app.models.card import TarotCard
+from app.models.card_teaching import CardTeaching
 from app.models.reading import DrawnCard, Reading
 from app.models.star_learning_progress import StarLearningProgress
 from app.models.user import User
+from app.services.ai_engine import _OUTPUT_RED_LINE
+from app.services.ai_personas import get_persona_prompt_suffix
+from app.services.compliance import AI_OUTPUT_BLACKLIST, find_forbidden
 from app.services.daily_card import pick_daily_card
 from app.services.stardust import tier_for
 from app.services.star_collectibles import grant_wallpaper, parse_json_list
+from app.services.star_words import _sanitize
+from app.utils.quota import reset_ai_quota_if_new_day
+
+logger = logging.getLogger(__name__)
 
 # 里程碑表（表驱动）：metric 为判定维度（learned 已学总数 / major 大阿卡纳 /
 # minor 小阿卡纳），min 为门槛，stardust 为发放星尘；title_name 为称号（全通
@@ -210,3 +222,164 @@ async def related_next_card(db: AsyncSession, user_id: str, all_cards: list[Taro
     learned = await learned_card_ids(db, user_id)
     candidates = [c for c in all_cards if c.id not in learned]
     return pick_related(candidates, await reading_frequency(db, user_id))
+
+
+# ── 陪学小星 AI 对话（SDD P2 阶段3 · T6-4）─────────────────────────────
+
+# 非会员每日免费陪学对话次数：语义同 settings.FREE_CHAT_MESSAGES（=3），
+# 但使用独立计数字段 academy_chat_count_today（与占卜追问 free_chats_today
+# 分离互不挤占），日复位复用 quota_reset_date 日复位管线。
+ACADEMY_CHAT_DAILY_LIMIT = settings.FREE_CHAT_MESSAGES
+
+# 陪学回复 ≤200 字；同卡同人当日二次提问回前 80 字短版（不重复调 AI 控成本）
+ACADEMY_CHAT_MAX_LEN = 200
+ACADEMY_CHAT_SHORT_LEN = 80
+
+# AI 失败/无 key 降级文案（不空屏；不消耗配额）
+ACADEMY_CHAT_DEGRADED_REPLY = "小星在休息，先看看学习卡吧 ✦"
+
+# 同卡同人当日短版内存缓存：{f"{user_id}:{card_id}": (短版回话, "YYYY-MM-DD")}
+# key 不含日期，跨日命中需比对元组第二元素（当日命中口径——同键不同日
+# 的旧短版不生效，重新调 AI）。进程级缓存，重启即失（成本控制而非持久化）。
+_academy_chat_short: dict[str, tuple[str, str]] = {}
+
+
+def _get_ai_client() -> AsyncOpenAI | None:
+    """DeepSeek 客户端（与 star_words._get_ai_client 同款模式，本地副本）。"""
+    if not settings.DEEPSEEK_API_KEY:
+        return None
+    return AsyncOpenAI(
+        api_key=settings.DEEPSEEK_API_KEY,
+        base_url=settings.DEEPSEEK_BASE_URL,
+    )
+
+
+def _chat_short_cache_get(user_id: str, card_id: int, today: date) -> str | None:
+    """当日短版缓存命中 → 短版回话；无缓存/跨日 → None。"""
+    entry = _academy_chat_short.get(f"{user_id}:{card_id}")
+    if entry and entry[1] == today.isoformat():
+        return entry[0]
+    return None
+
+
+def _chat_short_cache_set(user_id: str, card_id: int, today: date, reply: str) -> None:
+    """写入当日短版缓存（存最终 reply 的前 80 字 + 当日日期串）。"""
+    _academy_chat_short[f"{user_id}:{card_id}"] = (
+        reply[:ACADEMY_CHAT_SHORT_LEN],
+        today.isoformat(),
+    )
+
+
+def _chat_remaining(user: User) -> int | None:
+    """当日剩余免费陪学次数（含本次）：会员 None；非会员 FREE - 已用。"""
+    if user.is_member:
+        return None
+    return max(0, ACADEMY_CHAT_DAILY_LIMIT - (user.academy_chat_count_today or 0))
+
+
+def _degraded_chat_result(user: User) -> dict:
+    """AI 失败/无 key 降级：固定文案 + 不消耗配额（remaining 按当前计数算）。"""
+    return {
+        "reply": ACADEMY_CHAT_DEGRADED_REPLY,
+        "remaining": _chat_remaining(user),
+        "degraded": True,
+    }
+
+
+async def academy_chat(
+    db: AsyncSession, user: User, card_id: int, message: str
+) -> dict:
+    """陪学小星对话 → ``{reply, remaining: int | None, degraded: bool}``。
+
+    流程：日复位（reset_ai_quota_if_new_day）→ 配额校验（非会员
+    academy_chat_count_today < FREE_CHAT_MESSAGES，超限 → 402「明天再来」；
+    会员不限 remaining=None）→ 读 teaching（无 → 404）→ 当日短版缓存
+    （同卡同人二次提问直回前 80 字，不重复调 AI）→ persona=academy_tutor
+    + _OUTPUT_RED_LINE（陪学只讲牌意/典故/生活关联，不替用户做决定）→
+    AI ≤200 字 → _sanitize + find_forbidden 清洗 → 非会员计数 +1。
+    AI 失败/无 key → 降级文案（不空屏、不计数、不缓存）。
+    """
+    reset_ai_quota_if_new_day(user)
+    quota_exhausted = (
+        not user.is_member
+        and (user.academy_chat_count_today or 0) >= ACADEMY_CHAT_DAILY_LIMIT
+    )
+    if quota_exhausted:
+        raise HTTPException(status_code=402, detail="今天的小星课堂结束啦，明天再来 ✦")
+
+    teaching_result = await db.execute(
+        select(CardTeaching).where(CardTeaching.card_id == card_id)
+    )
+    teaching = teaching_result.scalar_one_or_none()
+    if not teaching:
+        raise HTTPException(status_code=404, detail="教学数据不存在")
+
+    # 与 quota 复位管线同口径（UTC 日界），保证缓存与配额同一天
+    today = datetime.now(timezone.utc).date()
+    short = _chat_short_cache_get(user.id, card_id, today)
+    if short is not None:
+        return {
+            "reply": short,
+            "remaining": _chat_remaining(user),
+            "degraded": False,
+        }
+
+    client = _get_ai_client()
+    if client is None:
+        return _degraded_chat_result(user)
+
+    system_prompt = (
+        "你是一位温柔讲学的塔罗陪学伙伴「小星」。本次对话是学习场景："
+        "只围绕当前这张牌讲解牌面含义、历史典故与生活关联，回答用户关于"
+        "这张牌的提问；不替用户做决定、不对未来做断言——选择权留给用户。"
+        "回复 200 字以内，只返回正文，不要前缀、不要解释、不要换行。"
+        + get_persona_prompt_suffix("academy_tutor")
+        + _OUTPUT_RED_LINE
+    )
+    user_prompt = (
+        f"卡牌 id={card_id} 的教学资料：\n"
+        f"牌面符号：{json.dumps(json.loads(teaching.symbols), ensure_ascii=False)}\n"
+        f"历史典故：{teaching.story}\n"
+        f"生活关联：{teaching.life_connection}\n"
+        f"学习关键词：{json.dumps(json.loads(teaching.keywords_learning), ensure_ascii=False)}\n"
+        f"用户提问：{message}\n"
+        "请以陪学伙伴的口吻回答（200 字以内）。"
+    )
+
+    try:
+        response = await client.chat.completions.create(
+            model=settings.DEEPSEEK_MODEL,
+            max_tokens=settings.AI_MAX_TOKENS,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            timeout=60.0,
+        )
+        content = response.choices[0].message.content
+    except Exception as exc:
+        logger.warning("academy_chat AI 调用失败: %s", exc)
+        return _degraded_chat_result(user)
+
+    if not content or not content.strip():
+        logger.warning("academy_chat AI 返回空内容，走降级")
+        return _degraded_chat_result(user)
+
+    reply = content.strip().strip('"').strip("'").strip("「").strip("」").strip()
+    reply = _sanitize(reply[:ACADEMY_CHAT_MAX_LEN])
+    if not reply or find_forbidden(reply, AI_OUTPUT_BLACKLIST):
+        # 清洗后为空 / 仍残留红线词（理论上 _sanitize 已字符级清干净）→ 降级兜底
+        logger.warning("academy_chat AI 输出清洗后仍不合规，走降级")
+        return _degraded_chat_result(user)
+
+    remaining = _chat_remaining(user)  # 先算剩余（含本次），再计数
+    if not user.is_member:
+        user.academy_chat_count_today = (user.academy_chat_count_today or 0) + 1
+
+    _chat_short_cache_set(user.id, card_id, today, reply)
+
+    return {
+        "reply": reply,
+        "remaining": remaining,
+        "degraded": False,
+    }

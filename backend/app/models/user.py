@@ -85,6 +85,10 @@ class User(Base):
     # Daily AI-extras quota (reinterpret / diary AI), reset when the day changes
     reinterpret_count_today: Mapped[int] = mapped_column(Integer, default=0)
     diary_ai_count_today: Mapped[int] = mapped_column(Integer, default=0)
+    # 星灵学堂陪学小星对话每日计数（SDD P2 阶段3 · T6-4）：独立计数字段，
+    # 与 free_chats_today（占卜追问）分离互不挤占；日复位复用 quota_reset_date
+    # 日复位管线（reset_ai_quota_if_new_day，见 app/utils/quota.py）。
+    academy_chat_count_today: Mapped[int] = mapped_column(Integer, default=0)
     quota_reset_date: Mapped[datetime | None] = mapped_column(Date, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))

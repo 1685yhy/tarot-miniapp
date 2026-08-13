@@ -17,3 +17,4 @@ def reset_ai_quota_if_new_day(user: User) -> None:
         user.quota_reset_date = today
         user.reinterpret_count_today = 0
         user.diary_ai_count_today = 0
+        user.academy_chat_count_today = 0

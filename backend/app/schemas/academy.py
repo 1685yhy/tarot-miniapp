@@ -1,8 +1,8 @@
-"""星灵学堂 schema（SDD P2 阶段3 · T6-1/2）：学习 / 复习 / 里程碑 / 学习卡页 / 学习计划 / 概览。"""
+"""星灵学堂 schema（SDD P2 阶段3 · T6-1/2/4）：学习 / 复习 / 里程碑 / 学习卡页 / 学习计划 / 概览 / 陪学对话。"""
 
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class LearnedRequest(BaseModel):
@@ -132,3 +132,29 @@ class OverviewResponse(BaseModel):
     paths: PathsStats
     titles: list[str]
     today_card: TodayCard | None = None
+
+
+# ── T6-4 陪学小星 AI 对话 ──────────────────────────────────────────────
+
+
+class ChatRequest(BaseModel):
+    """陪学提问：card_id + message（message 空 → 422）。
+
+    message 只做长度下限校验（min_length=1），与 community/wish 文案字段同款；
+    超长由 max_length 拦截（教学上下文对话，500 字足够）。
+    """
+
+    card_id: int
+    message: str = Field(..., min_length=1, max_length=500)
+
+
+class ChatResponse(BaseModel):
+    """陪学回答：reply + remaining（会员 None）+ degraded（AI 失败降级标记）。
+
+    remaining = 当日剩余免费陪学次数（含本次）：非会员 3→2→1 递减；会员不限
+    （None）。degraded=true 时 reply 为固定降级文案（不空屏、不消耗配额）。
+    """
+
+    reply: str
+    remaining: int | None
+    degraded: bool

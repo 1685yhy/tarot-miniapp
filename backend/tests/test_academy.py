@@ -12,7 +12,8 @@
 import asyncio
 import json
 import uuid
-from datetime import date
+from datetime import date, datetime, timedelta, timezone
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from fastapi.testclient import TestClient
@@ -36,6 +37,7 @@ from app.services.academy import (
     next_card,
     pick_related,
 )
+from app.services.ai_personas import get_persona, get_persona_prompt_suffix
 from app.services.compliance import AI_OUTPUT_BLACKLIST, MEET_BLACKLIST, find_forbidden
 from app.services.stardust import tier_for
 from app.utils.auth import create_token
@@ -756,3 +758,254 @@ class TestAcademyCopyCompliance:
         for reason in PATH_REASONS.values():
             assert find_forbidden(reason, MEET_BLACKLIST) == [], f"reason 含禁词: {reason}"
             assert find_forbidden(reason, AI_OUTPUT_BLACKLIST) == [], f"reason 含红线词: {reason}"
+
+
+# ---------------------------------------------------------------------------
+# T6-4（Task 15）: POST /academy/chat 陪学小星 AI
+#   - 免费 3 次内成功 + remaining 递减（3→2→1）；第 4 次 → 402「明天再来」
+#   - 独立计数：academy_chat_count_today 与 free_chats_today 互不挤占
+#   - 会员不限（10 次全成功 remaining=None，且不计数）
+#   - AI 失败 → degraded=true 降级文案（不空屏、不消耗配额）
+#   - AI 输出含黑名单词 → _sanitize 清洗后 reply 合规（find_forbidden == []）
+#   - 日复位（quota_reset_date=昨天 → 首次调用计数从 0 起）
+#   - message 空 → 422；card_id 非法 → 404；未登录 401
+#   - 同卡同人二次提问 → 短版（前 80 字）且 AI 调用次数不增（成本控制）
+#   - 系统 prompt 含 academy_tutor persona + 输出红线 + teaching 上下文
+# 教学卡用 3/6（本文件导入期种子），避开 test_teaching 的 1/2/7/14。
+# ---------------------------------------------------------------------------
+
+
+class _ChatFakeCompletions:
+    """仿 test_star_words._FakeCompletions 的假 AI：记录调用并返回固定内容。"""
+
+    def __init__(self, content: str | None = None, raise_error: bool = False):
+        self._content = content
+        self._raise_error = raise_error
+        self.calls: list[dict] = []
+
+    async def create(self, **kwargs):
+        self.calls.append(kwargs)
+        if self._raise_error:
+            raise RuntimeError("DeepSeek 服务不可用")
+        return SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content=self._content))]
+        )
+
+
+class _ChatFakeAI:
+    def __init__(self, completions: _ChatFakeCompletions):
+        self.chat = SimpleNamespace(completions=completions)
+
+
+def _chat_fake_ai(content: str | None = None, raise_error: bool = False) -> _ChatFakeAI:
+    return _ChatFakeAI(_ChatFakeCompletions(content, raise_error))
+
+
+def _make_member_user() -> tuple[str, str, dict]:
+    """创建会员测试用户（会员不限 academy chat 配额）。"""
+    openid = f"academy-chat-mem-{uuid.uuid4().hex[:12]}"
+
+    async def _run():
+        async with async_session() as session:
+            user = User(openid=openid, is_member=True)
+            session.add(user)
+            await session.commit()
+            await session.refresh(user)
+            return user
+
+    user = asyncio.run(_run())
+    return openid, user.id, {"Authorization": f"Bearer {create_token(user.id, user.token_version)}"}
+
+
+def _set_academy_chat_state(openid: str, count: int, reset_date: date | None) -> None:
+    """直接写 academy_chat_count_today + quota_reset_date（日复位测试用）。"""
+
+    async def _run():
+        async with async_session() as session:
+            user = (
+                await session.execute(select(User).where(User.openid == openid))
+            ).scalar_one()
+            user.academy_chat_count_today = count
+            user.quota_reset_date = reset_date
+            await session.commit()
+
+    asyncio.run(_run())
+
+
+def _chat(client: TestClient, headers: dict, card_id: int = 3, message: str = "这张牌是什么意思"):
+    return client.post(
+        "/academy/chat", json={"card_id": card_id, "message": message}, headers=headers
+    )
+
+
+class TestAcademyChat:
+    def test_free_quota_decrements_3_2_1_then_402(self, client, monkeypatch):
+        """免费 3 次内成功 + remaining 递减（3→2→1）；第 4 次 → 402；
+        独立计数不与占卜追问（free_chats_today）互挤。"""
+        openid, _, headers = _make_user()
+        fake = _chat_fake_ai("愚者的冒险精神，是说给生活里每个勇敢瞬间听的 ✦")
+        monkeypatch.setattr("app.services.academy._get_ai_client", lambda: fake)
+        # 配额语义隔离测试：禁用当日短版缓存（同卡重复提问会命中缓存不计数，
+        # 缓存行为由 test_same_card_second_ask_short_version_ai_not_called_again 覆盖）
+        monkeypatch.setattr("app.services.academy._chat_short_cache_get", lambda *a, **k: None)
+
+        r1 = _chat(client, headers)
+        assert r1.status_code == 200, r1.text
+        d1 = r1.json()
+        assert d1["degraded"] is False
+        assert d1["remaining"] == 3
+        assert "愚者的冒险精神" in d1["reply"]
+
+        assert _chat(client, headers, message="再讲一次").json()["remaining"] == 2
+        assert _chat(client, headers, message="第三次").json()["remaining"] == 1
+
+        r4 = _chat(client, headers, message="第四次")
+        assert r4.status_code == 402
+        assert "明天再来" in r4.json()["detail"]
+
+        user = _read_user(openid)
+        assert user.academy_chat_count_today == 3
+        assert user.free_chats_today == 0  # 独立计数，不挤占占卜追问额度
+
+    def test_member_unlimited_remaining_none(self, client, monkeypatch):
+        """会员 10 次全成功 remaining=None，且不计数。"""
+        openid, _, headers = _make_member_user()
+        fake = _chat_fake_ai("这张牌的典故很有意思 ✦")
+        monkeypatch.setattr("app.services.academy._get_ai_client", lambda: fake)
+        for i in range(10):
+            resp = _chat(client, headers, message=f"第 {i} 问")
+            assert resp.status_code == 200, resp.text
+            assert resp.json()["remaining"] is None
+        assert _read_user(openid).academy_chat_count_today == 0  # 会员不计数
+
+    def test_ai_failure_degraded_reply_no_quota_consumed(self, client, monkeypatch):
+        """AI 失败 → degraded=true 降级文案（不空屏），且不消耗免费次数。"""
+        _, _, headers = _make_user()
+        fake = _chat_fake_ai(raise_error=True)
+        monkeypatch.setattr("app.services.academy._get_ai_client", lambda: fake)
+        resp = _chat(client, headers)
+        assert resp.status_code == 200, resp.text
+        data = resp.json()
+        assert data["degraded"] is True
+        assert data["reply"] == "小星在休息，先看看学习卡吧 ✦"
+        assert data["remaining"] == 3  # 降级不计数 → 剩余仍为 3
+
+    def test_no_api_key_degraded(self, client):
+        """无 DEEPSEEK_API_KEY（测试环境为空）→ 降级文案，不 500。"""
+        _, _, headers = _make_user()
+        resp = _chat(client, headers)
+        assert resp.status_code == 200, resp.text
+        data = resp.json()
+        assert data["degraded"] is True
+        assert data["reply"] == "小星在休息，先看看学习卡吧 ✦"
+
+    def test_ai_output_sanitized_blacklist_words(self, client, monkeypatch):
+        """AI 输出含黑名单词 → _sanitize 清洗后 reply 不含禁词（find_forbidden == []）。"""
+        _, _, headers = _make_user()
+        fake = _chat_fake_ai("你命中注定会成功，明天一定会转运，不必焦虑")
+        monkeypatch.setattr("app.services.academy._get_ai_client", lambda: fake)
+        resp = _chat(client, headers)
+        assert resp.status_code == 200, resp.text
+        reply = resp.json()["reply"]
+        assert find_forbidden(reply, AI_OUTPUT_BLACKLIST) == [], f"reply 仍含禁词: {reply}"
+        assert "命中注定" not in reply and "转运" not in reply
+        assert reply == "你自有答案会成功，明天会调整，无需焦虑"
+
+    def test_daily_reset_starts_count_from_zero(self, client, monkeypatch):
+        """quota_reset_date=昨天且计数=3 → 首次调用即复位（计数从 0 起，不再 402）。
+
+        日界以 quota 复位管线口径为准（UTC：datetime.now(timezone.utc).date()），
+        不能用本地 date.today()——本地凌晨（CST 00:00-08:00）UTC 还是前一天，
+        会误判「已是今天」不复位（午夜回归钉住）。
+        """
+        utc_today = datetime.now(timezone.utc).date()
+        openid, _, headers = _make_user()
+        _set_academy_chat_state(openid, count=3, reset_date=utc_today - timedelta(days=1))
+        fake = _chat_fake_ai("复位成功 ✦")
+        monkeypatch.setattr("app.services.academy._get_ai_client", lambda: fake)
+        resp = _chat(client, headers)
+        assert resp.status_code == 200, resp.text
+        assert resp.json()["remaining"] == 3
+        user = _read_user(openid)
+        assert user.academy_chat_count_today == 1
+        assert user.quota_reset_date == utc_today
+
+    def test_same_card_second_ask_short_version_ai_not_called_again(self, client, monkeypatch):
+        """同卡同人二次提问 → 回前 80 字短版，AI 调用次数不增（成本控制）；
+        换卡提问仍走完整 AI。"""
+        _, _, headers = _make_user()
+        full = "恋人牌讲的是爱与选择：牌面上的一对，代表着心中两种声音的对话。" \
+               "真正的爱不是非此即彼，而是愿意与不同意见共处。愿你在每一次选择里，都听见自己的心。" \
+               "它也在提醒你：慢一点，爱会更有温度。"
+        assert len(full) > 80
+        fake = _chat_fake_ai(full)
+        monkeypatch.setattr("app.services.academy._get_ai_client", lambda: fake)
+
+        r1 = client.post(
+            "/academy/chat", json={"card_id": 6, "message": "讲讲恋人牌"}, headers=headers
+        )
+        assert r1.status_code == 200, r1.text
+        assert r1.json()["reply"] == full
+        assert r1.json()["remaining"] == 3
+
+        r2 = client.post(
+            "/academy/chat", json={"card_id": 6, "message": "再讲一遍"}, headers=headers
+        )
+        assert r2.status_code == 200, r2.text
+        assert len(fake.chat.completions.calls) == 1  # AI 只调一次
+        assert r2.json()["reply"] == full[:80]  # 短版 = 前 80 字
+        assert r2.json()["degraded"] is False
+        assert r2.json()["remaining"] == 2  # 短版命中不消耗配额
+
+        r3 = _chat(client, headers, card_id=3, message="讲讲这张")
+        assert r3.status_code == 200, r3.text
+        assert len(fake.chat.completions.calls) == 2  # 换卡 → 完整 AI 再调一次
+        assert r3.json()["reply"] == full
+
+    def test_prompt_includes_persona_redline_and_teaching(self, client, monkeypatch):
+        """system prompt 含 academy_tutor persona + 输出红线；user prompt 含 teaching 上下文。"""
+        _, _, headers = _make_user()
+        fake = _chat_fake_ai("回复 ✦")
+        monkeypatch.setattr("app.services.academy._get_ai_client", lambda: fake)
+        resp = _chat(client, headers, card_id=3, message="讲讲这张牌")
+        assert resp.status_code == 200, resp.text
+        system = fake.chat.completions.calls[0]["messages"][0]["content"]
+        user_msg = fake.chat.completions.calls[0]["messages"][1]["content"]
+        assert "陪学小星" in system  # academy_tutor persona 注入
+        assert "输出红线" in system  # _OUTPUT_RED_LINE 注入
+        assert "白色玫瑰" in user_msg  # teaching.symbols 上下文
+        assert "丰饶与滋养" in user_msg  # teaching.story 上下文
+        assert "开端" in user_msg  # keywords_learning 上下文
+        assert "讲讲这张牌" in user_msg  # 用户提问透传
+
+    def test_empty_message_422(self, client):
+        """message 空/缺失 → 422。"""
+        _, _, headers = _make_user()
+        resp = client.post("/academy/chat", json={"card_id": 3, "message": ""}, headers=headers)
+        assert resp.status_code == 422
+        resp = client.post("/academy/chat", json={"card_id": 3}, headers=headers)
+        assert resp.status_code == 422
+
+    def test_invalid_card_404(self, client):
+        """card_id 非法 → 404。"""
+        _, _, headers = _make_user()
+        resp = client.post(
+            "/academy/chat", json={"card_id": 999, "message": "hi"}, headers=headers
+        )
+        assert resp.status_code == 404
+
+    def test_requires_auth(self, client):
+        """未登录 POST /academy/chat → 401。"""
+        resp = client.post("/academy/chat", json={"card_id": 3, "message": "hi"})
+        assert resp.status_code == 401
+
+
+class TestAcademyTutorPersonaCompliance:
+    def test_academy_tutor_persona_copy_passes_compliance_scan(self):
+        """academy_tutor persona 文案过 compliance 禁词扫描（prompt 注入面不引红线词）。"""
+        suffix = get_persona_prompt_suffix("academy_tutor")
+        assert suffix, "academy_tutor persona 缺失 prompt_suffix"
+        assert find_forbidden(suffix, MEET_BLACKLIST) == [], f"persona 含禁词: {suffix}"
+        assert find_forbidden(suffix, AI_OUTPUT_BLACKLIST) == [], f"persona 含红线词: {suffix}"
+        persona = get_persona("academy_tutor")
+        assert persona["signature"] == "小星陪你 ✦"

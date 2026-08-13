@@ -14,6 +14,8 @@
   游标推进、random 按日确定性（pick_daily_card 同牌）、related 历史抽牌
   频次 TOP 未学；推进写回 plans.cursor_pos（upsert）
 - GET  /academy/overview — 学堂主页（T6-2）：总进度 + 四路径 + 称号 + today_card
+- POST /academy/chat — 陪学小星（T6-4）：teaching 上下文 + academy_tutor
+  persona + 输出红线 + 黑名单清洗 + 非会员每日 3 次独立配额 + 同卡当日短版缓存
 """
 
 import json
@@ -35,6 +37,8 @@ from app.models.star_learning_progress import StarLearningProgress
 from app.models.subscribe_quota import SubscribeQuota
 from app.models.user import User
 from app.schemas.academy import (
+    ChatRequest,
+    ChatResponse,
     LearnedRequest,
     LearnedResponse,
     LessonCard,
@@ -58,6 +62,7 @@ from app.services.academy import (
     MAJOR_SIZE,
     MINOR_SIZE,
     PATH_REASONS,
+    academy_chat,
     apply_milestones,
     major_cards,
     minor_cards,
@@ -375,3 +380,28 @@ async def get_overview(
         titles=titles_of(user),
         today_card=today_card,
     )
+
+
+# ── T6-4 陪学小星 AI 对话 ─────────────────────────────────────────────
+
+
+@router.post("/chat", response_model=ChatResponse)
+async def post_academy_chat(
+    payload: ChatRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """陪学小星对话：teaching 上下文 + academy_tutor persona + 输出红线 +
+    黑名单清洗 + 非会员每日 3 次独立配额（academy_chat_count_today）+
+    同卡同人当日短版缓存（二次提问回前 80 字，不重复调 AI）。
+
+    - message 空 → 422（schema min_length）；card_id 非法 → 404
+    - 非会员超限 → 402「今天的小星课堂结束啦，明天再来 ✦」；会员不限
+    - AI 失败/无 key → 200 + degraded=true 固定降级文案（不空屏、不消耗配额）
+    """
+    card = await db.get(TarotCard, payload.card_id)
+    if not card:
+        raise HTTPException(status_code=404, detail="卡牌不存在")
+
+    result = await academy_chat(db, user, payload.card_id, payload.message)
+    return ChatResponse(**result)
