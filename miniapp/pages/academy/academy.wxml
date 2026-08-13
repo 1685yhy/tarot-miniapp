@@ -197,4 +197,30 @@
     </view>
   </view>
 
+  <!-- ===== 全通庆祝（T6-6）：全屏星光雨 + 称号授予弹层 ===== -->
+  <view wx:if="{{showCelebrate}}" class="star-rain">
+    <view
+      wx:for="{{rainStars}}" wx:key="key"
+      class="star-rain-drop"
+      style="left: {{item.left}}%; animation-delay: {{item.delay}}s; animation-duration: {{item.duration}}s; font-size: {{item.size}}rpx; color: {{item.color}};"
+    >{{item.char}}</view>
+  </view>
+  <view wx:if="{{showCelebrate}}" class="celebrate-mask" bindtap="onCloseCelebrate">
+    <view class="celebrate-modal" catchtap="noop">
+      <view class="celebrate-burst">
+        <view class="burst-star burst-star-1">✦</view>
+        <view class="burst-star burst-star-2">✦</view>
+        <view class="burst-star burst-star-3">✦</view>
+        <view class="burst-star burst-star-4">✦</view>
+        <view class="burst-star burst-star-5">✦</view>
+        <view class="burst-star burst-star-6">✦</view>
+        <text class="celebrate-icon">✦</text>
+      </view>
+      <text class="celebrate-title">{{celebrateTitle}}</text>
+      <text class="celebrate-sub">{{celebrateSub}}</text>
+      <text class="celebrate-hint">夜空因你，星河又亮了一分 ✦</text>
+      <button class="celebrate-btn" bindtap="onCloseCelebrate">收下这份荣耀 ✦</button>
+    </view>
+  </view>
+
 </view>

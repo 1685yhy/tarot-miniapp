@@ -13,9 +13,9 @@
 //       POST /academy/learned · POST /academy/review
 // 数据降级：lesson 404/网络异常 → 错误态可重试；牌图失败 → PNG 兜底 → 文字色块。
 
-const { request, getFriendlyError } = require('../../utils/api');
-const { findCard, computeImagePath, pngFallbackPath } = require('../../utils/cards');
-const analytics = require('../../utils/analytics');
+const { request, getFriendlyError } = require('../../../utils/api');
+const { findCard, computeImagePath, pngFallbackPath } = require('../../../utils/cards');
+const analytics = require('../../../utils/analytics');
 
 // 牌面大图 base（lesson 接口 image_url 已是完整 URL，此为兜底路径）
 const IMAGE_BASE_FALLBACK = 'https://xingxiang.chat/images/cards_full';

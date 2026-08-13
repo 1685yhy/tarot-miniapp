@@ -172,6 +172,9 @@ Page({
     resonanceReceivedToday: 0, // 今日收到共鸣数（角标「今天有 N 颗星与你共鸣」）
     resonanceVisible: true,    // 在共鸣墙中出现（默认开，wall 回读校准）
 
+    // 星灵学堂称号（T6-6）：GET /academy/overview titles（星辉学者/星光塔罗师…）
+    academyTitles: [],
+
     // 我的页整理 2026-08：设置分组折叠（默认收起，点击标题行展开 9 项设置）
     settingsExpanded: false,
   },
@@ -209,6 +212,9 @@ Page({
 
     // 星友圈（T8-5）：共鸣角标 + 隐身开关回读（登录态才拉，失败静默）
     this._loadResonance();
+
+    // 星灵学堂称号（T6-6）：称号徽章行（登录态才拉，失败静默降级）
+    this._loadAcademyTitles();
 
     // Check annual report season (Dec-Jan)
     const month = new Date().getMonth() + 1;
@@ -618,6 +624,21 @@ Page({
     const myCard = wallRes.status === 'fulfilled' && wallRes.value && wallRes.value.my_card;
     if (myCard && typeof myCard.visible === 'boolean') {
       this.setData({ resonanceVisible: myCard.visible });
+    }
+  },
+
+  /**
+   * 星灵学堂称号（T6-6）：GET /academy/overview → titles（称号名数组），
+   * 星阶区徽章行展示，与星阶徽章并列。失败静默降级（不展示称号行），
+   * 不阻塞我的页加载（独立请求，与 _loadResonance 同模式）。
+   */
+  async _loadAcademyTitles() {
+    if (!wx.getStorageSync('token')) return; // 未登录不拉（接口需鉴权）
+    try {
+      const data = await request('/academy/overview');
+      this.setData({ academyTitles: (data && data.titles) || [] });
+    } catch (_err) {
+      // 静默降级：后端无该功能/网络异常时称号行不展示
     }
   },
 

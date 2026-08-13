@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "问小星",
+  "navigationBarBackgroundColor": "#FAF6EF",
+  "navigationBarTextStyle": "black",
+  "enablePullDownRefresh": false,
+  "usingComponents": {}
+}

@@ -1,0 +1,428 @@
+/* ============================================================
+   陪学小星 · 半屏对话页 — E3 奶油疗愈 token（styles/common.wxss）
+   底部半屏卡片：遮罩 + 圆角顶卡片 + 气泡对话 + 常驻免责小字
+   气泡语言复用 pages/chat 的 E3 补全（奶油底 + 细金左线）
+   ============================================================ */
+
+page {
+  --e3-cream: #FAF6EF;
+  --e3-cream-hi: #FFFDF8;
+  --e3-paper: #F2ECDF;
+  --e3-pink: #E8C4BE;
+  --e3-pink-ink: #B08A82;
+  --e3-gold: #C9A97C;
+  --e3-gold-deep: #8A6B3D;
+  --e3-line: rgba(201, 169, 124, 0.28);
+  --e3-line-soft: rgba(201, 169, 124, 0.38);
+  --e3-ink: #3D3A36;
+  --e3-ink-soft: #8A8478;
+  --e3-ink-faint: #6E6A96;
+  --e3-shadow: 0 2rpx 8rpx rgba(61, 58, 54, 0.08);
+  --e3-hi: inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
+  --e3-serif: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif CJK SC', 'Noto Serif SC', serif;
+}
+
+.chat-page {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ============================================================
+   半屏遮罩（点击返回）
+   ============================================================ */
+.chat-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(61, 58, 54, 0.45);
+  z-index: 1;
+  animation: mask-in 0.25s ease-out forwards;
+}
+
+@keyframes mask-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ============================================================
+   半屏卡片（底部 74% · 圆角顶 · 上滑入场）
+   ============================================================ */
+.chat-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 74vh;
+  background: var(--e3-cream, #FAF6EF);
+  border-radius: 36rpx 36rpx 0 0;
+  border-top: 1rpx solid var(--e3-line-soft, rgba(201, 169, 124, 0.38));
+  box-shadow: 0 -8rpx 40rpx rgba(61, 58, 54, 0.16);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  animation: sheet-up 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  overflow: hidden;
+}
+
+@keyframes sheet-up {
+  0% { transform: translateY(60rpx); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.sheet-handle {
+  flex-shrink: 0;
+  width: 72rpx;
+  height: 8rpx;
+  border-radius: var(--radius-pill, 999rpx);
+  background: rgba(201, 169, 124, 0.35);
+  margin: 16rpx auto 0;
+}
+
+/* ============================================================
+   头部：小星头像（E3 文字星灵头像 ✦）+ 名字 + 关闭
+   ============================================================ */
+.sheet-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 24rpx);
+  padding: var(--spacing-sm, 24rpx) var(--spacing-lg, 32rpx);
+  border-bottom: 1rpx solid rgba(201, 169, 124, 0.14);
+}
+
+.sheet-avatar {
+  width: 76rpx;
+  height: 76rpx;
+  border-radius: 50%;
+  background: linear-gradient(145deg, var(--e3-cream-hi, #FFFDF8) 0%, var(--e3-paper, #F2ECDF) 100%);
+  border: 1.5rpx solid var(--e3-line-soft, rgba(201, 169, 124, 0.38));
+  box-shadow: var(--e3-shadow, 0 2rpx 8rpx rgba(61, 58, 54, 0.08)), var(--e3-hi);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sheet-avatar-star {
+  font-size: 40rpx;
+  color: var(--e3-gold-deep, #8A6B3D);
+  text-shadow: 0 0 12rpx rgba(201, 169, 124, 0.45);
+  line-height: 1;
+}
+
+.sheet-header-texts {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.sheet-name {
+  font-family: var(--e3-serif, 'Songti SC', serif);
+  font-size: var(--font-size-body, 30rpx);
+  font-weight: 500;
+  color: var(--e3-ink, #3D3A36);
+  letter-spacing: 3rpx;
+}
+
+.sheet-sub {
+  font-size: var(--font-size-xs, 20rpx);
+  color: var(--e3-ink-soft, #8A8478);
+  letter-spacing: 2rpx;
+}
+
+.sheet-close {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30rpx;
+  color: var(--e3-ink-faint, #6E6A96);
+  background: rgba(201, 169, 124, 0.08);
+  border: 1rpx solid rgba(201, 169, 124, 0.16);
+  flex-shrink: 0;
+}
+
+.sheet-close:active {
+  transform: scale(0.92);
+  background: rgba(201, 169, 124, 0.16);
+}
+
+/* ============================================================
+   对话区（气泡语言复用 pages/chat E3 补全）
+   ============================================================ */
+.sheet-body {
+  flex: 1;
+  min-height: 0;
+  padding: var(--spacing-md, 24rpx) var(--spacing-lg, 32rpx) var(--spacing-sm, 24rpx);
+  box-sizing: border-box;
+}
+
+.msg-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.msg-row {
+  margin-bottom: 28rpx;
+  display: flex;
+  align-items: flex-end;
+  gap: 16rpx;
+  animation: msg-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes msg-in {
+  from { opacity: 0; transform: translateY(16rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.msg-row--user {
+  justify-content: flex-end;
+}
+
+.msg-row--assistant {
+  justify-content: flex-start;
+}
+
+.msg-row--system {
+  justify-content: center;
+  margin-bottom: 20rpx;
+}
+
+/* 小星头像（气泡外） */
+.msg-avatar {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: linear-gradient(145deg, var(--e3-cream-hi, #FFFDF8) 0%, var(--e3-paper, #F2ECDF) 100%);
+  border: 1.5rpx solid var(--e3-line-soft, rgba(201, 169, 124, 0.38));
+  box-shadow: var(--e3-shadow, 0 2rpx 8rpx rgba(61, 58, 54, 0.08));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.msg-avatar-star {
+  font-size: 32rpx;
+  color: var(--e3-gold-deep, #8A6B3D);
+  line-height: 1;
+}
+
+/* 气泡 */
+.msg-bubble {
+  padding: var(--spacing-sm, 24rpx) var(--spacing-md, 24rpx);
+  max-width: 76%;
+  line-height: 1.7;
+  border-radius: 18rpx;
+}
+
+.msg-text {
+  font-size: var(--font-size-caption, 24rpx);
+  color: var(--e3-ink, #3D3A36);
+  letter-spacing: 1rpx;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* 用户：奶油底 + 金深左线（pages/chat .bubble-user E3 语言） */
+.bubble-user {
+  background: linear-gradient(145deg, var(--e3-cream-hi, #FFFDF8) 0%, var(--e3-paper, #F2ECDF) 100%);
+  border: 1rpx solid var(--e3-line, rgba(201, 169, 124, 0.28));
+  border-left: 3rpx solid var(--e3-gold-deep, #8A6B3D);
+  border-radius: 18rpx 4rpx 18rpx 18rpx;
+  box-shadow: var(--e3-shadow, 0 2rpx 8rpx rgba(61, 58, 54, 0.08)), var(--e3-hi);
+}
+
+/* 小星：星光色气泡 + 金左线 */
+.bubble-ai {
+  background: var(--e3-cream-hi, #FFFDF8);
+  border: 1rpx solid var(--e3-line, rgba(201, 169, 124, 0.28));
+  border-left: 3rpx solid var(--e3-gold, #C9A97C);
+  border-radius: 4rpx 18rpx 18rpx 18rpx;
+  box-shadow: var(--e3-shadow, 0 2rpx 8rpx rgba(61, 58, 54, 0.08)), var(--e3-hi);
+}
+
+/* 降级文案：原样展示，气泡轻微弱化以示区分 */
+.bubble-ai--degraded {
+  background: var(--e3-paper, #F2ECDF);
+  opacity: 0.88;
+}
+
+/* 系统行（402 / 异常提示） */
+.msg-system {
+  padding: 10rpx 24rpx;
+  background: rgba(201, 169, 124, 0.08);
+  border: 1rpx solid rgba(201, 169, 124, 0.16);
+  border-radius: var(--radius-pill, 999rpx);
+}
+
+.msg-system-text {
+  font-size: var(--font-size-xs, 20rpx);
+  color: var(--e3-ink-soft, #8A8478);
+  letter-spacing: 1rpx;
+  text-align: center;
+}
+
+.msg-sentinel {
+  height: 4rpx;
+}
+
+/* 正在输入（脉冲金点，同 pages/chat） */
+.typing-box {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  background: var(--e3-cream-hi, #FFFDF8);
+  border: 1rpx solid var(--e3-line, rgba(201, 169, 124, 0.28));
+  border-left: 3rpx solid var(--e3-gold, #C9A97C);
+  border-radius: 4rpx 18rpx 18rpx 18rpx;
+  box-shadow: var(--e3-shadow, 0 2rpx 8rpx rgba(61, 58, 54, 0.08));
+  padding: var(--spacing-md, 24rpx) var(--spacing-lg, 32rpx);
+  min-height: 28rpx;
+}
+
+.typing-dot {
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--e3-gold, #C9A97C), var(--e3-gold-deep, #8A6B3D));
+  animation: typing-pulse 1.4s ease-in-out infinite;
+}
+
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typing-pulse {
+  0%, 80%, 100% {
+    transform: translateY(0) scale(0.7);
+    opacity: 0.35;
+  }
+  40% {
+    transform: translateY(-8rpx) scale(1);
+    opacity: 1;
+  }
+}
+
+/* ============================================================
+   配额提示 + 输入区 + 常驻小字
+   ============================================================ */
+.sheet-quota {
+  flex-shrink: 0;
+  text-align: center;
+  padding: 0 var(--spacing-lg, 32rpx) 8rpx;
+}
+
+.quota-text {
+  font-size: var(--font-size-xs, 20rpx);
+  color: var(--e3-ink-faint, #6E6A96);
+  letter-spacing: 1rpx;
+  line-height: 1.6;
+}
+
+.quota-text--exhausted {
+  color: var(--e3-pink-ink, #B08A82);
+}
+
+.sheet-input {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 24rpx);
+  padding: var(--spacing-sm, 24rpx) var(--spacing-lg, 32rpx);
+  border-top: 1rpx solid rgba(201, 169, 124, 0.14);
+}
+
+.input-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+}
+
+.chat-input {
+  width: 100%;
+  min-height: 72rpx;
+  max-height: 200rpx;
+  padding: var(--spacing-sm, 24rpx) var(--spacing-md, 24rpx);
+  border-radius: var(--radius-pill, 999rpx);
+  background: var(--e3-cream-hi, #FFFDF8);
+  border: 1.5rpx solid var(--e3-line, rgba(201, 169, 124, 0.28));
+  color: var(--e3-ink, #3D3A36);
+  font-size: var(--font-size-caption, 24rpx);
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+
+.chat-input:focus {
+  border-color: var(--e3-gold-deep, #8A6B3D);
+  box-shadow: 0 0 0 4rpx rgba(201, 169, 124, 0.10);
+}
+
+.input-placeholder {
+  color: var(--e3-ink-faint, #6E6A96);
+  font-style: italic;
+}
+
+/* 发送按钮：E3 三段金渐变（同 pages/chat） */
+.send-btn {
+  height: 88rpx;
+  padding: 0 40rpx;
+  border-radius: var(--radius-pill, 999rpx);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #C9A97C 0%, #B08F52 50%, #A98B5F 100%);
+  box-shadow: 0 4rpx 16rpx rgba(201, 169, 124, 0.28), var(--e3-hi);
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+  flex-shrink: 0;
+}
+
+.send-btn:active {
+  transform: scale(0.94);
+  box-shadow: 0 2rpx 8rpx rgba(201, 169, 124, 0.15);
+}
+
+.send-btn--disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.send-text {
+  font-family: var(--e3-serif, 'Songti SC', serif);
+  font-size: var(--font-size-caption, 24rpx);
+  font-weight: 600;
+  color: #FFFDF8;
+  letter-spacing: 6rpx;
+  line-height: 1;
+}
+
+/* 底部常驻免责小字 */
+.sheet-foot {
+  flex-shrink: 0;
+  text-align: center;
+  padding: 0 0 calc(12rpx + env(safe-area-inset-bottom, 0px));
+}
+
+.sheet-foot-text {
+  font-size: 20rpx;
+  color: var(--e3-ink-faint, #6E6A96);
+  letter-spacing: 3rpx;
+  opacity: 0.75;
+}
+
+/* ============================================================
+   无障碍：减弱动效
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .chat-mask { animation: none; }
+  .chat-sheet { animation: none; }
+  .msg-row { animation: none; }
+  .typing-dot { animation: none; }
+}

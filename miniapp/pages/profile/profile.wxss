@@ -1545,6 +1545,24 @@
   color: var(--color-text-tertiary);
 }
 
+/* ── T6-6 星灵学堂称号徽章行（与星阶徽章并列 · GET /academy/overview titles）── */
+.record-title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 12rpx;
+}
+.record-title-badge {
+  font-size: 22rpx;
+  letter-spacing: 1rpx;
+  color: var(--color-gold-deep-ink);
+  background: rgba(216, 210, 228, 0.20);
+  border: 1rpx solid rgba(201, 169, 124, 0.35);
+  padding: 6rpx 20rpx;
+  border-radius: var(--radius-pill);
+}
+
 /* ── T5-1 星阶区三数据：手账连续记录 / 本月节点完成（金微胶囊双 chip）── */
 .record-p1-row {
   display: flex;

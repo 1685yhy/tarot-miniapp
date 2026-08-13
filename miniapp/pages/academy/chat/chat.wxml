@@ -1,0 +1,116 @@
+<!-- pages/academy/chat/chat.wxml —— 陪学小星 · 半屏对话页（T6-6）：
+     底部半屏卡片（遮罩点击返回）：
+     头部（小星头像 + 名字）→ 气泡对话区 → 配额提示 → 输入区
+     → 底部常驻「仅供娱乐 · 星光映照」 -->
+
+<view class="chat-page">
+  <!-- 顶部遮罩：点击返回（半屏对话视觉） -->
+  <view class="chat-mask" bindtap="onClose" aria-label="关闭陪学对话"></view>
+
+  <!-- ===== 半屏卡片 ===== -->
+  <view class="chat-sheet">
+    <view class="sheet-handle"></view>
+
+    <!-- 头部 -->
+    <view class="sheet-header">
+      <view class="sheet-avatar">
+        <text class="sheet-avatar-star">✦</text>
+      </view>
+      <view class="sheet-header-texts">
+        <text class="sheet-name">小星</text>
+        <text class="sheet-sub">陪学伙伴 · 星灵学堂</text>
+      </view>
+      <view class="sheet-close" bindtap="onClose" role="button" aria-label="关闭陪学对话">✕</view>
+    </view>
+
+    <!-- ===== 对话区 ===== -->
+    <scroll-view
+      scroll-y
+      class="sheet-body"
+      scroll-into-view="{{scrollInto}}"
+      scroll-with-animation
+      enhanced
+      show-scrollbar="{{false}}"
+    >
+      <view class="msg-list">
+        <view
+          wx:for="{{messages}}" wx:key="index" id="msg-{{index}}"
+          class="msg-row msg-row--{{item.role}}"
+        >
+          <!-- 用户气泡（右） -->
+          <block wx:if="{{item.role === 'user'}}">
+            <view class="msg-bubble bubble-user">
+              <text class="msg-text">{{item.content}}</text>
+            </view>
+          </block>
+          <!-- 小星气泡（左 · 星光色 + 头像） -->
+          <block wx:elif="{{item.role === 'assistant'}}">
+            <view class="msg-avatar">
+              <text class="msg-avatar-star">✦</text>
+            </view>
+            <view class="msg-bubble bubble-ai {{item.degraded ? 'bubble-ai--degraded' : ''}}">
+              <text class="msg-text">{{item.content}}</text>
+            </view>
+          </block>
+          <!-- 系统行（402 / 异常提示，居中弱化） -->
+          <block wx:else>
+            <view class="msg-system">
+              <text class="msg-system-text">{{item.content}}</text>
+            </view>
+          </block>
+        </view>
+
+        <!-- 小星正在输入 -->
+        <view wx:if="{{aiThinking}}" class="msg-row msg-row--assistant" id="msg-typing">
+          <view class="msg-avatar">
+            <text class="msg-avatar-star">✦</text>
+          </view>
+          <view class="typing-box">
+            <view class="typing-dot"></view>
+            <view class="typing-dot"></view>
+            <view class="typing-dot"></view>
+          </view>
+        </view>
+
+        <view id="msg-bottom" class="msg-sentinel"></view>
+      </view>
+    </scroll-view>
+
+    <!-- ===== 配额提示（会员 remaining=null 不展示） ===== -->
+    <view class="sheet-quota" wx:if="{{showQuota}}">
+      <text class="quota-text {{quotaExhausted ? 'quota-text--exhausted' : ''}}">{{quotaText}}</text>
+    </view>
+
+    <!-- ===== 输入区 ===== -->
+    <view class="sheet-input">
+      <label class="input-wrap">
+        <textarea
+          class="chat-input"
+          placeholder="{{quotaExhausted ? '今日陪学次数已用完' : '写下你想问小星的...'}}"
+          placeholder-class="input-placeholder"
+          value="{{inputText}}"
+          bindinput="onInput"
+          auto-height="{{true}}"
+          maxlength="200"
+          show-confirm-bar="{{false}}"
+          cursor-spacing="12"
+          adjust-position="{{true}}"
+          disabled="{{quotaExhausted}}"
+        />
+      </label>
+      <view
+        class="send-btn {{sending || !canSend || quotaExhausted ? 'send-btn--disabled' : ''}}"
+        bindtap="onSend"
+        role="button"
+        aria-label="发送"
+      >
+        <text class="send-text">发送</text>
+      </view>
+    </view>
+
+    <!-- ===== 底部常驻小字 ===== -->
+    <view class="sheet-foot">
+      <text class="sheet-foot-text">仅供娱乐 · 星光映照</text>
+    </view>
+  </view>
+</view>

@@ -47,6 +47,49 @@ const PATH_META = {
   related: { name: '与你相遇的牌', sub: '读牌历史里的高频之牌', emoji: '💫' },
 };
 
+// ===================== 全通庆祝（T6-6） =====================
+// 称号 → 庆祝信息（与后端 MILESTONES 表 title_name 对齐：
+// fool_journey 全通大阿卡纳 22 → 星辉学者；full_78 全通 78 → 星光塔罗师）
+const CELEBRATE_META = {
+  '星辉学者': {
+    storageKey: 'academy_celebrated_fool_journey',
+    title: '称号解锁 · 星辉学者',
+    sub: '全通大阿卡纳 22 张，愚者之旅圆满 ✦',
+  },
+  '星光塔罗师': {
+    storageKey: 'academy_celebrated_full_78',
+    title: '称号解锁 · 星光塔罗师',
+    sub: '点亮全部 78 颗星，星空书卷为你合上 ✦',
+  },
+};
+
+// 星光雨配色（E3 派生：亮金/暖杏/雾蓝/灰紫）
+const RAIN_COLORS = ['#C9A97C', '#D9A36B', '#A3B8D6', '#B0A0CC'];
+const RAIN_CHARS = ['✦', '✧', '✦', '✧', '✦'];
+
+/** 生成星光雨星点（确定性伪随机：同一次生成结果可复现，便于审查） */
+function _buildRainStars() {
+  const stars = [];
+  const count = 28;
+  let seed = 20260813;
+  const rand = () => {
+    seed = (seed * 1103515245 + 12345) % 2147483648;
+    return seed / 2147483648;
+  };
+  for (let i = 0; i < count; i++) {
+    stars.push({
+      key: `rain-${i}`,
+      left: (rand() * 100).toFixed(1),
+      delay: (rand() * 1.2).toFixed(2),
+      duration: (2.0 + rand() * 1.6).toFixed(2),
+      size: (22 + rand() * 30).toFixed(0),
+      color: RAIN_COLORS[Math.floor(rand() * RAIN_COLORS.length)],
+      char: RAIN_CHARS[Math.floor(rand() * RAIN_CHARS.length)],
+    });
+  }
+  return stars;
+}
+
 /** 生成 78 颗星点（环状排布，坐标为容器百分比） */
 function _buildStars(learnedCount) {
   const stars = [];
@@ -106,6 +149,12 @@ Page({
 
     // 订阅授权引导（quota_warning → maybePromptSubscribe）
     showSubscribeGuide: false,
+
+    // 全通庆祝（T6-6）：全屏星光雨 + 称号授予弹层
+    showCelebrate: false,
+    celebrateTitle: '',
+    celebrateSub: '',
+    rainStars: [],
   },
 
   _busy: false,       // 路径进入防连点
@@ -217,6 +266,38 @@ Page({
       paths,
       todayCard,
     });
+    this._maybeCelebrate(ov.titles || []);
+  },
+
+  /**
+   * 全通庆祝（T6-6）：overview 称号含「星辉学者/星光塔罗师」且本地
+   * 未庆祝过 → 全屏星光雨 + 称号授予弹层（每称号仅一次，storage 旗标）。
+   * 与学习卡页的里程碑弹层协调：卡页弹层在授予瞬间（服务端一次性下发），
+   * 本页庆祝在其后回到学堂主页时触发一次，二者不重复、不互斥。
+   */
+  _maybeCelebrate(titles) {
+    for (const title of Object.keys(CELEBRATE_META)) {
+      if (titles.indexOf(title) < 0) continue;
+      const meta = CELEBRATE_META[title];
+      let celebrated = false;
+      try { celebrated = !!wx.getStorageSync(meta.storageKey); } catch (_e) { celebrated = false; }
+      if (celebrated) continue;
+      try { wx.setStorageSync(meta.storageKey, true); } catch (_e) { /* 存失败不阻塞展示 */ }
+      if (this._destroyed) return;
+      this.setData({
+        showCelebrate: true,
+        celebrateTitle: meta.title,
+        celebrateSub: meta.sub,
+        rainStars: _buildRainStars(),
+      });
+      analytics.trackEvent('academy_milestone_celebrate', { title });
+      return;
+    }
+  },
+
+  /** 庆祝弹层关闭（星光雨已播完，直接收起） */
+  onCloseCelebrate() {
+    this.setData({ showCelebrate: false });
   },
 
   /** plan 响应 → 计划面板（保持已有路径选择不变） */

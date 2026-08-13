@@ -797,6 +797,165 @@ page {
   100% { transform: translateY(0); opacity: 1; }
 }
 
+/* ============================================================
+   全通庆祝（T6-6）：全屏星光雨 + 称号授予弹层
+   星光雨 = CSS 星点下落（E3 星色：亮金/暖杏/雾蓝/灰紫），
+   粒子由 academy.js _buildRainStars 确定性生成
+   ============================================================ */
+.star-rain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2000;
+}
+
+.star-rain-drop {
+  position: absolute;
+  top: -12vh;
+  line-height: 1;
+  opacity: 0;
+  animation-name: star-fall;
+  animation-timing-function: ease-in;
+  animation-fill-mode: both;
+  text-shadow: 0 0 12rpx currentColor;
+}
+
+@keyframes star-fall {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(0.7);
+    opacity: 0;
+  }
+  12% { opacity: 0.95; }
+  85% { opacity: 0.85; }
+  100% {
+    transform: translateY(112vh) rotate(160deg) scale(1.05);
+    opacity: 0;
+  }
+}
+
+/* 称号授予弹层（视觉与学习卡页里程碑弹层同语言） */
+.celebrate-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(61, 58, 54, 0.50);
+  z-index: 2100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fade-in 0.25s ease-out forwards;
+}
+
+.celebrate-modal {
+  width: 600rpx;
+  box-sizing: border-box;
+  background: var(--e3-cream, #FAF6EF);
+  border: 1rpx solid rgba(201, 169, 124, 0.45);
+  border-radius: 28rpx;
+  padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 12rpx 60rpx rgba(61, 58, 54, 0.16);
+  animation: sheet-up 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.celebrate-burst {
+  position: relative;
+  width: 200rpx;
+  height: 160rpx;
+  margin-bottom: var(--spacing-sm);
+}
+
+.celebrate-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 88rpx;
+  color: var(--e3-gold, #C9A97C);
+  text-shadow: 0 0 30rpx rgba(201, 169, 124, 0.5);
+  animation: celebrate-pulse 2s ease-in-out infinite;
+}
+
+.burst-star {
+  position: absolute;
+  color: var(--e3-gold, #C9A97C);
+  font-size: 28rpx;
+  opacity: 0;
+  animation: burst-fly 1.6s ease-out infinite;
+}
+
+.burst-star-1 { top: 10%; left: 20%; animation-delay: 0s; }
+.burst-star-2 { top: 20%; left: 70%; animation-delay: 0.2s; color: var(--e3-pink, #E8C4BE); }
+.burst-star-3 { top: 60%; left: 5%; animation-delay: 0.4s; }
+.burst-star-4 { top: 70%; left: 85%; animation-delay: 0.6s; color: var(--e3-lav, #D8D2E4); }
+.burst-star-5 { top: 0; left: 45%; animation-delay: 0.8s; color: var(--e3-pink, #E8C4BE); }
+.burst-star-6 { top: 80%; left: 45%; animation-delay: 1s; }
+
+@keyframes burst-fly {
+  0% { transform: translateY(0) scale(0.6); opacity: 0; }
+  30% { opacity: 1; }
+  100% { transform: translateY(-60rpx) scale(1.1); opacity: 0; }
+}
+
+@keyframes celebrate-pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.12); }
+}
+
+.celebrate-title {
+  font-family: var(--e3-serif, 'Songti SC', serif);
+  font-size: var(--font-size-title);
+  font-weight: 500;
+  color: var(--e3-ink, #3D3A36);
+  letter-spacing: 4rpx;
+  margin-bottom: var(--spacing-sm);
+  text-align: center;
+}
+
+.celebrate-sub {
+  font-size: var(--font-size-caption);
+  color: var(--e3-gold-deep, #8A6B3D);
+  letter-spacing: 2rpx;
+  margin-bottom: var(--spacing-sm);
+  text-align: center;
+}
+
+.celebrate-hint {
+  font-size: var(--font-size-caption);
+  color: var(--e3-ink-soft, #8A8478);
+  letter-spacing: 2rpx;
+  margin-bottom: var(--spacing-lg);
+}
+
+.celebrate-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 92rpx;
+  background: linear-gradient(135deg, #C9A97C 0%, #B08F52 50%, #A98B5F 100%);
+  color: #FFFDF8;
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-pill);
+  letter-spacing: 3rpx;
+  box-shadow: 0 4rpx 20rpx rgba(201, 169, 124, 0.25);
+}
+
+.celebrate-btn::after { border: none; }
+.celebrate-btn:active { transform: scale(0.96); }
+
 @media (prefers-reduced-motion: reduce) {
   .academy-star--lit { animation: none; }
+  .star-rain-drop { animation: none; opacity: 0; }
+  .burst-star, .celebrate-icon { animation: none; }
 }
