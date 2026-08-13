@@ -171,6 +171,9 @@ Page({
         }, 1400);
         wx.showToast({ title: '这颗星，为你点亮 ✦', icon: 'none' });
         if (res.milestone) {
+          // T6-6 跨页去重：卡页里程碑弹层展示即落旗标（academy 主页同一
+          // 里程碑的全屏庆祝据此跳过，避免同一成就双重庆祝）
+          try { wx.setStorageSync('academy_celebrated_' + res.milestone.key, true); } catch (_e) {}
           this.setData({ milestone: res.milestone, showMilestone: true });
         }
       } else {

@@ -34,7 +34,7 @@
     >
       <view class="msg-list">
         <view
-          wx:for="{{messages}}" wx:key="index" id="msg-{{index}}"
+          wx:for="{{messages}}" wx:key="id" id="msg-{{index}}"
           class="msg-row msg-row--{{item.role}}"
         >
           <!-- 用户气泡（右） -->

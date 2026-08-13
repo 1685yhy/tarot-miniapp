@@ -40,17 +40,21 @@ Page({
   },
 
   _destroyed: false,
+  _msgSeq: 0, // 消息自增 id（wx:key 用；列表只追加，id 单调稳定）
 
   onLoad(options) {
     this._destroyed = false;
     const cardId = Number(options.card_id);
     if (!cardId) {
       this.setData({
-        messages: [{ role: 'system', content: '缺少卡牌编号，请从学习卡页进入 ✦' }],
+        messages: [{ role: 'system', content: '缺少卡牌编号，请从学习卡页进入 ✦', id: this._msgSeq++ }],
       });
       return;
     }
-    this.setData({ cardId, messages: [{ role: 'assistant', content: GREETING }] });
+    this.setData({
+      cardId,
+      messages: [{ role: 'assistant', content: GREETING, id: this._msgSeq++ }],
+    });
     analytics.trackEvent('academy_chat_open', { card_id: cardId });
   },
 
@@ -75,7 +79,7 @@ Page({
     if (!text || this.data.sending || this.data.quotaExhausted) return;
     if (!this.data.cardId) return;
 
-    const messages = [...this.data.messages, { role: 'user', content: text }];
+    const messages = [...this.data.messages, { role: 'user', content: text, id: this._msgSeq++ }];
     this.setData({ messages, inputText: '', canSend: false, sending: true, aiThinking: true });
     this._scrollBottom();
 
@@ -92,6 +96,7 @@ Page({
         role: 'assistant',
         content: (res && res.reply) || '',
         degraded: !!(res && res.degraded),
+        id: this._msgSeq++,
       });
       this.setData({ messages, sending: false, aiThinking: false });
       this._applyRemaining(res ? res.remaining : -1);
@@ -105,6 +110,7 @@ Page({
           messages: [...this.data.messages, {
             role: 'system',
             content: err.message || QUOTA_EXHAUSTED_FALLBACK,
+            id: this._msgSeq++,
           }],
           sending: false,
           aiThinking: false,
@@ -117,7 +123,11 @@ Page({
       }
       // 其他异常：系统行提示 + 恢复输入内容（用户可直接再发）
       this.setData({
-        messages: [...this.data.messages, { role: 'system', content: getFriendlyError(err) }],
+        messages: [...this.data.messages, {
+          role: 'system',
+          content: getFriendlyError(err),
+          id: this._msgSeq++,
+        }],
         sending: false,
         aiThinking: false,
         inputText: text,

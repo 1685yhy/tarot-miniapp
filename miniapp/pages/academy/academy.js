@@ -272,8 +272,9 @@ Page({
   /**
    * 全通庆祝（T6-6）：overview 称号含「星辉学者/星光塔罗师」且本地
    * 未庆祝过 → 全屏星光雨 + 称号授予弹层（每称号仅一次，storage 旗标）。
-   * 与学习卡页的里程碑弹层协调：卡页弹层在授予瞬间（服务端一次性下发），
-   * 本页庆祝在其后回到学堂主页时触发一次，二者不重复、不互斥。
+   * 跨页去重契约：卡页里程碑弹层展示时已写旗标（lesson.js onRemember
+   * 写 `academy_celebrated_<milestone.key>`）→ 本页跳过；本页庆祝仅在
+   * 旗标缺失时兜底触发一次（写入方与读取方同键同语义，自洽）。
    */
   _maybeCelebrate(titles) {
     for (const title of Object.keys(CELEBRATE_META)) {
