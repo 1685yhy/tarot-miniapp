@@ -12,6 +12,7 @@ Covers:
 """
 
 import asyncio
+import json
 from datetime import date, datetime, timedelta, timezone
 
 import pytest
@@ -20,6 +21,9 @@ from sqlalchemy import delete, select, update
 
 from app.config import settings
 from app.db.database import async_session
+from app.models.card_teaching import CardTeaching
+from app.models.star_learning_plan import StarLearningPlan
+from app.models.star_learning_progress import StarLearningProgress
 from app.models.star_word_daily import StarWordDaily
 from app.models.subscribe_quota import SubscribeQuota
 from app.models.user import User
@@ -790,3 +794,329 @@ def test_morning_push_regular_content_on_mercury_mid_range(
     quota = asyncio.run(_get_quota_row(uid))
     assert quota.quota_available == 0
     assert quota.last_sent_date == mid_range_now.date()
+
+
+# ══════════════════════════════════════════════════════════════
+# T6-3: 学习提醒主题三态优先级（节点日主题 > 学习提醒主题 > 常规晨讯/星语）
+# ══════════════════════════════════════════════════════════════
+
+# 教学种子卡（学习提醒关键词数据源）：只用 4/5 —— 避开 test_teaching 的
+# 1/7/14、无教学哨兵 2、test_academy 的 3/6（导入期先到先得，冲突破坏对方断言）。
+_LESSON_REMINDER_TEACHING = [
+    {
+        "card_id": 4,
+        "symbols": json.dumps([{"symbol": "王座", "meaning": "稳固与秩序"}]),
+        "story": "皇帝是塔罗大阿尔卡纳的第四张牌，象征秩序与掌控的力量。",
+        "keywords_learning": json.dumps(["稳固", "秩序", "责任"]),
+        "life_connection": "把秩序带回日常，让目标有落点。",
+        "element_association": "火元素——行动与权威。",
+    },
+    {
+        "card_id": 5,
+        "symbols": json.dumps([{"symbol": "导师", "meaning": "传承与指引"}]),
+        "story": "教皇是塔罗大阿尔卡纳的第五张牌，象征传承与内在指引。",
+        "keywords_learning": json.dumps(["传承", "指引", "智慧"]),
+        "life_connection": "倾听内心的声音，也听听前辈的经验。",
+        "element_association": "土元素——传统与经验。",
+    },
+]
+
+
+async def _seed_plan(
+    user_id: str,
+    cards_per_day: int = 1,
+    reminder_on: bool = True,
+    path: str = "major",
+    cursor_pos: int = 0,
+) -> None:
+    """创建 StarLearningPlan 行（学习提醒触发依据）。"""
+    async with async_session() as session:
+        session.add(
+            StarLearningPlan(
+                user_id=user_id,
+                cards_per_day=cards_per_day,
+                reminder_on=reminder_on,
+                path=path,
+                cursor_pos=cursor_pos,
+            )
+        )
+        await session.commit()
+
+
+async def _seed_learned_today(user_id: str, card_ids: list[int], day: date) -> None:
+    """直接插入今日已学行（learned_at==day，学满判定数据源）。"""
+    async with async_session() as session:
+        for cid in card_ids:
+            session.add(
+                StarLearningProgress(
+                    user_id=user_id,
+                    card_id=cid,
+                    learned_at=day,
+                    review_count=0,
+                )
+            )
+        await session.commit()
+
+
+def _learning_snapshot(uid: str, openid: str) -> daily_push._UserSnapshot:
+    """构造与推送循环同款的纯值快照（T6-3 纯函数测试用）。"""
+    return daily_push._UserSnapshot(
+        id=uid, openid=openid, zodiac=None, birth_date=None,
+        created_at=None, quota_available=1,
+    )
+
+
+async def _learning_event(uid: str, openid: str, day: date) -> dict | None:
+    """直接调用 _learning_reminder_event（三态判定中间件单测）。"""
+    async with async_session() as session:
+        return await daily_push._learning_reminder_event(
+            session, _learning_snapshot(uid, openid), day
+        )
+
+
+@pytest.fixture
+def clean_learning_state():
+    """学习提醒用例前后清理：额度 + 星语缓存 + 学习计划/进度 + 教学种子卡 4/5。
+
+    只清 4/5 的教学行（本文件自种）——不动 test_teaching 导入期种子卡
+    （1/7/14），避免跨文件顺序依赖。
+    """
+
+    async def _clean():
+        async with async_session() as session:
+            await session.execute(delete(SubscribeQuota))
+            await session.execute(delete(StarWordDaily))
+            await session.execute(delete(StarLearningProgress))
+            await session.execute(delete(StarLearningPlan))
+            await session.execute(
+                delete(CardTeaching).where(CardTeaching.card_id.in_([4, 5]))
+            )
+            await session.commit()
+
+    async def _seed():
+        async with async_session() as session:
+            for seed in _LESSON_REMINDER_TEACHING:
+                session.add(CardTeaching(**seed))
+            await session.commit()
+
+    asyncio.run(_clean())
+    asyncio.run(_seed())
+    yield
+    asyncio.run(_clean())
+
+
+def test_learning_reminder_event_fields(
+    client: TestClient, monkeypatch, clean_learning_state
+):
+    """T6-3 字段：thing1 ≤20 字且含牌名、page=pages/academy/lesson/lesson?card_id=、
+    thing4 固定「点击点亮这颗星 ✦」；无计划用户 → None（默认分支不变）。"""
+    _, openid = asyncio.run(_new_user("learn_field_001"))
+    uid = asyncio.run(_uid_by_openid("learn_field_001"))
+    asyncio.run(_seed_plan(uid, cards_per_day=1, reminder_on=True, path="major", cursor_pos=3))
+
+    # 大阿卡纳游标 3（0-based）→ 卡牌4（皇帝）：今日学牌 = 今日应学牌
+    event = asyncio.run(_learning_event(uid, openid, date(2026, 8, 8)))
+    assert event is not None
+    assert event["kind"] == "learning_reminder"
+    assert event["title"] == "今日学牌：卡牌4"
+    assert len(event["title"]) <= 20
+    assert event["keywords"] == "关键词·稳固·秩序"  # CardTeaching.keywords_learning 前两个
+    assert len(event["keywords"]) <= 20
+    assert event["page"] == "pages/academy/lesson/lesson?card_id=4"
+
+    data = daily_push.build_learning_push_data(event, date(2026, 8, 8))
+    assert data["thing1"]["value"] == "今日学牌：卡牌4"
+    assert len(data["thing1"]["value"]) <= 20
+    assert data["thing2"]["value"] == "关键词·稳固·秩序"
+    assert data["date3"]["value"] == "2026.08.08"
+    assert data["thing4"]["value"] == "点击点亮这颗星 ✦"
+
+    # 无计划用户 → None（学习提醒默认关闭：无计划天然不触发）
+    _, no_plan_openid = asyncio.run(_new_user("learn_field_002"))
+    no_plan_uid = asyncio.run(_uid_by_openid("learn_field_002"))
+    assert asyncio.run(_learning_event(no_plan_uid, no_plan_openid, date(2026, 8, 8))) is None
+
+
+def test_morning_push_learning_reminder_replaces_regular(
+    client: TestClient, monkeypatch, clean_learning_state
+):
+    """普通学习日（2026-08-08 非节点）7:37 晨讯 → 学习提醒替代常规今日星光。"""
+    _reset_state(monkeypatch)
+    monkeypatch.setattr(settings, "WX_TEMPLATE_DAILY_CARD", "TEST_TMPL")
+    _, openid = asyncio.run(_new_user("learn_morning_001"))
+    uid = asyncio.run(_uid_by_openid("learn_morning_001"))
+    asyncio.run(_seed_quota(uid, 1, slot="morning"))
+    asyncio.run(_seed_plan(uid, 1, True, "major", 3))
+
+    calls: list = []
+    _fake_wechat_ok(monkeypatch, calls)
+
+    result = _morning_send(NOW_0737)
+    assert result["status"] == "sent"
+    assert result["sent"] == 1
+    assert result["failed"] == 0
+    assert calls[0]["page"] == "pages/academy/lesson/lesson?card_id=4"
+    assert calls[0]["data"]["thing1"]["value"] == "今日学牌：卡牌4"
+    assert calls[0]["data"]["thing2"]["value"] == "关键词·稳固·秩序"
+    assert calls[0]["data"]["date3"]["value"] == "2026.08.08"
+    assert calls[0]["data"]["thing4"]["value"] == "点击点亮这颗星 ✦"
+
+    # 主题切换不破纪律：quota-1、last_sent_date=今天（仍 1 条/天）
+    quota = asyncio.run(_get_quota_row(uid))
+    assert quota.quota_available == 0
+    assert quota.last_sent_date == NOW_0737.date()
+
+
+def test_morning_push_learning_stops_when_day_goal_met(
+    client: TestClient, monkeypatch, clean_learning_state
+):
+    """今日已学满 cards_per_day → 学习提醒停发，晨讯回落常规今日星光。"""
+    _reset_state(monkeypatch)
+    monkeypatch.setattr(settings, "WX_TEMPLATE_DAILY_CARD", "TEST_TMPL")
+    _, openid = asyncio.run(_new_user("learn_full_001"))
+    uid = asyncio.run(_uid_by_openid("learn_full_001"))
+    asyncio.run(_seed_quota(uid, 1, slot="morning"))
+    asyncio.run(_seed_plan(uid, cards_per_day=1, reminder_on=True, path="major", cursor_pos=3))
+    asyncio.run(_seed_learned_today(uid, [4], NOW_0737.date()))
+
+    calls: list = []
+    _fake_wechat_ok(monkeypatch, calls)
+
+    result = _morning_send(NOW_0737)
+    assert result["status"] == "sent"
+    assert result["sent"] == 1
+    assert calls[0]["page"] == "pages/index/index"
+    assert calls[0]["data"]["thing1"]["value"].startswith("今日星光")
+    assert calls[0]["data"]["thing4"]["value"].startswith("星光色")
+
+    quota = asyncio.run(_get_quota_row(uid))
+    assert quota.quota_available == 0
+    assert quota.last_sent_date == NOW_0737.date()
+
+
+def test_morning_push_learning_off_by_default(
+    client: TestClient, monkeypatch, clean_learning_state
+):
+    """reminder_on=false → 学习提醒不触发，晨讯保持常规内容（默认关闭）。"""
+    _reset_state(monkeypatch)
+    monkeypatch.setattr(settings, "WX_TEMPLATE_DAILY_CARD", "TEST_TMPL")
+    _, openid = asyncio.run(_new_user("learn_off_001"))
+    uid = asyncio.run(_uid_by_openid("learn_off_001"))
+    asyncio.run(_seed_quota(uid, 1, slot="morning"))
+    asyncio.run(_seed_plan(uid, cards_per_day=1, reminder_on=False, path="major", cursor_pos=3))
+
+    calls: list = []
+    _fake_wechat_ok(monkeypatch, calls)
+
+    result = _morning_send(NOW_0737)
+    assert result["status"] == "sent"
+    assert calls[0]["page"] == "pages/index/index"
+    assert calls[0]["data"]["thing1"]["value"].startswith("今日星光")
+
+
+def test_morning_push_node_day_priority_over_learning(
+    client: TestClient, monkeypatch, clean_learning_state
+):
+    """新月当天（2026-01-03）7:37 → 节点内容优先于学习提醒（三态第一优先）。"""
+    _reset_state(monkeypatch)
+    monkeypatch.setattr(settings, "WX_TEMPLATE_DAILY_CARD", "TEST_TMPL")
+    _, openid = asyncio.run(_new_user("learn_node_001"))
+    uid = asyncio.run(_uid_by_openid("learn_node_001"))
+    asyncio.run(_seed_quota(uid, 1, slot="morning"))
+    # 学习条件全满足（reminder_on + 未学满）——仍要让位节点主题
+    asyncio.run(_seed_plan(uid, cards_per_day=1, reminder_on=True, path="major", cursor_pos=3))
+
+    calls: list = []
+    _fake_wechat_ok(monkeypatch, calls)
+
+    new_moon_now = datetime(2026, 1, 3, 7, 37, tzinfo=BEIJING_TZ)
+    result = _morning_send(new_moon_now)
+    assert result["status"] == "sent"
+    assert result["sent"] == 1
+    assert calls[0]["page"] == "pages/wish/wish"
+    assert calls[0]["data"]["thing1"]["value"] == "今日新月 · 许愿之夜"
+    assert calls[0]["data"]["thing2"]["value"] == "写给月亮的三行愿望"
+
+    quota = asyncio.run(_get_quota_row(uid))
+    assert quota.quota_available == 0
+    assert quota.last_sent_date == new_moon_now.date()
+
+
+def test_learning_reminder_no_quota_not_sent(
+    client: TestClient, monkeypatch, clean_learning_state
+):
+    """有学习计划但无额度 → 不发送（既有扫描条件不变，quota=0 不进候选）。"""
+    _reset_state(monkeypatch)
+    monkeypatch.setattr(settings, "WX_TEMPLATE_DAILY_CARD", "TEST_TMPL")
+    _, _ = asyncio.run(_new_user("learn_zero_001"))
+    uid = asyncio.run(_uid_by_openid("learn_zero_001"))
+    asyncio.run(_seed_quota(uid, 0, slot="morning"))
+    asyncio.run(_seed_plan(uid, cards_per_day=1, reminder_on=True, path="major", cursor_pos=3))
+
+    calls: list = []
+    _fake_wechat_ok(monkeypatch, calls)
+
+    result = _morning_send(NOW_0737)
+    assert result["status"] == "no_subscribers"
+    assert calls == []
+
+
+def test_night_push_learning_reminder_replaces_star_word(
+    client: TestClient, monkeypatch, clean_learning_state
+):
+    """普通日 21:00 night 用户 + 学习计划 → 学习提醒替代睡前星语（page=lesson）。"""
+    _reset_state(monkeypatch)
+    monkeypatch.setattr(settings, "WX_TEMPLATE_DAILY_CARD", "TEST_TMPL")
+    _, openid = asyncio.run(_new_user("learn_night_001"))
+    uid = asyncio.run(_uid_by_openid("learn_night_001"))
+    asyncio.run(_seed_quota(uid, 1))
+    asyncio.run(_seed_plan(uid, cards_per_day=1, reminder_on=True, path="major", cursor_pos=3))
+
+    calls: list = []
+    _fake_wechat_ok(monkeypatch, calls)
+
+    result = _send_if_due(NOW_2130)  # 2026-08-08 普通日（非月相事件）
+    assert result["status"] == "sent"
+    assert result["sent"] == 1
+    assert result["failed"] == 0
+    assert calls[0]["openid"] == openid
+    assert calls[0]["page"] == "pages/academy/lesson/lesson?card_id=4"
+    assert calls[0]["data"]["thing1"]["value"] == "今日学牌：卡牌4"
+    assert calls[0]["data"]["thing2"]["value"] == "关键词·稳固·秩序"
+    assert calls[0]["data"]["date3"]["value"] == "2026.08.08"
+    assert calls[0]["data"]["thing4"]["value"] == "点击点亮这颗星 ✦"
+
+    # 学习提醒不发星语：无星语缓存落库（星语日才写缓存）
+    assert asyncio.run(_get_star_word_row(uid, NOW_2130.date())) is None
+
+    quota = asyncio.run(_get_quota_row(uid))
+    assert quota.quota_available == 0
+    assert quota.last_sent_date == NOW_2130.date()
+
+
+def test_night_push_full_moon_priority_over_learning(
+    client: TestClient, monkeypatch, clean_learning_state
+):
+    """满月当天（2026-08-28）21:00 → 节点内容优先于学习提醒（月相节点召回）。"""
+    _reset_state(monkeypatch)
+    monkeypatch.setattr(settings, "WX_TEMPLATE_DAILY_CARD", "TEST_TMPL")
+    _, openid = asyncio.run(_new_user("learn_fullmoon_001"))
+    uid = asyncio.run(_uid_by_openid("learn_fullmoon_001"))
+    asyncio.run(_seed_quota(uid, 1))
+    # 学习条件全满足——仍要让位满月节点
+    asyncio.run(_seed_plan(uid, cards_per_day=1, reminder_on=True, path="major", cursor_pos=3))
+
+    calls: list = []
+    _fake_wechat_ok(monkeypatch, calls)
+
+    full_moon_now = datetime(2026, 8, 28, 21, 30, tzinfo=BEIJING_TZ)
+    result = _send_if_due(full_moon_now)
+    assert result["status"] == "sent"
+    assert result["sent"] == 1
+    assert calls[0]["openid"] == openid
+    assert calls[0]["page"] == "pages/review/review"
+    assert "满月" in calls[0]["data"]["thing2"]["value"]
+
+    quota = asyncio.run(_get_quota_row(uid))
+    assert quota.quota_available == 0
+    assert quota.last_sent_date == full_moon_now.date()

@@ -11,6 +11,11 @@
   星光不变。判断与 /astral 同源（astral_events_on），文案复用
   astral_calendar.node_content；模板字段结构（thing1/thing2/date3/thing4）
   与常规版及 21:00 月相节点一致。额度/认领/退避/批标记机制不动。
+- 学习提醒主题切换（T6-3）：三态优先级「节点日主题 > 学习提醒主题 > 常规
+  晨讯」——有星灵学堂计划且 reminder_on 且今日已学 < cards_per_day 时，
+  晨讯内容换成今日学牌提醒（thing1=今日学牌：{牌名}、thing2=关键词、
+  page=pages/academy/lesson/lesson?card_id=，直达学习卡页）；学满当日 N 张
+  或非学习日回落常规。纯主题切换：不新增条数/槽位，额度/认领/退避不动。
 - 额度来源：微信一次性订阅授权（POST /notify/subscribe-grant → quota+1）；
   发送成功后 quota-1、记 last_sent_date（同日最多 1 条）。
 - 失败退避（最终审查 F-2）：微信 errcode!=0 / 异常时认领回退照旧（不扣额度），
@@ -39,6 +44,11 @@
   有额度未发用户（不分槽位偏好）推送节点版（build_moon_push_data +
   pages/wish/wish 或 pages/review/review），当日不发星语——节点召回不因
   槽位偏好丢失。
+- 学习提醒主题切换（T6-3）：三态优先级「节点日主题 > 学习提醒主题 > 常规
+  星语」——普通日 night 用户有星灵学堂计划且 reminder_on 且今日未学满时，
+  睡前星语换成今日学牌提醒（page=pages/academy/lesson/lesson?card_id=）；
+  学习提醒不发星语缓存；学满/关闭回落常规星语。纯主题切换：额度/认领/
+  退避不动。
 - 存量兼容：PushSubscription（TEMPLATE_DAILY_CARD）不再作为 21:00 发送
   依据，仅作设置页「推送开关」展示数据源；未授权新额度的老用户晚间不再推送。
 
@@ -58,14 +68,19 @@ import os
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 
-from sqlalchemy import or_, select, update
+from sqlalchemy import func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.db.database import async_session
+from app.models.card import TarotCard
+from app.models.card_teaching import CardTeaching
 from app.models.horoscope import HoroscopeHistory
+from app.models.star_learning_plan import StarLearningPlan
+from app.models.star_learning_progress import StarLearningProgress
 from app.models.subscribe_quota import SubscribeQuota
 from app.models.user import User
+from app.services.academy import major_cards, minor_cards, next_card, related_next_card
 from app.services.astral_calendar import node_content
 from app.services.energy_engine import (
     DIM_NAMES_ZH,
@@ -79,6 +94,7 @@ from app.services.push import (
     resolve_template_id,
     send_subscribe_message,
 )
+from app.services.star_collectibles import parse_json_list
 from app.services.star_words import build_star_word_data, get_today_star_word
 
 logger = logging.getLogger(__name__)
@@ -280,6 +296,107 @@ def _astral_morning_event(today: date) -> dict | None:
     return None
 
 
+# ---------------------------------------------------------------------------
+# T6-3 学习提醒（星灵学堂 · 三态第二优先：节点日主题 > 学习提醒主题 > 常规）
+# ---------------------------------------------------------------------------
+
+
+async def _learning_reminder_event(
+    db: AsyncSession, target: _UserSnapshot, today: date
+) -> dict | None:
+    """学习提醒事件（T6-3）：今日已学 < cards_per_day 且 reminder_on 且今日非节点日。
+
+    - 无计划 / cards_per_day==0 / reminder_on=false → None（学习提醒默认
+      关闭，既有默认分支完全不变）
+    - 节点日（_astral_morning_event 非 None：新月/满月/水逆首日）→ None：
+      节点主题优先级更高（集成点先判节点，此处双重防御，单独调用也不会越权）
+    - 今日已学（learned_at==today）达到 cards_per_day → None（学满即停发）
+    - 命中 → 返回与节点事件同构的纯值事件，由 build_learning_push_data 映射
+      thing1/thing2/date3/thing4：
+        - title: "今日学牌：{牌名}"（≤20 字）
+        - keywords: "关键词·{k1}·{k2}"（CardTeaching.keywords_learning 前两个
+          关键词；无教学行回退 TarotCard.keywords_upright，均 JSON 数组）
+        - page: "pages/academy/lesson/lesson?card_id={id}"（与 Task 16/17
+          注册的学堂 subPackage 页面路径一致）
+    - 今日应学牌与 /academy/overview 的 today_card 同口径：plan.path →
+      next_card（major/minor 游标推进 / random 按日确定性）/ related_next_card
+      （历史抽牌频次 TOP 未学）。
+    - 仅 SELECT 无写入（不发星语缓存、不 commit），无 T1-8 认领竞态风险。
+    """
+    plan = await db.get(StarLearningPlan, target.id)
+    if (
+        plan is None
+        or not plan.reminder_on
+        or (plan.cards_per_day or 0) <= 0
+    ):
+        return None
+    if _astral_morning_event(today) is not None:
+        return None
+    learned_today = await db.scalar(
+        select(func.count(StarLearningProgress.id)).where(
+            StarLearningProgress.user_id == target.id,
+            StarLearningProgress.learned_at == today,
+        )
+    )
+    if (learned_today or 0) >= plan.cards_per_day:
+        return None
+
+    # 今日应学牌：与 /academy/overview today_card 同口径
+    cards_result = await db.execute(select(TarotCard).order_by(TarotCard.id))
+    all_cards = list(cards_result.scalars().all())
+    if not all_cards:
+        return None
+    major = major_cards(all_cards)
+    minor = minor_cards(all_cards)
+    if plan.path == "related":
+        card = await related_next_card(db, target.id, all_cards)
+        if card is None:
+            card = major[0] if major else None  # 全部已学 → 完成态循环回 0（同 overview）
+    elif plan.path in ("major", "minor", "random"):
+        card, _, _ = next_card(plan.path, plan.cursor_pos, major, minor, target.id, today)
+    else:
+        return None  # 未知路径防御（plan.path 由 API Literal 校验，不应发生）
+    if card is None:
+        return None
+
+    # 关键词：CardTeaching.keywords_learning 优先，回退 TarotCard.keywords_upright
+    teaching = (
+        await db.execute(select(CardTeaching).where(CardTeaching.card_id == card.id))
+    ).scalar_one_or_none()
+    keywords = parse_json_list(teaching.keywords_learning) if teaching else []
+    if not keywords:
+        keywords = parse_json_list(card.keywords_upright)
+    keys = [str(k) for k in keywords if isinstance(k, str)][:2]
+    if len(keys) < 2:
+        keys = (keys + [card.name_zh, "今日学牌"])[:2]  # 无关键词兜底（不应发生）
+
+    return {
+        "kind": "learning_reminder",
+        "title": f"今日学牌：{card.name_zh}",
+        "keywords": f"关键词·{keys[0]}·{keys[1]}",
+        "page": f"pages/academy/lesson/lesson?card_id={card.id}",
+    }
+
+
+def build_learning_push_data(
+    event: dict, today: date
+) -> dict[str, dict[str, str]]:
+    """构建学习提醒的模板数据（复用每日一牌模板字段 thing1..thing4）。
+
+    字段映射（微信 thing 字段 20 字符上限）:
+      - thing1: 事件 title（"今日学牌：愚者"）→ 学习卡页直达
+      - thing2: 事件 keywords（"关键词·探索·可能性"）
+      - date3:  日期 → "2026.08.13"
+      - thing4: 固定引导 → "点击点亮这颗星 ✦"
+    """
+    return {
+        "thing1": {"value": _truncate_str(event["title"], 20)},
+        "thing2": {"value": _truncate_str(event["keywords"], 20)},
+        "date3": {"value": today.strftime("%Y.%m.%d")},
+        "thing4": {"value": "点击点亮这颗星 ✦"},
+    }
+
+
 def build_starlight_morning_data(
     today: date,
     guidance: dict,
@@ -471,19 +588,28 @@ async def send_starlight_morning_if_due(
         if claim.rowcount != 1:
             continue
         try:
-            # ── T3-2 节点主题切换：有节点事件（新月/满月/水逆首日）时晨讯
-            #    用节点版内容（_astral_morning_event 纯函数，判断同源 /astral）；
-            #    无节点 → 常规今日星光（内容默认分支不变）。
+            # ── 三态主题切换（T3-2 + T6-3）：节点日主题 > 学习提醒主题 >
+            #    常规晨讯。
+            #    ① 节点版（_astral_morning_event 纯函数，判断同源 /astral）；
+            #    ② 学习提醒（今日已学 < cards_per_day 且 reminder_on，纯读
+            #       不写库）——只是内容换主题，仍 quota-1/天 1 条，不新增
+            #       条数与槽位；无计划用户天然回落常规（默认分支不变）；
+            #    ③ 常规今日星光。
             #    额度/原子认领/失败退避/批标记全链路不动。──
             astral_event = _astral_morning_event(today)
             if astral_event:
                 data = build_moon_push_data(astral_event, today)
                 page = astral_event["page"]
             else:
-                guidance = build_today_guidance(today, target.zodiac or None)
-                energy = await _today_energy(db, target, today)
-                data = build_starlight_morning_data(today, guidance, energy)
-                page = MORNING_PAGE
+                learning_event = await _learning_reminder_event(db, target, today)
+                if learning_event:
+                    data = build_learning_push_data(learning_event, today)
+                    page = learning_event["page"]
+                else:
+                    guidance = build_today_guidance(today, target.zodiac or None)
+                    energy = await _today_energy(db, target, today)
+                    data = build_starlight_morning_data(today, guidance, energy)
+                    page = MORNING_PAGE
             resp = await send_subscribe_message(
                 openid=target.openid,
                 template_id=template_id,
@@ -643,25 +769,34 @@ async def send_daily_push_if_due(db: AsyncSession, now: datetime | None = None) 
                 data = build_moon_push_data(moon_event, today)
                 page = moon_event["page"]
             else:
-                # 星语日：AI 优先 → 短句库兜底 → 同日缓存（写缓存即落库）
-                # ── T1-8 认领竞态修复（方案 B）：取星语必须在认领 UPDATE
-                #    之前。get_today_star_word 内部 _save_cache 会自行
-                #    db.commit()；若在认领之后调用，并发首写撞
-                #    uq_user_word_date 唯一约束时 _save_cache 的
-                #    db.rollback() 会连带撤销同事务内已写入的
-                #    last_sent_date=today（认领被静默回滚）→ 发送成功后
-                #    quota-1 但 last_sent_date 仍 NULL → 下轮循环同日
-                #    二次推送（quota≥2 时破坏 1 条/天硬上限）。
-                #    先取星语（纯 SELECT/缓存优先；AI 全挂有短句库兜底，
-                #    star_words 保证总有返回），其 commit/rollback 只作用于
-                #    星语缓存事务；缓存落库完成后再开启认领事务，互不影响。
-                #    传快照而非 ORM user：其 rollback 即使令 ORM 对象过期，
-                #    快照纯值不受影响（Fix round 2）。──
-                star = await get_today_star_word(db, target, today)
-                guidance = build_today_guidance(today, target.zodiac or None)
-                energy = await _today_energy(db, target, today)
-                data = build_star_word_data(today, guidance, energy, star["phrase"])
-                page = NIGHT_PAGE
+                # ── T6-3 学习提醒（第二优先）：节点（上分支 moon_event）>
+                #    学习提醒 > 常规星语。学习提醒纯 SELECT 无写入（不写星语
+                #    缓存、不 commit），无 T1-8 认领竞态；未命中再回落星语，
+                #    且星语须在认领 UPDATE 之前取（见下）。──
+                learning_event = await _learning_reminder_event(db, target, today)
+                if learning_event:
+                    data = build_learning_push_data(learning_event, today)
+                    page = learning_event["page"]
+                else:
+                    # 星语日：AI 优先 → 短句库兜底 → 同日缓存（写缓存即落库）
+                    # ── T1-8 认领竞态修复（方案 B）：取星语必须在认领 UPDATE
+                    #    之前。get_today_star_word 内部 _save_cache 会自行
+                    #    db.commit()；若在认领之后调用，并发首写撞
+                    #    uq_user_word_date 唯一约束时 _save_cache 的
+                    #    db.rollback() 会连带撤销同事务内已写入的
+                    #    last_sent_date=today（认领被静默回滚）→ 发送成功后
+                    #    quota-1 但 last_sent_date 仍 NULL → 下轮循环同日
+                    #    二次推送（quota≥2 时破坏 1 条/天硬上限）。
+                    #    先取星语（纯 SELECT/缓存优先；AI 全挂有短句库兜底，
+                    #    star_words 保证总有返回），其 commit/rollback 只作用于
+                    #    星语缓存事务；缓存落库完成后再开启认领事务，互不影响。
+                    #    传快照而非 ORM user：其 rollback 即使令 ORM 对象过期，
+                    #    快照纯值不受影响（Fix round 2）。──
+                    star = await get_today_star_word(db, target, today)
+                    guidance = build_today_guidance(today, target.zodiac or None)
+                    energy = await _today_energy(db, target, today)
+                    data = build_star_word_data(today, guidance, energy, star["phrase"])
+                    page = NIGHT_PAGE
 
             # ── 原子认领（I-1）：与晨讯同款。并发/崩溃交错时同用户同日最多
             #    发 1 条（双槽位共用 last_sent_date —— 已收晨讯者此处 rowcount==0
