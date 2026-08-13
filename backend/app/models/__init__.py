@@ -19,6 +19,7 @@ from app.models.astral_activity_log import AstralActivityLog
 from app.models.star_meeting import StarMeeting
 from app.models.star_resonance import StarResonance
 from app.models.star_report import StarReport
+from app.models.star_learning_progress import StarLearningProgress
 
 __all__ = [
     "User",
@@ -46,4 +47,5 @@ __all__ = [
     "StarMeeting",
     "StarResonance",
     "StarReport",
+    "StarLearningProgress",
 ]

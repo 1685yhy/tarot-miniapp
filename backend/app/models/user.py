@@ -46,6 +46,11 @@ class User(Base):
     #   连续 7 天记录奖励最后一次发放所在的周；同周再次达标不重复发放（幂等）。
     #   写入模式与签到星尘一致（stardust_total += 1; star_tier = tier_for(...)）。
     journal_streak_reward_week: Mapped[str | None] = mapped_column(String(8), nullable=True)
+    # ── 星灵学堂里程碑账本（SDD P2 阶段3 · T6-1）──
+    # academy_milestones：已领里程碑 key 的 JSON 数组字符串（["first_star", ...]），
+    #   幂等锚，仿 journal_streak_reward_week 语义：账本内已有 key 不重复发放。
+    #   读写统一走 app.services.academy（脏数据解析安全回退空列表）。
+    academy_milestones: Mapped[str | None] = mapped_column(String(255), nullable=True)
     # ── 星卡收藏 / 星光壁纸（P0-3：7 日稀有星卡 · 30 日星光壁纸）──
     # star_cards：JSON 数组字符串 [{"card_id": int, "date": "YYYY-MM-DD",
     #   "tier": "gold", "orientation": "upright"}, ...]（收藏品，不消耗额度）
