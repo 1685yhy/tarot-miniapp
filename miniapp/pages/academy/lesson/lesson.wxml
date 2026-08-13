@@ -80,7 +80,7 @@
           <text class="block-arrow">{{blocks[1].open ? '▴' : '▾'}}</text>
         </view>
         <view class="block-body" wx:if="{{blocks[1].open}}">
-          <view class="symbol-item" wx:for="{{teaching.symbols}}" wx:key="index" wx:for-index="idx">
+          <view class="symbol-item" wx:for="{{teaching.symbols}}" wx:key="symbol" wx:for-index="idx">
             <view class="symbol-badge" style="background: {{elementColor}};">{{idx + 1}}</view>
             <view class="symbol-body">
               <text class="symbol-name">{{item.symbol}}</text>

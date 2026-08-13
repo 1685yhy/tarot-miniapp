@@ -25,6 +25,16 @@
     </view>
   </view>
 
+  <!-- ===== 未登录空态（登录弹窗取消后停留于此，有内容有出口） ===== -->
+  <view wx:elif="{{needLogin}}" class="login-state">
+    <view class="login-card">
+      <text class="login-icon">✦</text>
+      <text class="login-title">登录后，点亮你的星图</text>
+      <text class="login-desc">78 颗星在书卷里等你——学一张牌，点亮一颗星</text>
+      <button class="btn-retry" bindtap="onGoLogin">去登录</button>
+    </view>
+  </view>
+
   <!-- ===== 主内容 ===== -->
   <view wx:else>
 

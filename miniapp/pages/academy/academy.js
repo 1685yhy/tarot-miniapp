@@ -78,6 +78,7 @@ Page({
     pageLoading: true,
     pageError: null,
     isLoggedIn: false,
+    needLogin: false, // 未登录空态（取消登录弹窗后仍可停留，有内容有出口）
 
     // 星图
     stars: [],
@@ -86,7 +87,6 @@ Page({
     percent: 0,
     titles: [],
     starColors: STAR_COLORS,
-    hasLegend: true,
 
     // 今日学牌
     todayCard: null, // {card_id, name_zh, reason}
@@ -106,42 +106,82 @@ Page({
 
     // 订阅授权引导（quota_warning → maybePromptSubscribe）
     showSubscribeGuide: false,
-    guideReminderOn: false, // 引导确认后回写的提醒状态
   },
 
-  _busy: false,      // 路径进入防连点
-  _loaded: false,    // 首页首次数据已到（避免骨架闪烁）
+  _busy: false,       // 路径进入防连点
+  _loading: false,    // 首屏/下拉加载中（防并发）
+  _loadedOnce: false, // 首次数据已到（onShow 静默刷新门槛）
+  _destroyed: false,  // 页面销毁守卫（异步回调不再 setData）
 
   onLoad() {
+    this._destroyed = false;
     const isLoggedIn = !!wx.getStorageSync('token');
-    this.setData({ isLoggedIn });
     if (!isLoggedIn) {
+      // 未登录：渲染「登录后点亮星图」空态（有内容有出口），不卡骨架屏
+      this.setData({ isLoggedIn: false, pageLoading: false, needLogin: true });
       this._promptLogin('登录后即可点亮你的星图 ✦');
       return;
     }
+    this.setData({ isLoggedIn: true });
     this._loadAll();
   },
 
+  onUnload() {
+    // 页面销毁守卫：异步回调/静默刷新不再触发 setData
+    this._destroyed = true;
+  },
+
+  /** 学完返回 / 从其他页回来：静默刷新星图与计划（不闪骨架） */
+  onShow() {
+    if (!this.data.isLoggedIn || this.data.needLogin) return;
+    if (this.data.pageLoading || this._loading || !this._loadedOnce) return;
+    this._refreshSilent();
+  },
+
   onPullDownRefresh() {
-    if (!this.data.isLoggedIn) {
+    const isLoggedIn = !!wx.getStorageSync('token');
+    if (!isLoggedIn) {
       wx.stopPullDownRefresh();
       return;
     }
+    if (this.data.needLogin) this.setData({ needLogin: false });
     this._loadAll().then(() => wx.stopPullDownRefresh());
   },
 
   /** 并发拉取概览 + 计划 */
   async _loadAll() {
+    if (this._loading) return;
+    this._loading = true;
     try {
       const [overview, plan] = await Promise.all([
         request('/academy/overview'),
         request('/academy/plan'),
       ]);
+      if (this._destroyed) return;
       this._applyOverview(overview || {});
       this._applyPlan(plan || {});
-      this.setData({ pageLoading: false, pageError: null });
+      this.setData({ pageLoading: false, pageError: null, needLogin: false });
+      this._loadedOnce = true;
     } catch (err) {
+      if (this._destroyed) return;
       this.setData({ pageLoading: false, pageError: getFriendlyError(err) });
+    } finally {
+      this._loading = false;
+    }
+  },
+
+  /** 静默刷新（onShow 触发）：失败保留当前内容，下拉可重试 */
+  async _refreshSilent() {
+    try {
+      const [overview, plan] = await Promise.all([
+        request('/academy/overview'),
+        request('/academy/plan'),
+      ]);
+      if (this._destroyed) return;
+      this._applyOverview(overview || {});
+      this._applyPlan(plan || {});
+    } catch (err) {
+      console.warn('[academy] 静默刷新失败（保留当前内容）:', err.statusCode || err.message);
     }
   },
 
@@ -204,7 +244,7 @@ Page({
     this._busy = true;
     const plan = this.data.plan || {};
     try {
-      await request('/academy/plan', {
+      const planRes = await request('/academy/plan', {
         method: 'POST',
         data: {
           cards_per_day: plan.cards_per_day || 0,
@@ -212,14 +252,24 @@ Page({
           path,
         },
       });
+      // 游标以 POST 响应为准（切路径后服务端 upsert 的 cursor_pos 才是权威值，
+      // 本地 plan.cursor_pos 可能是旧路径/旧时刻的，直接用它请求 next 会错位）
+      const cursorPos =
+        planRes && typeof planRes.cursor_pos === 'number'
+          ? planRes.cursor_pos
+          : plan.cursor_pos || 0;
+      // 同步本地计划（path/游标已切换，返回本页时高亮一致）
+      if (planRes && !this._destroyed) this._applyPlan(planRes);
       const next = await request(
-        `/academy/lesson/next?path=${encodeURIComponent(path)}&pos=${plan.cursor_pos || 0}`
+        `/academy/lesson/next?path=${encodeURIComponent(path)}&pos=${cursorPos}`
       );
+      if (this._destroyed) return;
       if (next && next.card_id) {
         analytics.trackEvent('academy_path_enter', { path });
         wx.navigateTo({ url: `/pages/academy/lesson/lesson?card_id=${next.card_id}` });
       }
     } catch (err) {
+      if (this._destroyed) return;
       wx.showToast({ title: getFriendlyError(err), icon: 'none' });
     } finally {
       this._busy = false;
@@ -266,6 +316,7 @@ Page({
     );
     try {
       const res = await request('/academy/plan', { method: 'POST', data });
+      if (this._destroyed) return;
       const quotaWarning = !!res.quota_warning;
       this.setData({
         plan: {
@@ -290,6 +341,7 @@ Page({
         icon: 'none',
       });
     } catch (err) {
+      if (this._destroyed) return;
       this.setData({ savingPlan: false });
       wx.showToast({ title: getFriendlyError(err), icon: 'none' });
     }
@@ -315,6 +367,11 @@ Page({
     this._loadAll();
   },
 
+  /** 未登录空态的「去登录」按钮 */
+  onGoLogin() {
+    wx.reLaunch({ url: '/pages/index/index' });
+  },
+
   _promptLogin(content) {
     wx.showModal({
       title: '需要登录',
@@ -323,6 +380,7 @@ Page({
       cancelText: '先看看',
       success: (r) => {
         if (r.confirm) wx.reLaunch({ url: '/pages/index/index' });
+        // 取消 → 停留在未登录空态（needLogin），有内容有出口，不再卡骨架屏
       },
     });
   },

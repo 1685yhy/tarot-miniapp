@@ -657,6 +657,51 @@ page {
 }
 
 /* ============================================================
+   未登录空态
+   ============================================================ */
+.login-state {
+  padding: 160rpx 0 0;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.login-card {
+  background: linear-gradient(145deg, var(--e3-cream-hi, #FFFDF8) 0%, var(--e3-paper, #F2ECDF) 100%);
+  border: 1rpx solid var(--e3-line, rgba(201, 169, 124, 0.28));
+  border-radius: 28rpx;
+  padding: var(--spacing-3xl) var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: var(--e3-shadow, 0 2rpx 8rpx rgba(61, 58, 54, 0.08));
+}
+
+.login-icon {
+  font-size: 64rpx;
+  color: var(--e3-gold, #C9A97C);
+  text-shadow: 0 0 24rpx rgba(201, 169, 124, 0.35);
+  margin-bottom: var(--spacing-md);
+}
+
+.login-title {
+  font-family: var(--e3-serif, 'Songti SC', serif);
+  font-size: var(--font-size-body);
+  font-weight: 500;
+  color: var(--e3-ink, #3D3A36);
+  letter-spacing: 3rpx;
+  margin-bottom: var(--spacing-sm);
+}
+
+.login-desc {
+  font-size: var(--font-size-caption);
+  color: var(--e3-ink-soft, #8A8478);
+  line-height: 1.7;
+  letter-spacing: 1rpx;
+  margin-bottom: var(--spacing-lg);
+}
+
+/* ============================================================
    订阅授权引导弹层
    ============================================================ */
 .guide-mask {

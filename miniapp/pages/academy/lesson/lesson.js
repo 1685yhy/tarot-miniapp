@@ -63,6 +63,7 @@ Page({
   },
 
   async onLoad(options) {
+    this._destroyed = false;
     const cardId = Number(options.card_id);
     if (!cardId) {
       this.setData({ pageLoading: false, pageError: '缺少卡牌编号' });
@@ -73,12 +74,19 @@ Page({
     await this._loadLesson(cardId);
   },
 
+  onUnload() {
+    // 页面销毁守卫：异步回调/延时 setData 不再触发
+    this._destroyed = true;
+  },
+
   async _loadLesson(cardId) {
     try {
       const data = await request(`/academy/lesson/${cardId}`);
+      if (this._destroyed) return;
       this._applyLesson(data || {});
       this.setData({ pageLoading: false, pageError: null });
     } catch (err) {
+      if (this._destroyed) return;
       this.setData({ pageLoading: false, pageError: getFriendlyError(err) });
     }
   },
@@ -153,11 +161,14 @@ Page({
         method: 'POST',
         data: { card_id: this.data.cardId },
       });
+      if (this._destroyed) return;
       analytics.trackEvent('academy_learned', { card_id: this.data.cardId });
       if (res.learned) {
-        // 点亮动效：星点转亮（1.2s 后清除，只保留静态点亮态）
+        // 点亮动效：星点转亮（1.2s 后清除，只保留静态点亮态；页面销毁守卫）
         this.setData({ litUp: true });
-        setTimeout(() => this.setData({ litUp: false }), 1400);
+        setTimeout(() => {
+          if (!this._destroyed) this.setData({ litUp: false });
+        }, 1400);
         wx.showToast({ title: '这颗星，为你点亮 ✦', icon: 'none' });
         if (res.milestone) {
           this.setData({ milestone: res.milestone, showMilestone: true });
@@ -168,6 +179,7 @@ Page({
       }
       this.setData({ learned: true, saving: false });
     } catch (err) {
+      if (this._destroyed) return;
       this.setData({ saving: false });
       if (err.statusCode === 401) {
         this._promptLogin('登录已过期，请重新登录');
@@ -186,6 +198,7 @@ Page({
         method: 'POST',
         data: { card_id: this.data.cardId },
       });
+      if (this._destroyed) return;
       analytics.trackEvent('academy_review', { card_id: this.data.cardId });
       this.setData({ reviewCount: res.review_count || this.data.reviewCount + 1, saving: false });
       wx.showToast({ title: '复习一次，星更亮 ✦', icon: 'none' });
