@@ -606,14 +606,14 @@ class TestNextLesson:
 
     def test_next_random_matches_daily_card(self, client: TestClient):
         """random 与每日一牌 pick_daily_card 同牌（同 seed 同卡，随机路径确定性）。"""
-        openid, user_id, headers = _make_user()
+        _, user_id, headers = _make_user()
         data = client.get("/academy/lesson/next?path=random&pos=0", headers=headers).json()
         card, _, _ = next_card("random", 0, major_cards(_load_deck()), minor_cards(_load_deck()), user_id, date.today())
         assert data["card_id"] == card.id
 
     def test_next_related_top_unlearned_by_frequency(self, client: TestClient):
         """related：未学牌中按历史抽牌频次 TOP（已学的高频牌被排除）。"""
-        openid, user_id, headers = _make_user()
+        _, user_id, headers = _make_user()
         _learn(client, headers, 5)  # 先学掉最高频的牌
         _insert_reading(user_id, card_ids=[5, 5, 5, 7, 7, 9])  # 5×3 / 7×2 / 9×1
         data = client.get("/academy/lesson/next?path=related&pos=0", headers=headers).json()
@@ -623,13 +623,34 @@ class TestNextLesson:
 
     def test_next_related_all_learned_done_wraps(self, client: TestClient):
         """related 全部已学 → done=true 循环回 0。"""
-        openid, user_id, headers = _make_user()
+        _, user_id, headers = _make_user()
         _insert_reading(user_id, card_ids=[5, 5, 7])
         _learn_all_direct(user_id)
         data = client.get("/academy/lesson/next?path=related&pos=0", headers=headers).json()
         assert data["done"] is True
         assert data["next_pos"] == 0
         assert data["card_id"] == 1
+
+    def test_next_preserves_saved_plan_path_when_path_omitted(self, client: TestClient):
+        """lesson/next 只推进游标不覆写计划路径：缺省 path=major 的调用不得把
+        random 计划改成 major（否则 GET /plan 与 overview.today_card 都漂移）。"""
+        _, _, headers = _make_user()
+        _set_plan(client, headers, {"cards_per_day": 1, "reminder_on": False, "path": "random"})
+        data = client.get("/academy/lesson/next?pos=0", headers=headers).json()
+        assert data["path"] == "major"  # 本次调用按默认 major 响应
+        plan = client.get("/academy/plan", headers=headers).json()
+        assert plan["path"] == "random"  # 已存路径不被覆写
+        assert plan["cursor_pos"] == 1  # 游标照常写回
+        overview = client.get("/academy/overview", headers=headers).json()
+        assert overview["today_card"]["reason"] == "今日之牌·随机星选"
+
+    def test_next_update_branch_keeps_stored_path(self, client: TestClient):
+        """既有计划：显式传不同 path 调用 lesson/next → 仍保留已存路径，仅写回游标。"""
+        _, _, headers = _make_user()
+        _set_plan(client, headers, {"cards_per_day": 3, "reminder_on": False, "path": "minor"})
+        client.get("/academy/lesson/next?path=major&pos=0", headers=headers)
+        plan = client.get("/academy/plan", headers=headers).json()
+        assert (plan["path"], plan["cursor_pos"]) == ("minor", 1)
 
     def test_next_invalid_path_422(self, client: TestClient):
         """next 非法路径 → 422。"""

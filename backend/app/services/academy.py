@@ -199,3 +199,14 @@ async def reading_frequency(db: AsyncSession, user_id: str) -> dict[int, int]:
         .group_by(DrawnCard.card_id)
     )
     return dict(result.all())
+
+
+async def related_next_card(db: AsyncSession, user_id: str, all_cards: list[TarotCard]) -> TarotCard | None:
+    """related 路径下一张：历史抽牌频次 TOP 的未学牌。
+
+    全部已学（无候选）→ None，由调用方按「完成态循环回 0」口径回退首张大阿卡纳
+    （lesson/next 置 done=True；overview 的 today_card 同口径）。
+    """
+    learned = await learned_card_ids(db, user_id)
+    candidates = [c for c in all_cards if c.id not in learned]
+    return pick_related(candidates, await reading_frequency(db, user_id))

@@ -59,12 +59,10 @@ from app.services.academy import (
     MINOR_SIZE,
     PATH_REASONS,
     apply_milestones,
-    learned_card_ids,
     major_cards,
     minor_cards,
     next_card,
-    pick_related,
-    reading_frequency,
+    related_next_card,
     titles_of,
 )
 from app.utils.auth import get_current_user, get_optional_user
@@ -166,19 +164,18 @@ async def next_lesson(
     minor = minor_cards(all_cards)
 
     if path == "related":
-        learned = await learned_card_ids(db, user.id)
-        candidates = [c for c in all_cards if c.id not in learned]
-        card = pick_related(candidates, await reading_frequency(db, user.id))
+        card = await related_next_card(db, user.id, all_cards)
         next_pos, done = pos, False  # related 忽略游标（cursor 派生自历史频次）
         if card is None:
             card, next_pos, done = major[0], 0, True  # 全部已学 → 完成态循环回 0
     else:
         card, next_pos, done = next_card(path, pos, major, minor, user.id, date.today())
 
-    # upsert 写回游标（路径跟随本次调用；cards_per_day/reminder_on 保留）
+    # upsert：新行才写 path；既有行只推进 cursor_pos（读多写少端点不得覆写
+    # 用户已存计划路径——否则缺省 path=major 的调用会把 random/related 计划
+    # 静默改成 major，GET /plan 与 overview.today_card 都会漂移）
     plan = await db.get(StarLearningPlan, user.id)
     if plan:
-        plan.path = path
         plan.cursor_pos = next_pos
     else:
         db.add(StarLearningPlan(user_id=user.id, path=path, cursor_pos=next_pos))
@@ -356,9 +353,7 @@ async def get_overview(
     today_card = None
     if plan:
         if plan.path == "related":
-            learned_ids = {cid for cid, _ in progress_rows}
-            candidates = [c for c in all_cards if c.id not in learned_ids]
-            card = pick_related(candidates, await reading_frequency(db, user.id))
+            card = await related_next_card(db, user.id, all_cards)
             if card is None:
                 card = major[0]  # 全部已学 → 完成态（与 lesson/next 口径一致）
         else:
