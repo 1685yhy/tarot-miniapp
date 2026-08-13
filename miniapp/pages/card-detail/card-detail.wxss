@@ -539,6 +539,62 @@ page {
 }
 
 /* ================================================================
+   ACADEMY LINK — 去学堂学这张牌（T6-5 百科 ↔ 学堂互链）
+   ================================================================ */
+.academy-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: linear-gradient(135deg, rgba(201, 169, 124, 0.10) 0%, rgba(216, 210, 228, 0.10) 100%);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.30);
+  border-radius: var(--radius-md);
+  transition: transform 0.15s ease-out, background 0.15s ease-out;
+  animation: sl-fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 0.65s;
+  opacity: 0;
+}
+
+.academy-link--press {
+  background: rgba(201, 169, 124, 0.14);
+  transform: scale(0.98);
+}
+
+.academy-link-icon {
+  font-size: 36rpx;
+  color: var(--color-gold-dark);
+  line-height: 1;
+}
+
+.academy-link-texts {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.academy-link-title {
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  color: var(--color-gold-deep-ink);
+  letter-spacing: 2rpx;
+}
+
+.academy-link-sub {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  letter-spacing: 1rpx;
+}
+
+.academy-link-arrow {
+  font-size: 44rpx;
+  color: var(--color-gold-dark);
+  opacity: 0.7;
+}
+
+/* ================================================================
    ADDITIONAL INFO ROW — Lavender labels
    ================================================================ */
 .meta-row {

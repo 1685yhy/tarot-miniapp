@@ -1,0 +1,190 @@
+<!-- pages/academy/academy.wxml —— 星灵学堂主页（T6-5）：
+     我的星图（78 星点环）→ 今日学牌 → 四路径卡 → 计划设置面板 -->
+
+<view class="academy-page">
+  <!-- E3 奶油底色氛围光斑 -->
+  <view class="wash wash-pink"></view>
+  <view class="wash wash-gold"></view>
+
+  <!-- ===== 加载骨架 ===== -->
+  <view wx:if="{{pageLoading}}" class="skeleton-wrap">
+    <view class="skeleton-header-area">
+      <view class="skeleton skeleton-line wide"></view>
+      <view class="skeleton skeleton-line medium"></view>
+    </view>
+    <view class="skeleton skeleton-ring"></view>
+    <view class="skeleton skeleton-block"></view>
+  </view>
+
+  <!-- ===== 错误状态 ===== -->
+  <view wx:elif="{{pageError}}" class="error-state">
+    <view class="error-card">
+      <text class="error-title">星图暂时无法展开</text>
+      <text class="error-desc">{{pageError}}</text>
+      <button class="btn-retry" bindtap="onRetry">重新连接</button>
+    </view>
+  </view>
+
+  <!-- ===== 主内容 ===== -->
+  <view wx:else>
+
+    <!-- 页头 -->
+    <view class="page-header anim-fade-up">
+      <text class="page-title">星灵学堂</text>
+      <text class="page-subtitle">星空书卷 · 点亮你的 78 颗星</text>
+    </view>
+
+    <!-- ===== 我的星图（78 星点环 · 与手账夜空同语言） ===== -->
+    <view class="star-map-card anim-fade-up anim-stagger-1">
+      <view class="section-head">
+        <text class="section-title">我的星图</text>
+        <view class="section-badge" wx:if="{{titles.length}}">
+          <text class="section-badge-text" wx:for="{{titles}}" wx:key="*this">{{item}}</text>
+        </view>
+      </view>
+
+      <!-- 星环 -->
+      <view class="star-ring">
+        <!-- 中心柔光 -->
+        <view class="ring-glow"></view>
+        <!-- 78 星点 -->
+        <view
+          wx:for="{{stars}}" wx:key="key"
+          class="academy-star {{item.major ? 'academy-star--major' : ''}} {{item.learned ? 'academy-star--lit' : 'academy-star--dust'}}"
+          style="left: {{item.x}}%; top: {{item.y}}%; background: {{item.color}};"
+        ></view>
+        <!-- 中心进度 -->
+        <view class="ring-center">
+          <text class="ring-center-num">{{learned}}</text>
+          <text class="ring-center-label">颗星已点亮</text>
+        </view>
+      </view>
+
+      <!-- 进度文案（verbatim） -->
+      <view class="progress-line">
+        <text class="progress-text">{{total}} 颗星里，你已经点亮了 {{learned}} 颗</text>
+        <view class="progress-bar"><view class="progress-fill" style="width: {{percent}}%;"></view></view>
+      </view>
+
+      <!-- 空态：未开始学习（verbatim） -->
+      <view class="empty-hint" wx:if="{{learned === 0}}">
+        <text class="empty-hint-icon">✦</text>
+        <text class="empty-hint-text">78 颗星在书卷里等你——从愚者之行走起</text>
+      </view>
+
+      <!-- 图例 -->
+      <view class="star-legend">
+        <view class="legend-item">
+          <view class="legend-dot" style="background: {{starColors.major}};"></view>
+          <text class="legend-text">大阿卡纳 22</text>
+        </view>
+        <view class="legend-item" wx:for="{{['wands','cups','swords','pentacles']}}" wx:key="*this">
+          <view class="legend-dot" style="background: {{starColors[item]}};"></view>
+          <text class="legend-text">{{item === 'wands' ? '火' : (item === 'cups' ? '水' : (item === 'swords' ? '风' : '土'))}} · 14</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ===== 今日学牌（计划已设时展示） ===== -->
+    <view
+      wx:if="{{todayCard}}"
+      class="today-card anim-fade-up anim-stagger-2"
+      bindtap="onTodayCardTap"
+      role="button"
+      aria-label="学习今日学牌 {{todayCard.name_zh}}"
+      hover-class="today-card--press"
+    >
+      <view class="today-card-left">
+        <view class="today-card-icon">✦</view>
+        <view class="today-card-texts">
+          <text class="today-card-title">今日学牌 · {{todayCard.name_zh}}</text>
+          <text class="today-card-sub">{{todayCard.reason}}</text>
+        </view>
+      </view>
+      <text class="today-card-arrow">›</text>
+    </view>
+
+    <!-- ===== 四路径卡（愚者之旅 / 四元素庭院 / 今日之牌 / 与你相遇的牌） ===== -->
+    <view class="paths-section anim-fade-up anim-stagger-2">
+      <text class="paths-title">选择你的学习路径</text>
+      <view class="paths-grid">
+        <view
+          wx:for="{{paths}}" wx:key="key"
+          class="path-card {{item.key === plan.path ? 'path-card--active' : ''}}"
+          data-path="{{item.key}}"
+          bindtap="onPathTap"
+          role="button"
+          aria-label="选择{{item.name}}路径，已学{{item.learned}}张"
+          hover-class="path-card--press"
+        >
+          <text class="path-emoji">{{item.emoji}}</text>
+          <text class="path-name">{{item.name}}</text>
+          <text class="path-sub">{{item.sub}}</text>
+          <view class="path-progress">
+            <text class="path-progress-text">{{item.learned}}<text wx:if="{{item.hasTotal}}"> / {{item.total}}</text> 张</text>
+            <view class="path-bar">
+              <view class="path-bar-fill" style="width: {{item.hasTotal ? (item.total ? (item.learned / item.total * 100) : 0) : 0}}%;"></view>
+            </view>
+          </view>
+          <text class="path-go" wx:if="{{item.key === plan.path}}">当前路径 ›</text>
+          <text class="path-go" wx:else>开始 ›</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ===== 计划设置面板 ===== -->
+    <view class="plan-panel anim-fade-up anim-stagger-3">
+      <text class="plan-title">每日学习计划</text>
+
+      <!-- 每日 N 张 -->
+      <view class="plan-row">
+        <text class="plan-label">每日 N 张</text>
+        <view class="plan-counts">
+          <view
+            wx:for="{{planCounts}}" wx:key="value"
+            class="plan-count {{plan.cards_per_day === item.value ? 'plan-count--active' : ''}}"
+            data-count="{{item.value}}"
+            bindtap="onPlanCountTap"
+            role="button"
+            aria-label="每日学习{{item.label}}"
+            hover-class="plan-count--press"
+          >{{item.label}}</view>
+        </view>
+      </view>
+
+      <!-- 学习提醒开关（默认关） -->
+      <view class="plan-row plan-row--switch">
+        <view class="plan-switch-texts">
+          <text class="plan-label">学习提醒</text>
+          <text class="plan-hint">学习提醒日，当天星光晨讯/星语将换成今日学牌</text>
+        </view>
+        <switch
+          class="plan-switch"
+          checked="{{plan.reminder_on}}"
+          color="#C9A97C"
+          bindchange="onReminderChange"
+          aria-label="学习提醒开关"
+        />
+      </view>
+    </view>
+
+    <view class="page-foot">
+      <text class="page-foot-text">✦ 学一张牌，点亮一颗星</text>
+    </view>
+
+  </view>
+
+  <!-- ===== 订阅授权引导（quota_warning：提醒开但无订阅额度，仅引导不硬拦） ===== -->
+  <view class="guide-mask" wx:if="{{showSubscribeGuide}}" bindtap="onGuideCancel">
+    <view class="guide-modal" catchtap="noop">
+      <text class="guide-icon">✦</text>
+      <text class="guide-title">开启学习提醒</text>
+      <text class="guide-desc">提醒已开启。授权订阅后，学习提醒日会将「今日学牌」送到你的晨讯/星语中；不授权也能继续学习。</text>
+      <view class="guide-actions">
+        <button class="guide-btn guide-btn--ghost" bindtap="onGuideCancel">暂不</button>
+        <button class="guide-btn guide-btn--primary" bindtap="onGuideConfirm">去授权 ✦</button>
+      </view>
+    </view>
+  </view>
+
+</view>

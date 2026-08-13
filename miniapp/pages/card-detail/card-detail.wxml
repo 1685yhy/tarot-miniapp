@@ -282,6 +282,16 @@
 
     </view>
 
+    <!-- ==================== 去学堂学这张牌（T6-5 百科 ↔ 学堂互链） ==================== -->
+    <view class="academy-link" bindtap="onGoAcademy" role="button" aria-label="去学堂学这张牌 {{card.name_zh}}" hover-class="academy-link--press">
+      <text class="academy-link-icon">✦</text>
+      <view class="academy-link-texts">
+        <text class="academy-link-title">去学堂学这张牌</text>
+        <text class="academy-link-sub">路径化学习 · 点亮你的星图</text>
+      </view>
+      <text class="academy-link-arrow">›</text>
+    </view>
+
     <!-- ==================== ADDITIONAL INFO ==================== -->
     <view
       class="meta-row"

@@ -1,0 +1,170 @@
+<!-- pages/academy/lesson/lesson.wxml —— 学习卡页（T6-5）：
+     牌面大图（星光色描边）→ 四区块渐进展开 → 我已记住 ✦ / 问小星
+     + 里程碑弹层 + 星点转亮动效 -->
+
+<view class="lesson-page">
+  <!-- E3 奶油底色氛围光斑 -->
+  <view class="wash wash-pink"></view>
+  <view class="wash wash-gold"></view>
+
+  <!-- ===== 加载骨架 ===== -->
+  <view wx:if="{{pageLoading}}" class="skeleton-wrap">
+    <view class="skeleton skeleton-hero"></view>
+    <view class="skeleton skeleton-line"></view>
+    <view class="skeleton skeleton-block"></view>
+  </view>
+
+  <!-- ===== 错误状态 ===== -->
+  <view wx:elif="{{pageError}}" class="error-state">
+    <view class="error-card">
+      <text class="error-title">这张牌暂时无法翻开</text>
+      <text class="error-desc">{{pageError}}</text>
+      <button class="btn-retry" bindtap="onRetry">重新连接</button>
+    </view>
+  </view>
+
+  <!-- ===== 主内容 ===== -->
+  <view wx:elif="{{card}}">
+
+    <!-- ===== 牌面大图 + 星光色描边（取牌元素色） ===== -->
+    <view class="card-hero anim-fade-up" style="border-left: 6rpx solid {{elementColor}};">
+      <view class="hero-glow" wx:if="{{litUp}}">
+        <view class="hero-glow-star"></view>
+      </view>
+      <view class="hero-img-wrap">
+        <image
+          wx:if="{{card.imageUrl && !card.imgError}}"
+          class="hero-img"
+          src="{{card.imageUrl}}"
+          mode="aspectFit"
+          binderror="onImgError"
+          aria-label="{{card.name_zh}} — 学习卡牌面"
+        />
+        <view wx:elif="{{card.imgError}}" class="hero-fallback">
+          <text class="hero-fallback-name">{{card.name_zh}}</text>
+        </view>
+        <view wx:else class="hero-fallback"></view>
+      </view>
+      <view class="hero-info">
+        <text class="hero-name">{{card.name_zh}}</text>
+        <view class="hero-tags">
+          <text class="hero-tag" style="color: {{elementColor}}; border-color: {{elementColor}};">{{elementName || '大阿卡纳'}}</text>
+          <text class="hero-tag" wx:if="{{learned}}">已点亮 ✦</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ===== 四区块渐进展开 ===== -->
+    <view class="blocks anim-fade-up anim-stagger-1">
+      <!-- ① 关键词（星光词） -->
+      <view class="block" wx:if="{{teaching.keywordsLearning.length}}">
+        <view class="block-head" data-key="keywords" bindtap="onBlockTap" role="button" aria-label="{{blocks[0].open ? '收起关键词' : '展开关键词'}}">
+          <text class="block-title">✦ 关键词 · 星光词</text>
+          <text class="block-arrow">{{blocks[0].open ? '▴' : '▾'}}</text>
+        </view>
+        <view class="block-body" wx:if="{{blocks[0].open}}">
+          <view class="keyword-row">
+            <text
+              class="keyword-chip"
+              wx:for="{{teaching.keywordsLearning}}" wx:key="*this"
+              style="border-color: {{elementColor}}; color: {{elementColor}};"
+            >{{item}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- ② 符号解读 -->
+      <view class="block" wx:if="{{teaching.symbols.length}}">
+        <view class="block-head" data-key="symbols" bindtap="onBlockTap" role="button" aria-label="{{blocks[1].open ? '收起符号解读' : '展开符号解读'}}">
+          <text class="block-title">✦ 符号解读</text>
+          <text class="block-arrow">{{blocks[1].open ? '▴' : '▾'}}</text>
+        </view>
+        <view class="block-body" wx:if="{{blocks[1].open}}">
+          <view class="symbol-item" wx:for="{{teaching.symbols}}" wx:key="index" wx:for-index="idx">
+            <view class="symbol-badge" style="background: {{elementColor}};">{{idx + 1}}</view>
+            <view class="symbol-body">
+              <text class="symbol-name">{{item.symbol}}</text>
+              <text class="symbol-meaning">{{item.meaning}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- ③ 典故 -->
+      <view class="block" wx:if="{{teaching.story}}">
+        <view class="block-head" data-key="story" bindtap="onBlockTap" role="button" aria-label="{{blocks[2].open ? '收起典故' : '展开典故'}}">
+          <text class="block-title">✦ 典故</text>
+          <text class="block-arrow">{{blocks[2].open ? '▴' : '▾'}}</text>
+        </view>
+        <view class="block-body" wx:if="{{blocks[2].open}}">
+          <text class="story-text">{{teaching.story}}</text>
+        </view>
+      </view>
+
+      <!-- ④ 生活关联 -->
+      <view class="block" wx:if="{{teaching.lifeConnection}}">
+        <view class="block-head" data-key="life" bindtap="onBlockTap" role="button" aria-label="{{blocks[3].open ? '收起生活关联' : '展开生活关联'}}">
+          <text class="block-title">✦ 生活关联</text>
+          <text class="block-arrow">{{blocks[3].open ? '▴' : '▾'}}</text>
+        </view>
+        <view class="block-body" wx:if="{{blocks[3].open}}">
+          <text class="life-text">{{teaching.lifeConnection}}</text>
+          <view class="element-note" wx:if="{{teaching.elementAssociation}}">
+            <text class="element-note-label">元素归属</text>
+            <text class="element-note-text">{{teaching.elementAssociation}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- ===== 底部操作 ===== -->
+    <view class="actions anim-fade-up anim-stagger-2">
+      <button
+        class="remember-btn"
+        bindtap="onRemember"
+        disabled="{{saving || learned}}"
+      >
+        {{learned ? '已记住 · 这颗星已点亮 ✦' : '我已记住 ✦'}}
+      </button>
+      <view class="sub-actions">
+        <button
+          wx:if="{{learned}}"
+          class="review-btn"
+          bindtap="onReview"
+          disabled="{{saving}}"
+        >复习一次 ✦</button>
+        <button class="ask-btn" bindtap="onAskXiaoXing">问小星 ›</button>
+      </view>
+      <text class="actions-hint" wx:if="{{learned}}">已复习 {{reviewCount}} 次</text>
+    </view>
+
+    <!-- ===== 百科互链（学堂 ↔ 百科） ===== -->
+    <view class="encyc-link" bindtap="onGoEncyclopedia" role="button" aria-label="在百科中查看这张牌" hover-class="encyc-link--press">
+      <text class="encyc-link-text">在百科中查看这张牌 ›</text>
+    </view>
+
+  </view>
+
+  <!-- ===== 里程碑弹层 ===== -->
+  <view class="milestone-mask" wx:if="{{showMilestone}}" bindtap="onCloseMilestone">
+    <view class="milestone-modal" catchtap="noop">
+      <view class="milestone-burst">
+        <view class="burst-star burst-star-1">✦</view>
+        <view class="burst-star burst-star-2">✦</view>
+        <view class="burst-star burst-star-3">✦</view>
+        <view class="burst-star burst-star-4">✦</view>
+        <view class="burst-star burst-star-5">✦</view>
+        <view class="burst-star burst-star-6">✦</view>
+        <text class="milestone-icon">✦</text>
+      </view>
+      <text class="milestone-title">{{milestone.title}}</text>
+      <view class="milestone-reward">
+        <text class="milestone-reward-item" wx:if="{{milestone.stardust_gained}}">星尘 +{{milestone.stardust_gained}}</text>
+        <text class="milestone-reward-item milestone-reward-item--wall" wx:if="{{milestone.wallpaper_granted}}">星光壁纸解锁</text>
+      </view>
+      <text class="milestone-sub">夜空因你，又亮了一分 ✦</text>
+      <button class="milestone-btn" bindtap="onCloseMilestone">收下这颗星 ✦</button>
+    </view>
+  </view>
+
+</view>

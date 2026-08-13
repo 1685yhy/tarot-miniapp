@@ -630,6 +630,12 @@ Page({
     wx.navigateTo({ url: '/pages/resonance/resonance' });
   },
 
+  /** 星灵学堂（T6-5）入口：点亮你的 78 颗星 */
+  onGoAcademy() {
+    analytics.trackEvent('academy_entry', { source: 'today' });
+    wx.navigateTo({ url: '/pages/academy/academy' });
+  },
+
   /** Navigate to membership page（牌阵区耗尽态「补充解读次数」入口） */
   onGoMembership() {
     wx.navigateTo({ url: '/pages/membership/membership' });

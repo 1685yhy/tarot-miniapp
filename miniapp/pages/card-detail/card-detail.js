@@ -215,6 +215,13 @@ Page({
     // Handled by onShareAppMessage below
   },
 
+  /** 去学堂学这张牌（T6-5 百科 ↔ 学堂互链：学堂=路径化学习、百科=全量浏览） */
+  onGoAcademy() {
+    const id = this.data.card && this.data.card.id;
+    if (!id) return;
+    wx.navigateTo({ url: `/pages/academy/lesson/lesson?card_id=${id}` });
+  },
+
   onShareAppMessage() {
     // Analytics: card detail share
     analytics.trackShare('wechat_friend', 'card_detail');

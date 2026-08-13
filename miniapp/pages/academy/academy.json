@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "星灵学堂",
+  "navigationBarBackgroundColor": "#FAF6EF",
+  "navigationBarTextStyle": "black",
+  "enablePullDownRefresh": true,
+  "usingComponents": {}
+}
