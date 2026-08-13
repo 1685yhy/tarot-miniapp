@@ -1,4 +1,6 @@
-"""星灵学堂 schema（SDD P2 阶段3 · T6-1）：学习 / 复习 / 里程碑 / 学习卡页。"""
+"""星灵学堂 schema（SDD P2 阶段3 · T6-1/2）：学习 / 复习 / 里程碑 / 学习卡页 / 学习计划 / 概览。"""
+
+from typing import Literal
 
 from pydantic import BaseModel
 
@@ -56,3 +58,77 @@ class LessonResponse(BaseModel):
     card: LessonCard
     teaching: LessonTeaching
     my: MyProgress | None = None
+
+
+# ── T6-2 学习计划 / 下一张 / 学堂概览 ──────────────────────────────────
+
+PlanPath = Literal["major", "minor", "random", "related"]
+CardsPerDay = Literal[0, 1, 3, 5]
+
+
+class PlanRequest(BaseModel):
+    """学习计划写入：cards_per_day 只允许 0|1|3|5（0=关闭）；path 四选一；
+    reminder_on 默认关闭（学习提醒默认关）。"""
+
+    cards_per_day: CardsPerDay
+    reminder_on: bool = False
+    path: PlanPath
+
+
+class PlanResponse(BaseModel):
+    """学习计划回显（GET 无 quota_warning；无行默认 {0, false, "major", 0}）。"""
+
+    cards_per_day: int
+    reminder_on: bool
+    path: str
+    cursor_pos: int
+
+
+class PlanSetResponse(PlanResponse):
+    """POST /academy/plan 回显 + quota_warning（提醒开启但无订阅额度时 true，
+    仅引导授权不硬拦）。"""
+
+    quota_warning: bool
+
+
+class NextLessonResponse(BaseModel):
+    """路径内下一张：card + 推进后的游标 + done（越界/无未学 → done=true 回 0）。"""
+
+    card_id: int
+    name_zh: str
+    path: str
+    next_pos: int
+    done: bool
+
+
+class PathStat(BaseModel):
+    """单路径进度（random/related 无固定总数 → total=null）。"""
+
+    learned: int
+    total: int | None = None
+
+
+class PathsStats(BaseModel):
+    major: PathStat
+    minor: PathStat
+    random: PathStat
+    related: PathStat
+
+
+class TodayCard(BaseModel):
+    """今日学习卡（计划路径派生：random 按日确定性；related 按历史抽牌 TOP）。"""
+
+    card_id: int
+    name_zh: str
+    reason: str
+
+
+class OverviewResponse(BaseModel):
+    """学堂主页：总进度 + 四路径进度 + 已获称号 + 今日学习卡。"""
+
+    total: int
+    learned: int
+    percent: int
+    paths: PathsStats
+    titles: list[str]
+    today_card: TodayCard | None = None

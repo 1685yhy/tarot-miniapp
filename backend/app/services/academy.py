@@ -13,9 +13,14 @@
 import json
 from datetime import date
 
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.models.card import TarotCard
+from app.models.reading import DrawnCard, Reading
+from app.models.star_learning_progress import StarLearningProgress
 from app.models.user import User
+from app.services.daily_card import pick_daily_card
 from app.services.stardust import tier_for
 from app.services.star_collectibles import grant_wallpaper, parse_json_list
 
@@ -86,3 +91,111 @@ async def apply_milestones(
     if granted:
         user.academy_milestones = json.dumps(awarded, ensure_ascii=False)
     return granted
+
+
+# ── 学习计划 · 路径排序 / 下一张 / 关联推荐（SDD P2 阶段3 · T6-2）──────────
+
+# 小阿卡纳花色顺序（suit 英文 / element 中文都兼容；牌库内 suit 为英文）
+SUIT_ORDER: dict[str, int] = {
+    "wands": 0, "cups": 1, "swords": 2, "pentacles": 3,
+    "火": 0, "水": 1, "风": 2, "土": 3,
+}
+
+# 路径展示名（设计 1.4 星光叙事）：大阿卡纳=愚者之旅 / 小阿卡纳=四元素庭院 /
+# 随机=今日之牌 / 关联=与你相遇的牌（过 compliance 禁词扫描，测试钉住）
+PATH_NAMES: dict[str, str] = {
+    "major": "愚者之旅",
+    "minor": "四元素庭院",
+    "random": "今日之牌",
+    "related": "与你相遇的牌",
+}
+
+# today_card 的 reason（各路径一句话说明）
+PATH_REASONS: dict[str, str] = {
+    "major": "愚者之旅·按顺序学习",
+    "minor": "四元素庭院·按顺序学习",
+    "random": "今日之牌·随机星选",
+    "related": "与你相遇的牌·按历史抽牌推荐",
+}
+
+# 牌库总数（78 张标准塔罗）
+DECK_SIZE = 78
+MAJOR_SIZE = 22
+MINOR_SIZE = 56
+
+
+def major_cards(cards: list[TarotCard]) -> list[TarotCard]:
+    """大阿卡纳（card_number 0-21 升序）。"""
+    return sorted((c for c in cards if c.arcana == "major"), key=lambda c: c.card_number)
+
+
+def minor_cards(cards: list[TarotCard]) -> list[TarotCard]:
+    """小阿卡纳（suit 火/水/风/土 + card_number 升序）。"""
+    return sorted(
+        (c for c in cards if c.arcana == "minor"),
+        key=lambda c: (SUIT_ORDER.get(c.suit or "", 99), c.card_number),
+    )
+
+
+def next_card(
+    path: str, cursor_pos: int, major: list[TarotCard], minor: list[TarotCard],
+    user_id: str, day: date,
+) -> tuple[TarotCard, int, bool]:
+    """路径内下一张牌 → (card, next_pos, done)。
+
+    - major / minor：顺序路径，cursor 推进；游标越界 → done=True 循环回 0
+    - random：与每日一牌 pick_daily_card 同款确定性（同日同人恒定），忽略游标
+    - related 不在本函数内（需 DB 历史频次，由 API 层组装后走 pick_related）
+    """
+    if path == "major":
+        return _sequence_next(major, cursor_pos)
+    if path == "minor":
+        return _sequence_next(minor, cursor_pos)
+    if path == "random":
+        # 按 id 归并后与 /cards/daily 全牌库口径一致（random：pick_daily_card 同牌）
+        deck = sorted(major + minor, key=lambda c: c.id)
+        return pick_daily_card(deck, user_id, day), cursor_pos, False
+    raise ValueError(f"不支持的路径: {path}")
+
+
+def _sequence_next(cards: list[TarotCard], cursor_pos: int) -> tuple[TarotCard, int, bool]:
+    if not cards:
+        raise ValueError("牌库为空")
+    if cursor_pos >= len(cards):
+        return cards[0], 0, True  # 越界 → 完成态循环回 0
+    return cards[cursor_pos], cursor_pos + 1, False
+
+
+def pick_related(cards: list[TarotCard], counts: dict[int, int]) -> TarotCard | None:
+    """候选牌中按历史抽牌频次 TOP 选一张（频次降序；同频 card_number 升序破平）。
+
+    ``cards`` 为未学候选牌；``counts`` 为 {card_id: 历史抽中次数}（来自 readings）。
+    从未抽过的牌频次为 0，仍参与排序（保证总有一张「下一张」）。
+    """
+    ordered = sorted(cards, key=lambda c: (-counts.get(c.id, 0), c.card_number))
+    return ordered[0] if ordered else None
+
+
+def titles_of(user: User) -> list[str]:
+    """由里程碑账本（academy_milestones）推导已获称号，按 MILESTONES 表序。"""
+    awarded = set(_milestones_awarded_of(user))
+    return [m["title_name"] for m in MILESTONES if m.get("title_name") and m["key"] in awarded]
+
+
+async def learned_card_ids(db: AsyncSession, user_id: str) -> set[int]:
+    """已学卡牌 id 集合（related 路径排除用）。"""
+    rows = await db.execute(
+        select(StarLearningProgress.card_id).where(StarLearningProgress.user_id == user_id)
+    )
+    return set(rows.scalars().all())
+
+
+async def reading_frequency(db: AsyncSession, user_id: str) -> dict[int, int]:
+    """历史抽牌频次 {card_id: 次数}（related 路径数据源：readings → drawn_cards）。"""
+    result = await db.execute(
+        select(DrawnCard.card_id, func.count(DrawnCard.card_id))
+        .join(Reading, Reading.id == DrawnCard.reading_id)
+        .where(Reading.user_id == user_id)
+        .group_by(DrawnCard.card_id)
+    )
+    return dict(result.all())

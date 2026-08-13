@@ -20,6 +20,7 @@ from app.models.star_meeting import StarMeeting
 from app.models.star_resonance import StarResonance
 from app.models.star_report import StarReport
 from app.models.star_learning_progress import StarLearningProgress
+from app.models.star_learning_plan import StarLearningPlan
 
 __all__ = [
     "User",
@@ -48,4 +49,5 @@ __all__ = [
     "StarResonance",
     "StarReport",
     "StarLearningProgress",
+    "StarLearningPlan",
 ]
