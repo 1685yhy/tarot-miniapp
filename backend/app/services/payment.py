@@ -28,6 +28,10 @@ PRODUCTS = {
     "annual_report": {"name": "年度运势报告", "price": 29.90, "type": "single_purchase", "cost": 0.03},
     # 开发 05：本命星盘深度报告（19.9 · 权益=birthchart_paid，独立于会员）
     "birthchart_report": {"name": "本命星盘深度报告", "price": 19.90, "type": "single_purchase", "cost": 0.05},
+    # SDD P2 · T7-3：星象周报/月报单次解锁（会员免费；权益=weekly/monthly_report_unlocked）
+    # 定价依据 P2 设计 2.3：月报对标星盘深度报告 19.9 锚点；周报数据量小取 4.9 低门槛转化钩
+    "weekly_report": {"name": "星光一周周报", "price": 4.90, "type": "single_purchase", "cost": 0.005},
+    "monthly_report": {"name": "星光月度卷轴", "price": 19.90, "type": "single_purchase", "cost": 0.02},
     "reading_pack_3": {"name": "3次深度解读包", "price": 9.90, "type": "reading_pack", "extra_readings": 3, "cost": 0.02},
     "reading_pack_10": {"name": "10次深度解读包", "price": 29.90, "type": "reading_pack", "extra_readings": 10, "cost": 0.06},
 }

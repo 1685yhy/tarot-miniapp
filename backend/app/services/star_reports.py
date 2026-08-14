@@ -844,6 +844,23 @@ async def get_or_create_week_report(
     return {"report": report, "cached": False, "source": source}
 
 
+async def regenerate_week_report(
+    db: AsyncSession, user: User, period: str
+) -> dict:
+    """会员重生成周报（T7-3）：force 覆盖缓存；AI 失败 → 回退原缓存不覆盖。
+
+    原缓存为 ai 源而本次 AI 失败（source=fallback）时，恢复原缓存并返回
+    原报告（source 不变），避免好内容被降级文案覆盖；原缓存即 fallback
+    时恢复为无操作（内容一致）。
+    """
+    original = await _load_cached_report(db, user.id, "week", period)
+    data = await get_or_create_week_report(db, user, period, force=True)
+    if original is not None and data["source"] == "fallback":
+        await _save_cached_report(db, user.id, "week", period, original[0], original[1])
+        return {"report": original[0], "cached": False, "source": original[1]}
+    return data
+
+
 async def get_or_create_month_report(
     db: AsyncSession, user: User, period: str, force: bool = False
 ) -> dict:
@@ -881,3 +898,18 @@ async def get_or_create_month_report(
     report = build_month_report(stats, ai_note)
     await _save_cached_report(db, user.id, "month", period, report, source)
     return {"report": report, "cached": False, "source": source}
+
+
+async def regenerate_month_report(
+    db: AsyncSession, user: User, period: str
+) -> dict:
+    """会员重生成月报（T7-3）：force 覆盖缓存；AI 失败 → 回退原缓存不覆盖。
+
+    语义与 regenerate_week_report 一致。
+    """
+    original = await _load_cached_report(db, user.id, "month", period)
+    data = await get_or_create_month_report(db, user, period, force=True)
+    if original is not None and data["source"] == "fallback":
+        await _save_cached_report(db, user.id, "month", period, original[0], original[1])
+        return {"report": original[0], "cached": False, "source": original[1]}
+    return data

@@ -32,24 +32,24 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/orders", tags=["支付订单"])
 
 
-@router.post("", response_model=CreateOrderResponse)
-async def create_order(
-    body: CreateOrderRequest,
-    user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    """Create a new order and return WeChat Pay JSAPI payment parameters."""
-    product = PRODUCTS.get(body.product_type)
+async def create_order_for_user(
+    db: AsyncSession, user: User, product_type: str
+) -> CreateOrderResponse:
+    """创建订单（POST /orders 端点与 POST /report/{type}/unlock 共用；T7-3）。
+
+    xpay 虚拟支付通道（回归修复：按 tests/test_xpay.py 契约恢复）。
+    """
+    product = PRODUCTS.get(product_type)
     if not product:
         raise HTTPException(status_code=400, detail="无效的商品类型")
 
-    # xpay 虚拟支付通道（回归修复：按 tests/test_xpay.py 契约恢复）
+    # xpay 虚拟支付通道
     if settings.PAY_CHANNEL == "xpay":
         try:
             product_map = json.loads(settings.XPAY_PRODUCT_MAP or "{}") or {}
         except Exception:
             product_map = {}
-        product_id = product_map.get(body.product_type)
+        product_id = product_map.get(product_type)
         if not product_id:
             # 虚拟支付道具未配置 → 前端展示「商品即将上线」降级提示
             raise HTTPException(status_code=400, detail="该商品即将上线,敬请期待")
@@ -85,7 +85,7 @@ async def create_order(
                 "productId": product_id,
                 "goodsPrice": goods_price,
                 "outTradeNo": order_no,
-                "attach": body.product_type,
+                "attach": product_type,
             },
             separators=(",", ":"),
         )
@@ -93,7 +93,7 @@ async def create_order(
         order = Order(
             user_id=user.id,
             order_no=order_no,
-            product_type=body.product_type,
+            product_type=product_type,
             amount=product["price"],
             status="pending",
             pay_channel="xpay",
@@ -111,7 +111,7 @@ async def create_order(
             "productId": product_id,
             "goodsPrice": goods_price,
             "outTradeNo": order_no,
-            "attach": body.product_type,
+            "attach": product_type,
             "signData": sign_data,
             "paySig": sign_xpay_params(app_key, sign_data),
             "signature": sign_xpay_signature(session_key, sign_data),
@@ -128,7 +128,7 @@ async def create_order(
     order = Order(
         user_id=user.id,
         order_no=generate_order_no(),
-        product_type=body.product_type,
+        product_type=product_type,
         amount=product["price"],
         status="pending",
     )
@@ -138,7 +138,7 @@ async def create_order(
     # Generate WeChat Pay JSAPI parameters
     payment_params = create_order_params(
         openid=user.openid,
-        product_type=body.product_type,
+        product_type=product_type,
         order_no=order.order_no,
     )
 
@@ -155,6 +155,16 @@ async def create_order(
         product_name=product["name"],
         payment_params=payment_params,
     )
+
+
+@router.post("", response_model=CreateOrderResponse)
+async def create_order(
+    body: CreateOrderRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Create a new order and return WeChat Pay JSAPI payment parameters."""
+    return await create_order_for_user(db, user, body.product_type)
 
 
 @router.post("/callback")
@@ -332,6 +342,16 @@ async def payment_callback(
         # 开发 05: standalone birth-chart deep-report purchase unlocks
         # POST /user/birthchart/report (independent of membership).
         user.birthchart_paid = True
+
+    elif order.product_type == "weekly_report":
+        # SDD P2 · T7-3: standalone weekly-report purchase (¥4.90) unlocks
+        # GET /report/week full access (independent of membership).
+        user.weekly_report_unlocked = True
+
+    elif order.product_type == "monthly_report":
+        # SDD P2 · T7-3: standalone monthly-report purchase (¥19.90) unlocks
+        # GET /report/month full access (independent of membership).
+        user.monthly_report_unlocked = True
 
     await db.flush()
     return {"code": "SUCCESS"}

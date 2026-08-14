@@ -80,6 +80,14 @@ class User(Base):
     #   真实昵称/头像永不外泄。
     resonance_visible: Mapped[bool] = mapped_column(Boolean, default=True, server_default="1")
     star_alias: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    # ── 星象月报解锁权益（SDD P2 · T7-3）：周报/月报单次购买 entitlement ──
+    # weekly_report_unlocked / monthly_report_unlocked：购买 weekly_report
+    # （4.9 元）/ monthly_report（19.9 元）商品后置位（支付回调写入），
+    # 独立于会员；会员到期后旧解锁仍有效（单次购买是永久资产，仿
+    # annual_report_paid / birthchart_paid 语义）。server_default 与迁移
+    # 文件一致（SQLite/MySQL 均需默认值，存量用户默认未解锁）。
+    weekly_report_unlocked: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
+    monthly_report_unlocked: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
     # Auth: bumped on logout/account-deletion to invalidate previously issued JWTs
     token_version: Mapped[int] = mapped_column(Integer, default=0)
     # Daily AI-extras quota (reinterpret / diary AI), reset when the day changes
