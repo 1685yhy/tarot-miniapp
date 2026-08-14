@@ -106,7 +106,7 @@
     },
     {
       "root": "pages/academy/",
-      "pages": ["academy/academy", "lesson/lesson", "chat/chat"]
+      "pages": ["academy", "lesson/lesson", "chat/chat"]
     }
   ],
   "window": {
