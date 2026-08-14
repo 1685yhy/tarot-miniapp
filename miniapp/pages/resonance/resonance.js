@@ -464,17 +464,21 @@ Page({
   /** 分享共鸣海报：打点（T8-5：analytics + POST /share/track share_type="resonance"） */
   onSharePosterToFriend(e) {
     const imagePath = (e.detail && e.detail.imagePath) || '';
-    if (imagePath) {
-      analytics.trackShare('wechat_friend', 'resonance');
-      request('/share/track', {
-        method: 'POST',
-        data: { channel: 'wechat_friend', share_type: 'resonance', ref_id: this._posterUid || '' },
-      }).catch(() => { /* 打点失败静默，不影响分享 */ });
+    if (!imagePath) return;
+    analytics.trackShare('wechat_friend', 'resonance');
+    request('/share/track', {
+      method: 'POST',
+      data: { channel: 'wechat_friend', share_type: 'resonance', ref_id: this._posterUid || '' },
+    }).catch(() => { /* 打点失败静默，不影响分享 */ });
+    // wx.showShareImageMenu — 小程序原生分享图片菜单（基础库 2.14.0+；与我的页周报分享同守卫）
+    if (wx.showShareImageMenu) {
+      wx.showShareImageMenu({
+        path: imagePath,
+        fail: () => {},
+      });
+    } else {
+      wx.showToast({ title: '请先保存海报，再从相册分享', icon: 'none', duration: 2000 });
     }
-    wx.showShareImageMenu({
-      path: imagePath,
-      fail: () => {},
-    });
   },
 
   /** 公约弹窗：确认后写 storage（本次不再弹） */
