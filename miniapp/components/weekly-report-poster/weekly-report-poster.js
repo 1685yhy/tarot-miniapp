@@ -547,9 +547,18 @@ Component({
           );
         }
       }
+      // /report/week 全文数据源（周报页）不带顶层 week_range → 从 curve 的 7 个日期推导
+      // （后端保证 curve 恒为 7 项且含 date，见 star_reports.py _build_stats）
+      if (weekDates.length !== 7 && Array.isArray(wd.curve)) {
+        const dates = wd.curve
+          .map((p) => (p && p.date ? String(p.date) : ''))
+          .filter(Boolean);
+        weekDates = [...new Set(dates)].sort();
+      }
       const cards = wd.cards || {};
       return {
-        week_range: this._fmtWeekRange(wd.week_range),
+        week_range: this._fmtWeekRange(wd.week_range)
+          || (weekDates.length === 7 ? this._fmtWeekRange([weekDates[0], weekDates[6]]) : ''),
         week_dates: weekDates,
         color_map: colorMap,
         curve_map: curveMap,
