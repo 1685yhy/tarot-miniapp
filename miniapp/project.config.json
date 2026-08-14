@@ -1,104 +1,108 @@
 {
-  "description": "星光映照小程序",
-  "packOptions": {
-    "ignore": [
-      {
-        "type": "file",
-        "value": "private.wxfc41c6b04fa892d1.key"
-      },
-      {
-        "type": "file",
-        "value": "*.key"
-      },
-      {
-        "type": "folder",
-        "value": "images/cards_thumb"
-      },
-      {
-        "type": "folder",
-        "value": "images/cards_flux"
-      },
-      {
-        "type": "folder",
-        "value": "images/cards_v2"
-      },
-      {
-        "type": "folder",
-        "value": "images/cards_v3"
-      },
-      {
-        "type": "folder",
-        "value": "images/cards"
-      },
-      {
-        "type": "file",
-        "value": "images/app_icon.png"
-      },
-      {
-        "type": "file",
-        "value": "images/app_icon_144.png"
-      },
-      {
-        "type": "folder",
-        "value": "images/cards_new"
-      },
-      {
-        "type": "folder",
-        "value": "images/cards_new_thumb"
-      }
-    ],
-    "include": []
+ "description": "星光映照小程序",
+ "packOptions": {
+  "ignore": [
+   {
+    "type": "file",
+    "value": "private.wxfc41c6b04fa892d1.key"
+   },
+   {
+    "type": "file",
+    "value": "*.key"
+   },
+   {
+    "type": "folder",
+    "value": "images/cards_thumb"
+   },
+   {
+    "type": "folder",
+    "value": "images/cards_flux"
+   },
+   {
+    "type": "folder",
+    "value": "images/cards_v2"
+   },
+   {
+    "type": "folder",
+    "value": "images/cards_v3"
+   },
+   {
+    "type": "folder",
+    "value": "images/cards"
+   },
+   {
+    "type": "file",
+    "value": "images/app_icon.png"
+   },
+   {
+    "type": "file",
+    "value": "images/app_icon_144.png"
+   },
+   {
+    "type": "folder",
+    "value": "images/cards_new"
+   },
+   {
+    "type": "folder",
+    "value": "images/cards_new_thumb"
+   },
+   {
+    "type": "folder",
+    "value": "scripts"
+   }
+  ],
+  "include": []
+ },
+ "setting": {
+  "bundle": false,
+  "userConfirmedBundleSwitch": false,
+  "urlCheck": false,
+  "scopeDataCheck": false,
+  "coverView": true,
+  "es6": true,
+  "postcss": true,
+  "compileHotReLoad": false,
+  "lazyloadPlaceholderEnable": false,
+  "preloadBackgroundData": false,
+  "minified": true,
+  "autoAudits": false,
+  "newFeature": false,
+  "uglifyFileName": false,
+  "uploadWithSourceMap": true,
+  "useIsolateContext": true,
+  "nodeModules": false,
+  "enhance": true,
+  "useMultiFrameRuntime": true,
+  "useApiHook": true,
+  "useApiHostProcess": true,
+  "showShadowRootInWxmlPanel": true,
+  "packNpmManually": false,
+  "enableEnglobe": false,
+  "packNpmRelationList": [],
+  "minifyWXSS": true,
+  "showES6CompileOption": false,
+  "minifyWXML": true,
+  "babelSetting": {
+   "ignore": [],
+   "disablePlugins": [],
+   "outputPath": ""
   },
-  "setting": {
-    "bundle": false,
-    "userConfirmedBundleSwitch": false,
-    "urlCheck": false,
-    "scopeDataCheck": false,
-    "coverView": true,
-    "es6": true,
-    "postcss": true,
-    "compileHotReLoad": false,
-    "lazyloadPlaceholderEnable": false,
-    "preloadBackgroundData": false,
-    "minified": true,
-    "autoAudits": false,
-    "newFeature": false,
-    "uglifyFileName": false,
-    "uploadWithSourceMap": true,
-    "useIsolateContext": true,
-    "nodeModules": false,
-    "enhance": true,
-    "useMultiFrameRuntime": true,
-    "useApiHook": true,
-    "useApiHostProcess": true,
-    "showShadowRootInWxmlPanel": true,
-    "packNpmManually": false,
-    "enableEnglobe": false,
-    "packNpmRelationList": [],
-    "minifyWXSS": true,
-    "showES6CompileOption": false,
-    "minifyWXML": true,
-    "babelSetting": {
-      "ignore": [],
-      "disablePlugins": [],
-      "outputPath": ""
-    },
-    "compileWorklet": false,
-    "localPlugins": false,
-    "disableUseStrict": false,
-    "useCompilerPlugins": false,
-    "condition": false,
-    "swc": false,
-    "disableSWC": true
-  },
-  "compileType": "miniprogram",
-  "libVersion": "3.3.4",
-  "appid": "wxfc41c6b04fa892d1",
-  "projectname": "tarot-miniapp",
-  "condition": {},
-  "editorSetting": {
-    "tabIndent": "insertSpaces",
-    "tabSize": 2
-  },
-  "simulatorPluginLibVersion": {}
+  "compileWorklet": false,
+  "localPlugins": false,
+  "disableUseStrict": false,
+  "useCompilerPlugins": false,
+  "condition": false,
+  "swc": false,
+  "disableSWC": true
+ },
+ "compileType": "miniprogram",
+ "libVersion": "3.3.4",
+ "appid": "wxfc41c6b04fa892d1",
+ "projectname": "tarot-miniapp",
+ "condition": {},
+ "editorSetting": {
+  "tabIndent": "insertSpaces",
+  "tabSize": 2
+ },
+ "simulatorPluginLibVersion": {}
 }
