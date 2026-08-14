@@ -223,6 +223,91 @@ function _drawMoodRow(ctx, W, Y, weekDates, moodMap, moodCount) {
 }
 
 /**
+ * Energy row — 7-day star dots (T7-6 /report/week 数据源):
+ * 每日星光色点（build_today_guidance 星光色；无记录日淡紫小点）+ 星期标注。
+ * 与 _drawMoodRow 同槽位版式（版式保留）。
+ * Returns Y just below the row.
+ */
+function _drawEnergyRow(ctx, W, Y, weekDates, colorMap, curveMap, recordedCount) {
+  const slotW = W / 7;
+  const dotR = Math.round(W * 0.033);
+  const labelFont = Math.round(W * 0.022);
+  const dotY = Y + Math.round(W * 0.012);
+  const labelY = Y + Math.round(W * 0.088);
+
+  for (let i = 0; i < 7; i++) {
+    const cx = slotW * i + slotW / 2;
+    const dateStr = weekDates[i] || '';
+    const weekday = WEEKDAY_LABELS[new Date(dateStr + 'T12:00:00').getDay()];
+    const hasRecord = curveMap[dateStr] != null;
+    const color = colorMap[dateStr] || C_GOLD;
+
+    if (hasRecord) {
+      // 星光色实心点 + 奶油白描边 + 细金光晕
+      ctx.save();
+      ctx.fillStyle = C_GLOW;
+      ctx.beginPath();
+      ctx.arc(cx, dotY, dotR * 1.9, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, dotY, dotR, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = '#FFFDF8';
+      ctx.stroke();
+      ctx.restore();
+    } else {
+      // 无记录日 — 淡紫小点
+      ctx.save();
+      ctx.fillStyle = C_MUTED;
+      ctx.globalAlpha = 0.35;
+      ctx.beginPath();
+      ctx.arc(cx, dotY + Math.round(W * 0.012), Math.round(dotR * 0.55), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    ctx.save();
+    ctx.fillStyle = hasRecord ? C_WHITE : C_MUTED;
+    ctx.globalAlpha = hasRecord ? 0.85 : 0.4;
+    ctx.font = `${labelFont}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(weekday, cx, labelY);
+    ctx.restore();
+  }
+
+  // 记录天数摘要行
+  const summaryY = labelY + Math.round(W * 0.034);
+  if (recordedCount > 0 && recordedCount < 7) {
+    ctx.save();
+    ctx.fillStyle = C_MUTED;
+    ctx.globalAlpha = 0.7;
+    ctx.font = `${Math.round(W * 0.023)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(`本周记录了 ${recordedCount} 天的星光能量`, W / 2, summaryY);
+    ctx.restore();
+    return summaryY + Math.round(W * 0.042);
+  }
+  if (recordedCount === 7) {
+    ctx.save();
+    ctx.fillStyle = C_MUTED;
+    ctx.globalAlpha = 0.7;
+    ctx.font = `${Math.round(W * 0.023)}px "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText('七天星光能量，一天不落 ✦', W / 2, summaryY);
+    ctx.restore();
+    return summaryY + Math.round(W * 0.042);
+  }
+  return labelY + Math.round(W * 0.038);
+}
+
+/**
  * Most frequent card — card image (gold glow + border), name, caption.
  * Returns Y just below the block.
  */
@@ -385,6 +470,11 @@ Component({
       type: Object,
       value: null,
     },
+    // P2 T7-6 数据源升级：GET /report/week 全文（周报页用；profile 旧 /report/weekly 兼容）
+    reportData: {
+      type: Object,
+      value: null,
+    },
     cardImagePath: {
       type: String,
       value: '',
@@ -435,11 +525,61 @@ Component({
     },
 
     /* ---------------------------------------------------------------
+       GET /report/week 全文 → 内部绘制结构映射（T7-6 数据源升级，版式保留）
+       --------------------------------------------------------------- */
+    _mapReportData(rd) {
+      const wd = rd || {};
+      const colorMap = {};
+      (wd.color_band || []).forEach((c) => {
+        if (c && c.date && c.star_color) colorMap[c.date] = c.star_color;
+      });
+      const curveMap = {};
+      (wd.curve || []).forEach((p) => {
+        if (p && p.date) curveMap[p.date] = p.total;
+      });
+      let weekDates = [];
+      if (Array.isArray(wd.week_range) && wd.week_range.length === 2) {
+        const start = new Date(wd.week_range[0] + 'T12:00:00');
+        for (let i = 0; i < 7; i++) {
+          const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+          weekDates.push(
+            `${d.getFullYear()}-${this._pad2(d.getMonth() + 1)}-${this._pad2(d.getDate())}`
+          );
+        }
+      }
+      const cards = wd.cards || {};
+      return {
+        week_range: this._fmtWeekRange(wd.week_range),
+        week_dates: weekDates,
+        color_map: colorMap,
+        curve_map: curveMap,
+        most_frequent_card: cards.most_card || null,
+        ai_summary: wd.note || '',
+        is_energy: true,
+      };
+    },
+
+    _pad2(n) {
+      return n < 10 ? '0' + n : '' + n;
+    },
+
+    /** ['2026-08-03','2026-08-09'] → '08.03 ~ 08.09' */
+    _fmtWeekRange(range) {
+      if (!Array.isArray(range) || range.length !== 2) return '';
+      const md = (s) => {
+        const m = String(s).match(/^\d{4}-(\d{2})-(\d{2})$/);
+        return m ? `${m[1]}.${m[2]}` : String(s).slice(5);
+      };
+      return `${md(range[0])} ~ ${md(range[1])}`;
+    },
+
+    /* ---------------------------------------------------------------
        Draw the poster on the canvas
        --------------------------------------------------------------- */
     _drawPoster() {
-      const { weeklyData, cardImagePath } = this.properties;
-      if (!weeklyData || typeof weeklyData !== 'object') {
+      const { weeklyData, reportData, cardImagePath } = this.properties;
+      const data = reportData ? this._mapReportData(reportData) : weeklyData;
+      if (!data || typeof data !== 'object') {
         this.setData({ drawError: true });
         return;
       }
@@ -487,13 +627,15 @@ Component({
           if (!cardImageLoaded || !qrImageLoaded) return;
           drawAttempted = true;
 
-          // Build mood map keyed by date
+          const isEnergy = !!data.is_energy;
+
+          // Build mood map keyed by date（旧数据源 /report/weekly）
           const moodMap = {};
-          (weeklyData.mood_trends || []).forEach((t) => {
+          (data.mood_trends || []).forEach((t) => {
             if (t && t.date) moodMap[t.date] = t;
           });
-          const weekDates = weeklyData.week_dates && weeklyData.week_dates.length === 7
-            ? weeklyData.week_dates
+          const weekDates = data.week_dates && data.week_dates.length === 7
+            ? data.week_dates
             : Array.from({ length: 7 }, (_, i) => {
                 const d = new Date();
                 d.setDate(d.getDate() - (6 - i));
@@ -513,14 +655,14 @@ Component({
           ctx.restore();
           y += Math.round(W * 0.082);
 
-          if (weeklyData.week_range) {
+          if (data.week_range) {
             ctx.save();
             ctx.fillStyle = C_MUTED;
             ctx.globalAlpha = 0.85;
             ctx.font = `${Math.round(W * 0.027)}px "PingFang SC", "Helvetica Neue", sans-serif`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
-            ctx.fillText(weeklyData.week_range, W / 2, y);
+            ctx.fillText(data.week_range, W / 2, y);
             ctx.restore();
             y += Math.round(W * 0.044);
           }
@@ -528,23 +670,29 @@ Component({
           _drawDivider(ctx, W, y);
           y += Math.round(W * 0.040);
 
-          // ── 5. Mood trend — 7-day emoji row ──
-          y = _drawSectionLabel(ctx, W, y, '本周心情轨迹');
-          y = _drawMoodRow(ctx, W, y, weekDates, moodMap, (weeklyData.mood_trends || []).length);
+          // ── 5. 7-day row：新数据源（/report/week）→ 星光色点；旧数据源 → emoji ──
+          if (isEnergy) {
+            y = _drawSectionLabel(ctx, W, y, '本周星光轨迹');
+            const recordedCount = weekDates.filter((d) => data.curve_map[d] != null).length;
+            y = _drawEnergyRow(ctx, W, y, weekDates, data.color_map, data.curve_map, recordedCount);
+          } else {
+            y = _drawSectionLabel(ctx, W, y, '本周心情轨迹');
+            y = _drawMoodRow(ctx, W, y, weekDates, moodMap, (data.mood_trends || []).length);
+          }
           y += Math.round(W * 0.008);
 
           // ── 6. Most frequent card ──
-          if (weeklyData.most_frequent_card && weeklyData.most_frequent_card.name) {
+          if (data.most_frequent_card && data.most_frequent_card.name) {
             y = _drawSectionLabel(ctx, W, y, '本周常遇之牌');
-            y = _drawTopCard(ctx, W, y, weeklyData.most_frequent_card, cardImg);
+            y = _drawTopCard(ctx, W, y, data.most_frequent_card, cardImg);
           }
           y += Math.round(W * 0.012);
 
           // ── 7. AI summary ──
           const qrAreaY = H - Math.round(W * 0.26);
-          if (weeklyData.ai_summary) {
-            y = _drawSectionLabel(ctx, W, y, 'AI 周语');
-            _drawAISummary(ctx, W, y, weeklyData.ai_summary, qrAreaY);
+          if (data.ai_summary) {
+            y = _drawSectionLabel(ctx, W, y, isEnergy ? 'AI 周寄语' : 'AI 周语');
+            _drawAISummary(ctx, W, y, data.ai_summary, qrAreaY);
           }
 
           // ── 8. QR + footer ──

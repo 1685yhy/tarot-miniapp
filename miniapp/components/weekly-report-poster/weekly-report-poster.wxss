@@ -121,7 +121,7 @@
   background: rgba(201, 169, 124, 0.22);
 }
 
-/* ---- Preview image (9:16 long image — height-capped, width auto) ---- */
+/* ---- Preview image (9:16 long image — widthFix 保比例，与 share-poster 同款) ---- */
 .wrp-preview-wrap {
   display: flex;
   align-items: center;
@@ -132,9 +132,8 @@
 }
 
 .wrp-preview {
-  width: auto;
   max-width: 76%;
-  height: 72vh;
+  max-height: 72vh;
   border-radius: 16rpx;
   box-shadow:
     0 8rpx 40rpx rgba(0, 0, 0, 0.40),

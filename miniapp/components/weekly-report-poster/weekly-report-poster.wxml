@@ -31,9 +31,9 @@
     <button class="wrp-btn-retry" bindtap="onRetry">重新生成</button>
   </view>
 
-  <!-- Preview image (once drawn) -->
+  <!-- Preview image (once drawn) · widthFix 保比例（aspectFit+width:auto 在部分环境解析为 0 宽不可见） -->
   <view class="wrp-preview-wrap" wx:elif="{{previewPath}}">
-    <image class="wrp-preview" src="{{previewPath}}" mode="aspectFit" aria-label="AI 周报长图预览"></image>
+    <image class="wrp-preview" src="{{previewPath}}" mode="widthFix" aria-label="AI 周报长图预览"></image>
   </view>
 
   <!-- Bottom action buttons -->

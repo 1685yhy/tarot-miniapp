@@ -171,6 +171,7 @@ const { drawJournalPoster } = require('../../utils/journal-poster');
 const { drawMoonCardPoster } = require('../../utils/moon-card-poster');
 const { drawMeetPoster } = require('../../utils/meet-poster');
 const { drawResonancePoster } = require('../../utils/resonance-poster');
+const { drawMonthReportPoster } = require('../../utils/month-report-poster');
 
 Component({
   properties: {
@@ -181,7 +182,7 @@ Component({
     },
     mode: {
       type: String,
-      value: 'reading', // 'reading' | 'daily' | 'invite' | 'zodiac' | 'diary' | 'fortune' | 'card' | 'journal' | 'moon' | 'meet' | 'resonance'
+      value: 'reading', // 'reading' | 'daily' | 'invite' | 'zodiac' | 'diary' | 'fortune' | 'card' | 'journal' | 'moon' | 'meet' | 'resonance' | 'month_report'
     },
     // resonance mode: 今日星光共鸣海报数据（全脱敏双星版式）
     resonanceData: {
@@ -202,6 +203,11 @@ Component({
     moonCardData: {
       type: null,
       value: {}, // { dateText, card: {date, phase:{emoji,label}, phrase, star_color, star_number, source} }
+    },
+    // month_report mode: 月报封面海报数据（GET /report/month/poster · 脱敏）
+    monthReportData: {
+      type: null,
+      value: {}, // { period, tier_name, core_numbers: {active_days, readings_count, stardust_estimated}, ai_sentence, share_text, disclaimer }
     },
     starTierName: {
       type: String,
@@ -327,7 +333,7 @@ Component({
        Draw the poster on canvas using the utility
        --------------------------------------------------------------- */
     _drawPoster() {
-      const { mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak, inviteCode, zodiacSigns, moodEmoji, excerpt, fortuneData, journalData, moonCardData, meetPosterData, resonanceData, starTierName, stardustTotal } = this.properties;
+      const { mode, cardImagePath, cardName, keyInsight, nickname, dateText, streak, inviteCode, zodiacSigns, moodEmoji, excerpt, fortuneData, journalData, moonCardData, meetPosterData, resonanceData, monthReportData, starTierName, stardustTotal } = this.properties;
 
       // 懒挂载 + visible 初始为 true 时，属性 observer 可能在 attached() 生成
       // canvasId 之前触发（部分基础库版本对初始属性值也触发 observer）——
@@ -338,15 +344,42 @@ Component({
         });
       }
 
-      // Card image is optional in diary/fortune/journal/moon/meet/resonance modes —
-      // data-only posters (mood emoji + excerpt / fortune trend / 月度星光手账 /
-      // 月光卡晚安卡 / 相遇合盘 / 共鸣双星) are valid.
-      if (!cardImagePath && !cardName && mode !== 'diary' && mode !== 'fortune' && mode !== 'journal' && mode !== 'moon' && mode !== 'meet' && mode !== 'resonance') {
+      // Card image is optional in diary/fortune/journal/moon/meet/resonance/month_report
+      // modes — data-only posters (mood emoji + excerpt / fortune trend / 月度星光手账 /
+      // 月光卡晚安卡 / 相遇合盘 / 共鸣双星 / 月报封面) are valid.
+      if (!cardImagePath && !cardName && mode !== 'diary' && mode !== 'fortune' && mode !== 'journal' && mode !== 'moon' && mode !== 'meet' && mode !== 'resonance' && mode !== 'month_report') {
         this.setData({ drawError: true });
         return;
       }
 
       this.setData({ isDrawing: true, drawError: false });
+
+      // 月报封面海报：星空卷轴标题 + 星阶徽章 + 3 核心数字 + AI 寄语一句
+      // （month-report-poster.js，独立绘制管线，复用 E3 调色板 / share-poster 弹层）
+      if (mode === 'month_report') {
+        const mr = monthReportData || {};
+        drawMonthReportPoster(this.data.canvasId, this, {
+          periodLabel: mr.periodLabel || '',
+          tierName: mr.tier_name || '',
+          coreNumbers: mr.core_numbers || {},
+          aiSentence: mr.ai_sentence || '',
+          onSuccess: (tempFilePath) => {
+            this.setData({
+              previewPath: tempFilePath,
+              isDrawing: false,
+              drawError: false,
+            });
+          },
+          onError: (err) => {
+            console.error('[share-poster] Month report draw error:', err);
+            this.setData({
+              drawError: true,
+              isDrawing: false,
+            });
+          },
+        });
+        return;
+      }
 
       // 今日星光共鸣海报：E3 奶油底双星徽章 + 共鸣维度 + 固定文案
       // （resonance-poster.js，独立绘制管线；T8-4 无码版式）
