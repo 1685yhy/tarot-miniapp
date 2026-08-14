@@ -83,6 +83,7 @@ Page({
   _giving: false,
   _posterBusy: false,
   _posterUid: '', // 当前海报目标星 uid（分享打点 ref_id）
+  _loadedOnce: false, // 首屏数据已到（onShow 静默刷新门槛）
 
   onLoad() {
     // 首次进入弹「星光公约」（三行说明 + 可随时在本页或我的页关闭展示）
@@ -94,8 +95,31 @@ Page({
     this._loadWall();
   },
 
+  /** 返回本页（从我的页切隐身/他页登录/跨日）静默刷新：保留当前内容，失败不打断 */
+  onShow() {
+    if (this.data.pageLoading || this.data.pageError || !this._loadedOnce) return;
+    this._refreshSilent();
+  },
+
   onPullDownRefresh() {
     this._loadWall(true).then(() => wx.stopPullDownRefresh());
+  },
+
+  /** 静默刷新（onShow 触发）：登录态回读 + 墙/统计后台刷新；失败保留当前内容 */
+  async _refreshSilent() {
+    const isLoggedIn = !!wx.getStorageSync('token');
+    if (isLoggedIn !== this.data.isLoggedIn) this.setData({ isLoggedIn });
+    try {
+      const wall = await request('/resonance/wall');
+      if (this._destroyed) return;
+      this._applyWall(wall || {});
+      if (this.data.isLoggedIn) {
+        this._loadAlias();
+        this._loadStats();
+      }
+    } catch (err) {
+      console.warn('[resonance] 静默刷新失败（保留当前内容）:', err.statusCode || err.message);
+    }
   },
 
   /** 拉共鸣墙（公开免登录；失败优雅降级不白屏） */
@@ -104,6 +128,7 @@ Page({
       const wall = await request('/resonance/wall');
       this._applyWall(wall || {});
       this.setData({ pageLoading: false, pageError: null });
+      this._loadedOnce = true;
       // 登录后进页先确保星名落库（后端规则：无星名不上墙）+ 拉统计
       if (this.data.isLoggedIn) {
         this._loadAlias();
