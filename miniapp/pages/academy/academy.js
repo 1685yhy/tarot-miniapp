@@ -50,16 +50,25 @@ const PATH_META = {
 // ===================== 全通庆祝（T6-6） =====================
 // 称号 → 庆祝信息（与后端 MILESTONES 表 title_name 对齐：
 // fool_journey 全通大阿卡纳 22 → 星辉学者；full_78 全通 78 → 星光塔罗师）
+// rewards 与 lesson 里程碑弹层 reward chip 同语言（wall=true 走粉色壁纸变体，
+// 与 lesson.wxml 的 milestone.wallpaper_granted chip 对齐）
 const CELEBRATE_META = {
   '星辉学者': {
     storageKey: 'academy_celebrated_fool_journey',
     title: '称号解锁 · 星辉学者',
     sub: '全通大阿卡纳 22 张，愚者之旅圆满 ✦',
+    rewards: [
+      { text: '星尘 +3', wall: false },
+    ],
   },
   '星光塔罗师': {
     storageKey: 'academy_celebrated_full_78',
     title: '称号解锁 · 星光塔罗师',
     sub: '点亮全部 78 颗星，星空书卷为你合上 ✦',
+    rewards: [
+      { text: '星尘 +10', wall: false },
+      { text: '星光壁纸解锁', wall: true },
+    ],
   },
 };
 
@@ -154,6 +163,7 @@ Page({
     showCelebrate: false,
     celebrateTitle: '',
     celebrateSub: '',
+    celebrateRewards: [], // [{text, wall}] 奖励 chip（壁纸解锁对齐 lesson 里程碑弹层）
     rainStars: [],
   },
 
@@ -289,6 +299,7 @@ Page({
         showCelebrate: true,
         celebrateTitle: meta.title,
         celebrateSub: meta.sub,
+        celebrateRewards: meta.rewards || [],
         rainStars: _buildRainStars(),
       });
       analytics.trackEvent('academy_milestone_celebrate', { title });

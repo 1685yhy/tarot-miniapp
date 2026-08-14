@@ -217,6 +217,13 @@
         <text class="celebrate-icon">✦</text>
       </view>
       <text class="celebrate-title">{{celebrateTitle}}</text>
+      <!-- 奖励 chip：与 lesson 里程碑弹层同语言（wall=true 走粉色壁纸变体） -->
+      <view class="celebrate-rewards" wx:if="{{celebrateRewards.length}}">
+        <text
+          class="celebrate-reward {{item.wall ? 'celebrate-reward--wall' : ''}}"
+          wx:for="{{celebrateRewards}}" wx:key="text"
+        >{{item.text}}</text>
+      </view>
       <text class="celebrate-sub">{{celebrateSub}}</text>
       <text class="celebrate-hint">夜空因你，星河又亮了一分 ✦</text>
       <button class="celebrate-btn" bindtap="onCloseCelebrate">收下这份荣耀 ✦</button>

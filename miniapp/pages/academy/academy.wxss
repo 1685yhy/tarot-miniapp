@@ -920,6 +920,27 @@ page {
   text-align: center;
 }
 
+/* 奖励 chip：与 lesson 里程碑弹层 milestone-reward 同语言（E3） */
+.celebrate-rewards {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+.celebrate-reward {
+  font-size: var(--font-size-caption);
+  color: var(--e3-gold-deep, #8A6B3D);
+  background: rgba(201, 169, 124, 0.14);
+  border: 1rpx solid rgba(201, 169, 124, 0.30);
+  border-radius: var(--radius-pill);
+  padding: 6rpx 20rpx;
+  letter-spacing: 1rpx;
+}
+.celebrate-reward--wall {
+  color: var(--e3-pink-ink, #B08A82);
+  background: rgba(232, 196, 190, 0.18);
+  border-color: rgba(232, 196, 190, 0.40);
+}
+
 .celebrate-sub {
   font-size: var(--font-size-caption);
   color: var(--e3-gold-deep, #8A6B3D);
