@@ -314,14 +314,15 @@ async def month_poster(
     year, month = period.split("-")
     month_cn = _MONTH_CN[int(month) - 1]
     active_days = core_numbers["active_days"]
+    # 月名带年份（跨年月份口径与前端海报标题一致：前端「2025年十二月」为准）
     share_text = (
-        f"我的{month_cn}星象月报 · 本月点亮 {active_days} 颗星 ✦"
+        f"我的{year}年{month_cn}星象月报 · 本月点亮 {active_days} 颗星 ✦"
         if active_days > 0
-        else f"我的{month_cn}星象月报 ✦"
+        else f"我的{year}年{month_cn}星象月报 ✦"
     )
     # 固定模板确定性文案过共享禁词扫描；命中 → 纯标题兜底（模板本身合规，防御性）
     if find_forbidden(share_text, AI_OUTPUT_BLACKLIST):
-        share_text = f"我的{month_cn}星象月报 ✦"
+        share_text = f"我的{year}年{month_cn}星象月报 ✦"
 
     return {
         "period": period,

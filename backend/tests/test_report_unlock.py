@@ -845,7 +845,7 @@ class TestMonthPoster:
         }
         assert d["ai_sentence"], "应有 AI 寄语一句"
         assert len(d["ai_sentence"]) <= 40, "AI 寄语应截断 40 字"
-        assert d["share_text"] == "我的八月星象月报 · 本月点亮 12 颗星 ✦"
+        assert d["share_text"] == "我的2026年八月星象月报 · 本月点亮 12 颗星 ✦"
         assert d["disclaimer"] == "仅供娱乐 · 星光映照"
 
         # 脱敏断言：响应序列化后不含昵称/手账原文/统计明细字段
