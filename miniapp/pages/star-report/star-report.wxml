@@ -117,7 +117,7 @@
       <view class="sr-sec {{locked ? 'sr-sec--locked' : ''}}">
         <view class="sr-sec-head">
           <text class="sr-sec-title">✦ 牌运回顾</text>
-          <text class="sr-sec-sub">本周抽牌 {{report.report.cards.readings_count || 0}} 次</text>
+          <text class="sr-sec-sub">{{locked ? '解锁后可见' : '本周抽牌 ' + report.report.cards.readings_count + ' 次'}}</text>
         </view>
         <view class="sr-blur-wrap {{locked ? 'sr-blur' : ''}}">
           <view class="sr-most-card" wx:if="{{report.report.cards.most_card}}">
@@ -242,7 +242,7 @@
       <view class="sr-sec {{locked ? 'sr-sec--locked' : ''}}">
         <view class="sr-sec-head">
           <text class="sr-sec-title">✦ 牌运回顾</text>
-          <text class="sr-sec-sub">上月抽牌 {{report.report.cards.readings_count || 0}} 次</text>
+          <text class="sr-sec-sub">{{locked ? '解锁后可见' : '上月抽牌 ' + report.report.cards.readings_count + ' 次'}}</text>
         </view>
         <view class="sr-blur-wrap {{locked ? 'sr-blur' : ''}}">
           <view class="sr-top3" wx:if="{{report.report.cards.top3.length > 0}}">
