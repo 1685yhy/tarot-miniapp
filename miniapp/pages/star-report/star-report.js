@@ -221,7 +221,13 @@ Page({
       });
       // 支付回调尚未到账（解锁后仍 locked）→ 短暂等待后重试（仿 reading-result 402 模式）
       if (report.locked && opts.afterUnlock && (opts.retries || 0) > 0) {
-        setTimeout(() => this._loadReport(period, { afterUnlock: true, retries: (opts.retries || 0) - 1 }), 1500);
+        const expectPeriod = report.period || period || '';
+        const tab = this.data.tab;
+        setTimeout(() => {
+          // 重试窗口内可能已切 Tab / 换期 → 放弃重试，避免用旧 period 请求新 tab（422 覆盖错误态）
+          if (this.data.tab !== tab || this.data.currentPeriod !== expectPeriod || this.data.loading) return;
+          this._loadReport(period, { afterUnlock: true, retries: (opts.retries || 0) - 1 });
+        }, 1500);
       }
     } catch (err) {
       if (opts.silent) return; // 静默刷新失败不打扰
