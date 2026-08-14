@@ -138,7 +138,10 @@ function getFriendlyError(err) {
   if (status === 429 || msg.includes('too many')) return '请求过于频繁，请稍后重试';
   if (status === 500 || msg.includes('500') || msg.includes('internal server')) return '服务器繁忙，请稍后重试';
   if (status === 502 || status === 503 || status === 504) return '服务暂不可用，请稍后重试';
-  if (status === 404 || msg.includes('not found')) return '请求的资源不存在';
+  if (status === 404 || msg.includes('not found')) {
+    // 后端可能返回中文 detail（如「先看报告，再分享星光 ✦」）→ 优先展示，与 400 分支一致
+    return err.message && /[一-龥]/.test(err.message) ? err.message : '请求的资源不存在';
+  }
   if (status === 401 || msg.includes('unauthorized') || msg.includes('登录过期')) return '登录已过期，请重新登录';
   if (status === 403 || msg.includes('forbidden')) return '暂无访问权限';
   if (msg.includes('network') || msg.includes('timeout') || msg.includes('abort') || msg.includes('fail')) return '网络连接异常，请检查网络后重试';
