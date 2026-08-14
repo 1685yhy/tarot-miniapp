@@ -173,7 +173,11 @@ Page({
         if (res.milestone) {
           // T6-6 跨页去重：卡页里程碑弹层展示即落旗标（academy 主页同一
           // 里程碑的全屏庆祝据此跳过，避免同一成就双重庆祝）
-          try { wx.setStorageSync('academy_celebrated_' + res.milestone.key, true); } catch (_e) {}
+          try {
+            wx.setStorageSync('academy_celebrated_' + res.milestone.key, true);
+          } catch (e) {
+            console.warn('[lesson] 里程碑去重旗标写入失败（主页可能重复庆祝）:', e);
+          }
           this.setData({ milestone: res.milestone, showMilestone: true });
         }
       } else {
