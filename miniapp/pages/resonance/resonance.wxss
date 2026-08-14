@@ -181,8 +181,8 @@ page {
 .tier-badge {
   padding: 6rpx 18rpx;
   border-radius: var(--radius-pill);
-  background: linear-gradient(135deg, #C9A97C 0%, #D9BC8F 100%);
-  color: #FFFDF8;
+  background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-light) 100%);
+  color: var(--color-surface);
   font-size: 20rpx;
   letter-spacing: 2rpx;
   box-shadow: var(--shadow-gold-button);
@@ -437,7 +437,7 @@ page {
   gap: 8rpx;
   padding: 14rpx 0;
   border-radius: var(--radius-pill);
-  background: linear-gradient(135deg, #C9A97C 0%, #D9BC8F 100%);
+  background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-light) 100%);
   box-shadow: var(--shadow-gold-button);
 }
 .give-btn--press {
@@ -462,14 +462,14 @@ page {
 }
 .give-btn-star {
   font-size: 26rpx;
-  color: #FFFDF8;
+  color: var(--color-surface);
 }
 .give-btn--done .give-btn-star {
   color: var(--color-gold-deep-ink);
 }
 .give-btn-text {
   font-size: 24rpx;
-  color: #FFFDF8;
+  color: var(--color-surface);
   letter-spacing: 2rpx;
 }
 .give-btn--done .give-btn-text {
@@ -624,17 +624,17 @@ page {
   padding: 4rpx 14rpx;
   border-radius: var(--radius-pill);
   font-size: 20rpx;
-  color: #FFFDF8;
+  color: var(--color-surface);
   letter-spacing: 1rpx;
 }
 .pact-row-tag--show {
-  background: #C9A97C;
+  background: var(--color-gold);
 }
 .pact-row-tag--hide {
-  background: #8A8478;
+  background: var(--color-text-secondary);
 }
 .pact-row-tag--ctrl {
-  background: #6E6A96;
+  background: var(--color-text-tertiary);
 }
 .pact-row-text {
   flex: 1;
@@ -655,8 +655,8 @@ page {
   width: 100%;
   padding: 22rpx 0;
   border-radius: var(--radius-pill);
-  background: linear-gradient(135deg, #C9A97C 0%, #D9BC8F 100%);
-  color: #FFFDF8;
+  background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-light) 100%);
+  color: var(--color-surface);
   font-size: 28rpx;
   letter-spacing: 4rpx;
   box-shadow: var(--shadow-gold-button);
