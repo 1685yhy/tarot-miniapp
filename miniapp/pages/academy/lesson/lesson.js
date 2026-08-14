@@ -206,6 +206,7 @@ Page({
       this.setData({ reviewCount: res.review_count || this.data.reviewCount + 1, saving: false });
       wx.showToast({ title: '复习一次，星更亮 ✦', icon: 'none' });
     } catch (err) {
+      if (this._destroyed) return; // 页面销毁守卫（与 onRemember 对齐）
       this.setData({ saving: false });
       wx.showToast({ title: getFriendlyError(err), icon: 'none' });
     }
