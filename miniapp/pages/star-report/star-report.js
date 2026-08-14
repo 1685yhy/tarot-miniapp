@@ -193,6 +193,9 @@ Page({
         const sd = body.stardust || {};
         const cards = body.cards || {};
         isEmpty = curve.length === 0 && (sd.total || 0) === 0 && (cards.readings_count || 0) === 0;
+      } else if (report.locked) {
+        // 锁定预览只下发 {astral_events, note} → 空态仅依据可见字段判定
+        isEmpty = ((body.astral_events) || []).length === 0;
       } else {
         const cards = body.cards || {};
         const j = body.journal;
