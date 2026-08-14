@@ -1,5 +1,5 @@
 """
-星象月报权益（SDD P2 · T7-3 解锁权益）测试。
+星象月报权益（SDD P2 · T7-3 解锁权益 + T7-4 月报海报脱敏端点）测试。
 
 T7-3 覆盖：
 - PRODUCTS 注册 weekly_report(4.9) / monthly_report(19.9)（type=single_purchase）
@@ -11,6 +11,12 @@ T7-3 覆盖：
 - 支付回调：weekly_report/monthly_report 商品 → 对应 BOOL 列置位；重复回调幂等
 - POST /report/{type}/regenerate：仅会员；周/月各 1 次/周期（内存限流）；
   AI 失败 → 回退原缓存不覆盖（source 不变）；非法 type → 404
+
+T7-4 覆盖：
+- GET /report/month/poster：有缓存 → 脱敏字段完整（报告期+3 核心数字+AI 寄语
+  一句+星阶名+固定分享文案）；键集断言无昵称/无原文统计明细/无手账内容
+- 无缓存 → 404「先看报告，再分享星光 ✦」；非会员未解锁 → 403；
+  已解锁非会员 → 200；未登录 401
 - 迁移链：users 表 weekly_report_unlocked/monthly_report_unlocked 可升级、可回滚
 
 测试环境 DEEPSEEK_API_KEY 为空 → AI 生成自动回退模板（确定性）；
@@ -778,6 +784,91 @@ class TestRegenerate:
         assert resp.json()["source"] == "ai"
         assert resp.json()["report"]["note"] == original["note"]
         assert _cache_data(uid, "month", MONTH_PERIOD)["note"] == original["note"]
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# T7-4：月报海报数据端点（脱敏）
+# ═══════════════════════════════════════════════════════════════════════
+
+
+class TestMonthPoster:
+    def test_poster_requires_auth(self, client: TestClient):
+        assert client.get("/report/month/poster").status_code == 401
+
+    def test_poster_invalid_period_422(self, client: TestClient):
+        uid, headers = _new_user(f"ps_bad_{uuid.uuid4().hex[:6]}")
+        assert client.get(
+            "/report/month/poster?period=abc", headers=headers
+        ).status_code == 422
+
+    def test_poster_no_cache_404(self, client: TestClient):
+        uid, headers = _new_user(f"ps_noc_{uuid.uuid4().hex[:6]}", member=True)
+        resp = client.get(f"/report/month/poster?period={MONTH_PERIOD}", headers=headers)
+        assert resp.status_code == 404
+        assert resp.json()["detail"] == "先看报告，再分享星光 ✦"
+
+    def test_poster_nonmember_without_unlock_403(self, client: TestClient, monkeypatch):
+        """非会员未解锁 → 403（前端已拦，后端兜底）。"""
+        uid, headers = _new_user(f"ps_free_{uuid.uuid4().hex[:6]}")
+        _seed_month_readings(uid, [1])
+        monkeypatch.setattr("app.services.star_reports._get_ai_client", lambda: None)
+        # 先生成缓存（预览态同样落全文缓存）
+        r = client.get(f"/report/month?period={MONTH_PERIOD}", headers=headers)
+        assert r.status_code == 200
+        resp = client.get(f"/report/month/poster?period={MONTH_PERIOD}", headers=headers)
+        assert resp.status_code == 403
+
+    def test_poster_member_full_desensitized(self, client: TestClient, monkeypatch):
+        """会员：字段完整 + 键集脱敏（无昵称/无原文统计明细/无手账内容）。"""
+        uid, headers = _new_user(f"ps_mem_{uuid.uuid4().hex[:6]}", member=True)
+        _seed_month_readings(uid, [1, 1, 2])
+        _seed_month_stardust(uid)
+        _seed_star_monthly_review(uid, "2026-08", trend="本月星光偏亮，情绪以平静为主。")
+
+        monkeypatch.setattr("app.services.star_reports._get_ai_client", lambda: None)
+        r = client.get(f"/report/month?period={MONTH_PERIOD}", headers=headers)
+        assert r.status_code == 200, r.text
+
+        resp = client.get(f"/report/month/poster?period={MONTH_PERIOD}", headers=headers)
+        assert resp.status_code == 200, resp.text
+        d = resp.json()
+        # 键集精确断言（脱敏契约）
+        assert set(d.keys()) == {
+            "period", "tier_name", "core_numbers", "ai_sentence", "share_text", "disclaimer",
+        }
+        assert d["period"] == MONTH_PERIOD
+        assert d["tier_name"], "应有星阶名"
+        assert d["core_numbers"] == {
+            "active_days": 12,
+            "readings_count": 3,
+            "stardust_estimated": 3,
+        }
+        assert d["ai_sentence"], "应有 AI 寄语一句"
+        assert len(d["ai_sentence"]) <= 40, "AI 寄语应截断 40 字"
+        assert d["share_text"] == "我的八月星象月报 · 本月点亮 12 颗星 ✦"
+        assert d["disclaimer"] == "仅供娱乐 · 星光映照"
+
+        # 脱敏断言：响应序列化后不含昵称/手账原文/统计明细字段
+        blob = json.dumps(d, ensure_ascii=False)
+        assert "nickname" not in blob
+        assert "trend" not in blob
+        assert "bright_ratio" not in blob
+        assert "top3" not in blob
+        assert "card" not in blob
+        assert "日记" not in blob
+
+    def test_poster_unlocked_nonmember_200(self, client: TestClient, monkeypatch):
+        """非会员已解锁月报 → 海报 200。"""
+        uid, headers = _new_user(f"ps_unl_{uuid.uuid4().hex[:6]}")
+        _patch_user(uid, monthly_report_unlocked=True)
+        _seed_month_readings(uid, [1])
+        _seed_star_monthly_review(uid, "2026-08")
+        monkeypatch.setattr("app.services.star_reports._get_ai_client", lambda: None)
+        r = client.get(f"/report/month?period={MONTH_PERIOD}", headers=headers)
+        assert r.status_code == 200
+        resp = client.get(f"/report/month/poster?period={MONTH_PERIOD}", headers=headers)
+        assert resp.status_code == 200
+        assert resp.json()["core_numbers"]["active_days"] == 12
 
 
 # ═══════════════════════════════════════════════════════════════════════

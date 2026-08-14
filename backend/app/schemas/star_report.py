@@ -160,3 +160,26 @@ class MonthReportResponse(BaseModel):
     preview: bool
     cached: bool
     source: str | None
+
+
+class MonthPosterCoreNumbers(BaseModel):
+    """海报 3 核心数字（脱敏：无原文统计明细）。"""
+
+    active_days: int
+    readings_count: int
+    stardust_estimated: int
+
+
+class MonthPosterResponse(BaseModel):
+    """GET /report/month/poster 响应（T7-4 · 脱敏海报数据）。
+
+    报告期 + 星阶名 + 3 核心数字 + AI 寄语一句（截断 40 字）+ 固定分享文案；
+    无昵称、无原文统计明细、无手账内容。
+    """
+
+    period: str
+    tier_name: str
+    core_numbers: MonthPosterCoreNumbers
+    ai_sentence: str
+    share_text: str
+    disclaimer: str

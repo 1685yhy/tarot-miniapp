@@ -20,6 +20,10 @@ POST /report/{type}/unlock —— T7-3 解锁下单：
 POST /report/{type}/regenerate —— T7-3 会员重生成：
 - 仅会员（403）；限流周/月各 1 次/周期（内存 dict，注释见下）
 - AI 失败 → 回退原缓存不覆盖（返回原报告，source 不变）
+
+GET /report/month/poster?period= —— T7-4 月报海报数据（脱敏）：
+- 报告期 + 星阶名 + 3 核心数字 + AI 寄语一句（截断 40 字）+ 固定分享文案
+- 无昵称、无原文统计明细、无手账内容；无缓存 → 404；未解锁 → 403
 """
 
 from datetime import datetime, timezone
@@ -33,10 +37,13 @@ from app.schemas.order import CreateOrderResponse
 from app.schemas.star_report import (
     MONTH_PERIOD_PATTERN,
     WEEK_PERIOD_PATTERN,
+    MonthPosterResponse,
     MonthReportResponse,
     WeekReportResponse,
 )
+from app.services.compliance import AI_OUTPUT_BLACKLIST, find_forbidden
 from app.services.star_reports import (
+    _load_cached_report,
     beijing_today,
     get_or_create_month_report,
     get_or_create_week_report,
@@ -56,6 +63,13 @@ router = APIRouter(prefix="/report", tags=["星象月报"])
 # 注：单实例部署下即用即生效；多实例部署需换共享存储（如 Redis），
 # 或改存 star_reports.updated_at（重生成会更新时间戳，同一周期限 1 次即可）。
 _REGEN_USED: dict[str, str] = {}
+
+# 月报海报 share_text 的月名（「八月」式，与前端 MONTH_NAMES 一致）
+_MONTH_CN = [
+    "一月", "二月", "三月", "四月", "五月", "六月",
+    "七月", "八月", "九月", "十月", "十一月", "十二月",
+]
+
 
 def is_member_active(user: User) -> bool:
     """会员实时判定（is_member 有效期内；expires_at=None 视为永续会员）。
@@ -249,3 +263,71 @@ async def regenerate_report(
         }
     _REGEN_USED[key] = period
     return resp
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# T7-4：月报海报数据端点（脱敏）
+# ═══════════════════════════════════════════════════════════════════════
+
+
+@router.get("/month/poster", response_model=MonthPosterResponse)
+async def month_poster(
+    period: str | None = Query(
+        None,
+        pattern=MONTH_PERIOD_PATTERN,
+        description="月周期 '2026-08'；缺省 = 上一完整月",
+    ),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """月报海报数据（脱敏）：报告期+星阶名+3 核心数字+AI 寄语一句+固定分享文案。
+
+    - 无昵称、无原文统计明细、无手账内容（脱敏契约，前端只消费本响应）
+    - 无缓存 → 404「先看报告，再分享星光 ✦」（先看报告才会生成缓存）
+    - 会员/已解锁才返回（前端锁态已拦，后端兜底 403）
+    """
+    if not can_read_full(user, "month"):
+        raise HTTPException(status_code=403, detail="解锁后可生成海报 ✦")
+    period = period or last_completed_month(beijing_today())
+    try:
+        month_bounds(period)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from None
+
+    cached = await _load_cached_report(db, user.id, "month", period)
+    if cached is None:
+        raise HTTPException(status_code=404, detail="先看报告，再分享星光 ✦")
+    report, _source = cached
+
+    journal = report.get("journal") or {}
+    cards = report.get("cards") or {}
+    stardust = report.get("stardust") or {}
+    core_numbers = {
+        "active_days": journal.get("active_days") or 0,
+        "readings_count": cards.get("readings_count") or 0,
+        "stardust_estimated": stardust.get("estimated") or 0,
+    }
+    tier_name = stardust.get("tier_name") or ""
+    note = report.get("note") or ""
+    ai_sentence = note[:40]
+
+    year, month = period.split("-")
+    month_cn = _MONTH_CN[int(month) - 1]
+    active_days = core_numbers["active_days"]
+    share_text = (
+        f"我的{month_cn}星象月报 · 本月点亮 {active_days} 颗星 ✦"
+        if active_days > 0
+        else f"我的{month_cn}星象月报 ✦"
+    )
+    # 固定模板确定性文案过共享禁词扫描；命中 → 纯标题兜底（模板本身合规，防御性）
+    if find_forbidden(share_text, AI_OUTPUT_BLACKLIST):
+        share_text = f"我的{month_cn}星象月报 ✦"
+
+    return {
+        "period": period,
+        "tier_name": tier_name,
+        "core_numbers": core_numbers,
+        "ai_sentence": ai_sentence,
+        "share_text": share_text,
+        "disclaimer": "仅供娱乐 · 星光映照",
+    }
