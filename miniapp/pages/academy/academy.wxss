@@ -414,7 +414,7 @@ page {
 }
 
 .path-sub {
-  font-size: 18rpx;
+  font-size: var(--font-size-xs); /* 20rpx：不低于 token 最小档 */
   color: var(--e3-ink-soft, #8A8478);
   letter-spacing: 1rpx;
   line-height: 1.5;
