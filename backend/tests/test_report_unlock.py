@@ -567,6 +567,50 @@ class TestUnlockOrder:
         resp_month = client.post("/report/month/unlock", headers=headers)
         assert resp_month.status_code == 200, "周已解锁不应阻塞月报下单"
 
+    def test_unlock_xpay_missing_mapping_400_then_mapped_ok(
+        self, client: TestClient, monkeypatch
+    ):
+        """xpay 通道两态：道具未映射 → 400「该商品即将上线」；映射后下单成功且 signData 含正确 productId。"""
+        from app.services.session_key import encrypt_session_key
+
+        monkeypatch.setattr(settings, "PAY_CHANNEL", "xpay")
+        monkeypatch.setattr(settings, "WX_XPAY_ENV", 0)
+        uid, headers = _new_user(f"xpay_unl_{uuid.uuid4().hex[:6]}")
+
+        # 状态一：XPAY_PRODUCT_MAP 无 weekly_report（部署前缺映射）→ 400 降级提示
+        monkeypatch.setattr(
+            settings, "XPAY_PRODUCT_MAP",
+            json.dumps({"single_reading": "single_reading"}),
+        )
+        resp = client.post("/report/week/unlock", headers=headers)
+        assert resp.status_code == 400
+        assert resp.json()["detail"] == "该商品即将上线,敬请期待"
+
+        # 状态二：补齐映射 + 落库加密 session_key（模拟真实登录）→ 下单成功
+        monkeypatch.setattr(
+            settings, "XPAY_PRODUCT_MAP",
+            json.dumps({"weekly_report": "weekly_report"}),
+        )
+
+        async def _set_session_key() -> None:
+            async with async_session() as session:
+                user = await session.get(User, uid)
+                user.session_key_encrypted = encrypt_session_key("xpay-test-session-key")
+                await session.commit()
+
+        asyncio.run(_set_session_key())
+
+        resp2 = client.post("/report/week/unlock", headers=headers)
+        assert resp2.status_code == 200, resp2.text
+        data = resp2.json()
+        assert data["payment_params"] is None, "xpay 通道不应返回 jsapi payment_params"
+        assert data["xpay_params"] is not None
+        payload = json.loads(data["xpay_params"]["signData"])
+        assert payload["productId"] == "weekly_report"
+        assert payload["attach"] == "weekly_report"
+        assert data["product_name"] == "星光一周周报"
+        assert float(data["amount"]) == 4.9
+
 
 # ═══════════════════════════════════════════════════════════════════════
 # T7-3：支付回调 → 权益置位（幂等）
