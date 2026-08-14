@@ -227,6 +227,17 @@
       <view class="menu-section-title anim-fade-up anim-stagger-1">
         <text class="menu-section-label">我的内容</text>
       </view>
+      <!-- 星象月报 — 周报/月报双 Tab（SDD P2 · T7-5 入口） -->
+      <view class="menu-item anim-slide-up anim-stagger-1" bindtap="onGoStarReport" role="button" aria-label="进入星象月报">
+        <view class="menu-icon-wrap">
+          <text class="menu-icon-text">✦</text>
+        </view>
+        <view class="menu-content">
+          <text class="menu-title">星象月报</text>
+          <text class="menu-desc">星光一周 · 星光月度卷轴 · 周报月报</text>
+        </view>
+        <text class="menu-arrow">›</text>
+      </view>
       <view class="menu-item anim-slide-up anim-stagger-1" bindtap="onGoDiary" role="button" aria-label="进入星光手账">
         <view class="menu-icon-wrap">
           <image src="/images/icons/diary_64.png" mode="aspectFit" class="menu-icon-img" aria-label="星光手账"></image>

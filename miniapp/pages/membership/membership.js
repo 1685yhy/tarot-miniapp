@@ -34,6 +34,7 @@ Page({
       { icon: '💬', text: '无限 AI 追问' },
       { icon: '🎭', text: '3 位专属塔罗师' },
       { icon: '📊', text: '年度运势报告' },
+      { icon: '📜', text: '星象月报 · 周报月报免费看' },
     ],
     // 定价卡片数据（固定值，不依赖后端；API返回时会被覆盖）
     pricingMonthly: {
@@ -114,6 +115,7 @@ Page({
         { label: '年度报告', free: '✗', pro: '✓' },
         { label: '每日一牌教学', free: '✓', pro: '✓' },
         { label: '解读历史回顾', free: '✓', pro: '✓' },
+        { label: '星象月报', free: '✗', pro: '✓' },
         { label: '专属客服', free: '✗', pro: '✓' },
       ],
     });
@@ -344,6 +346,11 @@ Page({
   onPurchasePack(e) {
     // Delegate to onPurchase with the same data format
     this.onPurchase(e);
+  },
+
+  /** P2 · 星象月报权益位入口（会员免费看） */
+  onGoStarReport() {
+    wx.navigateTo({ url: '/pages/star-report/star-report?tab=week' });
   },
 
   /** P2-3: 展开/收起权益对比表 */

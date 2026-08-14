@@ -1,0 +1,7 @@
+<!-- ================================================================
+     Energy Curve — 星运曲线（周报 · 7 天折线 + 每日星光色点）
+     E3 奶油底 · 细金折线 · 星光色点（build_today_guidance 星光色）
+     ================================================================ -->
+<view class="ec-wrap">
+  <canvas type="2d" id="energyCurveCanvas" class="ec-canvas" aria-label="本周星运能量曲线"></canvas>
+</view>

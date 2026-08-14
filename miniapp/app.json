@@ -107,6 +107,10 @@
     {
       "root": "pages/academy/",
       "pages": ["academy", "lesson/lesson", "chat/chat"]
+    },
+    {
+      "root": "pages/star-report/",
+      "pages": ["star-report"]
     }
   ],
   "window": {
@@ -145,7 +149,7 @@
   "preloadRule": {
     "pages/index/index": {
       "network": "all",
-      "packages": ["pages/daily-card/", "pages/reading/", "pages/reading-result/", "pages/checkin/", "pages/journal/", "pages/journal-review/", "pages/moon-card/", "pages/astral-calendar/", "pages/astral-event/", "pages/meet/", "pages/resonance/", "pages/academy/"]
+      "packages": ["pages/daily-card/", "pages/reading/", "pages/reading-result/", "pages/checkin/", "pages/journal/", "pages/journal-review/", "pages/moon-card/", "pages/astral-calendar/", "pages/astral-event/", "pages/meet/", "pages/resonance/", "pages/academy/", "pages/star-report/"]
     },
     "pages/oracle/oracle": {
       "network": "all",

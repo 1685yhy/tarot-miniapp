@@ -1,0 +1,359 @@
+<!-- pages/star-report/star-report.wxml -->
+<!-- 星象月报（SDD P2 · T7-5 报告页）· 星光卷轴 · E3 奶油疗愈，零新视觉 -->
+<view class="page sr-page">
+
+  <!-- ===== 双 Tab（星光一周 / 星光月度卷轴） ===== -->
+  <view class="sr-tabs">
+    <view
+      class="sr-tab {{tab === 'week' ? 'sr-tab--active' : ''}}"
+      data-tab="week"
+      bindtap="onSwitchTab"
+      role="button"
+      aria-label="星光一周周报"
+      hover-class="sr-tab--press"
+    >星光一周</view>
+    <view
+      class="sr-tab {{tab === 'month' ? 'sr-tab--active' : ''}}"
+      data-tab="month"
+      bindtap="onSwitchTab"
+      role="button"
+      aria-label="星光月度卷轴月报"
+      hover-class="sr-tab--press"
+    >星光月度卷轴</view>
+  </view>
+
+  <!-- ===== 加载 ===== -->
+  <view wx:if="{{loading}}" class="sr-state">
+    <view class="loading__spinner"></view>
+    <text class="loading__text">星光正在卷轴上展开...</text>
+  </view>
+
+  <!-- ===== 错误 ===== -->
+  <view wx:elif="{{error}}" class="sr-state">
+    <text class="sr-state-title">报告暂时无法展开</text>
+    <text class="sr-state-desc">{{error}}</text>
+    <button class="btn-primary btn--sm sr-retry-btn" bindtap="onRetry">重新加载</button>
+  </view>
+
+  <!-- ===== 报告主体 ===== -->
+  <block wx:elif="{{report}}">
+
+    <!-- ── 期头（报告期 + 星阶徽章） ── -->
+    <view class="sr-hero anim-fade-up">
+      <view class="sr-hero-glow"></view>
+      <text class="sr-hero-title">{{heroTitle}}</text>
+      <text class="sr-hero-period">{{heroPeriod}}</text>
+      <view class="sr-hero-tier" wx:if="{{starTierName}}">
+        <text class="sr-hero-tier-text">✦ {{starTierName}} · 星阶</text>
+      </view>
+      <button class="sr-poster-btn" bindtap="onGenPoster" aria-label="生成海报">
+        <text class="sr-poster-btn-icon">🖼</text>
+        <text>{{locked ? '解锁后生成海报' : '生成海报'}}</text>
+      </button>
+    </view>
+
+    <!-- ── 报告期切换器（最近 4 期） ── -->
+    <scroll-view scroll-x class="sr-periods" enhanced show-scrollbar="{{false}}">
+      <view class="sr-periods-row">
+        <view
+          class="sr-period {{item.key === currentPeriod ? 'sr-period--active' : ''}}"
+          wx:for="{{periods}}"
+          wx:key="key"
+          data-key="{{item.key}}"
+          bindtap="onSwitchPeriod"
+          role="button"
+          aria-label="切换到 {{item.label}}"
+          hover-class="sr-period--press"
+        >{{item.label}}</view>
+      </view>
+    </scroll-view>
+
+    <!-- ── 空态：夜空等着被你点亮（统计 0 不挫败） ── -->
+    <view class="sr-empty" wx:if="{{isEmpty}}">
+      <text class="sr-empty-star">✦</text>
+      <text class="sr-empty-title">夜空等着被你点亮</text>
+      <text class="sr-empty-desc">{{tab === 'week' ? '这周还没有星光记录，去抽牌或写手账吧' : '这个月还很安静，去抽牌、签到或写手账，点亮第一颗星'}}</text>
+    </view>
+
+    <!-- ══════════════ 周报五段 ══════════════ -->
+    <block wx:if="{{tab === 'week'}}">
+
+      <!-- 1 · 星运曲线（非会员预览可见） -->
+      <view class="sr-sec anim-fade-up">
+        <view class="sr-sec-head">
+          <text class="sr-sec-title">✦ 星运曲线</text>
+          <text class="sr-sec-sub">7 天能量总分</text>
+        </view>
+        <energy-curve curve="{{report.report.curve}}" colors="{{report.report.color_band}}" />
+      </view>
+
+      <!-- 2 · 星尘统计（会员可见） -->
+      <view class="sr-sec {{locked ? 'sr-sec--locked' : ''}}">
+        <view class="sr-sec-head">
+          <text class="sr-sec-title">✦ 星尘统计</text>
+          <text class="sr-sec-sub">本周星尘增减</text>
+        </view>
+        <view class="sr-blur-wrap {{locked ? 'sr-blur' : ''}}">
+          <view class="sr-stats-row">
+            <view class="sr-stat-item">
+              <text class="sr-stat-num">{{report.report.stardust.checkin_days || 0}}</text>
+              <text class="sr-stat-label">签到天数</text>
+            </view>
+            <view class="sr-stat-item">
+              <text class="sr-stat-num">{{report.report.stardust.activity_events || 0}}</text>
+              <text class="sr-stat-label">节点活动</text>
+            </view>
+            <view class="sr-stat-item">
+              <text class="sr-stat-num sr-stat-num--gold">+{{report.report.stardust.total || 0}}</text>
+              <text class="sr-stat-label">本周星尘</text>
+            </view>
+          </view>
+          <text class="sr-sec-note">本周你为自己点亮了 {{report.report.stardust.total || 0}} 颗星尘</text>
+        </view>
+        <view class="sr-lock-flag" wx:if="{{locked}}"><text>🔒 会员可见</text></view>
+      </view>
+
+      <!-- 3 · 牌运回顾（卡图横滑 · 会员可见） -->
+      <view class="sr-sec {{locked ? 'sr-sec--locked' : ''}}">
+        <view class="sr-sec-head">
+          <text class="sr-sec-title">✦ 牌运回顾</text>
+          <text class="sr-sec-sub">本周抽牌 {{report.report.cards.readings_count || 0}} 次</text>
+        </view>
+        <view class="sr-blur-wrap {{locked ? 'sr-blur' : ''}}">
+          <view class="sr-most-card" wx:if="{{report.report.cards.most_card}}">
+            <view class="sr-most-card-tarot-box">
+              <tarot-card
+                nameZh="{{report.report.cards.most_card.name}}"
+                positionName="本周常遇"
+                class="sr-most-card-tarot"
+              />
+            </view>
+            <view class="sr-most-card-info">
+              <text class="sr-most-card-name">{{report.report.cards.most_card.name}}</text>
+              <text class="sr-most-card-count">本周你最常遇到它 · {{report.report.cards.most_card.count}} 次</text>
+              <view class="sr-keyword-row">
+                <text class="sr-keyword" wx:for="{{report.report.cards.most_card.keywords}}" wx:key="*this">{{item}}</text>
+              </view>
+            </view>
+          </view>
+          <view class="sr-card-list-empty" wx:if="{{!report.report.cards.most_card}}">
+            <text class="sr-card-list-empty-text">本周还没有抽牌，去听听星光的指引吧</text>
+          </view>
+          <scroll-view scroll-x class="sr-card-scroll" wx:if="{{cardList.length > 0}}" enhanced show-scrollbar="{{false}}">
+            <view class="sr-card-scroll-row">
+              <view class="sr-card-item" wx:for="{{cardList}}" wx:key="index">
+                <view class="sr-card-item-frame">
+                  <image class="sr-card-item-img" src="{{item.image}}" mode="aspectFill" lazy-load aria-label="{{item.name}}" />
+                  <view class="sr-card-item-count">{{item.count}}</view>
+                </view>
+                <text class="sr-card-item-name">{{item.name}}</text>
+              </view>
+            </view>
+          </scroll-view>
+        </view>
+        <view class="sr-lock-flag" wx:if="{{locked}}"><text>🔒 会员可见</text></view>
+      </view>
+
+      <!-- 4 · AI 周寄语（≤60 字 · 非会员预览可见） -->
+      <view class="sr-sec">
+        <view class="sr-sec-head">
+          <text class="sr-sec-title">✦ AI 周寄语</text>
+        </view>
+        <view class="sr-note-card">
+          <text class="sr-note-text">{{report.report.note}}</text>
+        </view>
+      </view>
+
+      <!-- 5 · 本周星光色带（会员可见） -->
+      <view class="sr-sec {{locked ? 'sr-sec--locked' : ''}}">
+        <view class="sr-sec-head">
+          <text class="sr-sec-title">✦ 本周星光色带</text>
+          <text class="sr-sec-sub">7 天的星光色</text>
+        </view>
+        <view class="sr-blur-wrap {{locked ? 'sr-blur' : ''}}">
+          <view class="sr-color-band">
+            <view
+              class="sr-color-dot"
+              wx:for="{{report.report.color_band}}"
+              wx:key="index"
+              style="background: {{item.star_color || '#C9A97C'}};"
+            ></view>
+          </view>
+          <text class="sr-sec-note">每一天都有属于自己的星光色</text>
+        </view>
+        <view class="sr-lock-flag" wx:if="{{locked}}"><text>🔒 会员可见</text></view>
+      </view>
+    </block>
+
+    <!-- ══════════════ 月报六段 ══════════════ -->
+    <block wx:elif="{{tab === 'month'}}">
+
+      <!-- 1 · 月度天象事件表（每事件一句宜忌 · 非会员预览可见） -->
+      <view class="sr-sec">
+        <view class="sr-sec-head">
+          <text class="sr-sec-title">✦ 月度天象复盘</text>
+          <text class="sr-sec-sub">上月的星象日历</text>
+        </view>
+        <view class="sr-event-list">
+          <view class="sr-event-item" wx:for="{{report.report.astral_events}}" wx:key="index">
+            <view class="sr-event-date">
+              <text class="sr-event-date-num">{{item.date.slice(8)}}</text>
+              <text class="sr-event-date-mon">{{item.date.slice(5, 7)}}月</text>
+            </view>
+            <view class="sr-event-main">
+              <text class="sr-event-label">{{item.label}}</text>
+              <text class="sr-event-guide">{{eventGuidance[item.type] || '宜·顺应这天，温柔待己'}}</text>
+            </view>
+          </view>
+          <view class="sr-event-empty" wx:if="{{!report.report.astral_events.length}}">
+            <text class="sr-event-empty-text">这个月没有特别的天象，是安稳的一月</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 2 · 星光手账汇总（会员可见） -->
+      <view class="sr-sec {{locked ? 'sr-sec--locked' : ''}}">
+        <view class="sr-sec-head">
+          <text class="sr-sec-title">✦ 星光手账汇总</text>
+          <text class="sr-sec-sub">上月的情绪轨迹</text>
+        </view>
+        <view class="sr-blur-wrap {{locked ? 'sr-blur' : ''}}">
+          <block wx:if="{{report.report.journal}}">
+            <view class="sr-stats-row">
+              <view class="sr-stat-item">
+                <text class="sr-stat-num">{{report.report.journal.active_days || 0}}</text>
+                <text class="sr-stat-label">点亮天数</text>
+              </view>
+              <view class="sr-stat-item">
+                <text class="sr-stat-num">{{journalBrightPct}}%</text>
+                <text class="sr-stat-label">星光亮度</text>
+              </view>
+            </view>
+            <text class="sr-sec-note" wx:if="{{report.report.journal.trend}}">{{report.report.journal.trend}}</text>
+          </block>
+          <view class="sr-card-list-empty" wx:else>
+            <text class="sr-card-list-empty-text">上月没有手账星光，这个月去写一篇吧</text>
+          </view>
+        </view>
+        <view class="sr-lock-flag" wx:if="{{locked}}"><text>🔒 会员可见</text></view>
+      </view>
+
+      <!-- 3 · 牌运回顾 TOP3（会员可见） -->
+      <view class="sr-sec {{locked ? 'sr-sec--locked' : ''}}">
+        <view class="sr-sec-head">
+          <text class="sr-sec-title">✦ 牌运回顾</text>
+          <text class="sr-sec-sub">上月抽牌 {{report.report.cards.readings_count || 0}} 次</text>
+        </view>
+        <view class="sr-blur-wrap {{locked ? 'sr-blur' : ''}}">
+          <view class="sr-top3" wx:if="{{report.report.cards.top3.length > 0}}">
+            <view class="sr-top3-row" wx:for="{{report.report.cards.top3}}" wx:key="index">
+              <text class="sr-top3-rank {{index === 0 ? 'sr-top3-rank--first' : ''}}">{{index === 0 ? '✦' : index + 1}}</text>
+              <text class="sr-top3-name">{{item.name}}</text>
+              <view class="sr-top3-bar">
+                <view class="sr-top3-bar-fill" style="width: {{100 - index * 28}}%;"></view>
+              </view>
+              <text class="sr-top3-count">×{{item.count}}</text>
+            </view>
+          </view>
+          <view class="sr-card-list-empty" wx:else>
+            <text class="sr-card-list-empty-text">上月还没有抽牌记录，星光在等你的第一次</text>
+          </view>
+        </view>
+        <view class="sr-lock-flag" wx:if="{{locked}}"><text>🔒 会员可见</text></view>
+      </view>
+
+      <!-- 4 · 星尘与星阶（会员可见） -->
+      <view class="sr-sec {{locked ? 'sr-sec--locked' : ''}}">
+        <view class="sr-sec-head">
+          <text class="sr-sec-title">✦ 星尘与星阶</text>
+        </view>
+        <view class="sr-blur-wrap {{locked ? 'sr-blur' : ''}}">
+          <view class="sr-tier-card">
+            <text class="sr-tier-num">{{report.report.stardust.estimated || 0}}</text>
+            <text class="sr-tier-label">本月你为自己点亮了这些星尘</text>
+            <view class="sr-tier-badge" wx:if="{{report.report.stardust.tier_name}}">
+              <text class="sr-tier-badge-text">当前星阶 · {{report.report.stardust.tier_name}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="sr-lock-flag" wx:if="{{locked}}"><text>🔒 会员可见</text></view>
+      </view>
+
+      <!-- 5 · 下月展望（活动预告非运势预测 · 会员可见） -->
+      <view class="sr-sec {{locked ? 'sr-sec--locked' : ''}}">
+        <view class="sr-sec-head">
+          <text class="sr-sec-title">✦ 下月展望</text>
+          <text class="sr-sec-sub">真实天象日期 · 温柔行动建议</text>
+        </view>
+        <view class="sr-blur-wrap {{locked ? 'sr-blur' : ''}}">
+          <view class="sr-outlook" wx:if="{{report.report.outlook}}">
+            <view class="sr-outlook-row" wx:if="{{report.report.outlook.first_new_moon}}">
+              <text class="sr-outlook-date">{{report.report.outlook.first_new_moon.date.slice(5).replace('-', '.')}}</text>
+              <text class="sr-outlook-text">{{report.report.outlook.first_new_moon.label}} 升起</text>
+            </view>
+            <view class="sr-outlook-row" wx:if="{{report.report.outlook.first_full_moon}}">
+              <text class="sr-outlook-date">{{report.report.outlook.first_full_moon.date.slice(5).replace('-', '.')}}</text>
+              <text class="sr-outlook-text">{{report.report.outlook.first_full_moon.label}} 升起</text>
+            </view>
+            <view class="sr-outlook-row" wx:if="{{report.report.outlook.first_retrograde}}">
+              <text class="sr-outlook-date">{{report.report.outlook.first_retrograde.date.slice(5).replace('-', '.')}}</text>
+              <text class="sr-outlook-text">{{report.report.outlook.first_retrograde.label}} · 慢行的日子要来了</text>
+            </view>
+          </view>
+          <view class="sr-outlook-tips" wx:if="{{report.report.outlook && report.report.outlook.tips.length > 0}}">
+            <text class="sr-tip" wx:for="{{report.report.outlook.tips}}" wx:key="index">✦ {{item}}</text>
+          </view>
+        </view>
+        <view class="sr-lock-flag" wx:if="{{locked}}"><text>🔒 会员可见</text></view>
+      </view>
+
+      <!-- 6 · AI 月度总评（不定性 · 非会员预览可见） -->
+      <view class="sr-sec">
+        <view class="sr-sec-head">
+          <text class="sr-sec-title">✦ AI 月度总评</text>
+        </view>
+        <view class="sr-note-card">
+          <text class="sr-note-text">{{report.report.note}}</text>
+        </view>
+      </view>
+    </block>
+  </block>
+
+  <!-- ===== 免责尾行（常驻 · 合规 2.4） ===== -->
+  <view class="ai-disclaimer">
+    <view class="disc-line"></view>
+    <text class="disc-text">仅供娱乐 · 星光映照</text>
+    <view class="disc-line"></view>
+  </view>
+
+  <!-- ===== 非会员预览态：底部吸底解锁栏 ===== -->
+  <view class="sr-unlock-bar" wx:if="{{locked && report}}">
+    <view class="sr-unlock-info">
+      <text class="sr-unlock-price">解锁全文 ¥{{unlockPrice}}</text>
+      <text class="sr-unlock-hint">解锁后可生成海报分享 ✦</text>
+    </view>
+    <view class="sr-unlock-actions">
+      <button class="sr-member-btn" bindtap="onGoMembership" aria-label="开通会员免费看">开通会员免费看</button>
+      <button class="sr-unlock-btn" bindtap="onUnlock" loading="{{purchasing}}" disabled="{{purchasing}}" aria-label="解锁全文">解锁全文</button>
+    </view>
+  </view>
+
+  <!-- ===== 周报海报（weekly-report-poster · 数据源 GET /report/week 全文） ===== -->
+  <weekly-report-poster
+    visible="{{showWeeklyPoster}}"
+    reportData="{{weeklyReportData}}"
+    cardImagePath="{{weeklyCardImage}}"
+    nickname=""
+    bind:close="onCloseWeeklyPoster"
+    bind:share="onShareWeeklyPoster"
+  />
+
+  <!-- ===== 月报封面海报（share-poster · mode=month_report · 数据源 /report/month/poster） ===== -->
+  <share-poster
+    mode="month_report"
+    visible="{{showMonthPoster}}"
+    monthReportData="{{monthPosterData}}"
+    bind:close="onCloseMonthPoster"
+    bind:share="onShareMonthPoster"
+  />
+</view>

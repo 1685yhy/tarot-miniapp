@@ -93,6 +93,16 @@
       </view>
     </view>
 
+    <!-- ===== 星象月报权益位（P2 · T7-5 入口："星象月报 · 周报月报免费看"） ===== -->
+    <view class="sr-benefit-banner" bindtap="onGoStarReport" role="button" aria-label="星象月报 · 周报月报免费看" hover-class="sr-benefit-banner--press">
+      <view class="sr-benefit-icon">📜</view>
+      <view class="sr-benefit-text">
+        <text class="sr-benefit-title">星象月报 · 周报月报免费看</text>
+        <text class="sr-benefit-sub">星光一周 · 星光月度卷轴 · 会员免费</text>
+      </view>
+      <text class="sr-benefit-arrow">›</text>
+    </view>
+
     <!-- ===== 权益对比（P2-3：折叠，定价之后） ===== -->
     <view class="cmp-section">
       <view class="fold-header" bindtap="onToggleCmp" role="button" aria-label="{{cmpExpanded ? '收起权益对比' : '展开权益对比'}}">

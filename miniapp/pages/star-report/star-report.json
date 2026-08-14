@@ -1,0 +1,12 @@
+{
+  "navigationBarTitleText": "星象月报",
+  "navigationBarBackgroundColor": "#FAF6EF",
+  "navigationBarTextStyle": "black",
+  "backgroundColor": "#FAF6EF",
+  "usingComponents": {
+    "energy-curve": "../../components/energy-curve/energy-curve",
+    "weekly-report-poster": "../../components/weekly-report-poster/weekly-report-poster",
+    "share-poster": "../../components/share-poster/share-poster",
+    "tarot-card": "../../components/tarot-card/tarot-card"
+  }
+}

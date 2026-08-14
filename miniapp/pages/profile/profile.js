@@ -380,6 +380,11 @@ Page({
     wx.navigateTo({ url: '/pages/fortune-trend/fortune-trend' });
   },
 
+  /** P2 星象月报入口（周报 Tab 默认） */
+  onGoStarReport() {
+    wx.navigateTo({ url: '/pages/star-report/star-report?tab=week' });
+  },
+
   /** 开发 04 · 新月许愿 */
   onGoWish() {
     wx.navigateTo({ url: '/pages/wish/wish' });

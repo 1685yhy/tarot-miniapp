@@ -1307,3 +1307,65 @@ page {
   box-shadow: 0 2rpx 10rpx rgba(138, 107, 61, 0.30);
   z-index: 1;
 }
+
+/* ================================================================
+   星象月报权益位（P2 · T7-5 入口："星象月报 · 周报月报免费看"）
+   E3 奶油底 · 细金描边 · 与定价卡同系
+   ================================================================ */
+.sr-benefit-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: linear-gradient(145deg, rgba(255, 253, 248, 0.95) 0%, rgba(247, 240, 227, 0.95) 100%);
+  border: 1.5rpx solid rgba(201, 169, 124, 0.40);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  transition: transform var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
+}
+
+.sr-benefit-banner--press {
+  background: rgba(201, 169, 124, 0.10);
+  border-color: rgba(201, 169, 124, 0.60);
+  transform: scale(0.98);
+}
+
+.sr-benefit-icon {
+  width: 72rpx;
+  height: 72rpx;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(201, 169, 124, 0.16);
+  border: 1rpx solid rgba(201, 169, 124, 0.40);
+  font-size: 36rpx;
+}
+
+.sr-benefit-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.sr-benefit-title {
+  display: block;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.sr-benefit-sub {
+  display: block;
+  margin-top: 4rpx;
+  font-size: var(--font-size-caption);
+  color: var(--color-text-tertiary);
+}
+
+.sr-benefit-arrow {
+  flex-shrink: 0;
+  font-size: 36rpx;
+  color: var(--color-gold-deep-ink);
+  opacity: 0.7;
+}
