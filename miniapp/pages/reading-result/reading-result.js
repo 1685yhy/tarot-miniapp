@@ -115,6 +115,9 @@ Page({
     // 解读正文分区渲染（E3：标题/段落层级恢复，纯视觉不改内容）
     letterSegments: [],
 
+    // 深度解读（付费）结构化分区：[{ title, paragraphs: [{text, sub}] }]
+    deepSections: [],
+
     // Task 4: Reflection question
     reflectionQuestion: '',
 
@@ -393,6 +396,29 @@ Page({
     return segs;
   },
 
+  /** 深度解读分区：后端已按固定六段结构解析 → 前端拆成 标题+正文 区块 */
+  _buildDeepSections(sections) {
+    if (!Array.isArray(sections) || sections.length === 0) return [];
+    return sections.map((sec) => {
+      const blocks = String(sec.body || '')
+        .split(/\n{2,}/)
+        .map(b => b.trim())
+        .filter(Boolean);
+      const paragraphs = blocks.map((b) => {
+        const sub = b.match(/^\*\*(.+?)\*\*$/);
+        if (sub) return { text: sub[1], sub: true };
+        // 深度正文中的小标题行（如「圣杯十（逆位）· 过去」）
+        const short = b.replace(/\*\*/g, '').trim();
+        const looksSub = short.length <= 30 && /[（(]正|逆[）)]位/.test(short) && /[··]/.test(short);
+        return {
+          text: short.replace(/\[ACTION\](.*?)\[\/ACTION\]/g, '').trim(),
+          sub: !!sub || (looksSub && short.length > 0),
+        };
+      }).filter(p => p.text);
+      return { title: sec.title, paragraphs };
+    });
+  },
+
   /* ---------------------------------------------------------------
      Transition to Result
      - Quick mode: skeleton holds for at least QUICK_MIN_MS, then the
@@ -458,8 +484,28 @@ Page({
       // Analytics: funnel — reading completed
       analytics.funnel('reading_completed', { spread_type: reading.spread_type });
 
-      const letterSegments = this._buildLetterSegments(reading.interpretation);
-      const tldr = this._extractTLDR(reading.interpretation);
+      // 深度解读：结构化分区渲染（标题+正文）；免费/标准解读保持原正文
+      const isDeep = reading.depth === 'deep';
+      const deepSections = isDeep ? this._buildDeepSections(reading.deep_sections) : [];
+      const letterSegments = deepSections.length === 0
+        ? this._buildLetterSegments(reading.interpretation)
+        : [];
+
+      // TL;DR：深度解读优先从结构化分区提炼（整体脉络/直答/逐牌位详解）
+      let tldr;
+      if (deepSections.length > 0) {
+        const preferOrder = ['整体脉络', '对提问的直答', '逐牌位详解'];
+        const preferText = preferOrder
+          .map((name) => {
+            const sec = reading.deep_sections.find((s) => (s.title || '').includes(name));
+            return sec ? sec.body : '';
+          })
+          .filter(Boolean)
+          .join('\n\n');
+        tldr = this._extractTLDR(preferText || reading.interpretation);
+      } else {
+        tldr = this._extractTLDR(reading.interpretation);
+      }
 
       // Extract teaching data from drawn cards
       const teachingCards = [];
@@ -486,7 +532,7 @@ Page({
       this.setData({
         reading, personaDisplay, tldr, teachingCards, hasTeachingData,
         spreadTypeName, pageLoading: false, reflectionQuestion,
-        letterSegments,
+        letterSegments, deepSections,
       });
       // Trigger staggered card entrance animation after render
       this._animateCardReveal();

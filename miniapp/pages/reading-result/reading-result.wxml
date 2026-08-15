@@ -132,8 +132,27 @@
            （纯文本字段 · 仅做视觉分区：小标题/段落层级恢复，不改内容结构）
            ========================================================== -->
 
+      <!-- 深度解读（付费）：结构化分区渲染（标题+正文，信息层级清晰） -->
+      <view class="letter-section" wx:if="{{deepSections.length > 0}}">
+        <view class="letter-divider">
+          <view class="letter-divider-line"></view>
+          <text class="letter-divider-star">✦</text>
+          <view class="letter-divider-line"></view>
+        </view>
+        <view class="deep-sections">
+          <view class="deep-sec" wx:for="{{deepSections}}" wx:for-item="sec" wx:key="title">
+            <view class="deep-sec-head">
+              <text class="deep-sec-title">{{sec.title}}</text>
+            </view>
+            <view class="deep-sec-para" wx:for="{{sec.paragraphs}}" wx:for-item="para" wx:key="text">
+              <text class="deep-sec-text {{para.sub ? 'deep-sec-sub' : ''}}">{{para.text}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
       <!-- 免费/标准解读：分段渲染（标题行 + 正文段落，行距疏朗） -->
-      <view class="letter-section" wx:if="{{letterSegments.length > 0}}">
+      <view class="letter-section" wx:elif="{{letterSegments.length > 0}}">
         <view class="letter-divider">
           <view class="letter-divider-line"></view>
           <text class="letter-divider-star">✦</text>
