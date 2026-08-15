@@ -39,6 +39,17 @@ class TeachingData(BaseModel):
     life_connection: str = ""
 
 
+class DeepSection(BaseModel):
+    """One structured section of a deep (paid) reading.
+
+    Parsed server-side from the AI's fixed six-section structure
+    (【一、逐牌位详解】…【六、注意与观察】).
+    """
+
+    title: str
+    body: str
+
+
 class DrawnCardResponse(BaseModel):
     id: int
     card_id: int
@@ -67,6 +78,7 @@ class ReadingResponse(BaseModel):
     chat_messages: list[ChatMessageResponse] = []
     reflection_question: str | None = None  # NEW: AI-generated reflection question
     depth: str | None = "standard"  # NEW: reading depth (basic / standard / deep)
+    deep_sections: list[DeepSection] = []  # deep readings: structured sections
 
     model_config = ConfigDict(from_attributes=True)
 

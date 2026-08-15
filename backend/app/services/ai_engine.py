@@ -10,6 +10,7 @@ so the AI remembers who it's talking to.
 
 import datetime
 import logging
+import re
 from typing import AsyncGenerator
 
 from openai import AsyncOpenAI
@@ -498,6 +499,89 @@ def _build_no_question_guidance(question: str | None, user_context: str | None =
     return _NO_QUESTION_GUIDANCE_FRESH_USER
 
 
+# ── Deep reading structure (depth="deep") ───────────────────────────────
+# Paid deep reading: content must be 2x+ the free/standard reading and
+# follow a fixed six-section structure. Each section starts with its fixed
+# title so the backend can parse it into structured sections (parse_deep_sections)
+# and the frontend can render title+body blocks.
+# Compliance: the 10-rule output red line (_OUTPUT_RED_LINE) remains in the
+# system prompt and is re-emphasized here — no fortune-telling, no verdicts,
+# no fear-mongering. Templates below must stay free of AI_OUTPUT_BLACKLIST words.
+
+_DEEP_STRUCTURE_INSTRUCTION = (
+    "\n\n【深度解读结构·强制】本次是用户付费的深度解读，内容量必须达到普通解读的 2 倍以上"
+    "（全文建议 2000 字以上），并严格按照以下六个板块输出，每个板块以固定标题开头、正文紧随其后：\n"
+    "【一、逐牌位详解】——每一张牌单独成段，格式「牌名（正/逆位）」小标题+正文：牌面核心含义 +"
+    "这张牌在这个位置对用户问题情境的具体关联。每张牌不少于 120 字。\n"
+    "【二、整体脉络】——牌阵走向与能量流动：牌与牌之间如何承接、呼应或转折，连成一条怎样的故事线，"
+    "整组牌在说什么。不少于 200 字。\n"
+    "【三、深层心理动因】——这组牌可能映照出的内在动机、未说出口的顾虑或习惯模式；"
+    "必须使用「听起来…」「似乎…」等推测式措辞，禁止「我能感觉到你…」等断言句式。不少于 150 字。\n"
+    "【四、对提问的直答】——正面回应用户的问题本身，给出当下最值得留意、最值得行动的方向；"
+    "不预测结果、不给确定性结论（遵守输出红线）。不少于 120 字。\n"
+    "【五、行动建议】——3~5 条具体、今天或本周就能执行的小行动，每条用 [ACTION]内容[/ACTION] 包裹"
+    "（与普通解读一致，后端会解析成行动清单），按内容归入 love/career/general。\n"
+    "【六、注意与观察】——未来一周建议回看什么、留意什么信号（如情绪变化、某个反复出现的念头）；"
+    "温和提醒，不制造焦虑。不少于 100 字。\n"
+    "硬性要求：六个板块一个都不能少、顺序不能乱；除【五、行动建议】外禁止出现 [ACTION] 标签；"
+    "板块标题必须原样保留（前端依赖它分块渲染）。"
+    "全文禁止预测吉凶、禁止时间点承诺、禁止命运定性、禁止恐吓或制造恐慌——"
+    "系统提示中的输出红线 10 条无条件遵守。"
+)
+
+
+# Fixed deep-section names, in required order (used by parse_deep_sections).
+DEEP_SECTION_NAMES = (
+    "逐牌位详解",
+    "整体脉络",
+    "深层心理动因",
+    "对提问的直答",
+    "行动建议",
+    "注意与观察",
+)
+
+DEEP_SECTION_TITLES = tuple(
+    f"{cn}、{name}" for cn, name in zip("一二三四五六", DEEP_SECTION_NAMES)
+)
+
+# Tolerant marker match: tolerates leading markdown (#/space) and optional
+# "一、" numbering — the AI sometimes writes 「### 【一、逐牌位详解】」 or
+# 「【逐牌位详解】」. The canonical title is normalised from the matched name.
+_DEEP_SECTION_RE = re.compile(
+    r"^[#*\s]*【\s*(?:([一二三四五六])、\s*)?(" + "|".join(DEEP_SECTION_NAMES) + r")\s*】",
+    re.MULTILINE,
+)
+
+
+def parse_deep_sections(text: str | None) -> list[dict]:
+    """Parse the fixed six-section deep-reading structure into [{title, body}].
+
+    Splits the AI output at the section markers
+    （【一、逐牌位详解】…【六、注意与观察】；容忍 markdown 前缀与编号省略）。
+    Text before the first marker (e.g. the acknowledgment opener) is dropped;
+    bodies keep their inner formatting. Titles are normalised to the canonical
+    「X、名称」 form. Returns [] when no marker is found (e.g. the AI failed
+    to follow the structure, or the reading is not deep).
+    """
+    if not text:
+        return []
+    matches = list(_DEEP_SECTION_RE.finditer(text))
+    if not matches:
+        return []
+    sections: list[dict] = []
+    for i, m in enumerate(matches):
+        body_start = m.end()
+        body_end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
+        body = text[body_start:body_end].strip()
+        if not body:
+            continue
+        name = m.group(2)
+        order = DEEP_SECTION_NAMES.index(name)
+        title = f"{'一二三四五六'[order]}、{name}"
+        sections.append({"title": title, "body": body})
+    return sections
+
+
 def _get_nudge_instruction(theme: str | None) -> str:
     """Return an instruction for the AI to end the reading with a personalized nudge."""
     if theme == "love":
@@ -596,6 +680,7 @@ async def generate_reading(
     persona: str | None = None,
     user_context: str | None = None,
     zodiac_sign: str | None = None,
+    depth: str = "standard",
 ) -> str | None:
     """
     Call the DeepSeek API to produce a full tarot reading.
@@ -611,6 +696,9 @@ async def generate_reading(
                       When set, the AI adopts the persona's voice and style.
         user_context: Optional pre-built context block about the user's reading
                       history, built by ``_build_user_context()``.
+        depth:        Reading depth: "standard" (free) or "deep" (paid).
+                      When "deep", the AI must output the fixed six-section
+                      structure (2x+ content) — see _DEEP_STRUCTURE_INSTRUCTION.
 
     Returns:
         The interpretation text, or ``None`` if the API call fails
@@ -713,6 +801,8 @@ async def generate_reading(
         # 认领层 → 牌面教学(抽取的牌) → 情感语气 → 外化重构 →
         # 用户上下文(历史+日记) → 无问题引导 → (输出红线) →
         # 行动层 → 收尾金句 → [ACTION]结构化要求(应用解析用)
+        # 深度解读(付费)追加：固定六段结构，内容量为普通解读 2 倍以上
+        deep_block = _DEEP_STRUCTURE_INSTRUCTION if depth == "deep" else ""
         user_prompt = "\n".join(
             p for p in (
                 f"现在是{now_str}，{opening}",
@@ -748,6 +838,7 @@ async def generate_reading(
                 f"2. 逐牌解读（每张牌在对应位置的含义，请引用画面细节）\n"
                 f"3. 综合解读（将所有牌串联成完整故事）\n"
                 f"4. 建议与指引（用户可以在现实层面采取的行动）\n\n",
+                deep_block,
                 action_block,
                 nudge_instruction,
                 f"【行动建议要求】\n"

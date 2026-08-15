@@ -30,12 +30,18 @@ from app.schemas.reading import (
     ActionItem,
     ChatMessageResponse,
     CreateReadingRequest,
+    DeepSection,
     DrawnCardResponse,
     ReadingHistoryItem,
     ReadingHistoryResponse,
     ReadingResponse,
 )
-from app.services.ai_engine import generate_reading, generate_reflection_question, _build_user_context
+from app.services.ai_engine import (
+    generate_reading,
+    generate_reflection_question,
+    parse_deep_sections,
+    _build_user_context,
+)
 from app.services.ai_personas import get_persona
 from app.services.tarot import draw_cards
 from app.utils.auth import get_current_user
@@ -546,11 +552,16 @@ async def create_reading(
         persona=persona_key,
         user_context=user_context,
         zodiac_sign=req.zodiac,
+        depth=reading_depth,
     )
     action_items: list[dict] = []
+    deep_sections: list[dict] = []
     if interpretation is not None:
         reading.interpretation = interpretation
         action_items = parse_action_items(interpretation)
+        # 深度解读：AI 输出按固定六段结构解析为结构化分区（付费价值核心）
+        if reading_depth == "deep":
+            deep_sections = parse_deep_sections(interpretation)
 
     # ── Deduct balances only after successful AI generation ──
     if uses_paid_credit:
@@ -624,6 +635,7 @@ async def create_reading(
         action_items=[ActionItem(**a) for a in action_items],
         reflection_question=reflection_question,
         depth=reading_depth,
+        deep_sections=[DeepSection(**s) for s in deep_sections],
     )
 
 
@@ -786,6 +798,9 @@ async def get_reading(
 
     drawn_resp = await _load_drawn_cards_response(db, reading.drawn_cards)
     action_items = parse_action_items(reading.interpretation)
+    reading_depth = reading.depth or "standard"
+    # 深度解读：从存储的解读文本解析结构化分区（与创建时同源同构）
+    deep_sections = parse_deep_sections(reading.interpretation) if reading_depth == "deep" else []
 
     return ReadingResponse(
         id=reading.id,
@@ -800,7 +815,8 @@ async def get_reading(
         action_items=[ActionItem(**a) for a in action_items],
         chat_messages=[ChatMessageResponse.model_validate(m) for m in reading.chat_messages],
         reflection_question=reading.reflection_question,
-        depth=reading.depth or "standard",
+        depth=reading_depth,
+        deep_sections=[DeepSection(**s) for s in deep_sections],
     )
 
 
@@ -885,19 +901,25 @@ async def reinterpret_reading(
     # ── Build user context block (async DB query) ──
     user_context = await _build_user_context_block(db, user.id)
 
+    # ── Depth tier (moved up: generate_reading + section parsing need it) ──
+    reading_depth = reading.depth or "standard"
+
     interpretation = await generate_reading(
         reading.spread_type, reading.question, reading.theme, cards_info,
         teaching_info=teaching_info,
         persona=reading.persona,
         user_context=user_context,
+        depth=reading_depth,
     )
     action_items: list[dict] = []
+    deep_sections: list[dict] = []
     if interpretation is not None:
         reading.interpretation = interpretation
         action_items = parse_action_items(interpretation)
+        if reading_depth == "deep":
+            deep_sections = parse_deep_sections(interpretation)
 
     # ── Apply depth tier truncation ──
-    reading_depth = reading.depth or "standard"
     if reading_depth == "basic" and interpretation:
         truncation_note = "\n\n[注：此为免费简要解读。完整解读请升级为标准或深度模式。]"
         interpretation = interpretation[:200] + truncation_note
@@ -932,6 +954,7 @@ async def reinterpret_reading(
         action_items=[ActionItem(**a) for a in action_items],
         reflection_question=reading.reflection_question,
         depth=reading_depth,
+        deep_sections=[DeepSection(**s) for s in deep_sections],
     )
 
 
