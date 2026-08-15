@@ -2088,3 +2088,40 @@ page {
 .premium-overlay-text {
   color: #8A6B3D;
 }
+
+/* ============================================================
+   真机反馈A：更多牌阵折叠区（热门优先 · chevron 指示 · E3 语言内）
+   ============================================================ */
+.more-spreads {
+  margin-top: 28rpx;
+}
+.more-spreads-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  padding: 22rpx 0;
+  border-radius: 999rpx;
+  border: 1.5rpx solid rgba(201, 169, 124, 0.24);
+  background: var(--e3-cream-hi);
+  box-shadow: var(--e3-shadow), var(--e3-hi);
+  margin-bottom: 28rpx;
+}
+.more-spreads-toggle--press {
+  transform: scale(0.98);
+}
+.more-spreads-label {
+  font-family: var(--e3-serif);
+  font-size: 24rpx;
+  color: var(--e3-gold-deep);
+  letter-spacing: 6rpx;
+}
+.more-spreads-chevron {
+  font-size: 26rpx;
+  color: var(--e3-gold-deep);
+  opacity: 0.65;
+  transition: transform 0.2s ease-out;
+}
+.more-spreads-chevron--open {
+  transform: rotate(180deg);
+}

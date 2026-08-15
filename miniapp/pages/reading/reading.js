@@ -52,6 +52,9 @@ const SPREADS = [
   { key: 'year_ahead', name: '年度运势', icon: '📅', desc: '未来12个月逐月详解', cards: 13, premium: true, defaultTheme: null, plainDesc: '一整年的每月运势预览' },
 ];
 
+/** 真机反馈A：牌阵列表太长 — 热门优先，默认展示这 4 个（覆盖通用/爱情/事业/财运四类），其余收进「更多牌阵」 */
+const FEATURED_SPREAD_KEYS = ['three_card', 'triangle', 'career', 'finance'];
+
 const THEME_LABELS = {
   love: '爱情',
   career: '事业',
@@ -95,6 +98,10 @@ function buildDisplayThemes(defaultTheme) {
 Page({
   data: {
     spreads: SPREADS,
+    /* 真机反馈A：牌阵列表太长 — 热门优先（默认 4 个）+ 更多折叠 */
+    featuredSpreads: SPREADS.filter(s => FEATURED_SPREAD_KEYS.includes(s.key)),
+    moreSpreads: SPREADS.filter(s => !FEATURED_SPREAD_KEYS.includes(s.key)),
+    showMoreSpreads: false,
     selectedSpread: null,
     spreadDefaultTheme: null,
     question: '',
@@ -339,6 +346,11 @@ Page({
       showQuestionInput: false,
       ritualStage: 0,
     });
+  },
+
+  /** 真机反馈A：展开/收起「更多牌阵」（chevron 指示 · E3 语言内） */
+  onToggleMoreSpreads() {
+    this.setData({ showMoreSpreads: !this.data.showMoreSpreads });
   },
 
   async onSelectSpread(e) {

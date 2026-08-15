@@ -83,10 +83,11 @@
         </view>
       </view>
 
+      <!-- 真机反馈A：牌阵列表太长 — 热门优先，默认只展示常用 4 个，其余收进「更多牌阵」折叠区 -->
       <view class="spread-grid anim-fade-up anim-stagger-2">
         <view
           class="spread-card {{item.premium ? 'premium' : ''}}"
-          wx:for="{{spreads}}"
+          wx:for="{{featuredSpreads}}"
           wx:key="key"
           data-spread="{{item}}"
           bindtap="onSelectSpread" role="button" aria-label="{{item.name}}占卜牌阵"
@@ -108,6 +109,43 @@
             <view class="premium-overlay-content">
               <image class="premium-overlay-icon" src="/images/icons/lock_64.png" mode="aspectFit" lazy-load aria-label="会员专属" />
               <text class="premium-overlay-text">会员</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 更多牌阵折叠区（点击展开 · chevron 指示） -->
+      <view class="more-spreads anim-fade-up anim-stagger-2" wx:if="{{moreSpreads.length > 0}}">
+        <view class="more-spreads-toggle" bindtap="onToggleMoreSpreads" role="button" aria-label="展开或收起更多牌阵" hover-class="more-spreads-toggle--press">
+          <text class="more-spreads-label">更多牌阵</text>
+          <text class="more-spreads-chevron {{showMoreSpreads ? 'more-spreads-chevron--open' : ''}}">⌄</text>
+        </view>
+        <view class="spread-grid spread-grid--more" wx:if="{{showMoreSpreads}}">
+          <view
+            class="spread-card {{item.premium ? 'premium' : ''}}"
+            wx:for="{{moreSpreads}}"
+            wx:key="key"
+            data-spread="{{item}}"
+            bindtap="onSelectSpread" role="button" aria-label="{{item.name}}占卜牌阵"
+          >
+            <image class="spread-card-icon" src="/images/icons/theme_general_64.png" mode="aspectFit" lazy-load aria-label="{{item.name}}" />
+            <view class="spread-card-info">
+              <view class="spread-card-title-row">
+                <text class="heading-4">{{item.name}}</text>
+                <text class="badge badge-popular" wx:if="{{item.popular}}">热门</text>
+              </view>
+              <text class="spread-card-desc">{{item.desc}}</text>
+              <text class="spread-card-plainDesc">{{item.plainDesc}}</text>
+            </view>
+            <view class="spread-card-meta">
+              <text class="spread-card-count">{{item.cards}}张</text>
+            </view>
+            <!-- Premium 锁 — 轻量角标（P1-1：不盖满整卡 · premium 显隐逻辑不变） -->
+            <view class="premium-overlay" wx:if="{{item.premium}}">
+              <view class="premium-overlay-content">
+                <image class="premium-overlay-icon" src="/images/icons/lock_64.png" mode="aspectFit" lazy-load aria-label="会员专属" />
+                <text class="premium-overlay-text">会员</text>
+              </view>
             </view>
           </view>
         </view>
