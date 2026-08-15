@@ -174,11 +174,8 @@ module.exports = { fmtDate: fmtDate };
     </view>
   </view>
 
-  <!-- ===== 抽牌后动作：查看详解（主角的展开入口） ===== -->
+  <!-- ===== 抽牌后动作：保存今日卡牌（点卡牌即可看详解 · 真机反馈A：去除重复「查看详解」入口） ===== -->
   <view wx:if="{{dailyCard}}" class="after-row">
-    <view class="see-detail" bindtap="onDailyCardTap" role="button" aria-label="查看今日卡牌详解" hover-class="card-pressed">
-      <text>查看详解 →</text>
-    </view>
     <view class="daily-share-link" bindtap="onShareDailyCard" role="button" aria-label="保存今日卡牌">
       <text>保存今日卡牌 ✦</text>
     </view>

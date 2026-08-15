@@ -670,31 +670,15 @@ page {
 }
 
 /* -----------------------------------------------------------
-   9. 抽牌后动作：查看详解 / 保存今日卡牌
+   9. 抽牌后动作：保存今日卡牌（点卡牌即可看详解 · 真机反馈A：去除重复「查看详解」按钮）
    ----------------------------------------------------------- */
 .after-row {
   position: relative;
   z-index: 3;
   display: flex;
   flex-direction: column;
-  gap: 12rpx;
-  margin-top: 8rpx;
-}
-.see-detail {
-  display: flex;
   align-items: center;
-  justify-content: center;
-  height: 88rpx;
-  border-radius: 999rpx;
-  border: 1rpx solid var(--e3-line-soft);
-  background: var(--e3-cream-hi);
-  font-size: 25rpx;
-  letter-spacing: 6rpx;
-  color: var(--e3-gold-deep);
-  box-shadow: var(--e3-hi);
-}
-.see-detail:active {
-  transform: scale(0.975);
+  margin-top: 16rpx;
 }
 .daily-share-link {
   text-align: center;
@@ -703,6 +687,7 @@ page {
   letter-spacing: 4rpx;
   height: 64rpx;
   line-height: 64rpx;
+  padding: 0 32rpx;
 }
 
 /* -----------------------------------------------------------
