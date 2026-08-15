@@ -236,7 +236,7 @@
            7b. DEEP READING PAYWALL — 阅读后置（读完再卖）
            A/B 价格逻辑不动：¥9.9 vs ¥19.9 (Task 2.7)
            ========================================================== -->
-      <view class="deep-paywall" wx:if="{{!isMember}}">
+      <view class="deep-paywall" wx:if="{{!isMember && reading.depth !== 'deep'}}">
         <view class="divider">
           <view class="divider-line"></view>
         </view>

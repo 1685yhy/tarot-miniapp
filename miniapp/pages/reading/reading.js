@@ -401,6 +401,9 @@ Page({
       theme: theme,
       themeHint: themeHint,
       displayThemes: displayThemes,
+      /* 复审修复: 换牌阵=重想问题 — 清空输入框，与 questionEmpty:true 保持一致，
+         避免按钮置灰+提示与可见文本矛盾 */
+      question: '',
       questionEmpty: true,
       selectedPersona: DEFAULT_PERSONA,
       /* UX 修复: 痛点#4 — 按初始主题推荐解读师 */

@@ -275,7 +275,7 @@ Page({
           .replace(/^---+\s*$/gm, '')
           .replace(/^\*\s+/gm, '· ')
           .replace(/^-\s+/gm, '')
-          .replace(/\[ACTION\](.*?)\[\/ACTION\]/g, '')  // 行动建议已由 action-cards 组件呈现，正文不再重复
+          .replace(/\[ACTION\](.*?)\[\/ACTION\]/gs, '')  // 行动建议已由 action-cards 组件呈现，正文不再重复 (s: 匹配跨行标签)
           .replace(/\n{3,}/g, '\n\n')
           .trim();
       }
@@ -355,6 +355,22 @@ Page({
     });
   },
 
+  /** 深度解读首选文案：从结构化分区取「整体脉络/直答/逐牌位详解」正文拼接。
+      用于 TL;DR 与分享/海报 keyInsight，避免取到「【一、逐牌位详解】」这类结构标题。
+      非深读或未解析出分区时返回空串，由调用方回退到 interpretation。 */
+  _pickDeepInsightText(reading) {
+    const sections = reading && reading.deep_sections;
+    if (!Array.isArray(sections) || sections.length === 0) return '';
+    const preferOrder = ['整体脉络', '对提问的直答', '逐牌位详解'];
+    return preferOrder
+      .map((name) => {
+        const sec = sections.find((s) => (s.title || '').includes(name));
+        return sec ? sec.body : '';
+      })
+      .filter(Boolean)
+      .join('\n\n');
+  },
+
   /* ---------------------------------------------------------------
      解读正文分区（E3 排版 · 纯视觉）
      letterSegments: 把 AI 正文按空行拆段，识别小标题（**...** / 【一、…】
@@ -388,7 +404,7 @@ Page({
       }
       const cleanBody = body
         .replace(/\*\*(.+?)\*\*/g, '$1')
-        .replace(/\[ACTION\](.*?)\[\/ACTION\]/g, '')
+        .replace(/\[ACTION\](.*?)\[\/ACTION\]/gs, '')  // s: 匹配跨行 [ACTION] 标签
         .trim();
       if (headText) segs.push({ type: 'heading', text: headText });
       if (cleanBody) segs.push({ type: 'para', text: cleanBody });
@@ -411,12 +427,14 @@ Page({
         const short = b.replace(/\*\*/g, '').trim();
         const looksSub = short.length <= 30 && /[（(]正|逆[）)]位/.test(short) && /[··]/.test(short);
         return {
-          text: short.replace(/\[ACTION\](.*?)\[\/ACTION\]/g, '').trim(),
+          text: short.replace(/\[ACTION\](.*?)\[\/ACTION\]/gs, '').trim(),  // s: 匹配跨行标签
           sub: !!sub || (looksSub && short.length > 0),
         };
       }).filter(p => p.text);
       return { title: sec.title, paragraphs };
-    });
+    })
+    // 复审修复: 段五 body 只含 [ACTION] 行时，剥除后 paragraphs 为空 → 空标题卡片不渲染
+    .filter((sec) => sec.paragraphs.length > 0);
   },
 
   /* ---------------------------------------------------------------
@@ -494,14 +512,7 @@ Page({
       // TL;DR：深度解读优先从结构化分区提炼（整体脉络/直答/逐牌位详解）
       let tldr;
       if (deepSections.length > 0) {
-        const preferOrder = ['整体脉络', '对提问的直答', '逐牌位详解'];
-        const preferText = preferOrder
-          .map((name) => {
-            const sec = reading.deep_sections.find((s) => (s.title || '').includes(name));
-            return sec ? sec.body : '';
-          })
-          .filter(Boolean)
-          .join('\n\n');
+        const preferText = this._pickDeepInsightText(reading);
         tldr = this._extractTLDR(preferText || reading.interpretation);
       } else {
         tldr = this._extractTLDR(reading.interpretation);
@@ -984,12 +995,15 @@ Page({
     analytics.trackEvent('share', { type: 'reading', spread_type: reading.spread_type });
     analytics.trackShare('wechat_friend', 'reading');
 
-    // Extract a 15-char key insight from the interpretation
+    // Extract a 15-char key insight from the interpretation.
+    // 复审修复: 深读优先从 deep_sections 提炼，避免截到「【一、逐牌位详解】」结构标题
     let keyInsight = '';
-    if (reading.interpretation) {
-      const clean = reading.interpretation
+    const insightText = this._pickDeepInsightText(reading) || reading.interpretation || '';
+    if (insightText) {
+      const clean = insightText
         .replace(/#{1,4}\s+/g, '')
         .replace(/\*\*(.+?)\*\*/g, '$1')
+        .replace(/\[ACTION\](.*?)\[\/ACTION\]/gs, '')
         .replace(/\n+/g, '')
         .trim();
       keyInsight = clean.length > 15 ? clean.slice(0, 15) + '…' : clean;
@@ -1069,12 +1083,15 @@ Page({
     const cardName = (firstCard.card_name_zh || firstCard.card_name || '') +
       ' · ' + (firstCard.card_name_en || firstCard.name_en || '');
 
-    // Extract a short key insight (15 chars) for the poster
+    // Extract a short key insight (15 chars) for the poster.
+    // 复审修复: 深读优先从 deep_sections 提炼，避免截到结构标题
     let keyInsight = '';
-    if (reading.interpretation) {
-      const clean = reading.interpretation
+    const insightText = this._pickDeepInsightText(reading) || reading.interpretation || '';
+    if (insightText) {
+      const clean = insightText
         .replace(/#{1,4}\s+/g, '')
         .replace(/\*\*(.+?)\*\*/g, '$1')
+        .replace(/\[ACTION\](.*?)\[\/ACTION\]/gs, '')
         .replace(/\n+/g, '')
         .trim();
       keyInsight = clean.length > 15 ? clean.slice(0, 15) + '…' : clean;
