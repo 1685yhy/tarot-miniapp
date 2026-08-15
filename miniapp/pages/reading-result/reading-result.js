@@ -112,6 +112,9 @@ Page({
     hasTeachingData: false,
     teachingCards: [],
 
+    // 解读正文分区渲染（E3：标题/段落层级恢复，纯视觉不改内容）
+    letterSegments: [],
+
     // Task 4: Reflection question
     reflectionQuestion: '',
 
@@ -269,6 +272,7 @@ Page({
           .replace(/^---+\s*$/gm, '')
           .replace(/^\*\s+/gm, '· ')
           .replace(/^-\s+/gm, '')
+          .replace(/\[ACTION\](.*?)\[\/ACTION\]/g, '')  // 行动建议已由 action-cards 组件呈现，正文不再重复
           .replace(/\n{3,}/g, '\n\n')
           .trim();
       }
@@ -349,6 +353,47 @@ Page({
   },
 
   /* ---------------------------------------------------------------
+     解读正文分区（E3 排版 · 纯视觉）
+     letterSegments: 把 AI 正文按空行拆段，识别小标题（**...** / 【一、…】
+     / 固定标签行）→ {type:'heading'|'para', text}；供 WXML 分区渲染。
+     --------------------------------------------------------------- */
+
+  _buildLetterSegments(text) {
+    if (!text || typeof text !== 'string') return [];
+    const blocks = text.split(/\n{2,}/).map(b => b.trim()).filter(Boolean);
+    const segs = [];
+    const LABEL_HEADS = ['牌阵总览', '综合解读', '建议与指引', '逐牌解读', '牌阵解读'];
+    for (const block of blocks) {
+      const trimmed = block.trim();
+      // 段首行可能是小标题：**牌阵总览** / 【一、…】 / 固定标签行
+      const lines = trimmed.split('\n');
+      const firstLine = (lines[0] || '').trim();
+      const boldMatch = firstLine.match(/^\*\*(.+?)\*\*$/);
+      const deepHead = firstLine.match(/^【[一二三四五六]、?[^】]{2,14}】$/);
+      const labelHead = LABEL_HEADS.includes(firstLine.replace(/[*\s]/g, ''));
+      let body = trimmed;
+      let headText = '';
+      if (boldMatch) {
+        headText = boldMatch[1];
+        body = lines.slice(1).join('\n');
+      } else if (deepHead) {
+        headText = deepHead[0].replace(/[【】]/g, '');
+        body = lines.slice(1).join('\n');
+      } else if (labelHead) {
+        headText = firstLine;
+        body = lines.slice(1).join('\n');
+      }
+      const cleanBody = body
+        .replace(/\*\*(.+?)\*\*/g, '$1')
+        .replace(/\[ACTION\](.*?)\[\/ACTION\]/g, '')
+        .trim();
+      if (headText) segs.push({ type: 'heading', text: headText });
+      if (cleanBody) segs.push({ type: 'para', text: cleanBody });
+    }
+    return segs;
+  },
+
+  /* ---------------------------------------------------------------
      Transition to Result
      - Quick mode: skeleton holds for at least QUICK_MIN_MS, then the
        result shows the moment the API has returned.
@@ -413,6 +458,7 @@ Page({
       // Analytics: funnel — reading completed
       analytics.funnel('reading_completed', { spread_type: reading.spread_type });
 
+      const letterSegments = this._buildLetterSegments(reading.interpretation);
       const tldr = this._extractTLDR(reading.interpretation);
 
       // Extract teaching data from drawn cards
@@ -423,7 +469,12 @@ Page({
             teachingCards.push({
               card_id: card.card_id,
               card_name: card.card_name,
-              symbols: card.teaching.symbols || [],
+              // 符号单字符（如「☾」「·」）→ 徽章式渲染，避免被看成“一个点”
+              symbols: (card.teaching.symbols || []).map((sym) => ({
+                symbol: sym.symbol,
+                meaning: sym.meaning,
+                isSingle: typeof sym.symbol === 'string' && sym.symbol.trim().length <= 2,
+              })),
               life_connection: card.teaching.life_connection || '',
             });
           }
@@ -432,7 +483,11 @@ Page({
       const hasTeachingData = teachingCards.length > 0;
 
       const reflectionQuestion = reading.reflection_question || '今天的解读对你意味着什么？';
-      this.setData({ reading, personaDisplay, tldr, teachingCards, hasTeachingData, spreadTypeName, pageLoading: false, reflectionQuestion });
+      this.setData({
+        reading, personaDisplay, tldr, teachingCards, hasTeachingData,
+        spreadTypeName, pageLoading: false, reflectionQuestion,
+        letterSegments,
+      });
       // Trigger staggered card entrance animation after render
       this._animateCardReveal();
       // Play reveal sound when reading result appears

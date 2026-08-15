@@ -29,6 +29,14 @@
   flex-direction: column;
 }
 
+/* 加载页锁死不可滚动（真机反馈：加载态可下滑出现底部空白）。
+   min-height 100vh + 原生导航栏 88rpx 叠加会超出视口产生可滚动空白，
+   这里固定高度 + overflow hidden，且 loading-box 高度减去导航栏。 */
+.page-loading {
+  height: 100vh;
+  overflow: hidden;
+}
+
 /* Native nav bar (~44px = 88rpx) is drawn on top of the viewport,
    so 100vh extends past the visible area and pushes the bottom
    action bar off-screen. Subtract the nav bar height. */
@@ -36,8 +44,9 @@
   height: calc(100vh - 88rpx);
 }
 
+/* 底部吸底操作栏（fixed）占位：正文底部预留足够间距，内容不被遮挡 */
 .inner-wrap {
-  padding: var(--spacing-2xl) 40rpx 100rpx;
+  padding: var(--spacing-2xl) 40rpx 300rpx;
   box-sizing: border-box;
 }
 
@@ -49,7 +58,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: calc(100vh - 88rpx);
+  overflow: hidden;
 }
 
 /* ---- Stage Container (fade-in entry) ---- */
@@ -311,13 +321,26 @@
   pointer-events: none;
 }
 
-/* ---- Card Row (horizontal spread) ---- */
+/* ---- Card Row (horizontal spread) ----
+   多牌阵可左右横滑：scroll-x 容器，无滚动条、弹性阻尼；
+   内容不足一屏时居中，超出时可滑动。 */
+.card-row-scroll {
+  width: 100%;
+  white-space: nowrap;
+  position: relative;
+  z-index: 1;
+}
+
 .card-row {
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
   z-index: 1;
+  padding: 8rpx 24rpx;
+  flex-shrink: 0;
+  /* 内容不足一屏时居中；超出时自动归零不裁切左侧（可正常横滑） */
+  margin: 0 auto;
 }
 
 /* ---- Individual Card (image-based layout) ---- */
@@ -644,11 +667,43 @@
 .letter-text {
   font-size: 32rpx;   /* between body (30) and subhead (36) — the hero */
   color: var(--color-text-primary);
-  line-height: 1.95;
+  line-height: 2;
   letter-spacing: 1.5rpx;
   white-space: pre-wrap;
   word-break: break-word;
   display: block;
+  margin-bottom: 28rpx;
+}
+
+/* 正文小标题（**牌阵总览** 等）：恢复层级，衬线金字，与正文拉开 */
+.letter-heading {
+  display: block;
+  font-size: 32rpx;
+  color: var(--e3-gold-deep, #8A6B3D);
+  font-family: var(--e3-serif, 'Songti SC', serif);
+  font-weight: 600;
+  letter-spacing: 4rpx;
+  line-height: 1.6;
+  margin: 36rpx 0 16rpx;
+  padding-left: 18rpx;
+  position: relative;
+}
+
+.letter-heading::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6rpx;
+  height: 26rpx;
+  border-radius: 999rpx;
+  background: linear-gradient(180deg, #C9A97C, #B08F52);
+  opacity: 0.75;
+}
+
+.letter-body .letter-heading:first-child {
+  margin-top: 0;
 }
 
 /* ---- Staggered Text Fade-In ---- */
@@ -1108,7 +1163,38 @@
   color: var(--color-lavender-dark);
   letter-spacing: 2rpx;
   opacity: 0.4;
-  margin-top: 32rpx;
+  margin-top: 24rpx;
+}
+
+/* 悬浮放大层：大卡下方 牌名 + 正/逆位（E3 弹层语言） */
+.enlarged-caption {
+  margin-top: 28rpx;
+  padding: 22rpx 44rpx;
+  background: linear-gradient(145deg, rgba(255, 253, 248, 0.96) 0%, rgba(242, 236, 223, 0.96) 100%);
+  border: 1rpx solid rgba(201, 169, 124, 0.35);
+  border-radius: 20rpx;
+  box-shadow: var(--e3-shadow, 0 2rpx 8rpx rgba(61, 58, 54, 0.10));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.enlarged-caption-name {
+  font-size: 36rpx;
+  color: var(--e3-ink, #3D3A36);
+  font-family: var(--e3-serif, 'Songti SC', serif);
+  font-weight: 600;
+  letter-spacing: 4rpx;
+  line-height: 1.5;
+}
+
+.enlarged-caption-meta {
+  font-size: 24rpx;
+  color: var(--e3-gold-deep, #8A6B3D);
+  font-family: var(--e3-serif, 'Songti SC', serif);
+  letter-spacing: 3rpx;
+  opacity: 0.85;
 }
 
 /* ============================================================
@@ -1213,6 +1299,24 @@
   opacity: 0;
 }
 
+/* 关联引导：教学区与本次解读的连接说明（前端静态文案） */
+.teaching-guide {
+  margin-top: var(--spacing-sm, 16rpx);
+  padding: 18rpx 24rpx;
+  background: rgba(232, 196, 190, 0.16);
+  border: 1rpx solid rgba(201, 169, 124, 0.16);
+  border-radius: 14rpx;
+}
+
+.teaching-guide-text {
+  display: block;
+  font-size: 24rpx;
+  color: var(--e3-ink-soft, #8A8478);
+  font-family: var(--e3-serif, 'Songti SC', serif);
+  line-height: 1.7;
+  letter-spacing: 1rpx;
+}
+
 .teaching-body.teaching-expanded {
   max-height: 2000rpx;
   opacity: 1;
@@ -1253,26 +1357,39 @@
   margin-bottom: var(--spacing-sm, 16rpx);
 }
 
+/* 符号名与含义分行排布：符号名突出（衬线金字），含义正常字号独立成行 */
 .teaching-symbol-item {
-  display: flex;
-  align-items: baseline;
-  gap: var(--spacing-xxs, 8rpx);
-  padding: 6rpx 0;
+  padding: 10rpx 0;
 }
 
 .teaching-symbol-name {
-  font-size: var(--font-size-caption, 24rpx);
-  font-weight: 500;
-  color: var(--color-text-primary, #3D3A36);
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--e3-gold-deep, #8A6B3D);
+  font-family: var(--e3-serif, 'Songti SC', serif);
   letter-spacing: 1rpx;
-  flex-shrink: 0;
+  margin-bottom: 4rpx;
+}
+
+/* 单字符符号（如「☾」「·」）：徽章式渲染，避免被看成“一个点” */
+.teaching-symbol-name--single {
+  display: inline-block;
+  font-size: 30rpx;
+  line-height: 1;
+  padding: 10rpx 18rpx;
+  background: rgba(201, 169, 124, 0.14);
+  border: 1rpx solid rgba(201, 169, 124, 0.32);
+  border-radius: 12rpx;
+  margin-bottom: 10rpx;
 }
 
 .teaching-symbol-meaning {
+  display: block;
   font-size: var(--font-size-caption, 24rpx);
   color: var(--color-lavender, #6E6A96);
   letter-spacing: 1rpx;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 .teaching-connection {
@@ -1463,6 +1580,23 @@
    主：追问解读师（实心雾粉） / 次：分享海报（细金描边）
    小图标行：送牌 / 保存 / 写日记
    ============================================================ */
+/* 吸底常驻操作栏（E3）：奶油底 + 顶部细线 + 安全区；正文已预留 300rpx 间距 */
+.bottom-action-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 150;
+  display: flex;
+  gap: 20rpx;
+  padding: 20rpx 32rpx calc(20rpx + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, rgba(250, 246, 239, 0.92) 0%, var(--e3-cream-hi, #FFFDF8) 30%);
+  backdrop-filter: blur(10rpx);
+  -webkit-backdrop-filter: blur(10rpx);
+  border-top: 1rpx solid rgba(201, 169, 124, 0.22);
+  box-shadow: 0 -4rpx 20rpx rgba(61, 58, 54, 0.06);
+}
+
 .ask-share-row {
   display: flex;
   gap: 20rpx;

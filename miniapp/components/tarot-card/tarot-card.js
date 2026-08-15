@@ -22,6 +22,8 @@ Component({
     cardType: { type: String, value: '' },
     imagePath: { type: String, value: '' },
     flipping: { type: Boolean, value: false },
+    // 结果页等首屏牌面不懒加载（lazy-load 在动画容器内有概率不触发导致空白）
+    lazy: { type: Boolean, value: true },
   },
 
   data: {

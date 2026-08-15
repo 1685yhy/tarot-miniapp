@@ -4,7 +4,7 @@
      ============================================================ -->
 
 <!-- ===== LOADING STATE ===== -->
-<view class="page" wx:if="{{pageLoading}}">
+<view class="page page-loading" wx:if="{{pageLoading}}">
   <view class="loading-box">
 
     <!-- Quick mode (default): lightweight skeleton — 800ms, then results -->
@@ -83,18 +83,21 @@
         <!-- Warm glow behind the center (present) card -->
         <view class="center-glow"></view>
 
-        <!-- Three overlapping cards with images -->
-        <view class="card-row">
-          <view class="card-item {{enlargedCardIndex >= 0 && enlargedCardIndex !== index ? 'dimmed' : ''}} {{enlargedCardIndex === index ? 'card-active' : ''}}" wx:for="{{reading.drawn_cards}}" wx:for-item="card" wx:key="id" animation="{{cardAnimData[index]}}" data-index="{{index}}" bindtap="onCardTap" role="button" aria-label="点击放大查看卡牌 {{card.card_name}}">
-            <tarot-card
-              nameZh="{{card.card_name}}"
-              positionName="{{card.position_name}}"
-              isReversed="{{card.is_reversed}}"
-              cardNumber="{{card.card_number}}"
-              imagePath="{{card.imagePath}}"
-            />
+        <!-- 卡牌行：横向滑动（多牌阵可左右横滑，无滚动条），点击悬浮放大 -->
+        <scroll-view class="card-row-scroll" scroll-x enhanced show-scrollbar="{{false}}" enable-flex>
+          <view class="card-row">
+            <view class="card-item {{enlargedCardIndex >= 0 && enlargedCardIndex !== index ? 'dimmed' : ''}} {{enlargedCardIndex === index ? 'card-active' : ''}}" wx:for="{{reading.drawn_cards}}" wx:for-item="card" wx:key="id" animation="{{cardAnimData[index]}}" data-index="{{index}}" bindtap="onCardTap" role="button" aria-label="点击放大查看卡牌 {{card.card_name}}">
+              <tarot-card
+                nameZh="{{card.card_name}}"
+                positionName="{{card.position_name}}"
+                isReversed="{{card.is_reversed}}"
+                cardNumber="{{card.card_number}}"
+                imagePath="{{card.imagePath}}"
+                lazy="{{false}}"
+              />
+            </view>
           </view>
-        </view>
+        </scroll-view>
 
         <!-- Spread type -->
         <text class="spread-type">{{spreadTypeName}}</text>
@@ -126,9 +129,26 @@
 
       <!-- ==========================================================
            5. LETTER — The interpretation as personal prose (hero)
-           （纯文本字段 · 仅做视觉分隔线，不改内容结构）
+           （纯文本字段 · 仅做视觉分区：小标题/段落层级恢复，不改内容结构）
            ========================================================== -->
-      <view class="letter-section">
+
+      <!-- 免费/标准解读：分段渲染（标题行 + 正文段落，行距疏朗） -->
+      <view class="letter-section" wx:if="{{letterSegments.length > 0}}">
+        <view class="letter-divider">
+          <view class="letter-divider-line"></view>
+          <text class="letter-divider-star">✦</text>
+          <view class="letter-divider-line"></view>
+        </view>
+        <view class="letter-body">
+          <block wx:for="{{letterSegments}}" wx:for-item="seg" wx:key="text">
+            <text wx:if="{{seg.type === 'heading'}}" class="letter-heading">{{seg.text}}</text>
+            <text wx:else class="letter-text">{{seg.text}}</text>
+          </block>
+        </view>
+      </view>
+
+      <!-- 兜底：纯文本正文 -->
+      <view class="letter-section" wx:else>
         <view class="letter-divider">
           <view class="letter-divider-line"></view>
           <text class="letter-divider-star">✦</text>
@@ -161,15 +181,19 @@
       </view>
 
       <!-- ==========================================================
-           7. TEACHING — Card depth analysis (collapsible)
+           7. TEACHING — 这张牌在说什么（默认展开，解读后直接可见）
            ========================================================== -->
       <view class="teaching-section" wx:if="{{hasTeachingData}}">
-        <view class="teaching-toggle" bindtap="onToggleTeaching" role="button" aria-label="切换牌面深度解析">
-          <image class="teaching-toggle-icon" src="/images/icons/sparkle_64.png" mode="aspectFit" aria-label="牌面深度解析" />
-          <text class="teaching-toggle-text">牌面深度解析</text>
+        <view class="teaching-toggle" bindtap="onToggleTeaching" role="button" aria-label="切换「这张牌在说什么」">
+          <image class="teaching-toggle-icon" src="/images/icons/sparkle_64.png" mode="aspectFit" aria-label="这张牌在说什么" />
+          <text class="teaching-toggle-text">这张牌在说什么</text>
           <text class="teaching-toggle-arrow">{{showTeaching ? '收起 ▲' : '展开 ▼'}}</text>
         </view>
         <view class="teaching-body {{showTeaching ? 'teaching-expanded' : ''}}">
+          <!-- 关联引导：把教学与本次解读连起来（前端静态文案，不调 AI） -->
+          <view class="teaching-guide">
+            <text class="teaching-guide-text">结合你的问题看——牌面符号与生活启示，是这张牌在日常里给你的回应。</text>
+          </view>
           <view class="teaching-card" wx:for="{{teachingCards}}" wx:for-item="tc" wx:key="card_id">
             <view class="teaching-card-header">
               <text class="teaching-card-name">{{tc.card_name}}</text>
@@ -177,8 +201,8 @@
             <view wx:if="{{tc.symbols && tc.symbols.length > 0}}" class="teaching-symbols">
               <text class="teaching-label">牌面符号</text>
               <view class="teaching-symbol-item" wx:for="{{tc.symbols}}" wx:for-item="sym" wx:key="symbol">
-                <text class="teaching-symbol-name">{{sym.symbol}}</text>
-                <text class="teaching-symbol-meaning">— {{sym.meaning}}</text>
+                <text class="teaching-symbol-name {{sym.isSingle ? 'teaching-symbol-name--single' : ''}}">{{sym.symbol}}</text>
+                <text class="teaching-symbol-meaning">{{sym.meaning}}</text>
               </view>
             </view>
             <view wx:if="{{tc.life_connection}}" class="teaching-connection">
@@ -220,13 +244,9 @@
       </view>
 
       <!-- ==========================================================
-           9. BOTTOM ACTIONS — 分级：追问解读师（主）/ 分享海报（次）
-           送牌 / 保存 / 写日记 收进一行小图标按钮（保留原 bindtap）
+           9. BOTTOM ACTIONS — 追问解读师 / 分享海报 → 吸底常驻（fixed 安全区）
+           送牌 / 保存 / 写日记 仍在正文流内（置于吸底栏上方）
            ========================================================== -->
-      <view class="ask-share-row">
-        <button class="ask-primary-btn" bindtap="onAskMore" aria-label="追问解读师，与塔罗师继续对话">追问解读师 ✦</button>
-        <button class="share-secondary-btn" bindtap="onOpenSharePoster" aria-label="分享解读海报">分享海报</button>
-      </view>
       <view class="mini-action-row">
         <button class="mini-action-btn" bindtap="onSendCardToFriend" aria-label="送好友一张牌，好友扫码后双方各得一次免费深度解读">🎁 送好友一张牌</button>
         <button class="mini-action-btn" bindtap="{{isSaved ? 'onUnsaveReading' : 'onSaveReading'}}" aria-label="{{isSaved ? '取消保存解读' : '保存解读到收藏'}}">{{isSaved ? '已保存' : '保存解读'}}</button>
@@ -248,6 +268,12 @@
     </view>
 
   </scroll-view>
+
+  <!-- ===== BOTTOM ACTION BAR — 追问解读师 / 分享海报 吸底常驻（E3） ===== -->
+  <view class="bottom-action-bar">
+    <button class="ask-primary-btn" bindtap="onAskMore" aria-label="追问解读师，与塔罗师继续对话">追问解读师 ✦</button>
+    <button class="share-secondary-btn" bindtap="onOpenSharePoster" aria-label="分享解读海报">分享海报</button>
+  </view>
 
   <!-- ===== ENLARGED CARD OVERLAY ===== -->
   <view class="enlarged-overlay {{isAnimatingExit ? 'exiting' : 'active'}}" wx:if="{{enlargedCardIndex >= 0}}"
@@ -283,6 +309,11 @@
           <text class="back-desc">{{reading.drawn_cards[enlargedCardIndex].reversed_meaning || ''}}</text>
         </view>
 
+      </view>
+      <!-- 悬浮放大层：大卡 + 牌名 + 正/逆位（E3 弹层语言） -->
+      <view class="enlarged-caption">
+        <text class="enlarged-caption-name">{{reading.drawn_cards[enlargedCardIndex].card_name}}</text>
+        <text class="enlarged-caption-meta">{{reading.drawn_cards[enlargedCardIndex].position_name || ''}} · {{reading.drawn_cards[enlargedCardIndex].is_reversed ? '逆位' : '正位'}}</text>
       </view>
       <text class="enlarged-hint">轻点翻牌 · 点击背景关闭</text>
     </view>
