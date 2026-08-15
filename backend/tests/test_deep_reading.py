@@ -7,9 +7,9 @@ Covers:
 - Deep prompt injection: depth="deep" appends the structure instruction
   (with 2x+ content requirement and all six section titles) to the user
   prompt; depth="standard" does not
-- Compliance: the six section titles (user-visible structure) are free of
-  AI_OUTPUT_BLACKLIST words; the instruction re-emphasises the output red
-  line (no fortune-telling / no verdicts / no fear-mongering)
+- Compliance: the six section titles (user-visible structure) and the full
+  instruction are free of AI_OUTPUT_BLACKLIST words; the instruction
+  references (引用) the output red line rather than restating it
 - API plumbing: member creating a depth="deep" reading gets depth="deep"
   in the response (AI key empty in tests → interpretation None →
   deep_sections []), and the response schema accepts deep_sections
@@ -128,6 +128,24 @@ class TestParseDeepSections:
         assert sections[0]["title"] == "一、逐牌位详解"
         assert "正文内容" in sections[0]["body"]
 
+    def test_tolerates_markdown_prefix_missing_number_out_of_order(self):
+        # AI 输出可能带 markdown 前缀（###/##）、省略「一、」编号、或乱序输出——
+        # 解析器须容忍，并按出现顺序归一化为规范编号标题（防回归）。
+        text = (
+            "### 【三、深层心理动因】\n\n第三段正文。\n\n"
+            "## 【逐牌位详解】\n\n第一段正文。\n\n"
+            "【注意与观察】\n\n第六段正文。\n\n"
+            "【二、整体脉络】\n\n第二段正文。"
+        )
+        sections = parse_deep_sections(text)
+        assert [s["title"] for s in sections] == [
+            "三、深层心理动因", "一、逐牌位详解", "六、注意与观察", "二、整体脉络",
+        ]
+        assert "第三段正文" in sections[0]["body"]
+        assert "第一段正文" in sections[1]["body"]
+        assert "第六段正文" in sections[2]["body"]
+        assert "第二段正文" in sections[3]["body"]
+
 
 # ---------------------------------------------------------------------------
 # Deep prompt injection (generate_reading with depth="deep")
@@ -198,8 +216,17 @@ class TestDeepPromptInjection:
     def test_deep_prompt_reiterates_red_line(self, monkeypatch):
         _, user_prompt = _capture_prompts(monkeypatch, depth="deep")
         assert "输出红线" in user_prompt
-        assert "禁止预测吉凶" in user_prompt
-        assert "禁止命运定性" in user_prompt
+        assert "吉凶断言" in user_prompt
+        assert "时间点承诺" in user_prompt
+
+    def test_deep_prompt_skips_ending_action_layer(self, monkeypatch):
+        # 六段结构已含【五、行动建议】([ACTION]) 与【六、注意与观察】，
+        # 标准结尾层（两个问题与30秒小事 + 【行动建议要求】）不得再注入，
+        # 否则多余 [ACTION] 会污染第六段正文（防回归）。
+        _, user_prompt = _capture_prompts(monkeypatch, depth="deep")
+        assert "给你两个问题，不用现在回答" not in user_prompt
+        assert "【行动建议要求】" not in user_prompt
+        assert "【五、行动建议】" in user_prompt
 
     def test_standard_prompt_has_no_deep_structure(self, monkeypatch):
         _, user_prompt = _capture_prompts(monkeypatch, depth="standard")
@@ -224,8 +251,13 @@ class TestDeepCompliance:
     def test_instruction_no_fear_mongering(self):
         # The instruction itself must not order the AI to predict/terrorise
         assert "恐吓" in _DEEP_STRUCTURE_INSTRUCTION  # explicitly forbidden
-        assert "预测吉凶" in _DEEP_STRUCTURE_INSTRUCTION  # explicitly forbidden
+        assert "吉凶断言" in _DEEP_STRUCTURE_INSTRUCTION  # explicitly forbidden
         assert "时间点承诺" in _DEEP_STRUCTURE_INSTRUCTION
+
+    def test_full_instruction_blacklist_scan(self):
+        # 整段 _DEEP_STRUCTURE_INSTRUCTION（不只是六段标题）跑 AI_OUTPUT_BLACKLIST
+        # 黑名单扫描——指令文本本身塑造 AI 输出，禁词（必/命/预测等字符级）不得出现。
+        assert find_forbidden(_DEEP_STRUCTURE_INSTRUCTION, AI_OUTPUT_BLACKLIST) == []
 
     def test_action_tags_limited_to_actions_section(self):
         # Only the actions section may carry [ACTION] tags
