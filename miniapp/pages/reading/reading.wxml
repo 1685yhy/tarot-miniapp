@@ -217,7 +217,8 @@
           bindinput="onQuestionInput"
         />
         <view class="question-footer">
-          <text class="hint-text">星光会倾听每一个字 ✦</text>
+          <!-- 真机反馈A：空输入常驻提示（有内容后恢复原文案） -->
+          <text class="hint-text">{{questionEmpty ? '先把你的问题写下来，星光才能读懂你 ✦' : '星光会倾听每一个字 ✦'}}</text>
           <text class="char-counter {{question.length >= 450 ? 'counter-warning' : ''}}">{{question.length}}/500</text>
         </view>
       </view>
@@ -300,8 +301,8 @@
         </view>
       </view>
 
-      <!-- Draw button -->
-      <button class="btn-primary btn--full {{isDrawing ? 'btn-drawing' : ''}}" bindtap="onStartReading" disabled="{{isDrawing}}">
+      <!-- Draw button（真机反馈A：空输入置灰视觉，点击 toast 提示；保留可点以给出反馈） -->
+      <button class="btn-primary btn--full {{questionEmpty ? 'btn--muted' : ''}} {{isDrawing ? 'btn-drawing' : ''}}" bindtap="onStartReading" disabled="{{isDrawing}}">
         <text wx:if="{{!isDrawing}}">翻开牌阵</text>
         <text wx:else>牌灵正在回应...</text>
       </button>

@@ -148,6 +148,8 @@ Page({
     questionSamples: ['最近的工作发展如何？', '我和TA的关系走向？', '这段迷茫期该如何度过？'],
     questionFocus: false,
     recommendedPersona: null,
+    /* 真机反馈A：空输入标记 — 驱动按钮置灰 + 常驻提示 + 点击 toast */
+    questionEmpty: true,
 
     /* 开发 03：能量上下文联动 — 提问页顶部「今日能量」小字（真实接口） */
     energyHint: '',
@@ -204,6 +206,7 @@ Page({
           themeHint: themeHint,
           displayThemes: displayThemes,
           question: restoredQuestion,
+          questionEmpty: !(restoredQuestion && restoredQuestion.trim()),
           selectedPersona: restoredPersona || DEFAULT_PERSONA,
           /* UX 修复: 痛点#4 — 按初始主题推荐解读师 */
           recommendedPersona: this._computeRecommendedPersona(theme),
@@ -398,6 +401,7 @@ Page({
       theme: theme,
       themeHint: themeHint,
       displayThemes: displayThemes,
+      questionEmpty: true,
       selectedPersona: DEFAULT_PERSONA,
       /* UX 修复: 痛点#4 — 按初始主题推荐解读师 */
       recommendedPersona: this._computeRecommendedPersona(theme),
@@ -418,7 +422,8 @@ Page({
       this.setData({ showOnboarding: false });
       wx.setStorageSync('onboarding_step', 3);
     }
-    this.setData({ question: e.detail.value });
+    // 真机反馈A：同步空输入标记（驱动按钮置灰 / 恢复）
+    this.setData({ question: e.detail.value, questionEmpty: !e.detail.value.trim() });
   },
 
   onThemeTap(e) {
@@ -448,7 +453,7 @@ Page({
   onSampleTap(e) {
     const sample = e.currentTarget.dataset.sample;
     if (!sample) return;
-    this.setData({ question: sample, questionFocus: true });
+    this.setData({ question: sample, questionFocus: true, questionEmpty: false });
     try { wx.vibrateShort({ type: 'light' }); } catch(e) {}
     // 重置 focus 标记，保证再次点击示例可再次触发聚焦
     this._setTimer(() => {
@@ -518,6 +523,7 @@ Page({
       ritualStage: null,
       ritualEnabled: false,
       question: '',
+      questionEmpty: true,
       theme: '',
       themeHint: '',
       selectedPersona: DEFAULT_PERSONA,
@@ -657,54 +663,33 @@ Page({
       return;
     }
 
-    /* UX: 单弹窗温柔引导 — 无论写没写问题都只弹一次。
-       已写问题 → 一次次数确认（会员版保留"会员可无限次解读"文案）；
-       未写问题 → 一次温柔引导，「直接听牌意」立即开始，不再追加次数弹窗，
-       「先写一句」留在提问页并聚焦输入框。 */
+    /* 真机反馈A：空输入无提示 — 改为置灰按钮 + 点击 toast 明确反馈（按钮有内容后恢复） */
     const hasQuestion = !!(this.data.question && this.data.question.trim());
 
-    if (hasQuestion) {
-      // ── 已写问题：一次确认（含消耗次数文案）──
-      const isMember = this.data.isMember;
-      const used = this.data.freeReadingsUsed || 0;
-      const total = this.data.freeReadingsTotal || _getFreeReadingsLimit();
-      const confirmContent = isMember
-        ? '会员可无限次解读，确定要继续吗？'
-        : `将消耗 1 次免费解读机会（今日 ${used}/${total}），确定要继续吗？`;
-
-      const confirmed = await new Promise((resolve) => {
-        wx.showModal({
-          title: '今日解读机会 · 确定开始吗？',
-          content: confirmContent,
-          confirmText: '确定',
-          cancelText: '取消',
-          success: (res) => resolve(res.confirm),
-        });
-      });
-
-      if (!confirmed) return;
-    } else {
-      // ── 未写问题：一次温柔引导 ──
-      const startNow = await new Promise((resolve) => {
-        wx.showModal({
-          title: '给星光一句话，解读会更懂你 ✦',
-          content: '写下一个问题，星光能更懂你此刻的心事。也可以不写，先听听牌意。',
-          confirmText: '直接听牌意',
-          cancelText: '先写一句',
-          success: (res) => resolve(res.confirm),
-        });
-      });
-
-      if (!startNow) {
-        // 「先写一句」= 留在提问页，聚焦输入框（questionFocus 机制复用 onSampleTap）
-        this.setData({ questionFocus: true });
-        this._setTimer(() => {
-          if (this.data.questionFocus) this.setData({ questionFocus: false });
-        }, 1200);
-        return;
-      }
-      // 「直接听牌意」= 直接开始，次数消耗在开始逻辑里照常，不额外打扰
+    if (!hasQuestion) {
+      wx.showToast({ title: '先把你的问题写下来 ✦', icon: 'none', duration: 3000 });
+      return;
     }
+
+    // ── 已写问题：一次次数确认（含消耗次数文案）──
+    const isMember = this.data.isMember;
+    const used = this.data.freeReadingsUsed || 0;
+    const total = this.data.freeReadingsTotal || _getFreeReadingsLimit();
+    const confirmContent = isMember
+      ? '会员可无限次解读，确定要继续吗？'
+      : `将消耗 1 次免费解读机会（今日 ${used}/${total}），确定要继续吗？`;
+
+    const confirmed = await new Promise((resolve) => {
+      wx.showModal({
+        title: '今日解读机会 · 确定开始吗？',
+        content: confirmContent,
+        confirmText: '确定',
+        cancelText: '取消',
+        success: (res) => resolve(res.confirm),
+      });
+    });
+
+    if (!confirmed) return;
 
     // Analytics: funnel step
     analytics.funnel('reading_started', { spread: selectedSpread.key, theme: this.data.theme || 'general' });

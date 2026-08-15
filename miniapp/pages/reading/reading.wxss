@@ -2073,12 +2073,23 @@ page {
   background: linear-gradient(135deg, #7A5E35 0%, #634A27 100%);
   box-shadow: 0 4rpx 14rpx rgba(138, 107, 61, 0.28);
 }
+/* 真机反馈A：空输入置灰视觉（不设真 disabled，保留点击 toast 反馈） */
+.btn-primary.btn--full.btn--muted {
+  background: linear-gradient(135deg, var(--e3-paper, #F2ECDF) 0%, #E7DCC8 100%);
+  color: rgba(61, 58, 54, 0.40);
+  box-shadow: none;
+}
+.btn-primary.btn--full.btn--muted:active {
+  background: linear-gradient(135deg, var(--e3-paper, #F2ECDF) 0%, #E7DCC8 100%);
+  box-shadow: none;
+  transform: none;
+}
 /* 提问页底部留出 safe-area（真机 Home 条不遮挡按钮） */
 .btn-back-spreads-wrap {
   padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
 }
-/* 牌阵列表底部：留出固定栏高度 + 24rpx 余量 */
-.spread-grid {
+/* 牌阵列表底部：留出固定栏高度 + 24rpx 余量（真机反馈A：仅末行「更多牌阵」网格保留） */
+.spread-grid--more {
   margin-bottom: calc(120rpx + env(safe-area-inset-bottom));
 }
 /* 会员徽章：金描边 + 深金字 */
