@@ -906,6 +906,11 @@ page {
   box-sizing: border-box;
 }
 
+/* 真机反馈A：快速/沉浸选项与「翻开牌阵」按钮之间的呼吸感 */
+.mode-selector {
+  margin-bottom: 16rpx;
+}
+
 .mode-card {
   display: flex;
   align-items: center;
@@ -959,7 +964,9 @@ page {
   color: var(--color-text-tertiary);
   letter-spacing: 1rpx;
   opacity: 0.75;
-  white-space: nowrap;
+  /* 真机反馈A：选项文案过长时允许换行，避免溢出卡片 */
+  white-space: normal;
+  line-height: 1.5;
 }
 
 /* ==============================
@@ -2068,6 +2075,8 @@ page {
   background: linear-gradient(135deg, #8A6B3D 0%, #6F532C 100%);
   color: #FAF6EF;
   box-shadow: 0 8rpx 24rpx rgba(138, 107, 61, 0.32);
+  /* 真机反馈A：与上方选项区保持呼吸感（不挤不飘） */
+  margin-top: 48rpx;
 }
 .btn-primary.btn--full:active {
   background: linear-gradient(135deg, #7A5E35 0%, #634A27 100%);
