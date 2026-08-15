@@ -7,6 +7,7 @@ const { computeImagePath, findCard } = require('../../utils/cards');
 const sound = require('../../utils/sound');
 const { getZodiacBadge } = require('../../utils/energy');
 const { SLOT_INFO } = require('../../utils/config');
+const { navTo } = require('../../utils/nav-guard');
 
 // 三位塔罗师信息（与 backend ai_personas.py 保持一致）
 const PERSONA_INFO = {
@@ -377,22 +378,22 @@ Page({
 
   /** 进入「我的牌运」页（牌运曲线 · 个人数据资产） */
   onGoFortuneTrend() {
-    wx.navigateTo({ url: '/pages/fortune-trend/fortune-trend' });
+    navTo('/pages/fortune-trend/fortune-trend');
   },
 
   /** P2 星象月报入口（周报 Tab 默认） */
   onGoStarReport() {
-    wx.navigateTo({ url: '/pages/star-report/star-report?tab=week' });
+    navTo('/pages/star-report/star-report?tab=week');
   },
 
   /** 开发 04 · 新月许愿 */
   onGoWish() {
-    wx.navigateTo({ url: '/pages/wish/wish' });
+    navTo('/pages/wish/wish');
   },
 
   /** 开发 04 · 满月复盘 */
   onGoReview() {
-    wx.navigateTo({ url: '/pages/review/review' });
+    navTo('/pages/review/review');
   },
 
   /** 设置 tile → 平滑滚到页面「设置」分区 */
@@ -566,49 +567,49 @@ Page({
 
   /** 我的星座（可改）→ 复用星座网格页（change 模式） */
   onGoZodiac() {
-    wx.navigateTo({ url: '/pages/zodiac-welcome/zodiac-welcome?from=change' });
+    navTo('/pages/zodiac-welcome/zodiac-welcome?from=change');
   },
 
   /** 完善出生信息（日期自动推导星座） */
   onGoBirthInfo() {
-    wx.navigateTo({ url: '/pages/birth-info/birth-info' });
+    navTo('/pages/birth-info/birth-info');
   },
 
   onGoMembership() {
-    wx.navigateTo({ url: '/pages/membership/membership' });
+    navTo('/pages/membership/membership');
   },
 
   onGoToReading() {
-    wx.navigateTo({ url: '/pages/reading/reading' });
+    navTo('/pages/reading/reading');
   },
 
   onViewReading(e) {
     const id = e.currentTarget.dataset.id;
-    wx.navigateTo({ url: `/pages/reading-result/reading-result?id=${id}` });
+    navTo(`/pages/reading-result/reading-result?id=${id}`);
   },
 
   onGoFavorites() {
     // Use globalData to signal favorites filter (百科已改为普通页面，navigateTo 进入)
     const app = getApp();
     app.globalData.showCardFavorites = true;
-    wx.navigateTo({ url: '/pages/encyclopedia/encyclopedia' });
+    navTo('/pages/encyclopedia/encyclopedia');
   },
 
   onGoDiary() {
     // 星光手账 T1-4：日记与手账合并，入口指向手账
-    wx.navigateTo({ url: '/pages/journal/journal' });
+    navTo('/pages/journal/journal');
   },
 
   /** 星辰相遇（双人合盘）入口（SDD P1 · T2-4） */
   onGoMeet() {
     analytics.trackEvent('meet_entry', { source: 'profile' });
-    wx.navigateTo({ url: '/pages/meet/meet' });
+    navTo('/pages/meet/meet');
   },
 
   /** 星友圈（今日共鸣墙）入口（SDD P2 · T8-5） */
   onGoResonance() {
     analytics.trackEvent('resonance_entry', { source: 'profile' });
-    wx.navigateTo({ url: '/pages/resonance/resonance' });
+    navTo('/pages/resonance/resonance');
   },
 
   /**
@@ -666,7 +667,7 @@ Page({
 
   /** P3-1: 每日签到入口 */
   onGoCheckin() {
-    wx.navigateTo({ url: '/pages/checkin/checkin' });
+    navTo('/pages/checkin/checkin');
   },
 
   onGoAnnualReport() {
@@ -674,10 +675,10 @@ Page({
     const user = app.globalData.user;
     if (!user || !user.is_member) {
       wx.showToast({ title: '会员专属功能', icon: 'none' });
-      wx.navigateTo({ url: '/pages/membership/membership' });
+      navTo('/pages/membership/membership');
       return;
     }
-    wx.navigateTo({ url: '/pages/annual-report/annual-report' });
+    navTo('/pages/annual-report/annual-report');
   },
 
   onToggleYearEndReminder() {
@@ -692,11 +693,11 @@ Page({
   },
 
   onGoShareCenter() {
-    wx.navigateTo({ url: '/pages/share-center/share-center' });
+    navTo('/pages/share-center/share-center');
   },
 
   onGoAbout() {
-    wx.navigateTo({ url: '/pages/about/about' });
+    navTo('/pages/about/about');
   },
 
   /**
