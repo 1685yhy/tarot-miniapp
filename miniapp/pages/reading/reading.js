@@ -31,6 +31,7 @@ const { playCardDrawSound } = require('../../utils/sound');
 const { fetchTodayEnergy } = require('../../utils/energy');
 const analytics = require('../../utils/analytics');
 const { startPay, isComingSoonError, showComingSoonModal } = require('../../utils/pay');
+const { navTo, redirectTo } = require('../../utils/nav-guard');
 
 /** Get free daily readings limit from member status (or fallback) */
 function _getFreeReadingsLimit() {
@@ -227,7 +228,7 @@ Page({
                 confirmText: '开通会员',
                 cancelText: '取消',
                 success: (res) => {
-                  if (res.confirm) wx.navigateTo({ url: '/pages/membership/membership' });
+                  if (res.confirm) navTo('/pages/membership/membership');
                 },
               });
             }
@@ -373,7 +374,7 @@ Page({
             cancelText: '取消',
             success: (res) => {
               if (res.confirm) {
-                wx.navigateTo({ url: '/pages/membership/membership' });
+                navTo('/pages/membership/membership');
               }
             },
           });
@@ -590,7 +591,7 @@ Page({
   },
 
   onGoMembership() {
-    wx.navigateTo({ url: '/pages/membership/membership' });
+    navTo('/pages/membership/membership');
   },
 
   preventTouchMove() {
@@ -714,14 +715,10 @@ Page({
 
     if (quickMode) {
       // Quick mode: skip ritual & loading stages, go directly to result
-      wx.redirectTo({
-        url: `/pages/reading-result/reading-result?pending=1&spread=${selectedSpread.key}&quick=1`,
-      });
+      redirectTo(`/pages/reading-result/reading-result?pending=1&spread=${selectedSpread.key}&quick=1`);
     } else {
       // Immersive mode: existing flow with full animation
-      wx.redirectTo({
-        url: `/pages/reading-result/reading-result?pending=1&spread=${selectedSpread.key}`,
-      });
+      redirectTo(`/pages/reading-result/reading-result?pending=1&spread=${selectedSpread.key}`);
     }
   },
 });

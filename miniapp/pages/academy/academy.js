@@ -21,6 +21,7 @@
 const { request, getFriendlyError } = require('../../utils/api');
 const { maybePromptSubscribe } = require('../../utils/subscribe');
 const analytics = require('../../utils/analytics');
+const { navTo } = require('../../utils/nav-guard');
 
 // 星点配色（E3 奶油治愈色系派生）：大阿卡纳亮金，小阿卡纳按四元素
 const STAR_COLORS = {
@@ -359,7 +360,7 @@ Page({
       if (this._destroyed) return;
       if (next && next.card_id) {
         analytics.trackEvent('academy_path_enter', { path });
-        wx.navigateTo({ url: `/pages/academy/lesson/lesson?card_id=${next.card_id}` });
+        navTo(`/pages/academy/lesson/lesson?card_id=${next.card_id}`);
       }
     } catch (err) {
       if (this._destroyed) return;
@@ -373,7 +374,7 @@ Page({
   onTodayCardTap() {
     const tc = this.data.todayCard;
     if (!tc || !tc.card_id) return;
-    wx.navigateTo({ url: `/pages/academy/lesson/lesson?card_id=${tc.card_id}` });
+    navTo(`/pages/academy/lesson/lesson?card_id=${tc.card_id}`);
   },
 
   // ===================== 计划设置 =====================
