@@ -7,6 +7,7 @@ const { createAnim, staggeredEntrance } = require('../../utils/animate');
 const { playPageEnterSound, playCardFlipSound, startAmbientSound, stopAmbientSound } = require('../../utils/sound');
 const analytics = require('../../utils/analytics');
 const { ENERGY, ENERGY_KEYS, getSkyNote, getZodiacBadge, fetchTodayEnergy } = require('../../utils/energy');
+const { navTo, switchTo } = require('../../utils/nav-guard');
 
 /** Get free daily readings limit from member status (or fallback) */
 function _getFreeReadingsLimit() {
@@ -590,60 +591,60 @@ Page({
   navigateToReading(e) {
     const type = e.currentTarget.dataset.type;
     analytics.trackEvent('reading_start', { type, source: 'home_spread_card' });
-    wx.navigateTo({ url: `/pages/reading/reading?type=${type}` });
+    navTo(`/pages/reading/reading?type=${type}`);
   },
 
   goToDiary() {
     // 星光手账 T1-4：与"记录今天"合并指向手账
-    wx.navigateTo({ url: '/pages/journal/journal' });
+    navTo('/pages/journal/journal');
   },
 
   onGoDiary() {
     // 星光手账 T1-4：与"记录今天"合并指向手账
-    wx.navigateTo({ url: '/pages/journal/journal' });
+    navTo('/pages/journal/journal');
   },
 
   /** 星空时刻表（星象日历 + 节点活动）入口（SDD P1 · T3-4） */
   onGoAstralCalendar() {
     analytics.trackEvent('astral_calendar_entry', { source: 'today' });
-    wx.navigateTo({ url: '/pages/astral-calendar/astral-calendar' });
+    navTo('/pages/astral-calendar/astral-calendar');
   },
 
   /** 星辰相遇（双人合盘）入口（SDD P1 · T2-4） */
   onGoMeet() {
     analytics.trackEvent('meet_entry', { source: 'today' });
-    wx.navigateTo({ url: '/pages/meet/meet' });
+    navTo('/pages/meet/meet');
   },
 
   goToAllSpreads() {
-    wx.navigateTo({ url: '/pages/reading/reading' });
+    navTo('/pages/reading/reading');
   },
 
   /** Navigate to community / tree hole page */
   onGoCommunity() {
-    wx.navigateTo({ url: '/pages/community/community' });
+    navTo('/pages/community/community');
   },
 
   /** 今日共鸣墙（星友圈 · T8-4）入口：看看今天谁与你同星 */
   onGoResonance() {
     analytics.trackEvent('resonance_entry', { source: 'today' });
-    wx.navigateTo({ url: '/pages/resonance/resonance' });
+    navTo('/pages/resonance/resonance');
   },
 
   /** 星灵学堂（T6-5）入口：点亮你的 78 颗星 */
   onGoAcademy() {
     analytics.trackEvent('academy_entry', { source: 'today' });
-    wx.navigateTo({ url: '/pages/academy/academy' });
+    navTo('/pages/academy/academy');
   },
 
   /** Navigate to membership page（牌阵区耗尽态「补充解读次数」入口） */
   onGoMembership() {
-    wx.navigateTo({ url: '/pages/membership/membership' });
+    navTo('/pages/membership/membership');
   },
 
   /** Navigate to annual report page (members only) */
   onGoAnnualReport() {
-    wx.navigateTo({ url: '/pages/annual-report/annual-report' });
+    navTo('/pages/annual-report/annual-report');
   },
 
   /** DEV: Navigate to page test runner */
@@ -685,14 +686,12 @@ Page({
   onContinueReading() {
     const pending = this.data.pendingReading;
     if (!pending) return;
-    wx.navigateTo({
-      url: `/pages/reading/reading?type=${pending.spread_type}`,
-    });
+    navTo(`/pages/reading/reading?type=${pending.spread_type}`);
   },
 
   /** Navigate to daily-card teaching page */
   onDailyCardTap() {
-    wx.navigateTo({ url: '/pages/daily-card/daily-card' });
+    navTo('/pages/daily-card/daily-card');
   },
 
   /** 明日之牌预告 — 回流钩子：制造期待，不跳转、不展示牌面 */
@@ -894,7 +893,7 @@ Page({
 
   /** 星座徽章 → 修改星座（复用 onboarding 网格页 · change 模式返回） */
   onGoZodiac() {
-    wx.navigateTo({ url: '/pages/zodiac-welcome/zodiac-welcome?from=change' });
+    navTo('/pages/zodiac-welcome/zodiac-welcome?from=change');
   },
 
   /** 能量注脚 → 能量详情页（chips 页内切维度） */
@@ -902,13 +901,13 @@ Page({
     const dim = e.currentTarget.dataset.dim;
     if (!dim) return;
     analytics.trackEvent('energy_detail_open', { dim });
-    wx.navigateTo({ url: `/pages/energy-detail/energy-detail?dim=${dim}` });
+    navTo(`/pages/energy-detail/energy-detail?dim=${dim}`);
   },
 
   /** 占卜入口（降权）→ 神谕 Tab 牌阵馆 */
   onGoOracle() {
     analytics.trackEvent('go_oracle', { source: 'today_foot_entry' });
-    wx.switchTab({ url: '/pages/oracle/oracle' });
+    switchTo('/pages/oracle/oracle');
   },
 
   onUnload() {

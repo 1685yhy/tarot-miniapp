@@ -4,6 +4,7 @@
 const { getZodiacBadge } = require('../../utils/energy');
 const { fetchBirthchart, getCachedChart, missingHint } = require('../../utils/birthchart');
 const analytics = require('../../utils/analytics');
+const { navTo } = require('../../utils/nav-guard');
 
 /**
  * 牌阵馆 6 卡（与 reading.js SPREADS 的 key 一一对应，点击直达提问页）。
@@ -116,17 +117,17 @@ Page({
     if (!el || el.locked || !this.data.elements.length) {
       // 未点亮（未填出生日期）→ 出生信息引导
       analytics.trackEvent('oracle_element_to_birth_info', { element: key });
-      wx.navigateTo({ url: '/pages/birth-info/birth-info' });
+      navTo('/pages/birth-info/birth-info');
       return;
     }
     analytics.trackEvent('oracle_element_detail_open', { element: key });
-    wx.navigateTo({ url: `/pages/element-detail/element-detail?key=${key}&from=oracle` });
+    navTo(`/pages/element-detail/element-detail?key=${key}&from=oracle`);
   },
 
   /** 深度星图报告：二期已上线（会员免费 / 19.9 解锁） */
   onDeepReport() {
     analytics.trackEvent('oracle_deep_report_enter', {});
-    wx.navigateTo({ url: '/pages/birthchart-report/birthchart-report' });
+    navTo('/pages/birthchart-report/birthchart-report');
   },
 
   /** 牌阵馆卡片 → 提问页 */
@@ -134,17 +135,17 @@ Page({
     const type = e.currentTarget.dataset.type;
     if (!type) return;
     analytics.trackEvent('oracle_spread_enter', { type, source: 'oracle_spread_hall' });
-    wx.navigateTo({ url: `/pages/reading/reading?type=${type}` });
+    navTo(`/pages/reading/reading?type=${type}`);
   },
 
   /** 卡牌百科入口 */
   onGoEncyclopedia() {
     analytics.trackEvent('oracle_encyclopedia_enter', {});
-    wx.navigateTo({ url: '/pages/encyclopedia/encyclopedia' });
+    navTo('/pages/encyclopedia/encyclopedia');
   },
 
   /** 星座徽章 → 修改星座 */
   onGoZodiac() {
-    wx.navigateTo({ url: '/pages/zodiac-welcome/zodiac-welcome?from=change' });
+    navTo('/pages/zodiac-welcome/zodiac-welcome?from=change');
   },
 });
