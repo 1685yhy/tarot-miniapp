@@ -11,6 +11,7 @@ Covers:
 import asyncio
 import json
 
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import select
 
@@ -73,13 +74,15 @@ async def _seed_teaching():
         await session.commit()
 
 
-# Seed synchronously at import time (matching conftest.py pattern)
-_loop = asyncio.new_event_loop()
-asyncio.set_event_loop(_loop)
-try:
-    _loop.run_until_complete(_seed_teaching())
-finally:
-    _loop.close()
+@pytest.fixture(autouse=True)
+def _seed_teaching_fixture():
+    """每测试前重种教学数据。
+
+    conftest 的 _reset_db_before_each_test 会清空全部业务表（测试隔离），
+    教学种子若留在 import 期会被清掉，故改为 autouse fixture 每测试重种。
+    """
+    asyncio.run(_seed_teaching())
+    yield
 
 
 # ---------------------------------------------------------------------------
