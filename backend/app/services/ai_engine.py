@@ -504,29 +504,31 @@ def _build_no_question_guidance(question: str | None, user_context: str | None =
 # follow a fixed six-section structure. Each section starts with its fixed
 # title so the backend can parse it into structured sections (parse_deep_sections)
 # and the frontend can render title+body blocks.
-# Compliance: the 10-rule output red line (_OUTPUT_RED_LINE) remains in the
-# system prompt and is re-emphasized here — no fortune-telling, no verdicts,
-# no fear-mongering. Templates below must stay free of AI_OUTPUT_BLACKLIST words.
+# Compliance: the 10-rule output red line (_OUTPUT_RED_LINE) stays in the
+# system prompt; the instruction below only references (引用) it rather than
+# restating it (与 b1eded4 提交口径对齐——是「引用」不是「复述」). The named
+# prohibitions (吉凶断言/时间点承诺/定性/恐吓) are abbreviated so this template
+# itself stays free of AI_OUTPUT_BLACKLIST words.
 
 _DEEP_STRUCTURE_INSTRUCTION = (
-    "\n\n【深度解读结构·强制】本次是用户付费的深度解读，内容量必须达到普通解读的 2 倍以上"
+    "\n\n【深度解读结构·强制】本次是用户付费的深度解读，内容量须达到普通解读的 2 倍以上"
     "（全文建议 2000 字以上），并严格按照以下六个板块输出，每个板块以固定标题开头、正文紧随其后：\n"
     "【一、逐牌位详解】——每一张牌单独成段，格式「牌名（正/逆位）」小标题+正文：牌面核心含义 +"
     "这张牌在这个位置对用户问题情境的具体关联。每张牌不少于 120 字。\n"
     "【二、整体脉络】——牌阵走向与能量流动：牌与牌之间如何承接、呼应或转折，连成一条怎样的故事线，"
     "整组牌在说什么。不少于 200 字。\n"
     "【三、深层心理动因】——这组牌可能映照出的内在动机、未说出口的顾虑或习惯模式；"
-    "必须使用「听起来…」「似乎…」等推测式措辞，禁止「我能感觉到你…」等断言句式。不少于 150 字。\n"
+    "须使用「听起来…」「似乎…」等推测式措辞，禁止「我能感觉到你…」等断言句式。不少于 150 字。\n"
     "【四、对提问的直答】——正面回应用户的问题本身，给出当下最值得留意、最值得行动的方向；"
-    "不预测结果、不给确定性结论（遵守输出红线）。不少于 120 字。\n"
+    "不作结果断言、不给确定性结论（遵守输出红线）。不少于 120 字。\n"
     "【五、行动建议】——3~5 条具体、今天或本周就能执行的小行动，每条用 [ACTION]内容[/ACTION] 包裹"
     "（与普通解读一致，后端会解析成行动清单），按内容归入 love/career/general。\n"
     "【六、注意与观察】——未来一周建议回看什么、留意什么信号（如情绪变化、某个反复出现的念头）；"
     "温和提醒，不制造焦虑。不少于 100 字。\n"
     "硬性要求：六个板块一个都不能少、顺序不能乱；除【五、行动建议】外禁止出现 [ACTION] 标签；"
-    "板块标题必须原样保留（前端依赖它分块渲染）。"
-    "全文禁止预测吉凶、禁止时间点承诺、禁止命运定性、禁止恐吓或制造恐慌——"
-    "系统提示中的输出红线 10 条无条件遵守。"
+    "板块标题须原样保留（前端依赖它分块渲染）。"
+    "全文禁止吉凶断言、禁止时间点承诺、禁止好坏定性、禁止恐吓或制造恐慌——"
+    "系统提示中的输出红线 10 条无条件遵守（引用自系统提示）。"
 )
 
 
@@ -801,7 +803,10 @@ async def generate_reading(
         # 认领层 → 牌面教学(抽取的牌) → 情感语气 → 外化重构 →
         # 用户上下文(历史+日记) → 无问题引导 → (输出红线) →
         # 行动层 → 收尾金句 → [ACTION]结构化要求(应用解析用)
-        # 深度解读(付费)追加：固定六段结构，内容量为普通解读 2 倍以上
+        # 深度解读(付费)追加：固定六段结构，内容量为普通解读 2 倍以上。
+        # 深度模式跳过 结尾行动层 与 【行动建议要求】——六段结构已含
+        # 【五、行动建议】(3~5 条 [ACTION]) 与【六、注意与观察】，
+        # 若再注入结尾行动层会多出 3 条 [ACTION] 污染第六段；收尾金句保留。
         deep_block = _DEEP_STRUCTURE_INSTRUCTION if depth == "deep" else ""
         user_prompt = "\n".join(
             p for p in (
@@ -839,7 +844,7 @@ async def generate_reading(
                 f"3. 综合解读（将所有牌串联成完整故事）\n"
                 f"4. 建议与指引（用户可以在现实层面采取的行动）\n\n",
                 deep_block,
-                action_block,
+                action_block if depth != "deep" else "",
                 nudge_instruction,
                 f"【行动建议要求】\n"
                 f"在结尾行动层（两个问题与30秒小事）和收尾金句之后，另起一段，给出 3 条具体行动建议。\n"
@@ -849,7 +854,7 @@ async def generate_reading(
                 f"- 根据建议的内容主题，将每条建议归类为 love、career 或 general 中的一个\n"
                 f"- 格式：每行一条，使用 [ACTION]建议内容[/ACTION]\n"
                 f"  例如：[ACTION]本周主动约一位朋友喝咖啡，聊聊最近的感受[/ACTION]\n"
-                f"- 必须输出 3 条，不要多也不要少",
+                f"- 必须输出 3 条，不要多也不要少" if depth != "deep" else "",
             ) if p and p.strip()
         )
 
